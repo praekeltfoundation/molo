@@ -10,8 +10,12 @@ sane Django based web app deployment.
     $ source ve/bin/activate
     (ve)$ pip install -r requirements.pip
 
+You can use Git_ to merge this repository into your own code
+if you would like to use it as a starting point::
 
-The following packages are included:
+    $ git remote add skeleton https://github.com/praekelt/django-skeleton.git
+    $ git fetch skeleton
+    $ git merge skeleton/develop
 
 South
 -----
@@ -132,3 +136,4 @@ supply you with a key for you to configure your raven client with.
 .. _Gunicorn: http://gunicorn.org/
 .. _Sentry: https://github.com/getsentry/sentry
 .. _Raven: https://github.com/getsentry/raven-python
+.. _Git: http://git-scm.com/
