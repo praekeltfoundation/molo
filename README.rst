@@ -26,7 +26,7 @@ For your initial schema::
 
 For subsequent schema changes::
 
-    (ve)$ ./manage.py schemamigration --automatic <app-name>
+    (ve)$ ./manage.py schemamigration --auto <app-name>
 
 The schema changes can be applied manually with::
 
@@ -34,7 +34,7 @@ The schema changes can be applied manually with::
 
 Or generally what happens as part of a deploy is::
 
-    (ve)$ ./manage.py syncdb --noinput --migrate
+    (ve)$ ./manage.py syncdb --noinput --no-initial-data --migrate
 
 
 .. _South: http://south.aeracode.org/
