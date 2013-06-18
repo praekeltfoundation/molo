@@ -148,6 +148,7 @@ INSTALLED_APPS = (
 
     # sample apps to explain usage
     'app1',
+    'celery_app',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -183,9 +184,12 @@ LOGGING = {
 BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
-# If we're running in DEBUG mode then skip the broker and execute tasks
-# immediate instead of deferring them to the queue / workers.
-CELERY_ALWAYS_EAGER = DEBUG
+# Uncomment if you're running in DEBUG mode and you want to skip the broker
+# and execute tasks immediate instead of deferring them to the queue / workers.
+# CELERY_ALWAYS_EAGER = DEBUG
+
+# Tell Celery where to find the tasks
+CELERY_IMPORTS = ('celery_app.tasks',)
 
 # Defer email sending to Celery, except if we're in debug mode,
 # then just print the emails to stdout for debugging.
