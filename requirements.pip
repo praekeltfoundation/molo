@@ -7,3 +7,9 @@ raven
 nose
 django-haystack
 psycopg2
+celery
+redis
+django-debug-toolbar
+django-celery
+pep8
+pyflakes

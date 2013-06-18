@@ -1,5 +1,18 @@
 # Django settings for skeleton project.
 
+import os
+import djcelery
+
+
+djcelery.setup_loader()
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
+
+def abspath(*args):
+    """convert relative paths to absolute paths relative to PROJECT_ROOT"""
+    return os.path.join(PROJECT_ROOT, *args)
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -11,13 +24,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'skeleton',
         'USER': '',
         'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -29,7 +41,7 @@ ALLOWED_HOSTS = []
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'UTC'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -50,18 +62,18 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = abspath('media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = abspath('static')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -83,7 +95,8 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '@4=9v&i=qih@2qt-9#)t2ew4uf01bciew=b_j*m1-)y+m1to=*'
+# Leaving this intentionally blank because you have to generate one yourself.
+SECRET_KEY = 'please-change-me'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -111,6 +124,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    abspath('templates'),
 )
 
 INSTALLED_APPS = (
@@ -121,9 +135,16 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'south',
+    'gunicorn',
+    'django_nose',
+    'raven.contrib.django',
+    'djcelery',
+    'djcelery_email',
+    'debug_toolbar',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -154,3 +175,32 @@ LOGGING = {
         },
     }
 }
+
+# Celery configuration options
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# If we're running in DEBUG mode then skip the broker and execute tasks
+# immediate instead of deferring them to the queue / workers.
+CELERY_ALWAYS_EAGER = DEBUG
+
+# Defer email sending to Celery, except if we're in debug mode,
+# then just print the emails to stdout for debugging.
+EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Django debug toolbar
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+    'ENABLE_STACKTRACES': True,
+}
+
+# South configuration variables
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+SKIP_SOUTH_TESTS = True     # Do not run the south tests as part of our
+                            # test suite.
+SOUTH_TESTS_MIGRATE = False  # Do not run the migrations for our tests.
+                             # We are assuming that our models.py are correct
+                             # for the tests and as such nothing needs to be
+                             # migrated.
