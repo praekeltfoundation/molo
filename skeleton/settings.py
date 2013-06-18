@@ -141,10 +141,13 @@ INSTALLED_APPS = (
     'south',
     'gunicorn',
     'django_nose',
-    'raven.contrib.django',
+    'raven.contrib.django.raven_compat',
     'djcelery',
     'djcelery_email',
     'debug_toolbar',
+
+    # sample apps to explain usage
+    'app1',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -204,3 +207,9 @@ SOUTH_TESTS_MIGRATE = False  # Do not run the migrations for our tests.
                              # We are assuming that our models.py are correct
                              # for the tests and as such nothing needs to be
                              # migrated.
+
+# Sentry configuration
+RAVEN_CONFIG = {
+    # DevOps will supply you with this.
+    # 'dsn': 'http://public:secret@example.com/1',
+}

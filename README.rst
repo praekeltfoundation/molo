@@ -36,5 +36,22 @@ Or generally what happens as part of a deploy is::
 
     (ve)$ ./manage.py syncdb --noinput --no-initial-data --migrate
 
+As an example, the sample ``app1`` application's migrations were created
+with the following commands after creating the ``app1/models.py`` file::
+
+    (ve)$ ./manage.py schemamigration --initial app1
+    Creating migrations directory at '.../django-skeleton/app1/migrations'...
+    Creating __init__.py in '.../app1/migrations'...
+     + Added model app1.App1Model
+    Created 0001_initial.py. You can now apply this migration with: ./manage.py migrate app1
+
+A later change to the model definition is detected by South_ and a new
+schema migration is generated to reflect this change.
+
+    (ve)$ ./manage.py schemamigration --auto app1
+     + Added field gender on app1.App1Model
+    Created 0002_auto__add_field_app1model_gender.py.
+    You can now apply this migration with: ./manage.py migrate app1
+
 
 .. _South: http://south.aeracode.org/
