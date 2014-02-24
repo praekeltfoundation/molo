@@ -1,7 +1,6 @@
 Django
 South
 gunicorn
-supervisor
 python-memcached
 raven
 nose
