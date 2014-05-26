@@ -217,3 +217,8 @@ RAVEN_CONFIG = {
     # DevOps will supply you with this.
     # 'dsn': 'http://public:secret@example.com/1',
 }
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
