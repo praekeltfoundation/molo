@@ -74,8 +74,8 @@ MIDDLEWARE_CLASSES = (
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
 )
 
-ROOT_URLCONF = 'base.urls'
-WSGI_APPLICATION = 'base.wsgi.application'
+ROOT_URLCONF = 'project.urls'
+WSGI_APPLICATION = 'project.wsgi.application'
 
 
 # Database
