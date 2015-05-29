@@ -1,0 +1,17 @@
+Django
+South
+gunicorn
+python-memcached
+raven
+nose
+django-nose
+django-haystack
+psycopg2
+celery
+redis
+django-debug-toolbar
+django-celery
+django-celery-email
+pep8
+pyflakes
+fabric
