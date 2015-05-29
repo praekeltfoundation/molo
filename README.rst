@@ -5,4 +5,5 @@ Molo
     :target: https://molo.readthedocs.org
     :alt: Molo Documentation
 
-Molo is a CMS built on Django.
+Molo is a set of tools for publishing low end mobi sites with a
+community focus.
