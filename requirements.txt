@@ -1,1 +1,1 @@
-Django
+wagtail
