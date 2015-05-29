@@ -39,3 +39,4 @@ logs/*.log
 
 /static/
 db.sqlite3
+docs/_build
