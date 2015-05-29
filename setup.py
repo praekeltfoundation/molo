@@ -15,7 +15,7 @@ with open(os.path.join(here, 'requirements-dev.txt')) as f:
 with open(os.path.join(here, 'VERSION')) as f:
     version = f.read().strip()
 
-setup(name='molo.base',
+setup(name='molo.core',
       version=version,
       description=('Molo is a set of tools for publishing mobi sites with a '
                    'community focus.'),
