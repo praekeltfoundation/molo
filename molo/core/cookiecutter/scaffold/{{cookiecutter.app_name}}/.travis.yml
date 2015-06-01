@@ -1,0 +1,24 @@
+language: python
+python:
+  - "2.7"
+  - "pypy"
+install:
+  - pip install --upgrade pip
+  - pip install coveralls
+  - pip install flake8
+  - pip install -r requirements-dev.txt
+  - pip install -e .
+script:
+  - flake8 {{cookiecutter.app_name}}
+  - py.test --ds=project.settings --verbose --cov {{cookiecutter.app_name}} {{cookiecutter.app_name}}
+after_success:
+  - coveralls
+deploy:
+  provider: pypi
+  user: Praekelt
+  password:
+    # NOTE: See http://docs.travis-ci.com/user/encryption-keys/ for more info.
+    secure: "insert encrypted pypi password here"
+  on:
+    tags: true
+    all_branches: true
