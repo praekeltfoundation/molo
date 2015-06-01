@@ -9,8 +9,8 @@ install:
   - pip install -r requirements-dev.txt
   - pip install -e .
 script:
-  - flake8 unicore
-  - py.test --cov molo molo
+  - flake8 molo
+  - py.test --ds=project.settings --verbose --cov molo molo
 after_success:
   - coveralls
 deploy:
