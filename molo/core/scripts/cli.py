@@ -1,5 +1,7 @@
-import click
+import os.path
 import pkg_resources
+
+import click
 
 from cookiecutter.main import cookiecutter
 
@@ -22,11 +24,11 @@ def main():
 @click.option('--license',
               help='The License to release the package under.',
               default='BSD')
-def scaffold(app_name):
+def scaffold(**kwargs):
     cookiecutter(
         pkg_resources.resource_filename(
-            'molo', 'core/cookiecutter/scaffold'),
-        no_input=app_name,
-        extra_context={})
+            'molo', os.path.join('core', 'cookiecutter', 'scaffold')),
+        no_input=True,
+        extra_context=kwargs)
 
 main.add_command(scaffold)
