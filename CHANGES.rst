@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.0.4
+-----
+- Fix cookie cutter path
+
 2.0.3
 -----
 - pypi fix - include cookie cutter json
