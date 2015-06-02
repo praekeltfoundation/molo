@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.0.5
+-----
+- Add sideloader scripts
+
 2.0.4
 -----
 - Fix cookie cutter path
