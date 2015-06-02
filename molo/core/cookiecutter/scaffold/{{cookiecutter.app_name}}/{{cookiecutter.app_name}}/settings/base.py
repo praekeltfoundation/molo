@@ -25,7 +25,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
@@ -60,6 +60,7 @@ INSTALLED_APPS = (
     'wagtail.wagtailforms',
 
     'molo.core',
+    'raven.contrib.django.raven_compat',
 )
 
 MIDDLEWARE_CLASSES = (
