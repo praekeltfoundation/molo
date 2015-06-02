@@ -2,6 +2,7 @@ include LICENSE
 include README.rst
 include CHANGES.rst
 include VERSION
+include MANIFEST.in
 include requirements.txt
 include requirements-dev.txt
-recursive-include molo *.py *.txt *.scss *.js *.html
+recursive-include molo *.py *.txt *.scss *.js *.html *.json *.yml

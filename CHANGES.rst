@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.0.3
+-----
+- pypi fix - include cookie cutter json
+
 2.0.2
 -----
 - Use cookie cutter for a project template
