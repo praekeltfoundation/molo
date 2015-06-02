@@ -9,15 +9,16 @@ install:
   - pip install -r requirements-dev.txt
   - pip install -e .
 script:
-  - flake8 molo
-  - py.test --ds=project.settings --verbose --cov molo molo
+  - flake8 {{cookiecutter.app_name}}
+  - py.test --ds=project.settings --verbose --cov {{cookiecutter.app_name}} {{cookiecutter.app_name}}
 after_success:
   - coveralls
 deploy:
   provider: pypi
   user: Praekelt
   password:
-    secure: "HQ5JnvQ8Cwe0xUIuJy8mp4YHylRasji59UO8JttxtiiNU2Dih4qGpuGupZAeRICfvrRIZ3LWSeWPUV35+KMcQ0lnPoMYJzeICPTNB25ClTEe+a/Gi1sB0bd8ppSVin0UGS8ZWXysVu+/gmDC0gdo0JDvw/EEmuc647gdipF/Bhw="
+    # NOTE: See http://docs.travis-ci.com/user/encryption-keys/ for more info.
+    secure: "insert encrypted pypi password here"
   on:
     tags: true
     all_branches: true

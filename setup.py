@@ -37,4 +37,6 @@ setup(name='molo.core',
       namespace_packages=['molo'],
       install_requires=requires,
       tests_require=requires_dev,
-      entry_points={})
+      entry_points={
+          'console_scripts': ['molo = molo.core.scripts.cli:main'],
+      })
