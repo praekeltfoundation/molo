@@ -6,7 +6,7 @@ This is an application scaffold for Molo_.
 Getting started
 ---------------
 
-To get started, clone the repo from git::
+To get started::
 
     $ virtualenv ve
     $ pip install -e .
