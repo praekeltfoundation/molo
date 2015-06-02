@@ -27,7 +27,7 @@ def main():
 def scaffold(**kwargs):
     cookiecutter(
         pkg_resources.resource_filename(
-            'molo', os.path.join('core', 'cookiecutter', 'scaffold')),
+            'molo.core', os.path.join('cookiecutter', 'scaffold')),
         no_input=True,
         extra_context=kwargs)
 
