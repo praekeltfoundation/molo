@@ -5,4 +5,4 @@ include VERSION
 include MANIFEST.in
 include requirements.txt
 include requirements-dev.txt
-recursive-include molo *.py *.txt *.scss *.js *.html *.json *.yml
+recursive-include molo LICENSE VERSION *.py *.txt *.scss *.js *.html *.json *.yml *.rst *.in
