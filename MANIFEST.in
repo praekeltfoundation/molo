@@ -1,0 +1,7 @@
+include LICENSE
+include README.rst
+include CHANGES.rst
+include VERSION
+include requirements.txt
+include requirements-dev.txt
+recursive-include molo *.py *.txt *.scss *.js *.html

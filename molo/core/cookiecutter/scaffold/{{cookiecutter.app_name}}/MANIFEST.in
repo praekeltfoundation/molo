@@ -1,0 +1,6 @@
+include LICENSE
+include README.rst
+include VERSION
+include requirements.txt
+include requirements-dev.txt
+recursive-include {{cookiecutter.app_name}} *.py *.txt *.scss *.js *.html
