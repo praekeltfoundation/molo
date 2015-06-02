@@ -1,0 +1,10 @@
+buildscript: sideloader/build.sh
+postinstall: sideloader/postinstall.sh
+pip:
+ - gunicorn
+dependencies:
+ - nginx
+ - postgresql-server-dev-all
+ - libpq-dev
+ - postgresql
+ - redis-server
