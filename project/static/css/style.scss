@@ -1,0 +1,71 @@
+@import "mixins";
+@import "variables";
+@import "h5bp";
+@import "base";
+@import "modules";
+@import "icons";
+
+$colorFirst: #e52d47; // red
+$colorSecond: #27262b; // dark grey
+$colorThird: #1473ad; // blue
+$colorFourth: #ebebeb; // light grey
+$anotherShadeOfGrey: #67666b;
+
+@include links($colorFirst);
+
+
+a {
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+body,
+input,
+textarea {
+  font-family: "Exo 2", sans-serif;
+  color: $anotherShadeOfGrey;
+}
+
+// dark grey
+.highlight-primary {
+  color: $colorSecond;
+  p {
+    color: $anotherShadeOfGrey;
+  }
+}
+
+// dark grey
+.highlight-secondary {
+  color: $anotherShadeOfGrey;
+  li {
+    border: none;
+  }
+  a {
+    text-transform: uppercase;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// blue
+.highlight-tertiary {
+  color: $colorThird;
+}
+
+// light grey
+.highlight-quaternary {
+  color: $colorFourth;
+}
+
+
+
+// typography
+
+p {
+  margin: 0;
+  padding-bottom: 1em;
+}

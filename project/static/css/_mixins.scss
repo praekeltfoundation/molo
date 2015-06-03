@@ -1,0 +1,153 @@
+@mixin links($linkcolor) {
+  a {
+    color: $linkcolor;
+    &:visited {
+      color: $linkcolor;
+    }
+    &:hover {
+      text-decoration: none;
+      color: darken($linkcolor, 10);
+    }
+    &:focus {
+      outline: thin dotted;
+      color: darken($linkcolor, 10);
+    }
+    &:hover,
+    &:active {
+      outline: 0;
+    }
+  }
+}
+
+@mixin fancy-list-headers($background, $highlight, $gem: false) {
+  .list-header {
+    background: $background;
+    @if $gem {
+      line-height: 1.4;
+      padding-left: 0;
+    }
+    a {
+      background: $highlight;
+      padding-right: 0;
+      padding-left: 1em;
+      position: relative;
+     &:after {
+      content: "";
+      display: block;
+      width: 2.5em;
+      position: absolute;
+      top: 0;
+      right: -2.5em;
+      bottom: 0;
+      background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,$highlight), color-stop(50%,$highlight), color-stop(50%,$background), color-stop(100%,$background)); /* Chrome,Safari4+ */
+      background: -webkit-linear-gradient(-45deg, $highlight 0%,$highlight 50%, $background 50%, $background 100%); /* Chrome10+,Safari5.1+ */
+      background: linear-gradient(135deg, $highlight 0%,$highlight 50%, $background 50%, $background 100%); /* W3C */      
+     }
+    }
+  }
+
+  [dir="rtl"] & .list-header {
+    a {
+      padding-right: 1em;
+      padding-left: 0;
+      &:after {
+        right: auto;
+        left: -2.5em;
+        background: -webkit-gradient(linear, right top, left bottom, color-stop(0%,$highlight), color-stop(50%,$highlight), color-stop(50%,$background), color-stop(100%,$background)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(-135deg, $highlight 0%,$highlight 50%, $background 50%, $background 100%); /* Chrome10+,Safari5.1+ */
+        background: linear-gradient(225deg, $highlight 0%,$highlight 50%, $background 50%, $background 100%); /* W3C */      
+      }
+    }
+  }
+
+}
+
+// text helper classes
+
+@mixin uc {
+  text-transform: uppercase;
+}
+
+@mixin no-bull {
+  list-style: none;
+}
+
+// layout
+
+@mixin no-m {
+  margin: 0;
+}
+
+@mixin no-mp {
+  margin: 0;
+  padding: 0;
+}
+
+@mixin l-db {
+ display: block;
+}
+
+@mixin l-ib {
+  display: inline-block;
+
+}
+
+@mixin l-tac {
+  text-align: center;
+}
+
+// thumbs
+
+@mixin thumb-circle {
+  img {
+    border-radius: 50%;
+  }
+}
+
+@mixin has-thumb {
+  img {
+    float: left;
+    margin: 0 1em 1em 0;
+  }
+  [dir="rtl"] & {
+    img {
+      float: right;
+      margin: 0 0 1em 1em;
+    }
+  }
+}
+
+@mixin has-thumb-flip {
+  img {
+    float: right;
+    margin: 0 0 1em 1em;
+  }
+  [dir="rtl"] & {
+    img {
+      float: left;
+      margin: 0 1em 1em 0;
+    }
+  }
+}
+
+@mixin clearfix {
+  *zoom: 1;
+  &:before {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    content: " ";
+    display: table;
+    clear: both;
+  }
+}
+
+@mixin displaymenu {
+  display: block;
+  position: absolute;
+  top: 4.5em;
+  z-index: 3;
+  width: 20em;
+  max-width: 100%;
+}
