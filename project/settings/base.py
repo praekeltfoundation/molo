@@ -59,6 +59,7 @@ INSTALLED_APPS = (
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
 
+    'project',
     'molo.core',
 )
 

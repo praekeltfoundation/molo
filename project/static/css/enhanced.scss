@@ -1,0 +1,17 @@
+@media screen {
+  html {
+    background-color: #333;
+    max-width: 35em;
+    margin: 0 auto;
+    @media (min-device-width: 50em) {
+      max-width: 20em;
+    }
+  }
+
+  body {
+    background-color: #fff;
+  }
+}
+
+@import "mixins";
+@import "variables";
