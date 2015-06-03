@@ -10,9 +10,9 @@
   <ul class="list-block">
     <li>
       {% if page.image %}
-      <a href="{% pageurl section %}">{% image page.image width-60 %}</a>
+      <a href="{% pageurl page %}">{% image page.image width-60 %}</a>
       {% endif %}
-      <h3><a href="{% pageurl section %}">{{page.title}}</a></h3>
+      <h3><a href="{% pageurl page %}">{{page.title}}</a></h3>
       <p>{{page.subtitle}}</p>
     </li>
   </ul>
