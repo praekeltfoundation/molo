@@ -1,2 +1,4 @@
 wagtail
 cookiecutter
+psycopg2
+raven==5.0.0
