@@ -10,7 +10,8 @@ install:
   - pip install -e .
 script:
   - flake8 molo
-  - py.test --ds=project.settings --verbose --cov molo molo
+  - molo scaffold testapp
+  - py.test --ds=testapp.settings --verbose --cov molo molo
 after_success:
   - coveralls
 deploy:
