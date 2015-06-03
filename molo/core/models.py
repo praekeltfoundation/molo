@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch import index
@@ -16,16 +17,18 @@ class Main(Page):
 
 
 class LanguagePage(Page):
-    code = models.CharField(max_length=255)
+    code = models.CharField(
+        max_length=255,
+        help_text=_('The language code as specified in iso639-2'))
 
     parent_page_types = ['core.Main']
     subpage_types = ['core.HomePage', 'core.SectionPage']
 
     class Meta:
-        verbose_name = 'Language'
+        verbose_name = _('Language')
 
 LanguagePage.content_panels = [
-    FieldPanel('title'),
+    FieldPanel('title', classname='full title'),
     FieldPanel('code'),
 ]
 
@@ -39,10 +42,10 @@ class SectionPage(Page):
     )
 
     class Meta:
-        verbose_name = 'Section'
+        verbose_name = _('Section')
 
 SectionPage.content_panels = [
-    FieldPanel('title'),
+    FieldPanel('title', classname='full title'),
     FieldPanel('description'),
 ]
 
@@ -63,10 +66,10 @@ class ArticlePage(Page):
     )
 
     class Meta:
-        verbose_name = 'Article'
+        verbose_name = _('Article')
 
 ArticlePage.content_panels = [
-    FieldPanel('title'),
+    FieldPanel('title', classname='full title'),
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
 ]
