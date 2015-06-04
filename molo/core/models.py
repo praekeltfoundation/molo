@@ -41,6 +41,11 @@ class SectionPage(Page):
         index.SearchField('description'),
     )
 
+    def featured_articles(self):
+        # Get list of live article pages that are descendants of this page
+        # and are "featured in menu"
+        return ArticlePage.objects.live().descendant_of(self).in_menu()
+
     class Meta:
         verbose_name = _('Section')
 

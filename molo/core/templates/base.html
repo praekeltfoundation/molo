@@ -1,4 +1,4 @@
-{% load compress static wagtailuserbar %}
+{% load compress static wagtailuserbar core_tags %}
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -61,6 +61,8 @@
     <body class="{% block body_class %}{% endblock %}">
 
         {% wagtailuserbar %}
+
+        {% breadcrumbs %}
 
         {% block content %}{% endblock %}
 
