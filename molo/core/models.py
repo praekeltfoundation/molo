@@ -41,7 +41,6 @@ class SectionPage(Page):
         index.SearchField('description'),
     )
 
-    @property
     def featured_articles(self):
         # Get list of live article pages that are descendants of this page
         # and are "featured in menu"
