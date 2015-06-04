@@ -30,3 +30,10 @@ class TestPages(TestCase):
             '<img src="/media/images/f5edfca6af2e4410b029864a2da149fd'
             '.focus-none.width-60.jpeg" width="60" height="39" alt="2 girls">'
             '</a>' in response.content)
+
+    def test_article_page(self):
+        response = self.client.get('/english/your-mind/another-story/')
+        assert (
+            '<span class="active">This is another story</span>'
+            in response.content)
+        assert 'About a girl' in response.content
