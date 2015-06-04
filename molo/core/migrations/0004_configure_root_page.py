@@ -16,7 +16,7 @@ def configure_root_page(apps, schema_editor):
 
     # Create content type for main model
     main_content_type, created = ContentType.objects.get_or_create(
-        model='main', app_label='core', defaults={'name': 'Main'})
+        model='main', app_label='core')
 
     # Create a new homepage
     main = Main.objects.create(
