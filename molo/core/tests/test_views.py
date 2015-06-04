@@ -8,32 +8,33 @@ class TestPages(TestCase):
 
     def test_breadcrumbs(self):
         response = self.client.get('/')
-        assert response.status_code == 200
-        assert 'Home' not in response.content
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'Home')
 
         response = self.client.get('/english/your-mind/')
-        assert response.status_code == 200
-        assert '<span class="active">Your Mind</span>' in response.content
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, '<span class="active">Your Mind</span>')
 
         response = self.client.get('/english/your-mind/another-story/')
-        assert response.status_code == 200
-        assert (
-            '<span class="active">This is another story</span>'
-            in response.content)
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(
+            response,
+            '<span class="active">This is another story</span>')
 
     def test_section_listing(self):
         response = self.client.get('/')
-        assert 'About a girl' in response.content
-        assert 'about a boy' in response.content
-        assert (
+        self.assertContains(response, 'About a girl')
+        self.assertContains(response, 'about a boy')
+        self.assertContains(
+            response,
             '<a href="/english/your-mind/another-story/">'
             '<img src="/media/images/f5edfca6af2e4410b029864a2da149fd'
             '.focus-none.width-60.jpeg" width="60" height="39" alt="2 girls">'
-            '</a>' in response.content)
+            '</a>')
 
     def test_article_page(self):
         response = self.client.get('/english/your-mind/another-story/')
-        assert (
-            '<span class="active">This is another story</span>'
-            in response.content)
-        assert 'About a girl' in response.content
+        self.assertContains(
+            response,
+            '<span class="active">This is another story</span>')
+        self.assertContains(response, 'About a girl')
