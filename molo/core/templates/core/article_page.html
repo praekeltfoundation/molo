@@ -23,6 +23,16 @@
       {% else %}
       {% if block.block_type == 'image' %}
         {% image block.value width-240 %}
+      {% else %}
+      {% if block.block_type == 'numbered_list' %}
+      <ol>
+        {% for item in block.value %}
+          <li>{{item}}</li>
+        {% endfor %}
+        </ol>
+      {% else %}
+          {{ block }}
+      {% endif %}
       {% endif %}
       {% endif %}
       {% endif %}
