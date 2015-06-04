@@ -3,6 +3,7 @@ import pkg_resources
 
 import click
 
+
 @click.group()
 def main():
     pass

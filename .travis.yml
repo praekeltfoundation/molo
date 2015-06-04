@@ -9,7 +9,6 @@ install:
   - pip install -r requirements-dev.txt
   - pip install -e .
 script:
-  - flake8 molo
   - ./run-tests.sh
 after_success:
   - coveralls
