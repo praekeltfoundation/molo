@@ -13,5 +13,20 @@
   <div class="banner">{% image self.image width-240 %}</div>
   {% endif %}
 
+<article>
+  {% for block in self.body %}
+      {% if block.block_type == 'heading' %}
+          <h1>{{ block.value }}</h1>
+      {% else %}
+      {% if block.block_type == 'paragraph' %}
+          <p>{{ block }}</p>
+      {% else %}
+      {% if block.block_type == 'image' %}
+        {% image block.value width-240 %}
+      {% endif %}
+      {% endif %}
+      {% endif %}
+  {% endfor %}
+</article>
 </div>
 {% endblock %}
