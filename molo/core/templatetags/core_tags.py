@@ -1,5 +1,5 @@
 from django import template
-from django.utils.translation import get_language_from_request
+from django.utils.translation import get_language_from_request, to_locale
 
 from molo.core.models import SectionPage, LanguagePage, Page
 
@@ -11,8 +11,9 @@ register = template.Library()
     takes_context=True
 )
 def section_listing_homepage(context):
-    language = get_language_from_request(context['request'])
-    language_page = LanguagePage.objects.live().filter(code=language).first()
+    locale = get_language_from_request(context['request'])
+    lang_code, _, country_code = to_locale(locale).partition('_')
+    language_page = LanguagePage.objects.live().filter(code=lang_code).first()
     if language_page:
         sections = SectionPage.objects.live().descendant_of(language_page)
     else:
