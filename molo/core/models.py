@@ -74,7 +74,8 @@ class ArticlePage(Page):
         ('paragraph', MarkDownBlock()),
         ('image', ImageChooserBlock()),
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
-        ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item")))
+        ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
+        ('page', blocks.PageChooserBlock()),
     ], null=True, blank=True)
 
     subpage_types = []
