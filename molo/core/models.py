@@ -2,9 +2,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from wagtail.wagtailcore.models import Page
+from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
-from wagtail.wagtailadmin.edit_handlers import FieldPanel
+from wagtail.wagtailadmin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from wagtail.wagtailcore import blocks
+from wagtail.wagtailimages.blocks import ImageChooserBlock
+
+from molo.core.blocks import MarkDownBlock
 
 
 class HomePage(Page):
@@ -64,6 +69,11 @@ class ArticlePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    body = StreamField([
+        ('heading', blocks.CharBlock(classname="full title")),
+        ('paragraph', MarkDownBlock()),
+        ('image', ImageChooserBlock()),
+    ], null=True, blank=True)
 
     subpage_types = []
     search_fields = Page.search_fields + (
@@ -77,4 +87,5 @@ ArticlePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
+    StreamFieldPanel('body'),
 ]
