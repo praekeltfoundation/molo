@@ -1,4 +1,4 @@
-wagtail
+wagtail==1.0b2
 cookiecutter
 psycopg2cffi
 raven==5.0.0
