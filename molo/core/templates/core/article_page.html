@@ -18,14 +18,11 @@
       {% if block.block_type == 'heading' %}
           <h1>{{ block.value }}</h1>
       {% else %}
-      {% if block.block_type == 'paragraph' %}
-          <p>{{ block }}</p>
-      {% else %}
       {% if block.block_type == 'image' %}
         {% image block.value width-240 %}
       {% else %}
       {% if block.block_type == 'numbered_list' %}
-      <ol>
+        <ol>
         {% for item in block.value %}
           <li>{{item}}</li>
         {% endfor %}
