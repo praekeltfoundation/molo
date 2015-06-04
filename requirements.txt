@@ -1,4 +1,4 @@
 wagtail
 cookiecutter
-psycopg2
+# psycopg2 for use with postgres (not compatible with pypy)
 raven==5.0.0
