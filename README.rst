@@ -18,3 +18,17 @@ Molo
     :alt: Pypi Package
 
 Molo is a set of tools for publishing mobi sites with a community focus.
+It scaffolds a Django application for you with sensible defaults, packages
+and configuration to help you get going as soon as possible:
+
+.. bash::
+
+    $ pip install molo.core
+    $ molo scaffol myapp
+    $ cd myapp/
+    $ ./manage.py migrate
+    $ ./manage.py createsuperuser
+    $ ./manage.py runserver
+
+Open the sample site in your browser at http://localhost:8000/ and the CMS
+at http://localhost:8000/admin/.
