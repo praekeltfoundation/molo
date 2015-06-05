@@ -95,7 +95,7 @@
         "is_active": true,
         "is_superuser": true,
         "is_staff": true,
-        "last_login": "2015-06-03T05:39:17.429Z",
+        "last_login": "2015-06-04T13:00:22.683Z",
         "groups": [],
         "user_permissions": [],
         "password": "pbkdf2_sha256$15000$iZM5CzCAHjg2$P/zI8uTKkvYZa3MMaOTqZxrpLdK3De/iv7wGYHXarYY=",
@@ -104,6 +104,14 @@
     },
     "model": "auth.user",
     "pk": 1
+},
+{
+    "fields": {
+        "expire_date": "2015-06-18T13:00:22.816Z",
+        "session_data": "OTcxZjA5MjZlZTRlYWViMGQ3ODg0NTNhMmM3ZjY0MGVhOTliYWFlYTp7Il9hdXRoX3VzZXJfaGFzaCI6IjE2ZjU4NjMzYWZkMGExYWQ0OGYwZDBiNmFjYjRmZjUyODNhMGQ4OTQiLCJfYXV0aF91c2VyX2JhY2tlbmQiOiJkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZCIsIl9hdXRoX3VzZXJfaWQiOjF9"
+    },
+    "model": "sessions.session",
+    "pk": "ae270hav6b5ndqd99fomlmbg14jzxgw1"
 },
 {
     "fields": {
@@ -141,6 +149,7 @@
         "has_unpublished_changes": false,
         "owner": null,
         "path": "0001",
+        "first_published_at": null,
         "url_path": "/",
         "expired": false,
         "slug": "root",
@@ -168,6 +177,7 @@
         "has_unpublished_changes": false,
         "owner": null,
         "path": "00010001",
+        "first_published_at": null,
         "url_path": "/home/",
         "expired": false,
         "slug": "main",
@@ -197,6 +207,7 @@
             "root"
         ],
         "path": "000100010001",
+        "first_published_at": null,
         "url_path": "/home/english/",
         "expired": false,
         "slug": "english",
@@ -226,6 +237,7 @@
             "root"
         ],
         "path": "0001000100010001",
+        "first_published_at": null,
         "url_path": "/home/english/your-mind/",
         "expired": false,
         "slug": "your-mind",
@@ -243,7 +255,7 @@
         "show_in_menus": true,
         "live": true,
         "seo_title": "",
-        "latest_revision_created_at": "2015-06-03T09:26:06.446Z",
+        "latest_revision_created_at": "2015-06-04T14:37:45.608Z",
         "depth": 5,
         "search_description": "",
         "content_type": [
@@ -255,6 +267,7 @@
             "root"
         ],
         "path": "00010001000100010002",
+        "first_published_at": "2015-06-04T13:11:02.178Z",
         "url_path": "/home/english/your-mind/story/",
         "expired": false,
         "slug": "story",
@@ -284,6 +297,7 @@
             "root"
         ],
         "path": "00010001000100010001",
+        "first_published_at": null,
         "url_path": "/home/english/your-mind/another-story/",
         "expired": false,
         "slug": "another-story",
@@ -313,6 +327,7 @@
             "root"
         ],
         "path": "000100010002",
+        "first_published_at": null,
         "url_path": "/home/zulu/",
         "expired": false,
         "slug": "zulu",
@@ -342,6 +357,7 @@
             "root"
         ],
         "path": "0001000100020001",
+        "first_published_at": null,
         "url_path": "/home/zulu/zulu-1st-section/",
         "expired": false,
         "slug": "zulu-1st-section",
@@ -371,6 +387,7 @@
             "root"
         ],
         "path": "00010001000200010001",
+        "first_published_at": null,
         "url_path": "/home/zulu/zulu-1st-section/zulu-story/",
         "expired": false,
         "slug": "zulu-story",
@@ -522,6 +539,118 @@
 },
 {
     "fields": {
+        "approved_go_live_at": null,
+        "created_at": "2015-06-04T13:11:01.690Z",
+        "submitted_for_moderation": false,
+        "content_json": "{\"subtitle\": \"about a boy\", \"image\": 1, \"search_description\": \"\", \"owner\": 1, \"latest_revision_created_at\": \"2015-06-03T09:26:06.446Z\", \"go_live_at\": null, \"title\": \"This is a story\", \"seo_title\": \"\", \"slug\": \"story\", \"live\": true, \"has_unpublished_changes\": false, \"body\": \"[{\\\"type\\\": \\\"heading\\\", \\\"value\\\": \\\"A story about a boy\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"<p>This is a story about another boy from swaziland.<br/></p>\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"<p>And another paragraph goes here.</p><p><br/></p><p>Although you can do this too.<br/></p>\\\"}, {\\\"type\\\": \\\"image\\\", \\\"value\\\": 1}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"<p>I just felt like adding an image.<br/></p>\\\"}]\", \"numchild\": 0, \"content_type\": 30, \"show_in_menus\": true, \"path\": \"00010001000100010002\", \"url_path\": \"/home/english/your-mind/story/\", \"expired\": false, \"pk\": 7, \"locked\": false, \"depth\": 5, \"first_published_at\": null, \"expire_at\": null}",
+        "user": [
+            "root"
+        ],
+        "page": 7
+    },
+    "model": "wagtailcore.pagerevision",
+    "pk": 11
+},
+{
+    "fields": {
+        "approved_go_live_at": null,
+        "created_at": "2015-06-04T13:16:47.661Z",
+        "submitted_for_moderation": false,
+        "content_json": "{\"subtitle\": \"about a boy\", \"image\": 1, \"search_description\": \"\", \"owner\": 1, \"latest_revision_created_at\": \"2015-06-04T13:11:01.690Z\", \"go_live_at\": null, \"title\": \"This is a story\", \"seo_title\": \"\", \"slug\": \"story\", \"live\": true, \"has_unpublished_changes\": false, \"body\": \"[{\\\"type\\\": \\\"heading\\\", \\\"value\\\": \\\"A story about a boy\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"This is a paragraph in markdown.\\\\r\\\\n*bold*\\\\r\\\\n_italics*\\\\r\\\\netc ;)\\\"}, {\\\"type\\\": \\\"image\\\", \\\"value\\\": 1}]\", \"numchild\": 0, \"content_type\": 30, \"show_in_menus\": true, \"path\": \"00010001000100010002\", \"url_path\": \"/home/english/your-mind/story/\", \"expired\": false, \"pk\": 7, \"locked\": false, \"depth\": 5, \"first_published_at\": \"2015-06-04T13:11:02.178Z\", \"expire_at\": null}",
+        "user": [
+            "root"
+        ],
+        "page": 7
+    },
+    "model": "wagtailcore.pagerevision",
+    "pk": 12
+},
+{
+    "fields": {
+        "approved_go_live_at": null,
+        "created_at": "2015-06-04T13:57:55.050Z",
+        "submitted_for_moderation": false,
+        "content_json": "{\"subtitle\": \"about a boy\", \"image\": 1, \"search_description\": \"\", \"owner\": 1, \"latest_revision_created_at\": \"2015-06-04T13:16:47.661Z\", \"go_live_at\": null, \"title\": \"This is a story\", \"seo_title\": \"\", \"slug\": \"story\", \"live\": true, \"has_unpublished_changes\": false, \"body\": \"[{\\\"type\\\": \\\"heading\\\", \\\"value\\\": \\\"A story about a boy\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"This is a paragraph in markdown.\\\\r\\\\n**bold**\\\\r\\\\n_italics_\\\\r\\\\netc ;)\\\"}, {\\\"type\\\": \\\"image\\\", \\\"value\\\": 1}]\", \"numchild\": 0, \"content_type\": 30, \"show_in_menus\": true, \"path\": \"00010001000100010002\", \"url_path\": \"/home/english/your-mind/story/\", \"expired\": false, \"pk\": 7, \"locked\": false, \"depth\": 5, \"first_published_at\": \"2015-06-04T13:11:02.178Z\", \"expire_at\": null}",
+        "user": [
+            "root"
+        ],
+        "page": 7
+    },
+    "model": "wagtailcore.pagerevision",
+    "pk": 13
+},
+{
+    "fields": {
+        "approved_go_live_at": null,
+        "created_at": "2015-06-04T14:18:39.463Z",
+        "submitted_for_moderation": false,
+        "content_json": "{\"subtitle\": \"about a boy\", \"image\": 1, \"search_description\": \"\", \"owner\": 1, \"latest_revision_created_at\": \"2015-06-04T13:57:55.050Z\", \"go_live_at\": null, \"title\": \"This is a story\", \"seo_title\": \"\", \"slug\": \"story\", \"live\": true, \"has_unpublished_changes\": false, \"body\": \"[{\\\"type\\\": \\\"heading\\\", \\\"value\\\": \\\"A story about a boy\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"This is a paragraph in markdown.\\\\r\\\\n**bold**\\\\r\\\\n_italics_\\\\r\\\\netc ;)\\\"}, {\\\"type\\\": \\\"image\\\", \\\"value\\\": 2}]\", \"numchild\": 0, \"content_type\": 30, \"show_in_menus\": true, \"path\": \"00010001000100010002\", \"url_path\": \"/home/english/your-mind/story/\", \"expired\": false, \"pk\": 7, \"locked\": false, \"depth\": 5, \"first_published_at\": \"2015-06-04T13:11:02.178Z\", \"expire_at\": null}",
+        "user": [
+            "root"
+        ],
+        "page": 7
+    },
+    "model": "wagtailcore.pagerevision",
+    "pk": 14
+},
+{
+    "fields": {
+        "approved_go_live_at": null,
+        "created_at": "2015-06-04T14:28:41.253Z",
+        "submitted_for_moderation": false,
+        "content_json": "{\"subtitle\": \"about a boy\", \"image\": 1, \"search_description\": \"\", \"owner\": 1, \"latest_revision_created_at\": \"2015-06-04T14:18:39.463Z\", \"go_live_at\": null, \"title\": \"This is a story\", \"seo_title\": \"\", \"slug\": \"story\", \"live\": true, \"has_unpublished_changes\": false, \"body\": \"[{\\\"type\\\": \\\"heading\\\", \\\"value\\\": \\\"A story about a boy\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"This is a paragraph in markdown.\\\\r\\\\n\\\\r\\\\n**bold**\\\\r\\\\n_italics_\\\\r\\\\netc ;)\\\"}, {\\\"type\\\": \\\"image\\\", \\\"value\\\": 2}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"* something\\\\r\\\\n* another thing\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"#well\\\\r\\\\nQuite a heading\\\\r\\\\n\\\\r\\\\n##this is new\\\\r\\\\nWell another heading\\\"}]\", \"numchild\": 0, \"content_type\": 30, \"show_in_menus\": true, \"path\": \"00010001000100010002\", \"url_path\": \"/home/english/your-mind/story/\", \"expired\": false, \"pk\": 7, \"locked\": false, \"depth\": 5, \"first_published_at\": \"2015-06-04T13:11:02.178Z\", \"expire_at\": null}",
+        "user": [
+            "root"
+        ],
+        "page": 7
+    },
+    "model": "wagtailcore.pagerevision",
+    "pk": 15
+},
+{
+    "fields": {
+        "approved_go_live_at": null,
+        "created_at": "2015-06-04T14:29:07.528Z",
+        "submitted_for_moderation": false,
+        "content_json": "{\"subtitle\": \"about a boy\", \"image\": 1, \"search_description\": \"\", \"owner\": 1, \"latest_revision_created_at\": \"2015-06-04T14:28:41.253Z\", \"go_live_at\": null, \"title\": \"This is a story\", \"seo_title\": \"\", \"slug\": \"story\", \"live\": true, \"has_unpublished_changes\": true, \"body\": \"[{\\\"type\\\": \\\"heading\\\", \\\"value\\\": \\\"A story about a boy\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"This is a paragraph in markdown.\\\\r\\\\n\\\\r\\\\n**bold**\\\\r\\\\n_italics_\\\\r\\\\netc ;)\\\"}, {\\\"type\\\": \\\"image\\\", \\\"value\\\": 2}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"* something\\\\r\\\\n* another thing\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"#well\\\\r\\\\nQuite a heading\\\\r\\\\n\\\\r\\\\n##this is new\\\\r\\\\nWell another heading\\\"}]\", \"numchild\": 0, \"content_type\": 30, \"show_in_menus\": true, \"path\": \"00010001000100010002\", \"url_path\": \"/home/english/your-mind/story/\", \"expired\": false, \"pk\": 7, \"locked\": false, \"depth\": 5, \"first_published_at\": \"2015-06-04T13:11:02.178Z\", \"expire_at\": null}",
+        "user": [
+            "root"
+        ],
+        "page": 7
+    },
+    "model": "wagtailcore.pagerevision",
+    "pk": 16
+},
+{
+    "fields": {
+        "approved_go_live_at": null,
+        "created_at": "2015-06-04T14:33:39.239Z",
+        "submitted_for_moderation": false,
+        "content_json": "{\"subtitle\": \"about a boy\", \"image\": 1, \"search_description\": \"\", \"owner\": 1, \"latest_revision_created_at\": \"2015-06-04T14:29:07.528Z\", \"go_live_at\": null, \"title\": \"This is a story\", \"seo_title\": \"\", \"slug\": \"story\", \"live\": true, \"has_unpublished_changes\": false, \"body\": \"[{\\\"type\\\": \\\"heading\\\", \\\"value\\\": \\\"A story about a boy\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"This is a paragraph in markdown.\\\\r\\\\n\\\\r\\\\n**bold**\\\\r\\\\n_italics_\\\\r\\\\netc ;)\\\"}, {\\\"type\\\": \\\"image\\\", \\\"value\\\": 2}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"* something\\\\r\\\\n* another thing\\\"}, {\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"#well\\\\r\\\\nQuite a heading\\\\r\\\\n\\\\r\\\\n##this is new\\\\r\\\\nWell another heading\\\"}, {\\\"type\\\": \\\"heading\\\", \\\"value\\\": \\\"And a proper heading goes here\\\"}]\", \"numchild\": 0, \"content_type\": 30, \"show_in_menus\": true, \"path\": \"00010001000100010002\", \"url_path\": \"/home/english/your-mind/story/\", \"expired\": false, \"pk\": 7, \"locked\": false, \"depth\": 5, \"first_published_at\": \"2015-06-04T13:11:02.178Z\", \"expire_at\": null}",
+        "user": [
+            "root"
+        ],
+        "page": 7
+    },
+    "model": "wagtailcore.pagerevision",
+    "pk": 17
+},
+{
+    "fields": {
+        "approved_go_live_at": null,
+        "created_at": "2015-06-04T14:37:45.608Z",
+        "submitted_for_moderation": false,
+        "content_json": "{\"subtitle\": \"about a boy\", \"image\": 1, \"search_description\": \"\", \"owner\": 1, \"latest_revision_created_at\": \"2015-06-04T14:33:39.239Z\", \"go_live_at\": null, \"title\": \"This is a story\", \"seo_title\": \"\", \"slug\": \"story\", \"live\": true, \"has_unpublished_changes\": false, \"body\": \"[{\\\"type\\\": \\\"paragraph\\\", \\\"value\\\": \\\"A markdown paragraph with **bold** and _italics_\\\"}]\", \"numchild\": 0, \"content_type\": 30, \"show_in_menus\": true, \"path\": \"00010001000100010002\", \"url_path\": \"/home/english/your-mind/story/\", \"expired\": false, \"pk\": 7, \"locked\": false, \"depth\": 5, \"first_published_at\": \"2015-06-04T13:11:02.178Z\", \"expire_at\": null}",
+        "user": [
+            "root"
+        ],
+        "page": 7
+    },
+    "model": "wagtailcore.pagerevision",
+    "pk": 18
+},
+{
+    "fields": {
         "group": [
             "Moderators"
         ],
@@ -666,6 +795,13 @@
 },
 {
     "fields": {
+        "spec": "original"
+    },
+    "model": "wagtailimages.filter",
+    "pk": 7
+},
+{
+    "fields": {
         "image": 2,
         "focal_point_key": "",
         "filter": 2,
@@ -737,6 +873,78 @@
     "pk": 14
 },
 {
+    "fields": {
+        "image": 2,
+        "focal_point_key": "",
+        "filter": 1,
+        "width": 130,
+        "file": "images/f5edfca6af2e4410b029864a2da149fd.max-130x130.jpg",
+        "height": 86
+    },
+    "model": "wagtailimages.rendition",
+    "pk": 15
+},
+{
+    "fields": {
+        "image": 1,
+        "focal_point_key": "",
+        "filter": 1,
+        "width": 130,
+        "file": "images/fflangola.max-130x130.jpg",
+        "height": 101
+    },
+    "model": "wagtailimages.rendition",
+    "pk": 16
+},
+{
+    "fields": {
+        "image": 1,
+        "focal_point_key": "",
+        "filter": 3,
+        "width": 127,
+        "file": "images/fflangola.max-130x100.jpg",
+        "height": 100
+    },
+    "model": "wagtailimages.rendition",
+    "pk": 17
+},
+{
+    "fields": {
+        "image": 1,
+        "focal_point_key": "",
+        "filter": 7,
+        "width": 550,
+        "file": "images/fflangola.original.jpg",
+        "height": 430
+    },
+    "model": "wagtailimages.rendition",
+    "pk": 18
+},
+{
+    "fields": {
+        "image": 2,
+        "focal_point_key": "",
+        "filter": 3,
+        "width": 130,
+        "file": "images/f5edfca6af2e4410b029864a2da149fd.max-130x100.jpg",
+        "height": 86
+    },
+    "model": "wagtailimages.rendition",
+    "pk": 19
+},
+{
+    "fields": {
+        "image": 1,
+        "focal_point_key": "",
+        "filter": 5,
+        "width": 550,
+        "file": "images/fflangola.max-800x600.jpg",
+        "height": 430
+    },
+    "model": "wagtailimages.rendition",
+    "pk": 20
+},
+{
     "fields": {},
     "model": "core.main",
     "pk": 4
@@ -771,6 +979,7 @@
 },
 {
     "fields": {
+        "body": "[{\"type\": \"paragraph\", \"value\": \"A markdown paragraph with **bold** and _italics_\"}]",
         "image": 1,
         "subtitle": "about a boy"
     },
@@ -779,6 +988,7 @@
 },
 {
     "fields": {
+        "body": "[]",
         "image": 2,
         "subtitle": "About a girl"
     },
@@ -787,6 +997,7 @@
 },
 {
     "fields": {
+        "body": "[]",
         "image": 1,
         "subtitle": "About a boy"
     },

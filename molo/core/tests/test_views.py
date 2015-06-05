@@ -38,3 +38,10 @@ class TestPages(TestCase):
             response,
             '<span class="active">This is another story</span>')
         self.assertContains(response, 'About a girl')
+
+    def test_markdown_in_article_page(self):
+        response = self.client.get('/english/your-mind/story/')
+        self.assertContains(
+            response,
+            '<p>A markdown paragraph with <strong>bold</strong>'
+            ' and <em>italics</em></p>')
