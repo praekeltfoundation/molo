@@ -16,7 +16,7 @@ deploy:
   provider: pypi
   user: Praekelt
   password:
-    secure: XRtLnlbcqFVc0YYt7DZs/l/LATLoNshSGdaWyvVeULXIVWYxvrjighF4RZ0bSBgroP2M0ct4m1+s3j8584nHWFmYLZtEv9/cN3B7whcxcGm8lpXZl+BZsAXD7dx+W6P8Y/p2W2Q92ojmfeECMbx6wIuZOUqU3ofTgiWiOwAr4fE=
+    secure: gp/AZ2zNUktj6oCj434SArM9XAf2DqWJGwNYyTYDi7s7LbAmUkiCoAXfERiKrIK2Rsxht61jbU5xbBdf4HZL+VdVGbFwAWIagtv1r7Dlo1nJcymarcMFrfZG9X9nm99/nu66iaTHfb2ED8DXnRkuwu+13vgus3RlU7YNDYZwrmnzVItWNMhtayj70Iif4hUgsjga4hpRsdkfGPaHcimlX9IGR+EO7HUCvOwoErK47tY8g/8nkhEBwMDTY1TzfBDFhl10SDF+JqaKlps1Krdgziy6rKqXHentuLqmL8MkGHEnDZG+EFjXwqEBgGevX1Fg46/deZG+giUwGgHH1Na5fgq71LR8FX07BUq/TWTP6+p+S4N1FKFHf6JuYD+nVPj0cH39hzBFXLE5rBCXEgLcri+oufovBh0jqEIZrD4JGHIj+Lirq/bt10dPNU48GbSPzo1QhkdOAe/pxnmZNMAW73KQ2y7eKda4sl3fR/JSij9VQcklYF4w0ePyp82GyophswPy92+xA87B+n8/6QLQF9Ha2IbZFKuwvL+EwfcpGp4jlW6Oob7FTlkCPFQQ7TF6ZDnVUTfZuiEdlb0xSfB2Fpa8WPvOZDteixkN9rtKQTvH5HLjZi88F5N4MRzxv6Krg1CwdeLSnkGT4WwyHkZCuDz9d/JTc3ObliUfLU9hzc8=
   on:
     tags: true
     all_branches: true
