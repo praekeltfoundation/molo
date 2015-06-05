@@ -46,3 +46,14 @@ What is bundled with Molo?
    4. Articles are composed from one or more blocks.
    5. Blocks can be headings, paragraphs, images, lists or
       links to other pages.
+
+Tests
+-----
+
+Make sure to install the requirement development & testing dependencies::
+
+   $ pip install -r requirements-dev.txt
+
+And then run the full test suite with::
+
+   $ ./run-tests.sh
