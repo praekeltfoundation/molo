@@ -25,7 +25,7 @@ The goal of Molo is to provide a solid base of proven, stable packages that
 help Praekelt Foundation and partners to deliver on project scope::
 
    $ pip install molo.core
-   $ molo scaffol myapp
+   $ molo scaffold myapp
    $ cd myapp/
    $ ./manage.py migrate
    $ ./manage.py createsuperuser
