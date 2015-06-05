@@ -3,8 +3,6 @@ import pkg_resources
 
 import click
 
-from cookiecutter.main import cookiecutter
-
 
 @click.group()
 def main():
@@ -25,10 +23,14 @@ def main():
               help='The License to release the package under.',
               default='BSD')
 def scaffold(**kwargs):
+    from cookiecutter.main import cookiecutter
+    extra_context = kwargs.copy()
+    molo_package = pkg_resources.get_distribution('molo.core')
+    extra_context['molo_version'] = molo_package.version
     cookiecutter(
         pkg_resources.resource_filename(
             'molo.core', os.path.join('cookiecutter', 'scaffold')),
         no_input=True,
-        extra_context=kwargs)
+        extra_context=extra_context)
 
 main.add_command(scaffold)
