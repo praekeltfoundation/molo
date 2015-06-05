@@ -6,5 +6,6 @@ dependencies:
  - nginx
  - postgresql-server-dev-all
  - libpq-dev
+ - libffi-dev
  - postgresql
  - redis-server
