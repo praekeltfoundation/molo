@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^search/', include(wagtailsearch_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
 
+    url(r'', include('molo.core.urls')),
     url(r'', include(wagtail_urls)),
 )
 
