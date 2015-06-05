@@ -1,1 +1,1 @@
-molo.core
+molo.core=={{cookiecutter.molo_version}}

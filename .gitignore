@@ -36,8 +36,10 @@ nosetests.xml
 /ve/
 logs/*.log
 *.pid
+/testapp/
 
 /static/
+/media/
 db.sqlite3
 docs/_build
 .DS_Store

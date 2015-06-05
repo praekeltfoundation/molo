@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+2.1.0
+-----
+- Add basic models
+- Add basic templates
+- upgraded to v1.0b2
+
 2.0.5
 -----
 - Add sideloader scripts

@@ -25,7 +25,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
@@ -59,7 +59,9 @@ INSTALLED_APPS = (
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
 
+    '{{cookiecutter.app_name}}',
     'molo.core',
+    'raven.contrib.django.raven_compat',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -69,6 +71,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
@@ -143,6 +146,7 @@ from django.conf import global_settings
 
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+    'molo.core.context_processors.locale',
 )
 
 

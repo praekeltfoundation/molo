@@ -1,5 +1,5 @@
-buildscript: sideloader/build.sh
-postinstall: sideloader/postinstall.sh
+buildscript: {{cookiecutter.app_name}}/sideloader/build.sh
+postinstall: {{cookiecutter.app_name}}/sideloader/postinstall.sh
 pip:
  - gunicorn
 dependencies:
