@@ -3,6 +3,10 @@ CHANGE LOG
 
 2.1.0
 -----
+- ensure libffi-dev in sideloader build file
+
+2.1.0
+-----
 - Add basic models
 - Add basic templates
 - upgraded to v1.0b2
