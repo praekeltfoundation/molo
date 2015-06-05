@@ -10,7 +10,7 @@
       <h2 class="list-header">
         {{self.title}}
       </h2>
-      {% for page in self.get_children.live %}
+      {% for page in self.articles %}
       <ul class="list-block">
         <li>
           {% if page.image %}
