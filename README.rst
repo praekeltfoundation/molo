@@ -13,8 +13,8 @@ Molo
     :target: https://molo.readthedocs.org
     :alt: Molo Documentation
 
-.. image:: https://pypip.in/version/molo.core/badge.svg
-    :target: https://pypi.python.org/pypi/molo.core
+.. image:: https://badge.fury.io/py/molo.core.svg
+    :target: http://badge.fury.io/py/molo.core
     :alt: Pypi Package
 
 Molo is a set of tools for publishing mobi sites with a community focus.
