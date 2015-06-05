@@ -51,6 +51,9 @@ class SectionPage(Page):
         # and are "featured in menu"
         return ArticlePage.objects.live().descendant_of(self).in_menu()
 
+    def articles(self):
+        return ArticlePage.objects.live().descendant_of(self)
+
     class Meta:
         verbose_name = _('Section')
 
