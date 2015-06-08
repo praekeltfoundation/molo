@@ -1,8 +1,8 @@
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags trans %}
 
 {% if ancestors %}
   <h4>
-    <span><a href="/">Home</a></span> &gt;
+    <span><a href="/">{% trans "Home" %}</a></span> &gt;
     {% for ancestor in ancestors %}
       {% if forloop.last %}
         <span class="active">{{ ancestor }}</span>
