@@ -1,0 +1,24 @@
+{% raw %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% if sections %}
+{% for section in sections %}
+<div class="articles nav">
+  <h2 class="list-header">
+    <a href="{% pageurl section %}">{{section.title}}</a>
+  </h2>
+  {% for page in section.featured_articles %}
+  <ul class="list-block">
+    <li>
+      {% if page.image %}
+      <a href="{% pageurl page %}">{% image page.image width-60 %}</a>
+      {% endif %}
+      <h3><a href="{% pageurl page %}">{{page.title}}</a></h3>
+      <p>{{page.subtitle}}</p>
+    </li>
+  </ul>
+  {% endfor %}
+</div>
+{% endfor%}
+{% endif %}
+{% endraw %}

@@ -1,0 +1,38 @@
+{% raw %}
+{% extends "base.html" %}
+
+{% load static core_tags %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
+
+{% block content %}
+    <div class="articles nav">
+      <h2 class="list-header">
+        {{self.title}}
+      </h2>
+      {% for page in self.sections %}
+      <ul class="list-block">
+        <li>
+          {% if page.image %}
+          <a href="{% pageurl page %}">{% image page.image width-60 %}</a>
+          {% endif %}
+          <h3><a href="{% pageurl page %}">{{page.title}}</a></h3>
+          {% if page.description %}<p>{{page.description}}</p>{% endif %}
+        </li>
+      </ul>
+      {% endfor %}
+      {% for page in self.articles %}
+      <ul class="list-block">
+        <li>
+          {% if page.image %}
+          <a href="{% pageurl page %}">{% image page.image width-60 %}</a>
+          {% endif %}
+          <h3><a href="{% pageurl page %}">{{page.title}}</a></h3>
+          <p>{{page.subtitle}}</p>
+        </li>
+      </ul>
+      {% endfor %}
+    </div>
+{% endblock %}
+{% endraw %}
