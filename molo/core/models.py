@@ -48,7 +48,7 @@ class SectionPage(Page):
         related_name='+'
     )
 
-    subpage_types = ['core.ArticlePage']
+    subpage_types = ['core.ArticlePage', 'core.SectionPage']
     search_fields = Page.search_fields + (
         index.SearchField('description'),
     )
