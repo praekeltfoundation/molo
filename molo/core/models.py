@@ -40,6 +40,13 @@ LanguagePage.content_panels = [
 
 class SectionPage(Page):
     description = models.TextField(null=True, blank=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     subpage_types = ['core.ArticlePage']
     search_fields = Page.search_fields + (
@@ -60,6 +67,7 @@ class SectionPage(Page):
 SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
+    ImageChooserPanel('image'),
 ]
 
 
