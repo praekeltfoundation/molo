@@ -1,3 +1,4 @@
+{% raw %}
 {% load compress static wagtailuserbar core_tags %}
 
 <!DOCTYPE html>
@@ -62,6 +63,15 @@
 
         {% wagtailuserbar %}
 
+        {% if languages %}
+        <ul>
+            {% for language in languages %}
+            <li><a href="{% url 'locale_set' language.code %}">{{language.title}}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+
         {% breadcrumbs %}
 
         {% block content %}{% endblock %}
@@ -71,3 +81,4 @@
         {% endblock %}
     </body>
 </html>
+{% endraw %}

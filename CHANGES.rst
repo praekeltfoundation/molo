@@ -1,6 +1,14 @@
 CHANGE LOG
 ==========
 
+2.2.0
+-----
+- Add multi language support
+
+2.1.1
+-----
+- ensure libffi-dev in sideloader build file
+
 2.1.0
 -----
 - ensure libffi-dev in sideloader build file

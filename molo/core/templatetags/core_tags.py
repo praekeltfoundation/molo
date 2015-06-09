@@ -11,7 +11,7 @@ register = template.Library()
     takes_context=True
 )
 def section_listing_homepage(context):
-    language_code = context.get('language_code') or get_locale_code()
+    language_code = context.get('locale_code') or get_locale_code()
     language_page = LanguagePage.objects.live().filter(
         code=language_code).first()
     if language_page:

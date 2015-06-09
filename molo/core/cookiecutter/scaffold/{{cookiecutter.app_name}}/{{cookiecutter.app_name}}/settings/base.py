@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 from os.path import abspath, dirname, join
+from django.conf import global_settings
+from django.utils.translation import ugettext_lazy as _
 
 # Absolute filesystem path to the Django project directory:
 PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
@@ -66,12 +68,12 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
@@ -115,6 +117,23 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+# Native South African languages are currently not included in the default
+# list of languges in django
+# https://github.com/django/django/blob/master/django/conf/global_settings.py#L50
+LANGUAGES = global_settings.LANGUAGES + (
+    ('zu', _('Zulu')),
+    ('xh', _('Xhosa')),
+    ('st', _('Sotho')),
+    ('ve', _('Venda')),
+    ('tn', _('Tswana')),
+    ('ts', _('Tsonga')),
+    ('ss', _('Swati')),
+    ('nr', _('Ndebele')),
+    )
+
+LOCALE_PATHS = (
+    join(PROJECT_ROOT, "locale"),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -141,8 +160,6 @@ COMPRESS_PRECOMPILERS = (
 
 
 # Template configuration
-
-from django.conf import global_settings
 
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
