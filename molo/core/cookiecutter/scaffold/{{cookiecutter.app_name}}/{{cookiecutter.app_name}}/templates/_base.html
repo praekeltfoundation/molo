@@ -24,6 +24,7 @@
 
         {% endblock %}
 
+        {% block main_js %}
         <script type="text/javascript">
           WebFontConfig = {
             google: { families: [ 'Exo+2:400,700:latin' ] }
@@ -57,12 +58,14 @@
           loadJS( "{% static 'js/main.js' %}" );
         }
         </script>
+        {% endblock %}
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
 
         {% wagtailuserbar %}
 
+        {% block language_selector %}
         {% if languages %}
         <ul>
             {% for language in languages %}
@@ -70,9 +73,12 @@
             {% endfor %}
         </ul>
         {% endif %}
+        {% endblock %}
 
 
+        {% block breadcrumbs %}
         {% breadcrumbs %}
+        {% endblock %}
 
         {% block content %}{% endblock %}
 
