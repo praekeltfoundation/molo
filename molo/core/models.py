@@ -59,6 +59,9 @@ class SectionPage(Page):
     def articles(self):
         return ArticlePage.objects.live().child_of(self)
 
+    def sections(self):
+        return SectionPage.objects.live().child_of(self)
+
     def featured_articles(self):
         # Get list of live article pages that are descendants of this page
         # and are "featured in menu"

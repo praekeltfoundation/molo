@@ -15,7 +15,7 @@ def section_listing_homepage(context):
     language_page = LanguagePage.objects.live().filter(
         code=language_code).first()
     if language_page:
-        sections = SectionPage.objects.live().descendant_of(language_page)
+        sections = language_page.sections()
     else:
         sections = SectionPage.objects.none()
     return {
