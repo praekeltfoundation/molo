@@ -14,11 +14,13 @@
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+        {% block main_css %}
         {% compress css %}
 
             <link rel="stylesheet" type="text/x-scss" href="{% static 'css/style.scss' %}">
             <link rel="stylesheet" type="text/x-scss" media="screen and (min-width: 20em)" href="{% static 'css/enhanced.scss' %}">
         {% endcompress %}
+        {% endblock %}
 
         {% block extra_css %}
 
