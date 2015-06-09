@@ -29,6 +29,9 @@ class LanguagePage(Page):
     parent_page_types = ['core.Main']
     subpage_types = ['core.HomePage', 'core.SectionPage']
 
+    def sections(self):
+        return SectionPage.objects.live().child_of(self)
+
     class Meta:
         verbose_name = _('Language')
 
@@ -54,7 +57,7 @@ class SectionPage(Page):
     )
 
     def articles(self):
-        return ArticlePage.objects.live().descendant_of(self)
+        return ArticlePage.objects.live().child_of(self)
 
     def featured_articles(self):
         # Get list of live article pages that are descendants of this page
