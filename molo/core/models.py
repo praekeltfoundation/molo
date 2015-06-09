@@ -29,6 +29,9 @@ class LanguagePage(Page):
     parent_page_types = ['core.Main']
     subpage_types = ['core.HomePage', 'core.SectionPage']
 
+    def sections(self):
+        return SectionPage.objects.live().child_of(self)
+
     class Meta:
         verbose_name = _('Language')
 
@@ -40,14 +43,24 @@ LanguagePage.content_panels = [
 
 class SectionPage(Page):
     description = models.TextField(null=True, blank=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
-    subpage_types = ['core.ArticlePage']
+    subpage_types = ['core.ArticlePage', 'core.SectionPage']
     search_fields = Page.search_fields + (
         index.SearchField('description'),
     )
 
     def articles(self):
-        return ArticlePage.objects.live().descendant_of(self)
+        return ArticlePage.objects.live().child_of(self)
+
+    def sections(self):
+        return SectionPage.objects.live().child_of(self)
 
     def featured_articles(self):
         # Get list of live article pages that are descendants of this page
@@ -60,6 +73,7 @@ class SectionPage(Page):
 SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
+    ImageChooserPanel('image'),
 ]
 
 
