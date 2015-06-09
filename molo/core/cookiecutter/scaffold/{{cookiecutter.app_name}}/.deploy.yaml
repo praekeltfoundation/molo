@@ -10,3 +10,4 @@ dependencies:
  - postgresql
  - redis-server
  - libjpeg-dev
+ - zlib1g-dev
