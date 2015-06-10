@@ -9,3 +9,5 @@ dependencies:
  - libffi-dev
  - postgresql
  - redis-server
+ - libjpeg-dev
+ - zlib1g-dev

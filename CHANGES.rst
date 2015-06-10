@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+2.2.1
+-----
+- Add images to sections
+- Add support for sub sections
+
 2.2.0
 -----
 - Add multi language support
