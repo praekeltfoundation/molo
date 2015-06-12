@@ -56,7 +56,7 @@ class LanguagePage(Page):
         return SectionPage.objects.live().child_of(self)
 
     def footers(self):
-        return LanguagePage.objects.live().child_of(self)
+        return FooterPage.objects.live().child_of(self)
 
     class Meta:
         verbose_name = _('Language')
