@@ -13,7 +13,7 @@ from molo.core.blocks import MarkDownBlock
 
 
 class HomePage(Page):
-    pass
+    parent_page_types = ['core.LanguagePage']
 
 
 class Main(Page):
