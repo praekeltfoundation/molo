@@ -6,7 +6,7 @@
 <div class="header">
   {% if homepage.banner %}
     {% if homepage.banner_link_page %}
-    <a href="{% pageurl homepage %}">{% image homepage.image width-240 %}</a>
+    <a href="{% pageurl homepage %}">{% image homepage.banner width-240 %}</a>
     {% else %}
     {% image homepage.image width-240 %}
     {% endif %}

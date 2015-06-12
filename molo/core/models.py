@@ -53,6 +53,9 @@ class LanguagePage(Page):
     parent_page_types = ['core.Main']
     subpage_types = ['core.HomePage', 'core.SectionPage', 'core.FooterPage']
 
+    def homepages(self):
+        return HomePage.objects.live().child_of(self)
+
     def sections(self):
         return SectionPage.objects.live().child_of(self)
 
