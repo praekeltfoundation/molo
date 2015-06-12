@@ -1,6 +1,6 @@
 from django import template
 
-from molo.core.models import SectionPage, LanguagePage, Page
+from molo.core.models import SectionPage, LanguagePage, Page, HomePage
 from molo.core.utils import get_locale_code
 
 register = template.Library()
@@ -11,9 +11,7 @@ register = template.Library()
     takes_context=True
 )
 def section_listing_homepage(context):
-    language_code = context.get('locale_code') or get_locale_code()
-    language_page = LanguagePage.objects.live().filter(
-        code=language_code).first()
+    language_page = context.get('language_page')
     if language_page:
         sections = language_page.sections()
     else:
@@ -21,6 +19,19 @@ def section_listing_homepage(context):
     return {
         'sections': sections,
         'request': context['request'],
+    }
+
+
+@register.inclusion_tag('core/tags/homepages.html', takes_context=True)
+def homepages(context):
+    language_page = context.get('language_page')
+    if language_page:
+        homepages = language_page.homepages()
+    else:
+        homepages = HomePage.objects.none()
+    return {
+        'homepages': homepages,
+        'request': context['request']
     }
 
 
