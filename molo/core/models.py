@@ -31,6 +31,7 @@ class HomePage(Page):
     )
 
     parent_page_types = ['core.LanguagePage']
+    subpage_types = ['core.ArticlePage']
 
 HomePage.content_panels = [
     FieldPanel('title', classname='full title'),
