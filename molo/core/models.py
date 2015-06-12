@@ -136,7 +136,7 @@ ArticlePage.content_panels = [
 
 
 class FooterPage(ArticlePage):
-    parent_page_types = ['core.Main']
+    parent_page_types = ['core.LanguagePage']
     subpage_types = []
 
 FooterPage.content_panels = ArticlePage.content_panels
