@@ -133,3 +133,10 @@ ArticlePage.content_panels = [
     ImageChooserPanel('image'),
     StreamFieldPanel('body'),
 ]
+
+
+class FooterPage(ArticlePage):
+    parent_page_types = ['core.Main']
+    subpage_types = []
+
+FooterPage.content_panels = ArticlePage.content_panels
