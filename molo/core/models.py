@@ -50,7 +50,7 @@ class LanguagePage(Page):
         help_text=_('The language code as specified in iso639-2'))
 
     parent_page_types = ['core.Main']
-    subpage_types = ['core.HomePage', 'core.SectionPage']
+    subpage_types = ['core.HomePage', 'core.SectionPage', 'core.FooterPage']
 
     def sections(self):
         return SectionPage.objects.live().child_of(self)
