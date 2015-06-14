@@ -142,6 +142,11 @@ ArticlePage.content_panels = [
     StreamFieldPanel('body'),
 ]
 
+ArticlePage._meta.get_field('first_published_at').editable = True
+ArticlePage.promote_panels = Page.promote_panels + [
+    FieldPanel('first_published_at'),
+]
+
 
 class FooterPage(ArticlePage):
     parent_page_types = ['core.LanguagePage']
