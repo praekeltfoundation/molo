@@ -1,7 +1,6 @@
 from django import template
 
-from molo.core.models import SectionPage, LanguagePage, Page, HomePage
-from molo.core.utils import get_locale_code
+from molo.core.models import SectionPage, Page, HomePage
 
 register = template.Library()
 
