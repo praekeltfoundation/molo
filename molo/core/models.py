@@ -155,6 +155,8 @@ ArticlePage.content_panels = [
 ]
 
 ArticlePage._meta.get_field('first_published_at').editable = True
+ArticlePage._meta.get_field('first_published_at').help_text = _(
+    "Please add a date-time in the form YYYY-MM-DD hh:mm.")
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
