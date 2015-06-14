@@ -87,7 +87,8 @@ class SectionPage(Page):
     )
 
     def articles(self):
-        return ArticlePage.objects.live().child_of(self)
+        return ArticlePage.objects.live().order_by(
+            '-first_published_at').child_of(self)
 
     def sections(self):
         return SectionPage.objects.live().child_of(self)
