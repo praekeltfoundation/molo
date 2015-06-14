@@ -5,7 +5,8 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
 from wagtail.wagtailadmin.edit_handlers import (
-    FieldPanel, StreamFieldPanel, PageChooserPanel)
+    FieldPanel, FieldRowPanel, StreamFieldPanel, PageChooserPanel,
+    MultiFieldPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
@@ -110,6 +111,12 @@ SectionPage.content_panels = [
 
 class ArticlePage(Page):
     subtitle = models.TextField(null=True, blank=True)
+    featured_in_latest = models.BooleanField(
+        default=False,
+        help_text=_("Article to be featured in the Latest module"))
+    featured_in_section = models.BooleanField(
+        default=False,
+        help_text=_("Article to be featured in the Section module"))
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -132,6 +139,11 @@ class ArticlePage(Page):
         index.SearchField('body'),
     )
 
+    featured_promote_panels = [
+        FieldPanel('featured_in_latest'),
+        FieldPanel('featured_in_section'),
+    ]
+
     class Meta:
         verbose_name = _('Article')
 
@@ -143,8 +155,19 @@ ArticlePage.content_panels = [
 ]
 
 ArticlePage._meta.get_field('first_published_at').editable = True
-ArticlePage.promote_panels = Page.promote_panels + [
-    FieldPanel('first_published_at'),
+
+ArticlePage.promote_panels = [
+    MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
+    MultiFieldPanel(
+        Page.promote_panels,
+        "Common page configuration", "collapsible collapsed")]
+
+ArticlePage.settings_panels = [
+    MultiFieldPanel(
+        Page.settings_panels +
+        [FieldRowPanel(
+            [FieldPanel('first_published_at')], classname="label-above")],
+        "Scheduled publishing", "publishing")
 ]
 
 
