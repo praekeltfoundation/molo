@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime, timedelta
 from django.test import TestCase
 
-from molo.core.models import ArticlePage
+from molo.core.models import ArticlePage, SectionPage
 
 
 @pytest.mark.django_db
@@ -20,12 +20,13 @@ class TestModels(TestCase):
         article2.save()
 
         # most recent first
+        section = SectionPage.objects.get(slug='your-mind')
         self.assertEquals(
-            ArticlePage.objects.live()[0].title, article2.title)
+            section.articles()[0].title, article2.title)
 
         # swap published date
         article1.first_published_at = now + timedelta(hours=4)
         article1.save()
 
         self.assertEquals(
-            ArticlePage.objects.live()[0].title, article1.title)
+            section.articles()[0].title, article1.title)
