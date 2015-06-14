@@ -95,9 +95,7 @@ class SectionPage(Page):
         return SectionPage.objects.live().child_of(self)
 
     def featured_articles(self):
-        # Get list of live article pages that are descendants of this page
-        # and are "featured in menu"
-        return self.articles().in_menu()
+        return self.articles().filter(featured_in_section=True)
 
     class Meta:
         verbose_name = _('Section')
