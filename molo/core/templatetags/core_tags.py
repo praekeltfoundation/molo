@@ -21,6 +21,22 @@ def section_listing_homepage(context):
     }
 
 
+@register.inclusion_tag(
+    'core/tags/latest_listing_homepage.html',
+    takes_context=True
+)
+def latest_listing_homepage(context, num_count=5):
+    language_page = context.get('language_page')
+    if language_page:
+        articles = language_page.latest_articles()[:num_count]
+    else:
+        articles = Page.objects.none()
+    return {
+        'articles': articles,
+        'request': context['request'],
+    }
+
+
 @register.inclusion_tag('core/tags/homepages.html', takes_context=True)
 def homepages(context):
     language_page = context.get('language_page')

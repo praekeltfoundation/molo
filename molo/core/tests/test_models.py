@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime, timedelta
 from django.test import TestCase
 
-from molo.core.models import ArticlePage, SectionPage
+from molo.core.models import ArticlePage, SectionPage, LanguagePage
 
 
 @pytest.mark.django_db
@@ -11,16 +11,16 @@ class TestModels(TestCase):
 
     def test_article_order(self):
         now = datetime.now()
-        article1 = ArticlePage.objects.get(pk=7)
+        article1 = ArticlePage.objects.get(pk=14)
         article1.first_published_at = now
         article1.save()
 
-        article2 = ArticlePage.objects.get(pk=8)
+        article2 = ArticlePage.objects.get(pk=15)
         article2.first_published_at = now + timedelta(hours=1)
         article2.save()
 
         # most recent first
-        section = SectionPage.objects.get(slug='your-mind')
+        section = SectionPage.objects.get(slug='your-mind-subsection')
         self.assertEquals(
             section.articles()[0].title, article2.title)
 
@@ -30,3 +30,7 @@ class TestModels(TestCase):
 
         self.assertEquals(
             section.articles()[0].title, article1.title)
+
+    def test_latest(self):
+        lang = LanguagePage.objects.get(code='en')
+        self.assertEquals(lang.latest_articles().count(), 2)
