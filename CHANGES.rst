@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.3.1
+-----
+- `first published at` is not a required field
+
 2.3.0
 -----
 - add homepage models
