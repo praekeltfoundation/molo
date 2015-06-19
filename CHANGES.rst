@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+2.3.0
+-----
+- add homepage models
+- ensure articles ordered by published date
+- allow articles to be featured
+
 2.2.1
 -----
 - Add images to sections
