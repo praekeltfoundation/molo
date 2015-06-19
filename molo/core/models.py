@@ -4,7 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.wagtailadmin.edit_handlers import (
+    FieldPanel, StreamFieldPanel, PageChooserPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
@@ -13,7 +14,30 @@ from molo.core.blocks import MarkDownBlock
 
 
 class HomePage(Page):
+    banner = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    banner_link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Optional page to which the banner will link to')
+    )
+
     parent_page_types = ['core.LanguagePage']
+    subpage_types = ['core.ArticlePage']
+
+HomePage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    ImageChooserPanel('banner'),
+    PageChooserPanel('banner_link_page'),
+]
 
 
 class Main(Page):
@@ -27,10 +51,16 @@ class LanguagePage(Page):
         help_text=_('The language code as specified in iso639-2'))
 
     parent_page_types = ['core.Main']
-    subpage_types = ['core.HomePage', 'core.SectionPage']
+    subpage_types = ['core.HomePage', 'core.SectionPage', 'core.FooterPage']
+
+    def homepages(self):
+        return HomePage.objects.live().child_of(self)
 
     def sections(self):
         return SectionPage.objects.live().child_of(self)
+
+    def footers(self):
+        return FooterPage.objects.live().child_of(self)
 
     class Meta:
         verbose_name = _('Language')
@@ -98,6 +128,7 @@ class ArticlePage(Page):
     subpage_types = []
     search_fields = Page.search_fields + (
         index.SearchField('subtitle'),
+        index.SearchField('body'),
     )
 
     class Meta:
@@ -109,3 +140,10 @@ ArticlePage.content_panels = [
     ImageChooserPanel('image'),
     StreamFieldPanel('body'),
 ]
+
+
+class FooterPage(ArticlePage):
+    parent_page_types = ['core.LanguagePage']
+    subpage_types = []
+
+FooterPage.content_panels = ArticlePage.content_panels

@@ -1,0 +1,40 @@
+{% raw %}
+{% extends "base.html" %}
+
+{% load static core_tags %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
+
+{% block content %}
+<div class="articles nav">
+  <h3 class="article-title">{{self.title}}</h3>
+  <p>{{self.subtitle}}</p>
+  {% if self.image %}
+  <div class="banner">{% image self.image width-240 %}</div>
+  {% endif %}
+
+<article>
+  {% for block in self.body %}
+      {% if block.block_type == 'heading' %}
+          <h1>{{ block.value }}</h1>
+      {% else %}
+      {% if block.block_type == 'image' %}
+        {% image block.value width-240 %}
+      {% else %}
+      {% if block.block_type == 'numbered_list' %}
+        <ol>
+        {% for item in block.value %}
+          <li>{{item}}</li>
+        {% endfor %}
+        </ol>
+      {% else %}
+          {{ block }}
+      {% endif %}
+      {% endif %}
+      {% endif %}
+  {% endfor %}
+</article>
+</div>
+{% endblock %}
+{% endraw %}

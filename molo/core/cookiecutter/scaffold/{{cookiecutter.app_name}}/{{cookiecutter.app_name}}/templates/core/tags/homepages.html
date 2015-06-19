@@ -1,0 +1,17 @@
+{% raw %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% if homepages %}
+{% for homepage in homepages %}
+<div class="header">
+  {% if homepage.banner %}
+    {% if homepage.banner_link_page %}
+    <a href="{% pageurl homepage %}">{% image homepage.banner width-240 %}</a>
+    {% else %}
+    {% image homepage.image width-240 %}
+    {% endif %}
+  {% endif %}
+</div>
+{% endfor%}
+{% endif %}
+{% endraw %}
