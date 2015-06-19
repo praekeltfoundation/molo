@@ -87,7 +87,8 @@ class SectionPage(Page):
     )
 
     def articles(self):
-        return ArticlePage.objects.live().child_of(self)
+        return ArticlePage.objects.live().order_by(
+            '-first_published_at').child_of(self)
 
     def sections(self):
         return SectionPage.objects.live().child_of(self)
@@ -139,6 +140,11 @@ ArticlePage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
     StreamFieldPanel('body'),
+]
+
+ArticlePage._meta.get_field('first_published_at').editable = True
+ArticlePage.promote_panels = Page.promote_panels + [
+    FieldPanel('first_published_at'),
 ]
 
 
