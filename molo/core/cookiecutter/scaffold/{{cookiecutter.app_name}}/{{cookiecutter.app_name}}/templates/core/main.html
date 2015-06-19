@@ -6,6 +6,8 @@
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
 
 {% block content %}
+    {% homepages %}
+    {% latest_listing_homepage %}
     {% section_listing_homepage %}
 {% endblock %}
 {% endraw %}

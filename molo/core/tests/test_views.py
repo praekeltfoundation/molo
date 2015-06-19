@@ -13,35 +13,45 @@ class TestPages(TestCase):
 
         response = self.client.get('/english/your-mind/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, '<span class="active">Your Mind</span>')
+        self.assertContains(response, '<span class="active">Your mind</span>')
 
-        response = self.client.get('/english/your-mind/another-story/')
+        response = self.client.get(
+            '/english/your-mind/your-mind-subsection/page-1/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(
             response,
-            '<span class="active">This is another story</span>')
+            '<span class="active">Page 1</span>')
 
     def test_section_listing(self):
         response = self.client.get('/')
-        self.assertContains(response, 'About a girl')
-        self.assertContains(response, 'about a boy')
+        self.assertContains(response, 'Your mind')
         self.assertContains(
             response,
-            '<a href="/english/your-mind/another-story/">'
-            '<img src="/media/images/f5edfca6af2e4410b029864a2da149fd'
-            '.focus-none.width-60.jpeg" width="60" height="39" alt="2 girls">'
-            '</a>')
+            '<a href="/english/your-mind/">Your mind</a>')
+
+    def test_latest_listing(self):
+        response = self.client.get('/')
+        self.assertContains(response, 'Latest')
+        self.assertContains(
+            response,
+            '<a href="/english/your-mind/your-mind-subsection/page-1/">'
+            'Page 1</a>')
+        self.assertContains(
+            response,
+            '<a href="/english/your-mind/your-mind-subsection/page-2/">'
+            'Page 2</a>')
 
     def test_article_page(self):
-        response = self.client.get('/english/your-mind/another-story/')
+        response = self.client.get(
+            '/english/your-mind/your-mind-subsection/page-1/')
         self.assertContains(
             response,
-            '<span class="active">This is another story</span>')
-        self.assertContains(response, 'About a girl')
+            '<span class="active">Page 1</span>')
+        self.assertContains(response, 'Lorem ipsum dolor sit amet')
 
     def test_markdown_in_article_page(self):
-        response = self.client.get('/english/your-mind/story/')
+        response = self.client.get(
+            '/english/your-mind/your-mind-subsection/page-1/')
         self.assertContains(
             response,
-            '<p>A markdown paragraph with <strong>bold</strong>'
-            ' and <em>italics</em></p>')
+            '<strong>Lorem ipsum</strong> dolor <em>sit amet</em>')
