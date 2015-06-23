@@ -90,6 +90,12 @@ class SectionPage(Page):
     search_fields = Page.search_fields + (
         index.SearchField('description'),
     )
+    extra_css = models.TextField(
+        null=True,
+        blank=True,
+        help_text=_(
+            "CSS classes that can be applied to this section "
+            "and all its descendants"))
 
     def articles(self):
         return ArticlePage.objects.live().order_by(
@@ -112,6 +118,7 @@ SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
     ImageChooserPanel('image'),
+    FieldPanel('extra_css'),
 ]
 
 
