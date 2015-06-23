@@ -101,6 +101,10 @@ class SectionPage(Page):
     def featured_articles(self):
         return self.articles().filter(featured_in_section=True)
 
+    def featured_articles_in_homepage(self):
+        qs = ArticlePage.objects.live().order_by('-first_published_at')
+        return qs.descendant_of(self).filter(featured_in_homepage=True)
+
     class Meta:
         verbose_name = _('Section')
 
@@ -119,6 +123,11 @@ class ArticlePage(Page):
     featured_in_section = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Section module"))
+    featured_in_homepage = models.BooleanField(
+        default=False,
+        help_text=_(
+            "Article to be featured in the Homepage "
+            "within the Section module"))
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -144,6 +153,7 @@ class ArticlePage(Page):
     featured_promote_panels = [
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
+        FieldPanel('featured_in_homepage'),
     ]
 
     class Meta:

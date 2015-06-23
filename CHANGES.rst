@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.3.2
+-----
+- allow articles to be featured on the homepage
+
 2.3.1
 -----
 - `first published at` is not a required field

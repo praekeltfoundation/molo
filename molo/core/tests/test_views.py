@@ -55,3 +55,9 @@ class TestPages(TestCase):
         self.assertContains(
             response,
             '<strong>Lorem ipsum</strong> dolor <em>sit amet</em>')
+
+    def test_featured_homepage_listing(self):
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            'Your Mind Page 1 Lorem ipsum dolor sit amet')
