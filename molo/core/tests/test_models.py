@@ -33,4 +33,8 @@ class TestModels(TestCase):
 
     def test_latest(self):
         lang = LanguagePage.objects.get(code='en')
-        self.assertEquals(lang.latest_articles().count(), 2)
+        self.assertEquals(lang.latest_articles().count(), 4)
+
+    def test_featured_homepage(self):
+        section = SectionPage.objects.get(slug='your-mind')
+        self.assertEquals(section.featured_articles_in_homepage().count(), 2)
