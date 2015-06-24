@@ -1,5 +1,7 @@
-from django.test import TestCase
 import pytest
+
+from django.test import TestCase
+from molo.core.models import SectionPage
 
 
 @pytest.mark.django_db
@@ -23,11 +25,21 @@ class TestPages(TestCase):
             '<span class="active">Page 1</span>')
 
     def test_section_listing(self):
+        page = SectionPage.objects.get(slug='your-mind')
+        page.extra_css = 'yellow'
+        page.save_revision().publish()
+
         response = self.client.get('/')
         self.assertContains(response, 'Your mind')
         self.assertContains(
             response,
             '<a href="/english/your-mind/">Your mind</a>')
+        self.assertContains(response, '<div class="articles nav yellow">')
+
+        # Child page should have extra css from section
+        response = self.client.get(
+            '/english/your-mind/your-mind-subsection/page-1/')
+        self.assertContains(response, '<div class="articles nav yellow">')
 
     def test_latest_listing(self):
         response = self.client.get('/')

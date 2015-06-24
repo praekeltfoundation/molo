@@ -3,7 +3,7 @@
 
 {% if sections %}
 {% for section in sections %}
-<div class="articles nav">
+<div class="articles nav {{section.get_effective_extra_css}}">
   <h2 class="list-header">
     <a href="{% pageurl section %}">{{section.title}}</a>
   </h2>

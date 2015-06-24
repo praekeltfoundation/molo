@@ -172,6 +172,9 @@ class ArticlePage(Page):
         FieldPanel('featured_in_homepage'),
     ]
 
+    def get_parent_section(self):
+        return SectionPage.objects.all().ancestor_of(self).last()
+
     class Meta:
         verbose_name = _('Article')
 
