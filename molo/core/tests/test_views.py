@@ -26,7 +26,7 @@ class TestPages(TestCase):
 
     def test_section_listing(self):
         page = SectionPage.objects.get(slug='your-mind')
-        page.extra_css = 'yellow'
+        page.extra_style_hints = 'yellow'
         page.save_revision().publish()
 
         response = self.client.get('/')
@@ -36,7 +36,7 @@ class TestPages(TestCase):
             '<a href="/english/your-mind/">Your mind</a>')
         self.assertContains(response, '<div class="articles nav yellow">')
 
-        # Child page should have extra css from section
+        # Child page should have extra style from section
         response = self.client.get(
             '/english/your-mind/your-mind-subsection/page-1/')
         self.assertContains(response, '<div class="articles nav yellow">')

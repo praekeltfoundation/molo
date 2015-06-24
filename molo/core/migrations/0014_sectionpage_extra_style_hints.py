@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='sectionpage',
-            name='extra_css',
-            field=models.TextField(default=b'', help_text='CSS classes that can be applied to this section and all its descendants'),
+            name='extra_style_hints',
+            field=models.TextField(default=b'', help_text='Styling options that can be applied to this section and all its descendants'),
         ),
     ]

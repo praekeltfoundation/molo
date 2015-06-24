@@ -7,7 +7,7 @@
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
 
 {% block content %}
-<div class="articles nav {{self.get_parent_section.get_effective_extra_css}}">
+<div class="articles nav {{self.get_parent_section.get_effective_extra_style_hints}}">
   <h3 class="article-title">{{self.title}}</h3>
   <p>{{self.subtitle}}</p>
   {% if self.image %}
