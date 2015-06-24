@@ -63,7 +63,7 @@ class TestModels(TestCase):
         new_section2.add_child(instance=new_section4)
         self.assertEquals(new_section4.get_effective_extra_css(), 'primary')
 
-        # extra_css not set on child so should use parent value
+        # extra_css is set on child so should use child value
         new_section5 = SectionPage(
             title="New Section 5", slug="new-section-5", extra_css='secondary')
         new_section.add_child(instance=new_section5)
