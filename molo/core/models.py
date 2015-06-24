@@ -90,6 +90,12 @@ class SectionPage(Page):
     search_fields = Page.search_fields + (
         index.SearchField('description'),
     )
+    extra_style_hints = models.TextField(
+        default='',
+        null=True, blank=True,
+        help_text=_(
+            "Styling options that can be applied to this section "
+            "and all its descendants"))
 
     def articles(self):
         return ArticlePage.objects.live().order_by(
@@ -105,6 +111,17 @@ class SectionPage(Page):
         qs = ArticlePage.objects.live().order_by('-first_published_at')
         return qs.descendant_of(self).filter(featured_in_homepage=True)
 
+    def get_effective_extra_style_hints(self):
+        # The extra css is inherited from the parent SectionPage.
+        # This will either return the current value or a value
+        # from its parents.
+        parent_section = SectionPage.objects.all().ancestor_of(self).last()
+        if parent_section:
+            return self.extra_style_hints or \
+                parent_section.get_effective_extra_style_hints()
+        else:
+            return self.extra_style_hints
+
     class Meta:
         verbose_name = _('Section')
 
@@ -112,6 +129,15 @@ SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
     ImageChooserPanel('image'),
+]
+
+SectionPage.settings_panels = [
+    MultiFieldPanel(
+        Page.settings_panels, "Scheduled publishing", "publishing"),
+    MultiFieldPanel(
+        [FieldRowPanel(
+            [FieldPanel('extra_style_hints')], classname="label-above")],
+        "Meta")
 ]
 
 
@@ -155,6 +181,9 @@ class ArticlePage(Page):
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
     ]
+
+    def get_parent_section(self):
+        return SectionPage.objects.all().ancestor_of(self).last()
 
     class Meta:
         verbose_name = _('Article')
