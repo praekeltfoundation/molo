@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sectionpage',
             name='extra_style_hints',
-            field=models.TextField(default=b'', help_text='Styling options that can be applied to this section and all its descendants'),
+            field=models.TextField(default=b'', help_text='Styling options that can be applied to this section and all its descendants', null=True, blank=True),
         ),
     ]

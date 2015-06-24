@@ -92,6 +92,7 @@ class SectionPage(Page):
     )
     extra_style_hints = models.TextField(
         default='',
+        null=True, blank=True,
         help_text=_(
             "Styling options that can be applied to this section "
             "and all its descendants"))
@@ -135,7 +136,7 @@ SectionPage.settings_panels = [
         Page.settings_panels, "Scheduled publishing", "publishing"),
     MultiFieldPanel(
         [FieldRowPanel(
-            [FieldPanel('extra_css')], classname="label-above")],
+            [FieldPanel('extra_style_hints')], classname="label-above")],
         "Meta")
 ]
 
