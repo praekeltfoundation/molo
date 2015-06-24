@@ -127,7 +127,15 @@ SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
     ImageChooserPanel('image'),
-    FieldPanel('extra_css'),
+]
+
+SectionPage.settings_panels = [
+    MultiFieldPanel(
+        Page.settings_panels, "Scheduled publishing", "publishing"),
+    MultiFieldPanel(
+        [FieldRowPanel(
+            [FieldPanel('extra_css')], classname="label-above")],
+        "Meta")
 ]
 
 
