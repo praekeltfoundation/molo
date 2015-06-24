@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime, timedelta
 from django.test import TestCase
 
-from molo.core.models import ArticlePage, SectionPage, LanguagePage
+from molo.core.models import ArticlePage, SectionPage, LanguagePage, Page
 
 
 @pytest.mark.django_db
@@ -38,3 +38,33 @@ class TestModels(TestCase):
     def test_featured_homepage(self):
         section = SectionPage.objects.get(slug='your-mind')
         self.assertEquals(section.featured_articles_in_homepage().count(), 2)
+
+    def test_extra_css(self):
+        main = Page.objects.get(slug='main')
+
+        # extra_css set on current section
+        new_section = SectionPage(
+            title="New Section", slug="new-section", extra_css='primary')
+        main.add_child(instance=new_section)
+        self.assertEquals(new_section.get_effective_extra_css(), 'primary')
+
+        # extra_css not set to use inherited value
+        new_section2 = SectionPage(title="New Section 2", slug="new-section-2")
+        new_section.add_child(instance=new_section2)
+        self.assertEquals(new_section2.get_effective_extra_css(), 'primary')
+
+        # extra_css not set on either so should be blank
+        new_section3 = SectionPage(title="New Section 3", slug="new-section-3")
+        main.add_child(instance=new_section3)
+        self.assertEquals(new_section3.get_effective_extra_css(), '')
+
+        # extra_css not set on child so should use parent value
+        new_section4 = SectionPage(title="New Section 4", slug="new-section-4")
+        new_section2.add_child(instance=new_section4)
+        self.assertEquals(new_section4.get_effective_extra_css(), 'primary')
+
+        # extra_css not set on child so should use parent value
+        new_section5 = SectionPage(
+            title="New Section 5", slug="new-section-5", extra_css='secondary')
+        new_section.add_child(instance=new_section5)
+        self.assertEquals(new_section5.get_effective_extra_css(), 'secondary')

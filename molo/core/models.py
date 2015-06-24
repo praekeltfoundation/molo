@@ -91,8 +91,7 @@ class SectionPage(Page):
         index.SearchField('description'),
     )
     extra_css = models.TextField(
-        null=True,
-        blank=True,
+        default='',
         help_text=_(
             "CSS classes that can be applied to this section "
             "and all its descendants"))
@@ -110,6 +109,16 @@ class SectionPage(Page):
     def featured_articles_in_homepage(self):
         qs = ArticlePage.objects.live().order_by('-first_published_at')
         return qs.descendant_of(self).filter(featured_in_homepage=True)
+
+    def get_effective_extra_css(self):
+        # The extra css is inherited from the parent SectionPage.
+        # This will either return the current value or a value
+        # from its parents.
+        parent_section = SectionPage.objects.all().ancestor_of(self).last()
+        if parent_section:
+            return self.extra_css or parent_section.get_effective_extra_css()
+        else:
+            return self.extra_css
 
     class Meta:
         verbose_name = _('Section')

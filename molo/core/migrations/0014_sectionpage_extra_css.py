@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sectionpage',
             name='extra_css',
-            field=models.TextField(help_text='CSS classes that can be applied to this section and all its descendants', null=True, blank=True),
+            field=models.TextField(default=b'', help_text='CSS classes that can be applied to this section and all its descendants'),
         ),
     ]
