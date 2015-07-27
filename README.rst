@@ -44,6 +44,7 @@ To create your own custom settings add a ``local.py`` file in the ``settings``
 folder. The ``settings/dev.py`` will automatically include those settings
 for your local development environment.
 
+Now develop your application and write tests for the features you add.
 Running your tests for Django works as you would expect::
 
    $ ./manage.py test
