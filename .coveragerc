@@ -1,0 +1,4 @@
+[run]
+omit = molo/core/migrations/*
+source= molo/
+

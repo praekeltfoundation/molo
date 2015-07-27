@@ -90,6 +90,12 @@ class SectionPage(Page):
     search_fields = Page.search_fields + (
         index.SearchField('description'),
     )
+    extra_style_hints = models.TextField(
+        default='',
+        null=True, blank=True,
+        help_text=_(
+            "Styling options that can be applied to this section "
+            "and all its descendants"))
 
     def articles(self):
         return ArticlePage.objects.live().order_by(
@@ -101,6 +107,21 @@ class SectionPage(Page):
     def featured_articles(self):
         return self.articles().filter(featured_in_section=True)
 
+    def featured_articles_in_homepage(self):
+        qs = ArticlePage.objects.live().order_by('-first_published_at')
+        return qs.descendant_of(self).filter(featured_in_homepage=True)
+
+    def get_effective_extra_style_hints(self):
+        # The extra css is inherited from the parent SectionPage.
+        # This will either return the current value or a value
+        # from its parents.
+        parent_section = SectionPage.objects.all().ancestor_of(self).last()
+        if parent_section:
+            return self.extra_style_hints or \
+                parent_section.get_effective_extra_style_hints()
+        else:
+            return self.extra_style_hints
+
     class Meta:
         verbose_name = _('Section')
 
@@ -108,6 +129,15 @@ SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
     ImageChooserPanel('image'),
+]
+
+SectionPage.settings_panels = [
+    MultiFieldPanel(
+        Page.settings_panels, "Scheduled publishing", "publishing"),
+    MultiFieldPanel(
+        [FieldRowPanel(
+            [FieldPanel('extra_style_hints')], classname="label-above")],
+        "Meta")
 ]
 
 
@@ -119,6 +149,11 @@ class ArticlePage(Page):
     featured_in_section = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Section module"))
+    featured_in_homepage = models.BooleanField(
+        default=False,
+        help_text=_(
+            "Article to be featured in the Homepage "
+            "within the Section module"))
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -144,7 +179,11 @@ class ArticlePage(Page):
     featured_promote_panels = [
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
+        FieldPanel('featured_in_homepage'),
     ]
+
+    def get_parent_section(self):
+        return SectionPage.objects.all().ancestor_of(self).last()
 
     class Meta:
         verbose_name = _('Article')
@@ -157,6 +196,8 @@ ArticlePage.content_panels = [
 ]
 
 ArticlePage._meta.get_field('first_published_at').editable = True
+ArticlePage._meta.get_field('first_published_at').blank = True
+ArticlePage._meta.get_field('first_published_at').null = True
 ArticlePage._meta.get_field('first_published_at').help_text = _(
     "Please add a date-time in the form YYYY-MM-DD hh:mm.")
 

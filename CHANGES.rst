@@ -1,6 +1,24 @@
 CHANGE LOG
 ==========
 
+2.3.3
+-----
+- added `extra styling hints` field to section page
+
+2.3.2
+-----
+- allow articles to be featured on the homepage
+
+2.3.1
+-----
+- `first published at` is not a required field
+
+2.3.0
+-----
+- add homepage models
+- ensure articles ordered by published date
+- allow articles to be featured
+
 2.2.1
 -----
 - Add images to sections
