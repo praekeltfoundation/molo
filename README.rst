@@ -34,6 +34,20 @@ help Praekelt Foundation and partners to deliver on project scope::
 Open the sample site in your browser at http://localhost:8000/ and the CMS
 at http://localhost:8000/admin/.
 
+What you have now is a standard Django application set up for normal
+development like outlined in the Django documentation. The only main difference
+is that your settings are Python modules found in the
+``settings/dev.py`` and ``settings/production.py`` files in your applications
+folder. Both of these inherit settings from ``settings/base.py``.
+
+To create your own custom settings add a ``local.py`` file in the ``settings``
+folder. The ``settings/dev.py`` will automatically include those settings
+for your local development environment.
+
+Running your tests for Django works as you would expect::
+
+   $ ./manage.py test
+
 What is bundled with Molo?
 --------------------------
 
@@ -47,13 +61,21 @@ What is bundled with Molo?
    5. Blocks can be headings, paragraphs, images, lists or
       links to other pages.
 
-Tests
------
+Testing the Molo scaffolding tool
+---------------------------------
 
-Make sure to install the requirement development & testing dependencies::
+If you're interested in working on or contributing to the code that
+does the scaffolding then clone this repository from the GitHub repository at
+http://github.com/praekelt/molo.
+
+Install the requirement development & testing dependencies::
 
    $ pip install -r requirements-dev.txt
 
 And then run the full test suite with::
 
    $ ./run-tests.sh
+
+Pull requests are expected to follow Praekelt's `Ways Of Working`_.
+
+.. _`Ways of Working`: http://ways-of-working.rtfd.org
