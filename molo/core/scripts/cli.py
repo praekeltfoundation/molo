@@ -24,9 +24,16 @@ def main():
               default='BSD')
 def scaffold(**kwargs):
     from cookiecutter.main import cookiecutter
+    from django.utils.crypto import get_random_string
+
     extra_context = kwargs.copy()
     molo_package = pkg_resources.get_distribution('molo.core')
     extra_context['molo_version'] = molo_package.version
+
+    # Create a random SECRET_KEY to put it in the main settings.
+    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+    extra_context['secret_key'] = get_random_string(50, chars)
+
     cookiecutter(
         pkg_resources.resource_filename(
             'molo.core', os.path.join('cookiecutter', 'scaffold')),
