@@ -4,3 +4,4 @@ psycopg2cffi
 raven==5.0.0
 markdown
 django-libsass
+certifi

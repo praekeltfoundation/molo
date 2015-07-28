@@ -11,7 +11,8 @@ from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^django-admin/', include(admin.site.urls)),
 
     url(r'^admin/', include(wagtailadmin_urls)),
@@ -27,4 +28,6 @@ if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
     urlpatterns += staticfiles_urlpatterns()
-    urlpatterns += static(settings.MEDIA_URL + 'images/', document_root=os.path.join(settings.MEDIA_ROOT, 'images'))
+    urlpatterns += static(
+        settings.MEDIA_URL + 'images/',
+        document_root=os.path.join(settings.MEDIA_ROOT, 'images'))
