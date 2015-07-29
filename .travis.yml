@@ -14,9 +14,9 @@ install:
   - pip install -e . --cache-dir $HOME/.pip-cache/
 before_script:
   - flake8 molo
-  - molo scaffold testapp
-  - flake8 testapp
-  - ls testapp
+  - molo scaffold testapp ./testapp
+  - flake8 ./testapp
+  - ls ./testapp
   - pip install -e ./testapp
 script:
   - |
