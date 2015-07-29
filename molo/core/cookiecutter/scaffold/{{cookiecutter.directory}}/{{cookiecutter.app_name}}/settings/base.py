@@ -88,12 +88,9 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 # SQLite (simplest install)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': join(PROJECT_ROOT, 'db.sqlite3'),
-    }
-}
+import dj_database_url
+DATABASES = {'default': dj_database_url.config(
+    default='sqlite://%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
 
 # PostgreSQL (Recommended, but requires the psycopg2 library and Postgresql
 #             development headers)
