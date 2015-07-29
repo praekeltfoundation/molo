@@ -12,8 +12,19 @@ install:
   - pip install flake8 --cache-dir $HOME/.pip-cache/
   - pip install -r requirements-dev.txt --cache-dir $HOME/.pip-cache/
   - pip install -e . --cache-dir $HOME/.pip-cache/
+before_script:
+  - flake8 molo
+  - molo scaffold testapp
+  - flake8 testapp
+  - pip install -e testapp
 script:
-  - ./run-tests.sh
+  - |
+    if [ ${TRAVIS_PYTHON_VERSION} == "pypy" ]; then
+      `which py.test` --ds=testapp.settings --verbose molo "$@"
+    else
+      coverage run `which py.test` --ds=testapp.settings --verbose molo "$@"
+      coverage report
+    fi
 after_success:
   - coveralls
 deploy:
