@@ -18,6 +18,7 @@ class TestCli(TestCase):
         # mock_cookiecutter.assert_called_with({})
         [call] = mock_cookiecutter.call_args_list
         args, kwargs = call
+        self.assertTrue(kwargs['extra_context'].pop('secret_key'))
         self.assertEqual(kwargs, {
             'no_input': True,
             'extra_context': {
@@ -41,6 +42,7 @@ class TestCli(TestCase):
         # mock_cookiecutter.assert_called_with({})
         [call] = mock_cookiecutter.call_args_list
         args, kwargs = call
+        self.assertTrue(kwargs['extra_context'].pop('secret_key'))
         self.assertEqual(kwargs, {
             'no_input': True,
             'extra_context': {
