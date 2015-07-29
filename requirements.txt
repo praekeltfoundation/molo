@@ -5,3 +5,4 @@ raven==5.0.0
 markdown
 django-libsass
 certifi
+dj-database-url

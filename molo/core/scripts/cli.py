@@ -11,6 +11,7 @@ def main():
 
 @click.command()
 @click.argument('app_name')
+@click.argument('directory', default='')
 @click.option('--author',
               help='The author\'s name',
               default='Praekelt Foundation')
@@ -25,6 +26,10 @@ def main():
 def scaffold(**kwargs):
     from cookiecutter.main import cookiecutter
     extra_context = kwargs.copy()
+    # NOTE: we're going to create a directory for whatever value app_name
+    #       is unless directory is specified.
+    if not extra_context['directory']:
+        extra_context['directory'] = extra_context['app_name']
     molo_package = pkg_resources.get_distribution('molo.core')
     extra_context['molo_version'] = molo_package.version
     cookiecutter(
