@@ -73,8 +73,9 @@ Running your tests for Django works as you would expect::
 What is bundled with Molo?
 --------------------------
 
-1. Basic feature phone template set.
-2. Basic models for the following tree structure:
+1. `Wagtail CMS`_
+2. Basic feature phone template set.
+3. Basic models for the following tree structure:
 
    1. A site has languages
    2. A language has a homepage
@@ -101,3 +102,4 @@ And then run the full test suite with::
 Pull requests are expected to follow Praekelt's `Ways Of Working`_.
 
 .. _`Ways of Working`: http://ways-of-working.rtfd.org
+.. _`Wagtail CMS`: http://wagtail.io
