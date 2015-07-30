@@ -195,25 +195,11 @@ ArticlePage.content_panels = [
     StreamFieldPanel('body'),
 ]
 
-ArticlePage._meta.get_field('first_published_at').editable = True
-ArticlePage._meta.get_field('first_published_at').blank = True
-ArticlePage._meta.get_field('first_published_at').null = True
-ArticlePage._meta.get_field('first_published_at').help_text = _(
-    "Please add a date-time in the form YYYY-MM-DD hh:mm.")
-
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
-
-ArticlePage.settings_panels = [
-    MultiFieldPanel(
-        Page.settings_panels +
-        [FieldRowPanel(
-            [FieldPanel('first_published_at')], classname="label-above")],
-        "Scheduled publishing", "publishing")
-]
 
 
 class FooterPage(ArticlePage):

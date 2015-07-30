@@ -20,7 +20,7 @@ PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'v+*c@9@x%h%ou32gk58nv5=03dti0=z^g%296vcx*1alxg#m2)'
+SECRET_KEY = "{{cookiecutter.secret_key}}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,8 +30,9 @@ TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
-# Base URL to use when referring to full URLs within the Wagtail admin backend -
-# e.g. in notification emails. Don't include '/admin' or a trailing slash
+# Base URL to use when referring to full URLs within the Wagtail admin
+# backend - e.g. in notification emails. Don't include '/admin' or
+# a trailing slash
 BASE_URL = 'http://example.com'
 
 
@@ -87,14 +88,12 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 # SQLite (simplest install)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': join(PROJECT_ROOT, 'db.sqlite3'),
-    }
-}
+import dj_database_url
+DATABASES = {'default': dj_database_url.config(
+    default='sqlite://%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
 
-# PostgreSQL (Recommended, but requires the psycopg2 library and Postgresql development headers)
+# PostgreSQL (Recommended, but requires the psycopg2 library and Postgresql
+#             development headers)
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -103,7 +102,8 @@ DATABASES = {
 #         'PASSWORD': '',
 #         'HOST': '',  # Set to empty string for localhost.
 #         'PORT': '',  # Set to empty string for default.
-#         'CONN_MAX_AGE': 600,  # number of seconds database connections should persist for
+#         # number of seconds database connections should persist for
+#         'CONN_MAX_AGE': 600,
 #     }
 # }
 
@@ -129,7 +129,7 @@ LANGUAGES = global_settings.LANGUAGES + (
     ('ts', _('Tsonga')),
     ('ss', _('Swati')),
     ('nr', _('Ndebele')),
-    )
+)
 
 LOCALE_PATHS = (
     join(PROJECT_ROOT, "locale"),
@@ -174,17 +174,21 @@ LOGIN_REDIRECT_URL = 'wagtailadmin_home'
 
 WAGTAIL_SITE_NAME = "base"
 
-# Use Elasticsearch as the search backend for extra performance and better search results:
+# Use Elasticsearch as the search backend for extra performance and better
+# search results:
 # http://wagtail.readthedocs.org/en/latest/howto/performance.html#search
-# http://wagtail.readthedocs.org/en/latest/core_components/search/backends.html#elasticsearch-backend
+# http://wagtail.readthedocs.org/en/latest/core_components/
+#     search/backends.html#elasticsearch-backend
 #
 # WAGTAILSEARCH_BACKENDS = {
 #     'default': {
-#         'BACKEND': 'wagtail.wagtailsearch.backends.elasticsearch.ElasticSearch',
+#         'BACKEND': ('wagtail.wagtailsearch.backends.'
+#                     'elasticsearch.ElasticSearch'),
 #         'INDEX': 'base',
 #     },
 # }
 
 
-# Whether to use face/feature detection to improve image cropping - requires OpenCV
+# Whether to use face/feature detection to improve image
+# cropping - requires OpenCV
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False

@@ -1,0 +1,15 @@
+buildscript: {{cookiecutter.app_name}}/sideloader/build.sh
+postinstall: {{cookiecutter.app_name}}/sideloader/postinstall.sh
+pip:
+  - gunicorn
+  - psycopg2
+dependencies:
+  - nginx
+  - postgresql-server-dev-all
+  - libpq-dev
+  - libffi-dev
+  - postgresql
+  - redis-server
+  - libjpeg-dev
+  - zlib1g-dev
+  - gettext
