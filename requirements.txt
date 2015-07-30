@@ -1,4 +1,4 @@
-Django<1.9
+Django>=1.8,<1.9
 wagtail==1.0
 cookiecutter
 psycopg2cffi
