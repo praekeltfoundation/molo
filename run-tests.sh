@@ -6,7 +6,5 @@ flake8 molo
 molo scaffold testapp
 flake8 testapp
 pip install -e testapp
-coverage erase
-coverage run `which py.test` --ds=testapp.settings --verbose molo "$@"
-coverage report
+`which py.test` --ds=testapp.settings --verbose molo "$@"
 rm -rf testapp
