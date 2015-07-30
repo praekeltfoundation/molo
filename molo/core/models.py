@@ -202,7 +202,6 @@ ArticlePage.promote_panels = [
         "Common page configuration", "collapsible collapsed")]
 
 
-
 class FooterPage(ArticlePage):
     parent_page_types = ['core.LanguagePage']
     subpage_types = []
