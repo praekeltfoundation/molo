@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.3.6
+-----
+- remove first_published_at from models (casuing migration issues)
+
 2.3.3
 -----
 - added `extra styling hints` field to section page
