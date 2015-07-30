@@ -5,11 +5,11 @@ python:
   - "pypy"
 env:
   - COVERAGE=true TEST_RUNNER="py.test --cov molo --ds=testapp.settings --verbose molo"
-  - COVERAGE=false TEST_RUNNER="py.test --cov molo --ds=testapp.settings --verbose molo"
+  - COVERAGE=false TEST_RUNNER="py.test --ds=testapp.settings --verbose molo"
 matrix:
   exclude:
     - python: pypy
-      env: COVERAGE=true
+      env: COVERAGE=true TEST_RUNNER="py.test --cov molo --ds=testapp.settings --verbose molo"
 cache:
   directories:
     - $HOME/.pip-cache/
