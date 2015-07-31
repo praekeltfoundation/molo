@@ -32,7 +32,7 @@ def main():
                     'Expected format (<python-module-name> <regex-for-urls>)'),
               nargs=2, multiple=True)
 def scaffold(**kwargs):
-    from molo.core._cookiecutter import cookiecutter
+    from molo.core.cookiecutter import cookiecutter
     from django.utils.crypto import get_random_string
 
     extra_context = kwargs.copy()

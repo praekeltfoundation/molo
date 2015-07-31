@@ -64,9 +64,8 @@ INSTALLED_APPS = (
 
     'molo.core',
     '{{cookiecutter.app_name}}',
-    {% for app_name, _ in cookiecutter.include %}
-    '{{app_name}}',
-    {% endfor %}
+{% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
+{% endfor %}
     'raven.contrib.django.raven_compat',
 )
 
