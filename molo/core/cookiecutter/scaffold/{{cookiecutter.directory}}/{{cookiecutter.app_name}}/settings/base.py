@@ -62,11 +62,11 @@ INSTALLED_APPS = (
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
 
+    'molo.core',
     '{{cookiecutter.app_name}}',
     {% for app_name, _ in cookiecutter.include %}
     '{{app_name}}',
     {% endfor %}
-    'molo.core',
     'raven.contrib.django.raven_compat',
 )
 
