@@ -92,7 +92,7 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # SQLite (simplest install)
 import dj_database_url
 DATABASES = {'default': dj_database_url.config(
-    default='sqlite://%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
+    default='sqlite:///%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
 
 # PostgreSQL (Recommended, but requires the psycopg2 library and Postgresql
 #             development headers)
