@@ -49,6 +49,39 @@ To scaffold an application called ``myapp`` in the current directory do::
 
    $ molo scaffold myapp .
 
+Specifying extra requires
+=========================
+
+Molo in itself is not expected to be enough to deliver on a client request.
+During scaffolding use the ``--require`` commandline parameter to include
+more libraries that are required for installation::
+
+   $ molo scaffold myapp --require=django-contrib-comments
+
+Adds the `django-contrib-comments` to the generated requirements file which
+is read by the generated package's ``setup.py`` file.
+
+.. note:: multiple requires can be specified on the command line.
+
+Automatically adding installed apps
+===================================
+
+If you're including a Django app chances are you're going to want to
+add it to your ``INSTALLED_APPS`` settings as well as adding an entry
+to the generated ``urls.py`` file::
+
+   $ molo scaffold myapp --include=django_comments ^comments/
+
+This results in the following ``urls.py`` entry::
+
+   url(r'^comments/',
+       include('django_comments.urls',
+               namespace='django_comments',
+               app_name='django_comments')),
+
+.. note:: multiple includes can be specified on the command line, the format
+          is ``--include=<app_name> <regex-for-urls>``
+
 Molo, Django & settings files
 -----------------------------
 
