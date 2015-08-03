@@ -1,6 +1,15 @@
 CHANGE LOG
 ==========
 
+2.3.7
+-----
+- bump to official wagtail v1.0
+- add health check
+
+2.3.6
+-----
+- remove first_published_at from models (casuing migration issues)
+
 2.3.3
 -----
 - added `extra styling hints` field to section page

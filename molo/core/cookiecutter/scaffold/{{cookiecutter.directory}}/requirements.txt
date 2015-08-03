@@ -1,0 +1,4 @@
+molo.core=={{cookiecutter.molo_version}}
+{% for requirement in cookiecutter.require %}
+{{requirement}}
+{% endfor %}

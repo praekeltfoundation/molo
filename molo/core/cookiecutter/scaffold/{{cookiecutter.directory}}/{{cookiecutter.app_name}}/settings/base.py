@@ -20,7 +20,7 @@ PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'v+*c@9@x%h%ou32gk58nv5=03dti0=z^g%296vcx*1alxg#m2)'
+SECRET_KEY = "{{cookiecutter.secret_key}}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -62,8 +62,10 @@ INSTALLED_APPS = (
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
 
-    '{{cookiecutter.app_name}}',
     'molo.core',
+    '{{cookiecutter.app_name}}',
+{% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
+{% endfor %}
     'raven.contrib.django.raven_compat',
 )
 
@@ -88,12 +90,9 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 # SQLite (simplest install)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': join(PROJECT_ROOT, 'db.sqlite3'),
-    }
-}
+import dj_database_url
+DATABASES = {'default': dj_database_url.config(
+    default='sqlite:///%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
 
 # PostgreSQL (Recommended, but requires the psycopg2 library and Postgresql
 #             development headers)

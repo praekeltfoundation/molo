@@ -73,3 +73,8 @@ class TestPages(TestCase):
         self.assertContains(
             response,
             'Your Mind Page 1 Lorem ipsum dolor sit amet')
+
+    def test_health(self):
+        response = self.client.get('/health/')
+        self.assertEquals(
+            response.status_code, 200)

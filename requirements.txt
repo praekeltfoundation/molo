@@ -1,7 +1,9 @@
-wagtail==1.0b2
+Django>=1.8,<1.9
+wagtail==1.0
 cookiecutter
 psycopg2cffi
 raven==5.0.0
 markdown
 django-libsass
 certifi
+dj-database-url

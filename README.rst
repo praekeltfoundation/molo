@@ -17,6 +17,9 @@ Molo
     :target: http://badge.fury.io/py/molo.core
     :alt: Pypi Package
 
+Scaffold a site using Molo
+--------------------------
+
 Molo is a set of tools for publishing mobi sites with a community focus.
 It scaffolds a Django application for you with sensible defaults, packages
 and configuration to help you get going as soon as possible:
@@ -34,6 +37,57 @@ help Praekelt Foundation and partners to deliver on project scope::
 Open the sample site in your browser at http://localhost:8000/ and the CMS
 at http://localhost:8000/admin/.
 
+Scaffolding a site in an existing repository
+--------------------------------------------
+
+It's not always desirable to create a new directory for an application,
+especially when scaffolding an application for a repository that's already
+been created. Specifically for that Molo allows a second argument for the
+directory.
+
+To scaffold an application called ``myapp`` in the current directory do::
+
+   $ molo scaffold myapp .
+
+Specifying extra requires
+=========================
+
+Molo in itself is not expected to be enough to deliver on a client request.
+During scaffolding use the ``--require`` commandline parameter to include
+more libraries that are required for installation::
+
+   $ molo scaffold myapp --require=django-contrib-comments
+
+Adds the `django-contrib-comments` to the generated requirements file which
+is read by the generated package's ``setup.py`` file.
+
+Multiple requires can be specified on the command line::
+
+   $ molo scaffold myapp --require=django-contrib-comments \
+                         --require=molo.profiles
+
+Automatically adding installed apps
+===================================
+
+If you're including a Django app chances are you're going to want to
+add it to your ``INSTALLED_APPS`` settings as well as adding an entry
+to the generated ``urls.py`` file::
+
+   $ molo scaffold myapp --include=django_comments ^comments/
+
+This results in the following ``urls.py`` entry::
+
+   url(r'^comments/',
+       include('django_comments.urls',
+               namespace='django_comments',
+               app_name='django_comments')),
+
+.. note:: multiple includes can be specified on the command line, the format
+          is ``--include=<app_name> <regex-for-urls>``
+
+Molo, Django & settings files
+-----------------------------
+
 What you have now is a standard Django application set up for normal
 development like outlined in the Django documentation. The only main difference
 is that your settings are Python modules found in the
@@ -44,6 +98,9 @@ To create your own custom settings add a ``local.py`` file in the ``settings``
 folder. The ``settings/dev.py`` will automatically include those settings
 for your local development environment.
 
+Writing tests
+-------------
+
 Now develop your application and write tests for the features you add.
 Running your tests for Django works as you would expect::
 
@@ -52,8 +109,9 @@ Running your tests for Django works as you would expect::
 What is bundled with Molo?
 --------------------------
 
-1. Basic feature phone template set.
-2. Basic models for the following tree structure:
+1. `Wagtail CMS`_
+2. Basic feature phone template set.
+3. Basic models for the following tree structure:
 
    1. A site has languages
    2. A language has a homepage
@@ -80,3 +138,4 @@ And then run the full test suite with::
 Pull requests are expected to follow Praekelt's `Ways Of Working`_.
 
 .. _`Ways of Working`: http://ways-of-working.rtfd.org
+.. _`Wagtail CMS`: http://wagtail.io
