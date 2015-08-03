@@ -23,8 +23,16 @@ def main():
 @click.option('--license',
               help='The License to release the package under.',
               default='BSD')
+@click.option('--require',
+              help=('Define an extra package that needs to be included '
+                    'in the requirements.txt'),
+              multiple=True)
+@click.option('--include',
+              help=('Which libraries to include and add to INSTALLED_APPS. '
+                    'Expected format (<python-module-name> <regex-for-urls>)'),
+              nargs=2, multiple=True)
 def scaffold(**kwargs):
-    from cookiecutter.main import cookiecutter
+    from molo.core.cookiecutter import cookiecutter
     from django.utils.crypto import get_random_string
 
     extra_context = kwargs.copy()
