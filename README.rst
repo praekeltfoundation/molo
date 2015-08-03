@@ -61,7 +61,10 @@ more libraries that are required for installation::
 Adds the `django-contrib-comments` to the generated requirements file which
 is read by the generated package's ``setup.py`` file.
 
-.. note:: multiple requires can be specified on the command line.
+Multiple requires can be specified on the command line::
+
+   $ molo scaffold myapp --require=django-contrib-comments \
+                         --require=molo.profiles
 
 Automatically adding installed apps
 ===================================
