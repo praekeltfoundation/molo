@@ -3,6 +3,7 @@ import pkg_resources
 
 from mock import patch
 
+from click import UsageError
 from click.testing import CliRunner
 
 
@@ -132,3 +133,11 @@ class TestCli(TestCase):
         mock_copytree.assert_called_with(
             pkg_resources.resource_filename('molo.core', 'templates/foo'),
             pkg_resources.resource_filename('molo.core', 'templates/foo'))
+
+    def test_get_package(self):
+        from molo.core.scripts.cli import get_package
+        self.assertRaisesRegexp(
+            UsageError, 'molo.foo is not installed.', get_package, 'molo.foo')
+        self.assertRaisesRegexp(
+            UsageError, 'molo.core does not have a templates directory.',
+            get_package, 'molo.core')
