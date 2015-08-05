@@ -1,12 +1,43 @@
 import os.path
+import shutil
 import pkg_resources
 
 import click
 
 
-@click.group()
-def main():
-    pass
+@click.command()
+@click.argument('source_package')
+@click.argument('target_package')
+def unpack_templates(**kwargs):
+    source_package = kwargs['source_package']
+    target_package = kwargs['target_package']
+
+    try:
+        source_pkg = pkg_resources.get_distribution(source_package)
+    except pkg_resources.DistributionNotFound:
+        raise click.UsageError('%s is not installed.' % (source_package,))
+
+    try:
+        target_pkg = pkg_resources.get_distribution(target_package)
+    except pkg_resources.DistributionNotFound:
+        raise click.UsageError('%s is not installed.' % (target_package,))
+
+    for pkg in [source_pkg, target_pkg]:
+        if not pkg_resources.resource_isdir(pkg.key, 'templates'):
+            raise click.UsageError(
+                '%s does not have a templates directory.' % (pkg.key,))
+
+    template_dirs = pkg_resources.resource_listdir(source_pkg.key, 'templates')
+    for directory in template_dirs:
+        try:
+            shutil.copytree(
+                pkg_resources.resource_filename(
+                    source_pkg.key, os.path.join('templates', directory)),
+                pkg_resources.resource_filename(
+                    target_pkg.key, os.path.join('templates', directory))
+            )
+        except (OSError,), e:
+            raise click.ClickException(str(e))
 
 
 @click.command()
@@ -53,4 +84,10 @@ def scaffold(**kwargs):
         no_input=True,
         extra_context=extra_context)
 
-main.add_command(scaffold)
+
+@click.group()
+def main():
+    pass
+
+main.add_command(scaffold, name='scaffold')
+main.add_command(unpack_templates, name='unpack-templates')
