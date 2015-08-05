@@ -4,14 +4,14 @@ python:
   - "2.7"
   - "pypy"
 env:
-  - COVERAGE=true TEST_RUNNER="py.test --cov molo --ds=testapp.settings --verbose molo"
-  - COVERAGE=false TEST_RUNNER="py.test --ds=testapp.settings --verbose molo"
+  - COVERAGE=true TEST_RUNNER="py.test --cov molo"
+  - COVERAGE=false TEST_RUNNER="py.test"
 matrix:
   exclude:
     - python: "pypy"
-      env: COVERAGE=true TEST_RUNNER="py.test --cov molo --ds=testapp.settings --verbose molo"
+      env: COVERAGE=true TEST_RUNNER="py.test --cov molo"
     - python: "2.7"
-      env: COVERAGE=false TEST_RUNNER="py.test --ds=testapp.settings --verbose molo"
+      env: COVERAGE=false TEST_RUNNER="py.test"
 cache:
   directories:
     - $HOME/.pip-cache/
