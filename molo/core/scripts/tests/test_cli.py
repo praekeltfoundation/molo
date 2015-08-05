@@ -107,3 +107,28 @@ class TestCli(TestCase):
                 'include': (('bar', 'baz'),),
             }
         })
+
+    def test_unpack_templates_bad_source(self):
+        from molo.core.scripts import cli
+        runner = CliRunner()
+        result = runner.invoke(cli.unpack_templates, ['molo.core', 'testapp'])
+        self.assertTrue(
+            'molo.core does not have a templates directory' in result.output)
+
+    @patch('molo.core.scripts.cli.get_package')
+    @patch('molo.core.scripts.cli.get_template_dirs')
+    @patch('shutil.copytree')
+    def test_unpack(self, mock_copytree, mock_get_template_dirs,
+                    mock_get_package):
+        package = pkg_resources.get_distribution('molo.core')
+        mock_get_package.return_value = package
+        mock_get_template_dirs.return_value = ['foo']
+        mock_copytree.return_value = True
+
+        from molo.core.scripts import cli
+        runner = CliRunner()
+        runner.invoke(cli.unpack_templates, ['app1', 'app2'])
+
+        mock_copytree.assert_called_with(
+            pkg_resources.resource_filename('molo.core', 'templates/foo'),
+            pkg_resources.resource_filename('molo.core', 'templates/foo'))

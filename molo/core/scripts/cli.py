@@ -5,30 +5,30 @@ import pkg_resources
 import click
 
 
+def get_package(package_name):
+    try:
+        pkg = pkg_resources.get_distribution(package_name)
+    except pkg_resources.DistributionNotFound:
+        raise click.UsageError('%s is not installed.' % (package_name,))
+
+    if not pkg_resources.resource_isdir(pkg.key, 'templates'):
+        raise click.UsageError(
+            '%s does not have a templates directory.' % (pkg.key,))
+    return pkg
+
+
+def get_template_dirs(package_name):
+    return pkg_resources.resource_listdir(package_name, 'templates')
+
+
 @click.command()
 @click.argument('source_package')
 @click.argument('target_package')
 def unpack_templates(**kwargs):
-    source_package = kwargs['source_package']
-    target_package = kwargs['target_package']
+    source_pkg = get_package(kwargs['source_package'])
+    target_pkg = get_package(kwargs['target_package'])
 
-    try:
-        source_pkg = pkg_resources.get_distribution(source_package)
-    except pkg_resources.DistributionNotFound:
-        raise click.UsageError('%s is not installed.' % (source_package,))
-
-    try:
-        target_pkg = pkg_resources.get_distribution(target_package)
-    except pkg_resources.DistributionNotFound:
-        raise click.UsageError('%s is not installed.' % (target_package,))
-
-    for pkg in [source_pkg, target_pkg]:
-        if not pkg_resources.resource_isdir(pkg.key, 'templates'):
-            raise click.UsageError(
-                '%s does not have a templates directory.' % (pkg.key,))
-
-    template_dirs = pkg_resources.resource_listdir(source_pkg.key, 'templates')
-    for directory in template_dirs:
+    for directory in get_template_dirs(source_pkg.key):
         try:
             shutil.copytree(
                 pkg_resources.resource_filename(
