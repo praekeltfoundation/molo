@@ -182,6 +182,9 @@ class ArticlePage(Page):
         FieldPanel('featured_in_homepage'),
     ]
 
+    def get_absolute_url(self):
+        return self.url
+
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
 

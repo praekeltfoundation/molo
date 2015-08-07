@@ -98,6 +98,37 @@ To create your own custom settings add a ``local.py`` file in the ``settings``
 folder. The ``settings/dev.py`` will automatically include those settings
 for your local development environment.
 
+Unpacking Templates from Packages
+---------------------------------
+
+Sometimes a package's existing templates simply are not enough and need
+some amount of customization. Use the ``unpack-templates`` command in the
+scaffolded application to unpack a package's templates in your application's
+templates directory::
+
+   $ molo scaffold testapp \
+   >   --require=molo.profiles \
+   >   --include=molo.profiles ^profiles/
+   $ pip install -e testapp
+   ...
+
+You'll see the default templates that ``molo.core`` ships with available in
+the ``templates`` directory::
+
+   $ ls testapp/testapp/templates
+   404.html  500.html  base.html core
+
+Now we unpack the ``profiles`` templates directory from the ``molo.profiles``
+package into the ``testapp`` package template directory::
+
+   $ molo unpack-templates molo.profiles testapp
+   $ ls testapp/testapp/templates
+   404.html  500.html  base.html core profiles
+
+The format is::
+
+   $ molo unpack-templates <source package> <target package>
+
 Writing tests
 -------------
 
