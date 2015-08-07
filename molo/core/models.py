@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.dispatch.dispatcher import receiver
+from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
@@ -9,6 +11,7 @@ from wagtail.wagtailadmin.edit_handlers import (
     MultiFieldPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
+from wagtail.wagtailcore import signals
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 
 from molo.core.blocks import MarkDownBlock
@@ -62,7 +65,7 @@ class LanguagePage(Page):
 
     def latest_articles(self):
         return ArticlePage.objects.live().descendant_of(self).filter(
-            featured_in_latest=True).order_by('-first_published_at')
+            featured_in_latest=True).order_by('-published_date')
 
     def footers(self):
         return FooterPage.objects.live().child_of(self)
@@ -99,7 +102,7 @@ class SectionPage(Page):
 
     def articles(self):
         return ArticlePage.objects.live().order_by(
-            '-first_published_at').child_of(self)
+            '-published_date').child_of(self)
 
     def sections(self):
         return SectionPage.objects.live().child_of(self)
@@ -108,7 +111,7 @@ class SectionPage(Page):
         return self.articles().filter(featured_in_section=True)
 
     def featured_articles_in_homepage(self):
-        qs = ArticlePage.objects.live().order_by('-first_published_at')
+        qs = ArticlePage.objects.live().order_by('-published_date')
         return qs.descendant_of(self).filter(featured_in_homepage=True)
 
     def get_effective_extra_style_hints(self):
@@ -169,6 +172,8 @@ class ArticlePage(Page):
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
     ], null=True, blank=True)
+    published_date = models.DateTimeField(
+        verbose_name=_('Published date'), null=True, blank=True)
 
     subpage_types = []
     search_fields = Page.search_fields + (
@@ -180,6 +185,7 @@ class ArticlePage(Page):
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
+        FieldPanel('published_date')
     ]
 
     def get_absolute_url(self):
@@ -203,6 +209,14 @@ ArticlePage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
+
+
+@receiver(signals.page_published, sender=ArticlePage)
+def auto_save_published_date(sender, instance, **kwargs):
+    # Set published_date if the page is being published now
+    if instance.live and instance.published_date is None:
+        instance.published_date = timezone.now()
+        instance.save()
 
 
 class FooterPage(ArticlePage):

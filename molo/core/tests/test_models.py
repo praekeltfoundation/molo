@@ -12,11 +12,11 @@ class TestModels(TestCase):
     def test_article_order(self):
         now = datetime.now()
         article1 = ArticlePage.objects.get(pk=14)
-        article1.first_published_at = now
+        article1.published_date = now
         article1.save()
 
         article2 = ArticlePage.objects.get(pk=15)
-        article2.first_published_at = now + timedelta(hours=1)
+        article2.published_date = now + timedelta(hours=1)
         article2.save()
 
         # most recent first
@@ -25,11 +25,25 @@ class TestModels(TestCase):
             section.articles()[0].title, article2.title)
 
         # swap published date
-        article1.first_published_at = now + timedelta(hours=4)
+        article1.published_date = now + timedelta(hours=4)
         article1.save()
 
         self.assertEquals(
             section.articles()[0].title, article1.title)
+
+    def test_published_date(self):
+        main = Page.objects.get(slug='main')
+        new_section = SectionPage(title="New Section", slug="new-section")
+        main.add_child(instance=new_section)
+        new_page = ArticlePage(title="New Page", slug="new-page")
+        new_section.add_child(instance=new_page)
+
+        self.assertIsNone(new_page.published_date)
+
+        new_page.save_revision().publish()
+
+        new_page = ArticlePage.objects.get(pk=new_page.pk)
+        self.assertIsNotNone(new_page.published_date)
 
     def test_latest(self):
         lang = LanguagePage.objects.get(code='en')
