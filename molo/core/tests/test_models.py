@@ -22,7 +22,7 @@ class TestModels(TestCase):
         # most recent first
         section = SectionPage.objects.get(slug='your-mind-subsection')
         self.assertEquals(
-            section.articles()[0].title, article2.title)
+            section.articles()[0].title, article1.title)
 
         # swap published date
         article1.first_published_at = now + timedelta(hours=4)

@@ -98,8 +98,7 @@ class SectionPage(Page):
             "and all its descendants"))
 
     def articles(self):
-        return ArticlePage.objects.live().order_by(
-            '-first_published_at').child_of(self)
+        return ArticlePage.objects.live().child_of(self)
 
     def sections(self):
         return SectionPage.objects.live().child_of(self)
@@ -181,6 +180,9 @@ class ArticlePage(Page):
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
     ]
+
+    def get_absolute_url(self):
+        return self.url
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()

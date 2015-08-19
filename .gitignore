@@ -43,3 +43,4 @@ logs/*.log
 db.sqlite3
 docs/_build
 .DS_Store
+/htmlcov/

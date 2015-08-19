@@ -62,8 +62,10 @@ INSTALLED_APPS = (
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
 
-    '{{cookiecutter.app_name}}',
     'molo.core',
+    '{{cookiecutter.app_name}}',
+{% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
+{% endfor %}
     'raven.contrib.django.raven_compat',
 )
 
@@ -90,7 +92,7 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # SQLite (simplest install)
 import dj_database_url
 DATABASES = {'default': dj_database_url.config(
-    default='sqlite://%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
+    default='sqlite:///%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
 
 # PostgreSQL (Recommended, but requires the psycopg2 library and Postgresql
 #             development headers)

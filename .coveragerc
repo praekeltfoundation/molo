@@ -1,4 +1,3 @@
 [run]
-omit = molo/core/migrations/*
+omit = molo/core/migrations/*,molo/core/cookiecutter/*
 source= molo/
-
