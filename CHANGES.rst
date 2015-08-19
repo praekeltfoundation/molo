@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.4.2
+-----
+- ordering of articles within a section uses the Wagtail ordering
+
 2.3.7
 -----
 - bump to official wagtail v1.0
