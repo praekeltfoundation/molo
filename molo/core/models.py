@@ -110,6 +110,10 @@ class SectionPage(Page):
         qs = ArticlePage.objects.live().order_by('-first_published_at')
         return qs.descendant_of(self).filter(featured_in_homepage=True)
 
+    def latest_articles_in_homepage(self):
+        qs = ArticlePage.objects.live().order_by('-first_published_at')
+        return qs.descendant_of(self).filter(featured_in_latest=True)
+
     def get_effective_extra_style_hints(self):
         # The extra css is inherited from the parent SectionPage.
         # This will either return the current value or a value
