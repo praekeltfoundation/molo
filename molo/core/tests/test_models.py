@@ -39,6 +39,10 @@ class TestModels(TestCase):
         section = SectionPage.objects.get(slug='your-mind')
         self.assertEquals(section.featured_articles_in_homepage().count(), 2)
 
+    def test_latest_homepage(self):
+        section = SectionPage.objects.get(slug='your-mind')
+        self.assertEquals(section.latest_articles_in_homepage().count(), 2)
+
     def test_extra_css(self):
         main = Page.objects.get(slug='main')
 
