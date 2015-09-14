@@ -4,6 +4,8 @@ from django.test import TestCase
 
 from molo.core.models import ArticlePage, SectionPage, LanguagePage, Page
 
+from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+
 
 @pytest.mark.django_db
 class TestModels(TestCase):
@@ -78,3 +80,37 @@ class TestModels(TestCase):
         new_section.add_child(instance=new_section5)
         self.assertEquals(
             new_section5.get_effective_extra_style_hints(), 'secondary')
+
+    def setUp(self):
+        # Create an image for running tests on
+        self.image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+
+    def test_image(self):
+        main = Page.objects.get(slug='main')
+        new_section = SectionPage(
+            title="New Section", slug="new-section",
+            image=self.image)
+        main.add_child(instance=new_section)
+        self.assertEquals(
+            new_section.get_effective_image(), self.image)
+
+        # image not set to use inherited value
+        new_section2 = SectionPage(title="New Section 2", slug="new-section-2")
+        new_section.add_child(instance=new_section2)
+        self.assertEquals(
+            new_section2.get_effective_image(), new_section.image)
+
+        # image not set to use inherited value
+        new_section3 = SectionPage(title="New Section 3", slug="new-section-3")
+        new_section2.add_child(instance=new_section3)
+        self.assertEquals(
+            new_section3.get_effective_image(), new_section.image)
+
+        # Tests function get_parent_section
+        new_section4 = SectionPage(title="New Section 4", slug="new-section-4")
+        new_section3.add_child(instance=new_section4)
+        self.assertEquals(
+            new_section4.get_parent_section(), new_section3)
