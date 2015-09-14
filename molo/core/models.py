@@ -125,6 +125,18 @@ class SectionPage(Page):
         else:
             return self.extra_style_hints
 
+    def get_effective_image(self):
+
+        parent_section = SectionPage.objects.all().ancestor_of(self).last()
+        if parent_section:
+            return self.image or \
+                parent_section.get_effective_image()
+        else:
+            return self.image
+
+    def get_parent_section(self):
+        return SectionPage.objects.all().ancestor_of(self).last()
+
     class Meta:
         verbose_name = _('Section')
 
