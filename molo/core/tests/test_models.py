@@ -109,8 +109,12 @@ class TestModels(TestCase):
         self.assertEquals(
             new_section3.get_effective_image(), new_section.image)
 
-        # Tests function get_parent_section
-        new_section4 = SectionPage(title="New Section 4", slug="new-section-4")
-        new_section3.add_child(instance=new_section4)
+    def test_parent_section(self):
+        main = Page.objects.get(slug='main')
+        new_section = SectionPage(
+            title="New Section", slug="new-section")
+        main.add_child(instance=new_section)
+        new_section1 = SectionPage(title="New Section 1", slug="new-section-1")
+        new_section.add_child(instance=new_section1)
         self.assertEquals(
-            new_section4.get_parent_section(), new_section3)
+            new_section1.get_parent_section(), new_section)
