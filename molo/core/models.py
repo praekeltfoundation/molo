@@ -64,6 +64,12 @@ HomePage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
+    MultiFieldPanel([
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 
@@ -83,6 +89,14 @@ class Main(Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+Main.content_panels = [
+    MultiFieldPanel([
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
+]
 
 class LanguagePage(Page):
     code = models.CharField(
@@ -139,6 +153,12 @@ class LanguagePage(Page):
 LanguagePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('code'),
+    MultiFieldPanel([
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 
@@ -238,6 +258,12 @@ SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
     ImageChooserPanel('image'),
+    MultiFieldPanel([
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 SectionPage.settings_panels = [
@@ -348,6 +374,12 @@ ArticlePage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
     StreamFieldPanel('body'),
+    MultiFieldPanel([
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 ArticlePage.promote_panels = [
