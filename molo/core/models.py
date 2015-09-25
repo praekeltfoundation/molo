@@ -36,6 +36,7 @@ class HomePage(Page):
     COMMENTING_STATE_CHOICES = (
         ('O', 'Open'),
         ('C', 'Closed'),
+        ('D', 'Disabled'),
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
@@ -80,6 +81,7 @@ class Main(Page):
     COMMENTING_STATE_CHOICES = (
         ('O', 'Open'),
         ('C', 'Closed'),
+        ('D', 'Disabled'),
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
@@ -109,6 +111,7 @@ class LanguagePage(Page):
     COMMENTING_STATE_CHOICES = (
         ('O', 'Open'),
         ('C', 'Closed'),
+        ('D', 'Disabled'),
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
@@ -186,6 +189,7 @@ class SectionPage(Page):
     COMMENTING_STATE_CHOICES = (
         ('O', 'Open'),
         ('C', 'Closed'),
+        ('D', 'Disabled'),
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
@@ -314,6 +318,7 @@ class ArticlePage(Page):
     COMMENTING_STATE_CHOICES = (
         ('O', 'Open'),
         ('C', 'Closed'),
+        ('D', 'Disabled'),
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
@@ -355,7 +360,7 @@ class ArticlePage(Page):
                 open_time = commenting_settings['open_time']
                 close_time = commenting_settings['close_time']
                 return open_time < now < close_time
-            if (commenting_settings['state'] == 'C'):
+            if (commenting_settings['state'] == 'C' or commenting_settings['state'] == 'D'):
                 # Allow automated reopening of commenting at a specified time
                 reopen_time = commenting_settings['open_time']
                 if (reopen_time):
