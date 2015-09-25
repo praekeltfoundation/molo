@@ -31,6 +31,18 @@ class HomePage(Page):
         help_text=_('Optional page to which the banner will link to')
     )
 
+    COMMENTING_STATE_CHOICES = (
+        ('O', 'Open'),
+        ('C', 'Closed'),
+        ('T', 'Timestamped'),
+    )
+    commenting_state = models.CharField(max_length=1,
+                                      choices=COMMENTING_STATE_CHOICES,
+                                      blank=True,
+                                      null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
+
     parent_page_types = ['core.LanguagePage']
     subpage_types = ['core.ArticlePage']
 
@@ -45,6 +57,18 @@ class Main(Page):
     parent_page_types = []
     subpage_types = ['core.LanguagePage']
 
+    COMMENTING_STATE_CHOICES = (
+        ('O', 'Open'),
+        ('C', 'Closed'),
+        ('T', 'Timestamped'),
+    )
+    commenting_state = models.CharField(max_length=1,
+                                      choices=COMMENTING_STATE_CHOICES,
+                                      blank=False,
+                                      default='C')
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
+
 
 class LanguagePage(Page):
     code = models.CharField(
@@ -53,6 +77,18 @@ class LanguagePage(Page):
 
     parent_page_types = ['core.Main']
     subpage_types = ['core.HomePage', 'core.SectionPage', 'core.FooterPage']
+
+    COMMENTING_STATE_CHOICES = (
+        ('O', 'Open'),
+        ('C', 'Closed'),
+        ('T', 'Timestamped'),
+    )
+    commenting_state = models.CharField(max_length=1,
+                                      choices=COMMENTING_STATE_CHOICES,
+                                      blank=True,
+                                      null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def homepages(self):
         return HomePage.objects.live().child_of(self)
@@ -96,6 +132,18 @@ class SectionPage(Page):
         help_text=_(
             "Styling options that can be applied to this section "
             "and all its descendants"))
+
+    COMMENTING_STATE_CHOICES = (
+        ('O', 'Open'),
+        ('C', 'Closed'),
+        ('T', 'Timestamped'),
+    )
+    commenting_state = models.CharField(max_length=1,
+                                      choices=COMMENTING_STATE_CHOICES,
+                                      blank=True,
+                                      null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def articles(self):
         return ArticlePage.objects.live().child_of(self)
@@ -190,6 +238,18 @@ class ArticlePage(Page):
         index.SearchField('subtitle'),
         index.SearchField('body'),
     )
+
+    COMMENTING_STATE_CHOICES = (
+        ('O', 'Open'),
+        ('C', 'Closed'),
+        ('T', 'Timestamped'),
+    )
+    commenting_state = models.CharField(max_length=1,
+                                      choices=COMMENTING_STATE_CHOICES,
+                                      blank=True,
+                                      null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     featured_promote_panels = [
         FieldPanel('featured_in_latest'),
