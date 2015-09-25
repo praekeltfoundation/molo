@@ -46,6 +46,18 @@ class HomePage(Page):
     parent_page_types = ['core.LanguagePage']
     subpage_types = ['core.ArticlePage']
 
+    def get_effective_commenting_settings(self):
+        # return commenting settings for the homepage
+        if (self.commenting_state and self.commenting_state != ""):
+            return {
+                'state': self.commenting_state,
+                'open_time': self.commenting_open_time,
+                'close_time': self.commenting_close_time
+            }
+        # use the commenting settings for the language page
+        language_page = LanguagePage.objects.all().ancestor_of(self).last()
+        return language_page.get_effective_commenting_settings()
+
 HomePage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
@@ -102,6 +114,22 @@ class LanguagePage(Page):
 
     def footers(self):
         return FooterPage.objects.live().child_of(self)
+
+    def get_effective_commenting_settings(self):
+        # return commenting settings for this language
+        if (self.commenting_state and self.commenting_state != ""):
+            return {
+                'state': self.commenting_state,
+                'open_time': self.commenting_open_time,
+                'close_time': self.commenting_close_time
+            }
+        # use the commenting settings for the Home page
+        main = Main.objects.all().ancestor_of(self).last()
+        return {
+            'state': main.commenting_state,
+            'open_time': main.commenting_open_time,
+            'close_time': main.commenting_close_time
+        }
 
     class Meta:
         verbose_name = _('Language')
@@ -185,6 +213,22 @@ class SectionPage(Page):
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
 
+    def get_effective_commenting_settings(self):
+        # return commenting settings for this section
+        if (self.commenting_state and self.commenting_state != ""):
+            return {
+                'state': self.commenting_state,
+                'open_time': self.commenting_open_time,
+                'close_time': self.commenting_close_time
+            }
+        # check parent sections for commenting settings
+        parent_section = SectionPage.objects.all().ancestor_of(self).last()
+        if parent_section:
+            return parent_section.get_effective_commenting_settings()
+        # use the commenting settings for the language page
+        language_page = LanguagePage.objects.all().ancestor_of(self).last()
+        return language_page.get_effective_commenting_settings()
+
     class Meta:
         verbose_name = _('Section')
 
@@ -262,6 +306,17 @@ class ArticlePage(Page):
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
+
+    def get_effective_commenting_settings(self):
+        # return commenting settings for this section
+        if (self.commenting_state and self.commenting_state != ""):
+            return {
+                'state': self.commenting_state,
+                'open_time': self.commenting_open_time,
+                'close_time': self.commenting_close_time
+            }
+        # use the commenting settings for the parent section
+        return self.get_parent_section().get_effective_commenting_settings()
 
     class Meta:
         verbose_name = _('Article')
