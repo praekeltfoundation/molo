@@ -40,9 +40,9 @@ class HomePage(Page):
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
-                                      choices=COMMENTING_STATE_CHOICES,
-                                      blank=True,
-                                      null=True)
+                                        choices=COMMENTING_STATE_CHOICES,
+                                        blank=True,
+                                        null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -65,7 +65,8 @@ HomePage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    MultiFieldPanel([
+    MultiFieldPanel(
+        [
             FieldPanel('commenting_state'),
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
@@ -85,20 +86,22 @@ class Main(Page):
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
-                                      choices=COMMENTING_STATE_CHOICES,
-                                      blank=False,
-                                      default='C')
+                                        choices=COMMENTING_STATE_CHOICES,
+                                        blank=False,
+                                        default='C')
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
 Main.content_panels = [
-    MultiFieldPanel([
+    MultiFieldPanel(
+        [
             FieldPanel('commenting_state'),
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
 ]
+
 
 class LanguagePage(Page):
     code = models.CharField(
@@ -115,9 +118,9 @@ class LanguagePage(Page):
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
-                                      choices=COMMENTING_STATE_CHOICES,
-                                      blank=True,
-                                      null=True)
+                                        choices=COMMENTING_STATE_CHOICES,
+                                        blank=True,
+                                        null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -156,7 +159,8 @@ class LanguagePage(Page):
 LanguagePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('code'),
-    MultiFieldPanel([
+    MultiFieldPanel(
+        [
             FieldPanel('commenting_state'),
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
@@ -193,9 +197,9 @@ class SectionPage(Page):
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
-                                      choices=COMMENTING_STATE_CHOICES,
-                                      blank=True,
-                                      null=True)
+                                        choices=COMMENTING_STATE_CHOICES,
+                                        blank=True,
+                                        null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -262,7 +266,8 @@ SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
     ImageChooserPanel('image'),
-    MultiFieldPanel([
+    MultiFieldPanel(
+        [
             FieldPanel('commenting_state'),
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
@@ -322,9 +327,9 @@ class ArticlePage(Page):
         ('T', 'Timestamped'),
     )
     commenting_state = models.CharField(max_length=1,
-                                      choices=COMMENTING_STATE_CHOICES,
-                                      blank=True,
-                                      null=True)
+                                        choices=COMMENTING_STATE_CHOICES,
+                                        blank=True,
+                                        null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -353,14 +358,15 @@ class ArticlePage(Page):
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
-        if (commenting_settings['state'] != 'O'): # if commenting is not open
+        if (commenting_settings['state'] != 'O'):  # if commenting is not open
             now = timezone.now()
             if (commenting_settings['state'] == 'T'):
                 # Allow commenting over the given time period
                 open_time = commenting_settings['open_time']
                 close_time = commenting_settings['close_time']
                 return open_time < now < close_time
-            if (commenting_settings['state'] == 'C' or commenting_settings['state'] == 'D'):
+            if (commenting_settings['state'] == 'C' or
+                    commenting_settings['state'] == 'D'):
                 # Allow automated reopening of commenting at a specified time
                 reopen_time = commenting_settings['open_time']
                 if (reopen_time):
@@ -379,7 +385,8 @@ ArticlePage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
     StreamFieldPanel('body'),
-    MultiFieldPanel([
+    MultiFieldPanel(
+        [
             FieldPanel('commenting_state'),
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
