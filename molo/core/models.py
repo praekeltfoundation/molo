@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -317,6 +319,26 @@ class ArticlePage(Page):
             }
         # use the commenting settings for the parent section
         return self.get_parent_section().get_effective_commenting_settings()
+
+    def allow_commenting(self):
+        commenting_settings = self.get_effective_commenting_settings()
+        if (commenting_settings['state'] != 'O'): # if commenting is not open
+            now = timezone.now()
+            if (commenting_settings['state'] == 'T'):
+                # Allow commenting over the given time period
+                open_time = commenting_settings['open_time']
+                close_time = commenting_settings['close_time']
+                return open_time < now < close_time
+            if (commenting_settings['state'] == 'C'):
+                # Allow automated reopening of commenting at a specified time
+                reopen_time = commenting_settings['open_time']
+                if (reopen_time):
+                    if reopen_time < now:
+                        self.commenting_state = 'O'
+                        self.save()
+                        return True
+            return False
+        return True
 
     class Meta:
         verbose_name = _('Article')
