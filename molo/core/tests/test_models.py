@@ -118,3 +118,14 @@ class TestModels(TestCase):
         new_section.add_child(instance=new_section1)
         self.assertEquals(
             new_section1.get_parent_section(), new_section)
+
+    def test_commenting_closed_main(self):
+        main = Page.objects.get(slug='main')
+        new_section = SectionPage(
+            title="New Section", slug="new-section")
+        main.add_child(instance=new_section)
+        new_article = ArticlePage(
+            title="New article")
+        main.add_child(instance=new_article)
+        comment_settings = new_article.get_effective_commenting_settings()
+        self.assertEquals(comment_settings['state'], 'C')
