@@ -119,7 +119,7 @@ class TestModels(TestCase):
         self.assertEquals(
             new_section1.get_parent_section(), new_section)
 
-    def test_commenting_closed_main(self):
+    def test_commenting_closed_settings_fallbacks(self):
         main = Page.objects.get(slug='main')
         new_language = LanguagePage(
             title="new Language")
@@ -130,5 +130,18 @@ class TestModels(TestCase):
         new_article = ArticlePage(
             title="New article")
         new_section.add_child(instance=new_article)
+        # test fallback to main
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'], 'C')
+        # test overriding settings in language
+        new_language.commenting_settings="D"
+        comment_settings = new_article.get_effective_commenting_settings()
+        self.assertEquals(comment_settings['state'], 'D')
+        # test overriding settings in section
+        new_section.commenting_settings="C"
+        comment_settings = new_article.get_effective_commenting_settings()
+        self.assertEquals(comment_settings['state'], 'C')
+        # test overriding settings in article
+        new_article.commenting_settings="D"
+        comment_settings = new_article.get_effective_commenting_settings()
+        self.assertEquals(comment_settings['state'], 'D')
