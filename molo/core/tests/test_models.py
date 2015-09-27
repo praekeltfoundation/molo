@@ -151,8 +151,13 @@ class TestModels(TestCase):
         self.assertEquals(comment_settings['state'], 'D')
 
     def test_commenting_allowed(self):
+        main = Page.objects.get(slug='main')
+        new_section = SectionPage(
+            title="New Section", slug="new-section")
+        main.add_child(instance=new_section)
         new_article = ArticlePage(
             title="New article", commenting_state="O")
+        new_sectin.add_child(instance=new_article)
         # with commenting open
         self.assertTrue(new_article.allow_commenting)
         # with commenting disabled and no reopen_time given
