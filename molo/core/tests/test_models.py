@@ -165,14 +165,14 @@ class TestModels(TestCase):
         self.assertFalse(new_article.allow_commenting())
         # with commenting closed but past reopen time
         new_article.commenting_state = "C"
-        new_article.commenting_open_time = get_fixed_timezone(-1)
+        new_article.commenting_open_time = get_fixed_timezone(-1).now()
         self.assertTrue(new_article.allow_commenting())
         # with commenting timestamped and within specified time
         new_article.commenting_state = "T"
-        new_article.commenting_open_time = get_fixed_timezone(-1)
-        new_article.commenting_close_time = get_fixed_timezone(1)
+        new_article.commenting_open_time = get_fixed_timezone(-1).now()
+        new_article.commenting_close_time = get_fixed_timezone(1).now()
         self.assertTrue(new_article.allow_commenting())
         # with commenting closed and not yet reopen_time
         new_article.commenting_state = "C"
-        new_article.commenting_open_time = get_fixed_timezone(1)
+        new_article.commenting_open_time = get_fixed_timezone(1).now()
         self.assertFalse(new_article.allow_commenting())
