@@ -157,7 +157,7 @@ class TestModels(TestCase):
         main.add_child(instance=new_section)
         new_article = ArticlePage(
             title="New article", commenting_state="O")
-        new_sectin.add_child(instance=new_article)
+        new_section.add_child(instance=new_article)
         # with commenting open
         self.assertTrue(new_article.allow_commenting)
         # with commenting disabled and no reopen_time given
