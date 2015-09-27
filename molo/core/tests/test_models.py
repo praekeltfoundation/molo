@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime, timedelta
 from django.test import TestCase
+from django.utils.timezone import get_fixed_timezone
 
 from molo.core.models import ArticlePage, SectionPage, LanguagePage, Page
 
@@ -174,4 +175,3 @@ class TestModels(TestCase):
         new_article.commenting_open_time = get_fixed_timezone(1)
         new_article.save()
         self.assertFalse(new_article.allow_commenting)
-        
