@@ -134,17 +134,17 @@ class TestModels(TestCase):
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'], 'C')
         # test overriding settings in language
-        new_language.commenting_settings = "D"
+        new_language.commenting_state = "D"
         new_language.save()
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'], 'D')
         # test overriding settings in section
-        new_section.commenting_settings = "C"
+        new_section.commenting_state = "C"
         new_section.save()
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'], 'C')
         # test overriding settings in article
-        new_article.commenting_settings = "D"
+        new_article.commenting_state = "D"
         new_article.save()
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'], 'D')
