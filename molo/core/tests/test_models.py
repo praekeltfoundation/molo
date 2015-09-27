@@ -148,3 +148,30 @@ class TestModels(TestCase):
         new_article.save()
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'], 'D')
+
+    def test_commenting_allowed(self):
+        new_article = ArticlePage(
+            title="New article", commenting_state="O")
+        # with commenting open
+        self.assertTrue(new_article.allow_commenting)
+        # with commenting disabled and no reopen_time given
+        new_article.commenting_state = "D"
+        new_article.save()
+        self.assertFalse(new_article.allow_commenting)
+        # with commenting closed but past reopen time
+        new_article.commenting_state = "C"
+        new_article.commenting_open_time = get_fixed_timezone(-1)
+        new_article.save()
+        self.assertTrue(new_article.allow_commenting)
+        # with commenting timestamped and within specified time
+        new_article.commenting_state = "T"
+        new_article.commenting_open_time = get_fixed_timezone(-1)
+        new_article.commenting_close_time = get_fixed_timezone(1)
+        new_article.save()
+        self.assertTrue(new_article.allow_commenting)
+        # with commenting closed and not yet reopen_time
+        new_article.commenting_state = "C"
+        new_article.commenting_open_time = get_fixed_timezone(1)
+        new_article.save()
+        self.assertFalse(new_article.allow_commenting)
+        
