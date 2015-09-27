@@ -121,9 +121,12 @@ class TestModels(TestCase):
 
     def test_commenting_closed_main(self):
         main = Page.objects.get(slug='main')
+        new_language = LanguagePage(
+            title="new Language")
+        main.add_child(instance=new_language)
         new_section = SectionPage(
             title="New Section", slug="new-section")
-        main.add_child(instance=new_section)
+        new_language.add_child(instance=new_section)
         new_article = ArticlePage(
             title="New article")
         new_section.add_child(instance=new_article)
