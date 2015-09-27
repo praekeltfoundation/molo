@@ -126,6 +126,6 @@ class TestModels(TestCase):
         main.add_child(instance=new_section)
         new_article = ArticlePage(
             title="New article")
-        main.add_child(instance=new_article)
+        new_section.add_child(instance=new_article)
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'], 'C')
