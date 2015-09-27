@@ -180,5 +180,5 @@ class TestModels(TestCase):
         # with commenting closed and not yet reopen_time
         new_article.commenting_state = "C"
         new_article.commenting_open_time = timezone.make_aware(
-            now - dt.timedelta(1))
+            now + dt.timedelta(1))
         self.assertFalse(new_article.allow_commenting())
