@@ -1,4 +1,5 @@
 import pytest
+import datetime as dt
 from datetime import datetime, timedelta
 from django.test import TestCase
 from django.utils import timezone
@@ -167,17 +168,17 @@ class TestModels(TestCase):
         # with commenting closed but past reopen time
         new_article.commenting_state = "C"
         new_article.commenting_open_time = timezone.make_aware(
-            now - datetime.timedelta(1))
+            now - dt.timedelta(1))
         self.assertTrue(new_article.allow_commenting())
         # with commenting timestamped and within specified time
         new_article.commenting_state = "T"
         new_article.commenting_open_time = timezone.make_aware(
-            now - datetime.timedelta(-1))
+            now - dt.timedelta(-1))
         new_article.commenting_close_time = timezone.make_aware(
-            now - datetime.timedelta(1))
+            now - dt.timedelta(1))
         self.assertTrue(new_article.allow_commenting())
         # with commenting closed and not yet reopen_time
         new_article.commenting_state = "C"
         new_article.commenting_open_time = timezone.make_aware(
-            now - datetime.timedelta(1))
+            now - dt.timedelta(1))
         self.assertFalse(new_article.allow_commenting())
