@@ -17,7 +17,28 @@ from molo.core.blocks import MarkDownBlock
 from molo.core import constants
 
 
-class HomePage(Page):
+class CommentedPageMixin(object):
+    def get_effective_commenting_settings(self):
+        # return commenting settings for the homepage
+        if self.commenting_state:
+            return {
+                'state': self.commenting_state,
+                'open_time': self.commenting_open_time,
+                'close_time': self.commenting_close_time
+            }
+        # use the commenting settings for the parent page
+        parent_page = Page.objects.all().ancestor_of(self).last().specific
+        if (parent_page):
+            return parent_page.get_effective_commenting_settings()
+        # add a default in case nothing is set. We should never get here
+        return {
+            'state': constants.COMMENTING_DISABLED,
+            'open_time': None,
+            'close_time': None
+        }
+
+
+class HomePage(CommentedPageMixin, Page):
     banner = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -45,18 +66,6 @@ class HomePage(Page):
     parent_page_types = ['core.LanguagePage']
     subpage_types = ['core.ArticlePage']
 
-    def get_effective_commenting_settings(self):
-        # return commenting settings for the homepage
-        if self.commenting_state:
-            return {
-                'state': self.commenting_state,
-                'open_time': self.commenting_open_time,
-                'close_time': self.commenting_close_time
-            }
-        # use the commenting settings for the language page
-        language_page = LanguagePage.objects.all().ancestor_of(self).last()
-        return language_page.get_effective_commenting_settings()
-
 HomePage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
@@ -71,7 +80,7 @@ HomePage.content_panels = [
 ]
 
 
-class Main(Page):
+class Main(CommentedPageMixin, Page):
     parent_page_types = []
     subpage_types = ['core.LanguagePage']
 
@@ -94,7 +103,7 @@ Main.content_panels = [
 ]
 
 
-class LanguagePage(Page):
+class LanguagePage(CommentedPageMixin, Page):
     code = models.CharField(
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
@@ -123,22 +132,6 @@ class LanguagePage(Page):
     def footers(self):
         return FooterPage.objects.live().child_of(self)
 
-    def get_effective_commenting_settings(self):
-        # return commenting settings for this language
-        if self.commenting_state:
-            return {
-                'state': self.commenting_state,
-                'open_time': self.commenting_open_time,
-                'close_time': self.commenting_close_time
-            }
-        # use the commenting settings for the Home page
-        main = Main.objects.all().ancestor_of(self).last()
-        return {
-            'state': main.commenting_state,
-            'open_time': main.commenting_open_time,
-            'close_time': main.commenting_close_time
-        }
-
     class Meta:
         verbose_name = _('Language')
 
@@ -155,7 +148,7 @@ LanguagePage.content_panels = [
 ]
 
 
-class SectionPage(Page):
+class SectionPage(CommentedPageMixin, Page):
     description = models.TextField(null=True, blank=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -224,22 +217,6 @@ class SectionPage(Page):
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
 
-    def get_effective_commenting_settings(self):
-        # return commenting settings for this section
-        if self.commenting_state:
-            return {
-                'state': self.commenting_state,
-                'open_time': self.commenting_open_time,
-                'close_time': self.commenting_close_time
-            }
-        # check parent sections for commenting settings
-        parent_section = SectionPage.objects.all().ancestor_of(self).last()
-        if parent_section:
-            return parent_section.get_effective_commenting_settings()
-        # use the commenting settings for the language page
-        language_page = LanguagePage.objects.all().ancestor_of(self).last()
-        return language_page.get_effective_commenting_settings()
-
     class Meta:
         verbose_name = _('Section')
 
@@ -266,7 +243,7 @@ SectionPage.settings_panels = [
 ]
 
 
-class ArticlePage(Page):
+class ArticlePage(CommentedPageMixin, Page):
     subtitle = models.TextField(null=True, blank=True)
     featured_in_latest = models.BooleanField(
         default=False,
@@ -320,17 +297,6 @@ class ArticlePage(Page):
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
-
-    def get_effective_commenting_settings(self):
-        # return commenting settings for this section
-        if self.commenting_state:
-            return {
-                'state': self.commenting_state,
-                'open_time': self.commenting_open_time,
-                'close_time': self.commenting_close_time
-            }
-        # use the commenting settings for the parent section
-        return self.get_parent_section().get_effective_commenting_settings()
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
