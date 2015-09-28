@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from molo.core.models import ArticlePage, SectionPage, LanguagePage, Page
+from molo.core import constants
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
@@ -183,13 +184,13 @@ class TestModels(TestCase):
             now + dt.timedelta(1))
         self.assertFalse(new_article.allow_commenting())
 
-        def test_commenting_enabled(self):
-            article_1 = ArticlePage(
-                title="New article", commenting_state="O")
-            self.assertTrue(article_1.is_commenting_enabled())
-            article_2 = ArticlePage(
-                title="New article", commenting_state="C")
-            self.assertTrue(article_2.is_commenting_enabled())
-            article_3 = ArticlePage(
-                title="New article", commenting_state="D")
-            self.assertFalse(article_3.is_commenting_enabled())
+    def test_commenting_enabled(self):
+        article_1 = ArticlePage(
+            title="New article", commenting_state="O")
+        self.assertTrue(article_1.is_commenting_enabled())
+        article_2 = ArticlePage(
+            title="New article", commenting_state="C")
+        self.assertTrue(article_2.is_commenting_enabled())
+        article_3 = ArticlePage(
+            title="New article", commenting_state="D")
+        self.assertFalse(article_3.is_commenting_enabled())
