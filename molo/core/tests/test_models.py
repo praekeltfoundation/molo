@@ -162,7 +162,7 @@ class TestModels(TestCase):
             title="New Section", slug="new-section")
         main.add_child(instance=new_section)
         new_article = ArticlePage(
-            title="New article", commenting_state=constants.COMMENTING_CLOSED)
+            title="New article", commenting_state=constants.COMMENTING_OPEN)
         new_section.add_child(instance=new_article)
         now = datetime.now()
         # with commenting open
