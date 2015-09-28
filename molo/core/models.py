@@ -51,7 +51,7 @@ class HomePage(Page):
 
     def get_effective_commenting_settings(self):
         # return commenting settings for the homepage
-        if (self.commenting_state and self.commenting_state != ""):
+        if self.commenting_state:
             return {
                 'state': self.commenting_state,
                 'open_time': self.commenting_open_time,
@@ -139,7 +139,7 @@ class LanguagePage(Page):
 
     def get_effective_commenting_settings(self):
         # return commenting settings for this language
-        if (self.commenting_state and self.commenting_state != ""):
+        if self.commenting_state:
             return {
                 'state': self.commenting_state,
                 'open_time': self.commenting_open_time,
@@ -245,7 +245,7 @@ class SectionPage(Page):
 
     def get_effective_commenting_settings(self):
         # return commenting settings for this section
-        if (self.commenting_state and self.commenting_state != ""):
+        if self.commenting_state:
             return {
                 'state': self.commenting_state,
                 'open_time': self.commenting_open_time,
@@ -347,7 +347,7 @@ class ArticlePage(Page):
 
     def get_effective_commenting_settings(self):
         # return commenting settings for this section
-        if (self.commenting_state and self.commenting_state != ""):
+        if self.commenting_state:
             return {
                 'state': self.commenting_state,
                 'open_time': self.commenting_open_time,
