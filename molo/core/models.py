@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -12,9 +14,32 @@ from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 
 from molo.core.blocks import MarkDownBlock
+from molo.core import constants
 
 
-class HomePage(Page):
+class CommentedPageMixin(object):
+    def get_effective_commenting_settings(self):
+        # return commenting settings for the homepage
+        if self.commenting_state:
+            return {
+                'state': self.commenting_state,
+                'open_time': self.commenting_open_time,
+                'close_time': self.commenting_close_time
+            }
+        # use the commenting settings for the parent page
+        parent_page = Page.objects.all().ancestor_of(self).last()
+        if parent_page:
+            parent = parent_page.specific
+            return parent.get_effective_commenting_settings()
+        # add a default in case nothing is set. We should never get here
+        return {
+            'state': constants.COMMENTING_DISABLED,
+            'open_time': None,
+            'close_time': None
+        }
+
+
+class HomePage(CommentedPageMixin, Page):
     banner = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -31,6 +56,14 @@ class HomePage(Page):
         help_text=_('Optional page to which the banner will link to')
     )
 
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
+
     parent_page_types = ['core.LanguagePage']
     subpage_types = ['core.ArticlePage']
 
@@ -38,21 +71,54 @@ HomePage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 
-class Main(Page):
+class Main(CommentedPageMixin, Page):
     parent_page_types = []
     subpage_types = ['core.LanguagePage']
 
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=False,
+        default='C')
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-class LanguagePage(Page):
+Main.content_panels = [
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
+]
+
+
+class LanguagePage(CommentedPageMixin, Page):
     code = models.CharField(
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
 
     parent_page_types = ['core.Main']
     subpage_types = ['core.HomePage', 'core.SectionPage', 'core.FooterPage']
+
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def homepages(self):
         return HomePage.objects.live().child_of(self)
@@ -73,10 +139,17 @@ class LanguagePage(Page):
 LanguagePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('code'),
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 
-class SectionPage(Page):
+class SectionPage(CommentedPageMixin, Page):
     description = models.TextField(null=True, blank=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -96,6 +169,14 @@ class SectionPage(Page):
         help_text=_(
             "Styling options that can be applied to this section "
             "and all its descendants"))
+
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def articles(self):
         return ArticlePage.objects.live().child_of(self)
@@ -144,6 +225,13 @@ SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
     ImageChooserPanel('image'),
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 SectionPage.settings_panels = [
@@ -156,7 +244,7 @@ SectionPage.settings_panels = [
 ]
 
 
-class ArticlePage(Page):
+class ArticlePage(CommentedPageMixin, Page):
     subtitle = models.TextField(null=True, blank=True)
     featured_in_latest = models.BooleanField(
         default=False,
@@ -191,6 +279,14 @@ class ArticlePage(Page):
         index.SearchField('body'),
     )
 
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
+
     featured_promote_panels = [
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
@@ -203,6 +299,36 @@ class ArticlePage(Page):
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
 
+    def allow_commenting(self):
+        commenting_settings = self.get_effective_commenting_settings()
+        if (commenting_settings['state'] != constants.COMMENTING_OPEN):
+            now = timezone.now()
+            if (commenting_settings['state'] ==
+                    constants.COMMENTING_TIMESTAMPED):
+                # Allow commenting over the given time period
+                open_time = commenting_settings['open_time']
+                close_time = commenting_settings['close_time']
+                return open_time < now < close_time
+            if (commenting_settings['state'] == constants.COMMENTING_CLOSED or
+                    commenting_settings['state'] ==
+                    constants.COMMENTING_DISABLED):
+                # Allow automated reopening of commenting at a specified time
+                reopen_time = commenting_settings['open_time']
+                if (reopen_time):
+                    if reopen_time < now:
+                        self.commenting_state = constants.COMMENTING_OPEN
+                        self.save()
+                        return True
+            return False
+        return True
+
+    def is_commenting_enabled(self):
+        commenting_settings = self.get_effective_commenting_settings()
+        if (commenting_settings['state'] == constants.COMMENTING_DISABLED
+                or commenting_settings['state'] is None):
+            return False
+        return True
+
     class Meta:
         verbose_name = _('Article')
 
@@ -211,6 +337,13 @@ ArticlePage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
     StreamFieldPanel('body'),
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 ArticlePage.promote_panels = [
