@@ -14,6 +14,7 @@ from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 
 from molo.core.blocks import MarkDownBlock
+from molo.core import constants
 
 
 class HomePage(Page):
@@ -33,16 +34,11 @@ class HomePage(Page):
         help_text=_('Optional page to which the banner will link to')
     )
 
-    COMMENTING_STATE_CHOICES = (
-        ('O', 'Open'),
-        ('C', 'Closed'),
-        ('D', 'Disabled'),
-        ('T', 'Timestamped'),
-    )
-    commenting_state = models.CharField(max_length=1,
-                                        choices=COMMENTING_STATE_CHOICES,
-                                        blank=True,
-                                        null=True)
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -79,16 +75,11 @@ class Main(Page):
     parent_page_types = []
     subpage_types = ['core.LanguagePage']
 
-    COMMENTING_STATE_CHOICES = (
-        ('O', 'Open'),
-        ('C', 'Closed'),
-        ('D', 'Disabled'),
-        ('T', 'Timestamped'),
-    )
-    commenting_state = models.CharField(max_length=1,
-                                        choices=COMMENTING_STATE_CHOICES,
-                                        blank=False,
-                                        default='C')
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=False,
+        default='C')
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -111,16 +102,11 @@ class LanguagePage(Page):
     parent_page_types = ['core.Main']
     subpage_types = ['core.HomePage', 'core.SectionPage', 'core.FooterPage']
 
-    COMMENTING_STATE_CHOICES = (
-        ('O', 'Open'),
-        ('C', 'Closed'),
-        ('D', 'Disabled'),
-        ('T', 'Timestamped'),
-    )
-    commenting_state = models.CharField(max_length=1,
-                                        choices=COMMENTING_STATE_CHOICES,
-                                        blank=True,
-                                        null=True)
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -190,16 +176,11 @@ class SectionPage(Page):
             "Styling options that can be applied to this section "
             "and all its descendants"))
 
-    COMMENTING_STATE_CHOICES = (
-        ('O', 'Open'),
-        ('C', 'Closed'),
-        ('D', 'Disabled'),
-        ('T', 'Timestamped'),
-    )
-    commenting_state = models.CharField(max_length=1,
-                                        choices=COMMENTING_STATE_CHOICES,
-                                        blank=True,
-                                        null=True)
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -320,16 +301,11 @@ class ArticlePage(Page):
         index.SearchField('body'),
     )
 
-    COMMENTING_STATE_CHOICES = (
-        ('O', 'Open'),
-        ('C', 'Closed'),
-        ('D', 'Disabled'),
-        ('T', 'Timestamped'),
-    )
-    commenting_state = models.CharField(max_length=1,
-                                        choices=COMMENTING_STATE_CHOICES,
-                                        blank=True,
-                                        null=True)
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
@@ -358,20 +334,22 @@ class ArticlePage(Page):
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
-        if (commenting_settings['state'] != 'O'):  # if commenting is not open
+        if (commenting_settings['state'] != constants.COMMENTING_OPEN):
             now = timezone.now()
-            if (commenting_settings['state'] == 'T'):
+            if (commenting_settings['state'] ==
+                    constants.COMMENTING_TIMESTAMPED):
                 # Allow commenting over the given time period
                 open_time = commenting_settings['open_time']
                 close_time = commenting_settings['close_time']
                 return open_time < now < close_time
-            if (commenting_settings['state'] == 'C' or
-                    commenting_settings['state'] == 'D'):
+            if (commenting_settings['state'] == constants.COMMENTING_CLOSED or
+                    commenting_settings['state'] ==
+                    constants.COMMENTING_DISABLED):
                 # Allow automated reopening of commenting at a specified time
                 reopen_time = commenting_settings['open_time']
                 if (reopen_time):
                     if reopen_time < now:
-                        self.commenting_state = 'O'
+                        self.commenting_state = constants.COMMENTING_OPEN
                         self.save()
                         return True
             return False
