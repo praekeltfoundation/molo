@@ -27,9 +27,10 @@ class CommentedPageMixin(object):
                 'close_time': self.commenting_close_time
             }
         # use the commenting settings for the parent page
-        parent_page = Page.objects.all().ancestor_of(self).last().specific
+        parent_page = Page.objects.all().ancestor_of(self).last()
         if (parent_page):
-            return parent_page.get_effective_commenting_settings()
+            parent = parent_page.specific
+            return parent.get_effective_commenting_settings()
         # add a default in case nothing is set. We should never get here
         return {
             'state': constants.COMMENTING_DISABLED,
