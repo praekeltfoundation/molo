@@ -182,3 +182,14 @@ class TestModels(TestCase):
         new_article.commenting_open_time = timezone.make_aware(
             now + dt.timedelta(1))
         self.assertFalse(new_article.allow_commenting())
+
+        def test_commenting_enabled(self):
+            article_1 = ArticlePage(
+                title="New article", commenting_state="O")
+            self.assertTrue(article_1.is_commenting_enabled())
+            article_2 = ArticlePage(
+                title="New article", commenting_state="C")
+            self.assertTrue(article_2.is_commenting_enabled())
+            article_3 = ArticlePage(
+                title="New article", commenting_state="D")
+            self.assertFalse(article_3.is_commenting_enabled())
