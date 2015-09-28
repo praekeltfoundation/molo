@@ -28,7 +28,7 @@ class CommentedPageMixin(object):
             }
         # use the commenting settings for the parent page
         parent_page = Page.objects.all().ancestor_of(self).last()
-        if (parent_page):
+        if parent_page:
             parent = parent_page.specific
             return parent.get_effective_commenting_settings()
         # add a default in case nothing is set. We should never get here
