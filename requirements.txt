@@ -1,6 +1,6 @@
 Django>=1.8,<1.9
 wagtail==1.0
-cookiecutter
+cookiecutter==1.0.0
 psycopg2cffi
 raven==5.0.0
 markdown
