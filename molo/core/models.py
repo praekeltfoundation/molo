@@ -128,7 +128,7 @@ class LanguagePage(CommentedPageMixin, Page):
 
     def latest_articles(self):
         return ArticlePage.objects.live().descendant_of(self).filter(
-            featured_in_latest=True).order_by('-first_published_at')
+            featured_in_latest=True).order_by('-latest_revision_created_at')
 
     def footers(self):
         return FooterPage.objects.live().child_of(self)
