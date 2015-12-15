@@ -37,6 +37,12 @@ help Praekelt Foundation and partners to deliver on project scope::
 Open the sample site in your browser at http://localhost:8000/ and the CMS
 at http://localhost:8000/admin/.
 
+Set the CAS server
+--------------------------
+In order to point the Central Authentication Service at the correct server,
+create a ``local.py`` file in ``myapp/myapp/settings/`` and insert ``CAS_SERVER_URL = '<SERVER URL>'``
+
+
 Scaffolding a site in an existing repository
 --------------------------------------------
 

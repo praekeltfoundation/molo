@@ -14,7 +14,9 @@ from wagtail.wagtailcore import urls as wagtail_urls
 urlpatterns = patterns(
     '',
     url(r'^django-admin/', include(admin.site.urls)),
-
+    url(r'^admin/login/', 'django_cas_ng.views.login'),
+    url(r'^admin/logout/', 'django_cas_ng.views.logout'),
+    url(r'^admin/callback/', 'django_cas_ng.views.callback'),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^search/', include(wagtailsearch_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
