@@ -62,6 +62,9 @@ def unpack_templates(**kwargs):
               help=('Which libraries to include and add to INSTALLED_APPS. '
                     'Expected format (<python-module-name> <regex-for-urls>)'),
               nargs=2, multiple=True)
+@click.option('--cas/--no-cas',
+              help=('Add a Central Authentication Service'),
+              default=False)
 def scaffold(**kwargs):
     from molo.core.cookiecutter import cookiecutter
     from django.utils.crypto import get_random_string
