@@ -81,18 +81,7 @@ MIDDLEWARE_CLASSES = (
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
-    '{{cookiecutter.app_name}}.middleware.MoloCASMiddleware',
-    '{{cookiecutter.app_name}}.middleware.Custom403Middleware',
 )
-
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    '{{cookiecutter.app_name}}.backends.MoloCASBackend',
-)
-
-CAS_SERVER_URL = ''
-CAS_ADMIN_PREFIX = '/admin/'
-LOGIN_URL = '/accounts/login/'
 
 ROOT_URLCONF = '{{cookiecutter.app_name}}.urls'
 WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
@@ -182,7 +171,7 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 
 
 # Wagtail settings
-
+LOGIN_URL = 'wagtailadmin_login'
 LOGIN_REDIRECT_URL = 'wagtailadmin_home'
 
 WAGTAIL_SITE_NAME = "base"

@@ -41,6 +41,21 @@ COMPRESS_OFFLINE = True
 #     }
 # }
 
+# Setup for CAS
+MIDDLEWARE_CLASSES += (
+    '{{cookiecutter.app_name}}.middleware.MoloCASMiddleware',
+    '{{cookiecutter.app_name}}.middleware.Custom403Middleware',
+)
+
+
+AUTHENTICATION_BACKENDS += (
+    'django.contrib.auth.backends.ModelBackend',
+    '{{cookiecutter.app_name}}.backends.MoloCASBackend',
+)
+
+CAS_SERVER_URL = ''
+CAS_ADMIN_PREFIX = '/admin/'
+LOGIN_URL = '/accounts/login/'
 
 try:
     from .local import *
