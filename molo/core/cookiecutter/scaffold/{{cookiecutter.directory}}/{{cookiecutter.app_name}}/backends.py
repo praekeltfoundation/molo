@@ -7,10 +7,7 @@ class MoloCASBackend(CASBackend):
         user = super(
             MoloCASBackend, self).authenticate(ticket, service, request)
         if user is None:
-            print 'ticket is not valid'
             return None
-
-        print request.session['attributes']
 
         if 'attributes' in request.session \
             and 'has_perm' in request.session['attributes']\
