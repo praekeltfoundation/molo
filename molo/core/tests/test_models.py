@@ -213,7 +213,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'action-publish': 'Publish'
         }
         self.client.post(
-            reverse('wagtailadmin_pages_create',
+            reverse('wagtailadmin_pages:add',
                     args=('core', 'articlepage', self.yourmind.id, )),
             post_data)
         post_data.update({
@@ -222,7 +222,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'tags': 'peace, war',
         })
         self.client.post(
-            reverse('wagtailadmin_pages_create',
+            reverse('wagtailadmin_pages:add',
                     args=('core', 'articlepage', self.yourmind.id, )),
             post_data)
 
