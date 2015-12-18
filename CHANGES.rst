@@ -1,5 +1,9 @@
 CHANGE LOG
 ==========
+2.5.2
+-----
+- adding tags to ArticlePage model
+
 2.5.1
 -----
 - pinned cookiecutter to version 1.0.0
