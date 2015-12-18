@@ -73,8 +73,8 @@ class MoloTestCaseMixin(object):
             sections.append(section)
         return sections
 
-    def mk_pages(self, parent, count=2, **kwargs):
-        pages = []
+    def mk_articles(self, parent, count=2, **kwargs):
+        articles = []
 
         for i in range(count):
             data = {}
@@ -89,8 +89,14 @@ class MoloTestCaseMixin(object):
             data.update({
                 'slug': slugify(data['title'])
             })
-            page = ArticlePage(**data)
-            parent.add_child(instance=page)
-            page.save_revision().publish()
-            pages.append(page)
-        return pages
+            article = ArticlePage(**data)
+            parent.add_child(instance=article)
+            article.save_revision().publish()
+            articles.append(article)
+        return articles
+
+    def mk_section(self, parent, **kwargs):
+        return self.mk_sections(parent, count=1, **kwargs)[0]
+
+    def mk_article(self, parent, **kwargs):
+        return self.mk_articles(parent, count=1, **kwargs)[0]

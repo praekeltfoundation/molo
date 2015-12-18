@@ -10,13 +10,13 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
-        [self.yourmind] = self.mk_sections(
-            self.english, count=1, title='Your mind')
-        [self.yourmind_sub] = self.mk_sections(
-            self.yourmind, count=1, title='Your mind subsection')
+        self.yourmind = self.mk_section(
+            self.english, title='Your mind')
+        self.yourmind_sub = self.mk_section(
+            self.yourmind, title='Your mind subsection')
 
     def test_breadcrumbs(self):
-        self.mk_pages(self.yourmind_sub, count=10)
+        self.mk_articles(self.yourmind_sub, count=10)
 
         response = self.client.get('/')
         self.assertEquals(response.status_code, 200)
@@ -34,7 +34,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<span class="active">Test page 1</span>')
 
     def test_section_listing(self):
-        self.mk_pages(self.yourmind_sub, count=10)
+        self.mk_articles(self.yourmind_sub, count=10)
 
         self.yourmind.extra_style_hints = 'yellow'
         self.yourmind.save_revision().publish()
@@ -52,7 +52,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '<div class="articles nav yellow">')
 
     def test_latest_listing(self):
-        self.mk_pages(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
 
         response = self.client.get('/')
         self.assertContains(response, 'Latest')
@@ -66,7 +66,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             'Test page 9</a>')
 
     def test_article_page(self):
-        self.mk_pages(self.yourmind_sub, count=10)
+        self.mk_articles(self.yourmind_sub, count=10)
 
         response = self.client.get(
             '/english/your-mind/your-mind-subsection/test-page-1/')
@@ -76,7 +76,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Sample page content for 1')
 
     def test_markdown_in_article_page(self):
-        self.mk_pages(
+        self.mk_articles(
             self.yourmind_sub, count=10,
             body=json.dumps([{
                 'type': 'paragraph',
@@ -90,7 +90,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<strong>Lorem ipsum</strong> dolor <em>sit amet</em>')
 
     def test_featured_homepage_listing(self):
-        self.mk_pages(self.yourmind_sub, count=1, featured_in_homepage=True)
+        self.mk_article(self.yourmind_sub, featured_in_homepage=True)
         response = self.client.get('/')
         self.assertContains(
             response,
