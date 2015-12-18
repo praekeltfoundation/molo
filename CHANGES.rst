@@ -1,8 +1,9 @@
 CHANGE LOG
 ==========
-2.5.2
+2.x
 -----
 - adding tags to ArticlePage model
+- upgraded wagtail to v1.2
 
 2.5.1
 -----
