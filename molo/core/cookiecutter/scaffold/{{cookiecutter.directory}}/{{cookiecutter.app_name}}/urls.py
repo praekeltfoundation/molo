@@ -13,23 +13,23 @@ from wagtail.wagtailcore import urls as wagtail_urls
 # implement CAS URLs in a production setting
 if settings.ENABLE_SSO:
     urlpatterns = patterns(
-            '',
-            url(r'^django-admin/', include(admin.site.urls)),
-            url(r'^admin/login/', 'django_cas_ng.views.login'),
-            url(r'^admin/logout/', 'django_cas_ng.views.logout'),
-            url(r'^admin/callback/', 'django_cas_ng.views.callback'),
-            url(r'^admin/', include(wagtailadmin_urls)),
-            url(r'^search/', include(wagtailsearch_urls)),
-            url(r'^documents/', include(wagtaildocs_urls)),
-    {% for app_name, regex in cookiecutter.include %}
-            url(r'{{regex}}',
-                include('{{app_name}}.urls',
-                        namespace='{{app_name}}',
+        '',
+        url(r'^django-admin/', include(admin.site.urls)),
+        url(r'^admin/login/', 'django_cas_ng.views.login'),
+        url(r'^admin/logout/', 'django_cas_ng.views.logout'),
+        url(r'^admin/callback/', 'django_cas_ng.views.callback'),
+        url(r'^admin/', include(wagtailadmin_urls)),
+        url(r'^search/', include(wagtailsearch_urls)),
+        url(r'^documents/', include(wagtaildocs_urls)),
+{% for app_name, regex in cookiecutter.include %}
+        url(r'{{regex}}',
+            include('{{app_name}}.urls',
+                    namespace='{{app_name}}',
                         app_name='{{app_name}}')),
-    {% endfor %}
-            url(r'', include('molo.core.urls')),
-            url(r'', include(wagtail_urls)),
-        )
+{% endfor %}
+        url(r'', include('molo.core.urls')),
+        url(r'', include(wagtail_urls)),
+    )
 else:
     urlpatterns = patterns(
         '',
