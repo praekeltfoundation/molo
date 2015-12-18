@@ -224,7 +224,7 @@ class TestModels(TestCase):
             'action-publish': 'Publish'
         }
         self.client.post(
-            reverse('wagtailadmin_pages_create',
+            reverse('wagtailadmin_pages:add',
                     args=('core', 'articlepage', section.id, )),
             post_data)
         post_data.update({
@@ -233,7 +233,7 @@ class TestModels(TestCase):
             'tags': 'peace, war',
         })
         self.client.post(
-            reverse('wagtailadmin_pages_create',
+            reverse('wagtailadmin_pages:add',
                     args=('core', 'articlepage', section.id, )),
             post_data)
 
