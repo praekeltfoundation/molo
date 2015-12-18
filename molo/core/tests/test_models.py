@@ -3,6 +3,8 @@ import datetime as dt
 from datetime import datetime, timedelta
 from django.test import TestCase
 from django.utils import timezone
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
 from molo.core.models import ArticlePage, SectionPage, LanguagePage, Page
 from molo.core import constants
@@ -199,3 +201,45 @@ class TestModels(TestCase):
             title="New article",
             commenting_state=constants.COMMENTING_DISABLED)
         self.assertFalse(article_3.is_commenting_enabled())
+
+    def test_tags(self):
+        main = Page.objects.get(slug='main')
+        section = SectionPage(
+            title="Section", slug="section")
+        main.add_child(instance=section)
+
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        post_data = {
+            'title': 'this is a test article',
+            'slug': 'this-is-a-test-article',
+            'body-count': 1,
+            'body-0-value': 'Hello',
+            'body-0-deleted': False,
+            'body-0-order': 1,
+            'body-0-type': 'paragraph',
+            'tags': 'love, war',
+            'action-publish': 'Publish'
+        }
+        self.client.post(
+            reverse('wagtailadmin_pages_create',
+                    args=('core', 'articlepage', section.id, )),
+            post_data)
+        post_data.update({
+            'title': 'this is a test article2',
+            'slug': 'this-is-a-test-article-2',
+            'tags': 'peace, war',
+        })
+        self.client.post(
+            reverse('wagtailadmin_pages_create',
+                    args=('core', 'articlepage', section.id, )),
+            post_data)
+
+        self.assertEquals(
+            ArticlePage.objects.filter(tags__name='war').count(), 2)
+        self.assertEquals(
+            ArticlePage.objects.filter(tags__name='love').count(), 1)
+        self.assertEquals(
+            ArticlePage.objects.filter(tags__name='peace').count(), 1)
