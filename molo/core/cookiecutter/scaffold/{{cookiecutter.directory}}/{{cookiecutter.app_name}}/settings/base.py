@@ -194,3 +194,5 @@ WAGTAIL_SITE_NAME = "base"
 # Whether to use face/feature detection to improve image
 # cropping - requires OpenCV
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
+
+ENABLE_SSO = False

@@ -42,15 +42,17 @@ COMPRESS_OFFLINE = True
 # }
 
 # Setup for CAS
+ENABLE_SSO = True
+
 MIDDLEWARE_CLASSES += (
-    '{{cookiecutter.app_name}}.middleware.MoloCASMiddleware',
-    '{{cookiecutter.app_name}}.middleware.Custom403Middleware',
+    'molo.core.middleware.MoloCASMiddleware',
+    'molo.core.middleware.Custom403Middleware',
 )
 
 
-AUTHENTICATION_BACKENDS += (
+AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    '{{cookiecutter.app_name}}.backends.MoloCASBackend',
+    'molo.core.backends.MoloCASBackend',
 )
 
 CAS_SERVER_URL = ''
