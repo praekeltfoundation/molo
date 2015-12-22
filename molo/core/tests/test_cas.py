@@ -78,3 +78,25 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response, 'You do not have permssion to access this site.',
             status_code=403)
+
+    @patch('cas.CASClientV2.verify_ticket')
+    def test_succesful_logout(self, mock_verify):
+        service = ('http%3A%2F%2Ftestserver'
+                   '%2Fadmin%2Flogin%2F%3Fnext%3D%252Fadmin%252F')
+
+        mock_verify.return_value = (
+            'test@example.com',
+            {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True'},
+            None)
+
+        # login a user
+        response = self.client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+
+        # logout
+        response = self.client.get('/admin/logout/', follow=True)
+        self.assertEquals(
+            response.request.get('QUERY_STRING'),
+            'service=http%3A%2F%2Ftestserver%2F')
