@@ -1,5 +1,10 @@
 CHANGE LOG
 ==========
+2.x
+-----
+- adding tags to ArticlePage model
+- upgraded wagtail to v1.2
+
 2.5.1
 -----
 - pinned cookiecutter to version 1.0.0
