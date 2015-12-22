@@ -4,12 +4,12 @@ python:
   - "2.7"
   - "pypy"
 env:
-  - COVERAGE=true TEST_RUNNER="py.test --cov molo"
+  - COVERAGE=true TEST_RUNNER="py.test"
   - COVERAGE=false TEST_RUNNER="py.test"
 matrix:
   exclude:
     - python: "pypy"
-      env: COVERAGE=true TEST_RUNNER="py.test --cov molo"
+      env: COVERAGE=true TEST_RUNNER="py.test"
     - python: "2.7"
       env: COVERAGE=false TEST_RUNNER="py.test"
 cache:
