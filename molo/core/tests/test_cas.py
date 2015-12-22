@@ -1,14 +1,8 @@
 from mock import patch
 from django.test import TestCase
-from django.test.utils import override_settings
 from molo.core.tests.base import MoloTestCaseMixin
 
 
-@override_settings(
-    CAS_SERVER_URL='http://testcasserver',
-    CAS_ADMIN_PREFIX='/admin/',
-    LOGIN_URL='/accounts/login/',
-    CAS_VERSION='3')
 class CASTestCase(TestCase, MoloTestCaseMixin):
 
     def test_login_redirect(self):
@@ -34,7 +28,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
 
-        self.assertEquals(response.status_code, 200)
         self.assertContains(response, 'Welcome to the base Wagtail CMS')
 
     @patch('cas.CASClientV2.verify_ticket')
@@ -52,7 +45,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
 
-        self.assertEquals(response.status_code, 403)
         self.assertContains(
             response, 'You do not have permssion to access this site.',
             status_code=403)
@@ -71,7 +63,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
-        print response
+
         self.assertContains(
             response, 'You do not have permssion to access this site.',
             status_code=403)
