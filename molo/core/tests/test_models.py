@@ -6,85 +6,15 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from molo.core.models import ArticlePage, SectionPage, LanguagePage, Page
+from molo.core.models import ArticlePage
 from molo.core import constants
+from molo.core.tests.base import MoloTestCaseMixin
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 
 @pytest.mark.django_db
-class TestModels(TestCase):
-    fixtures = ['molo/core/tests/fixtures/test.json']
-
-    def test_article_order(self):
-        now = datetime.now()
-        article1 = ArticlePage.objects.get(pk=14)
-        article1.first_published_at = now
-        article1.save()
-
-        article2 = ArticlePage.objects.get(pk=15)
-        article2.first_published_at = now + timedelta(hours=1)
-        article2.save()
-
-        # most recent first
-        section = SectionPage.objects.get(slug='your-mind-subsection')
-        self.assertEquals(
-            section.articles()[0].title, article1.title)
-
-        # swap published date
-        article1.first_published_at = now + timedelta(hours=4)
-        article1.save()
-
-        self.assertEquals(
-            section.articles()[0].title, article1.title)
-
-    def test_latest(self):
-        lang = LanguagePage.objects.get(code='en')
-        self.assertEquals(lang.latest_articles().count(), 4)
-
-    def test_featured_homepage(self):
-        section = SectionPage.objects.get(slug='your-mind')
-        self.assertEquals(section.featured_articles_in_homepage().count(), 2)
-
-    def test_latest_homepage(self):
-        section = SectionPage.objects.get(slug='your-mind')
-        self.assertEquals(section.latest_articles_in_homepage().count(), 2)
-
-    def test_extra_css(self):
-        main = Page.objects.get(slug='main')
-
-        # extra_css set on current section
-        new_section = SectionPage(
-            title="New Section", slug="new-section",
-            extra_style_hints='primary')
-        main.add_child(instance=new_section)
-        self.assertEquals(
-            new_section.get_effective_extra_style_hints(), 'primary')
-
-        # extra_css not set to use inherited value
-        new_section2 = SectionPage(title="New Section 2", slug="new-section-2")
-        new_section.add_child(instance=new_section2)
-        self.assertEquals(
-            new_section2.get_effective_extra_style_hints(), 'primary')
-
-        # extra_css not set on either so should be blank
-        new_section3 = SectionPage(title="New Section 3", slug="new-section-3")
-        main.add_child(instance=new_section3)
-        self.assertEquals(new_section3.get_effective_extra_style_hints(), '')
-
-        # extra_css not set on child so should use parent value
-        new_section4 = SectionPage(title="New Section 4", slug="new-section-4")
-        new_section2.add_child(instance=new_section4)
-        self.assertEquals(
-            new_section4.get_effective_extra_style_hints(), 'primary')
-
-        # extra_css is set on child so should use child value
-        new_section5 = SectionPage(
-            title="New Section 5", slug="new-section-5",
-            extra_style_hints='secondary')
-        new_section.add_child(instance=new_section5)
-        self.assertEquals(
-            new_section5.get_effective_extra_style_hints(), 'secondary')
+class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         # Create an image for running tests on
@@ -93,55 +23,121 @@ class TestModels(TestCase):
             file=get_test_image_file(),
         )
 
+        self.mk_main()
+        self.yourmind = self.mk_section(
+            self.english, title='Your mind')
+        self.yourmind_sub = self.mk_section(
+            self.yourmind, title='Your mind subsection')
+
+    def test_article_order(self):
+        now = datetime.now()
+        article1 = self.mk_article(
+            self.yourmind_sub, first_published_at=now)
+
+        self.mk_article(
+            self.yourmind_sub, first_published_at=now + timedelta(hours=1))
+
+        # most recent first
+        self.assertEquals(
+            self.yourmind_sub.articles()[0].title, article1.title)
+
+        # swap published date
+        article1.first_published_at = now + timedelta(hours=4)
+        article1.save_revision().publish()
+
+        self.assertEquals(
+            self.yourmind_sub.articles()[0].title, article1.title)
+
+    def test_latest(self):
+        self.mk_articles(self.yourmind_sub, count=4, featured_in_latest=True)
+        self.mk_articles(self.yourmind_sub, count=10)
+        self.assertEquals(self.english.latest_articles().count(), 4)
+
+    def test_featured_homepage(self):
+        self.mk_articles(self.yourmind_sub, count=2, featured_in_homepage=True)
+        self.mk_articles(self.yourmind_sub, count=10)
+        self.assertEquals(
+            self.yourmind.featured_articles_in_homepage().count(), 2)
+
+    def test_latest_homepage(self):
+        self.mk_articles(self.yourmind_sub, count=2, featured_in_latest=True)
+        self.mk_articles(self.yourmind_sub, count=10)
+
+        self.assertEquals(
+            self.yourmind.latest_articles_in_homepage().count(), 2)
+
+    def test_extra_css(self):
+        # extra_css set on current section
+        new_section = self.mk_section(
+            self.english,
+            title="New Section",
+            extra_style_hints='primary')
+        self.assertEquals(
+            new_section.get_effective_extra_style_hints(), 'primary')
+
+        # extra_css not set to use inherited value
+        new_section2 = self.mk_section(new_section, title="New Section 2")
+        self.assertEquals(
+            new_section2.get_effective_extra_style_hints(), 'primary')
+
+        # extra_css not set on either so should be blank
+        new_section3 = self.mk_section(
+            self.english, title="New Section 3", slug="new-section-3")
+        self.assertEquals(new_section3.get_effective_extra_style_hints(), '')
+
+        # extra_css not set on child so should use parent value
+        new_section4 = self.mk_section(
+            new_section2, title="New Section 4", slug="new-section-4")
+        self.assertEquals(
+            new_section4.get_effective_extra_style_hints(), 'primary')
+
+        # extra_css is set on child so should use child value
+        new_section5 = self.mk_section(
+            new_section,
+            title="New Section 5", slug="new-section-5",
+            extra_style_hints='secondary')
+        self.assertEquals(
+            new_section5.get_effective_extra_style_hints(), 'secondary')
+
     def test_image(self):
-        main = Page.objects.get(slug='main')
-        new_section = SectionPage(
+        new_section = self.mk_section(
+            self.english,
             title="New Section", slug="new-section",
             image=self.image)
-        main.add_child(instance=new_section)
         self.assertEquals(
             new_section.get_effective_image(), self.image)
 
         # image not set to use inherited value
-        new_section2 = SectionPage(title="New Section 2", slug="new-section-2")
-        new_section.add_child(instance=new_section2)
+        new_section2 = self.mk_section(
+            new_section, title="New Section 2", slug="new-section-2")
         self.assertEquals(
             new_section2.get_effective_image(), new_section.image)
 
         # image not set to use inherited value
-        new_section3 = SectionPage(title="New Section 3", slug="new-section-3")
-        new_section2.add_child(instance=new_section3)
+        new_section3 = self.mk_section(
+            new_section2, title="New Section 3", slug="new-section-3")
         self.assertEquals(
             new_section3.get_effective_image(), new_section.image)
 
     def test_parent_section(self):
-        main = Page.objects.get(slug='main')
-        new_section = SectionPage(
-            title="New Section", slug="new-section")
-        main.add_child(instance=new_section)
-        new_section1 = SectionPage(title="New Section 1", slug="new-section-1")
-        new_section.add_child(instance=new_section1)
+        new_section = self.mk_section(
+            self.english, title="New Section", slug="new-section")
+        new_section1 = self.mk_section(
+            new_section, title="New Section 1", slug="new-section-1")
         self.assertEquals(
             new_section1.get_parent_section(), new_section)
 
     def test_commenting_closed_settings_fallbacks(self):
-        main = Page.objects.get(slug='main')
-        new_language = LanguagePage(
-            title="new Language")
-        main.add_child(instance=new_language)
-        new_section = SectionPage(
-            title="New Section", slug="new-section")
-        new_language.add_child(instance=new_section)
-        new_article = ArticlePage(
-            title="New article")
-        new_section.add_child(instance=new_article)
+        new_section = self.mk_section(
+            self.english, title="New Section", slug="new-section")
+        new_article = self.mk_article(new_section, title="New article")
         # test fallback to main
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'],
                           constants.COMMENTING_CLOSED)
         # test overriding settings in language
-        new_language.commenting_state = constants.COMMENTING_DISABLED
-        new_language.save()
+        self.english.commenting_state = constants.COMMENTING_DISABLED
+        self.english.save_revision().publish()
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'],
                           constants.COMMENTING_DISABLED)
@@ -153,19 +149,17 @@ class TestModels(TestCase):
                           constants.COMMENTING_CLOSED)
         # test overriding settings in article
         new_article.commenting_state = constants.COMMENTING_DISABLED
-        new_article.save()
+        new_article.save_revision().publish()
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'],
                           constants.COMMENTING_DISABLED)
 
     def test_commenting_allowed(self):
-        main = Page.objects.get(slug='main')
-        new_section = SectionPage(
-            title="New Section", slug="new-section")
-        main.add_child(instance=new_section)
-        new_article = ArticlePage(
-            title="New article", commenting_state=constants.COMMENTING_OPEN)
-        new_section.add_child(instance=new_article)
+        new_section = self.mk_section(
+            self.english, title="New Section", slug="new-section")
+        new_article = self.mk_article(
+            new_section, title="New article",
+            commenting_state=constants.COMMENTING_OPEN)
         now = datetime.now()
         # with commenting open
         self.assertTrue(new_article.allow_commenting())
@@ -203,11 +197,6 @@ class TestModels(TestCase):
         self.assertFalse(article_3.is_commenting_enabled())
 
     def test_tags(self):
-        main = Page.objects.get(slug='main')
-        section = SectionPage(
-            title="Section", slug="section")
-        main.add_child(instance=section)
-
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
@@ -224,8 +213,8 @@ class TestModels(TestCase):
             'action-publish': 'Publish'
         }
         self.client.post(
-            reverse('wagtailadmin_pages_create',
-                    args=('core', 'articlepage', section.id, )),
+            reverse('wagtailadmin_pages:add',
+                    args=('core', 'articlepage', self.yourmind.id, )),
             post_data)
         post_data.update({
             'title': 'this is a test article2',
@@ -233,8 +222,8 @@ class TestModels(TestCase):
             'tags': 'peace, war',
         })
         self.client.post(
-            reverse('wagtailadmin_pages_create',
-                    args=('core', 'articlepage', section.id, )),
+            reverse('wagtailadmin_pages:add',
+                    args=('core', 'articlepage', self.yourmind.id, )),
             post_data)
 
         self.assertEquals(
