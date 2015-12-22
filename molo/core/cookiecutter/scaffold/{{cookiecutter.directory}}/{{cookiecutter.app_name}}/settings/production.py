@@ -58,6 +58,7 @@ AUTHENTICATION_BACKENDS = (
 CAS_SERVER_URL = ''
 CAS_ADMIN_PREFIX = '/admin/'
 LOGIN_URL = '/accounts/login/'
+CAS_VERSION = '3'
 
 try:
     from .local import *
