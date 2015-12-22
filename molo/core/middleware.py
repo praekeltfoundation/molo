@@ -1,6 +1,7 @@
 
 from django.http import HttpResponseForbidden
 from django.views.defaults import permission_denied
+
 from django_cas_ng.middleware import CASMiddleware
 from django_cas_ng.views import login as cas_login, logout as cas_logout
 

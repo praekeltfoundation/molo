@@ -1,5 +1,6 @@
 from mock import patch
 from django.test import TestCase
+from django.contrib.auth.models import User
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -64,6 +65,16 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
 
+        self.assertContains(
+            response, 'You do not have permssion to access this site.',
+            status_code=403)
+
+    def test_normal_user_login_has_no_permissions(self):
+        User.objects.create_user(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        response = self.client.get('/admin/')
         self.assertContains(
             response, 'You do not have permssion to access this site.',
             status_code=403)
