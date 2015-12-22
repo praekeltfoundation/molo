@@ -16,26 +16,22 @@ if settings.ENABLE_SSO:
         '',
         url(r'^admin/login/', 'django_cas_ng.views.login'),
         url(r'^admin/logout/', 'django_cas_ng.views.logout'),
-        url(r'^admin/callback/', 'django_cas_ng.views.callback'),{% for app_name, regex in cookiecutter.include %}
-        url(r'{{regex}}',
-            include('{{app_name}}.urls',
-                    namespace='{{app_name}}',
-                        app_name='{{app_name}}')),{% endfor %}
+        url(r'^admin/callback/', 'django_cas_ng.views.callback'),
     )
 else:
-    urlpatterns = patterns(
-        '',{% for app_name, regex in cookiecutter.include %}
-        url(r'{{regex}}',
-            include('{{app_name}}.urls',
-                    namespace='{{app_name}}',
-                    app_name='{{app_name}}')),{% endfor %}
-    )
+    urlpatterns = patterns('', )
 
 urlpatterns += patterns(
     url(r'^django-admin/', include(admin.site.urls)),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^search/', include(wagtailsearch_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
+{% for app_name, regex in cookiecutter.include %}
+    url(r'{{regex}}',
+        include('{{app_name}}.urls',
+                namespace='{{app_name}}',
+                app_name='{{app_name}}')),
+{% endfor %}
     url(r'', include('molo.core.urls')),
     url(r'', include(wagtail_urls)),
 )
