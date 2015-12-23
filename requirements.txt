@@ -1,5 +1,5 @@
 Django>=1.8,<1.9
-wagtail==1.2
+wagtail==1.3
 cookiecutter==1.0.0
 psycopg2cffi
 raven==5.0.0
