@@ -34,7 +34,7 @@ To scaffold an application called ``myapp`` in the current directory do::
    $ molo scaffold myapp .
 
 Specifying extra requires
-=========================
+-------------------------
 
 Molo in itself is not expected to be enough to deliver on a client request.
 During scaffolding use the ``--require`` commandline parameter to include
@@ -51,7 +51,7 @@ Multiple requires can be specified on the command line::
                          --require=molo.profiles
 
 Automatically adding installed apps
-===================================
+-----------------------------------
 
 If you're including a Django app chances are you're going to want to
 add it to your ``INSTALLED_APPS`` settings as well as adding an entry
@@ -70,7 +70,7 @@ This results in the following ``urls.py`` entry::
           is ``--include=<app_name> <regex-for-urls>``
 
 Molo, Django & settings files
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 What you have now is a standard Django application set up for normal
 development like outlined in the Django documentation. The only main difference
@@ -83,7 +83,7 @@ folder. The ``settings/dev.py`` will automatically include those settings
 for your local development environment.
 
 Unpacking Templates from Packages
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Sometimes a package's existing templates simply are not enough and need
 some amount of customization. Use the ``unpack-templates`` command in the
@@ -114,7 +114,7 @@ The format is::
    $ molo unpack-templates <source package> <target package>
 
 Writing tests
--------------
+~~~~~~~~~~~~~
 
 Now develop your application and write tests for the features you add.
 Running your tests for Django works as you would expect::
