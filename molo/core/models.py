@@ -3,6 +3,10 @@ from django.utils import timezone
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from taggit.models import TaggedItemBase
+from modelcluster.fields import ParentalKey
+from modelcluster.tags import ClusterTaggableManager
+
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
@@ -12,6 +16,7 @@ from wagtail.wagtailadmin.edit_handlers import (
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
@@ -128,7 +133,7 @@ class LanguagePage(CommentedPageMixin, Page):
 
     def latest_articles(self):
         return ArticlePage.objects.live().descendant_of(self).filter(
-            featured_in_latest=True).order_by('-first_published_at')
+            featured_in_latest=True).order_by('-latest_revision_created_at')
 
     def footers(self):
         return FooterPage.objects.live().child_of(self)
@@ -244,7 +249,12 @@ SectionPage.settings_panels = [
 ]
 
 
-class ArticlePage(CommentedPageMixin, Page):
+class ArticlePageTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'core.ArticlePage', related_name='tagged_items')
+
+
+class ArticlePage(CommentedPageMixin, Page, TagSearchable):
     subtitle = models.TextField(null=True, blank=True)
     featured_in_latest = models.BooleanField(
         default=False,
@@ -272,9 +282,10 @@ class ArticlePage(CommentedPageMixin, Page):
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
     ], null=True, blank=True)
+    tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
 
     subpage_types = []
-    search_fields = Page.search_fields + (
+    search_fields = Page.search_fields + TagSearchable.search_fields + (
         index.SearchField('subtitle'),
         index.SearchField('body'),
     )
@@ -337,6 +348,7 @@ ArticlePage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
     StreamFieldPanel('body'),
+    FieldPanel('tags'),
     MultiFieldPanel(
         [
             FieldPanel('commenting_state'),

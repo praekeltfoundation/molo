@@ -1,5 +1,12 @@
 CHANGE LOG
 ==========
+2.6.0
+-----
+- updated documentation
+- adding tags to ArticlePage model
+- upgraded wagtail to v1.3.1
+- better testing base for Molo
+
 2.5.1
 -----
 - pinned cookiecutter to version 1.0.0

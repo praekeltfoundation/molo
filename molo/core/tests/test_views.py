@@ -1,14 +1,23 @@
+import json
 import pytest
 
 from django.test import TestCase
-from molo.core.models import SectionPage
+from molo.core.tests.base import MoloTestCaseMixin
 
 
 @pytest.mark.django_db
-class TestPages(TestCase):
-    fixtures = ['molo/core/tests/fixtures/test.json']
+class TestPages(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.yourmind = self.mk_section(
+            self.english, title='Your mind')
+        self.yourmind_sub = self.mk_section(
+            self.yourmind, title='Your mind subsection')
 
     def test_breadcrumbs(self):
+        self.mk_articles(self.yourmind_sub, count=10)
+
         response = self.client.get('/')
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'Home')
@@ -18,16 +27,17 @@ class TestPages(TestCase):
         self.assertContains(response, '<span class="active">Your mind</span>')
 
         response = self.client.get(
-            '/english/your-mind/your-mind-subsection/page-1/')
+            '/english/your-mind/your-mind-subsection/test-page-1/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(
             response,
-            '<span class="active">Page 1</span>')
+            '<span class="active">Test page 1</span>')
 
     def test_section_listing(self):
-        page = SectionPage.objects.get(slug='your-mind')
-        page.extra_style_hints = 'yellow'
-        page.save_revision().publish()
+        self.mk_articles(self.yourmind_sub, count=10)
+
+        self.yourmind.extra_style_hints = 'yellow'
+        self.yourmind.save_revision().publish()
 
         response = self.client.get('/')
         self.assertContains(response, 'Your mind')
@@ -38,41 +48,53 @@ class TestPages(TestCase):
 
         # Child page should have extra style from section
         response = self.client.get(
-            '/english/your-mind/your-mind-subsection/page-1/')
+            '/english/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(response, '<div class="articles nav yellow">')
 
     def test_latest_listing(self):
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+
         response = self.client.get('/')
         self.assertContains(response, 'Latest')
         self.assertContains(
             response,
-            '<a href="/english/your-mind/your-mind-subsection/page-1/">'
-            'Page 1</a>')
+            '<a href="/english/your-mind/your-mind-subsection/test-page-8/">'
+            'Test page 8</a>')
         self.assertContains(
             response,
-            '<a href="/english/your-mind/your-mind-subsection/page-2/">'
-            'Page 2</a>')
+            '<a href="/english/your-mind/your-mind-subsection/test-page-9/">'
+            'Test page 9</a>')
 
     def test_article_page(self):
+        self.mk_articles(self.yourmind_sub, count=10)
+
         response = self.client.get(
-            '/english/your-mind/your-mind-subsection/page-1/')
+            '/english/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
-            '<span class="active">Page 1</span>')
-        self.assertContains(response, 'Lorem ipsum dolor sit amet')
+            '<span class="active">Test page 1</span>')
+        self.assertContains(response, 'Sample page content for 1')
 
     def test_markdown_in_article_page(self):
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            body=json.dumps([{
+                'type': 'paragraph',
+                'value': '<strong>Lorem ipsum</strong> '
+                         'dolor <em>sit amet</em>'}]))
+
         response = self.client.get(
-            '/english/your-mind/your-mind-subsection/page-1/')
+            '/english/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
             '<strong>Lorem ipsum</strong> dolor <em>sit amet</em>')
 
     def test_featured_homepage_listing(self):
+        self.mk_article(self.yourmind_sub, featured_in_homepage=True)
         response = self.client.get('/')
         self.assertContains(
             response,
-            'Your Mind Page 1 Lorem ipsum dolor sit amet')
+            'Sample page description for 0')
 
     def test_health(self):
         response = self.client.get('/health/')

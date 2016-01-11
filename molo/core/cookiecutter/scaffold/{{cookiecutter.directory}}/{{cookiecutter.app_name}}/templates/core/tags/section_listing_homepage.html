@@ -7,7 +7,7 @@
   <h2 class="list-header">
     <a href="{% pageurl section %}">{{section.title}}</a>
   </h2>
-  {% for page in section.featured_articles %}
+  {% for page in section.featured_articles_in_homepage %}
   <ul class="list-block">
     <li>
       {% if page.image %}
