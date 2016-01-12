@@ -64,10 +64,14 @@ INSTALLED_APPS = (
 
     'molo.core',
     '{{cookiecutter.app_name}}',
+    'mptt',
+    'django.contrib.sites',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}
     'raven.contrib.django.raven_compat',
 )
+
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
