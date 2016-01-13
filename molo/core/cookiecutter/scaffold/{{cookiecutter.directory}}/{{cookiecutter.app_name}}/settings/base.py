@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'compressor',
     'taggit',
@@ -65,7 +66,6 @@ INSTALLED_APPS = (
     'molo.core',
     '{{cookiecutter.app_name}}',
     'mptt',
-    'django.contrib.sites',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}
     'raven.contrib.django.raven_compat',
