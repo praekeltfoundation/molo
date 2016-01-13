@@ -19,8 +19,8 @@ install:
   - pip install --upgrade pip --cache-dir $HOME/.pip-cache/
   - pip install coveralls coverage --cache-dir $HOME/.pip-cache/
   - pip install flake8 --cache-dir $HOME/.pip-cache/
-  - pip install -r requirements-dev.txt --cache-dir $HOME/.pip-cache/
   - pip install "Django >=1.8,<1.9"
+  - pip install -r requirements-dev.txt --cache-dir $HOME/.pip-cache/
   - pip install -e . --cache-dir $HOME/.pip-cache/
 script:
   - flake8 molo

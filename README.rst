@@ -5,7 +5,6 @@ Molo
 
 .. include:: docs/getting-started.rst
 
-<<<<<<< HEAD
 .. image:: https://readthedocs.org/projects/molo/badge/?version=latest
     :target: https://molo.readthedocs.org
     :alt: Molo Documentation
@@ -135,7 +134,6 @@ The format is::
 Writing tests
 =======
 Documentation
->>>>>>> ff88071820e9d660894aa318d269506367614da8
 -------------
 
 Documentation is available online at http://molo.readthedocs.org/

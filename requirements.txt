@@ -7,8 +7,5 @@ markdown
 django-libsass
 certifi
 dj-database-url
-<<<<<<< HEAD
 django-cas-ng
-=======
 django-mptt
->>>>>>> ff88071820e9d660894aa318d269506367614da8
