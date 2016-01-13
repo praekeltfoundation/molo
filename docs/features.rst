@@ -22,6 +22,7 @@ Core Features
     - Multiple Languages
         - Molo allows you to offer you content in multiple languages using the Wagtail's tree structure.
 
+
 Existing Plugins
 ----------------
 
