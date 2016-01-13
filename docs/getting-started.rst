@@ -48,7 +48,7 @@ is read by the generated package's ``setup.py`` file.
 Multiple requires can be specified on the command line::
 
    $ molo scaffold myapp --require=django-contrib-comments \
-                         --require=molo.profiles
+   >   --require=molo.profiles
 
 Automatically adding installed apps
 -----------------------------------
@@ -148,7 +148,7 @@ Install the requirement development & testing dependencies::
 
 And then run the full test suite with::
 
-   $ ./run-tests.sh
+   $ py.test
 
 Pull requests are expected to follow Praekelt's `Ways Of Working`_.
 
