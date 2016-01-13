@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 from os.path import abspath, dirname, join
 from django.conf import global_settings
 from django.utils.translation import ugettext_lazy as _
+import dj_database_url
 
 # Absolute filesystem path to the Django project directory:
 PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
@@ -94,7 +95,6 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 # SQLite (simplest install)
-import dj_database_url
 DATABASES = {'default': dj_database_url.config(
     default='sqlite:///%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
 
