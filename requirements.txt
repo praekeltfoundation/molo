@@ -1,5 +1,5 @@
 Django>=1.8,<1.9
-wagtail==1.2
+wagtail>=1.3,<1.4
 cookiecutter==1.0.0
 psycopg2cffi
 raven==5.0.0
@@ -7,4 +7,8 @@ markdown
 django-libsass
 certifi
 dj-database-url
+<<<<<<< HEAD
 django-cas-ng
+=======
+django-mptt
+>>>>>>> ff88071820e9d660894aa318d269506367614da8

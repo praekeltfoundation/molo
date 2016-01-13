@@ -1,9 +1,11 @@
 CHANGE LOG
 ==========
-2.x
+2.6.0
 -----
+- updated documentation
 - adding tags to ArticlePage model
-- upgraded wagtail to v1.2
+- upgraded wagtail to v1.3.1
+- better testing base for Molo
 
 2.5.1
 -----

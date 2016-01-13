@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 from os.path import abspath, dirname, join
 from django.conf import global_settings
 from django.utils.translation import ugettext_lazy as _
+import dj_database_url
 
 # Absolute filesystem path to the Django project directory:
 PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
@@ -45,6 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'compressor',
     'taggit',
@@ -64,11 +66,14 @@ INSTALLED_APPS = (
 
     'molo.core',
     '{{cookiecutter.app_name}}',
+    'mptt',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}
     'raven.contrib.django.raven_compat',
     'django_cas_ng',
 )
+
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -91,7 +96,6 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 # SQLite (simplest install)
-import dj_database_url
 DATABASES = {'default': dj_database_url.config(
     default='sqlite:///%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
 
