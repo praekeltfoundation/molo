@@ -335,8 +335,8 @@ class ArticlePage(CommentedPageMixin, Page, TagSearchable):
 
     def is_commenting_enabled(self):
         commenting_settings = self.get_effective_commenting_settings()
-        if (commenting_settings['state'] == constants.COMMENTING_DISABLED
-                or commenting_settings['state'] is None):
+        if (commenting_settings['state'] == constants.COMMENTING_DISABLED or
+                commenting_settings['state'] is None):
             return False
         return True
 
