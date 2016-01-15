@@ -7,4 +7,5 @@ markdown
 django-libsass
 certifi
 dj-database-url
+django-cas-ng
 django-mptt

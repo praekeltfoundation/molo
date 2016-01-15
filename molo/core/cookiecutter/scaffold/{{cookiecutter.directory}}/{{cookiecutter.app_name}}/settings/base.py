@@ -70,6 +70,7 @@ INSTALLED_APPS = (
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}
     'raven.contrib.django.raven_compat',
+    'django_cas_ng',
 )
 
 SITE_ID = 1
@@ -174,7 +175,6 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
 
 
 # Wagtail settings
-
 LOGIN_URL = 'wagtailadmin_login'
 LOGIN_REDIRECT_URL = 'wagtailadmin_home'
 
@@ -198,3 +198,5 @@ WAGTAIL_SITE_NAME = "base"
 # Whether to use face/feature detection to improve image
 # cropping - requires OpenCV
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
+
+ENABLE_SSO = False
