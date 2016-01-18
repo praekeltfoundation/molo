@@ -9,6 +9,7 @@ from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtailsearch import urls as wagtailsearch_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
+from .views import SmartCSS
 
 # implement CAS URLs in a production setting
 if settings.ENABLE_SSO:
@@ -22,6 +23,8 @@ else:
     urlpatterns = patterns('', )
 
 urlpatterns += patterns(
+    '',
+    url(r'^smart-css/$', SmartCSS.as_view(), name='smart-css'),
     url(r'^django-admin/', include(admin.site.urls)),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^search/', include(wagtailsearch_urls)),
