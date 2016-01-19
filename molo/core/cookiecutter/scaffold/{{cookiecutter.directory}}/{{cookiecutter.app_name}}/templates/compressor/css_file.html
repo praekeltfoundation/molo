@@ -1,3 +1,4 @@
+{% raw %}
 {% load static %}
 {% if compressed.name == 'enhanced' %}
 <script type="text/javascript" src="{% static 'js/eCSSential.min.js' %}"></script>
@@ -12,3 +13,4 @@ if('querySelector' in document && 'localStorage' in window && 'addEventListener'
 {% else %}
 <link rel="stylesheet" href="{{ compressed.url }}" type="text/css"{% if compressed.media %} media="{{ compressed.media }}"{% endif %} />
 {% endif %}
+{% endraw %}
