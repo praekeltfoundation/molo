@@ -48,7 +48,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'compressor',
     'taggit',
     'modelcluster',
 
@@ -71,6 +70,7 @@ INSTALLED_APPS = (
 {% endfor %}
     'raven.contrib.django.raven_compat',
     'django_cas_ng',
+    'compressor',
 )
 
 SITE_ID = 1
