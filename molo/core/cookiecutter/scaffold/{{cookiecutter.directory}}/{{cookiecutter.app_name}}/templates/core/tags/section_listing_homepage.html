@@ -7,14 +7,14 @@
   <h2 class="list-header">
     <a href="{% pageurl section %}">{{section.title}}</a>
   </h2>
-  {% for page in section.featured_articles_in_homepage %}
+  {% for article in section.featured_articles_in_homepage %}
   <ul class="list-block">
     <li>
-      {% if page.image %}
-      <a href="{% pageurl page %}">{% image page.image width-60 %}</a>
+      {% if article.image %}
+      <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
       {% endif %}
-      <h3><a href="{% pageurl page %}">{{page.title}}</a></h3>
-      <p>{{page.subtitle}}</p>
+      <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+      <p>{{article.subtitle}}</p>
     </li>
   </ul>
   {% endfor %}

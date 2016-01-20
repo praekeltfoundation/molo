@@ -1,11 +1,35 @@
 CHANGE LOG
 ==========
+2.6.5
+-----
+ - Added search functionality
+ - Updated core templates
+2.6.4
+-----
+ - Added support for Central Authentication Service (CAS)(CAS)
+
+2.6.3
+-----
+ - Updated documentation
+
+2.6.2
+-----
+ - Added missing files in the scaffold (pypi package) 2nd attempt
+
+2.6.1
+-----
+ - Added missing files in the scaffold (pypi package)
+
 2.6.0
 -----
-- updated documentation
-- adding tags to ArticlePage model
-- upgraded wagtail to v1.3.1
-- better testing base for Molo
+ - updated documentation
+ - adding tags to ArticlePage model
+ - upgraded wagtail to v1.3.1
+ - better testing base for Molo
+
+2.5.2
+-----
+ - Promoted articles 'featured in latest' will be ordered by most recently updated in the latest section.
 
 2.5.1
 -----

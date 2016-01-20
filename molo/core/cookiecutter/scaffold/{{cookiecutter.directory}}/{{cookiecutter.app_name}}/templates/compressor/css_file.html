@@ -1,0 +1,17 @@
+{% raw %}
+{% load static %}
+
+{% if compressed.name == 'enhanced' %}
+  <script type="text/javascript" src="{% static 'js/eCSSential.min.js' %}"></script>
+  <script type="text/javascript">
+  // cut the mustard
+  if('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
+    eCSSential({
+      "(min-width: 320px)": "{{ compressed.url }}"
+    });
+  }
+  </script>
+{% else %}
+  <link rel="stylesheet" href="{{ compressed.url }}" type="text/css"{% if compressed.media %} media="{{ compressed.media }}"{% endif %} />
+{% endif %}
+{% endraw %}
