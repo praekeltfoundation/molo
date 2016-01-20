@@ -1,6 +1,9 @@
 CHANGE LOG
 ==========
-
+2.6.5
+-----
+ - Added search functionality
+ - Updated core templates
 2.6.4
 -----
  - Added support for Central Authentication Service (CAS)(CAS)
