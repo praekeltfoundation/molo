@@ -79,6 +79,10 @@
         {% block extra_js %}
         {% endblock %}
 
+        {% block search %}
+          {% include "search/search_block.html" %}
+        {% endblock %}
+
         {% block footer %}
         {% if language_page.footers %}
           <ul>
