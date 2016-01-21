@@ -7,6 +7,7 @@ from django_cas_ng.views import login as cas_login, logout as cas_logout
 # test
 from django.contrib.messages import get_messages
 
+
 class MoloCASMiddleware(CASMiddleware):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
