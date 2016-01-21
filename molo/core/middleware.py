@@ -4,7 +4,8 @@ from django.views.defaults import permission_denied
 
 from django_cas_ng.middleware import CASMiddleware
 from django_cas_ng.views import login as cas_login, logout as cas_logout
-
+# test
+from django.contrib.messages import get_messages
 
 class MoloCASMiddleware(CASMiddleware):
 
@@ -28,6 +29,9 @@ class MoloCASMiddleware(CASMiddleware):
 class Custom403Middleware(object):
     """Catches 403 responses and raises 403 which allows for custom 403.html"""
     def process_response(self, request, response):
+        storage = get_messages(request)
+        for message in storage:
+            pass
         if isinstance(response, HttpResponseForbidden):
             return permission_denied(request)
         return response
