@@ -84,7 +84,9 @@
         {% endblock %}
 
         {% block search %}
-          {% include "search/search_block.html" %}
+          {% if languages %}
+            {% include "search/search_block.html" %}
+          {% endif %}
         {% endblock %}
 
         {% block footer %}
