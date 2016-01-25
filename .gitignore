@@ -42,5 +42,6 @@ logs/*.log
 /media/
 db.sqlite3
 docs/_build
+.cache
 .DS_Store
 /htmlcov/
