@@ -209,6 +209,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'body-0-deleted': False,
             'body-0-order': 1,
             'body-0-type': 'paragraph',
+            'translations-TOTAL_FORMS': 1,
+            'translations-INITIAL_FORMS': 0,
+            'translations-MIN_NUM_FORMS': 0,
+            'translations-MAX_NUM_FORMS': 100,
             'tags': 'love, war',
             'action-publish': 'Publish'
         }
