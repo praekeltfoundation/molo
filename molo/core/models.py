@@ -12,7 +12,7 @@ from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, FieldRowPanel, StreamFieldPanel, PageChooserPanel,
-    MultiFieldPanel)
+    MultiFieldPanel, InlinePanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
@@ -42,6 +42,33 @@ class CommentedPageMixin(object):
             'open_time': None,
             'close_time': None
         }
+
+
+class SectionPageTranslation(models.Model):
+    page = ParentalKey('core.SectionPage', related_name='translations')
+    translated_page = models.ForeignKey('core.SectionPage', related_name='+')
+
+    panels = [
+        PageChooserPanel('translated_page', 'core.SectionPage'),
+    ]
+
+
+class ArticlePageTranslation(models.Model):
+    page = ParentalKey('core.ArticlePage', related_name='translations')
+    translated_page = models.ForeignKey('core.ArticlePage', related_name='+')
+
+    panels = [
+        PageChooserPanel('translated_page', 'core.ArticlePage'),
+    ]
+
+
+class HomePageTranslation(models.Model):
+    page = ParentalKey('core.HomePage', related_name='translations')
+    translated_page = models.ForeignKey('core.HomePage', related_name='+')
+
+    panels = [
+        PageChooserPanel('translated_page', 'core.HomePage'),
+    ]
 
 
 class HomePage(CommentedPageMixin, Page):
@@ -83,7 +110,7 @@ HomePage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-]
+] + [InlinePanel('translations', label="Translations")]
 
 
 class Main(CommentedPageMixin, Page):
@@ -237,7 +264,7 @@ SectionPage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-]
+] + [InlinePanel('translations', label="Translations")]
 
 SectionPage.settings_panels = [
     MultiFieldPanel(
@@ -356,7 +383,7 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-]
+] + [InlinePanel('translations', label="Translations")]
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
