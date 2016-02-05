@@ -8,7 +8,7 @@ class LanguageModelAdmin(ModelAdmin):
     model = LanguagePage
     menu_label = 'Language'
     menu_icon = 'doc-full-inverse'
-    list_display = ('title', 'type', 'live',)
+    list_display = ('title', 'main_language', 'live',)
     list_filter = ('live',)
     search_fields = ('title',)
     list_per_page = 100

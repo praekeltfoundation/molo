@@ -114,13 +114,9 @@ class LanguagePage(CommentedPageMixin, Page):
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
 
-    TYPE_CHOICES = (
-        ('P', 'Parent'),
-        ('c', 'Child'),
-    )
-    type = models.CharField(
-        null=True,
-        max_length=1, choices=TYPE_CHOICES)
+    main_language = models.BooleanField(
+        default=False,
+        help_text=_("The main language of the site"))
 
     parent_page_types = ['core.Main']
     subpage_types = []
@@ -152,7 +148,8 @@ class LanguagePage(CommentedPageMixin, Page):
 LanguagePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('code'),
-    FieldPanel('type'),
+    FieldPanel('main_language'),
+
     MultiFieldPanel(
         [
             FieldPanel('commenting_state'),
