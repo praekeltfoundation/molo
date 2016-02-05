@@ -12,7 +12,7 @@ from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, FieldRowPanel, StreamFieldPanel, PageChooserPanel,
-    MultiFieldPanel, InlinePanel)
+    MultiFieldPanel, InlinePanel, TabbedInterface, ObjectList)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
@@ -44,6 +44,20 @@ class CommentedPageMixin(object):
         }
 
 
+class TranslatablePageMixin(models.Model):
+
+    language = models.CharField(
+        max_length=255,
+        blank=True,
+    )
+    panels = [
+        FieldPanel('language'),
+    ]
+
+    class Meta:
+        abstract = True
+
+
 class SectionPageTranslation(models.Model):
     page = ParentalKey('core.SectionPage', related_name='translations')
     translated_page = models.ForeignKey('core.SectionPage', related_name='+')
@@ -71,7 +85,7 @@ class HomePageTranslation(models.Model):
     ]
 
 
-class HomePage(CommentedPageMixin, Page):
+class HomePage(CommentedPageMixin, TranslatablePageMixin, Page):
     banner = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -99,6 +113,10 @@ class HomePage(CommentedPageMixin, Page):
     parent_page_types = ['core.LanguagePage']
     subpage_types = ['core.ArticlePage']
 
+    translation_panels = ([
+        InlinePanel('translations', label="Translations"),
+    ])
+
 HomePage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
@@ -110,7 +128,16 @@ HomePage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-] + [InlinePanel('translations', label="Translations")]
+]
+
+HomePage.edit_handler = TabbedInterface([
+    ObjectList(HomePage.content_panels, heading='Content'),
+    ObjectList(HomePage.promote_panels, heading='Promote'),
+    ObjectList(HomePage.translation_panels, heading='Translation'),
+    ObjectList(HomePage.settings_panels, heading='Settings',
+               classname="settings"),
+
+])
 
 
 class Main(CommentedPageMixin, Page):
@@ -181,7 +208,7 @@ LanguagePage.content_panels = [
 ]
 
 
-class SectionPage(CommentedPageMixin, Page):
+class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     description = models.TextField(null=True, blank=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -209,6 +236,10 @@ class SectionPage(CommentedPageMixin, Page):
         null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
+
+    translation_panels = ([
+        InlinePanel('translations', label="Translations"),
+    ])
 
     def articles(self):
         return ArticlePage.objects.live().child_of(self)
@@ -264,7 +295,7 @@ SectionPage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-] + [InlinePanel('translations', label="Translations")]
+]
 
 SectionPage.settings_panels = [
     MultiFieldPanel(
@@ -275,13 +306,23 @@ SectionPage.settings_panels = [
         "Meta")
 ]
 
+SectionPage.edit_handler = TabbedInterface([
+    ObjectList(SectionPage.content_panels, heading='Content'),
+    ObjectList(SectionPage.promote_panels, heading='Promote'),
+    ObjectList(SectionPage.translation_panels, heading='Translation'),
+    ObjectList(SectionPage.settings_panels, heading='Settings',
+               classname="settings"),
+
+])
+
 
 class ArticlePageTag(TaggedItemBase):
     content_object = ParentalKey(
         'core.ArticlePage', related_name='tagged_items')
 
 
-class ArticlePage(CommentedPageMixin, Page, TagSearchable):
+class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
+                  TagSearchable):
     subtitle = models.TextField(null=True, blank=True)
     featured_in_latest = models.BooleanField(
         default=False,
@@ -330,6 +371,10 @@ class ArticlePage(CommentedPageMixin, Page, TagSearchable):
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
     ]
+
+    translation_panels = ([
+        InlinePanel('translations', label="Translations"),
+    ])
 
     def get_absolute_url(self):  # pragma: no cover
         return self.url
@@ -383,13 +428,22 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-] + [InlinePanel('translations', label="Translations")]
+]
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
+
+ArticlePage.edit_handler = TabbedInterface([
+    ObjectList(ArticlePage.content_panels, heading='Content'),
+    ObjectList(ArticlePage.promote_panels, heading='Promote'),
+    ObjectList(ArticlePage.translation_panels, heading='Translation'),
+    ObjectList(ArticlePage.settings_panels, heading='Settings',
+               classname="settings"),
+
+])
 
 
 class FooterPage(ArticlePage):
