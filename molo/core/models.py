@@ -110,7 +110,7 @@ class HomePage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    parent_page_types = ['core.LanguagePage']
+    parent_page_types = ['core.Main']
     subpage_types = ['core.ArticlePage']
 
     translation_panels = ([
@@ -142,8 +142,8 @@ HomePage.edit_handler = TabbedInterface([
 
 class Main(CommentedPageMixin, Page):
     parent_page_types = []
-    subpage_types = ['core.LanguagePage']
-
+    subpage_types = ['core.LanguagePage', 'core.HomePage', 'core.SectionPage',
+                     'core.FooterPage']
     commenting_state = models.CharField(
         max_length=1,
         choices=constants.COMMENTING_STATE_CHOICES,
@@ -168,8 +168,16 @@ class LanguagePage(CommentedPageMixin, Page):
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
 
+    TYPE_CHOICES = (
+        ('P', 'Parent'),
+        ('c', 'Child'),
+    )
+    type = models.CharField(
+        null=True,
+        max_length=1, choices=TYPE_CHOICES)
+
     parent_page_types = ['core.Main']
-    subpage_types = ['core.HomePage', 'core.SectionPage', 'core.FooterPage']
+    subpage_types = []
 
     commenting_state = models.CharField(
         max_length=1,
@@ -198,6 +206,7 @@ class LanguagePage(CommentedPageMixin, Page):
 LanguagePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('code'),
+    FieldPanel('type'),
     MultiFieldPanel(
         [
             FieldPanel('commenting_state'),
@@ -447,7 +456,7 @@ ArticlePage.edit_handler = TabbedInterface([
 
 
 class FooterPage(ArticlePage):
-    parent_page_types = ['core.LanguagePage']
+    parent_page_types = ['core.Main']
     subpage_types = []
 
 FooterPage.content_panels = ArticlePage.content_panels
