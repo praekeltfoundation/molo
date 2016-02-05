@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='languagepage',
-            name='type',
-            field=models.CharField(max_length=1, null=True, choices=[(b'P', b'Parent'), (b'c', b'child')]),
+            name='main_language',
+            field=models.BooleanField(default=False, help_text='The main language of the site'),
         ),
     ]
