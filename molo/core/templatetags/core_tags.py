@@ -63,3 +63,25 @@ def breadcrumbs(context):
         'ancestors': ancestors,
         'request': context['request'],
     }
+
+
+@register.inclusion_tag('core/translations_actions.html', takes_context=True)
+def render_translations(context, page):
+    if not hasattr(page.specific, 'translations'):
+        return {}
+    languages = [
+        ('id', 'Bahasa'),
+        ('es', 'Spanish'),
+        ('fr', 'French'),
+        ('hi', 'Hindi')]
+    translations_qs = page.specific.translations.all()
+    return {
+        'translations': [{
+            'locale': {'title': lt, 'code': l},
+            'translated': translations_qs.get(
+                translated_page__language=l).translated_page
+            if translations_qs.filter(
+                translated_page__language=l).exists() else None}
+            for l, lt in languages],
+        'page': page
+    }
