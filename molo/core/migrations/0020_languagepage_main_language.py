@@ -7,14 +7,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0021_auto_20160205_1803'),
+        ('core', '0019_add_tags_to_article'),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='languagepage',
-            name='type',
-        ),
         migrations.AddField(
             model_name='languagepage',
             name='main_language',
