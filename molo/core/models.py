@@ -128,7 +128,7 @@ HomePage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-]
+] + TranslatablePageMixin.panels
 
 HomePage.edit_handler = TabbedInterface([
     ObjectList(HomePage.content_panels, heading='Content'),
@@ -301,7 +301,7 @@ SectionPage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-]
+] + TranslatablePageMixin.panels
 
 SectionPage.settings_panels = [
     MultiFieldPanel(
@@ -434,7 +434,7 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-]
+] + TranslatablePageMixin.panels
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
