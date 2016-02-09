@@ -11,7 +11,7 @@
   {% if t.translated %}
   <li><a href="{% url 'wagtailadmin_pages:edit' t.translated.id %}" class="button button-small button-secondary translation-translated" title="{{t.locale.title}}">{{t.locale.title}}</a></li>
   {% else %}
-  <li><a href="{% url 'wagtailadmin_pages:add_subpage' page.id %}" class="button button-small button-secondary" title="{{t.locale.title}}">{{t.locale.title}}</a></li>
+  <li><a href="{% url 'add_translation' page.id t.locale.code %}" class="button button-small button-secondary" title="{{t.locale.title}}">{{t.locale.title}}</a></li>
   {% endif %}
 {% endfor %}
 </ul>
