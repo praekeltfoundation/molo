@@ -58,30 +58,12 @@ class TranslatablePageMixin(models.Model):
         abstract = True
 
 
-class SectionPageTranslation(models.Model):
-    page = ParentalKey('core.SectionPage', related_name='translations')
-    translated_page = models.ForeignKey('core.SectionPage', related_name='+')
+class PageTranslation(models.Model):
+    page = ParentalKey('wagtailcore.Page', related_name='translations')
+    translated_page = models.ForeignKey('wagtailcore.Page', related_name='+')
 
     panels = [
-        PageChooserPanel('translated_page', 'core.SectionPage'),
-    ]
-
-
-class ArticlePageTranslation(models.Model):
-    page = ParentalKey('core.ArticlePage', related_name='translations')
-    translated_page = models.ForeignKey('core.ArticlePage', related_name='+')
-
-    panels = [
-        PageChooserPanel('translated_page', 'core.ArticlePage'),
-    ]
-
-
-class HomePageTranslation(models.Model):
-    page = ParentalKey('core.HomePage', related_name='translations')
-    translated_page = models.ForeignKey('core.HomePage', related_name='+')
-
-    panels = [
-        PageChooserPanel('translated_page', 'core.HomePage'),
+        PageChooserPanel('translated_page', 'wagtailcore.Page'),
     ]
 
 
