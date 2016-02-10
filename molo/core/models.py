@@ -100,11 +100,7 @@ class HomePage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     parent_page_types = ['core.Main']
-    subpage_types = ['core.ArticlePage']
-
-    translation_panels = ([
-        InlinePanel('translations', label="Translations"),
-    ])
+    subpage_types = []
 
 HomePage.content_panels = [
     FieldPanel('title', classname='full title'),
@@ -118,15 +114,6 @@ HomePage.content_panels = [
         ],
         heading="Commenting Settings",)
 ]
-
-HomePage.edit_handler = TabbedInterface([
-    ObjectList(HomePage.content_panels, heading='Content'),
-    ObjectList(HomePage.promote_panels, heading='Promote'),
-    ObjectList(HomePage.translation_panels, heading='Translation'),
-    ObjectList(HomePage.settings_panels, heading='Settings',
-               classname="settings"),
-
-])
 
 
 class Main(CommentedPageMixin, Page):
@@ -264,10 +251,6 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    translation_panels = ([
-        InlinePanel('translations', label="Translations"),
-    ])
-
     def articles(self):
         return ArticlePage.objects.live().child_of(self)
 
@@ -333,15 +316,6 @@ SectionPage.settings_panels = [
         "Meta")
 ]
 
-SectionPage.edit_handler = TabbedInterface([
-    ObjectList(SectionPage.content_panels, heading='Content'),
-    ObjectList(SectionPage.promote_panels, heading='Promote'),
-    ObjectList(SectionPage.translation_panels, heading='Translation'),
-    ObjectList(SectionPage.settings_panels, heading='Settings',
-               classname="settings"),
-
-])
-
 
 class ArticlePageTag(TaggedItemBase):
     content_object = ParentalKey(
@@ -398,10 +372,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
     ]
-
-    translation_panels = ([
-        InlinePanel('translations', label="Translations"),
-    ])
 
     def get_absolute_url(self):  # pragma: no cover
         return self.url
@@ -462,15 +432,6 @@ ArticlePage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
-
-ArticlePage.edit_handler = TabbedInterface([
-    ObjectList(ArticlePage.content_panels, heading='Content'),
-    ObjectList(ArticlePage.promote_panels, heading='Promote'),
-    ObjectList(ArticlePage.translation_panels, heading='Translation'),
-    ObjectList(ArticlePage.settings_panels, heading='Settings',
-               classname="settings"),
-
-])
 
 
 class FooterPage(ArticlePage):
