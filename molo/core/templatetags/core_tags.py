@@ -1,6 +1,6 @@
 from django import template
 
-from molo.core.models import SectionPage, Page, HomePage
+from molo.core.models import SectionPage, Page, HomePage, SiteLanguage
 
 register = template.Library()
 
@@ -72,7 +72,8 @@ def render_translations(context, page):
         translated = None
         for t in qs:
             if (hasattr(t.translated_page.specific, 'language') and
-                    t.translated_page.specific.language == locale):
+                    t.translated_page.specific.language and
+                    t.translated_page.specific.language.code == locale):
                 translated = t.translated_page.specific
                 break
         return translated
@@ -80,10 +81,8 @@ def render_translations(context, page):
     if not hasattr(page.specific, 'translations'):
         return {}
     languages = [
-        ('id', 'Bahasa'),
-        ('es', 'Spanish'),
-        ('fr', 'French'),
-        ('hi', 'Hindi')]
+        (l.code, l.title)
+        for l in SiteLanguage.objects.filter(is_main_language=False)]
     translations_qs = page.specific.translations.all()
 
     return {

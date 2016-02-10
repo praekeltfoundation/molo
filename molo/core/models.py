@@ -45,13 +45,15 @@ class CommentedPageMixin(object):
 
 
 class TranslatablePageMixin(models.Model):
-
-    language = models.CharField(
-        max_length=255,
+    language = models.ForeignKey(
+        'SiteLanguage',
+        null=True,
         blank=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'is_main_language': True},
     )
     panels = [
-        FieldPanel('language'),
+        # FieldPanel('language'),
     ]
 
     class Meta:
@@ -124,7 +126,7 @@ HomePage.edit_handler = TabbedInterface([
 
 class Main(CommentedPageMixin, Page):
     parent_page_types = []
-    subpage_types = ['core.LanguagePage', 'core.HomePage', 'core.SectionPage',
+    subpage_types = ['core.HomePage', 'core.SectionPage',
                      'core.FooterPage']
     commenting_state = models.CharField(
         max_length=1,
@@ -149,10 +151,6 @@ class LanguagePage(CommentedPageMixin, Page):
     code = models.CharField(
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
-
-    main_language = models.BooleanField(
-        default=False,
-        help_text=_("The main language of the site"))
 
     parent_page_types = ['core.Main']
     subpage_types = []
@@ -184,7 +182,6 @@ class LanguagePage(CommentedPageMixin, Page):
 LanguagePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('code'),
-    FieldPanel('main_language'),
 
     MultiFieldPanel(
         [
@@ -194,6 +191,39 @@ LanguagePage.content_panels = [
         ],
         heading="Commenting Settings",)
 ]
+
+
+class SiteLanguage(models.Model):
+    title = models.CharField(
+        verbose_name=_('language name'),
+        max_length=255,
+        blank=False,
+        help_text=_("The page title as you'd like it to be seen by the public")
+    )
+
+    code = models.CharField(
+        max_length=255,
+        verbose_name=_('language code'),
+        help_text=_('The language code as specified in iso639-2'))
+
+    is_main_language = models.BooleanField(
+        default=False,
+        editable=False,
+        verbose_name=_('main Language'),
+    )
+
+    def save(self, *args, **kwargs):
+        if SiteLanguage.objects.filter(is_main_language=True).exists():
+            return super(SiteLanguage, self).save(*args, **kwargs)
+
+        self.is_main_language = True
+        return super(SiteLanguage, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return "%s" % (self.title,)
+
+    class Meta:
+        verbose_name = _('Language')
 
 
 class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):

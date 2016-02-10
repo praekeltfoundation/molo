@@ -6,7 +6,7 @@ from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.utils.translation import ugettext as _
 
 from molo.core.utils import generate_slug
-from molo.core.models import PageTranslation
+from molo.core.models import PageTranslation, SiteLanguage
 
 from wagtail.wagtailcore.models import Page
 
@@ -46,8 +46,9 @@ def add_translation(request, page_id, locale):
 
     # create translation and redirect to edit page
     new_slug = generate_slug(page.title)
+    language = get_object_or_404(SiteLanguage, code=locale)
     translation = page.__class__(
-        title=page.title, slug=new_slug, language=locale)
+        title=page.title, slug=new_slug, language=language)
     page.get_parent().add_child(instance=translation)
     translation.save_revision()
     PageTranslation.objects.create(page=page, translated_page=translation)
