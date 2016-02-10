@@ -12,7 +12,7 @@ from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, FieldRowPanel, StreamFieldPanel, PageChooserPanel,
-    MultiFieldPanel, InlinePanel, TabbedInterface, ObjectList)
+    MultiFieldPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
