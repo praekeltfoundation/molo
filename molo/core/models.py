@@ -52,9 +52,14 @@ class TranslatablePageMixin(models.Model):
         on_delete=models.SET_NULL,
         limit_choices_to={'is_main_language': True},
     )
-    panels = [
-        # FieldPanel('language'),
-    ]
+
+    def save(self, *args, **kwargs):
+        if (SiteLanguage.objects.filter(is_main_language=True).exists() and
+                not self.language):
+            self.language = SiteLanguage.objects.filter(
+                is_main_language=True).first()
+
+        return super(TranslatablePageMixin, self).save(*args, **kwargs)
 
     class Meta:
         abstract = True
@@ -112,7 +117,7 @@ HomePage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-] + TranslatablePageMixin.panels
+]
 
 HomePage.edit_handler = TabbedInterface([
     ObjectList(HomePage.content_panels, heading='Content'),
@@ -210,6 +215,10 @@ class SiteLanguage(models.Model):
         default=False,
         editable=False,
         verbose_name=_('main Language'),
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name=_('active Language'),
     )
 
     def save(self, *args, **kwargs):
@@ -313,7 +322,7 @@ SectionPage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-] + TranslatablePageMixin.panels
+]
 
 SectionPage.settings_panels = [
     MultiFieldPanel(
@@ -446,7 +455,7 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_close_time'),
         ],
         heading="Commenting Settings",)
-] + TranslatablePageMixin.panels
+]
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
