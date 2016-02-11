@@ -68,7 +68,6 @@ class TranslatablePageMixin(models.Model):
                 page=self,
                 language=SiteLanguage.objects.filter(
                     is_main_language=True).first())
-            print 'default translation set', l.language
         return response
 
     class Meta:
@@ -131,20 +130,21 @@ class Main(CommentedPageMixin, Page):
 
     def homepages(self, selected_language):
         return HomePage.objects.live().child_of(self).filter(
-            language=selected_language)
+            languages__language=selected_language)
 
     def sections(self, selected_language):
         return SectionPage.objects.live().child_of(self).filter(
-            language=selected_language)
+            languages__language=selected_language)
 
     def latest_articles(self, selected_language):
         return ArticlePage.objects.live().filter(
             featured_in_latest=True,
-            language=selected_language).order_by('-latest_revision_created_at')
+            languages__language=selected_language).order_by(
+                '-latest_revision_created_at')
 
     def footers(self, selected_language):
         return FooterPage.objects.live().child_of(self).filter(
-            language=selected_language)
+            languages__language=selected_language)
 
 
 Main.content_panels = [
