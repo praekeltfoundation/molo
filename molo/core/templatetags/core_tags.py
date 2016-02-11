@@ -45,7 +45,8 @@ def homepages(context):
     selected_language = context.get('selected_language')
     request = context['request']
     if selected_language:
-        homepages = request.site.root_page.specific.homepages(selected_language)
+        homepages = request.site.root_page.specific.homepages(
+            selected_language)
     else:
         homepages = HomePage.objects.none()
     return {

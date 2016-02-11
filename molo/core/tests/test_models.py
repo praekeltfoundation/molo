@@ -234,19 +234,3 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(tags__name='love').count(), 1)
         self.assertEquals(
             ArticlePage.objects.filter(tags__name='peace').count(), 1)
-
-
-@pytest.mark.django_db
-class TestTranslation(TestCase, MoloTestCaseMixin):
-
-    def setUp(self):
-
-        self.mk_main()
-        self.main = SiteLanguage(
-            title='main',
-            code='en')
-        self.main.save_revision().publish()
-        section = SectionPage(
-            title='section', slug='section')
-        self.main.add_child(instance=section)
-        section.save_revision().publish()
