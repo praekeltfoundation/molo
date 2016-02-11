@@ -12,7 +12,7 @@ from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, FieldRowPanel, StreamFieldPanel, PageChooserPanel,
-    MultiFieldPanel, InlinePanel, TabbedInterface, ObjectList)
+    MultiFieldPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
@@ -127,6 +127,24 @@ class Main(CommentedPageMixin, Page):
         default='C')
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
+
+    def homepages(self, selected_language):
+        return HomePage.objects.live().child_of(self).filter(
+            language=selected_language)
+
+    def sections(self, selected_language):
+        return SectionPage.objects.live().child_of(self).filter(
+            language=selected_language)
+
+    def latest_articles(self, selected_language):
+        return ArticlePage.objects.live().filter(
+            featured_in_latest=True,
+            language=selected_language).order_by('-latest_revision_created_at')
+
+    def footers(self, selected_language):
+        return FooterPage.objects.live().child_of(self).filter(
+            language=selected_language)
+
 
 Main.content_panels = [
     MultiFieldPanel(
