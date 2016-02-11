@@ -46,14 +46,22 @@ def add_translation(request, page_id, locale):
 
     # create translation and redirect to edit page
     language = get_object_or_404(SiteLanguage, code=locale)
+
     new_title = language.title + " translation of %s" % page.title
     new_slug = generate_slug(new_title)
     translation = page.__class__(
-        title=new_title, slug=new_slug, language=language)
+        title=new_title, slug=new_slug)
     page.get_parent().add_child(instance=translation)
     translation.save_revision()
     translation.unpublish()
-    PageTranslation.objects.create(page=page, translated_page=translation)
+
+    language_relation = translation.languages.first()
+    language_relation.language = language
+    language_relation.save()
+    translation.save()
+
+    PageTranslation.objects.get_or_create(
+        page=page, translated_page=translation)
 
     return redirect(
         reverse('wagtailadmin_pages:edit', args=[translation.id]))

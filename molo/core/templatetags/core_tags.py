@@ -76,18 +76,20 @@ def render_translations(context, page):
     def get_translated_page(qs, locale):
         translated = None
         for t in qs:
-            if (hasattr(t.translated_page.specific, 'language') and
-                    t.translated_page.specific.language and
-                    t.translated_page.specific.language.code == locale):
-                translated = t.translated_page.specific
+            if t.translated_page.languages.filter(
+                    language__code=locale).exists():
+                translated = t.translated_page.languages.filter(
+                    language__code=locale).first().page.specific
                 break
         return translated
 
     if not hasattr(page.specific, 'translations'):
         return {}
+
     languages = [
         (l.code, l.title)
         for l in SiteLanguage.objects.filter(is_main_language=False)]
+
     translations_qs = page.specific.translations.all()
 
     return {

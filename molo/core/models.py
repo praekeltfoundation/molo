@@ -44,27 +44,6 @@ class CommentedPageMixin(object):
         }
 
 
-class TranslatablePageMixin(models.Model):
-    language = models.ForeignKey(
-        'SiteLanguage',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        limit_choices_to={'is_main_language': True},
-    )
-
-    def save(self, *args, **kwargs):
-        if (SiteLanguage.objects.filter(is_main_language=True).exists() and
-                not self.language):
-            self.language = SiteLanguage.objects.filter(
-                is_main_language=True).first()
-
-        return super(TranslatablePageMixin, self).save(*args, **kwargs)
-
-    class Meta:
-        abstract = True
-
-
 class PageTranslation(models.Model):
     page = ParentalKey('wagtailcore.Page', related_name='translations')
     translated_page = models.ForeignKey('wagtailcore.Page', related_name='+')
@@ -72,6 +51,28 @@ class PageTranslation(models.Model):
     panels = [
         PageChooserPanel('translated_page', 'wagtailcore.Page'),
     ]
+
+
+class LanguageRelation(models.Model):
+    page = ParentalKey('wagtailcore.Page', related_name='languages')
+    language = models.ForeignKey('core.SiteLanguage', related_name='+')
+
+
+class TranslatablePageMixin(models.Model):
+    def save(self, *args, **kwargs):
+        response = super(TranslatablePageMixin, self).save(*args, **kwargs)
+
+        if (SiteLanguage.objects.filter(is_main_language=True).exists() and
+                not self.languages.exists()):
+            l, _ = LanguageRelation.objects.get_or_create(
+                page=self,
+                language=SiteLanguage.objects.filter(
+                    is_main_language=True).first())
+            print 'default translation set', l.language
+        return response
+
+    class Meta:
+        abstract = True
 
 
 class HomePage(CommentedPageMixin, TranslatablePageMixin, Page):
