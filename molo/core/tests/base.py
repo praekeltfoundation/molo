@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 from wagtail.wagtailcore.models import Site, Page
 
-from molo.core.models import LanguagePage, Main, SectionPage, ArticlePage
+from molo.core.models import Main, SectionPage, ArticlePage
 
 
 class MoloTestCaseMixin(object):
@@ -42,13 +42,6 @@ class MoloTestCaseMixin(object):
             url_path='/home/',
         )
         self.main.save_revision().publish()
-
-        self.english = LanguagePage(
-            title='English',
-            code='en',
-            slug='english')
-        self.main.add_child(instance=self.english)
-        self.english.save_revision().publish()
 
         # Create a site with the new homepage set as the root
         Site.objects.all().delete()

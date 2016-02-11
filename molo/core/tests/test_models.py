@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from molo.core.models import ArticlePage
+from molo.core.models import ArticlePage, SiteLanguage
 from molo.core import constants
 from molo.core.tests.base import MoloTestCaseMixin
 
@@ -17,15 +17,17 @@ from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        self.english = SiteLanguage.objects.create(
+            title='english', code='en'
+        )
         # Create an image for running tests on
         self.image = Image.objects.create(
             title="Test image",
             file=get_test_image_file(),
         )
-
         self.mk_main()
         self.yourmind = self.mk_section(
-            self.english, title='Your mind')
+            self.main, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
 
@@ -51,7 +53,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_latest(self):
         self.mk_articles(self.yourmind_sub, count=4, featured_in_latest=True)
         self.mk_articles(self.yourmind_sub, count=10)
-        self.assertEquals(self.english.latest_articles().count(), 4)
+        self.assertEquals(self.main.latest_articles(self.english).count(), 4)
 
     def test_featured_homepage(self):
         self.mk_articles(self.yourmind_sub, count=2, featured_in_homepage=True)
@@ -69,7 +71,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_extra_css(self):
         # extra_css set on current section
         new_section = self.mk_section(
-            self.english,
+            self.main,
             title="New Section",
             extra_style_hints='primary')
         self.assertEquals(
@@ -82,7 +84,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         # extra_css not set on either so should be blank
         new_section3 = self.mk_section(
-            self.english, title="New Section 3", slug="new-section-3")
+            self.main, title="New Section 3", slug="new-section-3")
         self.assertEquals(new_section3.get_effective_extra_style_hints(), '')
 
         # extra_css not set on child so should use parent value
@@ -101,7 +103,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_image(self):
         new_section = self.mk_section(
-            self.english,
+            self.main,
             title="New Section", slug="new-section",
             image=self.image)
         self.assertEquals(
@@ -121,7 +123,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_parent_section(self):
         new_section = self.mk_section(
-            self.english, title="New Section", slug="new-section")
+            self.main, title="New Section", slug="new-section")
         new_section1 = self.mk_section(
             new_section, title="New Section 1", slug="new-section-1")
         self.assertEquals(
@@ -129,15 +131,15 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_commenting_closed_settings_fallbacks(self):
         new_section = self.mk_section(
-            self.english, title="New Section", slug="new-section")
+            self.main, title="New Section", slug="new-section")
         new_article = self.mk_article(new_section, title="New article")
         # test fallback to main
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'],
                           constants.COMMENTING_CLOSED)
         # test overriding settings in language
-        self.english.commenting_state = constants.COMMENTING_DISABLED
-        self.english.save_revision().publish()
+        self.main.commenting_state = constants.COMMENTING_DISABLED
+        self.main.save_revision().publish()
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'],
                           constants.COMMENTING_DISABLED)
@@ -156,7 +158,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_commenting_allowed(self):
         new_section = self.mk_section(
-            self.english, title="New Section", slug="new-section")
+            self.main, title="New Section", slug="new-section")
         new_article = self.mk_article(
             new_section, title="New article",
             commenting_state=constants.COMMENTING_OPEN)
@@ -209,10 +211,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'body-0-deleted': False,
             'body-0-order': 1,
             'body-0-type': 'paragraph',
-            'translations-TOTAL_FORMS': 1,
-            'translations-INITIAL_FORMS': 0,
-            'translations-MIN_NUM_FORMS': 0,
-            'translations-MAX_NUM_FORMS': 100,
             'tags': 'love, war',
             'action-publish': 'Publish'
         }
@@ -236,3 +234,19 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(tags__name='love').count(), 1)
         self.assertEquals(
             ArticlePage.objects.filter(tags__name='peace').count(), 1)
+
+
+@pytest.mark.django_db
+class TestTranslation(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+
+        self.mk_main()
+        self.main = SiteLanguage(
+            title='main',
+            code='en')
+        self.main.save_revision().publish()
+        section = SectionPage(
+            title='section', slug='section')
+        self.main.add_child(instance=section)
+        section.save_revision().publish()
