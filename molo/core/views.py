@@ -53,12 +53,14 @@ def add_translation(request, page_id, locale):
         title=new_title, slug=new_slug)
     page.get_parent().add_child(instance=translation)
     translation.save_revision()
-    translation.unpublish()
 
     language_relation = translation.languages.first()
     language_relation.language = language
     language_relation.save()
-    translation.save()
+    translation.save_revision()
+
+    # make sure new translation is in draft mode
+    translation.unpublish()
 
     PageTranslation.objects.get_or_create(
         page=page, translated_page=translation)

@@ -64,7 +64,7 @@ class TranslatablePageMixin(models.Model):
 
         if (SiteLanguage.objects.filter(is_main_language=True).exists() and
                 not self.languages.exists()):
-            l, _ = LanguageRelation.objects.get_or_create(
+            LanguageRelation.objects.create(
                 page=self,
                 language=SiteLanguage.objects.filter(
                     is_main_language=True).first())
