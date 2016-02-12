@@ -55,6 +55,24 @@ def homepages(context):
     }
 
 
+@register.inclusion_tag(
+    'core/tags/footerpage.html',
+    takes_context=True
+)
+def footer_page(context):
+    selected_language = context.get('selected_language')
+    request = context['request']
+    if selected_language:
+        footers = request.site.root_page.specific.footers(
+            selected_language)
+    else:
+        footers = footers.objects.none()
+    return {
+        'footers': footers,
+        'request': context['request'],
+    }
+
+
 @register.inclusion_tag('core/tags/breadcrumbs.html', takes_context=True)
 def breadcrumbs(context):
     self = context.get('self')
