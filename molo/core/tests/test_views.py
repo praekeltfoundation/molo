@@ -3,7 +3,7 @@ import pytest
 
 from django.test import TestCase
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage
+from molo.core.models import SiteLanguage, FooterPage
 
 
 @pytest.mark.django_db
@@ -36,6 +36,22 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<span class="active">Test page 1</span>')
+
+    def test_footer_pages(self):
+        self.footer = FooterPage(
+            title='Footer Page',
+            slug='footer-page')
+        self.main.add_child(instance=self.footer)
+
+        response = self.client.get('/')
+        self.assertContains(response, 'Footer Page')
+        self.assertContains(
+            response,
+            '<a href="/footer-page/">Footer Page</a>')
+
+        response = self.client.get(
+            '/your-mind/your-mind-subsection/')
+        self.assertContains(response, 'Footer Page')
 
     def test_section_listing(self):
         self.mk_articles(self.yourmind_sub, count=10)
