@@ -234,3 +234,19 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(tags__name='love').count(), 1)
         self.assertEquals(
             ArticlePage.objects.filter(tags__name='peace').count(), 1)
+
+    def test_site_languages(self):
+        self.english = SiteLanguage.objects.create(
+            title='english', code='en'
+        )
+        self.french = SiteLanguage.objects.create(
+            title='french', code='fr'
+        )
+        self.spanish = SiteLanguage.objects.create(
+            title='spanish', code='sp', is_active=False
+        )
+        response = self.client.get('/')
+        print response
+        self.assertContains(response, 'english')
+        self.assertContains(response, 'french')
+        self.assertNotContains(response, 'spanish')
