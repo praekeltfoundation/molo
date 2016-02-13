@@ -1,6 +1,7 @@
 from django import template
 
-from molo.core.models import SectionPage, Page, HomePage, SiteLanguage
+from molo.core.models import (
+    SectionPage, Page, HomePage, SiteLanguage, FooterPage)
 
 register = template.Library()
 
@@ -66,7 +67,7 @@ def footer_page(context):
         footers = request.site.root_page.specific.footers(
             selected_language)
     else:
-        footers = footers.objects.none()
+        footers = FooterPage.objects.none()
     return {
         'footers': footers,
         'request': context['request'],
