@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 
 from wagtail.wagtailcore.models import Site, Page
@@ -9,6 +10,15 @@ from molo.core.models import Main, SectionPage, ArticlePage
 
 
 class MoloTestCaseMixin(object):
+    def login(self):
+        # Create a user
+        user = get_user_model().objects.create_superuser(
+            username='superuser', email='superuser@email.com', password='pass')
+
+        # Login
+        self.client.login(username='superuser', password='pass')
+
+        return user
 
     def mk_main(self):
         # Create page content type
