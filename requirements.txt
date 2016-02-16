@@ -1,5 +1,5 @@
 Django>=1.8,<1.9
-https://github.com/torchbox/wagtail/tarball/master
+wagtail==1.4.master
 cookiecutter==1.0.0
 psycopg2cffi
 raven==5.0.0
