@@ -21,15 +21,6 @@ def health(request):
 
 
 def add_translation(request, page_id, locale):
-    def get_translated_page_for(page, locale):
-        translated_page = None
-        for t in page.translations.all():
-            if (hasattr(t.translated_page.specific, 'language') and
-                    t.translated_page.specific.language == locale):
-                translated_page = t.translated_page.specific
-                break
-        return translated_page
-
     _page = get_object_or_404(Page, id=page_id)
     page = _page.specific
 
@@ -39,7 +30,10 @@ def add_translation(request, page_id, locale):
         return redirect(reverse('wagtailadmin_home'))
 
     # redirect to edit page if translation already exists for this locale
-    translated_page = get_translated_page_for(page, locale)
+    translated_page = None
+    if hasattr(page.specific, 'get_translation_for'):
+        translated_page = page.specific.get_translation_for(locale)
+
     if translated_page:
         return redirect(
             reverse('wagtailadmin_pages:edit', args=[translated_page.id]))

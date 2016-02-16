@@ -138,3 +138,14 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response, 'class="button button-small button-secondary '
             'translation-translated " title="french">french</a>')
+
+    def test_adding_translation_that_already_exists_redirects_to_edit(self):
+        self.client.post(reverse(
+            'add_translation', args=[self.english_section.id, 'fr']))
+
+        response = self.client.post(reverse(
+            'add_translation', args=[self.english_section.id, 'fr']))
+        page = SectionPage.objects.get(
+            slug='french-translation-of-english-section')
+        self.assertRedirects(
+            response, reverse('wagtailadmin_pages:edit', args=[page.id]))

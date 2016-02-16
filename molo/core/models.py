@@ -55,6 +55,17 @@ class LanguageRelation(models.Model):
 
 
 class TranslatablePageMixin(models.Model):
+
+    def get_translation_for(self, locale):
+        translated = None
+        for t in self.specific.translations.all():
+            if t.translated_page.languages.filter(
+                    language__code=locale).exists():
+                translated = t.translated_page.languages.filter(
+                    language__code=locale).first().page.specific
+                break
+        return translated
+
     def save(self, *args, **kwargs):
         response = super(TranslatablePageMixin, self).save(*args, **kwargs)
 

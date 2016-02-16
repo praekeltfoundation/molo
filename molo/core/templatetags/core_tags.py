@@ -92,16 +92,6 @@ def breadcrumbs(context):
 @register.inclusion_tag(
     'core/admin/translations_actions.html', takes_context=True)
 def render_translations(context, page):
-    def get_translated_page(qs, locale):
-        translated = None
-        for t in qs:
-            if t.translated_page.languages.filter(
-                    language__code=locale).exists():
-                translated = t.translated_page.languages.filter(
-                    language__code=locale).first().page.specific
-                break
-        return translated
-
     if not hasattr(page.specific, 'translations'):
         return {}
 
@@ -109,12 +99,11 @@ def render_translations(context, page):
         (l.code, l.title)
         for l in SiteLanguage.objects.filter(is_main_language=False)]
 
-    translations_qs = page.specific.translations.all()
-
     return {
         'translations': [{
             'locale': {'title': lt, 'code': l},
-            'translated': get_translated_page(translations_qs, l)}
+            'translated': page.specific.get_translation_for(l)
+            if hasattr(page.specific, 'get_translation_for') else None}
             for l, lt in languages],
         'page': page
     }
