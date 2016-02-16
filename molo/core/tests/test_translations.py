@@ -89,7 +89,6 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         page.save_revision()
         response = self.client.get(reverse(
             'wagtailadmin_explore', args=[self.main.id]))
-        print response
         self.assertContains(
             response, 'class="button button-small button-secondary '
             'translation-translated translation-translated-draft" '
@@ -114,3 +113,25 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(response,
                             '<a href="/admin/pages/%s/edit/"'
                             % page.id)
+
+    def test_republishing_main_section_effecting_translated_section(self):
+        self.client.post(reverse(
+            'add_translation', args=[self.english_section.id, 'fr']))
+
+        page = SectionPage.objects.get(
+            slug='french-translation-of-english-section')
+        page.save_revision().publish()
+        response = self.client.get(reverse(
+            'wagtailadmin_explore', args=[self.main.id]))
+        self.assertContains(
+            response, 'class="button button-small button-secondary '
+            'translation-translated " title="french">french</a>')
+
+        self.english_section.unpublish()
+        self.english_section.save_revision().publish()
+
+        response = self.client.get(reverse(
+            'wagtailadmin_explore', args=[self.main.id]))
+        self.assertContains(
+            response, 'class="button button-small button-secondary '
+            'translation-translated " title="french">french</a>')
