@@ -48,10 +48,6 @@ class PageTranslation(models.Model):
     page = ParentalKey('wagtailcore.Page', related_name='translations')
     translated_page = models.ForeignKey('wagtailcore.Page', related_name='+')
 
-    panels = [
-        PageChooserPanel('translated_page', 'wagtailcore.Page'),
-    ]
-
 
 class LanguageRelation(models.Model):
     page = ParentalKey('wagtailcore.Page', related_name='languages')
