@@ -52,7 +52,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         # and not the french section
         self.assertContains(response, 'English section')
         self.assertNotContains(response,
-                               'French translation of English Section')
+                               'french translation of English section')
 
     def test_page_doesnt_have_translation_action_button_links_to_addview(self):
         response = self.client.get(reverse(
