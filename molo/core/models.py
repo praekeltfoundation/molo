@@ -45,12 +45,12 @@ class CommentedPageMixin(object):
 
 
 class PageTranslation(models.Model):
-    page = ParentalKey('wagtailcore.Page', related_name='translations')
+    page = models.ForeignKey('wagtailcore.Page', related_name='translations')
     translated_page = models.ForeignKey('wagtailcore.Page', related_name='+')
 
 
 class LanguageRelation(models.Model):
-    page = ParentalKey('wagtailcore.Page', related_name='languages')
+    page = models.ForeignKey('wagtailcore.Page', related_name='languages')
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 

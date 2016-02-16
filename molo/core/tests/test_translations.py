@@ -127,8 +127,11 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             response, 'class="button button-small button-secondary '
             'translation-translated " title="french">french</a>')
 
-        self.english_section.unpublish()
-        self.english_section.save_revision().publish()
+        self.client.post(reverse(
+            'wagtailadmin_pages:unpublish', args=[self.english_section.id]))
+
+        self.english_section = SectionPage.objects.get(
+            id=self.english_section.id)
 
         response = self.client.get(reverse(
             'wagtailadmin_explore', args=[self.main.id]))
