@@ -181,19 +181,6 @@ class LanguagePage(CommentedPageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    def homepages(self):
-        return HomePage.objects.live().child_of(self)
-
-    def sections(self):
-        return SectionPage.objects.live().child_of(self)
-
-    def latest_articles(self):
-        return ArticlePage.objects.live().descendant_of(self).filter(
-            featured_in_latest=True).order_by('-latest_revision_created_at')
-
-    def footers(self):
-        return FooterPage.objects.live().child_of(self)
-
     class Meta:
         verbose_name = _('Language')
 
