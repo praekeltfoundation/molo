@@ -228,7 +228,7 @@ class SiteLanguage(models.Model):
         self.is_main_language = True
         return super(SiteLanguage, self).save(*args, **kwargs)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return "%s" % (self.title,)
 
     class Meta:
