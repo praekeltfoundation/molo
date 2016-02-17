@@ -4,12 +4,12 @@ python:
   - "2.7"
   - "pypy"
 env:
-  - COVERAGE=true TEST_RUNNER="py.test --cov molo"
+  - COVERAGE=true TEST_RUNNER="py.test"
   - COVERAGE=false TEST_RUNNER="py.test"
 matrix:
   exclude:
     - python: "pypy"
-      env: COVERAGE=true TEST_RUNNER="py.test --cov molo"
+      env: COVERAGE=true TEST_RUNNER="py.test"
     - python: "2.7"
       env: COVERAGE=false TEST_RUNNER="py.test"
 cache:
@@ -19,6 +19,7 @@ install:
   - pip install --upgrade pip --cache-dir $HOME/.pip-cache/
   - pip install coveralls coverage --cache-dir $HOME/.pip-cache/
   - pip install flake8 --cache-dir $HOME/.pip-cache/
+  - pip install "Django >=1.8,<1.9"
   - pip install -r requirements-dev.txt --cache-dir $HOME/.pip-cache/
   - pip install -e . --cache-dir $HOME/.pip-cache/
 script:

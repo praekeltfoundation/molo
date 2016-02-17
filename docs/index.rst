@@ -20,6 +20,7 @@ Contents
 
    installation
    getting-started
+   plugins
    features
    release-notes
 

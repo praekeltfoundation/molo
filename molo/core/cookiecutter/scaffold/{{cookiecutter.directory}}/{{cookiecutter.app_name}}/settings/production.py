@@ -41,6 +41,24 @@ COMPRESS_OFFLINE = True
 #     }
 # }
 
+# Setup for CAS
+ENABLE_SSO = True
+
+MIDDLEWARE_CLASSES += (
+    'molo.core.middleware.MoloCASMiddleware',
+    'molo.core.middleware.Custom403Middleware',
+)
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'molo.core.backends.MoloCASBackend',
+)
+
+CAS_SERVER_URL = ''
+CAS_ADMIN_PREFIX = '/admin/'
+LOGIN_URL = '/accounts/login/'
+CAS_VERSION = '3'
 
 try:
     from .local import *
