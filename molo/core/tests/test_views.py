@@ -2,6 +2,9 @@ import json
 import pytest
 
 from django.test import TestCase
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -98,5 +101,15 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_health(self):
         response = self.client.get('/health/')
+        self.assertEquals(
+            response.status_code, 200)
+
+    def test_issue_with_django_admin_not_loading(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        response = self.client.get(reverse('admin:index'))
+        print response
         self.assertEquals(
             response.status_code, 200)
