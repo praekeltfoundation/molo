@@ -110,6 +110,4 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.client.login(username='testuser', password='password')
 
         response = self.client.get(reverse('admin:index'))
-        print response
-        self.assertEquals(
-            response.status_code, 200)
+        self.assertEquals(response.status_code, 200)
