@@ -35,6 +35,11 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'wagtailadmin_explore', args=[self.main.id]))
         self.assertContains(response, 'English section')
 
+    def test_wagtail_root_page_has_no_translations(self):
+        response = self.client.get(reverse(
+            'wagtailadmin_explore_root'))
+        self.assertNotContains(response, 'french')
+
     def test_that_all_translation_languages_are_listed(self):
         response = self.client.get(reverse(
             'wagtailadmin_explore', args=[self.main.id]))
