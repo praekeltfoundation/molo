@@ -25,12 +25,13 @@ def generate_slug(text, tail_number=0):
     based on implementation in jmbo.utils
     https://github.com/praekelt/jmbo/blob/develop/jmbo/utils/__init__.py
     """
-    # use django slugify filter to slugify
-    slug = cautious_slugify(text)
 
     # Empty slugs are ugly (eg. '-1' may be generated) so force non-empty
-    if not slug:
-        slug = 'no-title'
+    if not text:
+        text = 'no-title'
+
+    # use django slugify filter to slugify
+    slug = cautious_slugify(text)
 
     values_list = Page.objects.filter(
         slug__startswith=slug

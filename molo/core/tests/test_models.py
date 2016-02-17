@@ -246,7 +246,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             title='spanish', code='sp', is_active=False
         )
         response = self.client.get('/')
-        print response
+
         self.assertContains(response, 'english')
         self.assertContains(response, 'french')
         self.assertNotContains(response, 'spanish')
