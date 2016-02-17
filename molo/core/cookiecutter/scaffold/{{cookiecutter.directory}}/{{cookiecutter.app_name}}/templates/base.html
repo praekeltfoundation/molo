@@ -90,14 +90,9 @@
         {% endblock %}
 
         {% block footer %}
-        {% if language_page.footers %}
-          <ul>
-          {% for page in language_page.footers %}
-          <li><a href="{% pageurl page %}">{{page.title}}</a></li>
-          {% endfor %}
-          </ul>
-        {% endif %}
+          {% footer_page %}
         {% endblock %}
+
     </body>
 </html>
 {% endraw %}

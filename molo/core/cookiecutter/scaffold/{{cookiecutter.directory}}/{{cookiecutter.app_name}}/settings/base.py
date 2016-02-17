@@ -52,6 +52,9 @@ INSTALLED_APPS = (
     'taggit',
     'modelcluster',
 
+    'molo.core',
+    '{{cookiecutter.app_name}}',
+
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
     'wagtail.wagtaildocs',
@@ -65,8 +68,6 @@ INSTALLED_APPS = (
     'wagtail.wagtailforms',
     'wagtailmodeladmin',
 
-    'molo.core',
-    '{{cookiecutter.app_name}}',
     'mptt',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}

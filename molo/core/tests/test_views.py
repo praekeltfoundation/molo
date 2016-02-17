@@ -3,15 +3,19 @@ import pytest
 
 from django.test import TestCase
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.models import SiteLanguage, FooterPage
 
 
 @pytest.mark.django_db
 class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        self.english = SiteLanguage.objects.create(
+            title='english', code='en'
+        )
         self.mk_main()
         self.yourmind = self.mk_section(
-            self.english, title='Your mind')
+            self.main, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
 
@@ -22,16 +26,32 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'Home')
 
-        response = self.client.get('/english/your-mind/')
+        response = self.client.get('/your-mind/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, '<span class="active">Your mind</span>')
 
         response = self.client.get(
-            '/english/your-mind/your-mind-subsection/test-page-1/')
+            '/your-mind/your-mind-subsection/test-page-1/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(
             response,
             '<span class="active">Test page 1</span>')
+
+    def test_footer_pages(self):
+        self.footer = FooterPage(
+            title='Footer Page',
+            slug='footer-page')
+        self.main.add_child(instance=self.footer)
+
+        response = self.client.get('/')
+        self.assertContains(response, 'Footer Page')
+        self.assertContains(
+            response,
+            '<a href="/footer-page/">Footer Page</a>')
+
+        response = self.client.get(
+            '/your-mind/your-mind-subsection/')
+        self.assertContains(response, 'Footer Page')
 
     def test_section_listing(self):
         self.mk_articles(self.yourmind_sub, count=10)
@@ -43,12 +63,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Your mind')
         self.assertContains(
             response,
-            '<a href="/english/your-mind/">Your mind</a>')
+            '<a href="/your-mind/">Your mind</a>')
         self.assertContains(response, '<div class="articles nav yellow">')
 
         # Child page should have extra style from section
         response = self.client.get(
-            '/english/your-mind/your-mind-subsection/test-page-1/')
+            '/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(response, '<div class="articles nav yellow">')
 
     def test_latest_listing(self):
@@ -58,18 +78,18 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Latest')
         self.assertContains(
             response,
-            '<a href="/english/your-mind/your-mind-subsection/test-page-8/">'
+            '<a href="/your-mind/your-mind-subsection/test-page-8/">'
             'Test page 8</a>')
         self.assertContains(
             response,
-            '<a href="/english/your-mind/your-mind-subsection/test-page-9/">'
+            '<a href="/your-mind/your-mind-subsection/test-page-9/">'
             'Test page 9</a>')
 
     def test_article_page(self):
         self.mk_articles(self.yourmind_sub, count=10)
 
         response = self.client.get(
-            '/english/your-mind/your-mind-subsection/test-page-1/')
+            '/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
             '<span class="active">Test page 1</span>')
@@ -84,7 +104,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                          'dolor <em>sit amet</em>'}]))
 
         response = self.client.get(
-            '/english/your-mind/your-mind-subsection/test-page-1/')
+            '/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
             '<strong>Lorem ipsum</strong> dolor <em>sit amet</em>')

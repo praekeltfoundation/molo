@@ -1,14 +1,24 @@
 import json
 
 from django.contrib.contenttypes.models import ContentType
-from django.utils.text import slugify
+from django.contrib.auth import get_user_model
 
 from wagtail.wagtailcore.models import Site, Page
 
-from molo.core.models import LanguagePage, Main, SectionPage, ArticlePage
+from molo.core.models import Main, SectionPage, ArticlePage
+from molo.core.utils import generate_slug
 
 
 class MoloTestCaseMixin(object):
+    def login(self):
+        # Create a user
+        user = get_user_model().objects.create_superuser(
+            username='superuser', email='superuser@email.com', password='pass')
+
+        # Login
+        self.client.login(username='superuser', password='pass')
+
+        return user
 
     def mk_main(self):
         # Create page content type
@@ -43,13 +53,6 @@ class MoloTestCaseMixin(object):
         )
         self.main.save_revision().publish()
 
-        self.english = LanguagePage(
-            title='English',
-            code='en',
-            slug='english')
-        self.main.add_child(instance=self.english)
-        self.english.save_revision().publish()
-
         # Create a site with the new homepage set as the root
         Site.objects.all().delete()
         self.site = Site.objects.create(
@@ -65,7 +68,7 @@ class MoloTestCaseMixin(object):
             })
             data.update(kwargs)
             data.update({
-                'slug': slugify(data['title'])
+                'slug': generate_slug(data['title'])
             })
             section = SectionPage(**data)
             parent.add_child(instance=section)
@@ -87,7 +90,7 @@ class MoloTestCaseMixin(object):
             })
             data.update(kwargs)
             data.update({
-                'slug': slugify(data['title'])
+                'slug': generate_slug(data['title'])
             })
             article = ArticlePage(**data)
             parent.add_child(instance=article)
