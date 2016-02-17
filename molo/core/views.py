@@ -24,15 +24,13 @@ def add_translation(request, page_id, locale):
     _page = get_object_or_404(Page, id=page_id)
     page = _page.specific
 
-    if not hasattr(page, 'translations'):
+    if not hasattr(page, 'get_translation_for'):
         messages.add_message(
             request, messages.INFO, _('That page is not translatable.'))
         return redirect(reverse('wagtailadmin_home'))
 
     # redirect to edit page if translation already exists for this locale
-    translated_page = None
-    if hasattr(page.specific, 'get_translation_for'):
-        translated_page = page.specific.get_translation_for(locale)
+    translated_page = page.get_translation_for(locale)
 
     if translated_page:
         return redirect(

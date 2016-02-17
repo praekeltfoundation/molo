@@ -154,3 +154,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             slug='french-translation-of-english-section')
         self.assertRedirects(
             response, reverse('wagtailadmin_pages:edit', args=[page.id]))
+
+    def test_adding_translation_to_non_translatable_page_redirects_home(self):
+        response = self.client.post(reverse(
+            'add_translation', args=[self.main.id, 'fr']))
+        self.assertRedirects(response, reverse('wagtailadmin_home'))
