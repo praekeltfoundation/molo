@@ -1,5 +1,14 @@
 CHANGE LOG
 ==========
+2.6.8
+-----
+- updated plugins instructions
+- updated the polls plugin in the documentation
+
+2.6.7
+-----
+- core urls are not defined correctly
+
 2.6.6
 -----
 - Bug fixes

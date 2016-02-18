@@ -23,6 +23,7 @@ else:
     urlpatterns = patterns('', )
 
 urlpatterns += patterns(
+    '',
     url(r'^django-admin/', include(admin.site.urls)),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
