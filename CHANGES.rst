@@ -1,13 +1,17 @@
 CHANGE LOG
 ==========
+2.6.9
+-----
+- Fixed the issue with CAS not being compatible with normal login
+
 2.6.8
 -----
-- updated plugins instructions
-- updated the polls plugin in the documentation
+- Updated plugins instructions
+- Updated the polls plugin in the documentation
 
 2.6.7
 -----
-- core urls are not defined correctly
+- Core urls are not defined correctly
 
 2.6.6
 -----
