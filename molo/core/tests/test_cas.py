@@ -137,3 +137,12 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
         response = client.get('/profiles/logout/?next=/health/')
         self.assertRedirects(response, '/health/')
+
+    def test_normal_views_after_login_when_cas_enabled(self):
+        client = Client()
+        User.objects.create_user(
+            username='testuser', password='password', email='test@email.com')
+        client.login(username='testuser', password='password')
+
+        response = client.get('/')
+        self.assertEquals(response.status_code, 200)
