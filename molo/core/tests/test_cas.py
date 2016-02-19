@@ -139,6 +139,8 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         self.assertRedirects(response, '/health/')
 
     def test_normal_views_after_login_when_cas_enabled(self):
+        self.mk_main()
+
         client = Client()
         User.objects.create_user(
             username='testuser', password='password', email='test@email.com')
