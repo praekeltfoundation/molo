@@ -1,5 +1,9 @@
 CHANGE LOG
 ==========
+2.6.10
+------
+- Ensure CAS only applies to admin views
+
 2.6.9
 -----
 - Fixed the issue with CAS not being compatible with normal login
