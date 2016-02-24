@@ -20,6 +20,7 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
+from django.conf import settings
 
 
 class CommentedPageMixin(object):
@@ -60,9 +61,9 @@ class TranslatablePageMixin(models.Model):
         translated = None
         for t in self.specific.translations.all():
             if t.translated_page.languages.filter(
-                    language__code=locale).exists():
+                    language__locale=locale).exists():
                 translated = t.translated_page.languages.filter(
-                    language__code=locale).first().page.specific
+                    language__locale=locale).first().page.specific
                 break
         return translated
 
@@ -199,18 +200,13 @@ LanguagePage.content_panels = [
 
 
 class SiteLanguage(models.Model):
-    title = models.CharField(
+    locale = models.CharField(
         verbose_name=_('language name'),
+        choices=settings.LANGUAGES,
         max_length=255,
         blank=False,
-        help_text=_("The page title as you'd like it to be seen by the public")
+        help_text=_("Site language")
     )
-
-    code = models.CharField(
-        max_length=255,
-        verbose_name=_('language code'),
-        help_text=_('The language code as specified in iso639-2'))
-
     is_main_language = models.BooleanField(
         default=False,
         editable=False,
@@ -229,7 +225,7 @@ class SiteLanguage(models.Model):
         return super(SiteLanguage, self).save(*args, **kwargs)
 
     def __str__(self):  # pragma: no cover
-        return "%s" % (self.title,)
+        return "%s" % (self.get_locale_display(),)
 
     class Meta:
         verbose_name = _('Language')

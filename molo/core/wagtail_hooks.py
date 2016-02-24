@@ -11,7 +11,7 @@ class LanguageModelAdmin(ModelAdmin):
     model = SiteLanguage
     menu_label = 'Language'
     menu_icon = 'doc-full-inverse'
-    list_display = ('title', 'is_main_language', 'is_active')
+    list_display = ('locale', 'is_main_language', 'is_active')
     search_fields = ('title',)
     list_per_page = 20
     add_to_settings_menu = True

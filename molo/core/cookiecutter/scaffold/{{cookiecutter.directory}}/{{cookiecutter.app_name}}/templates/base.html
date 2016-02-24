@@ -71,7 +71,7 @@
         <ul>
             {% trans "Site Language:" %}
             {% for language in languages %}
-            <a href="{% url 'locale_set' language.code %}">{{language.title}} </a>
+            <a href="{% url 'locale_set' language.locale %}">{{language}} </a>
             {% endfor %}
         </ul>
         {% endif %}

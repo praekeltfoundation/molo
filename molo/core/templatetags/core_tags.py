@@ -96,14 +96,14 @@ def render_translations(context, page):
         return {}
 
     languages = [
-        (l.code, l.title)
+        (l.locale, str(l))
         for l in SiteLanguage.objects.filter(is_main_language=False)]
 
     return {
         'translations': [{
-            'locale': {'title': lt, 'code': l},
-            'translated': page.specific.get_translation_for(l)
+            'locale': {'title': title, 'code': code},
+            'translated': page.specific.get_translation_for(code)
             if hasattr(page.specific, 'get_translation_for') else None}
-            for l, lt in languages],
+            for code, title in languages],
         'page': page
     }

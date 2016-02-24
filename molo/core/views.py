@@ -23,7 +23,6 @@ def health(request):
 def add_translation(request, page_id, locale):
     _page = get_object_or_404(Page, id=page_id)
     page = _page.specific
-
     if not hasattr(page, 'get_translation_for'):
         messages.add_message(
             request, messages.INFO, _('That page is not translatable.'))
@@ -31,21 +30,18 @@ def add_translation(request, page_id, locale):
 
     # redirect to edit page if translation already exists for this locale
     translated_page = page.get_translation_for(locale)
-
     if translated_page:
         return redirect(
             reverse('wagtailadmin_pages:edit', args=[translated_page.id]))
 
     # create translation and redirect to edit page
-    language = get_object_or_404(SiteLanguage, code=locale)
-
-    new_title = language.title + " translation of %s" % page.title
+    language = get_object_or_404(SiteLanguage, locale=locale)
+    new_title = str(language) + " translation of %s" % page.title
     new_slug = generate_slug(new_title)
     translation = page.__class__(
         title=new_title, slug=new_slug)
     page.get_parent().add_child(instance=translation)
     translation.save_revision()
-
     language_relation = translation.languages.first()
     language_relation.language = language
     language_relation.save()
@@ -53,9 +49,7 @@ def add_translation(request, page_id, locale):
 
     # make sure new translation is in draft mode
     translation.unpublish()
-
     PageTranslation.objects.get_or_create(
         page=page, translated_page=translation)
-
     return redirect(
         reverse('wagtailadmin_pages:edit', args=[translation.id]))

@@ -17,7 +17,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
 
     def test_slugify(self):
         self.english = SiteLanguage.objects.create(
-            title='english', code='en'
+            locale='en',
         )
         self.mk_main()
 

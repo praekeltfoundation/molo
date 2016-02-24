@@ -14,7 +14,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.english = SiteLanguage.objects.create(
-            title='english', code='en'
+            locale='en',
         )
         self.mk_main()
         self.yourmind = self.mk_section(
