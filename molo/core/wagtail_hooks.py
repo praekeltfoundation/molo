@@ -15,7 +15,7 @@ class LanguageModelAdmin(ModelAdmin):
     search_fields = ('title',)
     list_per_page = 20
     add_to_settings_menu = True
-    ordering = ('is_main_language',)
+    ordering = ('-is_main_language', 'locale')
     menu_order = 100
 
 wagtailmodeladmin_register(LanguageModelAdmin)
