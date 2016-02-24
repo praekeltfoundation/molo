@@ -11,11 +11,11 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
     def setUp(self):
         # Creates Main language
         self.english = SiteLanguage.objects.create(
-            title='english', code='en'
+            locale='en',
         )
         # Creates translation Language
         self.french = SiteLanguage.objects.create(
-            title='french', code='fr'
+            locale='fr',
         )
 
         # Creates main page
@@ -38,15 +38,15 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
     def test_wagtail_root_page_has_no_translations(self):
         response = self.client.get(reverse(
             'wagtailadmin_explore_root'))
-        self.assertNotContains(response, 'french')
+        self.assertNotContains(response, 'French')
 
     def test_that_all_translation_languages_are_listed(self):
         response = self.client.get(reverse(
             'wagtailadmin_explore', args=[self.main.id]))
         # Checks main language is not listed as translation language
-        self.assertNotContains(response, 'title="english">english')
+        self.assertNotContains(response, 'title="English">English')
         # Checks if translation language exists
-        self.assertContains(response, 'title="french">french')
+        self.assertContains(response, 'title="French">French')
 
     def test_that_only_main_language_pages_are_listed(self):
         self.client.post(reverse(
@@ -57,7 +57,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         # and not the french section
         self.assertContains(response, 'English section')
         self.assertNotContains(response,
-                               'french translation of English section')
+                               'French translation of English section')
 
     def test_page_doesnt_have_translation_action_button_links_to_addview(self):
         response = self.client.get(reverse(
@@ -71,7 +71,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'add_translation', args=[self.english_section.id, 'fr']))
         page = SectionPage.objects.get(
             slug='french-translation-of-english-section')
-        self.assertEquals(page.languages.all()[0].language.title, 'french')
+        self.assertEquals(str(page.languages.all()[0].language), 'French')
 
     def test_draft_translations_have_additional_css_clsss(self):
         self.client.post(reverse(
@@ -86,7 +86,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response, 'class="button button-small button-secondary '
             'translation-translated translation-translated-draft" '
-            'title="french">french</a>')
+            'title="French">French</a>')
 
         # Ckecks when the translated page is Draft + live
         # the translation button has the right css
@@ -97,7 +97,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response, 'class="button button-small button-secondary '
             'translation-translated translation-translated-draft" '
-            'title="french">french</a>')
+            'title="French">French</a>')
         # Ckecks when the translated page is Publish
         # the translation button has the right css
         page.save_revision().publish()
@@ -106,7 +106,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         self.assertContains(
             response, 'class="button button-small button-secondary '
-            'translation-translated " title="french">french</a>')
+            'translation-translated " title="French">French</a>')
 
     def test_if_page_has_a_translation_the_action_links_to_the_edit_page(self):
         self.client.post(reverse(
@@ -122,7 +122,6 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
     def test_republishing_main_section_effecting_translated_section(self):
         self.client.post(reverse(
             'add_translation', args=[self.english_section.id, 'fr']))
-
         page = SectionPage.objects.get(
             slug='french-translation-of-english-section')
         page.save_revision().publish()
@@ -130,7 +129,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'wagtailadmin_explore', args=[self.main.id]))
         self.assertContains(
             response, 'class="button button-small button-secondary '
-            'translation-translated " title="french">french</a>')
+            'translation-translated " title="French">French</a>')
 
         self.client.post(reverse(
             'wagtailadmin_pages:unpublish', args=[self.english_section.id]))
@@ -142,7 +141,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'wagtailadmin_explore', args=[self.main.id]))
         self.assertContains(
             response, 'class="button button-small button-secondary '
-            'translation-translated " title="french">french</a>')
+            'translation-translated " title="French">French</a>')
 
     def test_adding_translation_that_already_exists_redirects_to_edit(self):
         self.client.post(reverse(

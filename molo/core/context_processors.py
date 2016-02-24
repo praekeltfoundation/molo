@@ -10,4 +10,4 @@ def locale(request):
         'locale_code': locale_code,
         'languages': languages,
         'selected_language': SiteLanguage.objects.filter(
-            code=locale_code).first()}
+            locale=locale_code).first()}

@@ -18,7 +18,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.english = SiteLanguage.objects.create(
-            title='english', code='en'
+            locale='en',
         )
         # Create an image for running tests on
         self.image = Image.objects.create(
@@ -237,16 +237,16 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_site_languages(self):
         self.english = SiteLanguage.objects.create(
-            title='english', code='en'
+            locale='en',
         )
         self.french = SiteLanguage.objects.create(
-            title='french', code='fr'
+            locale='fr',
         )
         self.spanish = SiteLanguage.objects.create(
-            title='spanish', code='sp', is_active=False
+            locale='sp', is_active=False
         )
         response = self.client.get('/')
 
-        self.assertContains(response, 'english')
-        self.assertContains(response, 'french')
-        self.assertNotContains(response, 'spanish')
+        self.assertContains(response, 'English')
+        self.assertContains(response, 'French')
+        self.assertNotContains(response, 'Spanish')
