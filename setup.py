@@ -38,7 +38,7 @@ setup(name='molo.core',
       install_requires=requires,
       tests_require=requires_dev,
       dependency_links = [
-          'https://github.com/torchbox/wagtail/tarball/master#egg=wagtail-1.4a0',
+          'https://github.com/takeflight/wagtail/tarball/feature/page-listing-buttons#egg=wagtail-1.4a0',
       ],
       entry_points={
           'console_scripts': ['molo = molo.core.scripts.cli:main'],
