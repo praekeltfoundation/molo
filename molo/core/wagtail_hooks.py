@@ -57,7 +57,7 @@ def page_listing_buttons(page, page_perms, is_parent=False):
         page_perms=page_perms,
         is_parent=is_parent,
         attrs={'target': '_blank'}, priority=60)
-    translations_group.template_name = 'core/translation_buttons.html'
+    translations_group.template_name = 'wagtail/translation_buttons.html'
     yield translations_group
 
 

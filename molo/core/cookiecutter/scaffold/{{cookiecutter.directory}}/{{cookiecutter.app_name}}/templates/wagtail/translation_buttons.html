@@ -1,0 +1,15 @@
+{% raw %}
+<style type="text/css">
+.listing .translation-translated {border-color: #43b1b0; background-color: #43b1b0; color: #fff }
+.listing .translation-translated-draft {background-color: #900;border-color: #900;}
+</style>
+<div class="dropdown dropdown-button">
+    <input type="button" value="{{label}}" class="button">
+    <div class="dropdown-toggle icon icon-arrow-down"></div>
+    <ul role="menu">
+    {% for button in buttons %}
+        <li>{{ button|safe }}</li>
+      {% endfor %}
+    </ul>
+</div>
+{% endraw %}
