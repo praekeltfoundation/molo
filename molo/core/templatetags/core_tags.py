@@ -1,7 +1,7 @@
 from django import template
 
 from molo.core.models import (
-    SectionPage, Page, HomePage, SiteLanguage, FooterPage)
+    SectionPage, Page, BannerPage, SiteLanguage, FooterPage)
 
 register = template.Library()
 
@@ -41,17 +41,17 @@ def latest_listing_homepage(context, num_count=5):
     }
 
 
-@register.inclusion_tag('core/tags/homepages.html', takes_context=True)
-def homepages(context):
+@register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
+def bannerpages(context):
     selected_language = context.get('selected_language')
     request = context['request']
     if selected_language:
-        homepages = request.site.root_page.specific.homepages(
+        bannerpages = request.site.root_page.specific.bannerpages(
             selected_language)
     else:
-        homepages = HomePage.objects.none()
+        bannerpages = BannerPage.objects.none()
     return {
-        'homepages': homepages,
+        'bannerpages': bannerpages,
         'request': context['request']
     }
 

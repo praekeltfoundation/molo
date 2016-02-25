@@ -1,0 +1,17 @@
+{% raw %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% if bannerpages %}
+{% for bannerpage in bannerpages %}
+<div class="header">
+  {% if bannerpage.banner %}
+    {% if bannerpage.banner_link_page %}
+    <a href="{% pageurl bannerpage.banner_link_page %}">{% image bannerpage.banner width-320 %}</a>
+    {% else %}
+    {% image bannerpage.banner width-320 %}
+    {% endif %}
+  {% endif %}
+</div>
+{% endfor%}
+{% endif %}
+{% endraw %}
