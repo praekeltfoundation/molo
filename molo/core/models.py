@@ -55,7 +55,7 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
-class TranslatablePageMixin(models.Model):
+class TranslatablePageMixin(object):
 
     def get_translation_for(self, locale):
         translated = None
@@ -78,11 +78,8 @@ class TranslatablePageMixin(models.Model):
                     is_main_language=True).first())
         return response
 
-    class Meta:
-        abstract = True
 
-
-class HomePage(CommentedPageMixin, TranslatablePageMixin, Page):
+class BannerPage(TranslatablePageMixin, Page):
     banner = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -99,34 +96,19 @@ class HomePage(CommentedPageMixin, TranslatablePageMixin, Page):
         help_text=_('Optional page to which the banner will link to')
     )
 
-    commenting_state = models.CharField(
-        max_length=1,
-        choices=constants.COMMENTING_STATE_CHOICES,
-        blank=True,
-        null=True)
-    commenting_open_time = models.DateTimeField(null=True, blank=True)
-    commenting_close_time = models.DateTimeField(null=True, blank=True)
-
     parent_page_types = ['core.Main']
     subpage_types = []
 
-HomePage.content_panels = [
+BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    MultiFieldPanel(
-        [
-            FieldPanel('commenting_state'),
-            FieldPanel('commenting_open_time'),
-            FieldPanel('commenting_close_time'),
-        ],
-        heading="Commenting Settings",)
 ]
 
 
 class Main(CommentedPageMixin, Page):
     parent_page_types = []
-    subpage_types = ['core.HomePage', 'core.SectionPage',
+    subpage_types = ['core.BannerPage', 'core.SectionPage',
                      'core.FooterPage']
     commenting_state = models.CharField(
         max_length=1,
@@ -136,8 +118,8 @@ class Main(CommentedPageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    def homepages(self, selected_language):
-        return HomePage.objects.live().child_of(self).filter(
+    def bannerpages(self, selected_language):
+        return BannerPage.objects.live().child_of(self).filter(
             languages__language=selected_language)
 
     def sections(self, selected_language):
