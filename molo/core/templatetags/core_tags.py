@@ -41,8 +41,8 @@ def latest_listing_homepage(context, num_count=5):
     }
 
 
-@register.inclusion_tag('core/tags/bannerpage.html', takes_context=True)
-def bannerpage(context):
+@register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
+def bannerpages(context):
     selected_language = context.get('selected_language')
     request = context['request']
     if selected_language:
