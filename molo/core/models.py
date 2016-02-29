@@ -79,7 +79,15 @@ class TranslatablePageMixin(object):
         return response
 
 
+class BannerIndexPage(Page):
+    parent_page_types = []
+    subpage_types = ['BannerPage']
+
+
 class BannerPage(TranslatablePageMixin, Page):
+    parent_page_types = ['core.BannerIndexPage']
+    subpage_types = []
+
     banner = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -96,9 +104,6 @@ class BannerPage(TranslatablePageMixin, Page):
         help_text=_('Optional page to which the banner will link to')
     )
 
-    parent_page_types = ['core.Main']
-    subpage_types = []
-
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
@@ -108,8 +113,7 @@ BannerPage.content_panels = [
 
 class Main(CommentedPageMixin, Page):
     parent_page_types = []
-    subpage_types = ['core.BannerPage', 'core.SectionPage',
-                     'core.FooterPage']
+    subpage_types = []
     commenting_state = models.CharField(
         max_length=1,
         choices=constants.COMMENTING_STATE_CHOICES,
@@ -153,7 +157,7 @@ class LanguagePage(CommentedPageMixin, Page):
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
 
-    parent_page_types = ['core.Main']
+    parent_page_types = []
     subpage_types = []
 
     commenting_state = models.CharField(
@@ -211,6 +215,11 @@ class SiteLanguage(models.Model):
 
     class Meta:
         verbose_name = _('Language')
+
+
+class SectionIndexPage(Page):
+    parent_page_types = []
+    subpage_types = ['SectionPage']
 
 
 class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
@@ -425,8 +434,13 @@ ArticlePage.promote_panels = [
         "Common page configuration", "collapsible collapsed")]
 
 
+class FooterIndexPage(Page):
+    parent_page_types = []
+    subpage_types = ['FooterPage']
+
+
 class FooterPage(ArticlePage):
-    parent_page_types = ['core.Main']
+    parent_page_types = ['FooterIndexPage']
     subpage_types = []
 
 FooterPage.content_panels = ArticlePage.content_panels
