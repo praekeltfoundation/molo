@@ -274,6 +274,16 @@ class ArticlePage(CommentedPageMixin, Page, TagSearchable):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    social_media_title = models.TextField(null=True, blank=True)
+    social_media_description = models.TextField(null=True, blank=True)
+    social_media_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     body = StreamField([
         ('heading', blocks.CharBlock(classname="full title")),
         ('paragraph', MarkDownBlock()),
@@ -355,7 +365,14 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings",)
+        heading="Commenting Settings",),
+    MultiFieldPanel(
+        [
+            FieldPanel('social_media_title'),
+            FieldPanel('social_media_description'),
+            FieldPanel('social_media_image'),
+        ],
+        heading="Social Media",)
 ]
 
 ArticlePage.promote_panels = [
