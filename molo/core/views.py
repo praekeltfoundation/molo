@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.utils.translation import LANGUAGE_SESSION_KEY
 
 
@@ -10,3 +10,7 @@ def locale_set(request, locale):
 
 def health(request):
     return HttpResponse(status=200)
+
+
+def import_from_ucd(request):
+    return render(request, 'import_from_ucd.html')
