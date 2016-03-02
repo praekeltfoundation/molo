@@ -1,5 +1,10 @@
 CHANGE LOG
 ==========
+
+2.6.11
+------
+- Added social media fields
+
 2.6.10
 ------
 - Ensure CAS only applies to admin views
