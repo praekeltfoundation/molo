@@ -114,7 +114,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_versions_comparison(self):
         response = self.client.get(reverse('versions'))
-        print response
         self.assertContains(
             response,
             'Molo')
