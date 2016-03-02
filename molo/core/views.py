@@ -56,4 +56,4 @@ def add_translation(request, page_id, locale):
 
 
 def import_from_ucd(request):
-    return render(request, 'import_from_ucd.html')
+    return render(request, 'admin/import_from_ucd.html')
