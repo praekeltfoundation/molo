@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.utils.translation import ugettext as _
 
@@ -53,3 +53,7 @@ def add_translation(request, page_id, locale):
         page=page, translated_page=translation)
     return redirect(
         reverse('wagtailadmin_pages:edit', args=[translation.id]))
+
+
+def import_from_ucd(request):
+    return render(request, 'import_from_ucd.html')
