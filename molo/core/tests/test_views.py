@@ -111,3 +111,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(reverse('admin:index'))
         self.assertEquals(response.status_code, 200)
+
+    def test_versions_comparison(self):
+        response = self.client.get(reverse('versions'))
+        print response
+        self.assertContains(
+            response,
+            'Molo')

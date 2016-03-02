@@ -18,7 +18,8 @@ def versions(request):
     comparison_url = "https://github.com/praekelt/%s/compare/%s...%s"
     packages = [('molo.core', 'Molo'), ('molo.profiles', 'Profiles'),
                 ('molo.commenting', 'Commenting'), ('molo.polls', 'Polls'),
-                ('molo.yourwords', 'YourWords')]
+                ('molo.yourwords', 'YourWords'), ('molo.servicedirectory',
+                'Srvice Directory')]
     packages_info = []
     for package in packages:
         try:
@@ -41,7 +42,7 @@ def versions(request):
             packages_info.append((package[1], pypi_version, "-",
                                  ""))
 
-    return render(request, 'versions/versions.html', {
+    return render(request, 'admin/versions.html', {
         'packages_info': packages_info,
     })
 
