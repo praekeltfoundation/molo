@@ -9,8 +9,8 @@ from django.contrib.auth.models import User
 from molo.core.models import ArticlePage
 from molo.core import constants
 from molo.core.tests.base import MoloTestCaseMixin
-
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+from wagtail.wagtailimages.models import Image
+from wagtail.wagtailimages.tests.utils import get_test_image_file
 
 
 @pytest.mark.django_db
@@ -232,3 +232,34 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(tags__name='love').count(), 1)
         self.assertEquals(
             ArticlePage.objects.filter(tags__name='peace').count(), 1)
+
+    def test_social_media(self):
+
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        self.mk_article(
+            self.yourmind, title="New article",
+            social_media_title='media title',
+            social_media_description='media description',)
+
+        self.mk_article(
+            self.yourmind, title="New article2",
+            social_media_title='media title',
+            social_media_image=self.image,)
+
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                social_media_title='media title').count(), 2)
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                social_media_description='media description').count(), 1)
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                social_media_image=self.image).count(), 1)
+
+        response = self.client.get('/english/your-mind/new-article/')
+
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'media title')
