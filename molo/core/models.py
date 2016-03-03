@@ -254,6 +254,11 @@ class ArticlePageTag(TaggedItemBase):
         'core.ArticlePage', related_name='tagged_items')
 
 
+class ArticlePageMetaDataTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'core.ArticlePage', related_name='metadata_tagged_items')
+
+
 class ArticlePage(CommentedPageMixin, Page, TagSearchable):
     subtitle = models.TextField(null=True, blank=True)
     featured_in_latest = models.BooleanField(
@@ -274,8 +279,9 @@ class ArticlePage(CommentedPageMixin, Page, TagSearchable):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    metadata_tags = models.TextField(null=True, blank=True,
-                                     verbose_name="metadata tags")
+    metadata_tags = ClusterTaggableManager(
+        through=ArticlePageMetaDataTag,
+        blank=True, related_name="metadata_tags")
     social_media_title = models.TextField(null=True, blank=True,
                                           verbose_name="title")
     social_media_description = models.TextField(null=True, blank=True,
