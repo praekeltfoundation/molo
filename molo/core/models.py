@@ -274,7 +274,8 @@ class ArticlePage(CommentedPageMixin, Page, TagSearchable):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
+    metadata_tags = models.TextField(null=True, blank=True,
+                                     verbose_name="metadata tags")
     social_media_title = models.TextField(null=True, blank=True,
                                           verbose_name="title")
     social_media_description = models.TextField(null=True, blank=True,
@@ -380,6 +381,7 @@ ArticlePage.content_panels = [
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
+    MultiFieldPanel(ArticlePage.promote_panels, "metadata_tags"),
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
