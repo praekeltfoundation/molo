@@ -17,6 +17,7 @@ from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        self.mk_main()
         self.english = SiteLanguage.objects.create(
             locale='en',
         )
@@ -25,7 +26,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
             title="Test image",
             file=get_test_image_file(),
         )
-        self.mk_main()
         self.yourmind = self.mk_section(
             self.main, title='Your mind')
         self.yourmind_sub = self.mk_section(

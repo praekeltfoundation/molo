@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from wagtail.wagtailcore.models import Site, Page
+from wagtail.wagtailcore.models import Site, Page, Collection
 
 from molo.core.models import Main, SectionPage, ArticlePage
 from molo.core.utils import generate_slug
@@ -52,6 +52,14 @@ class MoloTestCaseMixin(object):
             url_path='/home/',
         )
         self.main.save_revision().publish()
+
+        # Create root collection
+        Collection.objects.create(
+            name="Root",
+            path='0001',
+            depth=1,
+            numchild=0,
+        )
 
         # Create a site with the new homepage set as the root
         Site.objects.all().delete()
