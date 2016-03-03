@@ -249,7 +249,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'metadata_tags': 'love, happiness',
             'action-publish': 'Publish'
         }
-        print self.client.post(
+        self.client.post(
             reverse('wagtailadmin_pages:add',
                     args=('core', 'articlepage', self.yourmind.id, )),
             post_data)
@@ -267,9 +267,11 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(
                 metadata_tags__name='happiness').count(), 2)
         self.assertEquals(
-            ArticlePage.objects.filter(metadata_tags='love').count(), 1)
+            ArticlePage.objects.filter(
+                metadata_tags__name='love').count(), 1)
         self.assertEquals(
-            ArticlePage.objects.filter(metadata_tags='peace').count(), 1)
+            ArticlePage.objects.filter(
+                metadata_tags__name='peace').count(), 1)
 
     def test_social_media(self):
 
