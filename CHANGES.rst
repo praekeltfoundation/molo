@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.6.12
+------
+- Added metadata tag field
+
 2.6.11
 ------
 - Added social media fields
