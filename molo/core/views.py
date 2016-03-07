@@ -49,7 +49,5 @@ def versions(request):
 
 def get_pypi_version(package_name):
     url = "https://pypi.python.org/pypi/%s/json"
-    content = (requests.get(url % package_name)).content
-    content = content[((content.find('version')) + 11):]
-    version = content[:content.find('"')]
-    return version
+    content = requests.get(url % package_name).json()
+    return content.get('info').get('version')
