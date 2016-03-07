@@ -7,6 +7,12 @@ from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
 
+from mock import patch, Mock
+import pkg_resources
+import responses
+import requests
+from requests.exceptions import ConnectionError
+
 
 @pytest.mark.django_db
 class TestPages(TestCase, MoloTestCaseMixin):
@@ -114,6 +120,20 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_versions_comparison(self):
         response = self.client.get(reverse('versions'))
-        self.assertContains(
-            response,
-            'Molo')
+        self.assertContains(response, 'Molo')
+
+        with patch('pkg_resources.get_distribution', return_value=Mock(
+                version='2.5.0')):
+            response = self.client.get(reverse('versions'))
+            self.assertContains(response, '2.5.0')
+
+        @responses.activate
+        def get_pypi_version():
+            responses.add(
+                responses.GET, 'https://pypi.python.org/pypi/molo.core/json',
+                body=json.dumps({'info': {'version': '3.0.0'}}),
+                content_type="application/json",
+                status=200)
+            response = self.client.get(reverse('versions'))
+            self.assertContains(response, '3.0.0')
+        get_pypi_version()
