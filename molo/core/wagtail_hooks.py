@@ -6,6 +6,14 @@ from wagtail.wagtailcore import hooks
 
 from molo.core.models import SiteLanguage
 
+from django.core import urlresolvers
+from django.utils.translation import ugettext_lazy as _
+
+
+from wagtail.wagtailadmin.menu import MenuItem
+
+from . import views
+
 
 class LanguageModelAdmin(ModelAdmin):
     model = SiteLanguage
@@ -31,6 +39,15 @@ def urlconf_translations():
     ]
 
 
+@hooks.register('register_admin_urls')
+def register_admin_urls():
+    return [
+        url(r'^import-ucd/$',
+            views.import_from_ucd,
+            name='import-from-ucd'),
+    ]
+
+
 @hooks.register('construct_explorer_page_queryset')
 def show_main_language_only(parent_page, pages, request):
     main_language = SiteLanguage.objects.filter(is_main_language=True).first()
@@ -39,3 +56,12 @@ def show_main_language_only(parent_page, pages, request):
         return pages.filter(languages__language__id=main_language.id)
 
     return pages
+
+
+@hooks.register('register_admin_menu_item')
+def register_import_menu_item():
+    return MenuItem(
+        _('Import content'),
+        urlresolvers.reverse('import-from-ucd'),
+        classnames='icon icon-download',
+    )
