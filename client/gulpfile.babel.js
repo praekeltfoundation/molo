@@ -4,6 +4,7 @@ import plumber from 'gulp-plumber';
 import webpack from 'webpack-stream';
 import jscs from 'gulp-jscs';
 import jshint from 'gulp-jshint';
+import sass from 'gulp-sass';
 import { JSXHINT as linter } from 'jshint-jsx';
 
 import webpackPrd from './conf/webpack.prd.config';
@@ -29,7 +30,14 @@ const paths = {
 
 gulp.task('build:scripts', () => {
   return webpack(webpackConf)
-    .pipe(gulp.dest('./dist'));
+    .pipe(gulp.dest('./dist/js'));
+});
+
+
+gulp.task('build:styles', () => {
+  return gulp.src('./src/styles/index.scss')
+    .pipe(sass())
+    .pipe(gulp.dest('./dist/css'));
 });
 
 
@@ -57,6 +65,6 @@ gulp.task('watch:lint', () => {
 
 gulp.task('test', []);
 gulp.task('watch', ['watch:lint', 'watch:scripts']);
-gulp.task('build', ['build:scripts']);
+gulp.task('build', ['build:scripts', 'build:styles']);
 gulp.task('ci', ['lint', 'build', 'test']);
 gulp.task('default', ['build', 'test']);

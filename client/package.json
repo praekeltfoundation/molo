@@ -28,6 +28,7 @@
     "gulp-jshint": "^2.0.0",
     "gulp-jsxhint": "0.0.1",
     "gulp-plumber": "^1.1.0",
+    "gulp-sass": "^2.2.0",
     "gulp-watch": "^4.3.5",
     "gulp-webpack": "^1.5.0",
     "jshint-jsx": "^0.4.1",
