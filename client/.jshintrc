@@ -1,0 +1,19 @@
+{
+  "eqnull": true,
+  "unused": "vars",
+  "bitwise": true,
+  "eqeqeq": true,
+  "forin": true,
+  "freeze": true,
+  "noarg": true,
+  "maxparams": 3,
+  "maxdepth": 2,
+  "laxbreak": true,
+  "undef": true,
+  "browser": true,
+  "jquery": true,
+  "node": true,
+  "phantom": true,
+  "worker": true,
+  "esnext": true
+}
