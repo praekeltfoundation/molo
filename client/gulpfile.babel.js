@@ -4,6 +4,7 @@ import plumber from 'gulp-plumber';
 import webpack from 'webpack-stream';
 import jscs from 'gulp-jscs';
 import jshint from 'gulp-jshint';
+import mocha from 'gulp-mocha';
 import sass from 'gulp-sass';
 import { JSXHINT as linter } from 'jshint-jsx';
 
@@ -58,12 +59,17 @@ gulp.task('lint', () => {
 });
 
 
+gulp.task('test', () => {
+  return gulp.src(['./tests/**/*.test.js'])
+    .pipe(mocha({require: ['./tests/setup.js']}));
+});
+
+
 gulp.task('watch:lint', () => {
   gulp.watch(paths.js, ['lint']);
 });
 
 
-gulp.task('test', []);
 gulp.task('watch', ['watch:lint', 'watch:scripts']);
 gulp.task('build', ['build:scripts', 'build:styles']);
 gulp.task('ci', ['lint', 'build', 'test']);
