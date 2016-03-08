@@ -1,4 +1,7 @@
 import base from './webpack.base.config';
+import extend from 'lodash/extend';
 
-let config = base();
-export default config;
+
+export default extend(base(), {
+  devtool: '#inline-source-map'
+});
