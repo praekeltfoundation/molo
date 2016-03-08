@@ -55,8 +55,8 @@ gulp.task('watch:lint', () => {
 });
 
 
+gulp.task('test', []);
 gulp.task('watch', ['watch:lint', 'watch:scripts']);
 gulp.task('build', ['build:scripts']);
-
-
-gulp.task('default', ['build']);
+gulp.task('ci', ['lint', 'build', 'test']);
+gulp.task('default', ['build', 'test']);
