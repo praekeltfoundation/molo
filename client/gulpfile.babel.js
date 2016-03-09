@@ -6,6 +6,7 @@ import jscs from 'gulp-jscs';
 import jshint from 'gulp-jshint';
 import mocha from 'gulp-mocha';
 import sass from 'gulp-sass';
+import rename from 'gulp-rename';
 import { JSXHINT as linter } from 'jshint-jsx';
 
 import webpackPrd from './conf/webpack.prd.config';
@@ -38,6 +39,7 @@ gulp.task('build:scripts', () => {
 gulp.task('build:styles', () => {
   return gulp.src('./src/styles/index.scss')
     .pipe(sass())
+    .pipe(rename('molo.css'))
     .pipe(gulp.dest('./dist/css'));
 });
 
