@@ -252,13 +252,13 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     def featured_articles(self):
         return self.articles().filter(featured_in_section=True)
 
-    def featured_articles_in_homepage(self):
+    def featured_articles_in_homepage(self, count=5):
         qs = ArticlePage.objects.live().order_by('-first_published_at')
-        return qs.descendant_of(self).filter(featured_in_homepage=True)
+        return qs.descendant_of(self).filter(featured_in_homepage=True)[:count]
 
-    def latest_articles_in_homepage(self):
+    def latest_articles_in_homepage(self, count=5):
         qs = ArticlePage.objects.live().order_by('-first_published_at')
-        return qs.descendant_of(self).filter(featured_in_latest=True)
+        return qs.descendant_of(self).filter(featured_in_latest=True)[:count]
 
     def get_effective_extra_style_hints(self):
         # The extra css is inherited from the parent SectionPage.
