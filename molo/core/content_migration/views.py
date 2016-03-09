@@ -1,15 +1,22 @@
+import json
 import requests
+
+from django.shortcuts import get_object_or_404
+
+from elasticgit.workspace import RemoteWorkspace
+
+from molo.core.models import Main
+from molo.core.models import (
+    SiteLanguage, SectionPage, ArticlePage, FooterPage)
+
 from rest_framework.decorators import (
     api_view, authentication_classes, permission_classes)
 from rest_framework.response import Response
-from unicore.content.models import Localisation, Category, Page
-from molo.core.models import (
-    SiteLanguage, SectionPage, ArticlePage, FooterPage)
-from elasticgit.workspace import RemoteWorkspace
 from rest_framework.authentication import (
     SessionAuthentication, BasicAuthentication)
 from rest_framework.permissions import IsAuthenticated
-from molo.core.models import Main
+
+from unicore.content.models import Localisation, Category, Page
 
 
 @api_view(['GET'])
@@ -49,13 +56,11 @@ def import_content(request, name):
         if cls.objects.filter(uuid=obj.uuid).exists():
             instance = cls.objects.get(uuid=obj.uuid)
             instance.title = obj.title
-            instance.save_revision().publish()
             print 'updated', obj.title
             return instance
 
         instance = cls(uuid=obj.uuid, title=obj.title)
         parent.add_child(instance=instance)
-        instance.save_revision().publish()
         print 'created', obj.title
         return instance
 
@@ -68,24 +73,44 @@ def import_content(request, name):
 
     locales = request.data.get('locales')
     for selected_locale in locales:
-        for l in ws.S(Localisation).filter(
-                locale=selected_locale.get('locale')):
-            print "we're here"
-        site_language = SiteLanguage.objects.get(
-            locale=selected_locale.get('site_language'))
+        site_language = get_object_or_404(
+            SiteLanguage, locale=selected_locale.get('site_language'))
+
         if site_language.is_main_language:
             main = Main.objects.all().first()
             for c in ws.S(Category).filter(
-                    language=selected_locale.get('locale')):
-                get_or_create(SectionPage, c, main)
+                    language=selected_locale.get('locale')
+            ).order_by('position'):
+                section = get_or_create(SectionPage, c, main)
+                section.description = c.subtitle
+                # TODO: image
+                section.save_revision().publish()
 
-            for p in ws.S(Page).filter(language=selected_locale.get('locale')):
+            for p in ws.S(Page).filter(
+                language=selected_locale.get('locale')
+            ).order_by('position'):
                 if p.primary_category:
                     section = SectionPage.objects.get(uuid=p.primary_category)
-                    get_or_create(ArticlePage, p, section)
+                    page = get_or_create(ArticlePage, p, section)
                 else:
                     # special case for articles with no primary category
                     # this assumption is probably wrong..but we have no where
                     # else to put them
-                    get_or_create(FooterPage, p, main)
+                    page = get_or_create(FooterPage, p, main)
+
+                page.subtitle = p.subtitle
+                page.body = json.dumps([
+                    {'type': 'paragraph', 'value': p.description},
+                    {'type': 'paragraph', 'value': p.content}
+                ])
+                page.featured_in_latest = p.featured
+                page.featured_in_section = p.featured_in_category
+                # TODO: tags (see mk_tags)
+                # TODO: related pages
+                # TODO: image
+                # TODO
+                page.save_revision().publish()
+        else:
+            # TODO: import translations
+            pass
     return Response()
