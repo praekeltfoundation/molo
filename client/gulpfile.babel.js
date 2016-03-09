@@ -12,6 +12,8 @@ import { JSXHINT as linter } from 'jshint-jsx';
 
 import webpackPrd from './conf/webpack.prd.config';
 import webpackDev from './conf/webpack.dev.config';
+import sassPrd from './conf/sass.prd.config';
+import sassDev from './conf/sass.dev.config';
 
 
 const env = process.env.NODE_ENV || 'dev';
@@ -20,6 +22,12 @@ const env = process.env.NODE_ENV || 'dev';
 const webpackConf = {
   'dev': webpackDev,
   'prd': webpackPrd
+}[env];
+
+
+const sassConf = {
+  'dev': sassDev,
+  'prd': sassPrd
 }[env];
 
 
@@ -46,7 +54,7 @@ gulp.task('build:scripts', () => {
 gulp.task('build:styles', () => {
   return gulp.src('./src/styles/index.scss')
     .pipe(plumber(err))
-    .pipe(sass())
+    .pipe(sass(sassConf))
     .pipe(rename('molo.css'))
     .pipe(gulp.dest('./dist/css'));
 });
