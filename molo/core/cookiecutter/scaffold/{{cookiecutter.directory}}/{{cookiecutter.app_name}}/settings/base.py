@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django_extensions',
 
+    'rest_framework',
     'taggit',
     'modelcluster',
 

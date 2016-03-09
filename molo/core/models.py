@@ -215,6 +215,7 @@ class SiteLanguage(models.Model):
 
 class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     description = models.TextField(null=True, blank=True)
+    uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -316,6 +317,7 @@ class ArticlePageTag(TaggedItemBase):
 class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
                   TagSearchable):
     subtitle = models.TextField(null=True, blank=True)
+    uuid = models.CharField(max_length=32, blank=True, null=True)
     featured_in_latest = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Latest module"))
