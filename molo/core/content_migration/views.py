@@ -80,7 +80,7 @@ def import_content(request, name):
             main = Main.objects.all().first()
             for c in ws.S(Category).filter(
                     language=selected_locale.get('locale')
-            ).order_by('position'):
+            ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
                 section = get_or_create(SectionPage, c, main)
                 section.description = c.subtitle
                 # TODO: image
@@ -88,10 +88,14 @@ def import_content(request, name):
 
             for p in ws.S(Page).filter(
                 language=selected_locale.get('locale')
-            ).order_by('position'):
+            ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
                 if p.primary_category:
-                    section = SectionPage.objects.get(uuid=p.primary_category)
-                    page = get_or_create(ArticlePage, p, section)
+                    try:
+                        section = SectionPage.objects.get(
+                            uuid=p.primary_category)
+                        page = get_or_create(ArticlePage, p, section)
+                    except SectionPage.DoesNotExist:
+                        print "couldn't find", p.primary_category, SectionPage.objects.all().values('uuid')
                 else:
                     # special case for articles with no primary category
                     # this assumption is probably wrong..but we have no where
@@ -104,7 +108,7 @@ def import_content(request, name):
                     {'type': 'paragraph', 'value': p.content}
                 ])
                 page.featured_in_latest = p.featured
-                page.featured_in_section = p.featured_in_category
+                page.featured_in_homepage = p.featured_in_category
                 # TODO: tags (see mk_tags)
                 # TODO: related pages
                 # TODO: image
