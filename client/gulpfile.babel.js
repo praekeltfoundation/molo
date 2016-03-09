@@ -7,6 +7,7 @@ import jshint from 'gulp-jshint';
 import mocha from 'gulp-mocha';
 import sass from 'gulp-sass';
 import rename from 'gulp-rename';
+import gutil from 'gulp-util';
 import { JSXHINT as linter } from 'jshint-jsx';
 
 import webpackPrd from './conf/webpack.prd.config';
@@ -23,9 +24,15 @@ const webpackConf = {
 
 
 const paths = {
-  js: [
-    '*.js',
+  conf: [
+    'gulpfile.babel.js',
+    'conf/**/*.js'
+  ],
+  scripts: [
     'src/**/*.js'
+  ],
+  styles: [
+    'src/**/*.scss'
   ]
 };
 
@@ -38,6 +45,7 @@ gulp.task('build:scripts', () => {
 
 gulp.task('build:styles', () => {
   return gulp.src('./src/styles/index.scss')
+    .pipe(plumber(err))
     .pipe(sass())
     .pipe(rename('molo.css'))
     .pipe(gulp.dest('./dist/css'));
@@ -52,13 +60,8 @@ gulp.task('watch:scripts', () => {
 });
 
 
-gulp.task('lint', () => {
-  return gulp.src(paths.js)
-    .pipe(plumber())
-    .pipe(jscs())
-    .pipe(jshint({linter: linter}))
-    .pipe(jshint.reporter('jshint-stylish'));
-});
+gulp.task('lint:conf', () => lint(paths.conf));
+gulp.task('lint:scripts', () => lint(paths.scripts));
 
 
 gulp.task('test', () => {
@@ -67,12 +70,29 @@ gulp.task('test', () => {
 });
 
 
-gulp.task('watch:lint', () => {
-  gulp.watch(paths.js, ['lint']);
+gulp.task('watch', () => {
+  gulp.watch(paths.conf, ['lint']);
+  gulp.watch(paths.scripts, ['lint', 'build:scripts', 'test']);
+  gulp.watch(paths.styles, ['build:styles']);
 });
 
 
-gulp.task('watch', ['watch:lint', 'watch:scripts']);
+function lint(paths) {
+  return gulp.src(paths)
+    .pipe(plumber(err))
+    .pipe(jscs())
+    .pipe(jshint({linter: linter}))
+    .pipe(jshint.reporter('jshint-stylish'));
+}
+
+
+function err(e) {
+  gutil.log(e.message);
+  this.emit('end');
+}
+
+
+gulp.task('lint', ['lint:conf', 'lint:scripts']);
 gulp.task('build', ['build:scripts', 'build:styles']);
 gulp.task('ci', ['lint', 'build', 'test']);
 gulp.task('default', ['build', 'test']);
