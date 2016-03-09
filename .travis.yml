@@ -3,26 +3,18 @@ language: python
 python:
   - "2.7"
   - "pypy"
-node_js:
-  - "5.6.0"
 env:
   - COVERAGE=true TEST_RUNNER="py.test"
   - COVERAGE=false TEST_RUNNER="py.test"
-  - COVERAGE=false NODE=1 TEST_RUNNER="npm run ci"
 matrix:
   exclude:
     - python: "pypy"
       env: COVERAGE=true TEST_RUNNER="py.test"
     - python: "2.7"
       env: COVERAGE=false TEST_RUNNER="py.test"
-    - python: "pypy"
-      env: COVERAGE=false NODE=1 TEST_RUNNER="npm run ci"
-    - python: "2.7"
-      env: COVERAGE=false NODE=1 TEST_RUNNER="npm run ci"
+  include:
     - node_js: "5.6.0"
-      env: COVERAGE=false TEST_RUNNER="py.test"
-    - node_js: "5.6.0"
-      env: COVERAGE=false TEST_RUNNER="py.test"
+      env: COVERAGE=false NODE=1 TEST_RUNNER="npm run ci"
 cache:
   directories:
     - $HOME/.pip-cache/
@@ -33,7 +25,7 @@ install:
   - pip install "Django >=1.8,<1.9"
   - pip install -r requirements-dev.txt --cache-dir $HOME/.pip-cache/
   - pip install -e . --cache-dir $HOME/.pip-cache/ --process-dependency-links --allow-all-external
-  - "[[ -z $NODE ]] || npm install"
+  - '[[ -z $NODE ]] || npm install'
 script:
   - flake8 molo
   - molo scaffold testapp
