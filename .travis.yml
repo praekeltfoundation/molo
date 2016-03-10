@@ -32,7 +32,7 @@ script:
   - molo scaffold testapp
   - flake8 testapp
   - pip install -e testapp
-  - $TEST_RUNNER
+  - bash -c $TEST_RUNNER
 after_success:
   - coveralls
 deploy:
