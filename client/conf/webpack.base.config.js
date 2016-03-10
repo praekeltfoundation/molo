@@ -1,4 +1,6 @@
+import webpack from 'webpack';
 import { resolve } from 'path';
+const CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 
 
 export default function base() {
@@ -17,6 +19,9 @@ export default function base() {
         components: pathTo('src/components')
       }
     },
+    plugins: [
+      new CommonsChunkPlugin('commons.js')
+    ],
     module: {
       loaders: [{
         test: /\.js$/,

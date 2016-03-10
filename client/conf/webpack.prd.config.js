@@ -1,10 +1,12 @@
 import webpack from 'webpack';
 import base from './webpack.base.config';
 import extend from 'lodash/extend';
+const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
 
-export default extend(base(), {
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
-  ]
+let conf = base();
+
+
+export default extend(conf, {
+  plugins: conf.plugins.concat(new UglifyJsPlugin({output: {comments: false}}))
 });
