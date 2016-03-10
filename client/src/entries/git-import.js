@@ -1,4 +1,9 @@
-import { GitImporter } from 'components/git-importer';
+import React from 'react';
+import { render } from 'react-dom';
+import GitImporter from '../components/git-importer';
 
 
-console.log(GitImporter);
+render(
+    <GitImporter />,
+    document.getElementById('mountpoint')
+);
