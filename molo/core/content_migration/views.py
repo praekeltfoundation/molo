@@ -195,6 +195,6 @@ def import_content(request, name):
                         print "No source found for: ", tp.source, (
                             ArticlePage.objects.all().values('uuid'))
                 except ArticlePage.DoesNotExist:
-                        print "No source found for: ", tp.source, (
+                        print "Couldn't find", tp.source, (
                             ArticlePage.objects.all().values('uuid'))
     return Response()
