@@ -39,6 +39,9 @@ const paths = {
   scripts: [
     'src/**/*.js'
   ],
+  tests: [
+    'tests/**/*.js'
+  ],
   styles: [
     'src/**/*.scss'
   ],
@@ -81,8 +84,11 @@ gulp.task('test', () => {
 
 gulp.task('watch', () => {
   gulp.watch(paths.conf, ['lint']);
-  gulp.watch(paths.scripts, ['lint', 'build:scripts', 'test']);
   gulp.watch(paths.styles, ['build:styles']);
+
+  gulp.watch(
+    paths.scripts.concat(paths.tests),
+    ['lint', 'build:scripts', 'test']);
 });
 
 
