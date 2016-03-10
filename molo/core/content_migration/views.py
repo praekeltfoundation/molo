@@ -7,7 +7,7 @@ from elasticgit.workspace import RemoteWorkspace
 
 from molo.core.models import Main
 from molo.core.models import (
-    SiteLanguage, SectionPage, ArticlePage, FooterPage)
+    SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
 
 from rest_framework.decorators import (
     api_view, authentication_classes, permission_classes)
@@ -64,6 +64,24 @@ def import_content(request, name):
         print 'created', obj.title
         return instance
 
+    def get_or_create_translation(cls, obj, parent, language):
+        if cls.objects.filter(uuid=obj.uuid).exists():
+            instance = cls.objects.get(uuid=obj.uuid)
+            instance.title = obj.title
+            language_relation = instance.languages.first()
+            language_relation.language = language
+            language_relation.save()
+            print 'updated translation', obj.title
+            return instance
+
+        instance = cls(uuid=obj.uuid, title=obj.title)
+        parent.add_child(instance=instance)
+        language_relation = instance.languages.first()
+        language_relation.language = language
+        language_relation.save()
+        print 'created translation', obj.title
+        return instance
+
     ws = RemoteWorkspace('http://localhost:6543/repos/%s.json' % name)
     ws.sync(Localisation)
     ws.sync(Category)
@@ -85,7 +103,6 @@ def import_content(request, name):
                 section.description = c.subtitle
                 # TODO: image
                 section.save_revision().publish()
-
             for p in ws.S(Page).filter(
                 language=selected_locale.get('locale')
             ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
@@ -95,7 +112,8 @@ def import_content(request, name):
                             uuid=p.primary_category)
                         page = get_or_create(ArticlePage, p, section)
                     except SectionPage.DoesNotExist:
-                        print "couldn't find", p.primary_category, SectionPage.objects.all().values('uuid')
+                        print "couldn't find", p.primary_category, (
+                            SectionPage.objects.all().values('uuid'))
                 else:
                     # special case for articles with no primary category
                     # this assumption is probably wrong..but we have no where
@@ -112,9 +130,71 @@ def import_content(request, name):
                 # TODO: tags (see mk_tags)
                 # TODO: related pages
                 # TODO: image
-                # TODO
                 page.save_revision().publish()
         else:
-            # TODO: import translations
-            pass
+            main = Main.objects.all().first()
+            for tc in ws.S(Category).filter(
+                language=selected_locale.get('locale')
+            ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
+                translated_section = get_or_create_translation(
+                    SectionPage, tc, main, site_language, )
+                translated_section.description = tc.subtitle
+                # TODO: image
+                translated_section.save_revision().publish()
+                if tc.source:
+                    try:
+                        parent = SectionPage.objects.get(
+                            uuid=tc.source)
+                        PageTranslation.objects.get_or_create(
+                            page=parent, translated_page=translated_section)
+                    except SectionPage.DoesNotExist:
+                        print "couldn't find", tc.source, (
+                            SectionPage.objects.all().values('uuid'))
+                else:
+                    print "no source found for: ", tc.source, (
+                        SectionPage.objects.all().values('uuid'))
+
+            for tp in ws.S(Page).filter(
+                language=selected_locale.get('locale')
+            ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
+                try:
+                    parent = ArticlePage.objects.get(
+                        uuid=tp.source).get_parent()
+                    if parent:
+                        translated_page = get_or_create_translation(
+                            ArticlePage, tp, parent, site_language)
+                    else:
+                        # special case for articles with no primary category
+                        # this assumption is probably wrong..but we have no where
+                        # else to put them
+                        translated_page = get_or_create_translation(
+                            FooterPage, tp, main, site_language)
+
+                    translated_page.subtitle = tp.subtitle
+                    translated_page.body = json.dumps([
+                        {'type': 'paragraph', 'value': tp.description},
+                        {'type': 'paragraph', 'value': tp.content}
+                    ])
+                    translated_page.featured_in_latest = tp.featured
+                    translated_page.featured_in_homepage = (
+                        tp.featured_in_category)
+                    # TODO: tags (see mk_tags)
+                    # TODO: related pages
+                    # TODO: image
+                    translated_page.save_revision().publish()
+                    if tp.source:
+                        try:
+                            parent = ArticlePage.objects.get(
+                                uuid=tp.source)
+                            PageTranslation.objects.get_or_create(
+                                page=parent, translated_page=translated_page)
+                        except ArticlePage.DoesNotExist:
+                            print "Couldn't find", tp.source, (
+                                ArticlePage.objects.all().values('uuid'))
+                    else:
+                        print "No source found for: ", tp.source, (
+                            ArticlePage.objects.all().values('uuid'))
+                except ArticlePage.DoesNotExist:
+                        print "No source found for: ", tp.source, (
+                            ArticlePage.objects.all().values('uuid'))
     return Response()
