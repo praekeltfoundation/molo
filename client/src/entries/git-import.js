@@ -9,5 +9,5 @@ render(
   <Provider store={configureStore()}>
     <GitImporter/>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('mountpoint')
 );

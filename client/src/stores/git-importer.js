@@ -3,7 +3,7 @@ import reducer from '../reducers/git-importer.js';
 
 
 const initialState = () => ({
-  stub: 'TODO'
+  locales: []
 });
 
 
