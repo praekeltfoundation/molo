@@ -8,7 +8,7 @@ export default function base() {
 
   return {
     entry: {
-      'git-import': './src/entries/git-import'
+      'git-import': './src/views/git-importer/entry'
     },
     output: {
       filename: '[name].js'

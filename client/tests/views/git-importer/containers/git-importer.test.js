@@ -1,7 +1,7 @@
 import React from 'react';
 import { expect } from 'chai';
-import fixtures from '../fixtures/git-importer';
-import { stateToProps } from '../../src/containers/git-importer';
+import fixtures from '../fixtures';
+import { stateToProps } from 'views/git-importer/containers/git-importer';
 
 
 describe(`GitImporterContainer`, () => {

@@ -4,9 +4,9 @@
   "description": "Client side scripts and styles for molo",
   "scripts": {
     "test": "gulp test",
-    "build": "NODE_ENV=prd gulp build",
-    "build-dev": "NODE_ENV=dev gulp build",
-    "watch": "NODE_ENV=dev gulp watch",
+    "build": "NODE_PATH=$NODE_PATH:./src NODE_ENV=prd gulp build",
+    "build-dev": "NODE_PATH=$NODE_PATH:./src NODE_ENV=dev gulp build",
+    "watch": "NODE_PATH=$NODE_PATH:./src NODE_ENV=dev gulp watch",
     "ci": "gulp ci"
   },
   "repository": {

@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
 import React from 'react';
-import fixtures from '../fixtures/git-importer';
-import GitImporter from '../../src/components/git-importer';
+import fixtures from '../fixtures';
+import GitImporter from 'views/git-importer/components/git-importer';
 
 
 describe(`GitImporter`, () => {
