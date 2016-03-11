@@ -42,9 +42,9 @@ def urlconf_translations():
 @hooks.register('register_admin_urls')
 def register_admin_urls():
     return [
-        url(r'^import-ucd/$',
-            views.import_from_ucd,
-            name='import-from-ucd'),
+        url(r'^import-git/$',
+            views.import_from_git,
+            name='import-from-git'),
     ]
 
 
@@ -62,6 +62,6 @@ def show_main_language_only(parent_page, pages, request):
 def register_import_menu_item():
     return MenuItem(
         _('Import content'),
-        urlresolvers.reverse('import-from-ucd'),
+        urlresolvers.reverse('import-from-git'),
         classnames='icon icon-download',
     )

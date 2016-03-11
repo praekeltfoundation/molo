@@ -1,4 +1,5 @@
-import { resolve } from 'path';
+import webpack from 'webpack';
+const CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 
 
 export default function base() {
@@ -12,11 +13,9 @@ export default function base() {
     output: {
       filename: '[name].js'
     },
-    resolve: {
-      alias: {
-        components: pathTo('src/components')
-      }
-    },
+    plugins: [
+      new CommonsChunkPlugin('commons.js')
+    ],
     module: {
       loaders: [{
         test: /\.js$/,
@@ -24,9 +23,4 @@ export default function base() {
       }]
     }
   };
-}
-
-
-function pathTo(pathname) {
-  return resolve(__dirname, '..', pathname);
 }

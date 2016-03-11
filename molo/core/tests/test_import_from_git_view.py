@@ -7,12 +7,12 @@ from molo.core.tests.base import MoloTestCaseMixin
 
 
 @pytest.mark.django_db
-class TestImportFromUCD(TestCase, MoloTestCaseMixin):
+class TestImportFromGit(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
         self.user = self.login()
 
     def test_wagtail_has_import_menu_item(self):
-        response = self.client.get(reverse("import-from-ucd"))
-        self.assertContains(response, 'welcome to the import page')
+        response = self.client.get(reverse("import-from-git"))
+        self.assertContains(response, 'Import content from Git')

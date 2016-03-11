@@ -55,5 +55,5 @@ def add_translation(request, page_id, locale):
         reverse('wagtailadmin_pages:edit', args=[translation.id]))
 
 
-def import_from_ucd(request):
-    return render(request, 'admin/import_from_ucd.html')
+def import_from_git(request):
+    return render(request, 'admin/import_from_git.html')

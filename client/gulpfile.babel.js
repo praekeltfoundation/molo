@@ -41,13 +41,14 @@ const paths = {
   ],
   styles: [
     'src/**/*.scss'
-  ]
+  ],
+  dest: '../molo/core/static'
 };
 
 
 gulp.task('build:scripts', () => {
   return webpack(webpackConf)
-    .pipe(gulp.dest('./dist/js'));
+    .pipe(gulp.dest(`${paths.dest}/js`));
 });
 
 
@@ -56,7 +57,7 @@ gulp.task('build:styles', () => {
     .pipe(plumber(err))
     .pipe(sass(sassConf))
     .pipe(rename('molo.css'))
-    .pipe(gulp.dest('./dist/css'));
+    .pipe(gulp.dest(`${paths.dest}/css`));
 });
 
 
