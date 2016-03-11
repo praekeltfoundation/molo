@@ -1,24 +1,30 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 
 const GitImporter = (d) => (
   <form action="">
-    <div className="c-git-importer">
+    <div className="c-importer">
       <ul className="fields">
         <li>
-          <h2>Step 1: Fetch content from Github</h2>
-          <input type="text" />
+          <div className="import-step">
+            <h2>Step 1: Fetch content from Github</h2>
+            <input type="text" />
 
-          <p className="add"><button>Fetch</button></p>
+            <p className="add"><button>Fetch</button></p>
+          </div>
         </li>
 
         <li>
-          <h2>Step 2: Choose which locales to import</h2>
+          <div className="c-importer__step">
+            <h2>Step 2: Choose which locales to import</h2>
+            {/* TODO select all/none */}
 
-          {/* TODO select all/none */}
-          <div className="input">
-            <input type="checkbox" />
-            <span>en_ZA</span>
+            {d.locales.map(locale =>
+              <div key={locale.name} className="input c-importer__locale">
+                <input type="checkbox" />
+                <span>{locale.name}</span>
+              </div>
+            )}
           </div>
         </li>
 
@@ -29,6 +35,11 @@ const GitImporter = (d) => (
     </div>
   </form>
 );
+
+
+GitImporter.propTypes = {
+  locales: PropTypes.array.isRequired
+};
 
 
 export default GitImporter;

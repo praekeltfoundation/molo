@@ -77,7 +77,7 @@ gulp.task('lint:scripts', () => lint(paths.scripts));
 
 
 gulp.task('test', () => {
-  return gulp.src(['./tests/**/*.test.js'])
+  return gulp.src(paths.tests)
     .pipe(mocha({require: ['./tests/setup.js']}));
 });
 
