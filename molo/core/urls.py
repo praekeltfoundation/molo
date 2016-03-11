@@ -16,5 +16,5 @@ urlpatterns = patterns(
     ),
 
     url(r'^import/', include(
-        'molo.core.content_migration.urls', namespace='content_migration')),
+        'molo.core.content_import.urls', namespace='content_import')),
 )
