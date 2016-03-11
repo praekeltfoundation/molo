@@ -42,9 +42,6 @@ def urlconf_translations():
 @hooks.register('register_admin_urls')
 def register_admin_urls():
     return [
-        url(r'^import-ucd/$',
-            views.import_from_ucd,
-            name='import-from-ucd'),
         url(r'^import-git/$',
             views.import_from_git,
             name='import-from-git'),
