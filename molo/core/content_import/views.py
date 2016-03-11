@@ -96,16 +96,18 @@ def import_content(request, name):
 
         if site_language.is_main_language:
             main = Main.objects.all().first()
+            # S() only returns 10 results if you don't ask for more
             for c in ws.S(Category).filter(
                     language=selected_locale.get('locale')
-            ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
+            ).order_by('position')[:10000]:
                 section = get_or_create(SectionPage, c, main)
                 section.description = c.subtitle
                 # TODO: image
                 section.save_revision().publish()
+            # S() only returns 10 results if you don't ask for more
             for p in ws.S(Page).filter(
                 language=selected_locale.get('locale')
-            ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
+            ).order_by('position')[:10000]:
                 if p.primary_category:
                     try:
                         section = SectionPage.objects.get(
@@ -133,9 +135,10 @@ def import_content(request, name):
                 page.save_revision().publish()
         else:
             main = Main.objects.all().first()
+            # S() only returns 10 results if you don't ask for more
             for tc in ws.S(Category).filter(
                 language=selected_locale.get('locale')
-            ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
+            ).order_by('position')[:10000]:
                 translated_section = get_or_create_translation(
                     SectionPage, tc, main, site_language, )
                 translated_section.description = tc.subtitle
@@ -153,10 +156,10 @@ def import_content(request, name):
                 else:
                     print "no source found for: ", tc.source, (
                         SectionPage.objects.all().values('uuid'))
-
+            # S() only returns 10 results if you don't ask for more
             for tp in ws.S(Page).filter(
                 language=selected_locale.get('locale')
-            ).order_by('position')[:10000]:  # S() only returns 10 results if you don't ask for more
+            ).order_by('position')[:10000]:
                 try:
                     parent = ArticlePage.objects.get(
                         uuid=tp.source).get_parent()
@@ -165,8 +168,8 @@ def import_content(request, name):
                             ArticlePage, tp, parent, site_language)
                     else:
                         # special case for articles with no primary category
-                        # this assumption is probably wrong..but we have no where
-                        # else to put them
+                        # this assumption is probably wrong..but we have no
+                        # where else to put them
                         translated_page = get_or_create_translation(
                             FooterPage, tp, main, site_language)
 
