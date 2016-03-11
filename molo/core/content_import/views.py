@@ -3,7 +3,7 @@ import requests
 from elasticgit.workspace import RemoteWorkspace
 
 from molo.core.models import SiteLanguage
-from molo.core.content_migration.helper import ContentImportHelper
+from molo.core.content_import.helper import ContentImportHelper
 
 from rest_framework.decorators import (
     api_view, authentication_classes, permission_classes)
