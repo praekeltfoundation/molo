@@ -1,5 +1,4 @@
 Django>=1.8,<1.9
-wagtail==1.4rc1
 cookiecutter==1.0.0
 psycopg2cffi
 raven==5.0.0
@@ -11,3 +10,4 @@ django-cas-ng
 django-mptt
 elastic-git
 unicore.content
+wagtail==1.4rc1
