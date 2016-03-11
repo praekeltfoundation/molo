@@ -4,8 +4,8 @@ from elasticgit.tests.base import ModelBaseTest
 
 from molo.core.models import SiteLanguage, SectionPage, ArticlePage
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.content_migration.tests.base import ElasticGitTestMixin
-from molo.core.content_migration.helper import ContentImportHelper
+from molo.core.content_import.tests.base import ElasticGitTestMixin
+from molo.core.content_import.helper import ContentImportHelper
 
 from unicore.content import models as eg_models
 
