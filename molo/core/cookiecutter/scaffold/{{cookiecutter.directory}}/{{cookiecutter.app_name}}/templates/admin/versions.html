@@ -11,12 +11,12 @@
 {% block content %}
 <table class="versions" style="width:100%">
   <tr>
-    <th>{% trans "Package Name" %}</th>
+    <th>{% trans "Plugin" %}</th>
     <th>{% trans "PyPI Version" %}</th>
     <th>{% trans "Runing Version" %}</th>
     <th>{% trans "Status" %}</th>
   </tr>
-  {% for name,pypi_version,curent_version,compare in packages_info %}
+  {% for name,pypi_version,curent_version,compare in plugins_info %}
       <tr>
         <td>{{name}}</td>
         <td>{{pypi_version}}</td>
