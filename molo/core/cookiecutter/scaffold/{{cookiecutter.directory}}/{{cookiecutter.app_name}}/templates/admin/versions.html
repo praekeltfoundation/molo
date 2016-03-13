@@ -18,14 +18,14 @@
   </tr>
   {% for name,pypi_version,curent_version,compare in plugins_info %}
       <tr>
-        <td>{{name}}</td>
+        <td class="plugin">{{name}}</td>
         <td>{{pypi_version}}</td>
         <td>{{curent_version}}</td>
         {% if pypi_version == curent_version %}
-          <td>{% trans "Latest" %}</td>
+          <td class="latest">{% trans "UpToDate" %}</td>
         {% else %}
           {% if curent_version == "-" %}
-            <td>{% trans "Not installed" %}</td>
+            <td class="not-installed">{% trans "Not installed" %}</td>
           {% else %}
             <td><a href={{compare}}>{% trans "Compare" %}</a></td>
           {% endif %}
