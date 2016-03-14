@@ -2,7 +2,7 @@ import pytest
 
 from elasticgit.tests.base import ModelBaseTest
 
-from molo.core.models import SiteLanguage, SectionPage, ArticlePage
+from molo.core.models import SiteLanguage, SectionPage, ArticlePage, FooterPage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.helper import ContentImportHelper
@@ -146,3 +146,4 @@ class ContentImportTestCase(
 
         self.assertEquals(SectionPage.objects.all().count(), 4)
         self.assertEquals(ArticlePage.objects.all().count(), 44)
+        self.assertEquals(FooterPage.objects.all().count(), 4)

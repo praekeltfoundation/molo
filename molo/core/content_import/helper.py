@@ -68,7 +68,8 @@ class ContentImportHelper(object):
                 page = self.get_or_create(FooterPage, p, main)
         else:
             try:
-                main_instance = ArticlePage.objects.get(uuid=p.source)
+                main_instance = ArticlePage.objects.get(
+                    uuid=p.source).specific
                 page = self.get_or_create_translation(
                     main_instance.__class__, p, main_instance.get_parent(),
                     site_language)
