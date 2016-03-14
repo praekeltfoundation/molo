@@ -100,12 +100,12 @@ class ContentImportHelper(object):
 
     def import_categories_for_child_language(
             self, category, selected_locale, site_language):
-        translated_section = self.import_section_content(
-            category, site_language)
         if category.source:
             try:
                 parent = SectionPage.objects.get(
                     uuid=category.source)
+                translated_section = self.import_section_content(
+                    category, site_language)
                 PageTranslation.objects.get_or_create(
                     page=parent,
                     translated_page=translated_section)

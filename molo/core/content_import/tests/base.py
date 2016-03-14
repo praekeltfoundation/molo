@@ -21,7 +21,7 @@ class ElasticGitTestMixin(object):
             self, workspace, count=2, locale='eng_UK', **kwargs):
         categories = []
         for data, i in self.create_category_data_iter(
-                count=2, locale=locale, **kwargs):
+                count=count, locale=locale, **kwargs):
             category = Category(data)
             workspace.save(
                 category, u'Added category %s.' % (i,))

@@ -58,6 +58,10 @@ class ContentImportTestCase(
         [cat_spa_1, cat_spa_2] = self.create_categories(
             self.workspace, locale='spa_ES', count=2)
 
+        # section with invalid source
+        self.create_categories(
+            self.workspace, locale='spa_ES', source='an-invalid-uuid', count=1)
+
         self.workspace.save(cat_spa_1.update({
             'source': cat_eng_1.uuid,
             'position': 4,
@@ -115,7 +119,8 @@ class ContentImportTestCase(
             }), 'Added source to page.')
 
         self.assertEquals(
-            self.workspace.S(eg_models.Category).all().count(), 4)
+            self.workspace.S(eg_models.Category).all().count(), 5)
+
         self.assertEquals(
             self.workspace.S(eg_models.Page).all().count(), 46)
         self.assertEquals(
