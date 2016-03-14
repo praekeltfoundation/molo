@@ -98,55 +98,50 @@ class ContentImportHelper(object):
 
         return page
 
-    def import_main_language_content(self, selected_locale, site_language):
-        for c in self.ws.S(Category).filter(
-                language=selected_locale.get('locale')
-        ).order_by('position')[:10000]:
-            # S() only returns 10 results if you don't ask for more
-
-            self.import_section_content(c, site_language)
-
-        for p in self.ws.S(Page).filter(
-            language=selected_locale.get('locale')
-        ).order_by('position')[:10000]:
-            # S() only returns 10 results if you don't ask for more
-
-            self.import_page_content(p, site_language)
-
-    def import_translated_content(self, selected_locale, site_language):
-        for tc in self.ws.S(Category).filter(
-            language=selected_locale.get('locale')
-        ).order_by('position')[:10000]:
-            # S() only returns 10 results if you don't ask for more
-            translated_section = self.import_section_content(
-                tc, site_language)
-            if tc.source:
-                try:
-                    parent = SectionPage.objects.get(
-                        uuid=tc.source)
-                    PageTranslation.objects.get_or_create(
-                        page=parent,
-                        translated_page=translated_section)
-                except SectionPage.DoesNotExist:
-                    print "couldn't find", tc.source, (
-                        SectionPage.objects.all().values('uuid'))
-            else:
-                print "no source found for: ", tc.source, (
+    def import_categories_for_child_language(
+            self, category, selected_locale, site_language):
+        translated_section = self.import_section_content(
+            category, site_language)
+        if category.source:
+            try:
+                parent = SectionPage.objects.get(
+                    uuid=category.source)
+                PageTranslation.objects.get_or_create(
+                    page=parent,
+                    translated_page=translated_section)
+            except SectionPage.DoesNotExist:
+                print "couldn't find", category.source, (
                     SectionPage.objects.all().values('uuid'))
-
-        for tp in self.ws.S(Page).filter(
-            language=selected_locale.get('locale')
-        ).order_by('position')[:10000]:
-            # S() only returns 10 results if you don't ask for more
-                self.import_page_content(tp, site_language)
+        else:
+            print "no source found for: ", category.source, (
+                SectionPage.objects.all().values('uuid'))
 
     def import_content_for(self, locales):
         for selected_locale in locales:
             site_language = get_object_or_404(
                 SiteLanguage, locale=selected_locale.get('site_language'))
 
-            if site_language.is_main_language:
-                self.import_main_language_content(
-                    selected_locale, site_language)
-            else:
-                self.import_translated_content(selected_locale, site_language)
+            self.import_all_categories(site_language, selected_locale)
+            self.import_all_pages(site_language, selected_locale)
+
+    def import_all_categories(self, site_language, selected_locale):
+        category_qs = self.ws.S(Category).filter(
+            language=selected_locale.get('locale')
+        ).order_by('position')[:10000]
+        # S() only returns 10 results if you don't ask for more
+
+        if site_language.is_main_language:
+            for c in category_qs:
+                self.import_section_content(c, site_language)
+        else:
+            for c in category_qs:
+                self.import_categories_for_child_language(
+                    c, selected_locale, site_language)
+
+    def import_all_pages(self, site_language, selected_locale):
+        for p in self.ws.S(Page).filter(
+            language=selected_locale.get('locale')
+        ).order_by('position')[:10000]:
+            # S() only returns 10 results if you don't ask for more
+
+            self.import_page_content(p, site_language)
