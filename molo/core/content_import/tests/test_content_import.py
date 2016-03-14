@@ -138,3 +138,11 @@ class ContentImportTestCase(
 
         self.assertEquals(SectionPage.objects.all().count(), 4)
         self.assertEquals(ArticlePage.objects.all().count(), 44)
+
+        # run import twice
+        ContentImportHelper(self.workspace).import_content_for([
+            {'locale': 'eng_GB', 'site_language': 'en'},
+            {'locale': 'spa_ES', 'site_language': 'es'}])
+
+        self.assertEquals(SectionPage.objects.all().count(), 4)
+        self.assertEquals(ArticlePage.objects.all().count(), 44)
