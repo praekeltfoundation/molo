@@ -9,7 +9,7 @@ export default function base() {
 
   return {
     entry: {
-      'git-import': './src/views/git-importer/entry'
+      'git-import': './src/views/git-importer/entry',
     },
     resolve: {
       root: resolve(__dirname, '..')
@@ -23,7 +23,11 @@ export default function base() {
     module: {
       loaders: [{
         test: /\.js$/,
-        loader: 'babel'
+        loader: 'babel',
+        include: [
+          resolve(__dirname, '..', 'src'),
+          resolve(__dirname, '..', 'tests')
+        ]
       }]
     }
   };
