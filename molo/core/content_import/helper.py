@@ -56,8 +56,10 @@ class ContentImportHelper(object):
                         uuid=p.primary_category)
                     page = self.get_or_create(ArticlePage, p, section)
                 except SectionPage.DoesNotExist:
-                    print "couldn't find", p.primary_category, (
-                        SectionPage.objects.all().values('uuid'))
+                    print "couldn't find primary category ", \
+                        p.primary_category, \
+                        SectionPage.objects.all().values('uuid')
+                    return None
             else:
                 # special case for articles with no primary category
                 # this assumption is probably wrong..

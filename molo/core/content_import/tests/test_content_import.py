@@ -75,6 +75,11 @@ class ContentImportTestCase(
             self.workspace, count=10, locale='eng_GB',
             primary_category=cat_eng_2.uuid)
 
+        # main language page with invalid primary category
+        self.create_pages(
+            self.workspace, count=1, locale='eng_GB',
+            primary_category='an-invalid-uuid')
+
         en_footer_pages = self.create_pages(
             self.workspace, count=2, locale='eng_GB',
             primary_category=None)
@@ -91,6 +96,7 @@ class ContentImportTestCase(
             self.workspace, count=2, locale='spa_ES',
             primary_category=None)
 
+        # translation page without a source and primary category
         self.create_pages(
             self.workspace, count=1, locale='spa_ES',
             primary_category=None)
@@ -111,7 +117,7 @@ class ContentImportTestCase(
         self.assertEquals(
             self.workspace.S(eg_models.Category).all().count(), 4)
         self.assertEquals(
-            self.workspace.S(eg_models.Page).all().count(), 45)
+            self.workspace.S(eg_models.Page).all().count(), 46)
         self.assertEquals(
             self.workspace.S(eg_models.Localisation).all().count(), 2)
 
