@@ -91,6 +91,10 @@ class ContentImportTestCase(
             self.workspace, count=2, locale='spa_ES',
             primary_category=None)
 
+        self.create_pages(
+            self.workspace, count=1, locale='spa_ES',
+            primary_category=None)
+
         for i in range(0, 10):
             self.workspace.save(es_pages1[i].update({
                 'source': en_pages1[i].uuid,
@@ -107,7 +111,7 @@ class ContentImportTestCase(
         self.assertEquals(
             self.workspace.S(eg_models.Category).all().count(), 4)
         self.assertEquals(
-            self.workspace.S(eg_models.Page).all().count(), 44)
+            self.workspace.S(eg_models.Page).all().count(), 45)
         self.assertEquals(
             self.workspace.S(eg_models.Localisation).all().count(), 2)
 
