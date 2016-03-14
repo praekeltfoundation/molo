@@ -18,6 +18,9 @@ class ContentImportTestCase(
         self.english = SiteLanguage.objects.create(
             locale='en',
         )
+        self.spanish = SiteLanguage.objects.create(
+            locale='es',
+        )
         self.mk_main()
         self.workspace = self.mk_workspace()
 
@@ -64,34 +67,56 @@ class ContentImportTestCase(
             'position': 4,
         }), 'Added source to category.')
 
-        self.create_pages(
+        en_pages1 = self.create_pages(
             self.workspace, count=10, locale='eng_GB',
             primary_category=cat_eng_1.uuid)
 
-        self.create_pages(
+        en_pages2 = self.create_pages(
             self.workspace, count=10, locale='eng_GB',
             primary_category=cat_eng_2.uuid)
 
-        self.create_pages(
+        en_footer_pages = self.create_pages(
+            self.workspace, count=2, locale='eng_GB',
+            primary_category=None)
+
+        es_pages1 = self.create_pages(
             self.workspace, count=10, locale='spa_ES',
             primary_category=cat_eng_1.uuid)
 
-        self.create_pages(
+        es_pages2 = self.create_pages(
             self.workspace, count=10, locale='spa_ES',
             primary_category=cat_eng_2.uuid)
+
+        es_footer_pages = self.create_pages(
+            self.workspace, count=2, locale='spa_ES',
+            primary_category=None)
+
+        for i in range(0, 10):
+            self.workspace.save(es_pages1[i].update({
+                'source': en_pages1[i].uuid,
+            }), 'Added source to page.')
+            self.workspace.save(es_pages2[i].update({
+                'source': en_pages2[i].uuid,
+            }), 'Added source to page.')
+
+        for i in range(0, 2):
+            self.workspace.save(es_footer_pages[i].update({
+                'source': en_footer_pages[i].uuid,
+            }), 'Added source to page.')
 
         self.assertEquals(
             self.workspace.S(eg_models.Category).all().count(), 4)
         self.assertEquals(
-            self.workspace.S(eg_models.Page).all().count(), 40)
+            self.workspace.S(eg_models.Page).all().count(), 44)
         self.assertEquals(
             self.workspace.S(eg_models.Localisation).all().count(), 2)
 
         self.assertEquals(SectionPage.objects.all().count(), 0)
         self.assertEquals(ArticlePage.objects.all().count(), 0)
 
-        ContentImportHelper(self.workspace).import_content_for(
-            [{'locale': 'eng_GB', 'site_language': 'en'}])
+        ContentImportHelper(self.workspace).import_content_for([
+            {'locale': 'eng_GB', 'site_language': 'en'},
+            {'locale': 'spa_ES', 'site_language': 'es'}])
 
-        self.assertEquals(SectionPage.objects.all().count(), 2)
-        self.assertEquals(ArticlePage.objects.all().count(), 20)
+        self.assertEquals(SectionPage.objects.all().count(), 4)
+        self.assertEquals(ArticlePage.objects.all().count(), 44)
