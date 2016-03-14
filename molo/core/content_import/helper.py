@@ -48,7 +48,7 @@ class ContentImportHelper(object):
 
         return section
 
-    def import_page_content(self, p, site_language, main_instance):
+    def import_page_content(self, p, site_language):
         if site_language.is_main_language:
             if p.primary_category:
                 try:
@@ -65,9 +65,18 @@ class ContentImportHelper(object):
                 main = Main.objects.all().first()
                 page = self.get_or_create(FooterPage, p, main)
         else:
-            parent = main_instance.get_parent()
-            page = self.get_or_create_translation(
-                main_instance.__class__, p, parent, site_language)
+            try:
+                main_instance = ArticlePage.objects.get(uuid=p.source)
+                page = self.get_or_create_translation(
+                    main_instance.__class__, p, main_instance.get_parent(),
+                    site_language)
+                PageTranslation.objects.get_or_create(
+                    page=main_instance,
+                    translated_page=page)
+            except ArticlePage.DoesNotExist:
+                print "No source found for: ", p.source, (
+                    ArticlePage.objects.all().values('uuid'))
+                return None
 
         page.subtitle = p.subtitle
         page.body = json.dumps([
@@ -100,7 +109,7 @@ class ContentImportHelper(object):
         ).order_by('position')[:10000]:
             # S() only returns 10 results if you don't ask for more
 
-            self.import_page_content(p, site_language, 'foo')
+            self.import_page_content(p, site_language)
 
     def import_translated_content(self, selected_locale, site_language):
         for tc in self.ws.S(Category).filter(
@@ -127,17 +136,7 @@ class ContentImportHelper(object):
             language=selected_locale.get('locale')
         ).order_by('position')[:10000]:
             # S() only returns 10 results if you don't ask for more
-            try:
-                main_instance = ArticlePage.objects.get(
-                    uuid=tp.source)
-                page = self.import_page_content(
-                    tp, site_language, main_instance)
-                PageTranslation.objects.get_or_create(
-                    page=main_instance,
-                    translated_page=page)
-            except ArticlePage.DoesNotExist:
-                print "No source found for: ", tp.source, (
-                    ArticlePage.objects.all().values('uuid'))
+                self.import_page_content(tp, site_language)
 
     def import_content_for(self, locales):
         for selected_locale in locales:
