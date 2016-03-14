@@ -1,4 +1,5 @@
 import webpack from 'webpack';
+import { resolve } from 'path';
 const CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 
 
@@ -9,6 +10,9 @@ export default function base() {
   return {
     entry: {
       'git-import': './src/views/git-importer/entry'
+    },
+    resolve: {
+      root: resolve(__dirname, '..')
     },
     output: {
       filename: '[name].js'
