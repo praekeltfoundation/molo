@@ -5,8 +5,11 @@ import configureStore from './store';
 import GitImporterContainer from './containers/git-importer';
 
 
+let store = configureStore();
+
+
 render(
-  <Provider store={configureStore()}>
+  <Provider store={store}>
     <GitImporterContainer/>
   </Provider>,
   document.getElementById('mountpoint')

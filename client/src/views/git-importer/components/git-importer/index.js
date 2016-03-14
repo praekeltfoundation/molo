@@ -10,7 +10,7 @@ const GitImporter = (d) => (
             <h2>Step 1: Fetch content from Github</h2>
             <input type="text" />
 
-            <p className="add"><button className="c-git-importer__fetch" onClick={d.actions.fetchContent}>Fetch</button></p>
+            <p className="add"><button type="button" className="c-git-importer__fetch" onClick={d.actions.fetchContent}>Fetch</button></p>
           </div>
         </li>
 
@@ -29,7 +29,7 @@ const GitImporter = (d) => (
         </li>
 
         <li>
-          <button>Import</button>
+          <button type="button">Import</button>
         </li>
       </ul>
     </div>

@@ -5,10 +5,12 @@ import fixtures from 'tests/views/git-importer/fixtures';
 
 
 export default function gitImporterReducer(state, action) {
-  switch(state) {
+  switch (action.type) {
     case 'fetch-content':
       return conj({
         locales: fixtures('state').locales
       });
   }
+
+  return state;
 }
