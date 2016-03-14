@@ -49,7 +49,10 @@
   "dependencies": {
     "lodash": "^4.6.1",
     "react": "^0.14.7",
+    "react-collapse": "^2.0.0",
     "react-dom": "^0.14.7",
+    "react-height": "^2.0.4",
+    "react-motion": "^0.4.2",
     "react-redux": "^4.4.0",
     "redux": "^3.3.1"
   }

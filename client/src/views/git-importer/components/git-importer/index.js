@@ -1,22 +1,25 @@
 import React, { PropTypes } from 'react';
+import Collapse from 'react-collapse';
 
 
 const GitImporter = (d) => (
   <form action="">
     <div className="c-git-importer">
-      <ul className="fields">
-        <li>
-          <div className="c-git-import__step">
-            <h2>Step 1: Fetch content from Github</h2>
-            <input type="text" />
+      <div className="c-git-import__step">
+        <h2>Step 1: Choose site to import from</h2>
 
+        <Collapse isOpened={true}>
+          <div>
             <p className="add"><button type="button" className="c-git-importer__fetch" onClick={d.actions.fetchContent}>Fetch</button></p>
           </div>
-        </li>
+        </Collapse>
+      </div>
 
-        <li>
-          <div className="c-git-importer__step">
-            <h2>Step 2: Choose which locales to import</h2>
+      <div className="c-git-import__step">
+        <h2>Step 2: Choose which locales to import</h2>
+
+        <Collapse isOpened={d.locales.length > 0}>
+          <div>
             {/* TODO select all/none */}
 
             {d.locales.map(locale =>
@@ -25,13 +28,11 @@ const GitImporter = (d) => (
                 <span>{locale.name}</span>
               </div>
             )}
-          </div>
-        </li>
 
-        <li>
-          <button type="button">Import</button>
-        </li>
-      </ul>
+            <button type="button">Import</button>
+          </div>
+        </Collapse>
+      </div>
     </div>
   </form>
 );
