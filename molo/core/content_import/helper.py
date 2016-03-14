@@ -15,10 +15,7 @@ class ContentImportHelper(object):
 
     def get_or_create(self, cls, obj, parent):
         if cls.objects.filter(uuid=obj.uuid).exists():
-            instance = cls.objects.get(uuid=obj.uuid)
-            instance.title = obj.title
-            print 'updated', obj.title
-            return instance
+            return cls.objects.get(uuid=obj.uuid)
 
         instance = cls(uuid=obj.uuid, title=obj.title)
         parent.add_child(instance=instance)
@@ -27,13 +24,7 @@ class ContentImportHelper(object):
 
     def get_or_create_translation(self, cls, obj, parent, language):
         if cls.objects.filter(uuid=obj.uuid).exists():
-            instance = cls.objects.get(uuid=obj.uuid)
-            instance.title = obj.title
-            language_relation = instance.languages.first()
-            language_relation.language = language
-            language_relation.save()
-            print 'updated translation', obj.title
-            return instance
+            return cls.objects.get(uuid=obj.uuid)
 
         instance = cls(uuid=obj.uuid, title=obj.title)
         parent.add_child(instance=instance)
@@ -43,7 +34,8 @@ class ContentImportHelper(object):
         print 'created translation', obj.title
         return instance
 
-    def import_section_content(self, c, main, site_language):
+    def import_section_content(self, c, site_language):
+        main = Main.objects.all().first()
         if site_language.is_main_language:
             section = self.get_or_create(SectionPage, c, main)
         else:
@@ -56,7 +48,7 @@ class ContentImportHelper(object):
 
         return section
 
-    def import_page_content(self, p, main, site_language, parent):
+    def import_page_content(self, p, site_language, main_instance):
         if site_language.is_main_language:
             if p.primary_category:
                 try:
@@ -70,18 +62,12 @@ class ContentImportHelper(object):
                 # special case for articles with no primary category
                 # this assumption is probably wrong..
                 # but we have no where else to put them
+                main = Main.objects.all().first()
                 page = self.get_or_create(FooterPage, p, main)
         else:
-            if parent:
-                page = self.get_or_create_translation(
-                    ArticlePage, p, parent, site_language)
-            else:
-                # special case for articles with no primary
-                # category
-                # this assumption is probably wrong..but we have
-                # no where else to put them
-                page = self.get_or_create_translation(
-                    FooterPage, p, main, site_language)
+            parent = main_instance.get_parent()
+            page = self.get_or_create_translation(
+                main_instance.__class__, p, parent, site_language)
 
         page.subtitle = p.subtitle
         page.body = json.dumps([
@@ -102,29 +88,27 @@ class ContentImportHelper(object):
         return page
 
     def import_main_language_content(self, selected_locale, site_language):
-        main = Main.objects.all().first()
         for c in self.ws.S(Category).filter(
                 language=selected_locale.get('locale')
         ).order_by('position')[:10000]:
             # S() only returns 10 results if you don't ask for more
 
-            self.import_section_content(c, main, site_language)
+            self.import_section_content(c, site_language)
 
         for p in self.ws.S(Page).filter(
             language=selected_locale.get('locale')
         ).order_by('position')[:10000]:
             # S() only returns 10 results if you don't ask for more
 
-            self.import_page_content(p, main, site_language, 'foo')
+            self.import_page_content(p, site_language, 'foo')
 
     def import_translated_content(self, selected_locale, site_language):
-        main = Main.objects.all().first()
         for tc in self.ws.S(Category).filter(
             language=selected_locale.get('locale')
         ).order_by('position')[:10000]:
             # S() only returns 10 results if you don't ask for more
             translated_section = self.import_section_content(
-                tc, main, site_language)
+                tc, site_language)
             if tc.source:
                 try:
                     parent = SectionPage.objects.get(
@@ -144,26 +128,16 @@ class ContentImportHelper(object):
         ).order_by('position')[:10000]:
             # S() only returns 10 results if you don't ask for more
             try:
-                parent = ArticlePage.objects.get(
-                    uuid=tp.source).get_parent()
+                main_instance = ArticlePage.objects.get(
+                    uuid=tp.source)
                 page = self.import_page_content(
-                    tp, main, site_language, parent)
-                if tp.source:
-                    try:
-                        parent = ArticlePage.objects.get(
-                            uuid=tp.source)
-                        PageTranslation.objects.get_or_create(
-                            page=parent,
-                            translated_page=page)
-                    except ArticlePage.DoesNotExist:
-                        print "Couldn't find", tp.source, (
-                            ArticlePage.objects.all().values('uuid'))
-                else:
-                    print "No source found for: ", tp.source, (
-                        ArticlePage.objects.all().values('uuid'))
+                    tp, site_language, main_instance)
+                PageTranslation.objects.get_or_create(
+                    page=main_instance,
+                    translated_page=page)
             except ArticlePage.DoesNotExist:
-                        print "Couldn't find", tp.source, (
-                            ArticlePage.objects.all().values('uuid'))
+                print "No source found for: ", tp.source, (
+                    ArticlePage.objects.all().values('uuid'))
 
     def import_content_for(self, locales):
         for selected_locale in locales:
