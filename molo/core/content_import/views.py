@@ -5,6 +5,7 @@ from elasticgit.workspace import RemoteWorkspace
 
 from molo.core.models import SiteLanguage
 from molo.core.content_import.helper import ContentImportHelper
+from molo.core.content_import.validation import ContentImportValidation
 
 from rest_framework.decorators import (
     api_view, authentication_classes, permission_classes)
@@ -57,7 +58,22 @@ def import_content(request, name):
     ws.sync(Page)
 
     # create wagtail content
-
     locales = request.data.get('locales')
     ContentImportHelper(ws).import_content_for(locales)
     return Response()
+
+
+@api_view(['POST'])
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+@permission_classes((IsAuthenticated,))
+def import_validate(request, name):
+    ws = RemoteWorkspace('%s/repos/%s.json' % (
+        settings.UNICORE_DISTRIBUTE_API, name))
+    ws.sync(Localisation)
+    ws.sync(Category)
+    ws.sync(Page)
+
+    # validate import content
+    locales = request.data.get('locales')
+    errors = ContentImportValidation(ws).is_validate_for(locales)
+    return Response(errors)
