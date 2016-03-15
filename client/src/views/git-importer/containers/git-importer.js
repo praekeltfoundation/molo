@@ -6,7 +6,8 @@ import GitImporter from 'src/views/git-importer/components/git-importer';
 
 function stateToProps(state) {
   return {
-    locales: state.locales
+    locales: state.locales,
+    currentStep: currentStep(state)
   };
 }
 
@@ -15,6 +16,13 @@ function dispatchToProps(dispatch) {
   return {
     actions: bindActionCreators(actions, dispatch)
   };
+}
+
+
+function currentStep(state) {
+  return state.locales.length > 0
+    ? 'choose-locales'
+    : 'fetch-content';
 }
 
 

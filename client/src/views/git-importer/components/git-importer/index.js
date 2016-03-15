@@ -1,25 +1,30 @@
 import React, { PropTypes } from 'react';
 import Collapse from 'react-collapse';
+import classNames from 'classnames';
 
 
 const GitImporter = (d) => (
   <form action="">
     <div className="c-git-importer">
-      <div className="c-git-import__step">
-        <h2>Step 1: Choose site to import from</h2>
+      <div className={stepClasses(d, 'fetch-content')}>
+        <div className="o-collapse__header" href="">
+          <h2 className="o-collapse__header-title">Step 1: Choose site to import from</h2>
+        </div>
 
-        <Collapse isOpened={true}>
-          <div>
+        <Collapse isOpened={stepIsExpanded(d, 'fetch-content')}>
+          <div className="o-collapse__body">
             <p className="add"><button type="button" className="c-git-importer__fetch" onClick={d.actions.fetchContent}>Fetch</button></p>
           </div>
         </Collapse>
       </div>
 
-      <div className="c-git-import__step">
-        <h2>Step 2: Choose which locales to import</h2>
+      <div className={stepClasses(d, 'choose-locales')}>
+        <div className="o-collapse__header" href="">
+          <h2 className="o-collapse__header-title">Step 2: Choose which locales to import</h2>
+        </div>
 
-        <Collapse isOpened={d.locales.length > 0}>
-          <div>
+        <Collapse isOpened={stepIsExpanded(d, 'choose-locales')}>
+          <div className="o-collapse__body">
             {/* TODO select all/none */}
 
             {d.locales.map(locale =>
@@ -36,6 +41,26 @@ const GitImporter = (d) => (
     </div>
   </form>
 );
+
+
+function expandedClass(isExpanded) {
+  return isExpanded
+      ? 'is-expanded'
+      : 'is-collapsed';
+}
+
+
+function stepClasses(d, stepName) {
+  return classNames(
+    'o-collapse',
+    'c-git-import__step',
+    expandedClass(stepIsExpanded(d, stepName)));
+}
+
+
+function stepIsExpanded(d, stepName) {
+  return d.currentStep === stepName;
+}
 
 
 GitImporter.propTypes = {

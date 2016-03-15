@@ -18,7 +18,9 @@ function gitImporterFixtures(name) {
     case 'state-to-props:input':
       return gitImporterFixtures('state');
     case 'state-to-props:expected':
-      return gitImporterFixtures('state');
+      return extend(gitImporterFixtures('state'), {
+        currentStep: 'choose-locales'
+      });
     case 'component:input':
       return extend(gitImporterFixtures('state'), {
         actions: mapValues(actions, constant(noop))

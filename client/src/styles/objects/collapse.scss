@@ -1,0 +1,36 @@
+@import '../vars';
+@import '../mixins/chevron';
+
+
+.o-collapse {
+  &.is-expanded {
+    .o-collapse__header-title {
+      @include chevron-down();
+    }
+  }
+
+  &.is-collapsed {
+    .o-collapse__header-title {
+      @include chevron-right();
+    }
+  }
+}
+
+
+.o-collapse__header {
+  display: block;
+  width: 100%;
+  background: $bg-primary;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+
+.o-collapse__header-title {
+  color: $fg-primary;
+  padding: 0.5em 1em;
+}
+
+
+.o-collapse__body {
+}
