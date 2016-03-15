@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import Collapse from 'react-collapse';
 import classNames from 'classnames';
+import ChooseSite from 'src/views/git-importer/components/choose-site';
+import ChooseMain from 'src/views/git-importer/components/choose-main';
 
 
 const GitImporter = (d) => (
@@ -13,7 +15,7 @@ const GitImporter = (d) => (
 
         <Collapse isOpened={stepIsExpanded(d, 'choose-site')}>
           <div className="o-collapse__body">
-            <p className="add"><button type="button" className="c-git-importer__choose-site" onClick={d.actions.fetchSite}>Next</button></p>
+            <ChooseSite actions={d.actions} />
           </div>
         </Collapse>
       </div>
@@ -25,16 +27,7 @@ const GitImporter = (d) => (
 
         <Collapse isOpened={stepIsExpanded(d, 'choose-main')}>
           <div className="o-collapse__body">
-            {/* TODO select all/none */}
-
-            {d.languages.map(language =>
-              <div key={language.name} className="input c-git-importer__language">
-                <input type="checkbox" />
-                <span>{language.name}</span>
-              </div>
-            )}
-
-            <button type="button">Import</button>
+            <ChooseMain languages={d.languages} actions={d.actions} />
           </div>
         </Collapse>
       </div>

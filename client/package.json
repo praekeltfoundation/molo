@@ -55,6 +55,7 @@
     "react-height": "^2.0.4",
     "react-motion": "^0.4.2",
     "react-redux": "^4.4.0",
+    "react-search-bar": "^1.1.4",
     "redux": "^3.3.1"
   }
 }
