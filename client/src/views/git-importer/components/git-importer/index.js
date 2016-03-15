@@ -6,31 +6,31 @@ import classNames from 'classnames';
 const GitImporter = (d) => (
   <form action="">
     <div className="c-git-importer">
-      <div className={stepClasses(d, 'fetch-content')}>
+      <div className={stepClasses(d, 'choose-site')}>
         <div className="o-collapse__header" href="">
           <h2 className="o-collapse__header-title">Step 1: Choose site to import from</h2>
         </div>
 
-        <Collapse isOpened={stepIsExpanded(d, 'fetch-content')}>
+        <Collapse isOpened={stepIsExpanded(d, 'choose-site')}>
           <div className="o-collapse__body">
-            <p className="add"><button type="button" className="c-git-importer__fetch" onClick={d.actions.fetchContent}>Fetch</button></p>
+            <p className="add"><button type="button" className="c-git-importer__choose-site" onClick={d.actions.fetchSite}>Next</button></p>
           </div>
         </Collapse>
       </div>
 
-      <div className={stepClasses(d, 'choose-locales')}>
+      <div className={stepClasses(d, 'choose-main')}>
         <div className="o-collapse__header" href="">
           <h2 className="o-collapse__header-title">Step 2: Choose which locales to import</h2>
         </div>
 
-        <Collapse isOpened={stepIsExpanded(d, 'choose-locales')}>
+        <Collapse isOpened={stepIsExpanded(d, 'choose-main')}>
           <div className="o-collapse__body">
             {/* TODO select all/none */}
 
-            {d.locales.map(locale =>
-              <div key={locale.name} className="input c-git-importer__locale">
+            {d.languages.map(language =>
+              <div key={language.name} className="input c-git-importer__language">
                 <input type="checkbox" />
-                <span>{locale.name}</span>
+                <span>{language.name}</span>
               </div>
             )}
 
@@ -64,7 +64,7 @@ function stepIsExpanded(d, stepName) {
 
 
 GitImporter.propTypes = {
-  locales: PropTypes.array.isRequired
+  languages: PropTypes.array.isRequired
 };
 
 

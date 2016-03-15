@@ -1,3 +1,4 @@
+import isNull from 'lodash/isNull';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from 'src/views/git-importer/actions';
@@ -6,7 +7,8 @@ import GitImporter from 'src/views/git-importer/components/git-importer';
 
 function stateToProps(state) {
   return {
-    locales: state.locales,
+    site: state.site,
+    languages: state.languages,
     currentStep: currentStep(state)
   };
 }
@@ -20,9 +22,9 @@ function dispatchToProps(dispatch) {
 
 
 function currentStep(state) {
-  return state.locales.length > 0
-    ? 'choose-locales'
-    : 'fetch-content';
+  return isNull(state.site)
+    ? 'choose-site'
+    : 'choose-main';
 }
 
 

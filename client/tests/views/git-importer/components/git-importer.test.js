@@ -10,21 +10,22 @@ describe(`GitImporter`, () => {
   it(`should render`, () => {
     const el = shallow(<GitImporter {...fixtures('component:input')} />);
 
-    expect(el.find('.c-git-importer__locale')
-      .at(0)
-      .text())
-      .to.equal('en_ZA');
+    expect(el.find('.c-git-importer__language').at(0).text())
+      .to.equal('English');
+
+    expect(el.find('.c-git-importer__language').at(1).text())
+      .to.equal('Swahili');
   });
 
-  it(`should call fetchContent when fetch is clicked`, () => {
+  it(`should call fetchSite when user has chosen a site`, () => {
     const state = fixtures('component:input');
-    state.actions.fetchContent = spy();
+    state.actions.fetchSite = spy();
     const el = shallow(<GitImporter {...state} />);
 
-    el.find('.c-git-importer__fetch')
+    el.find('.c-git-importer__choose-site')
       .simulate('click');
 
-    expect(state.actions.fetchContent.calledOnce)
+    expect(state.actions.fetchSite.calledOnce)
       .to.be.true;
   });
 });

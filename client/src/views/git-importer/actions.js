@@ -1,3 +1,3 @@
-export function fetchContent() {
-  return {type: 'fetch-content'};
+export function fetchSite() {
+  return {type: 'fetch-site'};
 }

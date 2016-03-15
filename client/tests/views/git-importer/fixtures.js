@@ -8,18 +8,23 @@ import * as actions from 'src/views/git-importer/actions';
 function gitImporterFixtures(name) {
   switch (name) {
     case 'state':
+      return gitImporterFixtures('state:choose-main');
+    case 'state:choose-main':
       return {
-        locales: [{
-          name: 'en_ZA'
+        site: {
+          name: 'foo'
+        },
+        languages: [{
+          name: 'English'
         }, {
-          name: 'zu_ZA'
+          name: 'Swahili'
         }]
       };
     case 'state-to-props:input':
       return gitImporterFixtures('state');
     case 'state-to-props:expected':
       return extend(gitImporterFixtures('state'), {
-        currentStep: 'choose-locales'
+        currentStep: 'choose-main'
       });
     case 'component:input':
       return extend(gitImporterFixtures('state'), {

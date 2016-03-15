@@ -3,7 +3,8 @@ import reducer from './reducers';
 
 
 const initialState = () => ({
-  locales: []
+  site: null,
+  languages: []
 });
 
 
