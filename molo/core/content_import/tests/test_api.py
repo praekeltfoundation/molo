@@ -7,12 +7,8 @@ from rest_framework.test import APIClient
 
 from elasticgit.tests.base import ModelBaseTest
 
-from molo.core.models import SiteLanguage, SectionPage, ArticlePage, FooterPage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
-from molo.core.content_import.helper import ContentImportHelper
-
-from unicore.content import models as eg_models
 
 
 @pytest.mark.django_db
