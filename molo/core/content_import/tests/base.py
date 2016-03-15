@@ -1,3 +1,8 @@
+import json
+import responses
+
+from django.conf import settings
+
 from wagtail.wagtailcore.utils import cautious_slugify
 from unicore.content.models import Page, Category, Localisation
 
@@ -63,3 +68,10 @@ class ElasticGitTestMixin(object):
         workspace.save(loc, u'Added localisation %s.' % (locale,))
         workspace.refresh_index()
         return loc
+
+    def mock_get_repos_from_ucd(self, data=[], status=200):
+        responses.add(
+            responses.GET, '%s/repos.json' % settings.UNICORE_DISTRIBUTE_API,
+            body=json.dumps(data),
+            content_type="application/json",
+            status=status)

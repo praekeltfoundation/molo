@@ -1,5 +1,6 @@
 import requests
 
+from django.conf import settings
 from elasticgit.workspace import RemoteWorkspace
 
 from molo.core.models import SiteLanguage
@@ -17,14 +18,16 @@ from unicore.content.models import Localisation, Category, Page
 
 @api_view(['GET'])
 def get_repos(request):
-    response = requests.get('http://localhost:6543/repos.json').json()
+    response = requests.get(
+        '%s/repos.json' % settings.UNICORE_DISTRIBUTE_API).json()
     return Response({
         'repos': [repo.get('name') for repo in response]})
 
 
 @api_view(['GET'])
 def get_repo_languages(request, name):
-    ws = RemoteWorkspace('http://localhost:6543/repos/%s.json' % name)
+    ws = RemoteWorkspace('%s/repos/%s.json' % (
+        settings.UNICORE_DISTRIBUTE_API, name))
     ws.sync(Localisation)
 
     return Response({
@@ -47,7 +50,8 @@ def get_available_languages(request):
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticated,))
 def import_content(request, name):
-    ws = RemoteWorkspace('http://localhost:6543/repos/%s.json' % name)
+    ws = RemoteWorkspace('%s/repos/%s.json' % (
+        settings.UNICORE_DISTRIBUTE_API, name))
     ws.sync(Localisation)
     ws.sync(Category)
     ws.sync(Page)
