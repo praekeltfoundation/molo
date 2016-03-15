@@ -3,8 +3,14 @@ import reducer from './reducers';
 
 
 const initialState = () => ({
-  site: null,
-  languages: []
+  ui: {
+    currentStep: 'choose-site'
+  },
+  data: {
+    sites: [],
+    site: null,
+    languages: []
+  }
 });
 
 

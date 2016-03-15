@@ -11,23 +11,38 @@ function gitImporterFixtures(name) {
       return gitImporterFixtures('state:choose-main');
     case 'state:choose-main':
       return {
-        site: {
-          name: 'foo'
+        ui: {
+          currentStep: 'choose-main'
         },
+        data: {
+          sites: [{
+            name: 'foo'
+          }, {
+            name: 'bar'
+          }],
+          site: {
+            name: 'foo'
+          },
+          languages: [{
+            name: 'English'
+          }, {
+            name: 'Swahili'
+          }]
+        }
+      };
+    case 'state-to-props:input':
+      return gitImporterFixtures('state');
+    case 'state-to-props:expected':
+      return {
+        currentStep: 'choose-main',
         languages: [{
           name: 'English'
         }, {
           name: 'Swahili'
         }]
       };
-    case 'state-to-props:input':
-      return gitImporterFixtures('state');
-    case 'state-to-props:expected':
-      return extend(gitImporterFixtures('state'), {
-        currentStep: 'choose-main'
-      });
     case 'component:input':
-      return extend(gitImporterFixtures('state'), {
+      return extend(gitImporterFixtures('state-to-props:expected'), {
         actions: mapValues(actions, constant(noop))
       });
   }
