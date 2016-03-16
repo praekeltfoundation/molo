@@ -1,3 +1,11 @@
+export function expandStep(name) {
+  return {
+    type: 'expand-step',
+    name: name
+  };
+}
+
+
 export function chooseSite() {
   return {type: 'choose-site'};
 }
@@ -11,9 +19,9 @@ export function changeSite(id) {
 }
 
 
-export function expandStep(name) {
+export function changeMain(id) {
   return {
-    type: 'expand-step',
-    name: name
+    type: 'change-main',
+    id: id
   };
 }

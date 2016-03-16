@@ -27,21 +27,26 @@ function gitImporterFixtures(name) {
           },
           languages: [{
             id: 'en',
-            name: 'English'
+            name: 'English',
+            isMain: true
           }, {
             id: 'sw',
-            name: 'Swahili'
+            name: 'Swahili',
+            isMain: false
           }]
         }
       };
+
     case 'state-to-props':
       return {
         languages: [{
           id: 'en',
-          name: 'English'
+          name: 'English',
+          isMain: true
         }, {
           id: 'sw',
-          name: 'Swahili'
+          name: 'Swahili',
+          isMain: false
         }],
         site: {
           id: 'foo-id',
@@ -65,6 +70,7 @@ function gitImporterFixtures(name) {
           }
         }
       };
+
     case 'git-importer':
       return extend(gitImporterFixtures('state-to-props'), {
         actions: mapValues(actions, constant(noop))
