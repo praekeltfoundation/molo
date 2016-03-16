@@ -1,3 +1,40 @@
+@import '../vars';
+
+
+.o-search {
+  position: relative;
+}
+
+
 .o-search__input {
   margin: 1em 0;
+}
+
+
+.o-search__results {
+  background: $bg0;
+  border: 1px solid $border0;
+  position: absolute;
+  margin-top: -1em;
+  width: 100%;
+  display: block;
+  z-index: 999;
+}
+
+
+.o-search__item {
+  display: block;
+  font-size: 1.1em;
+}
+
+
+.o-search__anchor {
+  display: block;
+  color: $fg0;
+  padding: 0.5em 1em;
+
+  &:hover {
+    background: $bg-primary;
+    color: $fg-primary;
+  }
 }

@@ -13,7 +13,7 @@ const ChooseSite = (d) => (
       maxVisible={10}
       filterOption="name"
       displayOption={displaySite}
-      className="c-choose-site__search"
+      className="o-search c-choose-site__search"
       customClasses={{
         input: 'o-search__input',
         results: 'o-search__results',
