@@ -10,7 +10,6 @@ const ChooseMain = (d) => (
       className="o-input-group__item c-choose-main__language">
       <input
         type="radio"
-        name="main-language"
         defaultChecked={language.isMain}
         onChange={() => d.actions.changeMain(language.id)} />
       <span>{language.name}</span>
@@ -18,7 +17,11 @@ const ChooseMain = (d) => (
     )}
     </ul>
 
-    <p className="add"><button type="button">Next</button></p>
+    <p className="add">
+      <button type="button" onClick={d.actions.chooseMain}>
+        Next
+      </button>
+    </p>
   </div>
 );
 

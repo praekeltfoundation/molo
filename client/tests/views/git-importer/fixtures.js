@@ -10,8 +10,8 @@ function gitImporterFixtures(name) {
     case 'state':
       return {
         ui: {
-          currentStep: 'main',
-          lastStep: 'main'
+          currentStep: 'languages',
+          lastStep: 'languages'
         },
         data: {
           sites: [{
@@ -28,11 +28,13 @@ function gitImporterFixtures(name) {
           languages: [{
             id: 'en',
             name: 'English',
-            isMain: true
+            isMain: true,
+            isChosen: false
           }, {
             id: 'sw',
             name: 'Swahili',
-            isMain: false
+            isMain: false,
+            isChosen: true
           }]
         }
       };
@@ -42,11 +44,13 @@ function gitImporterFixtures(name) {
         languages: [{
           id: 'en',
           name: 'English',
-          isMain: true
+          isMain: true,
+          isChosen: false
         }, {
           id: 'sw',
           name: 'Swahili',
-          isMain: false
+          isMain: false,
+          isChosen: true
         }],
         site: {
           id: 'foo-id',
@@ -60,13 +64,17 @@ function gitImporterFixtures(name) {
           name: 'bar'
         }],
         steps: {
-          main: {
-            isDisabled: false,
-            isExpanded: true
-          },
           site: {
             isDisabled: false,
             isExpanded: false
+          },
+          main: {
+            isDisabled: false,
+            isExpanded: false
+          },
+          languages: {
+            isDisabled: false,
+            isExpanded: true
           }
         }
       };

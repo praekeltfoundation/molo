@@ -11,6 +11,11 @@ export function chooseSite() {
 }
 
 
+export function chooseMain() {
+  return {type: 'choose-main'};
+}
+
+
 export function changeSite(id) {
   return {
     type: 'change-site',
@@ -24,4 +29,17 @@ export function changeMain(id) {
     type: 'change-main',
     id: id
   };
+}
+
+
+export function toggleLanguageChosen(id) {
+  return {
+    type: 'toggle-language-chosen',
+    id: id
+  };
+}
+
+
+export function importContent() {
+  return {type: 'import-content'};
 }
