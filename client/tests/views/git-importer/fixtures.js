@@ -10,7 +10,8 @@ function gitImporterFixtures(name) {
     case 'state':
       return {
         ui: {
-          currentStep: 'choose-main'
+          currentStep: 'main',
+          lastStep: 'main'
         },
         data: {
           sites: [{
@@ -35,7 +36,6 @@ function gitImporterFixtures(name) {
       };
     case 'state-to-props':
       return {
-        currentStep: 'choose-main',
         languages: [{
           id: 'en',
           name: 'English'
@@ -53,7 +53,17 @@ function gitImporterFixtures(name) {
         }, {
           id: 'bar-id',
           name: 'bar'
-        }]
+        }],
+        steps: {
+          main: {
+            isDisabled: false,
+            isExpanded: true
+          },
+          site: {
+            isDisabled: false,
+            isExpanded: false
+          }
+        }
       };
     case 'git-importer':
       return extend(gitImporterFixtures('state-to-props'), {

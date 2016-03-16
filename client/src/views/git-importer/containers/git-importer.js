@@ -1,7 +1,9 @@
+import mapValues from 'lodash/mapValues';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from 'src/views/git-importer/actions';
 import GitImporter from 'src/views/git-importer/components/git-importer';
+import { STEPS } from 'src/views/git-importer/consts';
 
 
 function stateToProps(state) {
@@ -9,8 +11,21 @@ function stateToProps(state) {
     site: state.data.site,
     sites: state.data.sites,
     languages: state.data.languages,
-    currentStep: state.ui.currentStep
+    steps: mapValues(STEPS, (_, stepName) => ({
+        isDisabled: stepIsDisabled(state, stepName),
+        isExpanded: stepIsExpanded(state, stepName)
+      }))
   };
+}
+
+
+function stepIsDisabled(state, stepName) {
+  return STEPS[stepName] > STEPS[state.ui.lastStep];
+}
+
+
+function stepIsExpanded(state, stepName) {
+  return state.ui.currentStep === stepName;
 }
 
 

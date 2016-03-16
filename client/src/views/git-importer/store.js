@@ -7,7 +7,8 @@ import fixtures from 'tests/views/git-importer/fixtures';
 
 const initialState = () => ({
   ui: {
-    currentStep: 'choose-site'
+    currentStep: 'site',
+    lastStep: 'site'
   },
   data: {
     sites: fixtures('state').data.sites,

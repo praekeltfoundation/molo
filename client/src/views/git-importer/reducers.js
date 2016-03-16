@@ -15,6 +15,12 @@ export default function gitImporter(state, action) {
           site: ensure(find(state.data.sites, {id: action.id}), null)
         })
       });
+    case 'expand-step':
+      return conj(state, {
+        ui: conj(state.ui, {
+          currentStep: action.name
+        })
+      });
   }
 
   return state;

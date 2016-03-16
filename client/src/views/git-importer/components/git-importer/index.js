@@ -8,15 +8,19 @@ import ChooseMain from 'src/views/git-importer/components/choose-main';
 const GitImporter = (d) => (
   <form action="">
     <div className="c-git-importer">
-      <div className={stepClasses(d, 'choose-site')}>
-        <div className="o-collapse__header" href="">
-          <h2 className="o-collapse__header-title">
+      <div className="o-collapse c-git-import-step c-git-import-step--site">
+        <div
+          className={stepHeaderClasses(d.steps.site)}
+          disabled={d.steps.site.isDisabled}
+          onClick={() => d.actions.expandStep('site')}>
+
+          <h2 className="o-collapse-header__title">
             Step 1: Choose site to import from
           </h2>
         </div>
 
-        <Collapse isOpened={stepIsExpanded(d, 'choose-site')}>
-          <div className="o-collapse__body">
+        <Collapse isOpened={d.steps.site.isExpanded}>
+          <div className="o-collapse-body">
             <ChooseSite
               site={d.site}
               sites={d.sites}
@@ -25,15 +29,19 @@ const GitImporter = (d) => (
         </Collapse>
       </div>
 
-      <div className={stepClasses(d, 'choose-main')}>
-        <div className="o-collapse__header" href="">
-          <h2 className="o-collapse__header-title">
-            Step 2: Choose which locales to import
+      <div className="o-collapse c-git-import-step c-git-import-step--main">
+        <div
+          className={stepHeaderClasses(d.steps.main)}
+          disabled={d.steps.main.isDisabled}
+          onClick={() => d.actions.expandStep('main')}>
+
+          <h2 className="o-collapse-header__title">
+            Step 2: Choose the main language
           </h2>
         </div>
 
-        <Collapse isOpened={stepIsExpanded(d, 'choose-main')}>
-          <div className="o-collapse__body">
+        <Collapse isOpened={d.steps.main.isExpanded}>
+          <div className="o-collapse-body">
             <ChooseMain languages={d.languages} actions={d.actions} />
           </div>
         </Collapse>
@@ -45,21 +53,15 @@ const GitImporter = (d) => (
 
 function expandedClass(isExpanded) {
   return isExpanded
-      ? 'is-expanded'
-      : 'is-collapsed';
+      ? 'o-collapse-header--is-expanded'
+      : 'o-collapse-header--is-collapsed';
 }
 
 
-function stepClasses(d, stepName) {
+function stepHeaderClasses(step) {
   return classNames(
-    'o-collapse',
-    'c-git-import__step',
-    expandedClass(stepIsExpanded(d, stepName)));
-}
-
-
-function stepIsExpanded(d, stepName) {
-  return d.currentStep === stepName;
+    'o-collapse-header',
+    expandedClass(step.isExpanded));
 }
 
 

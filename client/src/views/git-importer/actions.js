@@ -9,3 +9,11 @@ export function changeSite(id) {
     id: id
   };
 }
+
+
+export function expandStep(name) {
+  return {
+    type: 'expand-step',
+    name: name
+  };
+}
