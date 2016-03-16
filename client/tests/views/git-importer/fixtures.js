@@ -8,41 +8,55 @@ import * as actions from 'src/views/git-importer/actions';
 function gitImporterFixtures(name) {
   switch (name) {
     case 'state':
-      return gitImporterFixtures('state:choose-main');
-    case 'state:choose-main':
       return {
         ui: {
           currentStep: 'choose-main'
         },
         data: {
           sites: [{
+            id: 'foo-id',
             name: 'foo'
           }, {
+            id: 'bar-id',
             name: 'bar'
           }],
           site: {
+            id: 'foo-id',
             name: 'foo'
           },
           languages: [{
+            id: 'en',
             name: 'English'
           }, {
+            id: 'sw',
             name: 'Swahili'
           }]
         }
       };
-    case 'state-to-props:input':
-      return gitImporterFixtures('state');
-    case 'state-to-props:expected':
+    case 'state-to-props':
       return {
         currentStep: 'choose-main',
         languages: [{
+          id: 'en',
           name: 'English'
         }, {
+          id: 'sw',
           name: 'Swahili'
+        }],
+        site: {
+          id: 'foo-id',
+          name: 'foo'
+        },
+        sites: [{
+          id: 'foo-id',
+          name: 'foo'
+        }, {
+          id: 'bar-id',
+          name: 'bar'
         }]
       };
-    case 'component:input':
-      return extend(gitImporterFixtures('state-to-props:expected'), {
+    case 'git-importer':
+      return extend(gitImporterFixtures('state-to-props'), {
         actions: mapValues(actions, constant(noop))
       });
   }

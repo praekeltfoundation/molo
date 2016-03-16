@@ -10,19 +10,26 @@ const GitImporter = (d) => (
     <div className="c-git-importer">
       <div className={stepClasses(d, 'choose-site')}>
         <div className="o-collapse__header" href="">
-          <h2 className="o-collapse__header-title">Step 1: Choose site to import from</h2>
+          <h2 className="o-collapse__header-title">
+            Step 1: Choose site to import from
+          </h2>
         </div>
 
         <Collapse isOpened={stepIsExpanded(d, 'choose-site')}>
           <div className="o-collapse__body">
-            <ChooseSite actions={d.actions} />
+            <ChooseSite
+              site={d.site}
+              sites={d.sites}
+              actions={d.actions} />
           </div>
         </Collapse>
       </div>
 
       <div className={stepClasses(d, 'choose-main')}>
         <div className="o-collapse__header" href="">
-          <h2 className="o-collapse__header-title">Step 2: Choose which locales to import</h2>
+          <h2 className="o-collapse__header-title">
+            Step 2: Choose which locales to import
+          </h2>
         </div>
 
         <Collapse isOpened={stepIsExpanded(d, 'choose-main')}>

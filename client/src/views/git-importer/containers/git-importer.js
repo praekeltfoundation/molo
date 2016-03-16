@@ -6,6 +6,8 @@ import GitImporter from 'src/views/git-importer/components/git-importer';
 
 function stateToProps(state) {
   return {
+    site: state.data.site,
+    sites: state.data.sites,
     languages: state.data.languages,
     currentStep: state.ui.currentStep
   };
