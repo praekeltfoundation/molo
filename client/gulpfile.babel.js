@@ -74,6 +74,7 @@ gulp.task('watch:scripts', () => {
 
 gulp.task('lint:conf', () => lint(paths.conf));
 gulp.task('lint:scripts', () => lint(paths.scripts));
+gulp.task('lint:tests', () => lint(paths.tests));
 
 
 gulp.task('test', () => {
@@ -83,12 +84,12 @@ gulp.task('test', () => {
 
 
 gulp.task('watch', () => {
-  gulp.watch(paths.conf, ['lint']);
+  gulp.watch(paths.conf, ['lint:conf']);
   gulp.watch(paths.styles, ['build:styles']);
 
   gulp.watch(
     paths.scripts.concat(paths.tests),
-    ['lint', 'build:scripts', 'test']);
+    ['lint:scripts', 'lint:tests', 'build:scripts', 'test']);
 });
 
 
@@ -107,7 +108,7 @@ function err(e) {
 }
 
 
-gulp.task('lint', ['lint:conf', 'lint:scripts']);
+gulp.task('lint', ['lint:conf', 'lint:scripts', 'lint:tests']);
 gulp.task('build', ['build:scripts', 'build:styles']);
 gulp.task('ci', ['lint', 'build', 'test']);
 gulp.task('default', ['build', 'test']);

@@ -15,5 +15,13 @@
   "node": true,
   "phantom": true,
   "worker": true,
-  "esnext": true
+  "esnext": true,
+  "node": true,
+  "expr": true,
+  "predef": [
+    "describe",
+    "it",
+    "beforeEach",
+    "afterEach"
+  ]
 }
