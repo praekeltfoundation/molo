@@ -24,7 +24,7 @@ const ChooseSite = (d) => (
       onOptionSelected={site => d.actions.changeSite(site.id)} />
 
     <button
-      className="o-button c-choose-site__next"
+      className="o-form-button c-choose-site__next"
       type="button"
       disabled={isNull(d.site)}
       onClick={d.actions.chooseSite}>

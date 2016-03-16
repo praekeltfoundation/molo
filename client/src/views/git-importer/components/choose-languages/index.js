@@ -14,12 +14,12 @@ const ChooseLanguages = (d) => (
         disabled={language.isMain}
         defaultChecked={language.isMain}
         onChange={() => d.actions.toggleLanguageChosen(language.id)} />
-      <span>{language.name}</span>
+      <span className="o-input-group__label">{language.name}</span>
     </li>
     )}
     </ul>
 
-    <button type="button" onClick={d.actions.importContent}>
+    <button className="o-form-button" type="button" onClick={d.actions.importContent}>
       Import
     </button>
   </div>

@@ -13,12 +13,15 @@ const ChooseMain = (d) => (
         name="main-language"
         defaultChecked={language.isMain}
         onChange={() => d.actions.changeMain(language.id)} />
-      <span>{language.name}</span>
+      <span className="o-input-group__label">{language.name}</span>
     </li>
     )}
     </ul>
 
-    <button type="button" onClick={d.actions.chooseMain}>
+    <button
+      className="o-form-button"
+      type="button"
+      onClick={d.actions.chooseMain}>
       Next
     </button>
   </div>
