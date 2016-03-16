@@ -23,15 +23,13 @@ const ChooseSite = (d) => (
       }}
       onOptionSelected={site => d.actions.changeSite(site.id)} />
 
-    <p className="add">
-      <button
-        className="o-button c-choose-site__next"
-        type="button"
-        disabled={isNull(d.site)}
-        onClick={d.actions.chooseSite}>
-        Next
-      </button>
-    </p>
+    <button
+      className="o-button c-choose-site__next"
+      type="button"
+      disabled={isNull(d.site)}
+      onClick={d.actions.chooseSite}>
+      Next
+    </button>
   </div>
 );
 

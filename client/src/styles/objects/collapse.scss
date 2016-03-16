@@ -2,6 +2,11 @@
 @import '../mixins/chevron';
 
 
+.o-collapse {
+  margin: 2em;
+}
+
+
 .o-collapse-header {
   display: block;
   width: 100%;
@@ -35,4 +40,15 @@
 .o-collapse-header__title {
   color: $fg-primary;
   padding: 0.5em 1em;
+  margin: 0;
+}
+
+
+.o-collapse-body {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+
+  background: $bg1;
+  border: 1px solid $bg1-border;
+  padding: 2em;
 }

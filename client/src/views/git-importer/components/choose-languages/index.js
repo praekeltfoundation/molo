@@ -19,11 +19,9 @@ const ChooseLanguages = (d) => (
     )}
     </ul>
 
-    <p className="add">
-      <button type="button" onClick={d.actions.importContent}>
-        Import
-      </button>
-    </p>
+    <button type="button" onClick={d.actions.importContent}>
+      Import
+    </button>
   </div>
 );
 

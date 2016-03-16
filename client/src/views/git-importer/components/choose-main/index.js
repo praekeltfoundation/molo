@@ -17,11 +17,9 @@ const ChooseMain = (d) => (
     )}
     </ul>
 
-    <p className="add">
-      <button type="button" onClick={d.actions.chooseMain}>
-        Next
-      </button>
-    </p>
+    <button type="button" onClick={d.actions.chooseMain}>
+      Next
+    </button>
   </div>
 );
 
