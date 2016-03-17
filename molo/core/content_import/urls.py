@@ -21,11 +21,6 @@ urlpatterns = patterns(
         name='import_content'
     ),
     url(
-        r'^languages/$',
-        'molo.core.content_import.views.get_available_languages',
-        name='get_available_languages'
-    ),
-    url(
         r'^repos/(?P<name>[\w-]+)/validate/',
         'molo.core.content_import.views.import_validate',
         name='import_validate'

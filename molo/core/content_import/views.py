@@ -4,7 +4,6 @@ from django.conf import settings
 from elasticgit.workspace import RemoteWorkspace
 from babel import Locale
 
-from molo.core.models import SiteLanguage
 from molo.core.content_import.helper import ContentImportHelper
 from molo.core.content_import.validation import ContentImportValidation
 
@@ -37,17 +36,6 @@ def get_repo_languages(request, name):
             'locale': l.locale,
             'name': Locale.parse(l.locale).english_name
         }for l in ws.S(Localisation).all()],
-    })
-
-
-@api_view(['GET'])
-def get_available_languages(request):
-    return Response({
-        'locales': [{
-            'locale': l.locale,
-            'name': l.get_locale_display(),
-            'is_main_language': l.is_main_language}
-            for l in SiteLanguage.objects.all()],
     })
 
 
