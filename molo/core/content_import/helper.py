@@ -1,6 +1,5 @@
 import json
 
-from django.shortcuts import get_object_or_404
 
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
