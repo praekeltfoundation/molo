@@ -3,8 +3,8 @@ import * as httpApi from 'src/views/git-importer/api';
 
 export function expandStep(name) {
   return {
-    type: 'expand-step',
-    name: name
+    type: 'EXPAND_STEP',
+    payload: {name: name}
   };
 }
 
@@ -12,47 +12,47 @@ export function expandStep(name) {
 export function updateSites(api=httpApi) {
   return dispatch => api.sites()
     .then(sites => ({
-      type: 'update-sites',
-      sites: sites
+      type: 'UPDATE_SITES',
+      payload: {sites: sites}
     }))
     .then(dispatch);
 }
 
 
 export function chooseSite() {
-  return {type: 'choose-site'};
+  return {type: 'CHOOSE_SITE'};
 }
 
 
 export function chooseMain() {
-  return {type: 'choose-main'};
+  return {type: 'CHOOSE_MAIN'};
 }
 
 
 export function changeSite(id) {
   return {
-    type: 'change-site',
-    id: id
+    type: 'CHANGE_SITE',
+    payload: {id: id}
   };
 }
 
 
 export function changeMain(id) {
   return {
-    type: 'change-main',
-    id: id
+    type: 'CHANGE_MAIN',
+    payload: {id: id}
   };
 }
 
 
 export function toggleLanguageChosen(id) {
   return {
-    type: 'toggle-language-chosen',
-    id: id
+    type: 'TOGGLE_LANGUAGE_CHOSEN',
+    payload: {id: id}
   };
 }
 
 
 export function importContent() {
-  return {type: 'import-content'};
+  return {type: 'IMPORT_CONTENT'};
 }
