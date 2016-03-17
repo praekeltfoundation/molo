@@ -7,14 +7,14 @@ import fixtures from 'tests/views/git-importer/fixtures';
 
 export default function gitImporter(state, action) {
   switch (action.type) {
-    case 'expand-step':
+    case 'EXPAND_STEP':
       return conj(state, {
         ui: conj(state.ui, {
-          currentStep: action.name
+          currentStep: action.payload.name
         })
       });
 
-    case 'choose-site':
+    case 'CHOOSE_SITE':
       // TODO get languages from api
       return conj(state, {
         data: conj(state.data, {
@@ -26,7 +26,7 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'choose-main':
+    case 'CHOOSE_MAIN':
       return conj(state, {
         ui: conj(state.ui, {
           currentStep: 'languages',
@@ -34,32 +34,32 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'change-site':
+    case 'CHANGE_SITE':
       return conj(state, {
         data: conj(state.data, {
-          site: ensure(find(state.data.sites, {id: action.id}), null)
+          site: ensure(find(state.data.sites, {id: action.payload.id}), null)
         })
       });
 
-    case 'change-main':
+    case 'CHANGE_MAIN':
       // HACK returning a new object here seems to cause react to render really
       // slowly here, so instead we mutate state. My guess is react is
       // performing many unnecessary re-renders for some reason.
       state.data = conj(state.data, {
         languages: state.data.languages
           .map(language => conj(language, {
-            isMain: language.id === action.id
+            isMain: language.id === action.payload.id
           }))
       });
 
       return state;
 
-    case 'toggle-language-chosen':
+    case 'TOGGLE_LANGUAGE_CHOSEN':
       // HACK same as for `change-main`
       state.data = conj(state.data, {
         languages: state.data.languages
           .map(language => conj(language, {
-            isChosen: language.id === action.id
+            isChosen: language.id === action.payload.id
               ? !language.isChosen
               : language.isChosen
           }))
@@ -67,7 +67,7 @@ export default function gitImporter(state, action) {
 
       return state;
 
-    case 'import-content':
+    case 'IMPORT_CONTENT':
       // TODO
       return state;
   }
