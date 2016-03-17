@@ -14,6 +14,13 @@ export default function gitImporter(state, action) {
         })
       });
 
+    case 'update-sites':
+      return conj(state, {
+        data: conj(state.data, {
+          sites: action.sites
+        })
+      });
+
     case 'choose-site':
       // TODO get languages from api
       return conj(state, {
