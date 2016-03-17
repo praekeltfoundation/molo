@@ -16,18 +16,18 @@ import sassPrd from './conf/sass.prd.config';
 import sassDev from './conf/sass.dev.config';
 
 
-const env = process.env.NODE_ENV || 'dev';
+const env = process.env.NODE_ENV || 'development';
 
 
 const webpackConf = {
-  'dev': webpackDev,
-  'prd': webpackPrd
+  'development': webpackDev,
+  'production': webpackPrd
 }[env];
 
 
 const sassConf = {
-  'dev': sassDev,
-  'prd': sassPrd
+  'development': sassDev,
+  'production': sassPrd
 }[env];
 
 

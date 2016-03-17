@@ -4,7 +4,7 @@ import extend from 'lodash/extend';
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
 
-let conf = base();
+let conf = base('production');
 
 
 export default extend(conf, {
