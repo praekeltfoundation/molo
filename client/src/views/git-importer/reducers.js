@@ -42,30 +42,26 @@ export default function gitImporter(state, action) {
       });
 
     case 'CHANGE_MAIN':
-      // HACK returning a new object here seems to cause react to render really
-      // slowly here, so instead we mutate state. My guess is react is
-      // performing many unnecessary re-renders for some reason.
-      state.data = conj(state.data, {
-        languages: state.data.languages
-          .map(language => conj(language, {
-            isMain: language.id === action.payload.id
+      return conj(state, {
+        data: conj(state.data, {
+          languages: state.data.languages
+            .map(language => conj(language, {
+              isMain: language.id === action.payload.id
           }))
+        })
       });
-
-      return state;
 
     case 'TOGGLE_LANGUAGE_CHOSEN':
-      // HACK same as for `change-main`
-      state.data = conj(state.data, {
-        languages: state.data.languages
-          .map(language => conj(language, {
-            isChosen: language.id === action.payload.id
-              ? !language.isChosen
-              : language.isChosen
+      return conj(state, {
+        data: conj(state.data, {
+          languages: state.data.languages
+            .map(language => conj(language, {
+              isChosen: language.id === action.payload.id
+                ? !language.isChosen
+                : language.isChosen
           }))
+        })
       });
-
-      return state;
 
     case 'IMPORT_CONTENT':
       // TODO
