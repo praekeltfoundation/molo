@@ -4,9 +4,10 @@
   "description": "Client side scripts and styles for molo",
   "scripts": {
     "test": "NODE_PATH=. gulp test",
+    "test:record": "NODE_PATH=. DEBUG=replay REPLAY=record gulp test",
     "build": "NODE_PATH=. NODE_ENV=prd gulp build",
     "build-dev": "NODE_PATH=. NODE_ENV=dev gulp build",
-    "watch": "NODE_PATH=. NODE_ENV=dev gulp watch",
+    "watch": "NODE_PATH=. DE_ENV=dev gulp watch",
     "ci": "gulp ci"
   },
   "repository": {
@@ -42,11 +43,13 @@
     "jshint-stylish": "^2.1.0",
     "jsx-loader": "^0.13.2",
     "react-addons-test-utils": "^0.14.7",
+    "replay": "^2.0.6",
     "sinon": "^1.17.3",
     "webpack": "^1.12.14",
     "webpack-stream": "^3.1.0"
   },
   "dependencies": {
+    "axios": "^0.9.1",
     "classnames": "^2.2.3",
     "lodash": "^4.6.1",
     "react": "^0.14.7",
@@ -57,6 +60,7 @@
     "react-redux": "^4.4.0",
     "react-search": "^1.0.9",
     "react-typeahead": "^1.1.6",
-    "redux": "^3.3.1"
+    "redux": "^3.3.1",
+    "redux-thunk": "^2.0.1"
   }
 }
