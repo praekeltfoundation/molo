@@ -81,7 +81,6 @@ Main features:
 molo.polls
 ~~~~~~~~~~
 
-.. note:: this plugin is currently in dev and not available as a standalone plugin in yet.
 
 ``Github``: https://github.com/praekelt/molo.polls
 
@@ -89,7 +88,7 @@ molo.polls
 A poll is a short set of questions (or typically only one question) with predetermined answers that a user can choose from.
 
 Main features:
-    - Creating and publishing a Question to the home page
+    - Creating and publishing a Question to the home page, section page and article page
     - Multiple Question types (Single choice, Multiple Choice, Free Text, Numeric)
     - Exporting polls results as a CSV (currently in dev)
 
