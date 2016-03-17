@@ -18,3 +18,5 @@ CAS_SERVER_URL = 'http://testcasserver'
 CAS_ADMIN_PREFIX = '/admin/'
 LOGIN_URL = '/accounts/login/'
 CAS_VERSION = '3'
+
+UNICORE_DISTRIBUTE_API = 'http://testserver:6543'

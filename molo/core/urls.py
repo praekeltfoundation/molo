@@ -1,4 +1,5 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, include, url
+
 
 urlpatterns = patterns(
     '',
@@ -13,4 +14,7 @@ urlpatterns = patterns(
         'molo.core.views.health',
         name='health'
     ),
+
+    url(r'^import/', include(
+        'molo.core.content_import.urls', namespace='content_import')),
 )
