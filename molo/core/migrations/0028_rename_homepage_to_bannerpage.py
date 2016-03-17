@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0024_remove_commenting_fields_from_homepage'),
+        ('core', '0027_remove_commenting_fields_from_homepage'),
     ]
 
     operations = [

@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('wagtailcore', '0023_alter_page_revision_on_delete_behaviour'),
-        ('core', '0020_languagepage_main_language'),
+        ('core', '0023_languagepage_main_language'),
     ]
 
     operations = [
