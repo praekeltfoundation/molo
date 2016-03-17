@@ -49,11 +49,12 @@ class ContentImportValidationTestCase(
 
         error = ContentImportValidation(self.workspace).is_validate_for([
             {'locale': 'eng_GB', 'site_language': 'en',
-             'is_main': True},
+             'is_main': False},
             {'locale': 'spa_ES', 'site_language': 'es',
-             'is_main': False}])
+             'is_main': True}])
 
-        self.assertEquals(error[0]['type'], 'language_exist_in_wagtail')
+        self.assertEquals(error[0]['type'],
+                          'wrong_main_language_exist_in_wagtail')
 
     def test_import_validation(self):
         lang1 = eg_models.Localisation({'locale': 'eng_GB'})
@@ -69,6 +70,14 @@ class ContentImportValidationTestCase(
         self.create_categories(
             self.workspace, title='spanish cat', locale='spa_ES',
             source=eng_cat.uuid, count=1)
+
+        [eng_page] = self.create_pages(
+            self.workspace, locale='eng_GB', count=1)
+
+        # spanish page with valid source
+        self.create_pages(
+            self.workspace, title='spanish page', locale='spa_ES',
+            source=eng_page.uuid, count=1)
 
         # section with invalid source
         self.create_categories(

@@ -15,14 +15,14 @@ class ContentImportValidation(object):
         self.errors = []
         for l in locales:
             if l.get('is_main'):
-                main_lang = l.get('locale')
+                main_language = l.get('locale')
                 break
 
-        self.validate_wagtail_has_no_language(main_lang)
+        self.validate_wagtail_has_no_language(main_language)
         for l in locales:
             self.validate_translated_content_has_source(l)
             self.validate_page_primary_category_exists(l)
-            self.validate_translated_content_source_exists(l, main_lang)
+            self.validate_translated_content_source_exists(l, main_language)
 
         return self.errors
 
@@ -36,7 +36,8 @@ class ContentImportValidation(object):
             self.errors.append({
                 'type': 'wrong_main_language_exist_in_wagtail',
                 'details': {
-                    'lang': wagtail_main_language.get_locale_display()
+                    'lang': wagtail_main_language.get_locale_display(),
+                    'selected_lang': Locale.parse(main_language).english_name
                 }})
 
     def validate_translated_content_has_source(self, l):
@@ -87,7 +88,7 @@ class ContentImportValidation(object):
                     self.errors.append({
                         'type': 'page_source_not_exists',
                         'details': {
-                            'category': p.title,
+                            'page': p.title,
                             'lang': Locale.parse(child_language).english_name
                         }})
 
