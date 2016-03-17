@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import fixtures from 'tests/views/git-importer/fixtures';
 import gitImporter from 'src/views/git-importer/reducers';
-import * as actions from 'src/views/git-importer/actions';
 import { conj } from 'src/utils';
 
 
@@ -11,7 +10,10 @@ describe(`gitImporter`, () => {
       const state = fixtures('state');
       state.ui.currentStep = 'main';
 
-      expect(gitImporter(state, actions.expandStep('site')))
+      expect(gitImporter(state, {
+          type: 'expand-step',
+          name: 'site'
+        }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
             currentStep: 'site'
@@ -26,7 +28,7 @@ describe(`gitImporter`, () => {
       state.ui.currentStep = 'site';
       state.ui.lastStep = 'site';
 
-      expect(gitImporter(state, actions.chooseSite()))
+      expect(gitImporter(state, {type: 'choose-site'}))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
             currentStep: 'main',
@@ -42,7 +44,7 @@ describe(`gitImporter`, () => {
       state.ui.currentStep = 'main';
       state.ui.lastStep = 'main';
 
-      expect(gitImporter(state, actions.chooseMain()))
+      expect(gitImporter(state, {type: 'choose-main'}))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
             currentStep: 'languages',
@@ -61,14 +63,20 @@ describe(`gitImporter`, () => {
         name: 'foo'
       }];
 
-      expect(gitImporter(state, actions.changeSite('bar-id')))
+      expect(gitImporter(state, {
+          id: 'bar-id',
+          type: 'change-site'
+        }))
         .to.deep.equal(conj(fixtures('state'), {
           data: conj(state.data, {
             site: null
           })
         }));
 
-      expect(gitImporter(state, actions.changeSite('foo-id')))
+      expect(gitImporter(state, {
+          id: 'foo-id',
+          type: 'change-site'
+        }))
         .to.deep.equal(conj(fixtures('state'), {
           data: conj(state.data, {
             site: {
@@ -96,7 +104,10 @@ describe(`gitImporter`, () => {
         isChosen: false
       }];
 
-      expect(gitImporter(state, actions.changeMain('sw')))
+      expect(gitImporter(state, {
+          type: 'change-main',
+          id: 'sw'
+        }))
         .to.deep.equal(conj(fixtures('state'), {
           data: conj(state.data, {
             languages: [{
@@ -131,7 +142,10 @@ describe(`gitImporter`, () => {
         isChosen: false
       }];
 
-      expect(gitImporter(state, actions.toggleLanguageChosen('sw')))
+      expect(gitImporter(state, {
+          type: 'toggle-language-chosen',
+          id: 'sw'
+        }))
         .to.deep.equal(conj(fixtures('state'), {
           data: conj(state.data, {
             languages: [{
@@ -160,7 +174,10 @@ describe(`gitImporter`, () => {
         isChosen: true
       }];
 
-      expect(gitImporter(state, actions.toggleLanguageChosen('sw')))
+      expect(gitImporter(state, {
+          type: 'toggle-language-chosen',
+          id: 'sw'
+        }))
         .to.deep.equal(conj(fixtures('state'), {
           data: conj(state.data, {
             languages: [{
