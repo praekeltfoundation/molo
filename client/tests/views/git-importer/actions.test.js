@@ -10,12 +10,12 @@ describe(`actions`, () => {
     it(`should return the list of sites to update with`, () => {
       let api = conj(fixtures('api'), {
         sites: resolvesTo([{
-            id: 'foo-id',
-            name: 'foo'
-          }, {
-            id: 'bar-id',
-            name: 'bar'
-          }])
+          id: 'foo-id',
+          name: 'foo'
+        }, {
+          id: 'bar-id',
+          name: 'bar'
+        }])
       });
 
       actions.updateSites(api)(action => {
