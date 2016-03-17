@@ -103,6 +103,14 @@ This results in the following ``urls.py`` entry::
 .. note:: multiple includes can be specified on the command line, the format
           is ``--include=<app_name> <regex-for-urls>``
 
+For convenience, here's the full scaffold command for the current plugins::
+
+    $ molo scaffold myapp \
+        --require=molo.profiles --include=molo.profiles ^profiles/ \
+        --require=django-contrib-comments --include=django_comments ^comments/ \
+        --require=molo.commenting --include=molo.commenting ^commenting/ \
+        --require=molo.yourwords --include=molo.yourwords ^yourwords/
+
 Molo, Django & settings files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
