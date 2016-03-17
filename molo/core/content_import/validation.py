@@ -13,26 +13,29 @@ class ContentImportValidation(object):
 
     def is_validate_for(self, locales):
         self.errors = []
+        for l in locales:
+            if l.get('is_main'):
+                main_lang = Locale.parse(l.get('locale')).language
+                break
 
-        if self.validate_wagtail_has_no_language():
-            for l in locales:
-                self.validate_translated_content_has_source(l)
-                self.validate_page_primary_category_exists(l)
-                self.validate_translated_content_source_exists(l)
+        self.validate_wagtail_has_no_language(main_lang)
+        for l in locales:
+            self.validate_translated_content_has_source(l)
+            self.validate_page_primary_category_exists(l)
+            self.validate_translated_content_source_exists(l, main_lang)
 
         return self.errors
 
-    def validate_wagtail_has_no_language(self):
-        wagtail_language = SiteLanguage.objects.all()
-        if wagtail_language:
-            for l in wagtail_language:
-                self.errors.append({
-                    'type': 'language_exist_in_wagtail',
-                    'details': {
-                        'lang': Locale.parse(l.locale).english_name
-                    }})
-            return False
-        return True
+    def validate_wagtail_has_no_language(self, main_language):
+        wagtail_main_language = SiteLanguage.objects.filter(
+            is_main_language=True).first()
+        if (wagtail_main_language and not
+                wagtail_main_language.locale == main_language):
+            self.errors.append({
+                'type': 'wrong_main_language_exist_in_wagtail',
+                'details': {
+                    'lang': wagtail_main_language.get_locale_display()
+                }})
 
     def validate_translated_content_has_source(self, l):
         if not l.get('is_main'):
@@ -59,7 +62,7 @@ class ContentImportValidation(object):
                             'lang': Locale.parse(child_language).english_name
                         }})
 
-    def validate_translated_content_source_exists(self, l):
+    def validate_translated_content_source_exists(self, l, main_language):
         if not l.get('is_main'):
             child_language = l.get('locale')
 
@@ -67,7 +70,7 @@ class ContentImportValidation(object):
                 language=child_language).order_by('position')[:10000]
             for c in categories:
                 if c.source and not self.validate_source_exists(
-                        Category, c.source, child_language):
+                        Category, c.source, main_language):
                     self.errors.append({
                         'type': 'category_source_not_exists',
                         'details': {
@@ -78,7 +81,7 @@ class ContentImportValidation(object):
             pages = self.ws.S(Page).filter(language=child_language)[:10000]
             for p in pages:
                 if p.source and not self.validate_source_exists(
-                        Page, p.source, child_language):
+                        Page, p.source, main_language):
                     self.errors.append({
                         'type': 'page_source_not_exists',
                         'details': {
@@ -100,7 +103,9 @@ class ContentImportValidation(object):
                     }})
 
     def validate_category_exists(self, uuid, locale):
-        return self.ws.S(Category).filter(language=locale, uuid=uuid)
+        return self.ws.S(Category).filter(
+            language=locale, uuid=uuid).count() > 0
 
     def validate_source_exists(self, instance, uuid, locale):
-        return self.ws.S(instance).filter(language=locale, uuid=uuid)
+        return self.ws.S(instance).filter(
+            language=locale, uuid=uuid).count() > 0
