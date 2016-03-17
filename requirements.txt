@@ -10,6 +10,6 @@ django-cas-ng
 django-mptt
 elastic-git
 unicore.content
-wagtail==1.4rc1
+wagtail==1.4.1
 responses
 babel
