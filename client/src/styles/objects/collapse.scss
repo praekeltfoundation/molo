@@ -11,7 +11,7 @@
   display: block;
   width: 100%;
   background: $bg-primary;
-  border-radius: 3px;
+  border-radius: 0.4em;
   cursor: pointer;
 
   &--is-expanded {
@@ -45,8 +45,8 @@
 
 
 .o-collapse-body {
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 0.4em;
+  border-bottom-right-radius: 0.4em;
 
   background: $bg1;
   border: 1px solid $border0;
