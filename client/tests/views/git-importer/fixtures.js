@@ -3,6 +3,7 @@ import extend from 'lodash/extend';
 import constant from 'lodash/constant';
 import mapValues from 'lodash/mapValues';
 import * as actions from 'src/views/git-importer/actions';
+import { resolvesTo } from 'tests/utils';
 
 
 function gitImporterFixtures(name) {
@@ -38,6 +39,7 @@ function gitImporterFixtures(name) {
           }]
         }
       };
+
 
     case 'state-to-props':
       return {
@@ -79,10 +81,23 @@ function gitImporterFixtures(name) {
         }
       };
 
+
     case 'git-importer':
       return extend(gitImporterFixtures('state-to-props'), {
         actions: mapValues(actions, constant(noop))
       });
+
+
+    case 'api':
+      return {
+        sites: resolvesTo([{
+          id: 'foo-id',
+          name: 'foo'
+        }, {
+          id: 'bar-id',
+          name: 'bar'
+        }])
+      };
   }
 }
 

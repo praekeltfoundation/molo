@@ -1,8 +1,6 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import reducer from './reducers';
-
-// TODO remove once we are hooked up to an api
-import fixtures from 'tests/views/git-importer/fixtures';
+import thunk from 'redux-thunk';
 
 
 const initialState = () => ({
@@ -11,7 +9,7 @@ const initialState = () => ({
     lastStep: 'site'
   },
   data: {
-    sites: fixtures('state').data.sites,
+    sites: [],
     site: null,
     languages: []
   }
@@ -19,5 +17,5 @@ const initialState = () => ({
 
 
 export default function configureStore() {
-  return createStore(reducer, initialState());
+  return createStore(reducer, initialState(), applyMiddleware(thunk));
 }

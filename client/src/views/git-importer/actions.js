@@ -1,8 +1,21 @@
+import * as httpApi from 'src/views/git-importer/api';
+
+
 export function expandStep(name) {
   return {
     type: 'expand-step',
     name: name
   };
+}
+
+
+export function updateSites(api=httpApi) {
+  return dispatch => api.sites()
+    .then(sites => ({
+      type: 'update-sites',
+      sites: sites
+    }))
+    .then(dispatch);
 }
 
 
