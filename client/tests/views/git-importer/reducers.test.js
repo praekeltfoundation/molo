@@ -5,7 +5,7 @@ import { conj } from 'src/utils';
 
 
 describe(`gitImporter`, () => {
-  describe(`expand-step`, () => {
+  describe(`EXPAND_STEP`, () => {
     it(`should change the current step`, () => {
       const state = fixtures('state');
       state.ui.currentStep = 'main';
@@ -22,7 +22,7 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`choose-site`, () => {
+  describe(`CHOOSE_SITE`, () => {
     it("should change the current and last steps to 'main'", () => {
       const state = fixtures('state');
       state.ui.currentStep = 'site';
@@ -38,7 +38,7 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`choose-main`, () => {
+  describe(`CHOOSE_MAIN`, () => {
     it("should change the current and last steps to 'languages'", () => {
       const state = fixtures('state');
       state.ui.currentStep = 'main';
@@ -54,7 +54,7 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`change-site`, () => {
+  describe(`CHANGE_SITE`, () => {
     it(`should change site if the site exists`, () => {
       const state = fixtures('state');
 
@@ -88,7 +88,7 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`change-main`, () => {
+  describe(`CHANGE_MAIN`, () => {
     it(`should change the main language`, () => {
       const state = fixtures('state');
 
@@ -126,7 +126,7 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`toggle-language-chosen`, () => {
+  describe(`TOGGLE_LANGUAGE_CHOSEN`, () => {
     it(`should choose/unchoose the language`, () => {
       const state = fixtures('state');
 
