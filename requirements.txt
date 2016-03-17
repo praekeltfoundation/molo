@@ -12,3 +12,4 @@ elastic-git
 unicore.content
 wagtail==1.4rc1
 responses
+babel
