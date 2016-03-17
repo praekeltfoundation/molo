@@ -119,8 +119,9 @@ class ContentImportHelper(object):
 
     def import_content_for(self, locales):
         for selected_locale in locales:
-            site_language = get_object_or_404(
-                SiteLanguage, locale=selected_locale.get('site_language'))
+            site_language = SiteLanguage.objects.create(
+                locale=selected_locale.get('site_language'),
+                is_main_language=selected_locale.get('is_main'))
 
             self.import_all_categories(site_language, selected_locale)
             self.import_all_pages(site_language, selected_locale)
