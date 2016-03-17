@@ -15,7 +15,7 @@ class ContentImportValidation(object):
         self.errors = []
         for l in locales:
             if l.get('is_main'):
-                main_lang = Locale.parse(l.get('locale')).language
+                main_lang = l.get('locale')
                 break
 
         self.validate_wagtail_has_no_language(main_lang)
@@ -27,6 +27,8 @@ class ContentImportValidation(object):
         return self.errors
 
     def validate_wagtail_has_no_language(self, main_language):
+        main_language = Locale.parse(main_language).language
+
         wagtail_main_language = SiteLanguage.objects.filter(
             is_main_language=True).first()
         if (wagtail_main_language and not
@@ -106,6 +108,6 @@ class ContentImportValidation(object):
         return self.ws.S(Category).filter(
             language=locale, uuid=uuid).count() > 0
 
-    def validate_source_exists(self, instance, uuid, locale):
-        return self.ws.S(instance).filter(
+    def validate_source_exists(self, cls, uuid, locale):
+        return self.ws.S(cls).filter(
             language=locale, uuid=uuid).count() > 0

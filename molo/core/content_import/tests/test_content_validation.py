@@ -29,12 +29,14 @@ class ContentImportValidationTestCase(
 
         self.workspace.setup_custom_mapping(eg_models.Category, {
             'properties': {
+                'uuid': {'type': 'string', 'index': 'not_analyzed'},
                 'language': {'type': 'string', 'index': 'not_analyzed'},
                 'position': {'type': 'integer', 'index': 'not_analyzed'},
             }
         })
         self.workspace.setup_custom_mapping(eg_models.Page, {
             'properties': {
+                'uuid': {'type': 'string', 'index': 'not_analyzed'},
                 'language': {'type': 'string', 'index': 'not_analyzed'},
                 'position': {'type': 'integer', 'index': 'not_analyzed'},
             }
@@ -60,6 +62,14 @@ class ContentImportValidationTestCase(
         self.workspace.save(lang1, 'Added english language')
         self.workspace.save(lang2, 'Added french language')
 
+        [eng_cat] = self.create_categories(
+            self.workspace, locale='eng_GB', count=1)
+
+        # spanish section with valid source
+        self.create_categories(
+            self.workspace, title='spanish cat', locale='spa_ES',
+            source=eng_cat.uuid, count=1)
+
         # section with invalid source
         self.create_categories(
             self.workspace, locale='spa_ES',
@@ -84,13 +94,14 @@ class ContentImportValidationTestCase(
             self.workspace, count=1, locale='eng_GB',
             primary_category='an-invalid-uuid')
 
-        error = ContentImportValidation(self.workspace).is_validate_for([
+        errors = ContentImportValidation(self.workspace).is_validate_for([
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
-        self.assertEquals(error[0]['type'], 'no_primary_category')
-        self.assertEquals(error[1]['type'], 'no_source_found_for_category')
-        self.assertEquals(error[2]['type'], 'no_source_found_for_page')
-        self.assertEquals(error[3]['type'], 'no_primary_category')
-        self.assertEquals(error[4]['type'], 'category_source_not_exists')
-        self.assertEquals(error[5]['type'], 'page_source_not_exists')
+        self.assertEquals(errors[0]['type'], 'no_primary_category')
+        self.assertEquals(errors[1]['type'], 'no_source_found_for_category')
+        self.assertEquals(errors[2]['type'], 'no_source_found_for_page')
+        self.assertEquals(errors[3]['type'], 'no_primary_category')
+        self.assertEquals(errors[4]['type'], 'category_source_not_exists')
+        self.assertEquals(errors[5]['type'], 'page_source_not_exists')
+        self.assertEquals(len(errors), 6)
