@@ -12,7 +12,8 @@ const initialState = () => ({
   data: {
     sites: [],
     site: null,
-    languages: []
+    languages: [],
+    errors: []
   }
 });
 

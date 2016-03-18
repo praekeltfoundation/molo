@@ -37,7 +37,8 @@ function gitImporterFixtures(name) {
             name: 'Swahili',
             isMain: false,
             isChosen: true
-          }]
+          }],
+          errors: []
         }
       };
 

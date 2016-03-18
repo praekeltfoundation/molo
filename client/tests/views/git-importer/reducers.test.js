@@ -276,5 +276,49 @@ describe(`gitImporter`, () => {
         }));
     });
   });
+
+  describe(`IMPORT_CONTENT/LOADING`, () => {
+    it("should change the ui state to loading", () => {
+      const state = fixtures('state');
+      state.ui.isLoading = false;
+
+      expect(gitImporter(state, {
+          type: 'IMPORT_CONTENT/LOADING'
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          ui: conj(state.ui, {
+            isLoading: true
+          })
+        }));
+    });
+  });
+
+  describe(`IMPORT_CONTENT/DONE`, () => {
+    it("should add import errors to the returned state", () => {
+      const state = fixtures('state');
+      state.ui.isLoading = true;
+
+      expect(gitImporter(state, {
+          type: 'IMPORT_CONTENT/DONE',
+          payload: {
+            errors: [{
+              type: 'foo',
+              details: {bar: 'baz'}
+            }]
+          }
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          ui: conj(state.ui, {
+            isLoading: false
+          }),
+          data: conj(state.data, {
+            errors: [{
+              type: 'foo',
+              details: {bar: 'baz'}
+            }]
+          })
+        }));
+    });
+  });
 });
 

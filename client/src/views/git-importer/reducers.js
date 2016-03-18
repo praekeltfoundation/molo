@@ -74,9 +74,22 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'IMPORT_CONTENT':
-      // TODO
-      return state;
+    case 'IMPORT_CONTENT/LOADING':
+      return conj(state, {
+        ui: conj(state.ui, {
+          isLoading: true
+        })
+      });
+
+    case 'IMPORT_CONTENT/DONE':
+      return conj(state, {
+        ui: conj(state.ui, {
+          isLoading: false,
+        }),
+        data: conj(state.data, {
+          errors: action.payload.errors
+        })
+      });
   }
 
   return state;
