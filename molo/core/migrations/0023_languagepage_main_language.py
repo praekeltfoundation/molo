@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0019_add_tags_to_article'),
+        ('core', '0022_add_help_text_for_metadata_tags'),
     ]
 
     operations = [
