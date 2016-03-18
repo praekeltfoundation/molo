@@ -16,18 +16,18 @@ import sassPrd from './conf/sass.prd.config';
 import sassDev from './conf/sass.dev.config';
 
 
-const env = process.env.NODE_ENV || 'dev';
+const env = process.env.NODE_ENV || 'development';
 
 
 const webpackConf = {
-  'dev': webpackDev,
-  'prd': webpackPrd
+  'development': webpackDev,
+  'production': webpackPrd
 }[env];
 
 
 const sassConf = {
-  'dev': sassDev,
-  'prd': sassPrd
+  'development': sassDev,
+  'production': sassPrd
 }[env];
 
 
@@ -38,6 +38,9 @@ const paths = {
   ],
   scripts: [
     'src/**/*.js'
+  ],
+  tests: [
+    'tests/**/*.js'
   ],
   styles: [
     'src/**/*.scss'
@@ -71,18 +74,22 @@ gulp.task('watch:scripts', () => {
 
 gulp.task('lint:conf', () => lint(paths.conf));
 gulp.task('lint:scripts', () => lint(paths.scripts));
+gulp.task('lint:tests', () => lint(paths.tests));
 
 
 gulp.task('test', () => {
-  return gulp.src(['./tests/**/*.test.js'])
+  return gulp.src(paths.tests)
     .pipe(mocha({require: ['./tests/setup.js']}));
 });
 
 
 gulp.task('watch', () => {
-  gulp.watch(paths.conf, ['lint']);
-  gulp.watch(paths.scripts, ['lint', 'build:scripts', 'test']);
+  gulp.watch(paths.conf, ['lint:conf']);
   gulp.watch(paths.styles, ['build:styles']);
+
+  gulp.watch(
+    paths.scripts.concat(paths.tests),
+    ['lint:scripts', 'lint:tests', 'build:scripts', 'test']);
 });
 
 
@@ -101,7 +108,7 @@ function err(e) {
 }
 
 
-gulp.task('lint', ['lint:conf', 'lint:scripts']);
+gulp.task('lint', ['lint:conf', 'lint:scripts', 'lint:tests']);
 gulp.task('build', ['build:scripts', 'build:styles']);
 gulp.task('ci', ['lint', 'build', 'test']);
 gulp.task('default', ['build', 'test']);
