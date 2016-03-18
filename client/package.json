@@ -51,6 +51,7 @@
   "dependencies": {
     "axios": "^0.9.1",
     "classnames": "^2.2.3",
+    "cookies-js": "^1.2.2",
     "lodash": "^4.6.1",
     "react": "^0.14.7",
     "react-collapse": "^2.0.0",
