@@ -57,17 +57,63 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`CHOOSE_SITE`, () => {
+  describe(`CHOOSE_SITE/LOADING`, () => {
+    it("should change the ui state to loading", () => {
+      const state = fixtures('state');
+      state.ui.isLoading = false;
+
+      expect(gitImporter(state, {
+          type: 'CHOOSE_SITE/LOADING'
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          ui: conj(state.ui, {
+            isLoading: true
+          })
+        }));
+    });
+  });
+
+  describe(`CHOOSE_SITE/DONE`, () => {
     it("should change the current and last steps to 'main'", () => {
       const state = fixtures('state');
       state.ui.currentStep = 'site';
       state.ui.lastStep = 'site';
+      state.ui.isLoading = true;
 
-      expect(gitImporter(state, {type: 'CHOOSE_SITE'}))
+      expect(gitImporter(state, {
+          type: 'CHOOSE_SITE/DONE',
+          payload: {
+            languages: [{
+              id: 'en',
+              name: 'English',
+              isMain: false,
+              isChosen: false
+            }, {
+              id: 'sw',
+              name: 'Swahili',
+              isMain: false,
+              isChosen: false
+            }]
+          }
+        }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
             currentStep: 'main',
-            lastStep: 'main'
+            lastStep: 'main',
+            isLoading: false
+          }),
+          data: conj(state.data, {
+            languages: [{
+              id: 'en',
+              name: 'English',
+              isMain: false,
+              isChosen: false
+            }, {
+              id: 'sw',
+              name: 'Swahili',
+              isMain: false,
+              isChosen: false
+            }]
           })
         }));
     });

@@ -8,13 +8,14 @@ import { STEPS } from 'src/views/git-importer/consts';
 
 function stateToProps(state) {
   return {
+    isLoading: state.ui.isLoading,
     site: state.data.site,
     sites: state.data.sites,
     languages: state.data.languages,
     steps: mapValues(STEPS, (_, stepName) => ({
         isDisabled: stepIsDisabled(state, stepName),
         isExpanded: stepIsExpanded(state, stepName)
-      }))
+      })),
   };
 }
 
