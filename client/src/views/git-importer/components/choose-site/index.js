@@ -27,7 +27,7 @@ const ChooseSite = (d) => (
       className="o-form-button c-choose-site__next"
       type="button"
       disabled={isNull(d.site)}
-      onClick={d.actions.chooseSite}>
+      onClick={() => d.actions.chooseSite(d.site.id)}>
       Next
     </button>
   </div>

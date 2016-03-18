@@ -35,6 +35,9 @@ describe(`ChooseSite`, () => {
 
     expect(state.actions.changeSite.calledWith('foo-id'))
       .to.be.true;
+
+    expect(state.actions.changeSite.calledOnce)
+      .to.be.true;
   });
 
   it(`should disable 'Next' button if site is null`, () => {
@@ -63,5 +66,30 @@ describe(`ChooseSite`, () => {
 
     expect(el.find('.c-choose-site__next').prop('disabled'))
       .to.be.false;
+  });
+
+  it(`should call chooseSite when user clicks 'Next' button`, () => {
+    const state = fixtures('git-importer');
+    state.actions.chooseSite = spy();
+
+    state.site = {
+      id: 'foo-id',
+      name: 'foo'
+    };
+
+    const el = mount(
+      <ChooseSite
+        site={state.site}
+        sites={state.sites}
+        actions={state.actions} />);
+
+    el.find('.c-choose-site__next')
+      .simulate('click');
+
+    expect(state.actions.chooseSite.calledWith('foo-id'))
+      .to.be.true;
+
+    expect(state.actions.chooseSite.calledOnce)
+      .to.be.true;
   });
 });
