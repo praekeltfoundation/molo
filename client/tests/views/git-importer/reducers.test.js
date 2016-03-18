@@ -65,17 +65,19 @@ describe(`gitImporter`, () => {
 
       expect(gitImporter(state, {
           type: 'CHOOSE_SITE',
-          languages: [{
-            id: 'en',
-            name: 'English',
-            isMain: false,
-            isChosen: false
-          }, {
-            id: 'sw',
-            name: 'Swahili',
-            isMain: false,
-            isChosen: false
-          }]
+          payload: {
+            languages: [{
+              id: 'en',
+              name: 'English',
+              isMain: false,
+              isChosen: false
+            }, {
+              id: 'sw',
+              name: 'Swahili',
+              isMain: false,
+              isChosen: false
+            }]
+          }
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {

@@ -25,7 +25,7 @@ export default function gitImporter(state, action) {
           lastStep: 'main'
         }),
         data: conj(state.data, {
-          languages: action.languages
+          languages: action.payload.languages
         })
       });
 
