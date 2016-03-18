@@ -1,11 +1,12 @@
-import cookies from 'cookies-js';
+import cookies from 'js-cookie';
 import { ensure } from 'src/utils';
 
 
 const conf = {
   apiPrefix: '',
+  apiHeaders: {},
   csrfToken: typeof window !== 'undefined'
-    ? ensure(cookies(window).get('csrftoken'), null)
+    ? ensure(cookies.get('csrftoken'), null)
     : null
 };
 

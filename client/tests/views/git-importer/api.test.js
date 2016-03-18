@@ -23,13 +23,32 @@ describe(`api`, () => {
           id: 'fre_FR',
           name: 'French (France)',
           isMain: true,
-          isChosen: false
+          isChosen: true
         }, {
           id: 'eng_GB',
           name: 'English (United Kingdom)',
           isMain: false,
           isChosen: false
         }]));
+    });
+  });
+
+  describe(`importContent`, () => {
+    it(`should import content for the chosen langauges`, () => {
+      return api.importContent('unicore-cms-content-ffl-sn-prod', [{
+          id: 'fre_FR',
+          name: 'French (France)',
+          isMain: true,
+          isChosen: true
+        }, {
+          id: 'eng_GB',
+          name: 'English (United Kingdom)',
+          isMain: false,
+          isChosen: true
+        }])
+        .then(sites => expect(sites).to.deep.equal({
+          errors: []
+        }));
     });
   });
 });

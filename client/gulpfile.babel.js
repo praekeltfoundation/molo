@@ -79,7 +79,10 @@ gulp.task('lint:tests', () => lint(paths.tests));
 
 gulp.task('test', () => {
   return gulp.src(paths.tests)
-    .pipe(mocha({require: ['./tests/setup.js']}));
+  .pipe(mocha({
+    require: ['./tests/setup.js'],
+    timeout: process.env.TIMEOUT || 2000
+  }));
 });
 
 

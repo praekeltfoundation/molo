@@ -4,7 +4,7 @@
   "description": "Client side scripts and styles for molo",
   "scripts": {
     "test": "NODE_PATH=. gulp test",
-    "test:record": "NODE_PATH=. DEBUG=replay REPLAY=record gulp test",
+    "test:record": "TIMEOUT=200000 NODE_PATH=. DEBUG=replay REPLAY=record gulp test",
     "build": "NODE_PATH=. NODE_ENV=production gulp build",
     "build-dev": "NODE_PATH=. NODE_ENV=development gulp build",
     "watch": "NODE_PATH=. NODE_ENV=development gulp watch",
@@ -51,7 +51,7 @@
   "dependencies": {
     "axios": "^0.9.1",
     "classnames": "^2.2.3",
-    "cookies-js": "^1.2.2",
+    "js-cookie": "^2.1.0",
     "lodash": "^4.6.1",
     "react": "^0.14.7",
     "react-collapse": "^2.0.0",
