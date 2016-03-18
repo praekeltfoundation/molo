@@ -2,11 +2,11 @@ import { expect } from 'chai';
 import * as actions from 'src/views/git-importer/actions';
 import fixtures from 'tests/views/git-importer/fixtures';
 import { conj } from 'src/utils';
-import { resolvesTo } from 'tests/utils';
+import { doThunk, resolvesTo } from 'tests/utils';
 
 
 describe(`actions`, () => {
-  describe(`updateSites`, done => {
+  describe(`updateSites`, () => {
     it(`should return the list of sites to update with`, () => {
       let api = conj(fixtures('api'), {
         sites: resolvesTo([{
@@ -18,21 +18,58 @@ describe(`actions`, () => {
         }])
       });
 
-      actions.updateSites(api)(action => {
-        expect(action).to.deep.equal({
-          type: 'update-sites',
-          sites: [{
-            id: 'foo-id',
-            name: 'foo'
-          }, {
-            id: 'bar-id',
-            name: 'bar'
-          }]
-        });
-
-        done();
+      return doThunk(actions.updateSites(api))
+        .then(action => expect(action).to.deep.equal({
+          type: 'UPDATE_SITES',
+          payload: {
+            sites: [{
+              id: 'foo-id',
+              name: 'foo'
+            }, {
+              id: 'bar-id',
+              name: 'bar'
+            }]
+          }
+        }));
       });
+  });
+});
+
+describe(`chooseSite`, done => {
+  it(`should return the list of sites to update with`, () => {
+    let api = conj(fixtures('api'), {
+      languages: resolvesTo([{
+        id: 'en',
+        name: 'English',
+        isMain: true,
+        isChosen: false
+      }, {
+        id: 'sw',
+        name: 'Swahili',
+        isMain: false,
+        isChosen: false
+      }])
     });
+
+    return doThunk(actions.chooseSite('foo-id', api))
+      .then(action => expect(action).to.deep.equal([{
+        type: 'CHOOSE_SITE/LOADING'
+      }, {
+        type: 'CHOOSE_SITE/DONE',
+        payload: {
+          languages: [{
+            id: 'en',
+            name: 'English',
+            isMain: true,
+            isChosen: false
+          }, {
+            id: 'sw',
+            name: 'Swahili',
+            isMain: false,
+            isChosen: false
+          }]
+        }
+      }]));
   });
 });
 

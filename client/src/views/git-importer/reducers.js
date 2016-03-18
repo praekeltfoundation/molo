@@ -1,9 +1,6 @@
 import find from 'lodash/find';
 import { conj, ensure } from 'src/utils';
 
-// TODO remove once we are hooked up to an api
-import fixtures from 'tests/views/git-importer/fixtures';
-
 
 export default function gitImporter(state, action) {
   switch (action.type) {
@@ -21,15 +18,22 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'CHOOSE_SITE':
-      // TODO get languages from api
+    case 'CHOOSE_SITE/LOADING':
       return conj(state, {
-        data: conj(state.data, {
-          languages: fixtures('state').data.languages
-        }),
         ui: conj(state.ui, {
+          isLoading: true
+        })
+      });
+
+    case 'CHOOSE_SITE/DONE':
+      return conj(state, {
+        ui: conj(state.ui, {
+          isLoading: false,
           currentStep: 'main',
           lastStep: 'main'
+        }),
+        data: conj(state.data, {
+          languages: action.payload.languages
         })
       });
 
