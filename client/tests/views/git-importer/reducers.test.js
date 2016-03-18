@@ -63,11 +63,37 @@ describe(`gitImporter`, () => {
       state.ui.currentStep = 'site';
       state.ui.lastStep = 'site';
 
-      expect(gitImporter(state, {type: 'CHOOSE_SITE'}))
+      expect(gitImporter(state, {
+          type: 'CHOOSE_SITE',
+          languages: [{
+            id: 'en',
+            name: 'English',
+            isMain: false,
+            isChosen: false
+          }, {
+            id: 'sw',
+            name: 'Swahili',
+            isMain: false,
+            isChosen: false
+          }]
+        }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
             currentStep: 'main',
             lastStep: 'main'
+          }),
+          data: conj(state.data, {
+            languages: [{
+              id: 'en',
+              name: 'English',
+              isMain: false,
+              isChosen: false
+            }, {
+              id: 'sw',
+              name: 'Swahili',
+              isMain: false,
+              isChosen: false
+            }]
           })
         }));
     });
