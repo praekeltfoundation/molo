@@ -25,7 +25,7 @@ describe(`api`, () => {
         .then(sites => expect(sites).to.deep.equal([{
           id: 'fre_FR',
           name: 'French (France)',
-          isMain: false,
+          isMain: true,
           isChosen: false
         }, {
           id: 'eng_GB',

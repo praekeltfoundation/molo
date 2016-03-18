@@ -6,14 +6,16 @@ export function repo(name) {
 }
 
 
-export function locale(d) {
+export function locale(d, i) {
   return {
     id: d.locale,
     name: d.name,
     isChosen: false,
 
     // We receive this field as `is_main_language`, but since this field should
-    // be set via the UI, it should always start off as `false`.
-    isMain: false,
+    // be set via the UI, we initialise it ourselves. We set the first locale
+    // to `true` to provide a default, and set the rest of the locales to
+    // `false`.
+    isMain: i < 1
   };
 }

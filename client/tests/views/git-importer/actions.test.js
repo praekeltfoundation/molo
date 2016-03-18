@@ -41,7 +41,7 @@ describe(`chooseSite`, done => {
       languages: resolvesTo([{
         id: 'en',
         name: 'English',
-        isMain: false,
+        isMain: true,
         isChosen: false
       }, {
         id: 'sw',
@@ -58,7 +58,7 @@ describe(`chooseSite`, done => {
           languages: [{
             id: 'en',
             name: 'English',
-            isMain: false,
+            isMain: true,
             isChosen: false
           }, {
             id: 'sw',
