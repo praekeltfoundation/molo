@@ -84,7 +84,9 @@ export default function gitImporter(state, action) {
     case 'IMPORT_CONTENT/DONE':
       return conj(state, {
         ui: conj(state.ui, {
-          status: 'IDLE'
+          status: action.payload.errors.length
+            ? 'ERROR'
+            : 'COMPLETE'
         }),
         data: conj(state.data, {
           errors: action.payload.errors

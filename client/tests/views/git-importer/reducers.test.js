@@ -309,13 +309,28 @@ describe(`gitImporter`, () => {
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            status: 'IDLE'
+            status: 'ERROR'
           }),
           data: conj(state.data, {
             errors: [{
               type: 'foo',
               details: {bar: 'baz'}
             }]
+          })
+        }));
+    });
+
+    it("should set the status to COMPLETE if there are no errors", () => {
+      const state = fixtures('state');
+      state.ui.status = 'LOADING';
+
+      expect(gitImporter(state, {
+          type: 'IMPORT_CONTENT/DONE',
+          payload: {errors: []}
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          ui: conj(state.ui, {
+            status: 'COMPLETE'
           })
         }));
     });
