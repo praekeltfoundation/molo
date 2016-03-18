@@ -20,9 +20,25 @@ export function updateSites(api=httpApi) {
 
 
 export function chooseSite(id, api=httpApi) {
-  return dispatch => api.languages(id)
+  return dispatch => Promise.all([
+    chooseSiteLoading(dispatch, id, api),
+    chooseSiteDone(dispatch, id, api)
+  ]);
+}
+
+
+function chooseSiteLoading(dispatch, id, api) {
+  return Promise.resolve({
+      type: 'CHOOSE_SITE/LOADING'
+    })
+    .then(dispatch);
+}
+
+
+function chooseSiteDone(dispatch, id, api) {
+  return api.languages(id)
     .then(languages => ({
-      type: 'CHOOSE_SITE',
+      type: 'CHOOSE_SITE/DONE',
       payload: {languages: languages}
     }))
     .then(dispatch);

@@ -18,9 +18,17 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'CHOOSE_SITE':
+    case 'CHOOSE_SITE/LOADING':
       return conj(state, {
         ui: conj(state.ui, {
+          isLoading: true
+        })
+      });
+
+    case 'CHOOSE_SITE/DONE':
+      return conj(state, {
+        ui: conj(state.ui, {
+          isLoading: false,
           currentStep: 'main',
           lastStep: 'main'
         }),

@@ -52,8 +52,10 @@ describe(`chooseSite`, done => {
     });
 
     return doThunk(actions.chooseSite('foo-id', api))
-      .then(action => expect(action).to.deep.equal({
-        type: 'CHOOSE_SITE',
+      .then(action => expect(action).to.deep.equal([{
+        type: 'CHOOSE_SITE/LOADING'
+      }, {
+        type: 'CHOOSE_SITE/DONE',
         payload: {
           languages: [{
             id: 'en',
@@ -67,7 +69,7 @@ describe(`chooseSite`, done => {
             isChosen: false
           }]
         }
-      }));
+      }]));
   });
 });
 
