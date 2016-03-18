@@ -60,14 +60,14 @@ describe(`gitImporter`, () => {
   describe(`CHOOSE_SITE/LOADING`, () => {
     it("should change the ui state to loading", () => {
       const state = fixtures('state');
-      state.ui.isLoading = false;
+      state.ui.status = 'IDLE';
 
       expect(gitImporter(state, {
           type: 'CHOOSE_SITE/LOADING'
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            isLoading: true
+            status: 'LOADING'
           })
         }));
     });
@@ -78,7 +78,7 @@ describe(`gitImporter`, () => {
       const state = fixtures('state');
       state.ui.currentStep = 'site';
       state.ui.lastStep = 'site';
-      state.ui.isLoading = true;
+      state.ui.status = 'LOADING';
 
       expect(gitImporter(state, {
           type: 'CHOOSE_SITE/DONE',
@@ -100,7 +100,7 @@ describe(`gitImporter`, () => {
           ui: conj(state.ui, {
             currentStep: 'main',
             lastStep: 'main',
-            isLoading: false
+            status: 'IDLE'
           }),
           data: conj(state.data, {
             languages: [{
@@ -280,14 +280,14 @@ describe(`gitImporter`, () => {
   describe(`IMPORT_CONTENT/LOADING`, () => {
     it("should change the ui state to loading", () => {
       const state = fixtures('state');
-      state.ui.isLoading = false;
+      state.ui.status = 'IDLE';
 
       expect(gitImporter(state, {
           type: 'IMPORT_CONTENT/LOADING'
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            isLoading: true
+            status: 'LOADING'
           })
         }));
     });
@@ -296,7 +296,7 @@ describe(`gitImporter`, () => {
   describe(`IMPORT_CONTENT/DONE`, () => {
     it("should add import errors to the returned state", () => {
       const state = fixtures('state');
-      state.ui.isLoading = true;
+      state.ui.status = 'LOADING';
 
       expect(gitImporter(state, {
           type: 'IMPORT_CONTENT/DONE',
@@ -309,7 +309,7 @@ describe(`gitImporter`, () => {
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            isLoading: false
+            status: 'IDLE'
           }),
           data: conj(state.data, {
             errors: [{

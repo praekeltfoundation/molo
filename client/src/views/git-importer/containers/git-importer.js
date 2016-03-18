@@ -8,7 +8,7 @@ import { STEPS } from 'src/views/git-importer/consts';
 
 function stateToProps(state) {
   return {
-    isLoading: state.ui.isLoading,
+    status: state.ui.status,
     site: state.data.site,
     sites: state.data.sites,
     languages: state.data.languages,

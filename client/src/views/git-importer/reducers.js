@@ -21,14 +21,14 @@ export default function gitImporter(state, action) {
     case 'CHOOSE_SITE/LOADING':
       return conj(state, {
         ui: conj(state.ui, {
-          isLoading: true
+          status: 'LOADING'
         })
       });
 
     case 'CHOOSE_SITE/DONE':
       return conj(state, {
         ui: conj(state.ui, {
-          isLoading: false,
+          status: 'IDLE',
           currentStep: 'main',
           lastStep: 'main'
         }),
@@ -77,14 +77,14 @@ export default function gitImporter(state, action) {
     case 'IMPORT_CONTENT/LOADING':
       return conj(state, {
         ui: conj(state.ui, {
-          isLoading: true
+          status: 'LOADING'
         })
       });
 
     case 'IMPORT_CONTENT/DONE':
       return conj(state, {
         ui: conj(state.ui, {
-          isLoading: false,
+          status: 'IDLE'
         }),
         data: conj(state.data, {
           errors: action.payload.errors

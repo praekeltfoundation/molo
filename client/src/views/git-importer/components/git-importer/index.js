@@ -23,7 +23,7 @@ const GitImporter = (d) => (
         <Collapse isOpened={d.steps.site.isExpanded}>
           <div className="o-collapse-body">
             <ChooseSite
-              isLoading={d.isLoading}
+              status={d.status}
               site={d.site}
               sites={d.sites}
               actions={d.actions} />
