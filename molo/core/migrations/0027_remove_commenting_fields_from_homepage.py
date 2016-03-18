@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0023_add_site_language_model'),
+        ('core', '0026_add_site_language_model'),
     ]
 
     operations = [
