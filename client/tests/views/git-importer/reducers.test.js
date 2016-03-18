@@ -22,6 +22,41 @@ describe(`gitImporter`, () => {
     });
   });
 
+  describe(`UPDATE_SITES`, () => {
+    it(`should update the available sites`, () => {
+      const state = fixtures('state');
+
+      state.data.sites = [{
+        id: 'win',
+        name: 'rar'
+      }];
+
+      expect(gitImporter(state, {
+          type: 'UPDATE_SITES',
+          payload: {
+            sites: [{
+              id: 'foo-id',
+              name: 'foo'
+            }, {
+              id: 'bar-id',
+              name: 'bar'
+            }]
+          }
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          data: conj(state.data, {
+            sites: [{
+              id: 'foo-id',
+              name: 'foo'
+            }, {
+              id: 'bar-id',
+              name: 'bar'
+            }]
+          })
+        }));
+    });
+  });
+
   describe(`CHOOSE_SITE`, () => {
     it("should change the current and last steps to 'main'", () => {
       const state = fixtures('state');

@@ -1,0 +1,13 @@
+GET /import/repos/
+accept: application/json, text/plain, */*
+
+HTTP/1.0 200 OK
+date: Thu, 17 Mar 2016 19:52:04 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language, Cookie
+x-frame-options: SAMEORIGIN
+content-type: application/json
+content-language: en-gb
+allow: OPTIONS, GET
+
+{"repos":["unicore-cms-content-barefootlaw-i1-prod","unicore-cms-content-ffl-sn-prod"]}
