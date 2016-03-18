@@ -1,6 +1,6 @@
 import json
 
-from django.shortcuts import get_object_or_404
+from babel import Locale
 
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
@@ -119,8 +119,10 @@ class ContentImportHelper(object):
 
     def import_content_for(self, locales):
         for selected_locale in locales:
-            site_language = get_object_or_404(
-                SiteLanguage, locale=selected_locale.get('site_language'))
+
+            site_language, _ = SiteLanguage.objects.get_or_create(
+                locale=Locale.parse(selected_locale.get('locale')).language,
+                is_main_language=selected_locale.get('is_main'))
 
             self.import_all_categories(site_language, selected_locale)
             self.import_all_pages(site_language, selected_locale)
@@ -130,7 +132,6 @@ class ContentImportHelper(object):
             language=selected_locale.get('locale')
         ).order_by('position')[:10000]
         # S() only returns 10 results if you don't ask for more
-
         if site_language.is_main_language:
             for c in category_qs:
                 self.import_section_content(c, site_language)
