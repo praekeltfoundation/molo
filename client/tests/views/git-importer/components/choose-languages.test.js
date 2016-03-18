@@ -6,7 +6,7 @@ import fixtures from 'tests/views/git-importer/fixtures';
 import ChooseLanguages from 'src/views/git-importer/components/choose-languages';
 
 
-describe(`ChooseLangauges`, () => {
+describe(`ChooseLanguages`, () => {
   it(`should render the available languages`, () => {
     const state = fixtures('git-importer');
 
@@ -24,6 +24,8 @@ describe(`ChooseLangauges`, () => {
 
     const el = mount(
       <ChooseLanguages
+        site={state.site}
+        status={state.status}
         actions={state.actions}
         languages={state.languages} />);
 
@@ -54,6 +56,8 @@ describe(`ChooseLangauges`, () => {
 
     const el = mount(
       <ChooseLanguages
+        site={state.site}
+        status={state.status}
         actions={state.actions}
         languages={state.languages} />);
 
@@ -69,5 +73,82 @@ describe(`ChooseLangauges`, () => {
 
     expect(state.actions.toggleLanguageChosen.calledWith('sw'))
       .to.be.true;
+  });
+
+  it(`should call importContent() when 'Import' button is clicked`, () => {
+    const state = fixtures('git-importer');
+    let importContent = state.actions.importContent = spy();
+
+    let el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    el.find('.c-choose-languages__import')
+      .simulate('click');
+
+    expect(importContent.calledWith(state.site.id, state.languages))
+      .to.be.true;
+
+    expect(importContent.calledOnce)
+      .to.be.true;
+  });
+
+  it(`should change 'Import' button to a loading button when loading`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    let button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Import content');
+    expect(button.prop('disabled')).to.be.false;
+
+    state.status = 'LOADING';
+
+    el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Importing content...');
+    expect(button.prop('disabled')).to.be.true;
+  });
+
+  it(`should change 'Import' button to a completed button when complete`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    let button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Import content');
+
+    state.status = 'COMPLETE';
+
+    el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Import complete');
   });
 });
