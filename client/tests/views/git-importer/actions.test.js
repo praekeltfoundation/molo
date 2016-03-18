@@ -33,12 +33,57 @@ describe(`actions`, () => {
         }));
       });
   });
-});
 
-describe(`chooseSite`, done => {
-  it(`should return the list of sites to update with`, () => {
-    let api = conj(fixtures('api'), {
-      languages: resolvesTo([{
+  describe(`chooseSite`, done => {
+    it(`should return the list of sites to update with`, () => {
+      let api = conj(fixtures('api'), {
+        languages: resolvesTo([{
+          id: 'en',
+          name: 'English',
+          isMain: true,
+          isChosen: false
+        }, {
+          id: 'sw',
+          name: 'Swahili',
+          isMain: false,
+          isChosen: false
+        }])
+      });
+
+      return doThunk(actions.chooseSite('foo-id', api))
+        .then(action => expect(action).to.deep.equal([{
+          type: 'CHOOSE_SITE/LOADING'
+        }, {
+          type: 'CHOOSE_SITE/DONE',
+          payload: {
+            languages: [{
+              id: 'en',
+              name: 'English',
+              isMain: true,
+              isChosen: false
+            }, {
+              id: 'sw',
+              name: 'Swahili',
+              isMain: false,
+              isChosen: false
+            }]
+          }
+        }]));
+    });
+  });
+
+  describe(`importContent`, done => {
+    it(`should return errors that occured during the import`, () => {
+      let api = conj(fixtures('api'), {
+        importContent: resolvesTo({
+          errors: [{
+            type: 'foo',
+            details: {bar: 'baz'}
+          }]
+        })
+      });
+
+      let languages = [{
         id: 'en',
         name: 'English',
         isMain: true,
@@ -48,28 +93,20 @@ describe(`chooseSite`, done => {
         name: 'Swahili',
         isMain: false,
         isChosen: false
-      }])
-    });
+      }];
 
-    return doThunk(actions.chooseSite('foo-id', api))
-      .then(action => expect(action).to.deep.equal([{
-        type: 'CHOOSE_SITE/LOADING'
-      }, {
-        type: 'CHOOSE_SITE/DONE',
-        payload: {
-          languages: [{
-            id: 'en',
-            name: 'English',
-            isMain: true,
-            isChosen: false
-          }, {
-            id: 'sw',
-            name: 'Swahili',
-            isMain: false,
-            isChosen: false
-          }]
-        }
-      }]));
+      return doThunk(actions.importContent('foo-id', languages, api))
+        .then(action => expect(action).to.deep.equal([{
+          type: 'IMPORT_CONTENT/LOADING'
+        }, {
+          type: 'IMPORT_CONTENT/DONE',
+          payload: {
+            errors: [{
+              type: 'foo',
+              details: {bar: 'baz'}
+            }]
+          }
+        }]));
+    });
   });
 });
-

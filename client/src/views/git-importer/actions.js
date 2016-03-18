@@ -74,6 +74,27 @@ export function toggleLanguageChosen(id) {
 }
 
 
-export function importContent() {
-  return {type: 'IMPORT_CONTENT'};
+export function importContent(id, languages, api=httpApi) {
+  return dispatch => Promise.all([
+    importContentLoading(dispatch, id, languages, api),
+    importContentDone(dispatch, id, languages, api)
+  ]);
+}
+
+
+function importContentLoading(dispatch, id, languages, api) {
+  return Promise.resolve({
+      type: 'IMPORT_CONTENT/LOADING'
+    })
+    .then(dispatch);
+}
+
+
+function importContentDone(dispatch, id, languages, api) {
+  return api.importContent(id, languages)
+    .then(d => ({
+      type: 'IMPORT_CONTENT/DONE',
+      payload: {errors: d.errors}
+    }))
+    .then(dispatch);
 }

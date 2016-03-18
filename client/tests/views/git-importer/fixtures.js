@@ -109,7 +109,10 @@ function gitImporterFixtures(name) {
           name: 'Swahili',
           isMain: false,
           isChosen: false
-        }])
+        }]),
+        importContent: resolvesTo({
+          errors: []
+        })
       };
   }
 }
