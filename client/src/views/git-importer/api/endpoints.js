@@ -8,11 +8,17 @@ export const repos = opts => endpoint(opts, {
 });
 
 
+export const locales = (name, opts) => endpoint(opts, {
+  method: 'GET',
+  url: `/import/repos/${name}/`
+});
+
+
 function endpoint(opts, def) {
   let d = conj(def, opts || {});
   if (has(d, 'prefix')) d.url = d.prefix + d.url;
 
-  // request option parsing for all api endpoints goes here
+  // request option parsing relevant to all api endpoints goes here
 
   return d;
 }
