@@ -78,6 +78,7 @@ describe(`gitImporter`, () => {
       const state = fixtures('state');
       state.ui.currentStep = 'site';
       state.ui.lastStep = 'site';
+      state.ui.isLoading = true;
 
       expect(gitImporter(state, {
           type: 'CHOOSE_SITE/DONE',
@@ -98,7 +99,8 @@ describe(`gitImporter`, () => {
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
             currentStep: 'main',
-            lastStep: 'main'
+            lastStep: 'main',
+            isLoading: false
           }),
           data: conj(state.data, {
             languages: [{
