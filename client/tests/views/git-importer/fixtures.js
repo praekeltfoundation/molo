@@ -96,6 +96,17 @@ function gitImporterFixtures(name) {
         }, {
           id: 'bar-id',
           name: 'bar'
+        }]),
+        languages: resolvesTo([{
+          id: 'en',
+          name: 'English',
+          isMain: false,
+          isChosen: false
+        }, {
+          id: 'sw',
+          name: 'Swahili',
+          isMain: false,
+          isChosen: false
         }])
       };
   }

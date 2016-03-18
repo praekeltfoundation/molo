@@ -9,7 +9,7 @@ export function sites(opts) {
 }
 
 
-export function languages(name, opts) {
-  return request(endpoints.locales(name, opts))
+export function languages(id, opts) {
+  return request(endpoints.locales(id, opts))
     .then(resp => resp.data.locales.map(parse.locale));
 }

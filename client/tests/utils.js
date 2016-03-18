@@ -7,6 +7,6 @@ export function resolvesTo(v) {
 }
 
 
-export function thunk(fn) {
+export function doThunk(fn, ret=identity) {
   return fn(identity);
 }

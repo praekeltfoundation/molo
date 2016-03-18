@@ -19,8 +19,13 @@ export function updateSites(api=httpApi) {
 }
 
 
-export function chooseSite() {
-  return {type: 'CHOOSE_SITE'};
+export function chooseSite(id, api=httpApi) {
+  return dispatch => api.languages(id)
+    .then(languages => ({
+      type: 'CHOOSE_SITE',
+      payload: {languages: languages}
+    }))
+    .then(dispatch);
 }
 
 
