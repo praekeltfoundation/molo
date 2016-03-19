@@ -11,7 +11,7 @@ function gitImporterFixtures(name) {
     case 'state':
       return {
         ui: {
-          isLoading: false,
+          status: 'IDLE',
           currentStep: 'languages',
           lastStep: 'languages'
         },
@@ -37,14 +37,15 @@ function gitImporterFixtures(name) {
             name: 'Swahili',
             isMain: false,
             isChosen: true
-          }]
+          }],
+          errors: []
         }
       };
 
 
     case 'state-to-props':
       return {
-        isLoading: false,
+        status: 'IDLE',
         languages: [{
           id: 'en',
           name: 'English',
@@ -109,7 +110,10 @@ function gitImporterFixtures(name) {
           name: 'Swahili',
           isMain: false,
           isChosen: false
-        }])
+        }]),
+        importContent: resolvesTo({
+          errors: []
+        })
       };
   }
 }

@@ -1,5 +1,5 @@
-import has from 'lodash/has';
 import { conj } from 'src/utils';
+import { internalEndpoint } from 'src/http';
 
 
 export const repos = opts => endpoint(opts, {
@@ -14,11 +14,16 @@ export const locales = (id, opts) => endpoint(opts, {
 });
 
 
+export const importContent = (id, locales, opts) => endpoint(opts, {
+  method: 'POST',
+  url: `/import/repos/${id}/import/`,
+  data: {locales},
+  useAuth: true
+});
+
+
 function endpoint(opts, def) {
   let d = conj(def, opts || {});
-  if (has(d, 'prefix')) d.url = d.prefix + d.url;
-
   // request option parsing relevant to all api endpoints goes here
-
-  return d;
+  return internalEndpoint(d);
 }

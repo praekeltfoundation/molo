@@ -18,7 +18,7 @@ describe(`ChooseSite`, () => {
 
     const el = mount(
       <ChooseSite
-        isLoading={state.isLoading}
+        status={state.status}
         site={state.site}
         sites={state.sites}
         actions={state.actions} />);
@@ -43,11 +43,11 @@ describe(`ChooseSite`, () => {
 
   it(`should change 'Next' button to a loading button when loading`, () => {
     const state = fixtures('git-importer');
-    state.isLoading = false;
+    state.status = 'IDLE';
 
     let el = mount(
       <ChooseSite
-        isLoading={state.isLoading}
+        status={state.status}
         site={state.site}
         sites={state.sites}
         actions={state.actions} />);
@@ -56,11 +56,11 @@ describe(`ChooseSite`, () => {
     expect(button.text()).to.equal('Next');
     expect(button.prop('disabled')).to.be.false;
 
-    state.isLoading = true;
+    state.status = 'LOADING';
 
     el = mount(
       <ChooseSite
-        isLoading={state.isLoading}
+        status={state.status}
         site={state.site}
         sites={state.sites}
         actions={state.actions} />);
@@ -76,7 +76,7 @@ describe(`ChooseSite`, () => {
 
     let el = mount(
       <ChooseSite
-        isLoading={state.isLoading}
+        status={state.status}
         site={state.site}
         sites={state.sites}
         actions={state.actions} />);
@@ -91,7 +91,7 @@ describe(`ChooseSite`, () => {
 
     el = mount(
       <ChooseSite
-        isLoading={state.isLoading}
+        status={state.status}
         site={state.site}
         sites={state.sites}
         actions={state.actions} />);
@@ -111,7 +111,7 @@ describe(`ChooseSite`, () => {
 
     const el = mount(
       <ChooseSite
-        isLoading={state.isLoading}
+        status={state.status}
         site={state.site}
         sites={state.sites}
         actions={state.actions} />);

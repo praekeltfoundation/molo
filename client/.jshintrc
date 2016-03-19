@@ -6,7 +6,6 @@
   "forin": true,
   "freeze": true,
   "noarg": true,
-  "maxparams": 3,
   "maxdepth": 2,
   "laxbreak": true,
   "undef": true,

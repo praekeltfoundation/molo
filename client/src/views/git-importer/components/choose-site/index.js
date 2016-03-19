@@ -26,9 +26,9 @@ const ChooseSite = (d) => (
     <button
       className="o-form-button c-choose-site__next"
       type="button"
-      disabled={isNull(d.site) || d.isLoading}
+      disabled={isNull(d.site) || d.status === 'LOADING'}
       onClick={() => d.actions.chooseSite(d.site.id)}>
-      {d.isLoading
+      {d.status === 'LOADING'
         ? `Fetching languages...`
         : `Next`}
     </button>

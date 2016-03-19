@@ -5,14 +5,15 @@ import thunk from 'redux-thunk';
 
 const initialState = () => ({
   ui: {
-    isLoading: false,
+    state: 'IDLE',
     currentStep: 'site',
     lastStep: 'site'
   },
   data: {
     sites: [],
     site: null,
-    languages: []
+    languages: [],
+    errors: []
   }
 });
 
