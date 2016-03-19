@@ -13,4 +13,8 @@ urlpatterns = patterns(
         'molo.core.views.health',
         name='health'
     ),
+    url(
+        r'^versions/$',
+        'molo.core.views.versions',
+        name='versions'),
 )
