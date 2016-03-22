@@ -151,4 +151,31 @@ describe(`ChooseLanguages`, () => {
     button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Import complete');
   });
+
+  it(`should change 'Import' button to an error button on error`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    let button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Check content and import');
+
+    state.status = 'ERROR';
+
+    el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Could not import content');
+  });
 });
