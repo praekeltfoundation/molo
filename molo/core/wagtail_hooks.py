@@ -1,16 +1,16 @@
 from django.conf.urls import url
 
-from wagtailmodeladmin.options import(
-    ModelAdmin, wagtailmodeladmin_register)
-from wagtail.wagtailcore import hooks
-
 from molo.core.models import SiteLanguage
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 
-
+from wagtailmodeladmin.options import(
+    ModelAdmin, wagtailmodeladmin_register)
+from wagtail.wagtailcore import hooks
+from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
+from wagtail.wagtailadmin.site_summary import SummaryItem
 
 from . import views
 
@@ -65,3 +65,23 @@ def register_import_menu_item():
         urlresolvers.reverse('import-from-git'),
         classnames='icon icon-download',
     )
+
+
+class LanguageSummaryItem(SummaryItem):
+    order = 500
+    template = 'admin/site_languages_summary.html'
+
+    def get_context(self):
+        languages = SiteLanguage.objects.all()
+        return {
+            'summaries': [{
+                'language': l.get_locale_display(),
+                'total': Page.objects.filter(
+                    languages__language__id=l.id, live=True).count()
+            }for l in languages],
+        }
+
+
+@hooks.register('construct_homepage_summary_items')
+def add_languages_summary_item(request, items):
+    items.append(LanguageSummaryItem(request))

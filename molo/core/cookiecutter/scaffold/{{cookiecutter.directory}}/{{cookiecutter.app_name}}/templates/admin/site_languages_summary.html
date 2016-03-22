@@ -1,0 +1,13 @@
+{% raw %}
+{% load i18n wagtailadmin_tags %}
+
+{% for summary in summaries %}
+  <li class="icon icon-doc-empty-inverse">
+    {% if summary.total > 0 %}
+      <span>{{ summary.total }}</span>{{ summary.language }} Pages
+    {% else %}
+      <span>{{ summary.total }}</span>{{ summary.language }} Page
+    {% endif %}
+  </li>
+{% endfor %}
+{% endraw %}
