@@ -32,8 +32,8 @@
 
   function importButtonText(status) {
     return {
-      IDLE: `Import content`,
-      LOADING: `Importing content...`,
+      IDLE: `Check content and import`,
+      LOADING: `Checking and importing content...`,
       COMPLETE: `Import complete`
     }[status];
   }

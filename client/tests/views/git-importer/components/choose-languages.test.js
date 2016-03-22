@@ -108,7 +108,7 @@ describe(`ChooseLanguages`, () => {
         languages={state.languages} />);
 
     let button = el.find('.c-choose-languages__import');
-    expect(button.text()).to.equal('Import content');
+    expect(button.text()).to.equal('Check content and import');
     expect(button.prop('disabled')).to.be.false;
 
     state.status = 'LOADING';
@@ -121,7 +121,7 @@ describe(`ChooseLanguages`, () => {
         languages={state.languages} />);
 
     button = el.find('.c-choose-languages__import');
-    expect(button.text()).to.equal('Importing content...');
+    expect(button.text()).to.equal('Checking and importing content...');
     expect(button.prop('disabled')).to.be.true;
   });
 
@@ -137,7 +137,7 @@ describe(`ChooseLanguages`, () => {
         languages={state.languages} />);
 
     let button = el.find('.c-choose-languages__import');
-    expect(button.text()).to.equal('Import content');
+    expect(button.text()).to.equal('Check content and import');
 
     state.status = 'COMPLETE';
 
