@@ -1,6 +1,6 @@
 import { spy } from 'sinon';
 import { expect } from 'chai';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import React from 'react';
 import fixtures from 'tests/views/git-importer/fixtures';
 import GitImporter from 'src/views/git-importer/components/git-importer';
@@ -33,7 +33,7 @@ describe(`GitImporter`, () => {
     const state = fixtures('git-importer');
     state.errors = [];
 
-    let el = shallow(<GitImporter {...state} />);
+    let el = mount(<GitImporter {...state} />);
 
     expect(el.find('.c-import-error-item'))
       .to.have.length(0);
@@ -52,10 +52,10 @@ describe(`GitImporter`, () => {
       }
     }];
 
-    el = shallow(<GitImporter {...state} />);
+    el = mount(<GitImporter {...state} />);
 
     expect(el.find('.c-import-error-item'))
-      .to.have.length(0);
+      .to.have.length(2);
   });
 
   it(`should call expandStep when user clicks on a completed step`, () => {
