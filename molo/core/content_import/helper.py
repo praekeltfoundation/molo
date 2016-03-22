@@ -4,6 +4,7 @@ from babel import Locale
 
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
+from molo.core.content_import.get_image import get_image
 
 from unicore.content.models import Category, Page
 
@@ -43,7 +44,9 @@ class ContentImportHelper(object):
                 SectionPage, c, main, site_language)
 
         section.description = c.subtitle
-        # TODO: image
+        if c.image_host and c.image:
+            section.image = get_image(c.image_host, c.image)
+
         section.save_revision().publish()
 
         return section
@@ -92,12 +95,27 @@ class ContentImportHelper(object):
 
         page.featured_in_latest = is_featured
         page.featured_in_homepage = is_featured_in_category
-        # TODO: tags (see mk_tags)
-        # TODO: related pages
-        # TODO: image
+        for tag in p.author_tags:
+            page.metadata_tags.add(tag)
+        if p.image_host and p.image:
+            page.image = get_image(p.image_host, p.image)
+
         page.save_revision().publish()
 
         return page
+
+    def update_pages_with_linked_page_field(self):
+        for p in self.ws.S(Page).all():
+            if p.linked_pages:
+                for lp in p.linked_pages:
+                    try:
+                        page = ArticlePage.objects.get(uuid=p.uuid)
+                        page.body.stream_data.append(
+                            {u'type': u'page',
+                             u'value': ArticlePage.objects.get(uuid=lp).pk})
+                        page.save_revision().publish()
+                    except ArticlePage.DoesNotExist:
+                        None
 
     def import_categories_for_child_language(
             self, category, selected_locale, site_language):
@@ -126,6 +144,7 @@ class ContentImportHelper(object):
 
             self.import_all_categories(site_language, selected_locale)
             self.import_all_pages(site_language, selected_locale)
+        self.update_pages_with_linked_page_field()
 
     def import_all_categories(self, site_language, selected_locale):
         category_qs = self.ws.S(Category).filter(
