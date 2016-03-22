@@ -68,19 +68,21 @@ describe(`api`, () => {
           isMain:false,
           isChosen:true
         }])
-        .then(sites => expect(sites).to.deep.equal([{
-          type: 'wrong_main_language_exist_in_wagtail',
-          details: {
-            lang: 'French',
-            selected_lang: 'Spanish (Mexico)'
-          }
-        }, {
-          type: 'no_primary_category',
-          details: {
-            lang: 'Spanish (Mexico)',
-            article: 'Palabras sobre el embarazo y el parto'
-          }
-        }]));
+        .then(sites => expect(sites).to.deep.equal({
+          errors: [{
+            type: 'wrong_main_language_exist_in_wagtail',
+            details: {
+              lang: 'French',
+              selected_lang: 'Spanish (Mexico)'
+            }
+          }, {
+            type: 'no_primary_category',
+            details: {
+              lang: 'Spanish (Mexico)',
+              article: 'Palabras sobre el embarazo y el parto'
+            }
+          }]
+        }));
     });
   });
 });

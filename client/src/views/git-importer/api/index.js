@@ -25,5 +25,5 @@ export function importContent(id, languages, opts) {
     .then(request)
     .then(
       constant({errors: []}),
-      responseErrback(d => d.data.errors));
+      responseErrback(d => ({errors: d.data.errors})));
 }
