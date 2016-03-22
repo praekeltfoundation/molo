@@ -46,12 +46,12 @@
     "replay": "^2.0.6",
     "sinon": "^1.17.3",
     "webpack": "^1.12.14",
-    "webpack-stream": "^3.1.0"
+    "webpack-stream": "^3.1.0",
+    "dedent": "^0.6.0"
   },
   "dependencies": {
     "axios": "^0.9.1",
     "classnames": "^2.2.3",
-    "dedent": "^0.6.0",
     "js-cookie": "^2.1.0",
     "lodash": "^4.6.1",
     "react": "^0.14.7",
