@@ -119,11 +119,8 @@ class ContentImportTestCase(
         for i in range(0, 10):
             self.workspace.save(es_pages1[i].update({
                 'source': en_pages1[i].uuid,
-            }), 'Added source to page.')
-
-            self.workspace.save(en_pages1[i].update({
                 'author_tags': ['love'],
-            }), 'Added author_tags to page.')
+            }), 'Added author_tags and source to page.')
 
             self.workspace.save(es_pages2[i].update({
                 'source': en_pages2[i].uuid,
