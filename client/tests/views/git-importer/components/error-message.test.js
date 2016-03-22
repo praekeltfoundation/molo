@@ -21,8 +21,8 @@ describe(`ErrorMessage`, () => {
       }
     }))
     .to.equal(message`
-      The main language for the account is French, while the selected
-      main language for this site is Spanish (Mexico)
+      The main language for the account is French, while the selected main
+      language for this site is Spanish (Mexico)
     `);
   });
 
@@ -35,9 +35,9 @@ describe(`ErrorMessage`, () => {
       }
     }))
     .to.equal(message`
-      No primary category found for page Palabras sobre el embarazo y el
-      parto
-    `);
+      Spanish (Mexico) No primary category found for page Palabras sobre el
+      embarazo y el parto
+`);
   });
 
   it(`should handle no_source_found_for_category`, () => {
@@ -49,7 +49,8 @@ describe(`ErrorMessage`, () => {
       }
     }))
     .to.equal(message`
-      No source found for category La cabra siempre tira al monte
+      Spanish (Mexico) No source found for category La cabra siempre tira al
+      monte
     `);
   });
 
@@ -62,7 +63,7 @@ describe(`ErrorMessage`, () => {
       }
     }))
     .to.equal(message`
-      No source found for page La cabra siempre tira al monte
+      Spanish (Mexico) No source found for page La cabra siempre tira al monte
     `);
   });
 
@@ -75,7 +76,8 @@ describe(`ErrorMessage`, () => {
       }
     }))
     .to.equal(message`
-      The source for category La cabra siempre tira al monte does not exist
+      Spanish (Mexico) The source for category La cabra siempre tira al monte
+      does not exist
     `);
   });
 
@@ -88,7 +90,8 @@ describe(`ErrorMessage`, () => {
       }
     }))
     .to.equal(message`
-      The source for page La cabra siempre tira al monte does not exist
+      Spanish (Mexico) The source for page La cabra siempre tira al monte does
+      not exist
     `);
   });
 });

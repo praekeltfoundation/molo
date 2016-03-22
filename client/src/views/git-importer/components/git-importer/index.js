@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import ChooseSite from 'src/views/git-importer/components/choose-site';
 import ChooseMain from 'src/views/git-importer/components/choose-main';
 import ChooseLanguages from 'src/views/git-importer/components/choose-languages';
+import ErrorList from 'src/views/git-importer/components/error-list';
 
 
 const GitImporter = (d) => (
@@ -70,9 +71,16 @@ const GitImporter = (d) => (
           </div>
         </Collapse>
       </div>
+
+      {renderErrors(d)}
     </div>
   </form>
 );
+
+
+function renderErrors(d) {
+  if (d.errors.length) return (<ErrorList errors={d.errors} />);
+}
 
 
 function expandedClass(isExpanded) {

@@ -10,4 +10,11 @@
     border: 1px solid $border-success;
     pointer-events: none;
   }
+
+  &--failure {
+    color: $fg-failure;
+    background: $bg-failure;
+    border: 1px solid $border-failure;
+    pointer-events: none;
+  }
 }
