@@ -23,10 +23,7 @@ export function importContent(id, languages, opts) {
     .then(serialize.languages)
     .then(languages => endpoints.importContent(id, languages, opts))
     .then(request)
-    .then(constant({
-      errors: []
-    }), responseErrback(constant({
-      // TODO
-      errors: []
-    })));
+    .then(
+      constant({errors: []}),
+      responseErrback(d => d.data.errors));
 }
