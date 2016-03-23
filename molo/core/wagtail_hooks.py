@@ -77,7 +77,7 @@ class LanguageSummaryItem(SummaryItem):
             'summaries': [{
                 'language': l.get_locale_display(),
                 'total': Page.objects.filter(
-                    languages__language__id=l.id, live=True).count()
+                    languages__language__id=l.id).count()
             }for l in languages],
         }
 
