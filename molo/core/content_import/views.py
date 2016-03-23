@@ -51,8 +51,13 @@ def import_content(request, name):
 
     # create wagtail content
     locales = request.data.get('locales')
-    ContentImportHelper(ws).import_content_for(locales)
-    return Response()
+    errors = ContentImportValidation(ws).is_validate_for(locales)
+
+    if errors:
+        return Response(status=422, data={'errors': errors})
+    else:
+        ContentImportHelper(ws).import_content_for(locales)
+        return Response()
 
 
 @api_view(['POST'])
@@ -68,4 +73,7 @@ def import_validate(request, name):
     # validate import content
     locales = request.data.get('locales')
     errors = ContentImportValidation(ws).is_validate_for(locales)
-    return Response(errors)
+    if errors:
+        return Response(status=422, data={'errors': errors})
+    else:
+        return Response()
