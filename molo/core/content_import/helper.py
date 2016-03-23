@@ -105,7 +105,7 @@ class ContentImportHelper(object):
         return page
 
     def update_pages_with_linked_page_field(self):
-        for p in self.ws.S(Page).all():
+        for p in self.ws.S(Page).all()[:10000]:
             if p.linked_pages:
                 for lp in p.linked_pages:
                     try:
@@ -115,7 +115,7 @@ class ContentImportHelper(object):
                              u'value': ArticlePage.objects.get(uuid=lp).pk})
                         page.save_revision().publish()
                     except ArticlePage.DoesNotExist:
-                        None
+                        print 'Linked page does not exist %s' % lp
 
     def import_categories_for_child_language(
             self, category, selected_locale, site_language):
