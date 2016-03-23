@@ -41,7 +41,7 @@ describe(`ChooseSite`, () => {
       .to.be.true;
   });
 
-  it(`should change 'Next' button to a loading button when loading`, () => {
+  it(`should change 'Next' button to a busy button when busy`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
@@ -56,7 +56,7 @@ describe(`ChooseSite`, () => {
     expect(button.text()).to.equal('Next');
     expect(button.prop('disabled')).to.be.false;
 
-    state.status = 'LOADING';
+    state.status = 'CHOOSE_SITE_BUSY';
 
     el = mount(
       <ChooseSite
