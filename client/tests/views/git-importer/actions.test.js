@@ -52,7 +52,7 @@ describe(`actions`, () => {
 
       return doThunk(actions.chooseSite('foo-id', api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'CHOOSE_SITE/LOADING'
+          type: 'CHOOSE_SITE/BUSY'
         }, {
           type: 'CHOOSE_SITE/DONE',
           payload: {
@@ -97,9 +97,47 @@ describe(`actions`, () => {
 
       return doThunk(actions.importContent('foo-id', languages, api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'IMPORT_CONTENT/LOADING'
+          type: 'IMPORT_CONTENT/BUSY'
         }, {
           type: 'IMPORT_CONTENT/DONE',
+          payload: {
+            errors: [{
+              type: 'foo',
+              details: {bar: 'baz'}
+            }]
+          }
+        }]));
+    });
+  });
+
+  describe(`checkContent`, done => {
+    it(`should return errors that occured during the check`, () => {
+      let api = conj(fixtures('api'), {
+        checkContent: resolvesTo({
+          errors: [{
+            type: 'foo',
+            details: {bar: 'baz'}
+          }]
+        })
+      });
+
+      let languages = [{
+        id: 'en',
+        name: 'English',
+        isMain: true,
+        isChosen: false
+      }, {
+        id: 'sw',
+        name: 'Swahili',
+        isMain: false,
+        isChosen: false
+      }];
+
+      return doThunk(actions.checkContent('foo-id', languages, api))
+        .then(action => expect(action).to.deep.equal([{
+          type: 'CHECK_CONTENT/BUSY'
+        }, {
+          type: 'CHECK_CONTENT/DONE',
           payload: {
             errors: [{
               type: 'foo',

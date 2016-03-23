@@ -24,11 +24,11 @@ const ChooseSite = (d) => (
       onOptionSelected={site => d.actions.changeSite(site.id)} />
 
     <button
-      className="o-form-button c-choose-site__next"
+      className="o-button c-choose-site__next"
       type="button"
-      disabled={isNull(d.site) || d.status === 'LOADING'}
+      disabled={isNull(d.site) || d.status === 'CHOOSE_SITE_BUSY'}
       onClick={() => d.actions.chooseSite(d.site.id)}>
-      {d.status === 'LOADING'
+      {d.status === 'CHOOSE_SITE_BUSY'
         ? `Fetching languages...`
         : `Next`}
     </button>

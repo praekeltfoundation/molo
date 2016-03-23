@@ -29,7 +29,7 @@ export function chooseSite(id, api=httpApi) {
 
 function chooseSiteLoading(dispatch, id, api) {
   return Promise.resolve({
-      type: 'CHOOSE_SITE/LOADING'
+      type: 'CHOOSE_SITE/BUSY'
     })
     .then(dispatch);
 }
@@ -84,7 +84,7 @@ export function importContent(id, languages, api=httpApi) {
 
 function importContentLoading(dispatch, id, languages, api) {
   return Promise.resolve({
-      type: 'IMPORT_CONTENT/LOADING'
+      type: 'IMPORT_CONTENT/BUSY'
     })
     .then(dispatch);
 }
@@ -94,6 +94,32 @@ function importContentDone(dispatch, id, languages, api) {
   return api.importContent(id, languages)
     .then(d => ({
       type: 'IMPORT_CONTENT/DONE',
+      payload: {errors: d.errors}
+    }))
+    .then(dispatch);
+}
+
+
+export function checkContent(id, languages, api=httpApi) {
+  return dispatch => Promise.all([
+    checkContentLoading(dispatch, id, languages, api),
+    checkContentDone(dispatch, id, languages, api)
+  ]);
+}
+
+
+function checkContentLoading(dispatch, id, languages, api) {
+  return Promise.resolve({
+      type: 'CHECK_CONTENT/BUSY'
+    })
+    .then(dispatch);
+}
+
+
+function checkContentDone(dispatch, id, languages, api) {
+  return api.checkContent(id, languages)
+    .then(d => ({
+      type: 'CHECK_CONTENT/DONE',
       payload: {errors: d.errors}
     }))
     .then(dispatch);
