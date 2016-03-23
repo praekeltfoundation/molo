@@ -18,10 +18,10 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'CHOOSE_SITE/LOADING':
+    case 'CHOOSE_SITE/BUSY':
       return conj(state, {
         ui: conj(state.ui, {
-          status: 'LOADING'
+          status: 'CHOOSE_SITE_BUSY'
         })
       });
 
@@ -74,10 +74,10 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'IMPORT_CONTENT/LOADING':
+    case 'IMPORT_CONTENT/BUSY':
       return conj(state, {
         ui: conj(state.ui, {
-          status: 'LOADING'
+          status: 'IMPORT_CONTENT_BUSY'
         })
       });
 
@@ -85,8 +85,27 @@ export default function gitImporter(state, action) {
       return conj(state, {
         ui: conj(state.ui, {
           status: action.payload.errors.length
-            ? 'ERROR'
-            : 'COMPLETE'
+            ? 'IMPORT_CONTENT_ERROR'
+            : 'IMPORT_CONTENT_COMPLETE'
+        }),
+        data: conj(state.data, {
+          errors: action.payload.errors
+        })
+      });
+
+    case 'CHECK_CONTENT/BUSY':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'CHECK_CONTENT_BUSY'
+        })
+      });
+
+    case 'CHECK_CONTENT/DONE':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: action.payload.errors.length
+            ? 'CHECK_CONTENT_ERROR'
+            : 'CHECK_CONTENT_COMPLETE'
         }),
         data: conj(state.data, {
           errors: action.payload.errors
