@@ -1,0 +1,9 @@
+{% raw %}
+{% load i18n wagtailadmin_tags %}
+
+{% for summary in summaries %}
+  <li class="icon icon-doc-empty-inverse">
+      <span>{{ summary.total }}</span>{{ summary.language }} Page{{ summary.total|pluralize }}
+  </li>
+{% endfor %}
+{% endraw %}

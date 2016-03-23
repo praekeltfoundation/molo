@@ -158,3 +158,15 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         response = self.client.post(reverse(
             'add_translation', args=[self.main.id, 'fr']))
         self.assertRedirects(response, reverse('wagtailadmin_home'))
+
+    def test_site_languages_summary(self):
+        self.client.post(reverse(
+            'add_translation', args=[self.english_subsection.id, 'fr']))
+        self.client.post(reverse(
+            'add_translation', args=[self.english_section.id, 'fr']))
+        page = SectionPage.objects.get(
+            slug='french-translation-of-english-section')
+        page.save_revision().publish()
+        response = self.client.get(reverse('wagtailadmin_home'))
+        self.assertContains(response, '<span>2</span>English Pages')
+        self.assertContains(response, '<span>2</span>French Pages')
