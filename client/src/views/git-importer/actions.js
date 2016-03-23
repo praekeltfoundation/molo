@@ -29,7 +29,7 @@ export function chooseSite(id, api=httpApi) {
 
 function chooseSiteLoading(dispatch, id, api) {
   return Promise.resolve({
-      type: 'CHOOSE_SITE/LOADING'
+      type: 'CHOOSE_SITE/BUSY'
     })
     .then(dispatch);
 }
@@ -84,7 +84,7 @@ export function importContent(id, languages, api=httpApi) {
 
 function importContentLoading(dispatch, id, languages, api) {
   return Promise.resolve({
-      type: 'IMPORT_CONTENT/LOADING'
+      type: 'IMPORT_CONTENT/BUSY'
     })
     .then(dispatch);
 }
@@ -110,7 +110,7 @@ export function checkContent(id, languages, api=httpApi) {
 
 function checkContentLoading(dispatch, id, languages, api) {
   return Promise.resolve({
-      type: 'CHECK_CONTENT/LOADING'
+      type: 'CHECK_CONTENT/BUSY'
     })
     .then(dispatch);
 }

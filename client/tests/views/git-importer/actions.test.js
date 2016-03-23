@@ -52,7 +52,7 @@ describe(`actions`, () => {
 
       return doThunk(actions.chooseSite('foo-id', api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'CHOOSE_SITE/LOADING'
+          type: 'CHOOSE_SITE/BUSY'
         }, {
           type: 'CHOOSE_SITE/DONE',
           payload: {
@@ -97,7 +97,7 @@ describe(`actions`, () => {
 
       return doThunk(actions.importContent('foo-id', languages, api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'IMPORT_CONTENT/LOADING'
+          type: 'IMPORT_CONTENT/BUSY'
         }, {
           type: 'IMPORT_CONTENT/DONE',
           payload: {
@@ -135,7 +135,7 @@ describe(`actions`, () => {
 
       return doThunk(actions.checkContent('foo-id', languages, api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'CHECK_CONTENT/LOADING'
+          type: 'CHECK_CONTENT/BUSY'
         }, {
           type: 'CHECK_CONTENT/DONE',
           payload: {
