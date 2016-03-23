@@ -109,4 +109,42 @@ describe(`actions`, () => {
         }]));
     });
   });
+
+  describe(`checkContent`, done => {
+    it(`should return errors that occured during the check`, () => {
+      let api = conj(fixtures('api'), {
+        checkContent: resolvesTo({
+          errors: [{
+            type: 'foo',
+            details: {bar: 'baz'}
+          }]
+        })
+      });
+
+      let languages = [{
+        id: 'en',
+        name: 'English',
+        isMain: true,
+        isChosen: false
+      }, {
+        id: 'sw',
+        name: 'Swahili',
+        isMain: false,
+        isChosen: false
+      }];
+
+      return doThunk(actions.checkContent('foo-id', languages, api))
+        .then(action => expect(action).to.deep.equal([{
+          type: 'CHECK_CONTENT/LOADING'
+        }, {
+          type: 'CHECK_CONTENT/DONE',
+          payload: {
+            errors: [{
+              type: 'foo',
+              details: {bar: 'baz'}
+            }]
+          }
+        }]));
+    });
+  });
 });

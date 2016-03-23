@@ -98,3 +98,29 @@ function importContentDone(dispatch, id, languages, api) {
     }))
     .then(dispatch);
 }
+
+
+export function checkContent(id, languages, api=httpApi) {
+  return dispatch => Promise.all([
+    checkContentLoading(dispatch, id, languages, api),
+    checkContentDone(dispatch, id, languages, api)
+  ]);
+}
+
+
+function checkContentLoading(dispatch, id, languages, api) {
+  return Promise.resolve({
+      type: 'CHECK_CONTENT/LOADING'
+    })
+    .then(dispatch);
+}
+
+
+function checkContentDone(dispatch, id, languages, api) {
+  return api.checkContent(id, languages)
+    .then(d => ({
+      type: 'CHECK_CONTENT/DONE',
+      payload: {errors: d.errors}
+    }))
+    .then(dispatch);
+}
