@@ -4,7 +4,7 @@ from babel import Locale
 
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
-from molo.core.content_import.get_image import get_image
+from molo.core.content_import.get_image import get_image_file
 
 from unicore.content.models import Category, Page
 
@@ -45,7 +45,7 @@ class ContentImportHelper(object):
 
         section.description = c.subtitle
         if c.image_host and c.image:
-            section.image = get_image(c.image_host, c.image)
+            section.image = get_image_file(c.image_host, c.image)
 
         section.save_revision().publish()
 
@@ -98,7 +98,7 @@ class ContentImportHelper(object):
         for tag in p.author_tags:
             page.metadata_tags.add(tag)
         if p.image_host and p.image:
-            page.image = get_image(p.image_host, p.image)
+            page.image = get_image_file(p.image_host, p.image)
 
         page.save_revision().publish()
 

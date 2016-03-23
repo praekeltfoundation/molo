@@ -1,3 +1,4 @@
+import mock
 import pytest
 
 from elasticgit.tests.base import ModelBaseTest
@@ -8,6 +9,8 @@ from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.helper import ContentImportHelper
 
 from unicore.content import models as eg_models
+
+from wagtail.wagtailimages.tests.utils import get_test_image_file
 
 
 @pytest.mark.django_db
@@ -164,3 +167,26 @@ class ContentImportTestCase(
         self.assertEquals(SectionPage.objects.all().count(), 4)
         self.assertEquals(ArticlePage.objects.all().count(), 46)
         self.assertEquals(FooterPage.objects.all().count(), 4)
+
+    @mock.patch('molo.core.content_import.get_image.get_thumbor_image_file')
+    def test_image_import(self, mock_get_thumbor_image_file):
+        mock_get_thumbor_image_file.return_value = get_test_image_file()
+
+        lang1 = eg_models.Localisation({'locale': 'eng_GB'})
+        self.workspace.save(lang1, 'Added english language')
+
+        [cat_eng] = self.create_categories(
+            self.workspace, locale='eng_GB', count=1)
+
+        [en_page] = self.create_pages(
+            self.workspace, count=1, locale='eng_GB',
+            primary_category=cat_eng.uuid,
+            image_host='http://thumbor', image='some-uuid-for-the-image')
+
+        ContentImportHelper(self.workspace).import_content_for([
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True}])
+
+        self.assertEquals(ArticlePage.objects.all().count(), 1)
+        self.assertEquals(
+            ArticlePage.objects.all().first().image.title,
+            'some-uuid-for-the-image')

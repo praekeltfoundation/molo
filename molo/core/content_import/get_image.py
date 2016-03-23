@@ -3,27 +3,25 @@ import requests
 from urlparse import urljoin
 
 from django.core.files.base import ContentFile
+from django.core.files.images import ImageFile
+from wagtail.wagtailimages.models import get_image_model
 
-from wagtail.wagtailimages.tests.utils import Image
-
-
-def get_image(host, uuid):
-    image = Image.objects.create(
-        title='test.png',
-        file=get_image_file(host, uuid),
-    )
-    return image
+Image = get_image_model()
 
 
 def get_image_file(host, uuid):
-    file_obj, content_type = get_thumbor_image_file(host, uuid)
+    thumbor_image = get_thumbor_image_file(host, uuid)
+    if thumbor_image:
+        image, _ = Image.objects.get_or_create(title=uuid, defaults={
+            'file': thumbor_image
+        })
+        return image
+    return None
 
 
 def get_thumbor_image_file(host, uuid):
         url = urljoin(host, 'image/%s' % uuid)
         response = requests.get(url)
         if response.status_code == 200:
-            return (
-                ContentFile(response.content),
-                response.headers['Content-Type'])
-        return None, None
+            return ImageFile(ContentFile(response.content), name=uuid)
+        return None
