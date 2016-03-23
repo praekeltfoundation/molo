@@ -22,8 +22,14 @@ export const importContent = (id, locales, opts) => endpoint(opts, {
 });
 
 
+export const validateContent = (id, locales, opts) => endpoint(opts, {
+  method: 'POST',
+  url: `/import/repos/${id}/validate/`,
+  data: {locales},
+  useAuth: true
+});
+
+
 function endpoint(opts, def) {
-  let d = conj(def, opts || {});
-  // request option parsing relevant to all api endpoints goes here
-  return internalEndpoint(d);
+  return internalEndpoint(conj(def, opts || {}));
 }

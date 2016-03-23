@@ -36,3 +36,18 @@ export function importContent(id, languages, opts) {
         errors: resp.data.errors
       })));
 }
+
+
+export function checkContent(id, languages, opts) {
+  return Promise.resolve(languages)
+    .then(serialize.languages)
+    .then(languages => endpoints.validateContent(id, languages, opts))
+    .then(request)
+    .then(
+      constant({
+        errors: []
+      }),
+      catchResponseCode(CODES.VALIDATION_FAIL, resp => ({
+        errors: resp.data.errors
+      })));
+}
