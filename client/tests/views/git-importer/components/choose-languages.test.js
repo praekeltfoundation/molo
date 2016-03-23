@@ -108,7 +108,7 @@ describe(`ChooseLanguages`, () => {
         languages={state.languages} />);
 
     let button = el.find('.c-choose-languages__import');
-    expect(button.text()).to.equal('Import content');
+    expect(button.text()).to.equal('Import');
     expect(button.prop('disabled')).to.be.false;
 
     state.status = 'LOADING';
@@ -137,7 +137,7 @@ describe(`ChooseLanguages`, () => {
         languages={state.languages} />);
 
     let button = el.find('.c-choose-languages__import');
-    expect(button.text()).to.equal('Import content');
+    expect(button.text()).to.equal('Import');
 
     state.status = 'COMPLETE';
 
@@ -150,5 +150,32 @@ describe(`ChooseLanguages`, () => {
 
     button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Import complete');
+  });
+
+  it(`should change 'Import' button to an error button on error`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    let button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Import');
+
+    state.status = 'ERROR';
+
+    el = mount(
+      <ChooseLanguages
+        site={state.site}
+        status={state.status}
+        actions={state.actions}
+        languages={state.languages} />);
+
+    button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Could not import content');
   });
 });

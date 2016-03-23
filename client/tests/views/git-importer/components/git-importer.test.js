@@ -1,6 +1,6 @@
 import { spy } from 'sinon';
 import { expect } from 'chai';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import React from 'react';
 import fixtures from 'tests/views/git-importer/fixtures';
 import GitImporter from 'src/views/git-importer/components/git-importer';
@@ -27,6 +27,35 @@ describe(`GitImporter`, () => {
 
     expect(main.prop('disabled'))
       .to.be.true;
+  });
+
+  it(`should render errors`, () => {
+    const state = fixtures('git-importer');
+    state.errors = [];
+
+    let el = mount(<GitImporter {...state} />);
+
+    expect(el.find('.c-import-error-item'))
+      .to.have.length(0);
+
+    state.errors = [{
+      type: 'wrong_main_language_exist_in_wagtail',
+      details: {
+        lang: 'French',
+        selected_lang: 'Spanish (Mexico)'
+      }
+    }, {
+      type: 'no_primary_category',
+      details: {
+        lang: 'Spanish (Mexico)',
+        article: 'Palabras sobre el embarazo y el parto'
+      }
+    }];
+
+    el = mount(<GitImporter {...state} />);
+
+    expect(el.find('.c-import-error-item'))
+      .to.have.length(2);
   });
 
   it(`should call expandStep when user clicks on a completed step`, () => {

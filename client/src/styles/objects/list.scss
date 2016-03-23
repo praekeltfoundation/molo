@@ -1,0 +1,14 @@
+@import '../vars';
+
+
+.o-list-item {
+  border-bottom: 1px solid $border0;
+  margin: 0 -2em;
+  padding: 1.5em 2em;
+  font-size: 1.15em;
+  line-height: 1.15em;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}

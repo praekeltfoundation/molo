@@ -3,7 +3,7 @@
 
 
 .o-collapse {
-  margin: 2em;
+  margin: 2em 0;
 }
 
 
@@ -11,10 +11,13 @@
   display: block;
   width: 100%;
   background: $bg-primary;
-  border-radius: 0.4em;
   cursor: pointer;
+  border-radius: $border-radius;
 
   &--is-expanded {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
     .o-collapse-header__title {
       @include chevron-down();
     }
@@ -45,11 +48,11 @@
 
 
 .o-collapse-body {
-  border-bottom-left-radius: 0.4em;
-  border-bottom-right-radius: 0.4em;
+  border-radius: $border-radius;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 
   background: $bg1;
   border: 1px solid $border0;
   padding: 0.618em 2em;
-
 }

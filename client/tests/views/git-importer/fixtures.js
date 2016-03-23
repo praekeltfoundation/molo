@@ -81,7 +81,8 @@ function gitImporterFixtures(name) {
             isDisabled: false,
             isExpanded: true
           }
-        }
+        },
+        errors: []
       };
 
 

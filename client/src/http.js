@@ -15,11 +15,19 @@ export function internalEndpoint(def) {
 }
 
 
-export function responseErrback(fn=throwResponse) {
+export function catchResponse(fn=throwResponse) {
   return obj => {
     if (obj instanceof Error) throw obj;
     return fn(obj);
   };
+}
+
+
+export function catchResponseCode(code, fn) {
+  return catchResponse(resp => {
+    if (resp.status === code) return fn(resp);
+    else throwResponse(resp);
+  });
 }
 
 

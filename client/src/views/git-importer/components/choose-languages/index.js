@@ -32,17 +32,28 @@
 
   function importButtonText(status) {
     return {
-      IDLE: `Import content`,
+      IDLE: `Import`,
       LOADING: `Importing content...`,
-      COMPLETE: `Import complete`
+      COMPLETE: `Import complete`,
+      ERROR: `Could not import content`
     }[status];
   }
 
 
   function importButtonClasses(status) {
-    return status === 'COMPLETE'
-      ? 'o-form-button o-form-button--success c-choose-languages__import'
-      : 'o-form-button c-choose-languages__import';
+    return {
+      IDLE:
+        'o-form-button c-choose-languages__import',
+
+      LOADING:
+        'o-form-button c-choose-languages__import',
+
+      COMPLETE:
+        'o-form-button o-form-button--success c-choose-languages__import',
+
+      ERROR:
+        'o-form-button o-form-button--failure c-choose-languages__import'
+    }[status];
   }
 
 
