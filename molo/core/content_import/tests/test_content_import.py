@@ -156,6 +156,7 @@ class ContentImportTestCase(
 
         page = ArticlePage.objects.get(uuid=page_with_linked_page.uuid)
         linked_page = ArticlePage.objects.get(uuid=page_en.uuid)
+        print "page body --->", page.body.stream_data
         self.assertEquals(page.body.stream_data[2],
                           {u'type': u'page', u'value': linked_page.pk})
 
