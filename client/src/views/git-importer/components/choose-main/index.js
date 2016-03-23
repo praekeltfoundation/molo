@@ -19,7 +19,7 @@ const ChooseMain = (d) => (
     </ul>
 
     <button
-      className="o-form-button"
+      className="o-button"
       type="button"
       onClick={d.actions.chooseMain}>
       Next
