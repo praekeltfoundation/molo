@@ -7,6 +7,7 @@ from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 
+from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
@@ -20,6 +21,21 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
+
+
+@register_setting
+class SiteSettings(BaseSetting):
+    logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    panels = [
+        ImageChooserPanel('logo'),
+    ]
 
 
 class CommentedPageMixin(object):
