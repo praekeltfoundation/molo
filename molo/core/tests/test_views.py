@@ -16,11 +16,21 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.english = SiteLanguage.objects.create(
             locale='en',
         )
+        self.french = SiteLanguage.objects.create(
+            locale='fr',
+        )
         self.mk_main()
+
         self.yourmind = self.mk_section(
             self.main, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
+
+        self.yourmind_fr = self.mk_section_translation(
+            self.yourmind, self.french, title='Your mind french')
+        self.yourmind_sub_fr = self.mk_section_translation(
+            self.yourmind_sub, self.french,
+            title='Your mind subsection french')
 
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)
@@ -45,16 +55,23 @@ class TestPages(TestCase, MoloTestCaseMixin):
             title='Footer Page',
             slug='footer-page')
         self.main.add_child(instance=self.footer)
+        footer_french = self.mk_article_translation(
+            self.footer, self.french,
+            title='Footer Page in french')
 
         response = self.client.get('/')
         self.assertContains(response, 'Footer Page')
         self.assertContains(
             response,
             '<a href="/footer-page/">Footer Page</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/%s/">Footer Page in french</a>' % footer_french.slug)
 
         response = self.client.get(
             '/your-mind/your-mind-subsection/')
         self.assertContains(response, 'Footer Page')
+        self.assertNotContains(response, 'Footer Page in french')
 
     def test_section_listing(self):
         self.mk_articles(self.yourmind_sub, count=10)
