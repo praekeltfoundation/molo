@@ -1,7 +1,6 @@
 from django import template
 
-from molo.core.models import (
-    SectionPage, Page, BannerPage, SiteLanguage, FooterPage)
+from molo.core.models import Page, SiteLanguage
 
 register = template.Library()
 
@@ -11,14 +10,16 @@ register = template.Library()
     takes_context=True
 )
 def section_listing_homepage(context):
-    selected_language = context.get('selected_language')
     request = context['request']
-    if selected_language:
-        sections = request.site.root_page.specific.sections(selected_language)
+    locale = context['locale_code']
+
+    if request.site:
+        sections = request.site.root_page.specific.sections()
     else:
-        sections = SectionPage.objects.none()
+        sections = []
+
     return {
-        'sections': sections,
+        'sections': [a.get_translation_for(locale) or a for a in sections],
         'request': context['request'],
     }
 
@@ -28,48 +29,49 @@ def section_listing_homepage(context):
     takes_context=True
 )
 def latest_listing_homepage(context, num_count=5):
-    selected_language = context.get('selected_language')
     request = context['request']
-    if selected_language:
-        articles = request.site.root_page.specific.latest_articles(
-            selected_language)[:num_count]
+    locale = context['locale_code']
+
+    if request.site:
+        articles = request.site.root_page.specific\
+            .latest_articles()[:num_count]
     else:
-        articles = Page.objects.none()
+        articles = []
+
     return {
-        'articles': articles,
+        'articles': [a.get_translation_for(locale) or a for a in articles],
         'request': context['request'],
     }
 
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
 def bannerpages(context):
-    selected_language = context.get('selected_language')
     request = context['request']
-    if selected_language:
-        bannerpages = request.site.root_page.specific.bannerpages(
-            selected_language)
+    locale = context['locale_code']
+
+    if request.site:
+        pages = request.site.root_page.specific.bannerpages()
     else:
-        bannerpages = BannerPage.objects.none()
+        pages = []
+
     return {
-        'bannerpages': bannerpages,
+        'bannerpages': [a.get_translation_for(locale) or a for a in pages],
         'request': context['request']
     }
 
 
-@register.inclusion_tag(
-    'core/tags/footerpage.html',
-    takes_context=True
-)
+@register.inclusion_tag('core/tags/footerpage.html', takes_context=True)
 def footer_page(context):
-    selected_language = context.get('selected_language')
     request = context['request']
-    if selected_language:
-        footers = request.site.root_page.specific.footers(
-            selected_language)
+    locale = context['locale_code']
+
+    if request.site:
+        pages = request.site.root_page.specific.footers()
     else:
-        footers = FooterPage.objects.none()
+        pages = []
+
     return {
-        'footers': footers,
+        'footers': [a.get_translation_for(locale) or a for a in pages],
         'request': context['request'],
     }
 
@@ -107,3 +109,10 @@ def render_translations(context, page):
             for code, title in languages],
         'page': page
     }
+
+
+@register.filter
+def translation(page, locale):
+    if not hasattr(page.specific, 'get_translation_for'):
+        return page
+    return page.get_translation_for(locale) or page

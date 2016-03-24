@@ -92,7 +92,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '<div class="articles nav yellow">')
 
     def test_latest_listing(self):
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        en_latest = self.mk_articles(
+            self.yourmind_sub, count=10, featured_in_latest=True)
+
+        for p in en_latest:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
 
         response = self.client.get('/')
         self.assertContains(response, 'Latest')
@@ -104,6 +109,33 @@ class TestPages(TestCase, MoloTestCaseMixin):
             response,
             '<a href="/your-mind/your-mind-subsection/test-page-9/">'
             'Test page 9</a>')
+        self.assertNotContains(
+            response, 'Test page 9 in french')
+        self.assertNotContains(
+            response, 'in french')
+
+    def test_latest_listing_in_french(self):
+        en_latest = self.mk_articles(
+            self.yourmind_sub, count=10, featured_in_latest=True)
+
+        for p in en_latest:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        print response
+        self.assertContains(response, 'Latest')
+        self.assertContains(
+            response,
+            '<a href="/your-mind/your-mind-subsection/test-page-8-in-french/">'
+            'Test page 8 in french</a>')
+        self.assertContains(
+            response,
+            '<a href="/your-mind/your-mind-subsection/test-page-9-in-french/">'
+            'Test page 9 in french</a>')
+        self.assertNotContains(
+            response, 'Test page 9</a>')
 
     def test_article_page(self):
         self.mk_articles(self.yourmind_sub, count=10)

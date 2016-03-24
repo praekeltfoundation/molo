@@ -118,23 +118,23 @@ class Main(CommentedPageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    def bannerpages(self, selected_language):
+    def bannerpages(self):
         return BannerPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True)
 
-    def sections(self, selected_language):
+    def sections(self):
         return SectionPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True)
 
-    def latest_articles(self, selected_language):
+    def latest_articles(self):
         return ArticlePage.objects.live().filter(
             featured_in_latest=True,
-            languages__language=selected_language).order_by(
+            languages__language__is_main_language=True).order_by(
                 '-latest_revision_created_at')
 
-    def footers(self, selected_language):
+    def footers(self):
         return FooterPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True)
 
 
 Main.content_panels = [
