@@ -1,6 +1,6 @@
 from django import template
 
-from molo.core.models import Page, SiteLanguage
+from molo.core.models import Page, SiteLanguage, ArticlePage
 
 register = template.Library()
 
@@ -11,7 +11,7 @@ register = template.Library()
 )
 def section_listing_homepage(context):
     request = context['request']
-    locale = context['locale_code']
+    locale_code = context['locale_code']
 
     if request.site:
         sections = request.site.root_page.specific.sections()
@@ -19,8 +19,10 @@ def section_listing_homepage(context):
         sections = []
 
     return {
-        'sections': [a.get_translation_for(locale) or a for a in sections],
+        'sections': [
+            a.get_translation_for(locale_code) or a for a in sections],
         'request': context['request'],
+        'locale_code': locale_code,
     }
 
 
@@ -30,7 +32,7 @@ def section_listing_homepage(context):
 )
 def latest_listing_homepage(context, num_count=5):
     request = context['request']
-    locale = context['locale_code']
+    locale_code = context['locale_code']
 
     if request.site:
         articles = request.site.root_page.specific\
@@ -39,15 +41,17 @@ def latest_listing_homepage(context, num_count=5):
         articles = []
 
     return {
-        'articles': [a.get_translation_for(locale) or a for a in articles],
+        'articles': [
+            a.get_translation_for(locale_code) or a for a in articles],
         'request': context['request'],
+        'locale_code': locale_code,
     }
 
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
 def bannerpages(context):
     request = context['request']
-    locale = context['locale_code']
+    locale_code = context['locale_code']
 
     if request.site:
         pages = request.site.root_page.specific.bannerpages()
@@ -55,15 +59,17 @@ def bannerpages(context):
         pages = []
 
     return {
-        'bannerpages': [a.get_translation_for(locale) or a for a in pages],
-        'request': context['request']
+        'bannerpages': [
+            a.get_translation_for(locale_code) or a for a in pages],
+        'request': context['request'],
+        'locale_code': locale_code,
     }
 
 
 @register.inclusion_tag('core/tags/footerpage.html', takes_context=True)
 def footer_page(context):
     request = context['request']
-    locale = context['locale_code']
+    locale_code = context['locale_code']
 
     if request.site:
         pages = request.site.root_page.specific.footers()
@@ -71,8 +77,9 @@ def footer_page(context):
         pages = []
 
     return {
-        'footers': [a.get_translation_for(locale) or a for a in pages],
+        'footers': [a.get_translation_for(locale_code) or a for a in pages],
         'request': context['request'],
+        'locale_code': locale_code,
     }
 
 
@@ -116,3 +123,26 @@ def translation(page, locale):
     if not hasattr(page.specific, 'get_translation_for'):
         return page
     return page.get_translation_for(locale) or page
+
+
+@register.assignment_tag(takes_context=True)
+def load_section_articles(
+        context, section, featured_in_homepage=None, featured_in_section=None,
+        featured_in_latest=None, count=5):
+    page = section.get_main_language_page()
+
+    locale = context['locale_code']
+    qs = ArticlePage.objects.live().order_by(
+        '-first_published_at').descendant_of(page)
+
+    if featured_in_homepage is not None:
+        qs = qs.filter(featured_in_homepage=featured_in_homepage)
+    if featured_in_latest is not None:
+        qs = qs.filter(featured_in_latest=featured_in_latest)
+    if featured_in_section is not None:
+        qs = qs.filter(featured_in_section=featured_in_section)
+
+    if not locale:
+        return qs[:count]
+
+    return [a.get_translation_for(locale) or a for a in qs[:count]]

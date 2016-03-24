@@ -47,7 +47,8 @@ class CommentedPageMixin(object):
 
 class PageTranslation(models.Model):
     page = models.ForeignKey('wagtailcore.Page', related_name='translations')
-    translated_page = models.ForeignKey('wagtailcore.Page', related_name='+')
+    translated_page = models.OneToOneField(
+        'wagtailcore.Page', related_name='source_page')
 
 
 class LanguageRelation(models.Model):
@@ -66,6 +67,11 @@ class TranslatablePageMixin(object):
                     language__locale=locale).first().page.specific
                 break
         return translated
+
+    def get_main_language_page(self):
+        if hasattr(self.specific, 'source_page'):
+            return self.specific.source_page.page
+        return self
 
     def save(self, *args, **kwargs):
         response = super(TranslatablePageMixin, self).save(*args, **kwargs)

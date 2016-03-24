@@ -124,7 +124,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
-        print response
+
         self.assertContains(response, 'Latest')
         self.assertContains(
             response,
@@ -167,6 +167,30 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             'Sample page description for 0')
+
+    def test_featured_homepage_listing_in_french(self):
+        en_page = self.mk_article(self.yourmind_sub, featured_in_homepage=True)
+        self.mk_article_translation(
+            en_page, self.french,
+            title=en_page.title + ' in french',
+            subtitle=en_page.subtitle + ' in french')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            'Sample page description for 0')
+        self.assertNotContains(
+            response,
+            'Sample page description for 0 in french')
+
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+
+        self.assertNotContains(
+            response,
+            'Sample page description for 0</a>')
+        self.assertContains(
+            response,
+            'Sample page description for 0 in french')
 
     def test_health(self):
         response = self.client.get('/health/')
