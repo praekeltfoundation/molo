@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+2.6.14
+------
+- Added plugins version comparison
+- Added logo as wagtail setting
+
 2.6.13
 ------
 - Re-release of version 2.6.12 because we forgot to increment the version
