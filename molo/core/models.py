@@ -7,6 +7,7 @@ from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 
+from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
@@ -20,6 +21,21 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
+
+
+@register_setting
+class SiteSettings(BaseSetting):
+    logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    panels = [
+        ImageChooserPanel('logo'),
+    ]
 
 
 class CommentedPageMixin(object):
@@ -254,6 +270,11 @@ class ArticlePageTag(TaggedItemBase):
         'core.ArticlePage', related_name='tagged_items')
 
 
+class ArticlePageMetaDataTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'core.ArticlePage', related_name='metadata_tagged_items')
+
+
 class ArticlePage(CommentedPageMixin, Page, TagSearchable):
     subtitle = models.TextField(null=True, blank=True)
     featured_in_latest = models.BooleanField(
@@ -274,6 +295,18 @@ class ArticlePage(CommentedPageMixin, Page, TagSearchable):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    social_media_title = models.TextField(null=True, blank=True,
+                                          verbose_name="title")
+    social_media_description = models.TextField(null=True, blank=True,
+                                                verbose_name="description")
+    social_media_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        verbose_name="Image",
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     body = StreamField([
         ('heading', blocks.CharBlock(classname="full title")),
         ('paragraph', MarkDownBlock()),
@@ -282,7 +315,14 @@ class ArticlePage(CommentedPageMixin, Page, TagSearchable):
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
     ], null=True, blank=True)
+
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
+    metadata_tags = ClusterTaggableManager(
+        through=ArticlePageMetaDataTag,
+        blank=True, related_name="metadata_tags",
+        help_text=_(
+            'A comma-separated list of tags. '
+            'This is not visible to the user.'))
 
     subpage_types = []
     search_fields = Page.search_fields + TagSearchable.search_fields + (
@@ -302,6 +342,10 @@ class ArticlePage(CommentedPageMixin, Page, TagSearchable):
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
+    ]
+
+    metedata_promote_panels = [
+        FieldPanel('metadata_tags'),
     ]
 
     def get_absolute_url(self):  # pragma: no cover
@@ -355,11 +399,19 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings",)
+        heading="Commenting Settings",),
+    MultiFieldPanel(
+        [
+            FieldPanel('social_media_title'),
+            FieldPanel('social_media_description'),
+            ImageChooserPanel('social_media_image'),
+        ],
+        heading="Social Media",)
 ]
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
+    MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]

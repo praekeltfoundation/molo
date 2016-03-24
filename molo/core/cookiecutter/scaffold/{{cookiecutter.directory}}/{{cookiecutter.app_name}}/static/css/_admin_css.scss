@@ -1,0 +1,22 @@
+.versions{
+  color: black;
+  table, th, td {
+      border: 1px solid black;
+  }
+  th, td {
+      padding: 5px;
+      font-size: 14px;
+  }
+  th {
+      text-align: left;
+  }
+  .latest{
+    color: #20C320;
+  }
+  .plugin{
+    font-weight: bold;
+  }
+  .not-installed{
+    color: orange;
+  }
+}

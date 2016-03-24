@@ -1,11 +1,15 @@
 import json
 import pytest
+import responses
 
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.known_plugins import known_plugins
+
+from mock import patch, Mock
 
 
 @pytest.mark.django_db
@@ -111,3 +115,29 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(reverse('admin:index'))
         self.assertEquals(response.status_code, 200)
+
+    def test_versions_comparison(self):
+        response = self.client.get(reverse('versions'))
+        self.assertContains(response, 'Molo')
+        self.assertContains(response, 'Profiles')
+
+        with patch('pkg_resources.get_distribution', return_value=Mock(
+                version='2.5.0')):
+            response = self.client.get(reverse('versions'))
+            self.assertContains(response, '2.5.0')
+
+        @responses.activate
+        def get_pypi_version():
+            for plugin in known_plugins():
+                responses.add(
+                    responses.GET, (
+                        'https://pypi.python.org/pypi/%s/json' % plugin[0]),
+                    body=json.dumps({'info': {'version': '3.0.0'}}),
+                    content_type="application/json",
+                    status=200)
+
+            response = self.client.get(reverse('versions'))
+            self.assertContains(response, '3.0.0')
+            self.assertContains(response, 'Compare')
+            self.assertContains(response, 'Not installed')
+        get_pypi_version()

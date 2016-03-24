@@ -1,5 +1,28 @@
 CHANGE LOG
 ==========
+
+2.6.14
+------
+- Added plugins version comparison
+- Added logo as wagtail setting
+
+2.6.13
+------
+- Re-release of version 2.6.12 because we forgot to increment the version
+  number.
+
+2.6.12
+------
+- Added metadata tag field
+
+2.6.11
+------
+- Added social media fields
+
+2.6.10
+------
+- Ensure CAS only applies to admin views
+
 2.6.9
 -----
 - Fixed the issue with CAS not being compatible with normal login

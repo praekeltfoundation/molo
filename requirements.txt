@@ -9,3 +9,5 @@ certifi
 dj-database-url
 django-cas-ng
 django-mptt
+requests
+responses
