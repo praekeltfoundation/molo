@@ -48,7 +48,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_extensions',
-
     'taggit',
     'modelcluster',
 
@@ -63,6 +62,7 @@ INSTALLED_APPS = (
     'wagtail.wagtailsearch',
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
+    'wagtail.contrib.settings',
 
     'molo.core',
     '{{cookiecutter.app_name}}',
@@ -87,6 +87,7 @@ MIDDLEWARE_CLASSES = (
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+
 )
 
 ROOT_URLCONF = '{{cookiecutter.app_name}}.urls'
@@ -172,6 +173,7 @@ COMPRESS_PRECOMPILERS = (
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
     'molo.core.context_processors.locale',
+    'wagtail.contrib.settings.context_processors.settings',
 )
 
 
