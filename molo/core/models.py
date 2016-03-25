@@ -58,9 +58,13 @@ class LanguageRelation(models.Model):
 
 class TranslatablePageMixin(object):
 
-    def get_translation_for(self, locale):
+    def get_translation_for(self, locale, is_live=None):
         translated = None
-        for t in self.specific.translations.all():
+        qs = self.specific.translations.all()
+        if is_live is not None:
+            qs = qs.filter(translated_page__live=True)
+
+        for t in qs:
             if t.translated_page.languages.filter(
                     language__locale=locale).exists():
                 translated = t.translated_page.languages.filter(
@@ -69,7 +73,7 @@ class TranslatablePageMixin(object):
         return translated
 
     def get_main_language_page(self):
-        if hasattr(self.specific, 'source_page'):
+        if hasattr(self.specific, 'source_page') and self.specific.source_page:
             return self.specific.source_page.page
         return self
 
@@ -126,21 +130,21 @@ class Main(CommentedPageMixin, Page):
 
     def bannerpages(self):
         return BannerPage.objects.live().child_of(self).filter(
-            languages__language__is_main_language=True)
+            languages__language__is_main_language=True).specific()
 
     def sections(self):
         return SectionPage.objects.live().child_of(self).filter(
-            languages__language__is_main_language=True)
+            languages__language__is_main_language=True).specific()
 
     def latest_articles(self):
         return ArticlePage.objects.live().filter(
             featured_in_latest=True,
             languages__language__is_main_language=True).order_by(
-                '-latest_revision_created_at')
+                '-latest_revision_created_at').specific()
 
     def footers(self):
         return FooterPage.objects.live().child_of(self).filter(
-            languages__language__is_main_language=True)
+            languages__language__is_main_language=True).specific()
 
 
 Main.content_panels = [
@@ -250,21 +254,14 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def articles(self):
-        return ArticlePage.objects.live().child_of(self)
+        main_language_page = self.get_main_language_page()
+        return ArticlePage.objects.live().child_of(main_language_page).filter(
+            languages__language__is_main_language=True)
 
     def sections(self):
-        return SectionPage.objects.live().child_of(self)
-
-    def featured_articles(self):
-        return self.articles().filter(featured_in_section=True)
-
-    def featured_articles_in_homepage(self, count=5):
-        qs = ArticlePage.objects.live().order_by('-first_published_at')
-        return qs.descendant_of(self).filter(featured_in_homepage=True)[:count]
-
-    def latest_articles_in_homepage(self, count=5):
-        qs = ArticlePage.objects.live().order_by('-first_published_at')
-        return qs.descendant_of(self).filter(featured_in_latest=True)[:count]
+        main_language_page = self.get_main_language_page()
+        return SectionPage.objects.live().child_of(main_language_page).filter(
+            languages__language__is_main_language=True)
 
     def get_effective_extra_style_hints(self):
         # The extra css is inherited from the parent SectionPage.
