@@ -13,7 +13,7 @@ from wagtail.wagtailcore.models import Page
 
 def locale_set(request, locale):
     request.session[LANGUAGE_SESSION_KEY] = locale
-    return redirect('/')
+    return redirect(request.GET.get('next', '/'))
 
 
 def health(request):

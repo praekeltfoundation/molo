@@ -62,6 +62,14 @@ class LanguageRelation(models.Model):
 class TranslatablePageMixin(object):
 
     def get_translation_for(self, locale, is_live=True):
+        language = SiteLanguage.objects.filter(locale=locale).first()
+        if not language:
+            return None
+
+        main_language_page = self.get_main_language_page()
+        if language.is_main_language and not self == main_language_page:
+            return main_language_page
+
         translated = None
         qs = self.specific.translations.all()
         if is_live is not None:
