@@ -20,7 +20,7 @@ def section_listing_homepage(context):
 
     return {
         'sections': [
-            a.get_translation_for(locale_code) or a for a in sections],
+            a.get_translation_for(locale_code, True) or a for a in sections],
         'request': context['request'],
         'locale_code': locale_code,
     }

@@ -23,10 +23,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.yourmind, title='Your mind subsection')
 
         self.yourmind_fr = self.mk_section_translation(
-            self.yourmind, self.french, title='Your mind french')
+            self.yourmind, self.french, title='Your mind in french')
         self.yourmind_sub_fr = self.mk_section_translation(
             self.yourmind_sub, self.french,
-            title='Your mind subsection french')
+            title='Your mind subsection in french')
 
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)
@@ -86,6 +86,40 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             '/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(response, '<div class="articles nav yellow">')
+
+    def test_section_listing_in_french(self):
+        self.yourmind.extra_style_hints = 'yellow'
+        self.yourmind.save_revision().publish()
+
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/your-mind/">Your mind</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/your-mind-in-french/">Your mind in french</a>')
+
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+
+        self.assertNotContains(
+            response,
+            '<a href="/your-mind/">Your mind</a>')
+        self.assertContains(
+            response,
+            '<a href="/your-mind-in-french/">Your mind in french</a>')
+
+        # unpublished section should fallback to main language
+        self.yourmind_fr.unpublish()
+
+        response = self.client.get('/')
+
+        self.assertContains(
+            response,
+            '<a href="/your-mind/">Your mind</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/your-mind-in-french/">Your mind in french</a>')
 
     def test_latest_listing(self):
         en_latest = self.mk_articles(
