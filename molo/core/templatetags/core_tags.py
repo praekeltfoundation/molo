@@ -163,7 +163,7 @@ def load_descendant_articles_for_section(
     if not locale:
         return qs[:count]
 
-    return [a.get_translation_for(locale) or a for a in qs[:count]]
+    return [a.get_translation_for(locale, True) or a for a in qs[:count]]
 
 
 @register.assignment_tag(takes_context=True)
@@ -182,4 +182,4 @@ def load_child_articles_for_section(context, section, count=5):
     if not locale:
         return qs[:count]
 
-    return [a.get_translation_for(locale) or a for a in qs[:count]]
+    return [a.get_translation_for(locale, True) or a for a in qs[:count]]

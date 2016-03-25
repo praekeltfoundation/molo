@@ -162,31 +162,42 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            'Sample page description for 0')
+            '<p>Sample page description for 0</p>')
 
     def test_featured_homepage_listing_in_french(self):
         en_page = self.mk_article(self.yourmind_sub, featured_in_homepage=True)
-        self.mk_article_translation(
+        fr_page = self.mk_article_translation(
             en_page, self.french,
             title=en_page.title + ' in french',
             subtitle=en_page.subtitle + ' in french')
         response = self.client.get('/')
         self.assertContains(
             response,
-            'Sample page description for 0')
+            '<p>Sample page description for 0</p>')
         self.assertNotContains(
             response,
-            'Sample page description for 0 in french')
+            '<p>Sample page description for 0 in french</p>')
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
 
         self.assertNotContains(
             response,
-            'Sample page description for 0</a>')
+            '<p>Sample page description for 0</p>')
         self.assertContains(
             response,
-            'Sample page description for 0 in french')
+            '<p>Sample page description for 0 in french</p>')
+
+        # unpublished article should fallback to main language
+        fr_page.unpublish()
+        response = self.client.get('/')
+
+        self.assertContains(
+            response,
+            '<p>Sample page description for 0</p>')
+        self.assertNotContains(
+            response,
+            '<p>Sample page description for 0 in french</p>')
 
     def test_health(self):
         response = self.client.get('/health/')
