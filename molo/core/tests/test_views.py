@@ -256,3 +256,33 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(reverse('admin:index'))
         self.assertEquals(response.status_code, 200)
+
+    def test_translaton_redirects(self):
+        en_page = self.mk_article(self.yourmind, featured_in_homepage=True)
+        fr_page = self.mk_article_translation(
+            en_page, self.french,
+            title=en_page.title + ' in french',
+            subtitle=en_page.subtitle + ' in french')
+
+        response = self.client.get('/your-mind/')
+        self.assertEquals(response.status_code, 200)
+
+        response = self.client.get('/your-mind/test-page-0/')
+        self.assertEquals(response.status_code, 200)
+
+        response = self.client.get('/locale/fr/')
+
+        response = self.client.get('/your-mind/')
+        self.assertRedirects(response, '/your-mind-in-french/')
+
+        response = self.client.get('/your-mind/test-page-0/')
+        self.assertRedirects(response, '/your-mind/test-page-0-in-french/')
+
+        # unpublished translation will not result in a redirect
+        self.yourmind_fr.unpublish()
+        response = self.client.get('/your-mind/')
+        self.assertEquals(response.status_code, 200)
+
+        fr_page.unpublish()
+        response = self.client.get('/your-mind/test-page-0/')
+        self.assertEquals(response.status_code, 200)

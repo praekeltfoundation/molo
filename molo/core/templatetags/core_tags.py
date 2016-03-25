@@ -20,7 +20,7 @@ def section_listing_homepage(context):
 
     return {
         'sections': [
-            a.get_translation_for(locale_code, True) or a for a in sections],
+            a.get_translation_for(locale_code) or a for a in sections],
         'request': context['request'],
         'locale_code': locale_code,
     }
@@ -42,7 +42,7 @@ def latest_listing_homepage(context, num_count=5):
 
     return {
         'articles': [
-            a.get_translation_for(locale_code, True) or a for a in articles],
+            a.get_translation_for(locale_code) or a for a in articles],
         'request': context['request'],
         'locale_code': locale_code,
     }
@@ -99,7 +99,7 @@ def breadcrumbs(context):
     for p in ancestors:
         if hasattr(p, 'get_translation_for'):
             translated_ancestors.append(
-                p.get_translation_for(locale_code, True) or p)
+                p.get_translation_for(locale_code) or p)
         else:
             translated_ancestors.append(p)
 
@@ -122,18 +122,12 @@ def render_translations(context, page):
     return {
         'translations': [{
             'locale': {'title': title, 'code': code},
-            'translated': page.specific.get_translation_for(code)
+            'translated':
+                page.specific.get_translation_for(code, is_live=None)
             if hasattr(page.specific, 'get_translation_for') else None}
             for code, title in languages],
         'page': page
     }
-
-
-@register.filter
-def translation(page, locale):
-    if not hasattr(page.specific, 'get_translation_for'):
-        return page
-    return page.get_translation_for(locale) or page
 
 
 @register.assignment_tag(takes_context=True)
@@ -163,7 +157,7 @@ def load_descendant_articles_for_section(
     if not locale:
         return qs[:count]
 
-    return [a.get_translation_for(locale, True) or a for a in qs[:count]]
+    return [a.get_translation_for(locale) or a for a in qs[:count]]
 
 
 @register.assignment_tag(takes_context=True)
@@ -182,4 +176,4 @@ def load_child_articles_for_section(context, section, count=5):
     if not locale:
         return qs[:count]
 
-    return [a.get_translation_for(locale, True) or a for a in qs[:count]]
+    return [a.get_translation_for(locale) or a for a in qs[:count]]

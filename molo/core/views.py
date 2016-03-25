@@ -29,7 +29,7 @@ def add_translation(request, page_id, locale):
         return redirect(reverse('wagtailadmin_home'))
 
     # redirect to edit page if translation already exists for this locale
-    translated_page = page.get_translation_for(locale)
+    translated_page = page.get_translation_for(locale, is_live=None)
     if translated_page:
         return redirect(
             reverse('wagtailadmin_pages:edit', args=[translated_page.id]))

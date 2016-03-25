@@ -1,7 +1,10 @@
 from django.utils import timezone
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language_from_request
+from django.shortcuts import redirect
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
@@ -20,7 +23,7 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
-from django.conf import settings
+from molo.core.utils import get_locale_code
 
 
 class CommentedPageMixin(object):
@@ -58,7 +61,7 @@ class LanguageRelation(models.Model):
 
 class TranslatablePageMixin(object):
 
-    def get_translation_for(self, locale, is_live=None):
+    def get_translation_for(self, locale, is_live=True):
         translated = None
         qs = self.specific.translations.all()
         if is_live is not None:
@@ -87,6 +90,14 @@ class TranslatablePageMixin(object):
                 language=SiteLanguage.objects.filter(
                     is_main_language=True).first())
         return response
+
+    def serve(self, request):
+        locale_code = get_locale_code(get_language_from_request(request))
+        translation = self.get_translation_for(locale_code)
+        if translation:
+            return redirect(translation.url)
+
+        return super(TranslatablePageMixin, self).serve(request)
 
 
 class BannerPage(TranslatablePageMixin, Page):
