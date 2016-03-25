@@ -42,7 +42,7 @@ def latest_listing_homepage(context, num_count=5):
 
     return {
         'articles': [
-            a.get_translation_for(locale_code) or a for a in articles],
+            a.get_translation_for(locale_code, True) or a for a in articles],
         'request': context['request'],
         'locale_code': locale_code,
     }

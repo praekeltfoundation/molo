@@ -133,6 +133,17 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(
             response, 'Test page 9</a>')
 
+        # unpublished article should fallback to main language
+        en_latest[9].specific.translations.first().translated_page.unpublish()
+
+        response = self.client.get('/')
+        self.assertNotContains(
+            response,
+            '<a href="/your-mind/your-mind-subsection/test-page-9-in-french/">'
+            'Test page 9 in french</a>')
+        self.assertContains(
+            response, 'Test page 9</a>')
+
     def test_article_page(self):
         self.mk_articles(self.yourmind_sub, count=10)
 
