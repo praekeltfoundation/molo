@@ -23,8 +23,9 @@
           <ul class="list-block">
             <li>
               {% if section.description %}<p>{{section.description}}</p>{% endif %}
-              {% if section.featured_articles %}
-              {% for article in section.featured_articles %}
+              {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
+              {% if featured_articles %}
+              {% for article in featured_articles %}
                 <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
                 <p>{{article.subtitle}}</p>
               {% endfor %}
@@ -34,7 +35,8 @@
         </h2>
       {% endfor %}
 
-      {% for article in self.articles %}
+      {% load_child_articles_for_section self as articles %}
+      {% for article in articles %}
       <ul class="list-block">
         <li>
           {% if article.image %}
