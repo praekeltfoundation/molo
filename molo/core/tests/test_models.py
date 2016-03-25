@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 
 from molo.core.models import ArticlePage, SiteLanguage
 from molo.core import constants
+from molo.core.templatetags.core_tags import (
+    load_descendant_articles_for_section)
 from molo.core.tests.base import MoloTestCaseMixin
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -67,15 +69,18 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_featured_homepage(self):
         self.mk_articles(self.yourmind_sub, count=2, featured_in_homepage=True)
         self.mk_articles(self.yourmind_sub, count=10)
+
         self.assertEquals(
-            self.yourmind.featured_articles_in_homepage().count(), 2)
+            len(load_descendant_articles_for_section(
+                {}, self.yourmind, featured_in_homepage=True)), 2)
 
     def test_latest_homepage(self):
         self.mk_articles(self.yourmind_sub, count=2, featured_in_latest=True)
         self.mk_articles(self.yourmind_sub, count=10)
 
         self.assertEquals(
-            self.yourmind.latest_articles_in_homepage().count(), 2)
+            len(load_descendant_articles_for_section(
+                {}, self.yourmind, featured_in_latest=True)), 2)
 
     def test_extra_css(self):
         # extra_css set on current section

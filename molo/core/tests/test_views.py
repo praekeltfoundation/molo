@@ -13,12 +13,8 @@ from molo.core.models import SiteLanguage, FooterPage
 class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
-        self.french = SiteLanguage.objects.create(
-            locale='fr',
-        )
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.french = SiteLanguage.objects.create(locale='fr')
         self.mk_main()
 
         self.yourmind = self.mk_section(
