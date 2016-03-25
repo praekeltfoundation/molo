@@ -5,19 +5,19 @@ CHANGE LOG
 ---
 - added multilanguage support
 - added content import from UC content repos (using REACT)
-- rename Homepage module to Banner Page
+- rename ``HomePage`` module to ``BannerPage``
 - upgrade wagtail to 1.4.1
-- updated language switcher to include `next={{request.path}}`
-- section_page.html now uses new template tags (see below)
-- section_listing_homepage.html now uses new template tags (see below)
+- updated language switcher url to include ``?next={{request.path}}``
+- ``section_page.html`` now uses new template tags (see below)
+- ``section_listing_homepage.html`` now uses new template tags (see below)
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- deprecated use of `LanguagePage`: all pages are now direct children of Main (use SiteLanguage for multilanguage support)
-- deprecated use of `Section.featured_articles`: use the template tag `{% load_descendant_articles_for_section section featured_in_section=True %}`
-- deprecated use of `Section.featured_articles_in_homepage`: use the template tag `{% load_descendant_articles_for_section section featured_in_homepage=True %}`
-- deprecated use of `Section.latest_articles_in_homepage`: use the template tag `{% load_descendant_articles_for_section section featured_in_latest=True %}`
-- deprecated use of `Section.articles`: use the template tag `{% load_child_articles_for_section page %}`
+- deprecated use of ``LanguagePage``: all pages are now direct children of ``Main`` (use ``SiteLanguage`` for multilanguage support)
+- deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
+- deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
+- deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
+- deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
 2.6.13
 ------
