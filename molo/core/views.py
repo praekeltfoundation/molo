@@ -92,7 +92,6 @@ def versions(request):
     })
 
 
-
 def get_pypi_version(plugin_name):
     url = "https://pypi.python.org/pypi/%s/json"
     content = requests.get(url % plugin_name).json()
