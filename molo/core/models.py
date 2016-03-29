@@ -1,7 +1,10 @@
 from django.utils import timezone
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language_from_request
+from django.shortcuts import redirect
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
@@ -20,7 +23,7 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
-from django.conf import settings
+from molo.core.utils import get_locale_code
 
 
 class CommentedPageMixin(object):
@@ -47,7 +50,8 @@ class CommentedPageMixin(object):
 
 class PageTranslation(models.Model):
     page = models.ForeignKey('wagtailcore.Page', related_name='translations')
-    translated_page = models.ForeignKey('wagtailcore.Page', related_name='+')
+    translated_page = models.OneToOneField(
+        'wagtailcore.Page', related_name='source_page')
 
 
 class LanguageRelation(models.Model):
@@ -57,15 +61,32 @@ class LanguageRelation(models.Model):
 
 class TranslatablePageMixin(object):
 
-    def get_translation_for(self, locale):
+    def get_translation_for(self, locale, is_live=True):
+        language = SiteLanguage.objects.filter(locale=locale).first()
+        if not language:
+            return None
+
+        main_language_page = self.get_main_language_page()
+        if language.is_main_language and not self == main_language_page:
+            return main_language_page
+
         translated = None
-        for t in self.specific.translations.all():
+        qs = self.specific.translations.all()
+        if is_live is not None:
+            qs = qs.filter(translated_page__live=True)
+
+        for t in qs:
             if t.translated_page.languages.filter(
                     language__locale=locale).exists():
                 translated = t.translated_page.languages.filter(
                     language__locale=locale).first().page.specific
                 break
         return translated
+
+    def get_main_language_page(self):
+        if hasattr(self.specific, 'source_page') and self.specific.source_page:
+            return self.specific.source_page.page
+        return self
 
     def save(self, *args, **kwargs):
         response = super(TranslatablePageMixin, self).save(*args, **kwargs)
@@ -77,6 +98,14 @@ class TranslatablePageMixin(object):
                 language=SiteLanguage.objects.filter(
                     is_main_language=True).first())
         return response
+
+    def serve(self, request):
+        locale_code = get_locale_code(get_language_from_request(request))
+        translation = self.get_translation_for(locale_code)
+        if translation:
+            return redirect(translation.url)
+
+        return super(TranslatablePageMixin, self).serve(request)
 
 
 class BannerPage(TranslatablePageMixin, Page):
@@ -118,23 +147,23 @@ class Main(CommentedPageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    def bannerpages(self, selected_language):
+    def bannerpages(self):
         return BannerPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True).specific()
 
-    def sections(self, selected_language):
+    def sections(self):
         return SectionPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True).specific()
 
-    def latest_articles(self, selected_language):
+    def latest_articles(self):
         return ArticlePage.objects.live().filter(
             featured_in_latest=True,
-            languages__language=selected_language).order_by(
-                '-latest_revision_created_at')
+            languages__language__is_main_language=True).order_by(
+                '-latest_revision_created_at').specific()
 
-    def footers(self, selected_language):
+    def footers(self):
         return FooterPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True).specific()
 
 
 Main.content_panels = [
@@ -244,21 +273,14 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def articles(self):
-        return ArticlePage.objects.live().child_of(self)
+        main_language_page = self.get_main_language_page()
+        return ArticlePage.objects.live().child_of(main_language_page).filter(
+            languages__language__is_main_language=True)
 
     def sections(self):
-        return SectionPage.objects.live().child_of(self)
-
-    def featured_articles(self):
-        return self.articles().filter(featured_in_section=True)
-
-    def featured_articles_in_homepage(self, count=5):
-        qs = ArticlePage.objects.live().order_by('-first_published_at')
-        return qs.descendant_of(self).filter(featured_in_homepage=True)[:count]
-
-    def latest_articles_in_homepage(self, count=5):
-        qs = ArticlePage.objects.live().order_by('-first_published_at')
-        return qs.descendant_of(self).filter(featured_in_latest=True)[:count]
+        main_language_page = self.get_main_language_page()
+        return SectionPage.objects.live().child_of(main_language_page).filter(
+            languages__language__is_main_language=True)
 
     def get_effective_extra_style_hints(self):
         # The extra css is inherited from the parent SectionPage.
