@@ -10,6 +10,7 @@ from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 
+from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
@@ -24,6 +25,21 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
 from molo.core.utils import get_locale_code
+
+
+@register_setting
+class SiteSettings(BaseSetting):
+    logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    panels = [
+        ImageChooserPanel('logo'),
+    ]
 
 
 class CommentedPageMixin(object):
@@ -132,6 +148,13 @@ BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
 ]
 
 

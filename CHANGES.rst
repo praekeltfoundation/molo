@@ -1,8 +1,8 @@
 CHANGE LOG
 ==========
 
-3.x
----
+3.0rc1
+------
 - added multilanguage support
 - added content import from UC content repos (using REACT)
 - rename ``HomePage`` module to ``BannerPage``
@@ -18,6 +18,11 @@ Backwards incompatible changes
 - deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
 - deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+
+2.6.14
+------
+- Added plugins version comparison
+- Added logo as wagtail setting
 
 2.6.13
 ------
@@ -47,7 +52,7 @@ Backwards incompatible changes
 
 2.6.7
 -----
-- Core urls are not defined correctly
+- core urls are not defined correctly
 
 2.6.6
 -----

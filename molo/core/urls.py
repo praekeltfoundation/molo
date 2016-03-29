@@ -17,4 +17,8 @@ urlpatterns = patterns(
 
     url(r'^import/', include(
         'molo.core.content_import.urls', namespace='content_import')),
+    url(
+        r'^versions/$',
+        'molo.core.views.versions',
+        name='versions'),
 )

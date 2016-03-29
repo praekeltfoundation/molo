@@ -8,6 +8,7 @@ certifi
 dj-database-url
 django-cas-ng
 django-mptt
+requests
 elastic-git
 unicore.content
 wagtail==1.4.1
