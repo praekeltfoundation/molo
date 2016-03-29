@@ -28,6 +28,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
             title="Test image",
             file=get_test_image_file(),
         )
+
+        self.mk_main()
         self.yourmind = self.mk_section(
             self.main, title='Your mind')
         self.yourmind_sub = self.mk_section(

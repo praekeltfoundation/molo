@@ -19,6 +19,11 @@ Backwards incompatible changes
 - deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
+2.6.14
+------
+- Added plugins version comparison
+- Added logo as wagtail setting
+
 2.6.13
 ------
 - Re-release of version 2.6.12 because we forgot to increment the version
@@ -47,7 +52,7 @@ Backwards incompatible changes
 
 2.6.7
 -----
-- Core urls are not defined correctly
+- core urls are not defined correctly
 
 2.6.6
 -----
