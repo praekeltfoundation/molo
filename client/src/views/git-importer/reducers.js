@@ -42,6 +42,12 @@ export default function gitImporter(state, action) {
         ui: conj(state.ui, {
           currentStep: 'languages',
           lastStep: 'languages'
+        }),
+        data: conj(state.data, {
+          languages: state.data.languages
+            .map(language => conj(language, {
+              isChosen: language.isMain
+            }))
         })
       });
 

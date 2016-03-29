@@ -23,7 +23,7 @@ describe(`api`, () => {
           id: 'fre_FR',
           name: 'French (France)',
           isMain: true,
-          isChosen: true
+          isChosen: false
         }, {
           id: 'eng_GB',
           name: 'English (United Kingdom)',

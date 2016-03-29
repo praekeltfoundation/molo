@@ -125,12 +125,41 @@ describe(`gitImporter`, () => {
       state.ui.currentStep = 'main';
       state.ui.lastStep = 'main';
 
-      expect(gitImporter(state, {type: 'CHOOSE_MAIN'}))
-        .to.deep.equal(conj(fixtures('state'), {
-          ui: conj(state.ui, {
-            currentStep: 'languages',
-            lastStep: 'languages'
-          })
+      expect(gitImporter(state, {type: 'CHOOSE_MAIN'}).ui)
+        .to.deep.equal(conj(fixtures('state').ui, {
+          currentStep: 'languages',
+          lastStep: 'languages'
+        }));
+    });
+
+    it("should set the chosen main language as a chosen language", () => {
+      const state = fixtures('state');
+
+      state.data.languages = [{
+        id: 'en',
+        name: 'English',
+        isMain: false,
+        isChosen: false
+      }, {
+        id: 'sw',
+        name: 'Swahili',
+        isMain: true,
+        isChosen: false
+      }];
+
+      expect(gitImporter(state, {type: 'CHOOSE_MAIN'}).data)
+        .to.deep.equal(conj(fixtures('state').data, {
+          languages: [{
+            id: 'en',
+            name: 'English',
+            isMain: false,
+            isChosen: false
+          }, {
+            id: 'sw',
+            name: 'Swahili',
+            isMain: true,
+            isChosen: true
+          }]
         }));
     });
   });
