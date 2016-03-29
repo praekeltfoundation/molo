@@ -1,0 +1,29 @@
+@mixin _chevron($content) {
+  content: $content;
+  float: right;
+  font-size: 2em;
+}
+
+
+@mixin chevron-right() {
+  &::after {
+    @include _chevron('›');
+    margin-top: -0.1em;
+  }
+}
+
+
+@mixin chevron-down() {
+  &::after {
+    @include _chevron('⌄');
+    margin-top: -0.2em;
+    margin-right: -0.3em;
+  }
+}
+
+
+@mixin chevron-up() {
+  &::after {
+    @include chevron('⌃');
+  }
+}

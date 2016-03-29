@@ -1,5 +1,8 @@
 {% raw %}
 {% load wagtailcore_tags compress static wagtailuserbar core_tags i18n %}
+{% load wagtailsettings_tags wagtailimages_tags %}
+{% get_settings %}
+
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -67,14 +70,19 @@
 
         {% wagtailuserbar %}
 
+
+        <div class="logo">
         {% if languages %}
-        <ul>
-            {% trans "Site Language:" %}
-            {% for language in languages %}
-            <a href="{% url 'locale_set' language.code %}">{{language.title}} </a>
-            {% endfor %}
-        </ul>
+          {% if settings.core.SiteSettings.logo %}
+            {% image settings.core.SiteSettings.logo height-30 %}
+          {% endif %}
+
+          {% trans "Site Language:" %}
+          {% for language in languages %}
+            <a href="{% url 'locale_set' language.locale %}?next={{request.path}}">{{language}} </a>
+          {% endfor %}
         {% endif %}
+        </div>
 
         {% breadcrumbs %}
 
@@ -90,14 +98,9 @@
         {% endblock %}
 
         {% block footer %}
-        {% if language_page.footers %}
-          <ul>
-          {% for page in language_page.footers %}
-          <li><a href="{% pageurl page %}">{{page.title}}</a></li>
-          {% endfor %}
-          </ul>
-        {% endif %}
+          {% footer_page %}
         {% endblock %}
+
     </body>
 </html>
 {% endraw %}

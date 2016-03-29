@@ -1,0 +1,26 @@
+{
+  "eqnull": true,
+  "unused": "vars",
+  "bitwise": true,
+  "eqeqeq": true,
+  "forin": true,
+  "freeze": true,
+  "noarg": true,
+  "maxdepth": 2,
+  "laxbreak": true,
+  "undef": true,
+  "browser": true,
+  "jquery": true,
+  "node": true,
+  "phantom": true,
+  "worker": true,
+  "esnext": true,
+  "node": true,
+  "expr": true,
+  "predef": [
+    "describe",
+    "it",
+    "beforeEach",
+    "afterEach"
+  ]
+}
