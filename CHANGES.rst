@@ -1,8 +1,8 @@
 CHANGE LOG
 ==========
 
-3.x
----
+3.0rc1
+------
 - added multilanguage support
 - added content import from UC content repos (using REACT)
 - rename ``HomePage`` module to ``BannerPage``
