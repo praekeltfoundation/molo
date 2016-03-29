@@ -1,6 +1,6 @@
 from django import template
 
-from molo.core.models import Page, SiteLanguage, ArticlePage
+from molo.core.models import Page, SiteLanguage, ArticlePage, SectionPage
 
 register = template.Library()
 
@@ -171,6 +171,25 @@ def load_child_articles_for_section(context, section, count=5):
     locale = context.get('locale_code')
 
     qs = ArticlePage.objects.live().child_of(page).filter(
+        languages__language__is_main_language=True)
+
+    if not locale:
+        return qs[:count]
+
+    return [a.get_translation_for(locale) or a for a in qs[:count]]
+
+
+@register.assignment_tag(takes_context=True)
+def load_child_sections_for_section(context, section, count=5):
+    '''
+    Returns all child articles
+    If the `locale_code` in the context is not the main language, it will
+    return the translations of the live articles.
+    '''
+    page = section.get_main_language_page()
+    locale = context.get('locale_code')
+
+    qs = SectionPage.objects.live().child_of(page).filter(
         languages__language__is_main_language=True)
 
     if not locale:

@@ -14,7 +14,8 @@
         {% endif %}
         {{self.title}}
       </h2>
-      {% for section in self.sections %}
+      {% load_child_sections_for_section self as sections %}
+      {% for section in sections %}
         <h2 class="list-header">
           {% if section.image %}
             <a href="{% pageurl section %}">{% image section.image width-60 %}</a>

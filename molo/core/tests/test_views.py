@@ -295,3 +295,27 @@ class TestPages(TestCase, MoloTestCaseMixin):
         fr_page.unpublish()
         response = self.client.get('/your-mind/test-page-0/')
         self.assertEquals(response.status_code, 200)
+
+    def test_subsection_is_translated(self):
+        en_page = self.mk_article(self.yourmind_sub)
+        self.mk_article_translation(
+            en_page, self.french,
+            title=en_page.title + ' in french',
+            subtitle=en_page.subtitle + ' in french')
+
+        response = self.client.get('/your-mind/')
+        self.assertContains(response, 'Your mind subsection</a>')
+        self.assertNotContains(response, 'Your mind subsection in french</a>')
+
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/your-mind-in-french/')
+
+        self.assertContains(response, 'Your mind subsection in french</a>')
+        self.assertNotContains(response, 'Your mind subsection</a>')
+
+        # ensure section fallbacks to main language
+        self.yourmind_sub_fr.unpublish()
+        response = self.client.get('/your-mind-in-french/')
+
+        self.assertContains(response, 'Your mind subsection</a>')
+        self.assertNotContains(response, 'Your mind subsection in french</a>')
