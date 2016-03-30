@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.0rc2
+------
+- Fixed migration conflict
+
 3.0rc1
 ------
 - added multilanguage support
