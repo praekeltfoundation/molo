@@ -3,3 +3,4 @@ molo.core=={{cookiecutter.molo_version}}
 {{requirement}}
 {% endfor %}
 django-extensions
+wagtailmodeladmin

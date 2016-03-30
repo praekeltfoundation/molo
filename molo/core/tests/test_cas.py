@@ -1,11 +1,13 @@
 from mock import patch
 from django.test import TestCase, Client, override_settings
 from django.contrib.auth.models import User
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
 from django.template.base import TemplateDoesNotExist
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.urls import urlpatterns
+
+from wagtail.wagtailadmin import urls as wagtailadmin_urls
 
 urlpatterns += patterns(
     '',
@@ -17,6 +19,7 @@ urlpatterns += patterns(
         r'^profiles/logout/$',
         'django.contrib.auth.views.logout',
         name='auth_logout'),
+    url(r'^admin/', include(wagtailadmin_urls)),
 )
 
 
@@ -119,6 +122,8 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
     def test_normal_profiles_login_works_when_cas_enabled(self):
+        self.mk_main()
+
         client = Client()
         try:
             client.get('/profiles/login/')
@@ -137,3 +142,14 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
         response = client.get('/profiles/logout/?next=/health/')
         self.assertRedirects(response, '/health/')
+
+    def test_normal_views_after_login_when_cas_enabled(self):
+        self.mk_main()
+
+        client = Client()
+        User.objects.create_user(
+            username='testuser', password='password', email='test@email.com')
+        client.login(username='testuser', password='password')
+
+        response = client.get('/')
+        self.assertEquals(response.status_code, 200)
