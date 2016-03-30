@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('wagtailcore', '0023_alter_page_revision_on_delete_behaviour'),
         ('wagtailimages', '0010_change_on_delete_behaviour'),
-        ('core', '0022_add_help_text_for_metadata_tags'),
+        ('core', '0030_change_related_name_for_translations'),
     ]
 
     operations = [
