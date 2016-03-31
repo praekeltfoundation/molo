@@ -2,10 +2,10 @@ import requests
 
 from django.conf import settings
 from elasticgit.workspace import RemoteWorkspace
-from babel import Locale
-from babel.core import UnknownLocaleError
 
-from molo.core.content_import.helper import ContentImportHelper
+
+from molo.core.content_import.helper import (
+    ContentImportHelper)
 from molo.core.content_import.validation import ContentImportValidation
 
 from rest_framework.decorators import (
@@ -31,18 +31,12 @@ def get_repo_languages(request, name):
     ws = RemoteWorkspace('%s/repos/%s.json' % (
         settings.UNICORE_DISTRIBUTE_API, name))
     ws.sync(Localisation)
+    locales, errors = ContentImportHelper(ws).parse_locales()
 
-    locales = []
-    for l in ws.S(Localisation).all():
-        try:
-            locales.append({
-                'locale': l.locale,
-                'name': Locale.parse(l.locale).english_name
-            })
-        except UnknownLocaleError:
-            print('Unkown locale: %s (ignored)' % l.locale)
-
-    return Response({'locales': locales})
+    return Response({
+        'locales': locales,
+        'errors': errors
+    })
 
 
 @api_view(['POST'])
