@@ -213,10 +213,9 @@ class ContentImportTestCase(
         [cat_Zre_1, cat_Zre_2] = self.create_categories(
             self.workspace, locale='Zre_ZR', count=2)
 
-        response = ContentImportHelper(self.workspace).parse_locales()
-        self.assertEquals(response[1], [
+        locales, errors = ContentImportHelper(self.workspace).parse_locales()
+        self.assertEquals(errors, [
             {'type': 'unknown_locale', 'details': {'locale': u'Zre_ZR'}}])
-        self.assertEquals(len(response[1]), 1)
 
     @mock.patch('molo.core.content_import.get_image.get_thumbor_image_file')
     def test_image_import(self, mock_get_thumbor_image_file):

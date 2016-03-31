@@ -43,12 +43,23 @@ class ContentImportValidationTestCase(
             }
         })
 
-    def test_that_an_ImportError_is_raised_if_there_is_no_main_language(self):
+    def test_that_an_ImportError_is_raised_for_invalid_main_languages(self):
         error_occured = False
         try:
             ContentImportValidation(self.workspace).is_validate_for([
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
                 {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}
+            ])
+        except ImportError:
+            error_occured = True
+
+        self.assertTrue(error_occured)
+
+        error_occured = False
+        try:
+            ContentImportValidation(self.workspace).is_validate_for([
+                {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+                {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}
             ])
         except ImportError:
             error_occured = True
