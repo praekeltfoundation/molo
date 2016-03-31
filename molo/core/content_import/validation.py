@@ -13,10 +13,16 @@ class ContentImportValidation(object):
 
     def is_validate_for(self, locales):
         self.errors = []
+        main_language = None
         for l in locales:
             if l.get('is_main'):
                 main_language = l.get('locale')
                 break
+        if not main_language:
+            self.errors.append({
+                'type': 'no_main_language',
+            })
+            return self.errors
 
         self.validate_wagtail_has_no_language(main_language)
         for l in locales:
