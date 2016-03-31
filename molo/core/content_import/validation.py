@@ -12,15 +12,19 @@ class ContentImportValidation(object):
     def __init__(self, ws):
         self.ws = ws
 
+    def get_main_language(self, locales):
+        mains = [locale for locale in locales if locale.get('is_main')]
+
+        if not mains:
+            raise ImportError("No main languages have been given")
+        elif len(mains) > 1:
+            raise ImportError("Cannot have multiple main languages")
+        else:
+            return mains[0].get('locale')
+
     def is_validate_for(self, locales):
         self.errors = []
-        main_language = None
-        for l in locales:
-            if l.get('is_main'):
-                main_language = l.get('locale')
-                break
-        if not main_language:
-            raise ImportError("No main language found")
+        main_language = self.get_main_language(locales)
 
         self.validate_wagtail_has_no_language(main_language)
         for l in locales:
