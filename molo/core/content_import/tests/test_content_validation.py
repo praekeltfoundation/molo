@@ -6,6 +6,7 @@ from molo.core.models import SiteLanguage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.validation import ContentImportValidation
+from molo.core.content_import.helper import ImportError
 
 from unicore.content import models as eg_models
 
@@ -42,16 +43,26 @@ class ContentImportValidationTestCase(
             }
         })
 
+    def test_that_an_ImportError_is_raised_if_there_is_no_main_language(self):
+        error_occured = False
+        try:
+            ContentImportValidation(self.workspace).is_validate_for([
+                {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
+                {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}
+            ])
+        except ImportError:
+            error_occured = True
+
+        self.assertTrue(error_occured)
+
     def test_language_validation(self):
         self.english = SiteLanguage.objects.create(
             locale='en',
         )
 
         error = ContentImportValidation(self.workspace).is_validate_for([
-            {'locale': 'eng_GB', 'site_language': 'en',
-             'is_main': False},
-            {'locale': 'spa_ES', 'site_language': 'es',
-             'is_main': True}])
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
 
         self.assertEquals(error[0]['type'],
                           'wrong_main_language_exist_in_wagtail')

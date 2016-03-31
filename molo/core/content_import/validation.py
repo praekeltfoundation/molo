@@ -3,6 +3,7 @@ from babel import Locale
 from molo.core.models import SiteLanguage
 
 from unicore.content.models import Category, Page
+from molo.core.content_import.helper import ImportError
 
 
 class ContentImportValidation(object):
@@ -19,10 +20,7 @@ class ContentImportValidation(object):
                 main_language = l.get('locale')
                 break
         if not main_language:
-            self.errors.append({
-                'type': 'no_main_language',
-            })
-            return self.errors
+            raise ImportError("No main language found")
 
         self.validate_wagtail_has_no_language(main_language)
         for l in locales:
