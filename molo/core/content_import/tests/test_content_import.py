@@ -156,7 +156,6 @@ class ContentImportTestCase(
 
         page = ArticlePage.objects.get(uuid=page_with_linked_page.uuid)
         linked_page = ArticlePage.objects.get(uuid=page_en.uuid)
-        print "page body --->", page.body.stream_data
         self.assertEquals(page.body.stream_data[2],
                           {u'type': u'page', u'value': linked_page.pk})
 
@@ -168,6 +167,22 @@ class ContentImportTestCase(
         self.assertEquals(SectionPage.objects.all().count(), 4)
         self.assertEquals(ArticlePage.objects.all().count(), 46)
         self.assertEquals(FooterPage.objects.all().count(), 4)
+
+    def test_unknown_locale(self):
+        lang1 = eg_models.Localisation({'locale': 'eng_GB'})
+        lang2 = eg_models.Localisation({'locale': 'Zre_ZR'})
+
+        self.workspace.save(lang1, 'Added english language')
+        self.workspace.save(lang2, 'Added a language with unknown locale')
+
+        [cat_eng_1, cat_eng_2] = self.create_categories(
+            self.workspace, locale='eng_GB', count=2)
+        [cat_Zre_1, cat_Zre_2] = self.create_categories(
+            self.workspace, locale='Zre_ZR', count=2)
+
+        errors = ContentImportHelper(self.workspace).parse_locales()
+        self.assertEquals(errors[1], [
+            {'type': 'unknown_locale', 'details': {'locale': u'Zre_ZR'}}])
 
     @mock.patch('molo.core.content_import.get_image.get_thumbor_image_file')
     def test_image_import(self, mock_get_thumbor_image_file):
