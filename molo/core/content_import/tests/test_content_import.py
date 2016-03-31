@@ -6,7 +6,7 @@ from elasticgit.tests.base import ModelBaseTest
 from molo.core.models import SiteLanguage, SectionPage, ArticlePage, FooterPage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
-from molo.core.content_import.helper import ContentImportHelper
+from molo.core.content_import.helper import ContentImportHelper, ImportError
 
 from unicore.content import models as eg_models
 
@@ -156,7 +156,6 @@ class ContentImportTestCase(
 
         page = ArticlePage.objects.get(uuid=page_with_linked_page.uuid)
         linked_page = ArticlePage.objects.get(uuid=page_en.uuid)
-        print "page body --->", page.body.stream_data
         self.assertEquals(page.body.stream_data[2],
                           {u'type': u'page', u'value': linked_page.pk})
 
@@ -168,6 +167,55 @@ class ContentImportTestCase(
         self.assertEquals(SectionPage.objects.all().count(), 4)
         self.assertEquals(ArticlePage.objects.all().count(), 46)
         self.assertEquals(FooterPage.objects.all().count(), 4)
+
+        # check that the main language no longer
+        # needs to be first in the list of locales
+        ContentImportHelper(self.workspace).import_content_for([
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
+        self.assertEquals(str(SiteLanguage.objects.filter(
+            is_main_language=True).first()), 'English')
+        self.assertEquals(str(SiteLanguage.objects.filter(
+            is_main_language=False).first()), 'Spanish')
+
+        # check that an ImportError is raised if
+        # locales has more than one language with is_main == True
+        error_occured = False
+        try:
+            ContentImportHelper(self.workspace).import_content_for([
+                {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+                {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
+        except ImportError:
+            error_occured = True
+        self.assertTrue(error_occured)
+
+        # check that an ImportError is raised
+        # if none of the locales have is_main == True
+        error_occured = False
+        try:
+            ContentImportHelper(self.workspace).import_content_for([
+                {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
+                {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+        except ImportError:
+            error_occured = True
+
+        self.assertTrue(error_occured)
+
+    def test_unknown_locale(self):
+        lang1 = eg_models.Localisation({'locale': 'eng_GB'})
+        lang2 = eg_models.Localisation({'locale': 'Zre_ZR'})
+
+        self.workspace.save(lang1, 'Added english language')
+        self.workspace.save(lang2, 'Added a language with unknown locale')
+
+        [cat_eng_1, cat_eng_2] = self.create_categories(
+            self.workspace, locale='eng_GB', count=2)
+        [cat_Zre_1, cat_Zre_2] = self.create_categories(
+            self.workspace, locale='Zre_ZR', count=2)
+
+        locales, errors = ContentImportHelper(self.workspace).parse_locales()
+        self.assertEquals(errors, [
+            {'type': 'unknown_locale', 'details': {'locale': u'Zre_ZR'}}])
 
     @mock.patch('molo.core.content_import.get_image.get_thumbor_image_file')
     def test_image_import(self, mock_get_thumbor_image_file):

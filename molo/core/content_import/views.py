@@ -2,9 +2,10 @@ import requests
 
 from django.conf import settings
 from elasticgit.workspace import RemoteWorkspace
-from babel import Locale
 
-from molo.core.content_import.helper import ContentImportHelper
+
+from molo.core.content_import.helper import (
+    ContentImportHelper)
 from molo.core.content_import.validation import ContentImportValidation
 
 from rest_framework.decorators import (
@@ -30,12 +31,11 @@ def get_repo_languages(request, name):
     ws = RemoteWorkspace('%s/repos/%s.json' % (
         settings.UNICORE_DISTRIBUTE_API, name))
     ws.sync(Localisation)
+    locales, errors = ContentImportHelper(ws).parse_locales()
 
     return Response({
-        'locales': [{
-            'locale': l.locale,
-            'name': Locale.parse(l.locale).english_name
-        }for l in ws.S(Localisation).all()],
+        'locales': locales,
+        'errors': errors
     })
 
 
