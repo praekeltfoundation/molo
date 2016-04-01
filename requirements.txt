@@ -14,3 +14,5 @@ unicore.content
 wagtail==1.4.1
 responses
 babel
+wagtailmodeladmin
+django-extensions
