@@ -1,5 +1,11 @@
 CHANGE LOG
 ==========
+
+3.0rc5
+------
+- Re-release of version 3.0rc3 because we forgot to increment the version
+  number.
+
 3.0rc3
 ------
 - Bug fixes
