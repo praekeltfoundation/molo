@@ -147,14 +147,7 @@ class BannerPage(TranslatablePageMixin, Page):
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
-    PageChooserPanel('banner_link_page'),
-    MultiFieldPanel(
-        [
-            FieldPanel('commenting_state'),
-            FieldPanel('commenting_open_time'),
-            FieldPanel('commenting_close_time'),
-        ],
-        heading="Commenting Settings",)
+    PageChooserPanel('banner_link_page')
 ]
 
 
