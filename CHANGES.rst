@@ -1,5 +1,8 @@
 CHANGE LOG
 ==========
+3.0rc3
+------
+- Bug fixes
 
 3.0rc2
 ------
