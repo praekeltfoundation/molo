@@ -7,10 +7,12 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage, FooterPage
+from molo.core.models import SiteLanguage, FooterPage, SiteSettings
 from molo.core.known_plugins import known_plugins
 
 from mock import patch, Mock
+
+from wagtail.wagtailcore.models import Site
 
 
 @pytest.mark.django_db
@@ -349,3 +351,17 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.assertContains(response, 'Compare')
             self.assertContains(response, 'Not installed')
         get_pypi_version()
+
+    def test_ga_tag_manager_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        response = self.client.get('/')
+        self.assertNotContains(response, 'www.googletagmanager.com')
+
+        setting.ga_tag_manager = 'GTM-1234567'
+        setting.save()
+
+        response = self.client.get('/')
+        self.assertContains(response, 'www.googletagmanager.com')
+        self.assertContains(response, 'GTM-1234567')
