@@ -37,6 +37,14 @@ class SiteSettings(BaseSetting):
         related_name='+'
     )
 
+    ga_tag_manager = models.CharField(
+        verbose_name=_('GA Tag Manager'),
+        choices=settings.LANGUAGES,
+        max_length=255,
+        blank=False,
+        help_text=_("GA Tag Manager tracking code (e.g GTM-XXX)")
+    )
+
     panels = [
         ImageChooserPanel('logo'),
     ]
