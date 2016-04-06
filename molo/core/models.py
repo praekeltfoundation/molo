@@ -37,8 +37,17 @@ class SiteSettings(BaseSetting):
         related_name='+'
     )
 
+    ga_tag_manager = models.CharField(
+        verbose_name=_('GA Tag Manager'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_("GA Tag Manager tracking code (e.g GTM-XXX)")
+    )
+
     panels = [
         ImageChooserPanel('logo'),
+        FieldPanel('ga_tag_manager'),
     ]
 
 
@@ -147,14 +156,7 @@ class BannerPage(TranslatablePageMixin, Page):
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
-    PageChooserPanel('banner_link_page'),
-    MultiFieldPanel(
-        [
-            FieldPanel('commenting_state'),
-            FieldPanel('commenting_open_time'),
-            FieldPanel('commenting_close_time'),
-        ],
-        heading="Commenting Settings",)
+    PageChooserPanel('banner_link_page')
 ]
 
 
