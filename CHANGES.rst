@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.0rc7
+------
+- Add GA tag manager field to site settings
+
 3.0rc6
 ------
 - Remove commenting settings from the BannerPage model
