@@ -49,7 +49,7 @@ def validate_content(workspaces, locales):
     elif len(workspaces) > 1:
         return validate_content_multirepo(workspaces, locales)
     else:
-        return {'errors': []}
+        return []
 
 
 def validate_content_repo(workspace, locales):

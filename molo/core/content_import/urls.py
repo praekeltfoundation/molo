@@ -11,17 +11,17 @@ urlpatterns = patterns(
         name='get_repos'
     ),
     url(
-        r'^repos/(?P<name>[\w-]+)/$',
+        r'^languages/$',
         'molo.core.content_import.views.get_repo_languages',
         name='get_repo_languages'
     ),
     url(
-        r'^repos/(?P<name>[\w-]+)/import/',
+        r'^content/',
         'molo.core.content_import.views.import_content',
         name='import_content'
     ),
     url(
-        r'^repos/(?P<name>[\w-]+)/validate/',
+        r'^validation/',
         'molo.core.content_import.views.import_validate',
         name='import_validate'
     ),
