@@ -6,7 +6,8 @@ from elasticgit.tests.base import ModelBaseTest
 from molo.core.models import SiteLanguage, SectionPage, ArticlePage, FooterPage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
-from molo.core.content_import.helper import ContentImportHelper, ImportError
+from molo.core.content_import.errors import ImportError
+from molo.core.content_import import api
 
 from unicore.content import models as eg_models
 
@@ -14,7 +15,7 @@ from wagtail.wagtailimages.tests.utils import get_test_image_file
 
 
 @pytest.mark.django_db
-class ContentImportTestCase(
+class TestImportContent(
         ModelBaseTest, MoloTestCaseMixin, ElasticGitTestMixin):
 
     def setUp(self):
@@ -145,7 +146,7 @@ class ContentImportTestCase(
         self.assertEquals(SectionPage.objects.all().count(), 0)
         self.assertEquals(ArticlePage.objects.all().count(), 0)
 
-        ContentImportHelper(self.workspace).import_content_for([
+        api.import_content([self.workspace], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
@@ -160,7 +161,7 @@ class ContentImportTestCase(
                           {u'type': u'page', u'value': linked_page.pk})
 
         # run import twice
-        ContentImportHelper(self.workspace).import_content_for([
+        api.import_content([self.workspace], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
@@ -170,7 +171,7 @@ class ContentImportTestCase(
 
         # check that the main language no longer
         # needs to be first in the list of locales
-        ContentImportHelper(self.workspace).import_content_for([
+        api.import_content([self.workspace], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
         self.assertEquals(str(SiteLanguage.objects.filter(
@@ -182,7 +183,7 @@ class ContentImportTestCase(
         # locales has more than one language with is_main == True
         error_occured = False
         try:
-            ContentImportHelper(self.workspace).import_content_for([
+            api.import_content([self.workspace], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
                 {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
         except ImportError:
@@ -193,29 +194,13 @@ class ContentImportTestCase(
         # if none of the locales have is_main == True
         error_occured = False
         try:
-            ContentImportHelper(self.workspace).import_content_for([
+            api.import_content([self.workspace], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
                 {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
         except ImportError:
             error_occured = True
 
         self.assertTrue(error_occured)
-
-    def test_unknown_locale(self):
-        lang1 = eg_models.Localisation({'locale': 'eng_GB'})
-        lang2 = eg_models.Localisation({'locale': 'Zre_ZR'})
-
-        self.workspace.save(lang1, 'Added english language')
-        self.workspace.save(lang2, 'Added a language with unknown locale')
-
-        [cat_eng_1, cat_eng_2] = self.create_categories(
-            self.workspace, locale='eng_GB', count=2)
-        [cat_Zre_1, cat_Zre_2] = self.create_categories(
-            self.workspace, locale='Zre_ZR', count=2)
-
-        locales, errors = ContentImportHelper(self.workspace).parse_locales()
-        self.assertEquals(errors, [
-            {'type': 'unknown_locale', 'details': {'locale': u'Zre_ZR'}}])
 
     @mock.patch('molo.core.content_import.get_image.get_thumbor_image_file')
     def test_image_import(self, mock_get_thumbor_image_file):
@@ -232,7 +217,7 @@ class ContentImportTestCase(
             primary_category=cat_eng.uuid,
             image_host='http://thumbor', image='some-uuid-for-the-image')
 
-        ContentImportHelper(self.workspace).import_content_for([
+        api.import_content([self.workspace], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True}])
 
         self.assertEquals(ArticlePage.objects.all().count(), 1)

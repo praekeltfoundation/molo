@@ -6,16 +6,12 @@ from babel.core import UnknownLocaleError
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
 from molo.core.content_import.get_image import get_image_file
+from molo.core.content_import.errors import ImportError
 
 from unicore.content.models import Localisation, Category, Page
 
 
-class ImportError(Exception):
-    """Raised when there is an error importing"""
-
-
 class ContentImportHelper(object):
-
     def __init__(self, ws):
         self.ws = ws
 

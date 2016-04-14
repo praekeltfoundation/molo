@@ -5,14 +5,14 @@ from elasticgit.tests.base import ModelBaseTest
 from molo.core.models import SiteLanguage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
-from molo.core.content_import.validation import ContentImportValidation
 from molo.core.content_import.helper import ImportError
+from molo.core.content_import import api
 
 from unicore.content import models as eg_models
 
 
 @pytest.mark.django_db
-class ContentImportValidationTestCase(
+class TestValidateContent(
         ModelBaseTest, MoloTestCaseMixin, ElasticGitTestMixin):
 
     def setUp(self):
@@ -46,7 +46,7 @@ class ContentImportValidationTestCase(
     def test_that_an_ImportError_is_raised_for_invalid_main_languages(self):
         error_occured = False
         try:
-            ContentImportValidation(self.workspace).is_validate_for([
+            api.validate_content([self.workspace], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
                 {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}
             ])
@@ -57,7 +57,7 @@ class ContentImportValidationTestCase(
 
         error_occured = False
         try:
-            ContentImportValidation(self.workspace).is_validate_for([
+            api.validate_content([self.workspace], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
                 {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}
             ])
@@ -71,7 +71,7 @@ class ContentImportValidationTestCase(
             locale='en',
         )
 
-        error = ContentImportValidation(self.workspace).is_validate_for([
+        error = api.validate_content([self.workspace], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
 
@@ -125,7 +125,7 @@ class ContentImportValidationTestCase(
             self.workspace, count=1, locale='eng_GB',
             primary_category='an-invalid-uuid')
 
-        errors = ContentImportValidation(self.workspace).is_validate_for([
+        errors = api.validate_content([self.workspace], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
