@@ -59,7 +59,9 @@ class ContentImportAPITestCase(
         ws1, ws2 = workspaces.values()
 
         api.get_workspaces = lambda names, **kw: pick(workspaces, *names)
+
         api.validate_content = lambda *a, **kw: []
+
         api.import_content = lambda wses, locales: (
             imports.append((wses, locales)))
 
@@ -84,7 +86,9 @@ class ContentImportAPITestCase(
         ws1, ws2 = workspaces.values()
 
         api.get_workspaces = lambda names, **kw: pick(workspaces, *names)
+
         api.validate_content = lambda *a, **kw: [{'type': 'fake_error'}]
+
         api.import_content = lambda wses, locales: (
             imports.append((wses, locales)))
 
@@ -94,6 +98,8 @@ class ContentImportAPITestCase(
         })
 
         self.assertEquals(resp.status_code, 422)
+
+        self.assertEqual(imports, [])
 
         self.assertEquals(resp.data, {
             'type': 'validation_failure',
