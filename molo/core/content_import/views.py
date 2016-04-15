@@ -36,12 +36,12 @@ def import_content(request):
     data = request.data
     names, locales = data['repos'], data['locales']
     repos = api.get_repos(names)
-    errors = api.validate_content(repos, locales)
+    result = api.validate_content(repos, locales)
 
-    if errors:
+    if result['errors']:
         return Response(status=422, data={
             'type': 'validation_failure',
-            'errors': errors
+            'errors': result['errors']
         })
     else:
         api.import_content(repos, locales)
@@ -56,10 +56,10 @@ def import_validate(request):
     data = request.data
     names, locales = data['repos'], data['locales']
     repos = api.get_repos(names)
-    errors = api.validate_content(repos, locales)
+    result = api.validate_content(repos, locales)
 
     return Response(data={
         'repos': names,
         'locales': locales,
-        'errors': errors
+        'errors': result['errors']
     })

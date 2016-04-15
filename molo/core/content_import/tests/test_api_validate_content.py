@@ -50,12 +50,19 @@ class TestValidateContent(
             locale='en',
         )
 
-        error = api.validate_content([self.repo1], [
+        res = api.validate_content([self.repo1], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
 
-        self.assertEquals(error[0]['type'],
-                          'wrong_main_language_exist_in_wagtail')
+        self.assertEquals(res, {
+            'errors': [{
+                'type': 'wrong_main_language_exist_in_wagtail',
+                'details': {
+                    'lang': 'English',
+                    'selected_lang': 'Spanish'
+                }
+            }]
+        })
 
     def test_import_validation(self):
         lang1 = eg_models.Localisation({'locale': 'eng_GB'})
@@ -104,14 +111,46 @@ class TestValidateContent(
             self.ws1, count=1, locale='eng_GB',
             primary_category='an-invalid-uuid')
 
-        errors = api.validate_content([self.repo1], [
+        res = api.validate_content([self.repo1], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
-        self.assertEquals(errors[0]['type'], 'no_primary_category')
-        self.assertEquals(errors[1]['type'], 'no_source_found_for_category')
-        self.assertEquals(errors[2]['type'], 'no_source_found_for_page')
-        self.assertEquals(errors[3]['type'], 'no_primary_category')
-        self.assertEquals(errors[4]['type'], 'category_source_not_exists')
-        self.assertEquals(errors[5]['type'], 'page_source_not_exists')
-        self.assertEquals(len(errors), 6)
+        self.assertEquals(res, {
+            'errors': [{
+                'type': 'no_primary_category',
+                'details': {
+                    'lang': 'English (United Kingdom)',
+                    'article': 'Test Page 0'
+                }
+            }, {
+                'type': 'no_source_found_for_category',
+                'details': {
+                    'lang': 'Spanish (Spain)',
+                    'category': 'Test Category 0'
+                }
+            }, {
+                'type': 'no_source_found_for_page',
+                'details': {
+                    'lang': 'Spanish (Spain)',
+                    'article': 'Test Page 0'
+                }
+            }, {
+                'type': 'no_primary_category',
+                'details': {
+                    'lang': 'Spanish (Spain)',
+                    'article': 'Test Page 0'
+                }
+            }, {
+                'type': 'category_source_not_exists',
+                'details': {
+                    'lang': 'Spanish (Spain)',
+                    'category': 'Test Category 0'
+                }
+            }, {
+                'type': 'page_source_not_exists',
+                'details': {
+                    'lang': 'Spanish (Spain)',
+                    'page': 'Test Page 0'
+                }
+            }]
+        })

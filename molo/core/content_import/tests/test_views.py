@@ -65,7 +65,7 @@ class ContentImportAPITestCase(
         repos = fake_repos('r1', 'r2')
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.validate_content = lambda *a, **kw: []
+        api.validate_content = lambda *a, **kw: {'errors': []}
 
         api.import_content = lambda wses, locales: (
             imports.append((wses, locales)))
@@ -91,7 +91,9 @@ class ContentImportAPITestCase(
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
         api.validate_content = lambda wses, locales: {
-            (repos, ('en', 'fr')): [{'type': 'fake_error'}]
+            (repos, ('en', 'fr')): {
+                'errors': [{'type': 'fake_error'}]
+            }
         }[(wses, tuple(locales))]
 
         api.import_content = lambda wses, locales: (
@@ -119,7 +121,9 @@ class ContentImportAPITestCase(
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
         api.validate_content = lambda wses, locales: {
-            (repos, ('en', 'fr')): [{'type': 'fake_error'}]
+            (repos, ('en', 'fr')): {
+                'errors': [{'type': 'fake_error'}]
+            }
         }[(wses, tuple(locales))]
 
         resp = self.client.post('/import/validation/', data={

@@ -34,12 +34,16 @@ def import_content_multirepo(repos, locales):
 
 
 def validate_content(repos, locales):
+    errors = []
+
     if len(repos) == 1:
-        return validate_content_repo(repos[0], locales)
+        errors = validate_content_repo(repos[0], locales)
     elif len(repos) > 1:
-        return validate_content_multirepo(repos, locales)
-    else:
-        return []
+        errors = validate_content_multirepo(repos, locales)
+
+    return {
+        'errors': errors
+    }
 
 
 def validate_content_repo(repo, locales):
