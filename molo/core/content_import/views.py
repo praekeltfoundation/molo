@@ -18,7 +18,12 @@ def get_repos(request):
 def get_repo_languages(request):
     names = request.query_params.getlist('repo')
     repos = api.get_repos(names, models=(Localisation,))
-    return Response(api.get_languages(repos))
+    result = api.get_languages(repos)
+
+    return Response({
+        'locales': result['locales'],
+        'warnings': result['warnings']
+    })
 
 
 @api_view(['PUT'])
