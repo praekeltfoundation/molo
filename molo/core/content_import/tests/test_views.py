@@ -81,7 +81,9 @@ class ContentImportAPITestCase(
         repos = fake_repos('r1', 'r2')
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.validate_content = lambda *a, **kw: []
+        api.validate_content = lambda wses, locales: {
+            (repos, ('en', 'fr')): [{'type': 'fake_error'}]
+        }[(wses, tuple(locales))]
 
         api.import_content = lambda wses, locales: (
             imports.append((wses, locales)))
@@ -91,11 +93,12 @@ class ContentImportAPITestCase(
             'locales': ['en', 'fr']
         })
 
-        self.assertEqual(imports, [
-            (repos, ['en', 'fr'])
-        ])
+        self.assertEquals(resp.data, {
+            'type': 'validation_failure',
+            'errors': [{'type': 'fake_error'}],
+        })
 
-        self.assertEquals(resp.status_code, 204)
+        self.assertEquals(resp.status_code, 422)
 
     @mock.patch('molo.core.content_import.views.api')
     def test_validate_content(self, api):
