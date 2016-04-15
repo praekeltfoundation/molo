@@ -24,8 +24,108 @@ class TestGetLanguages(
         )
         self.mk_main()
 
-        self.repo1 = Repo('repo1', self.create_workspace())
-        self.ws1 = self.repo1.workspace
+        prefix = self.mk_index_prefix()
+        self.ws1 = self.create_workspace(index_prefix='%s-1' % prefix)
+        self.ws2 = self.create_workspace(index_prefix='%s-2' % prefix)
+        self.repo1 = Repo('repo1', self.ws1)
+        self.repo2 = Repo('repo2', self.ws2)
+
+    def test_get_locale(self):
+        lang1 = eg_models.Localisation({'locale': 'eng_GB'})
+        lang2 = eg_models.Localisation({'locale': 'spa_ES'})
+        self.ws1.save(lang1, 'Added english')
+        self.ws1.save(lang2, 'Added spanish')
+
+        self.create_categories(self.ws1, locale='eng_GB', count=2)
+        self.create_categories(self.ws1, locale='spa_ES', count=2)
+
+        res = api.get_languages([self.repo1])
+
+        self.assertEquals(res, {
+            'locales': [{
+                'locale': 'eng_GB',
+                'name': 'English (United Kingdom)'
+            }, {
+                'locale': 'spa_ES',
+                'name': 'Spanish (Spain)'
+            }],
+            'warnings': []
+        })
+
+    def test_get_locale_multirepo(self):
+        lang1 = eg_models.Localisation({'locale': 'eng_GB'})
+        lang2 = eg_models.Localisation({'locale': 'spa_ES'})
+        self.ws1.save(lang1, 'Added english')
+        self.ws1.save(lang2, 'Added spanish')
+        self.ws2.save(lang1, 'Added english')
+        self.ws2.save(lang2, 'Added spanish')
+
+        self.create_categories(self.ws1, locale='eng_GB', count=2)
+        self.create_categories(self.ws1, locale='spa_ES', count=2)
+        self.create_categories(self.ws2, locale='eng_GB', count=2)
+        self.create_categories(self.ws2, locale='spa_ES', count=2)
+
+        res = api.get_languages([self.repo1, self.repo2])
+
+        self.assertEquals(res, {
+            'locales': [{
+                'locale': 'eng_GB',
+                'name': 'English (United Kingdom)'
+            }, {
+                'locale': 'spa_ES',
+                'name': 'Spanish (Spain)'
+            }],
+            'warnings': []
+        })
+
+    def test_get_locale_multirepo_strays(self):
+        lang1 = eg_models.Localisation({'locale': 'eng_GB'})
+        lang2 = eg_models.Localisation({'locale': 'spa_ES'})
+        lang3 = eg_models.Localisation({'locale': 'spa_MX'})
+        lang4 = eg_models.Localisation({'locale': 'spa_CU'})
+
+        self.ws1.save(lang1, 'Added english')
+        self.ws1.save(lang2, 'Added spanish es')
+        self.ws1.save(lang3, 'Added spanish mx')
+
+        self.ws2.save(lang2, 'Added spanish es')
+        self.ws2.save(lang3, 'Added spanish mx')
+        self.ws2.save(lang4, 'Added spanish cu')
+
+        self.create_categories(self.ws1, locale='eng_GB', count=2)
+        self.create_categories(self.ws1, locale='spa_ES', count=2)
+        self.create_categories(self.ws1, locale='spa_MX', count=2)
+
+        self.create_categories(self.ws2, locale='spa_ES', count=2)
+        self.create_categories(self.ws2, locale='spa_MX', count=2)
+        self.create_categories(self.ws2, locale='spa_CU', count=2)
+
+        res = api.get_languages([self.repo1, self.repo2])
+
+        self.assertEquals(res, {
+            'locales': [{
+                'locale': 'spa_ES',
+                'name': 'Spanish (Spain)'
+            }, {
+                'locale': 'spa_MX',
+                'name': 'Spanish (Mexico)'
+            }],
+            'warnings': [{
+                'type': 'stray_locale',
+                'details': {
+                    'repo': 'repo1',
+                    'locale': 'eng_GB',
+                    'name': 'English (United Kingdom)'
+                }
+            }, {
+                'type': 'stray_locale',
+                'details': {
+                    'repo': 'repo2',
+                    'locale': 'spa_CU',
+                    'name': 'Spanish (Cuba)'
+                }
+            }]
+        })
 
     def test_unknown_locale(self):
         lang1 = eg_models.Localisation({'locale': 'eng_GB'})
@@ -34,11 +134,18 @@ class TestGetLanguages(
         self.ws1.save(lang1, 'Added english language')
         self.ws1.save(lang2, 'Added a language with unknown locale')
 
-        [cat_eng_1, cat_eng_2] = self.create_categories(
-            self.ws1, locale='eng_GB', count=2)
-        [cat_Zre_1, cat_Zre_2] = self.create_categories(
-            self.ws1, locale='Zre_ZR', count=2)
+        self.create_categories(self.ws1, locale='eng_GB', count=2)
+        self.create_categories(self.ws1, locale='Zre_ZR', count=2)
 
-        locales, errors = api.get_languages([self.repo1])
-        self.assertEquals(errors, [
-            {'type': 'unknown_locale', 'details': {'locale': u'Zre_ZR'}}])
+        res = api.get_languages([self.repo1])
+
+        self.assertEquals(res, {
+            'locales': [{
+                'locale': 'eng_GB',
+                'name': 'English (United Kingdom)'
+            }],
+            'warnings': [{
+                'repo': self.workspace.repo,
+                'locale': u'Zre_ZR'
+            }]
+        })

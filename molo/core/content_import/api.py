@@ -15,18 +15,7 @@ def get_repo_summaries():
 
 
 def get_languages(repos):
-    if len(repos) == 1:
-        return get_repo_languages(repos[0].workspace)
-    elif len(repos) > 1:
-        return get_multirepo_languages(repos.workspace)
-
-
-def get_repo_languages(repo):
-    return get_locales(repo)
-
-
-def get_multirepo_languages(repos):
-    raise NotImplementedError()
+    return get_locales(repos)
 
 
 def import_content(repos, locales):
