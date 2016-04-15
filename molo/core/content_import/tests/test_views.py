@@ -34,14 +34,15 @@ class ContentImportAPITestCase(
         repos = fake_repos('r1', 'r2')
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.get_languages = lambda wses: ({
+        api.get_languages = lambda wses: {
             repos: {
                 'locales': [{
                     'locale': 'eng_GB',
                     'name': 'English (United Kingdom)'
-                }]
+                }],
+                'warnings': []
             },
-        }[wses], [])
+        }[wses]
 
         resp = self.client.get('/import/languages/?repo=r1&repo=r2')
 
