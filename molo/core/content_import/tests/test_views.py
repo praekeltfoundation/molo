@@ -73,7 +73,7 @@ class ContentImportAPITestCase(
         resp = self.client.put('/import/content/', data={
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr']
-        })
+        }, format='json')
 
         self.assertEqual(imports, [
             (repos, ['en', 'fr'])
@@ -100,7 +100,7 @@ class ContentImportAPITestCase(
         resp = self.client.put('/import/content/', data={
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr']
-        })
+        }, format='json')
 
         self.assertEquals(resp.data, {
             'type': 'validation_failure',
@@ -125,7 +125,7 @@ class ContentImportAPITestCase(
         resp = self.client.post('/import/validation/', data={
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr']
-        })
+        }, format='json')
 
         self.assertEquals(resp.data, {
             'repos': ['r1', 'r2'],
