@@ -202,7 +202,8 @@ class TestImportContent(
 
         self.assertTrue(error_occured)
 
-    @mock.patch('molo.core.content_import.get_image.get_thumbor_image_file')
+    @mock.patch(
+        'molo.core.content_import.helpers.get_image.get_thumbor_image_file')
     def test_image_import(self, mock_get_thumbor_image_file):
         mock_get_thumbor_image_file.return_value = get_test_image_file()
 

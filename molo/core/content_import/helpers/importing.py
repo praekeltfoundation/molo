@@ -1,14 +1,13 @@
 import json
 
 from babel import Locale
-from babel.core import UnknownLocaleError
 
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
-from molo.core.content_import.get_image import get_image_file
+from molo.core.content_import.helpers.get_image import get_image_file
 from molo.core.content_import.errors import ImportError
 
-from unicore.content.models import Localisation, Category, Page
+from unicore.content.models import Category, Page
 
 
 class ContentImportHelper(object):
@@ -181,21 +180,3 @@ class ContentImportHelper(object):
             # S() only returns 10 results if you don't ask for more
 
             self.import_page_content(p, site_language)
-
-    def parse_locales(self):
-        locales = []
-        errors = []
-
-        for l in self.ws.S(Localisation).all():
-            try:
-                locales.append({
-                    'locale': l.locale,
-                    'name': Locale.parse(l.locale).english_name
-                })
-            except UnknownLocaleError:
-                errors.append({
-                    'type': 'unknown_locale',
-                    'details': {'locale': l.locale}
-                })
-
-        return locales, errors

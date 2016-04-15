@@ -3,7 +3,7 @@ from babel import Locale
 from molo.core.models import SiteLanguage
 
 from unicore.content.models import Category, Page
-from molo.core.content_import.helper import ImportError
+from molo.core.content_import.errors import ImportError
 
 
 class ContentImportValidation(object):

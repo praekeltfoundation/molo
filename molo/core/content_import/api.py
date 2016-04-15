@@ -4,8 +4,9 @@ import requests
 from elasticgit.workspace import RemoteWorkspace
 from unicore.content.models import Localisation, Category, Page
 
-from molo.core.content_import.helper import ContentImportHelper
-from molo.core.content_import.validation import ContentImportValidation
+from molo.core.content_import.helpers.locales import get_locales
+from molo.core.content_import.helpers.importing import ContentImportHelper
+from molo.core.content_import.helpers.validation import ContentImportValidation
 
 
 def get_repos():
@@ -21,7 +22,7 @@ def get_languages(workspaces):
 
 
 def get_repo_languages(workspace):
-    return ContentImportHelper(workspace).parse_locales()
+    return get_locales(workspace)
 
 
 def get_multirepo_languages(workspaces):

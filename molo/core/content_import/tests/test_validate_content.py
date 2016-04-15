@@ -5,7 +5,7 @@ from elasticgit.tests.base import ModelBaseTest
 from molo.core.models import SiteLanguage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
-from molo.core.content_import.helper import ImportError
+from molo.core.content_import.errors import ImportError
 from molo.core.content_import import api
 
 from unicore.content import models as eg_models
