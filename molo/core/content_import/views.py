@@ -1,9 +1,11 @@
+from rest_framework.parsers import JSONParser
 from rest_framework.decorators import (
     api_view, authentication_classes, permission_classes)
 from rest_framework.response import Response
 from rest_framework.authentication import (
     SessionAuthentication, BasicAuthentication)
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import parser_classes
 
 from molo.core.content_import import api
 from unicore.content.models import Localisation
@@ -27,11 +29,12 @@ def get_repo_languages(request):
 
 
 @api_view(['PUT'])
+@parser_classes((JSONParser,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticated,))
 def import_content(request):
     data = request.data
-    names, locales = data.getlist('repos'), data.getlist('locales')
+    names, locales = data['repos'], data['locales']
     repos = api.get_repos(names)
     errors = api.validate_content(repos, locales)
 
@@ -46,11 +49,12 @@ def import_content(request):
 
 
 @api_view(['POST'])
+@parser_classes((JSONParser,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticated,))
 def import_validate(request):
     data = request.data
-    names, locales = data.getlist('repos'), data.getlist('locales')
+    names, locales = data['repos'], data['locales']
     repos = api.get_repos(names)
     errors = api.validate_content(repos, locales)
 

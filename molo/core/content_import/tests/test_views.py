@@ -34,14 +34,20 @@ class ContentImportAPITestCase(
         repos = fake_repos('r1', 'r2')
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.get_languages = lambda wses: ({
-            repos: ['en', 'fr'],
-        }[wses], [])
+        api.get_languages = lambda wses: {
+            repos: ([{
+                'locale': 'eng_GB',
+                'name': 'English (United Kingdom)'
+            }], [])
+        }[wses]
 
         resp = self.client.get('/import/languages/?repo=r1&repo=r2')
 
         self.assertEquals(resp.data, {
-            'locales': ['en', 'fr'],
+            'locales': [{
+                'locale': 'eng_GB',
+                'name': 'English (United Kingdom)'
+            }],
             'errors': [],
         })
 
@@ -64,7 +70,7 @@ class ContentImportAPITestCase(
         resp = self.client.put('/import/content/', data={
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr']
-        })
+        }, format='json')
 
         self.assertEqual(imports, [
             (repos, ['en', 'fr'])
@@ -91,7 +97,7 @@ class ContentImportAPITestCase(
         resp = self.client.put('/import/content/', data={
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr']
-        })
+        }, format='json')
 
         self.assertEquals(resp.data, {
             'type': 'validation_failure',
@@ -116,7 +122,7 @@ class ContentImportAPITestCase(
         resp = self.client.post('/import/validation/', data={
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr']
-        })
+        }, format='json')
 
         self.assertEquals(resp.data, {
             'repos': ['r1', 'r2'],
