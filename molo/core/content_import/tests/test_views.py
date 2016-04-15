@@ -35,14 +35,22 @@ class ContentImportAPITestCase(
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
         api.get_languages = lambda wses: ({
-            repos: ['en', 'fr'],
+            repos: {
+                'locales': [{
+                    'locale': 'eng_GB',
+                    'name': 'English (United Kingdom)'
+                }]
+            },
         }[wses], [])
 
         resp = self.client.get('/import/languages/?repo=r1&repo=r2')
 
         self.assertEquals(resp.data, {
-            'locales': ['en', 'fr'],
-            'errors': [],
+            'locales': [{
+                'locale': 'eng_GB',
+                'name': 'English (United Kingdom)'
+            }],
+            'warnings': [],
         })
 
         self.assertEquals(resp.status_code, 200)
