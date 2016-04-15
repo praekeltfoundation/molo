@@ -145,7 +145,10 @@ class TestGetLanguages(
                 'name': 'English (United Kingdom)'
             }],
             'warnings': [{
-                'repo': self.workspace.repo,
-                'locale': u'Zre_ZR'
+                'type': 'unknown_locale',
+                'details': {
+                    'repo': self.repo1.name,
+                    'locale': 'Zre_ZR'
+                }
             }]
         })

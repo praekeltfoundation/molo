@@ -63,7 +63,7 @@ def parse_repo_locales(repo):
     locales = []
     warnings = []
 
-    for l in repo.workspace.S(Localisation).all():
+    for l in sorted_uniq_locales(repo.workspace.S(Localisation).all()):
         try:
             locales.append({
                 'locale': l.locale,
@@ -79,7 +79,7 @@ def parse_repo_locales(repo):
             })
 
     return {
-        'locales': sorted_uniq_locales(locales),
+        'locales': locales,
         'warnings': warnings,
     }
 
