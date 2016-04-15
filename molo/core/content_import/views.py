@@ -11,14 +11,14 @@ from unicore.content.models import Localisation
 
 @api_view(['GET'])
 def get_repos(request):
-    return Response({'repos': api.get_repos()})
+    return Response({'repos': api.get_repo_summaries()})
 
 
 @api_view(['GET'])
 def get_repo_languages(request):
-    repos = request.query_params.getlist('repo')
-    workspaces = api.get_workspaces(repos, models=(Localisation,))
-    locales, errors = api.get_languages(workspaces)
+    names = request.query_params.getlist('repo')
+    repos = api.get_repos(names, models=(Localisation,))
+    locales, errors = api.get_languages(repos)
 
     return Response({
         'locales': locales,
@@ -31,9 +31,9 @@ def get_repo_languages(request):
 @permission_classes((IsAuthenticated,))
 def import_content(request):
     data = request.data
-    repos, locales = data.getlist('repos'), data.getlist('locales')
-    workspaces = api.get_workspaces(repos)
-    errors = api.validate_content(workspaces, locales)
+    names, locales = data.getlist('repos'), data.getlist('locales')
+    repos = api.get_repos(names)
+    errors = api.validate_content(repos, locales)
 
     if errors:
         return Response(status=422, data={
@@ -41,7 +41,7 @@ def import_content(request):
             'errors': errors
         })
     else:
-        api.import_content(workspaces, locales)
+        api.import_content(repos, locales)
         return Response(status=204)
 
 
@@ -50,12 +50,12 @@ def import_content(request):
 @permission_classes((IsAuthenticated,))
 def import_validate(request):
     data = request.data
-    repos, locales = data.getlist('repos'), data.getlist('locales')
-    workspaces = api.get_workspaces(repos)
-    errors = api.validate_content(workspaces, locales)
+    names, locales = data.getlist('repos'), data.getlist('locales')
+    repos = api.get_repos(names)
+    errors = api.validate_content(repos, locales)
 
     return Response(data={
-        'repos': repos,
+        'repos': names,
         'locales': locales,
         'errors': errors
     })

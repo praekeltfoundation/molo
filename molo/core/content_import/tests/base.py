@@ -6,9 +6,10 @@ from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
 from unicore.content.models import Page, Category, Localisation
 
+from unicore.content import models as eg_models
+
 
 class ElasticGitTestMixin(object):
-
     def create_category_data_iter(self, count=2, locale='eng_UK', **kwargs):
         for i in range(count):
             data = {}
@@ -75,3 +76,31 @@ class ElasticGitTestMixin(object):
             body=json.dumps(data),
             content_type="application/json",
             status=status)
+
+    def create_workspace(self):
+        ws = self.mk_workspace()
+
+        ws.setup_custom_mapping(eg_models.Localisation, {
+            'properties': {
+                'locale': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+
+        ws.setup_custom_mapping(eg_models.Category, {
+            'properties': {
+                'language': {'type': 'string', 'index': 'not_analyzed'},
+                'position': {'type': 'integer', 'index': 'not_analyzed'},
+            }
+        })
+
+        ws.setup_custom_mapping(eg_models.Page, {
+            'properties': {
+                'language': {'type': 'string', 'index': 'not_analyzed'},
+                'position': {'type': 'integer', 'index': 'not_analyzed'},
+            }
+        })
+
+        return ws

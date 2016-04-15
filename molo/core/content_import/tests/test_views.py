@@ -1,12 +1,12 @@
 import mock
 import pytest
-from mock import Mock
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from elasticgit.tests.base import ModelBaseTest
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
+from molo.core.content_import.api import Repo
 
 
 @pytest.mark.django_db
@@ -21,7 +21,7 @@ class ContentImportAPITestCase(
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
-        api.get_repos = lambda: ['foo']
+        api.get_repo_summaries = lambda: ['foo']
         resp = self.client.get('/import/repos/')
         self.assertEquals(resp.data, {'repos': ['foo']})
         self.assertEquals(resp.status_code, 200)
@@ -31,14 +31,12 @@ class ContentImportAPITestCase(
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
-        workspaces = fake_workspaces('r1', 'r2')
-        ws1, ws2 = workspaces.values()
-
-        api.get_workspaces = lambda names, **kw: pick(workspaces, *names)
+        repos = fake_repos('r1', 'r2')
+        api.get_repos = lambda names, **kw: find_repos(repos, names)
 
         api.get_languages = lambda wses: ({
-            (ws1, ws2): ['en', 'fr'],
-        }[tuple(wses)], [])
+            repos: ['en', 'fr'],
+        }[wses], [])
 
         resp = self.client.get('/import/languages/?repo=r1&repo=r2')
 
@@ -55,10 +53,8 @@ class ContentImportAPITestCase(
         self.client.login(username='testuser', password='1234')
 
         imports = []
-        workspaces = fake_workspaces('r1', 'r2')
-        ws1, ws2 = workspaces.values()
-
-        api.get_workspaces = lambda names, **kw: pick(workspaces, *names)
+        repos = fake_repos('r1', 'r2')
+        api.get_repos = lambda names, **kw: find_repos(repos, names)
 
         api.validate_content = lambda *a, **kw: []
 
@@ -71,7 +67,7 @@ class ContentImportAPITestCase(
         })
 
         self.assertEqual(imports, [
-            ([ws1, ws2], ['en', 'fr'])
+            (repos, ['en', 'fr'])
         ])
 
         self.assertEquals(resp.status_code, 204)
@@ -82,12 +78,10 @@ class ContentImportAPITestCase(
         self.client.login(username='testuser', password='1234')
 
         imports = []
-        workspaces = fake_workspaces('r1', 'r2')
-        ws1, ws2 = workspaces.values()
+        repos = fake_repos('r1', 'r2')
+        api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.get_workspaces = lambda names, **kw: pick(workspaces, *names)
-
-        api.validate_content = lambda *a, **kw: [{'type': 'fake_error'}]
+        api.validate_content = lambda *a, **kw: []
 
         api.import_content = lambda wses, locales: (
             imports.append((wses, locales)))
@@ -97,28 +91,23 @@ class ContentImportAPITestCase(
             'locales': ['en', 'fr']
         })
 
-        self.assertEquals(resp.status_code, 422)
+        self.assertEqual(imports, [
+            (repos, ['en', 'fr'])
+        ])
 
-        self.assertEqual(imports, [])
-
-        self.assertEquals(resp.data, {
-            'type': 'validation_failure',
-            'errors': [{'type': 'fake_error'}],
-        })
+        self.assertEquals(resp.status_code, 204)
 
     @mock.patch('molo.core.content_import.views.api')
     def test_validate_content(self, api):
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
-        workspaces = fake_workspaces('r1', 'r2')
-        ws1, ws2 = workspaces.values()
-
-        api.get_workspaces = lambda names, **kw: pick(workspaces, *names)
+        repos = fake_repos('r1', 'r2')
+        api.get_repos = lambda names, **kw: find_repos(repos, names)
 
         api.validate_content = lambda wses, locales: {
-            ((ws1, ws2), ('en', 'fr')): [{'type': 'fake_error'}]
-        }[(tuple(wses), tuple(locales))]
+            (repos, ('en', 'fr')): [{'type': 'fake_error'}]
+        }[(wses, tuple(locales))]
 
         resp = self.client.post('/import/validation/', data={
             'repos': ['r1', 'r2'],
@@ -134,15 +123,9 @@ class ContentImportAPITestCase(
         self.assertEquals(resp.status_code, 200)
 
 
-def fake_workspace(name):
-    ws = Mock()
-    ws.name = name
-    return ws
+def fake_repos(*names):
+    return tuple(Repo(name, None) for name in names)
 
 
-def fake_workspaces(*names):
-    return dict((name, fake_workspace(name)) for name in names)
-
-
-def pick(obj, *keys):
-    return [obj[k] for k in keys]
+def find_repos(repos, names):
+    return tuple(r for r in repos if r.name in names)

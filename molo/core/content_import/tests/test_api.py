@@ -11,7 +11,7 @@ from molo.core.content_import import api
 @pytest.mark.django_db
 class ApiTestCase(TestCase):
     @responses.activate
-    def test_get_repos(self):
+    def test_get_repo_summaries(self):
         responses.add(
             responses.GET,
             '%s/repos.json' % settings.UNICORE_DISTRIBUTE_API,
@@ -23,4 +23,4 @@ class ApiTestCase(TestCase):
             }]),
             status=200)
 
-        self.assertEqual(api.get_repos(), ['foo', 'bar'])
+        self.assertEqual(api.get_repo_summaries(), ['foo', 'bar'])

@@ -9,65 +9,73 @@ from molo.core.content_import.helpers.importing import ContentImportHelper
 from molo.core.content_import.helpers.validation import ContentImportValidation
 
 
-def get_repos():
+def get_repo_summaries():
     response = requests.get('%s/repos.json' % settings.UNICORE_DISTRIBUTE_API)
-    return [repo.get('name') for repo in response.json()]
+    return [d.get('name') for d in response.json()]
 
 
-def get_languages(workspaces):
-    if len(workspaces) == 1:
-        return get_repo_languages(workspaces[0])
-    elif len(workspaces) > 1:
-        return get_multirepo_languages(workspaces)
+def get_languages(repos):
+    if len(repos) == 1:
+        return get_repo_languages(repos[0].workspace)
+    elif len(repos) > 1:
+        return get_multirepo_languages(repos.workspace)
 
 
-def get_repo_languages(workspace):
-    return get_locales(workspace)
+def get_repo_languages(repo):
+    return get_locales(repo)
 
 
-def get_multirepo_languages(workspaces):
+def get_multirepo_languages(repos):
     raise NotImplementedError()
 
 
-def import_content(workspaces, locales):
-    if len(workspaces) == 1:
-        import_content_repo(workspaces[0], locales)
-    elif len(workspaces) > 1:
-        import_content_multirepo(workspaces, locales)
+def import_content(repos, locales):
+    if len(repos) == 1:
+        import_content_repo(repos[0], locales)
+    elif len(repos) > 1:
+        import_content_multirepo(repos, locales)
 
 
-def import_content_repo(workspace, locales):
-    ContentImportHelper(workspace).import_content_for(locales)
+def import_content_repo(repo, locales):
+    ContentImportHelper(repo.workspace).import_content_for(locales)
 
 
-def import_content_multirepo(workspaces, locales):
+def import_content_multirepo(repos, locales):
     raise NotImplementedError()
 
 
-def validate_content(workspaces, locales):
-    if len(workspaces) == 1:
-        return validate_content_repo(workspaces[0], locales)
-    elif len(workspaces) > 1:
-        return validate_content_multirepo(workspaces, locales)
+def validate_content(repos, locales):
+    if len(repos) == 1:
+        return validate_content_repo(repos[0], locales)
+    elif len(repos) > 1:
+        return validate_content_multirepo(repos, locales)
     else:
         return []
 
 
-def validate_content_repo(workspace, locales):
-    return ContentImportValidation(workspace).is_validate_for(locales)
+def validate_content_repo(repo, locales):
+    return ContentImportValidation(repo.workspace).is_validate_for(locales)
 
 
-def validate_content_multirepo(workspaces, locales):
+def validate_content_multirepo(repos, locales):
     raise NotImplementedError()
 
 
-def get_workspaces(names, models=(Localisation, Category, Page)):
-    return [get_workspace(name, models) for name in names]
+def get_repos(names, models=(Localisation, Category, Page)):
+    return [get_repo(name, models) for name in names]
 
 
-def get_workspace(name, models=(Localisation, Category, Page)):
-    ws = RemoteWorkspace('%s/repos/%s.json' % (
+def get_repo(name, models=(Localisation, Category, Page)):
+    workspace = RemoteWorkspace('%s/repos/%s.json' % (
         settings.UNICORE_DISTRIBUTE_API, name))
 
     for model in models:
-        ws.sync(model)
+        workspace.sync(model)
+
+    return Repo(name, workspace)
+
+
+class Repo(object):
+    def __init__(self, name, workspace):
+        self.name = name
+        self.workspace = workspace
