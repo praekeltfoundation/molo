@@ -107,6 +107,7 @@ class ContentImportAPITestCase(
             'errors': [{'type': 'fake_error'}],
         })
 
+        self.assertEqual(imports, [])
         self.assertEquals(resp.status_code, 422)
 
     @mock.patch('molo.core.content_import.views.api')
