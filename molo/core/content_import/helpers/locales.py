@@ -5,19 +5,13 @@ from unicore.content.models import Localisation
 
 
 def get_locales(repos):
-    parsed = parse_locales(repos)
+    parsed = parse_repos_locales(repos)
     uniqs = uniqs_from_parsed(parsed)
 
     return {
         'locales': locales_from_parsed(parsed, uniqs),
         'warnings': warnings_from_parsed(parsed, uniqs)
     }
-
-
-def parse_locales(repos):
-    return [
-        conj(parse_repo_locales(repo), {'repo': repo})
-        for repo in repos]
 
 
 def locales_from_parsed(parsed, uniqs):
@@ -57,6 +51,12 @@ def uniqs_from_parsed(parsed):
         set(locale['locale'] for locale in d['locales'])
         for d in parsed
     ])
+
+
+def parse_repos_locales(repos):
+    return [
+        conj(parse_repo_locales(repo), {'repo': repo})
+        for repo in repos]
 
 
 def parse_repo_locales(repo):
