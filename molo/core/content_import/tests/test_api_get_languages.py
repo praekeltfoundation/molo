@@ -24,9 +24,8 @@ class TestGetLanguages(
         )
         self.mk_main()
 
-        prefix = self.mk_index_prefix()
-        self.ws1 = self.create_workspace(index_prefix='%s-1' % prefix)
-        self.ws2 = self.create_workspace(index_prefix='%s-2' % prefix)
+        self.ws1 = self.create_workspace('1')
+        self.ws2 = self.create_workspace('2')
         self.repo1 = Repo('repo1', self.ws1)
         self.repo2 = Repo('repo2', self.ws2)
 
