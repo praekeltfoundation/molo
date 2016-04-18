@@ -5,11 +5,9 @@ from elasticgit.tests.base import ModelBaseTest
 from molo.core.models import SiteLanguage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
-from molo.core.content_import.errors import ImportError
+from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.api import Repo
 from molo.core.content_import import api
-
-from unicore.content import models as eg_models
 
 
 @pytest.mark.django_db
@@ -19,36 +17,93 @@ class TestValidateContent(
     def setUp(self):
         self.mk_main()
 
-        self.repo1 = Repo('repo1', self.create_workspace())
-        self.ws1 = self.repo1.workspace
+        self.ws1 = self.create_workspace(prefix='1')
+        self.repo1 = Repo('repo1', self.ws1)
 
-    def test_that_an_ImportError_is_raised_for_invalid_main_languages(self):
-        error_occured = False
-        try:
+    def test_no_main_language(self):
+        def run():
             api.validate_content([self.repo1], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
                 {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}
             ])
-        except ImportError:
-            error_occured = True
 
-        self.assertTrue(error_occured)
+        self.add_languages(self.ws1, 'eng_GB', 'spa_ES')
+        self.create_category(self.ws1, locale='eng_GB')
+        self.create_category(self.ws1, locale='spa_ES')
 
-        error_occured = False
-        try:
+        error = self.catch(InvalidParametersError, run)
+
+        self.assertEqual(
+            error.message,
+            "Invalid parameters given for content validation")
+
+        self.assertEqual(error.errors, [{
+            'type': 'no_main_language_given'
+        }])
+
+    def test_multiple_main_languages(self):
+        def run():
             api.validate_content([self.repo1], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
                 {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}
             ])
-        except ImportError:
-            error_occured = True
 
-        self.assertTrue(error_occured)
+        self.add_languages(self.ws1, 'eng_GB', 'spa_ES')
+        self.create_category(self.ws1, locale='eng_GB')
+        self.create_category(self.ws1, locale='spa_ES')
 
-    def test_language_validation(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
+        error = self.catch(InvalidParametersError, run)
+
+        self.assertEqual(
+            error.message,
+            "Invalid parameters given for content validation")
+
+        self.assertEqual(error.errors, [{
+            'type': 'multiple_main_languages_given'
+        }])
+
+    def test_languages_not_in_repo(self):
+        def run():
+            api.validate_content([self.repo1, repo2], [
+                {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
+                {'locale': 'spa_MX', 'site_language': 'es', 'is_main': False},
+                {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}
+            ])
+
+        ws2 = self.create_workspace(prefix='2')
+        repo2 = Repo('repo2', ws2)
+
+        self.add_languages(self.ws1, 'eng_GB', 'spa_MX', 'spa_CU')
+        self.create_category(self.ws1, locale='eng_GB')
+
+        self.add_languages(ws2, 'spa_ES')
+        self.create_category(ws2, locale='spa_ES')
+
+        error = self.catch(InvalidParametersError, run)
+
+        self.assertEqual(
+            error.message,
+            "Invalid parameters given for content validation")
+
+        self.assertEqual(error.errors, [{
+            'type': 'languages_not_in_repo',
+            'details': {
+                'repo': 'repo1',
+                'locales': ['spa_ES']
+            }
+        }, {
+            'type': 'languages_not_in_repo',
+            'details': {
+                'repo': 'repo2',
+                'locales': ['eng_GB', 'spa_MX']
+            }
+        }])
+
+    def test_wagtail_language_validation(self):
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.add_languages(self.ws1, 'eng_GB', 'spa_ES')
+        spa_cat = self.create_category(self.ws1, locale='spa_ES')
+        self.create_category(self.ws1, locale='eng_GB', source=spa_cat.uuid)
 
         res = api.validate_content([self.repo1], [
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
@@ -65,50 +120,41 @@ class TestValidateContent(
         })
 
     def test_import_validation(self):
-        lang1 = eg_models.Localisation({'locale': 'eng_GB'})
-        lang2 = eg_models.Localisation({'locale': 'spa_ES'})
+        self.add_languages(self.ws1, 'eng_GB', 'spa_ES')
 
-        self.ws1.save(lang1, 'Added english language')
-        self.ws1.save(lang2, 'Added french language')
-
-        [eng_cat] = self.create_categories(
-            self.ws1, locale='eng_GB', count=1)
+        eng_cat = self.create_category(self.ws1, locale='eng_GB')
 
         # spanish section with valid source
-        self.create_categories(
+        self.create_category(
             self.ws1, title='spanish cat', locale='spa_ES',
-            source=eng_cat.uuid, count=1)
+            source=eng_cat.uuid)
 
-        [eng_page] = self.create_pages(
-            self.ws1, locale='eng_GB', count=1)
+        eng_page = self.create_page(self.ws1, locale='eng_GB')
 
         # spanish page with valid source
-        self.create_pages(
+        self.create_page(
             self.ws1, title='spanish page', locale='spa_ES',
-            source=eng_page.uuid, count=1)
+            source=eng_page.uuid)
 
         # section with invalid source
-        self.create_categories(
-            self.ws1, locale='spa_ES',
-            source='an-invalid-uuid', count=1)
+        self.create_category(
+            self.ws1, locale='spa_ES', source='an-invalid-uuid')
 
         # page with invalid source
-        self.create_pages(
-            self.ws1, count=1, locale='spa_ES',
-            source='an-invalid-uuid')
+        self.create_page(self.ws1, locale='spa_ES', source='an-invalid-uuid')
 
         # section with no source
-        self.create_categories(
-            self.ws1, locale='spa_ES', source=None, count=1)
+        self.create_category(
+            self.ws1, locale='spa_ES', source=None)
 
         # traslated page without a source and an invalid primary category
-        self.create_pages(
-            self.ws1, source=None, count=1, locale='spa_ES',
+        self.create_page(
+            self.ws1, source=None, locale='spa_ES',
             primary_category='an-invalid-primary-category')
 
         # main language page with invalid primary category
-        self.create_pages(
-            self.ws1, count=1, locale='eng_GB',
+        self.create_page(
+            self.ws1, locale='eng_GB',
             primary_category='an-invalid-uuid')
 
         res = api.validate_content([self.repo1], [

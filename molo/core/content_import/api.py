@@ -4,7 +4,9 @@ import requests
 from elasticgit.workspace import RemoteWorkspace
 from unicore.content.models import Localisation, Category, Page
 
+from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
+from molo.core.content_import.helpers.parse import parse_validate_content
 from molo.core.content_import.helpers.importing import ContentImportHelper
 from molo.core.content_import.helpers.validation import ContentImportValidation
 
@@ -34,24 +36,28 @@ def import_content_multirepo(repos, locales):
 
 
 def validate_content(repos, locales):
-    errors = []
+    result = parse_validate_content(repos, locales)
+    main, locales = result['main'], result['locales']
 
-    if len(repos) == 1:
-        errors = validate_content_repo(repos[0], locales)
-    elif len(repos) > 1:
-        errors = validate_content_multirepo(repos, locales)
+    if result['errors']:
+        raise InvalidParametersError(
+            "Invalid parameters given for content validation",
+            result['errors'])
 
+    errors = [
+        error
+        for repo in repos
+        for error in validate_content_repo(repo, main, locales)]
+
+    # returns a dictionary to make provision for warnings
     return {
         'errors': errors
     }
 
 
-def validate_content_repo(repo, locales):
-    return ContentImportValidation(repo.workspace).is_validate_for(locales)
-
-
-def validate_content_multirepo(repos, locales):
-    raise NotImplementedError()
+def validate_content_repo(repo, main, locales):
+    validator = ContentImportValidation(repo.workspace)
+    return validator.is_validate_for(main, locales)
 
 
 def get_repos(names, models=(Localisation, Category, Page)):
