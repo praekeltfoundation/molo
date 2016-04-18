@@ -8,8 +8,9 @@ from unicore.content.models import Category, Page
 class ContentImportValidation(object):
     errors = []
 
-    def __init__(self, ws):
-        self.ws = ws
+    def __init__(self, repo):
+        self.repo = repo
+        self.ws = self.repo.workspace
 
     def is_validate_for(self, main_language, locales):
         self.errors = []
@@ -32,6 +33,7 @@ class ContentImportValidation(object):
             self.errors.append({
                 'type': 'wrong_main_language_exist_in_wagtail',
                 'details': {
+                    'repo': self.repo.name,
                     'lang': wagtail_main_language.get_locale_display(),
                     'selected_lang': Locale.parse(main_language).english_name
                 }})
@@ -47,6 +49,7 @@ class ContentImportValidation(object):
                     self.errors.append({
                         'type': 'no_source_found_for_category',
                         'details': {
+                            'repo': self.repo.name,
                             'category': c.title,
                             'lang': Locale.parse(child_language).english_name
                         }})
@@ -57,6 +60,7 @@ class ContentImportValidation(object):
                     self.errors.append({
                         'type': 'no_source_found_for_page',
                         'details': {
+                            'repo': self.repo.name,
                             'article': p.title,
                             'lang': Locale.parse(child_language).english_name
                         }})
@@ -73,6 +77,7 @@ class ContentImportValidation(object):
                     self.errors.append({
                         'type': 'category_source_not_exists',
                         'details': {
+                            'repo': self.repo.name,
                             'category': c.title,
                             'lang': Locale.parse(child_language).english_name
                         }})
@@ -84,6 +89,7 @@ class ContentImportValidation(object):
                     self.errors.append({
                         'type': 'page_source_not_exists',
                         'details': {
+                            'repo': self.repo.name,
                             'page': p.title,
                             'lang': Locale.parse(child_language).english_name
                         }})
@@ -97,6 +103,7 @@ class ContentImportValidation(object):
                 self.errors.append({
                     'type': 'no_primary_category',
                     'details': {
+                        'repo': self.repo.name,
                         'article': p.title,
                         'lang': Locale.parse(language).english_name
                     }})
