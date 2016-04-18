@@ -36,6 +36,8 @@ def import_content(request):
     data = request.data
     names, locales = data['repos'], data['locales']
     repos = api.get_repos(names)
+
+    # TODO handle `InvalidParameterError`s
     result = api.validate_content(repos, locales)
 
     if result['errors']:
@@ -56,6 +58,8 @@ def import_validate(request):
     data = request.data
     names, locales = data['repos'], data['locales']
     repos = api.get_repos(names)
+
+    # TODO handle `InvalidParameterError`s
     result = api.validate_content(repos, locales)
 
     return Response(data={
