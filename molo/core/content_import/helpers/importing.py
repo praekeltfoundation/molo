@@ -5,7 +5,6 @@ from babel import Locale
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
 from molo.core.content_import.helpers.get_image import get_image_file
-from molo.core.content_import.errors import ImportError
 
 from unicore.content.models import Category, Page
 
@@ -135,25 +134,11 @@ class ContentImportHelper(object):
             print "no source found for: ", category.source, (
                 SectionPage.objects.all().values('uuid'))
 
-    @classmethod
-    def get_main_language(cls, locales):
-        mains = [locale for locale in locales if locale.get('is_main')]
-
-        if not mains:
-            raise ImportError("No main languages have been given")
-        elif len(mains) > 1:
-            raise ImportError("Cannot have multiple main languages")
-        else:
-            return mains[0]
-
-    def import_content_for(self, locales):
-        main = self.get_main_language(locales)
-        locales = [main] + [
-            locale for locale in locales if not locale.get('is_main')]
-        for selected_locale in locales:
+    def import_content_for(self, main, children):
+        for selected_locale in [main] + children:
             site_language, _ = SiteLanguage.objects.get_or_create(
-                locale=Locale.parse(selected_locale.get('locale')).language,
-                is_main_language=selected_locale.get('is_main'))
+                locale=Locale.parse(selected_locale).language,
+                is_main_language=selected_locale == main)
 
             self.import_all_categories(site_language, selected_locale)
             self.import_all_pages(site_language, selected_locale)
@@ -162,7 +147,7 @@ class ContentImportHelper(object):
 
     def import_all_categories(self, site_language, selected_locale):
         category_qs = self.ws.S(Category).filter(
-            language=selected_locale.get('locale')
+            language=selected_locale
         ).order_by('position')[:10000]
         # S() only returns 10 results if you don't ask for more
         if site_language.is_main_language:
@@ -175,7 +160,7 @@ class ContentImportHelper(object):
 
     def import_all_pages(self, site_language, selected_locale):
         for p in self.ws.S(Page).filter(
-            language=selected_locale.get('locale')
+            language=selected_locale
         ).order_by('position')[:10000]:
             # S() only returns 10 results if you don't ask for more
 

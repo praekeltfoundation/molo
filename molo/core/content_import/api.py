@@ -6,9 +6,10 @@ from unicore.content.models import Localisation, Category, Page
 
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
-from molo.core.content_import.helpers.parse import parse_validate_content
 from molo.core.content_import.helpers.importing import ContentImportHelper
 from molo.core.content_import.helpers.validation import ContentImportValidation
+from molo.core.content_import.helpers.parse import (
+    parse_validate_content, parse_import_content)
 
 
 def get_repo_summaries():
@@ -21,17 +22,25 @@ def get_languages(repos):
 
 
 def import_content(repos, locales):
+    result = parse_import_content(repos, locales)
+    main, children = result['main'], result['children']
+
+    if result['errors']:
+        raise InvalidParametersError(
+            "Invalid parameters given for content import",
+            result['errors'])
+
     if len(repos) == 1:
-        import_content_repo(repos[0], locales)
+        import_content_repo(repos[0], main, children)
     elif len(repos) > 1:
-        import_content_multirepo(repos, locales)
+        import_content_multirepo(repos, main, children)
 
 
-def import_content_repo(repo, locales):
-    ContentImportHelper(repo.workspace).import_content_for(locales)
+def import_content_repo(repo, main, children):
+    ContentImportHelper(repo.workspace).import_content_for(main, children)
 
 
-def import_content_multirepo(repos, locales):
+def import_content_multirepo(repos, main, children):
     raise NotImplementedError()
 
 
