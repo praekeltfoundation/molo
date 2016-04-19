@@ -6,7 +6,7 @@ from unicore.content.models import Localisation, Category, Page
 
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
-from molo.core.content_import.helpers.importing import ContentImportHelper
+from molo.core.content_import.helpers.importing import import_repo
 from molo.core.content_import.helpers.validation import ContentImportValidation
 from molo.core.content_import.helpers.parse import (
     parse_validate_content, parse_import_content)
@@ -31,17 +31,14 @@ def import_content(repos, locales):
             result['errors'])
 
     if len(repos) == 1:
-        import_content_repo(repos[0], main, children)
+        import_repo(repos[0], main, children)
     elif len(repos) > 1:
-        import_content_multirepo(repos, main, children)
+        import_multirepo(repos, main, children)
 
 
-def import_content_repo(repo, main, children):
-    ContentImportHelper(repo).import_content_for(main, children)
-
-
-def import_content_multirepo(repos, main, children):
-    raise NotImplementedError()
+def import_multirepo(repos, main, children):
+    for repo in repos:
+        import_repo(repo, main, children, should_nest=True)
 
 
 def validate_content(repos, locales):
@@ -56,7 +53,7 @@ def validate_content(repos, locales):
     errors = [
         error
         for repo in repos
-        for error in validate_content_repo(repo, main, children)]
+        for error in validate_repo(repo, main, children)]
 
     # returns a dictionary to make provision for warnings
     return {
@@ -64,7 +61,7 @@ def validate_content(repos, locales):
     }
 
 
-def validate_content_repo(repo, main, children):
+def validate_repo(repo, main, children):
     validator = ContentImportValidation(repo)
     return validator.validate_for(main, children)
 

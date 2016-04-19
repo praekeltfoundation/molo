@@ -3,14 +3,15 @@ import pytest
 
 from elasticgit.tests.base import ModelBaseTest
 
-from molo.core.models import SiteLanguage, SectionPage, ArticlePage, FooterPage
+from molo.core.models import (
+    Main, SiteLanguage, SectionPage, ArticlePage, FooterPage)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.api import Repo
 from molo.core.content_import import api
 
-from unicore.content import models as eg_models
+from unicore.content.models import Category, Page, Localisation
 
 from wagtail.wagtailimages.tests.utils import get_test_image_file
 
@@ -197,13 +198,9 @@ class TestImportContent(
                 'source': en_footer_pages[i].uuid,
             }), 'Added source to page.')
 
-        self.assertEquals(
-            ws1.S(eg_models.Category).all().count(), 6)
-
-        self.assertEquals(
-            ws1.S(eg_models.Page).all().count(), 48)
-        self.assertEquals(
-            ws1.S(eg_models.Localisation).all().count(), 2)
+        self.assertEquals(ws1.S(Category).all().count(), 6)
+        self.assertEquals(ws1.S(Page).all().count(), 48)
+        self.assertEquals(ws1.S(Localisation).all().count(), 2)
 
         self.assertEquals(SectionPage.objects.all().count(), 0)
         self.assertEquals(ArticlePage.objects.all().count(), 0)
@@ -240,6 +237,187 @@ class TestImportContent(
             is_main_language=True).first()), 'English')
         self.assertEquals(str(SiteLanguage.objects.filter(
             is_main_language=False).first()), 'Spanish')
+
+    def test_import_multirepo(self):
+        repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
+        repo2 = Repo(self.create_workspace(), 'repo2', 'Repo 2')
+        ws1 = repo1.workspace
+        ws2 = repo2.workspace
+
+        self.add_languages(ws1, 'eng_GB', 'spa_ES')
+        self.add_languages(ws2, 'eng_GB', 'spa_ES')
+
+        a_eng = self.create_category(
+            ws1, locale='eng_GB', title='A Eng')
+        a_spa = self.create_category(
+            ws1, locale='spa_ES', title='A Spa', source=a_eng.uuid)
+        a1_eng = self.create_page(
+            ws1, locale='eng_GB', title='A1 Eng', primary_category=a_eng.uuid)
+        a1_spa = self.create_page(
+            ws1, locale='spa_ES', title='A1 Spa',
+            source=a1_eng.uuid, primary_category=a_spa.uuid)
+
+        b_eng = self.create_category(
+            ws2, locale='eng_GB', title='B Eng')
+        b_spa = self.create_category(
+            ws2, locale='spa_ES', title='B Spa', source=b_eng.uuid)
+        b1_eng = self.create_page(
+            ws2, locale='eng_GB', title='B1 Eng', primary_category=b_eng.uuid)
+        self.create_page(
+            ws2, locale='spa_ES', title='B1 Spa',
+            source=b1_eng.uuid, primary_category=b_spa.uuid)
+
+        api.import_content([repo1, repo2], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        main = Main.objects.all().first()
+        languages = SiteLanguage.objects.all().order_by('locale')
+        sections = SectionPage.objects.all().order_by('title', 'uuid')
+        articles = ArticlePage.objects.all().order_by('title')
+
+        self.assertEqual(languages.count(), 2)
+        self.assertEqual(sections.all().count(), 8)
+        self.assertEqual(articles.all().count(), 4)
+
+        self.assert_collection_attrs_equal(languages, [{
+            'locale': 'en',
+            'is_main_language': True,
+        }, {
+            'locale': 'es',
+            'is_main_language': False,
+        }])
+
+        self.assert_collection_attrs_equal(sections, [{
+            'title': 'A Eng',
+        }, {
+            'title': 'A Spa',
+        }, {
+            'title': 'B Eng',
+        }, {
+            'title': 'B Spa',
+        }, {
+            'uuid': 'repo1-eng_GB',
+            'title': 'Repo 1',
+        }, {
+            'uuid': 'repo1-spa_ES',
+            'title': 'Repo 1',
+        }, {
+            'uuid': 'repo2-eng_GB',
+            'title': 'Repo 2',
+        }, {
+            'uuid': 'repo2-spa_ES',
+            'title': 'Repo 2',
+        }])
+
+        self.assert_collection_attrs_equal(articles, [{
+            'title': 'A1 Eng',
+        }, {
+            'title': 'A1 Spa',
+        }, {
+            'title': 'B1 Eng',
+        }, {
+            'title': 'B1 Spa',
+        }])
+
+        self.assert_has_children(main, [
+            sections.get(uuid='repo1-eng_GB'),
+            sections.get(uuid='repo1-spa_ES'),
+            sections.get(uuid='repo2-eng_GB'),
+            sections.get(uuid='repo2-spa_ES')])
+
+        self.assert_has_children(
+            sections.get(uuid='repo1-eng_GB'),
+            [sections.get(title='A Eng')])
+
+        self.assert_has_children(
+            sections.get(uuid='repo1-spa_ES'),
+            [sections.get(title='A Spa')])
+
+        self.assert_has_children(
+            sections.get(uuid='repo2-eng_GB'),
+            [sections.get(title='B Eng')])
+
+        self.assert_has_children(
+            sections.get(uuid='repo2-spa_ES'),
+            [sections.get(title='B Spa')])
+
+        self.assert_has_children(sections.get(title='A Eng'), [
+            articles.get(title='A1 Eng'),
+            articles.get(title='A1 Spa')
+        ])
+
+        self.assert_has_children(sections.get(title='B Eng'), [
+            articles.get(title='B1 Eng'),
+            articles.get(title='B1 Spa')
+        ])
+
+        self.assert_has_translation(
+            articles.get(title='A1 Eng'),
+            articles.get(title='A1 Spa'))
+
+        self.assert_has_translation(
+            articles.get(title='B1 Eng'),
+            articles.get(title='B1 Spa'))
+
+        self.assert_has_language(
+            articles.get(title='A1 Eng'),
+            languages.get(locale='en'))
+
+        self.assert_has_language(
+            articles.get(title='A1 Spa'),
+            languages.get(locale='es'))
+
+        self.assert_has_language(
+            articles.get(title='B1 Eng'),
+            languages.get(locale='en'))
+
+        self.assert_has_language(
+            articles.get(title='B1 Spa'),
+            languages.get(locale='es'))
+
+    def test_import_multirepo_idempotent(self):
+        repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
+        repo2 = Repo(self.create_workspace(), 'repo2', 'Repo 2')
+        ws1 = repo1.workspace
+        ws2 = repo2.workspace
+
+        self.add_languages(ws1, 'eng_GB', 'spa_ES')
+        self.add_languages(ws2, 'eng_GB', 'spa_ES')
+
+        a_eng = self.create_category(ws1, locale='eng_GB')
+        a_spa = self.create_category(ws1, locale='spa_ES', source=a_eng.uuid)
+        a1_eng = self.create_page(
+            ws1, locale='eng_GB', primary_category=a_eng.uuid)
+        a1_spa = self.create_page(
+            ws1, locale='spa_ES', source=a1_eng.uuid,
+            primary_category=a_spa.uuid)
+
+        b_eng = self.create_category(
+            ws2, locale='eng_GB')
+        b_spa = self.create_category(
+            ws2, locale='spa_ES', source=b_eng.uuid)
+        b1_eng = self.create_page(
+            ws2, locale='eng_GB', primary_category=b_eng.uuid)
+        self.create_page(
+            ws2, locale='spa_ES', source=b1_eng.uuid,
+            primary_category=b_spa.uuid)
+
+        api.import_content([repo1, repo2], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        self.assertEqual(SiteLanguage.objects.all().count(), 2)
+        self.assertEqual(SectionPage.objects.all().count(), 8)
+        self.assertEqual(ArticlePage.objects.all().count(), 4)
+
+        api.import_content([repo1, repo2], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        self.assertEqual(SiteLanguage.objects.all().count(), 2)
+        self.assertEqual(SectionPage.objects.all().count(), 8)
+        self.assertEqual(ArticlePage.objects.all().count(), 4)
 
     @mock.patch(
         'molo.core.content_import.helpers.get_image.get_thumbor_image_file')
