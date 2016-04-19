@@ -57,7 +57,7 @@ def validate_content(repos, locales):
 
 def validate_content_repo(repo, main, locales):
     validator = ContentImportValidation(repo)
-    return validator.is_validate_for(main, locales)
+    return validator.validate_for(main, locales)
 
 
 def get_repos(names, models=(Localisation, Category, Page)):

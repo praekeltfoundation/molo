@@ -12,7 +12,7 @@ class ContentImportValidation(object):
         self.repo = repo
         self.ws = self.repo.workspace
 
-    def is_validate_for(self, main_language, locales):
+    def validate_for(self, main_language, locales):
         self.errors = []
 
         self.validate_wagtail_has_no_language(main_language)
