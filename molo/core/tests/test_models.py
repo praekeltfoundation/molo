@@ -30,7 +30,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         )
 
         self.yourmind = self.mk_section(
-            self.main, title='Your mind')
+            self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
 
@@ -86,7 +86,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_extra_css(self):
         # extra_css set on current section
         new_section = self.mk_section(
-            self.main,
+            self.section_index,
             title="New Section",
             extra_style_hints='primary')
         self.assertEquals(
@@ -99,7 +99,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         # extra_css not set on either so should be blank
         new_section3 = self.mk_section(
-            self.main, title="New Section 3", slug="new-section-3")
+            self.section_index, title="New Section 3", slug="new-section-3")
         self.assertEquals(new_section3.get_effective_extra_style_hints(), '')
 
         # extra_css not set on child so should use parent value
@@ -118,7 +118,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_image(self):
         new_section = self.mk_section(
-            self.main,
+            self.section_index,
             title="New Section", slug="new-section",
             image=self.image)
         self.assertEquals(
@@ -138,7 +138,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_parent_section(self):
         new_section = self.mk_section(
-            self.main, title="New Section", slug="new-section")
+            self.section_index, title="New Section", slug="new-section")
         new_section1 = self.mk_section(
             new_section, title="New Section 1", slug="new-section-1")
         self.assertEquals(
@@ -146,18 +146,14 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_commenting_closed_settings_fallbacks(self):
         new_section = self.mk_section(
-            self.main, title="New Section", slug="new-section")
+            self.section_index, title="New Section", slug="new-section")
         new_article = self.mk_article(new_section, title="New article")
-        # test fallback to main
+        # test fallback to section_index
+        self.section_index.commenting_state = constants.COMMENTING_CLOSED
+        self.section_index.save()
         comment_settings = new_article.get_effective_commenting_settings()
         self.assertEquals(comment_settings['state'],
                           constants.COMMENTING_CLOSED)
-        # test overriding settings in language
-        self.main.commenting_state = constants.COMMENTING_DISABLED
-        self.main.save_revision().publish()
-        comment_settings = new_article.get_effective_commenting_settings()
-        self.assertEquals(comment_settings['state'],
-                          constants.COMMENTING_DISABLED)
         # test overriding settings in section
         new_section.commenting_state = constants.COMMENTING_CLOSED
         new_section.save()
@@ -173,7 +169,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_commenting_allowed(self):
         new_section = self.mk_section(
-            self.main, title="New Section", slug="new-section")
+            self.section_index, title="New Section", slug="new-section")
         new_article = self.mk_article(
             new_section, title="New article",
             commenting_state=constants.COMMENTING_OPEN)
@@ -316,7 +312,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(
                 social_media_image=self.image).count(), 1)
 
-        response = self.client.get('/your-mind/new-article/')
+        response = self.client.get('/sections/your-mind/new-article/')
 
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'media title')
