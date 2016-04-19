@@ -37,7 +37,7 @@ def import_content_multirepo(repos, locales):
 
 def validate_content(repos, locales):
     result = parse_validate_content(repos, locales)
-    main, locales = result['main'], result['locales']
+    main, children = result['main'], result['children']
 
     if result['errors']:
         raise InvalidParametersError(
@@ -47,7 +47,7 @@ def validate_content(repos, locales):
     errors = [
         error
         for repo in repos
-        for error in validate_content_repo(repo, main, locales)]
+        for error in validate_content_repo(repo, main, children)]
 
     # returns a dictionary to make provision for warnings
     return {
@@ -55,9 +55,9 @@ def validate_content(repos, locales):
     }
 
 
-def validate_content_repo(repo, main, locales):
+def validate_content_repo(repo, main, children):
     validator = ContentImportValidation(repo)
-    return validator.validate_for(main, locales)
+    return validator.validate_for(main, children)
 
 
 def get_repos(names, models=(Localisation, Category, Page)):
