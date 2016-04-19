@@ -168,20 +168,14 @@ BannerPage.content_panels = [
 class Main(CommentedPageMixin, Page):
     parent_page_types = []
     subpage_types = []
-    commenting_state = models.CharField(
-        max_length=1,
-        choices=constants.COMMENTING_STATE_CHOICES,
-        blank=False,
-        default='C')
-    commenting_open_time = models.DateTimeField(null=True, blank=True)
-    commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def bannerpages(self):
-        return BannerPage.objects.live().child_of(self).filter(
+        return BannerPage.objects.live().filter(
             languages__language__is_main_language=True).specific()
 
     def sections(self):
-        return SectionPage.objects.live().child_of(self).filter(
+        index_page = SectionIndexPage.objects.live().all().first()
+        return SectionPage.objects.live().child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 
     def latest_articles(self):
@@ -191,19 +185,8 @@ class Main(CommentedPageMixin, Page):
                 '-latest_revision_created_at').specific()
 
     def footers(self):
-        return FooterPage.objects.live().child_of(self).filter(
+        return FooterPage.objects.live().filter(
             languages__language__is_main_language=True).specific()
-
-
-Main.content_panels = [
-    MultiFieldPanel(
-        [
-            FieldPanel('commenting_state'),
-            FieldPanel('commenting_open_time'),
-            FieldPanel('commenting_close_time'),
-        ],
-        heading="Commenting Settings",)
-]
 
 
 class LanguagePage(CommentedPageMixin, Page):
@@ -271,9 +254,28 @@ class SiteLanguage(models.Model):
         verbose_name = _('Language')
 
 
-class SectionIndexPage(Page):
+class SectionIndexPage(CommentedPageMixin, Page):
     parent_page_types = []
     subpage_types = ['SectionPage']
+
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
+
+SectionIndexPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
+]
 
 
 class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
