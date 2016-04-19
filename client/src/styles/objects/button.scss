@@ -1,0 +1,24 @@
+@import '../vars';
+
+
+.o-button {
+  margin: 1em 0;
+
+  &--success {
+    &, &[disabled] {
+      color: $fg-success;
+      background: $bg-success;
+      border: 1px solid $border-success;
+      pointer-events: none;
+    }
+  }
+
+  &--failure {
+    &, &[disabled] {
+      color: $fg-failure;
+      background: $bg-failure;
+      border: 1px solid $border-failure;
+      pointer-events: none;
+    }
+  }
+}

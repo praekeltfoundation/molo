@@ -1,7 +1,26 @@
 from mock import patch
-from django.test import TestCase
+from django.test import TestCase, Client, override_settings
 from django.contrib.auth.models import User
+from django.conf.urls import patterns, url, include
+from django.template.base import TemplateDoesNotExist
+
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.urls import urlpatterns
+
+from wagtail.wagtailadmin import urls as wagtailadmin_urls
+
+urlpatterns += patterns(
+    '',
+    url(
+        r'^profiles/login/$',
+        'django.contrib.auth.views.login',
+        name='auth_login'),
+    url(
+        r'^profiles/logout/$',
+        'django.contrib.auth.views.logout',
+        name='auth_logout'),
+    url(r'^admin/', include(wagtailadmin_urls)),
+)
 
 
 class CASTestCase(TestCase, MoloTestCaseMixin):
@@ -100,3 +119,37 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             response.request.get('QUERY_STRING'),
             'service=http%3A%2F%2Ftestserver%2F')
+
+    @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
+    def test_normal_profiles_login_works_when_cas_enabled(self):
+        self.mk_main()
+
+        client = Client()
+        try:
+            client.get('/profiles/login/')
+
+            # this should always fail. We're expecting an error
+            self.assertFalse(True)
+        except TemplateDoesNotExist:
+            pass
+
+    @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
+    def test_normal_profiles_logout_works_when_cas_enabled(self):
+        client = Client()
+        User.objects.create_user(
+            username='testuser', password='password', email='test@email.com')
+        client.login(username='testuser', password='password')
+
+        response = client.get('/profiles/logout/?next=/health/')
+        self.assertRedirects(response, '/health/')
+
+    def test_normal_views_after_login_when_cas_enabled(self):
+        self.mk_main()
+
+        client = Client()
+        User.objects.create_user(
+            username='testuser', password='password', email='test@email.com')
+        client.login(username='testuser', password='password')
+
+        response = client.get('/')
+        self.assertEquals(response.status_code, 200)

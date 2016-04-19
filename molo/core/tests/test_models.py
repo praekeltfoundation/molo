@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 
 from molo.core.models import ArticlePage, SiteLanguage
 from molo.core import constants
+from molo.core.templatetags.core_tags import (
+    load_descendant_articles_for_section)
 from molo.core.tests.base import MoloTestCaseMixin
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -17,15 +19,16 @@ from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.french = SiteLanguage.objects.create(locale='fr')
+
         # Create an image for running tests on
         self.image = Image.objects.create(
             title="Test image",
             file=get_test_image_file(),
         )
-        self.mk_main()
+
         self.yourmind = self.mk_section(
             self.main, title='Your mind')
         self.yourmind_sub = self.mk_section(
@@ -51,22 +54,34 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.yourmind_sub.articles()[0].title, article1.title)
 
     def test_latest(self):
-        self.mk_articles(self.yourmind_sub, count=4, featured_in_latest=True)
-        self.mk_articles(self.yourmind_sub, count=10)
-        self.assertEquals(self.main.latest_articles(self.english).count(), 4)
+        en_latest = self.mk_articles(
+            self.yourmind_sub, count=4, featured_in_latest=True)
+        for p in en_latest:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        fr_articles = self.mk_articles(self.yourmind_sub, count=10)
+        for p in fr_articles:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        self.assertEquals(self.main.latest_articles().count(), 4)
 
     def test_featured_homepage(self):
         self.mk_articles(self.yourmind_sub, count=2, featured_in_homepage=True)
         self.mk_articles(self.yourmind_sub, count=10)
+
         self.assertEquals(
-            self.yourmind.featured_articles_in_homepage().count(), 2)
+            len(load_descendant_articles_for_section(
+                {}, self.yourmind, featured_in_homepage=True)), 2)
 
     def test_latest_homepage(self):
         self.mk_articles(self.yourmind_sub, count=2, featured_in_latest=True)
         self.mk_articles(self.yourmind_sub, count=10)
 
         self.assertEquals(
-            self.yourmind.latest_articles_in_homepage().count(), 2)
+            len(load_descendant_articles_for_section(
+                {}, self.yourmind, featured_in_latest=True)), 2)
 
     def test_extra_css(self):
         # extra_css set on current section
@@ -234,6 +249,77 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(tags__name='love').count(), 1)
         self.assertEquals(
             ArticlePage.objects.filter(tags__name='peace').count(), 1)
+
+    def test_meta_data_tags(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        post_data = {
+            'title': 'this is a test article',
+            'slug': 'this-is-a-test-article',
+            'body-count': 1,
+            'body-0-value': 'Hello',
+            'body-0-deleted': False,
+            'body-0-order': 1,
+            'body-0-type': 'paragraph',
+            'metadata_tags': 'love, happiness',
+            'action-publish': 'Publish'
+        }
+        self.client.post(
+            reverse('wagtailadmin_pages:add',
+                    args=('core', 'articlepage', self.yourmind.id, )),
+            post_data)
+        post_data.update({
+            'title': 'this is a test article2',
+            'slug': 'this-is-a-test-article-2',
+            'metadata_tags': 'peace, happiness',
+        })
+        self.client.post(
+            reverse('wagtailadmin_pages:add',
+                    args=('core', 'articlepage', self.yourmind.id, )),
+            post_data)
+
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                metadata_tags__name='happiness').count(), 2)
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                metadata_tags__name='love').count(), 1)
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                metadata_tags__name='peace').count(), 1)
+
+    def test_social_media(self):
+
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        self.mk_article(
+            self.yourmind, title="New article",
+            social_media_title='media title',
+            social_media_description='media description',)
+
+        self.mk_article(
+            self.yourmind, title="New article2",
+            social_media_title='media title',
+            social_media_image=self.image,)
+
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                social_media_title='media title').count(), 2)
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                social_media_description='media description').count(), 1)
+        self.assertEquals(
+            ArticlePage.objects.filter(
+                social_media_image=self.image).count(), 1)
+
+        response = self.client.get('/your-mind/new-article/')
+
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'media title')
 
     def test_site_languages(self):
         self.english = SiteLanguage.objects.create(

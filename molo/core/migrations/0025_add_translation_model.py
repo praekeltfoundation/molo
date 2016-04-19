@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('wagtailcore', '0023_alter_page_revision_on_delete_behaviour'),
-        ('core', '0021_add_language_field_to_models'),
+        ('core', '0024_add_language_field_to_models'),
     ]
 
     operations = [

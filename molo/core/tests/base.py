@@ -1,11 +1,11 @@
 import json
 
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 
-from wagtail.wagtailcore.models import Site, Page
+from wagtail.wagtailcore.models import Site, Page, Collection
 
-from molo.core.models import Main, SectionPage, ArticlePage
+from molo.core.models import Main, SectionPage, ArticlePage, PageTranslation
 from molo.core.utils import generate_slug
 
 
@@ -52,6 +52,14 @@ class MoloTestCaseMixin(object):
             url_path='/home/',
         )
         self.main.save_revision().publish()
+
+        # Create root collection
+        Collection.objects.create(
+            name="Root",
+            path='0001',
+            depth=1,
+            numchild=0,
+        )
 
         # Create a site with the new homepage set as the root
         Site.objects.all().delete()
@@ -103,3 +111,20 @@ class MoloTestCaseMixin(object):
 
     def mk_article(self, parent, **kwargs):
         return self.mk_articles(parent, count=1, **kwargs)[0]
+
+    def mk_translation(self, source, language, translation):
+        language_relation = translation.languages.first()
+        language_relation.language = language
+        language_relation.save()
+        translation.save_revision().publish()
+        PageTranslation.objects.get_or_create(
+            page=source, translated_page=translation)
+        return translation
+
+    def mk_section_translation(self, source, language, **kwargs):
+        instance = self.mk_section(source.get_parent(), **kwargs)
+        return self.mk_translation(source, language, instance)
+
+    def mk_article_translation(self, source, language, **kwargs):
+        instance = self.mk_article(source.get_parent(), **kwargs)
+        return self.mk_translation(source, language, instance)

@@ -1,5 +1,76 @@
 CHANGE LOG
 ==========
+
+3.0rc7
+------
+- Add GA tag manager field to site settings
+
+3.0rc6
+------
+- Remove commenting settings from the BannerPage model
+
+3.0rc5
+------
+- Re-release of version 3.0rc3 because we forgot to increment the version
+  number.
+
+3.0rc3
+------
+- Bug fixes
+
+3.0rc2
+------
+- Fixed migration conflict
+
+3.0rc1
+------
+- added multilanguage support
+- added content import from UC content repos (using REACT)
+- rename ``HomePage`` module to ``BannerPage``
+- upgrade wagtail to 1.4.1
+- updated language switcher url to include ``?next={{request.path}}``
+- ``section_page.html`` now uses new template tags (see below)
+- ``section_listing_homepage.html`` now uses new template tags (see below)
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- deprecated use of ``LanguagePage``: all pages are now direct children of ``Main`` (use ``SiteLanguage`` for multilanguage support)
+- deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
+- deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
+- deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
+- deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+
+2.6.14
+------
+- Added plugins version comparison
+- Added logo as wagtail setting
+
+2.6.13
+------
+- Re-release of version 2.6.12 because we forgot to increment the version
+  number.
+
+2.6.12
+------
+- Added metadata tag field
+
+2.6.11
+------
+- Added social media fields
+
+2.6.10
+------
+- Ensure CAS only applies to admin views
+
+2.6.9
+-----
+- Fixed the issue with CAS not being compatible with normal login
+
+2.6.8
+-----
+- Updated plugins instructions
+- Updated the polls plugin in the documentation
+
 2.6.7
 -----
 - core urls are not defined correctly

@@ -1,12 +1,16 @@
 from django.utils import timezone
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language_from_request
+from django.shortcuts import redirect
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 
+from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
@@ -20,7 +24,31 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
-from django.conf import settings
+from molo.core.utils import get_locale_code
+
+
+@register_setting
+class SiteSettings(BaseSetting):
+    logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    ga_tag_manager = models.CharField(
+        verbose_name=_('GA Tag Manager'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_("GA Tag Manager tracking code (e.g GTM-XXX)")
+    )
+
+    panels = [
+        ImageChooserPanel('logo'),
+        FieldPanel('ga_tag_manager'),
+    ]
 
 
 class CommentedPageMixin(object):
@@ -47,7 +75,8 @@ class CommentedPageMixin(object):
 
 class PageTranslation(models.Model):
     page = models.ForeignKey('wagtailcore.Page', related_name='translations')
-    translated_page = models.ForeignKey('wagtailcore.Page', related_name='+')
+    translated_page = models.OneToOneField(
+        'wagtailcore.Page', related_name='source_page')
 
 
 class LanguageRelation(models.Model):
@@ -57,15 +86,32 @@ class LanguageRelation(models.Model):
 
 class TranslatablePageMixin(object):
 
-    def get_translation_for(self, locale):
+    def get_translation_for(self, locale, is_live=True):
+        language = SiteLanguage.objects.filter(locale=locale).first()
+        if not language:
+            return None
+
+        main_language_page = self.get_main_language_page()
+        if language.is_main_language and not self == main_language_page:
+            return main_language_page
+
         translated = None
-        for t in self.specific.translations.all():
+        qs = self.specific.translations.all()
+        if is_live is not None:
+            qs = qs.filter(translated_page__live=True)
+
+        for t in qs:
             if t.translated_page.languages.filter(
                     language__locale=locale).exists():
                 translated = t.translated_page.languages.filter(
                     language__locale=locale).first().page.specific
                 break
         return translated
+
+    def get_main_language_page(self):
+        if hasattr(self.specific, 'source_page') and self.specific.source_page:
+            return self.specific.source_page.page
+        return self
 
     def save(self, *args, **kwargs):
         response = super(TranslatablePageMixin, self).save(*args, **kwargs)
@@ -77,6 +123,14 @@ class TranslatablePageMixin(object):
                 language=SiteLanguage.objects.filter(
                     is_main_language=True).first())
         return response
+
+    def serve(self, request):
+        locale_code = get_locale_code(get_language_from_request(request))
+        translation = self.get_translation_for(locale_code)
+        if translation:
+            return redirect(translation.url)
+
+        return super(TranslatablePageMixin, self).serve(request)
 
 
 class BannerIndexPage(Page):
@@ -107,7 +161,7 @@ class BannerPage(TranslatablePageMixin, Page):
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
-    PageChooserPanel('banner_link_page'),
+    PageChooserPanel('banner_link_page')
 ]
 
 
@@ -122,23 +176,23 @@ class Main(CommentedPageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    def bannerpages(self, selected_language):
+    def bannerpages(self):
         return BannerPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True).specific()
 
-    def sections(self, selected_language):
+    def sections(self):
         return SectionPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True).specific()
 
-    def latest_articles(self, selected_language):
+    def latest_articles(self):
         return ArticlePage.objects.live().filter(
             featured_in_latest=True,
-            languages__language=selected_language).order_by(
-                '-latest_revision_created_at')
+            languages__language__is_main_language=True).order_by(
+                '-latest_revision_created_at').specific()
 
-    def footers(self, selected_language):
+    def footers(self):
         return FooterPage.objects.live().child_of(self).filter(
-            languages__language=selected_language)
+            languages__language__is_main_language=True).specific()
 
 
 Main.content_panels = [
@@ -224,6 +278,7 @@ class SectionIndexPage(Page):
 
 class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     description = models.TextField(null=True, blank=True)
+    uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -252,21 +307,14 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def articles(self):
-        return ArticlePage.objects.live().child_of(self)
+        main_language_page = self.get_main_language_page()
+        return ArticlePage.objects.live().child_of(main_language_page).filter(
+            languages__language__is_main_language=True)
 
     def sections(self):
-        return SectionPage.objects.live().child_of(self)
-
-    def featured_articles(self):
-        return self.articles().filter(featured_in_section=True)
-
-    def featured_articles_in_homepage(self):
-        qs = ArticlePage.objects.live().order_by('-first_published_at')
-        return qs.descendant_of(self).filter(featured_in_homepage=True)
-
-    def latest_articles_in_homepage(self):
-        qs = ArticlePage.objects.live().order_by('-first_published_at')
-        return qs.descendant_of(self).filter(featured_in_latest=True)
+        main_language_page = self.get_main_language_page()
+        return SectionPage.objects.live().child_of(main_language_page).filter(
+            languages__language__is_main_language=True)
 
     def get_effective_extra_style_hints(self):
         # The extra css is inherited from the parent SectionPage.
@@ -322,9 +370,15 @@ class ArticlePageTag(TaggedItemBase):
         'core.ArticlePage', related_name='tagged_items')
 
 
+class ArticlePageMetaDataTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'core.ArticlePage', related_name='metadata_tagged_items')
+
+
 class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
                   TagSearchable):
     subtitle = models.TextField(null=True, blank=True)
+    uuid = models.CharField(max_length=32, blank=True, null=True)
     featured_in_latest = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Latest module"))
@@ -343,6 +397,18 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    social_media_title = models.TextField(null=True, blank=True,
+                                          verbose_name="title")
+    social_media_description = models.TextField(null=True, blank=True,
+                                                verbose_name="description")
+    social_media_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        verbose_name="Image",
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     body = StreamField([
         ('heading', blocks.CharBlock(classname="full title")),
         ('paragraph', MarkDownBlock()),
@@ -351,7 +417,14 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
     ], null=True, blank=True)
+
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
+    metadata_tags = ClusterTaggableManager(
+        through=ArticlePageMetaDataTag,
+        blank=True, related_name="metadata_tags",
+        help_text=_(
+            'A comma-separated list of tags. '
+            'This is not visible to the user.'))
 
     subpage_types = []
     search_fields = Page.search_fields + TagSearchable.search_fields + (
@@ -371,6 +444,10 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
+    ]
+
+    metedata_promote_panels = [
+        FieldPanel('metadata_tags'),
     ]
 
     def get_absolute_url(self):  # pragma: no cover
@@ -424,11 +501,19 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings",)
+        heading="Commenting Settings",),
+    MultiFieldPanel(
+        [
+            FieldPanel('social_media_title'),
+            FieldPanel('social_media_description'),
+            ImageChooserPanel('social_media_image'),
+        ],
+        heading="Social Media",)
 ]
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
+    MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]

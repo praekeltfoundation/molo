@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
     'wagtailmodeladmin',
+    'wagtail.contrib.settings',
 
     'mptt',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
@@ -175,6 +176,7 @@ COMPRESS_PRECOMPILERS = (
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
     'molo.core.context_processors.locale',
+    'wagtail.contrib.settings.context_processors.settings',
 )
 
 
@@ -204,3 +206,5 @@ WAGTAIL_SITE_NAME = "base"
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
 
 ENABLE_SSO = False
+
+UNICORE_DISTRIBUTE_API = 'http://localhost:6543'
