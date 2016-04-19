@@ -28,7 +28,7 @@ class TestImportContent(
         )
         self.mk_main()
 
-        self.repo1 = Repo('repo1', self.create_workspace())
+        self.repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
         self.ws1 = self.repo1.workspace
 
     def test_import_sections_for_primary_language(self):

@@ -60,21 +60,22 @@ def validate_content_repo(repo, main, locales):
     return validator.is_validate_for(main, locales)
 
 
-def get_repos(names, models=(Localisation, Category, Page)):
-    return [get_repo(name, models) for name in names]
+def get_repos(data, models=(Localisation, Category, Page)):
+    return [get_repo(d, models) for d in data]
 
 
-def get_repo(name, models=(Localisation, Category, Page)):
+def get_repo(datum, models=(Localisation, Category, Page)):
     workspace = RemoteWorkspace('%s/repos/%s.json' % (
-        settings.UNICORE_DISTRIBUTE_API, name))
+        settings.UNICORE_DISTRIBUTE_API, datum['name']))
 
     for model in models:
         workspace.sync(model)
 
-    return Repo(name, workspace)
+    return Repo(workspace, **datum)
 
 
 class Repo(object):
-    def __init__(self, name, workspace):
-        self.name = name
+    def __init__(self, workspace, name, title):
         self.workspace = workspace
+        self.name = name
+        self.title = title

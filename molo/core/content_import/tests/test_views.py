@@ -141,7 +141,7 @@ class ContentImportAPITestCase(
 
 
 def fake_repos(*names):
-    return tuple(Repo(name, None) for name in names)
+    return tuple(Repo(None, name, name) for name in names)
 
 
 def find_repos(repos, names):
