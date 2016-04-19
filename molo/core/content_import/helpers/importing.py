@@ -10,8 +10,9 @@ from unicore.content.models import Category, Page
 
 
 class ContentImportHelper(object):
-    def __init__(self, ws):
-        self.ws = ws
+    def __init__(self, repo):
+        self.repo = repo
+        self.ws = self.repo.workspace
 
     def get_or_create(self, cls, obj, parent):
         if cls.objects.filter(uuid=obj.uuid).exists():

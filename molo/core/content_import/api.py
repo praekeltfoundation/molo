@@ -37,7 +37,7 @@ def import_content(repos, locales):
 
 
 def import_content_repo(repo, main, children):
-    ContentImportHelper(repo.workspace).import_content_for(main, children)
+    ContentImportHelper(repo).import_content_for(main, children)
 
 
 def import_content_multirepo(repos, main, children):
