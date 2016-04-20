@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 from os.path import abspath, dirname, join
+from os import environ
 from django.conf import global_settings
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
@@ -91,6 +92,7 @@ MIDDLEWARE_CLASSES = (
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
     'wagtailmodeladmin.middleware.ModelAdminMiddleware',
+    'molo.core.middleware.AdminLocaleMiddleware',
 )
 
 ROOT_URLCONF = '{{cookiecutter.app_name}}.urls'
@@ -208,3 +210,5 @@ WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
 ENABLE_SSO = False
 
 UNICORE_DISTRIBUTE_API = 'http://localhost:6543'
+
+ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
