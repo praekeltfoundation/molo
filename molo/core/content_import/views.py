@@ -12,7 +12,8 @@ from unicore.content.models import Localisation
 
 
 @api_view(['GET'])
-def get_repos(request):
+def get_repo_summaries(request):
+    # TODO handle `InvalidParameterError`s
     return Response({'repos': api.get_repo_summaries()})
 
 
