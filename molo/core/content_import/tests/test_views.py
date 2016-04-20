@@ -7,6 +7,7 @@ from elasticgit.tests.base import ModelBaseTest
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.api import Repo
+from molo.core.content_import.errors import SiteResponseError
 
 
 @pytest.mark.django_db
@@ -23,8 +24,23 @@ class ContentImportAPITestCase(
 
         api.get_repo_summaries = lambda: ['foo']
         resp = self.client.get('/import/repos/')
+
         self.assertEquals(resp.data, {'repos': ['foo']})
         self.assertEquals(resp.status_code, 200)
+
+    @mock.patch('molo.core.content_import.views.api')
+    def test_get_repos_site_response_error(self, api):
+        def get_repo_summaries():
+            raise SiteResponseError(':/')
+
+        User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
+        self.client.login(username='testuser', password='1234')
+
+        api.get_repo_summaries = get_repo_summaries
+        resp = self.client.get('/import/repos/')
+
+        self.assertEquals(resp.data, {'type': 'site_response_error'})
+        self.assertEquals(resp.status_code, 422)
 
     @mock.patch('molo.core.content_import.views.api')
     def test_get_languages(self, api):

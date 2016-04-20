@@ -7,14 +7,19 @@ from rest_framework.authentication import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import parser_classes
 
-from molo.core.content_import import api
 from unicore.content.models import Localisation
+
+from molo.core.content_import import api
+from molo.core.content_import.errors import SiteResponseError
 
 
 @api_view(['GET'])
 def get_repo_summaries(request):
     # TODO handle `InvalidParameterError`s
-    return Response({'repos': api.get_repo_summaries()})
+    try:
+        return Response({'repos': api.get_repo_summaries()})
+    except SiteResponseError:
+        return Response(status=422, data={'type': 'site_response_error'})
 
 
 @api_view(['GET'])
