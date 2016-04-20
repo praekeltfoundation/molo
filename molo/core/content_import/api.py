@@ -3,7 +3,6 @@ from django.conf import settings
 from elasticgit.workspace import RemoteWorkspace
 from unicore.content.models import Localisation, Category, Page
 
-from molo.core.content_import.utils import conj
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
 from molo.core.content_import.helpers.summaries import get_summaries
