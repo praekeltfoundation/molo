@@ -18,7 +18,7 @@ class ContentImportAPITestCase(
         self.client = APIClient()
 
     @mock.patch('molo.core.content_import.views.api')
-    def test_get_repos(self, api):
+    def test_get_repo_summaries(self, api):
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
@@ -29,7 +29,7 @@ class ContentImportAPITestCase(
         self.assertEquals(resp.status_code, 200)
 
     @mock.patch('molo.core.content_import.views.api')
-    def test_get_repos_site_response_error(self, api):
+    def test_get_repo_summaries_site_response_error(self, api):
         def get_repo_summaries():
             raise SiteResponseError(':/')
 
