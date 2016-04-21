@@ -253,7 +253,7 @@ class TestImportContent(
             ws1, locale='spa_ES', title='A Spa', source=a_eng.uuid)
         a1_eng = self.create_page(
             ws1, locale='eng_GB', title='A1 Eng', primary_category=a_eng.uuid)
-        a1_spa = self.create_page(
+        self.create_page(
             ws1, locale='spa_ES', title='A1 Spa',
             source=a1_eng.uuid, primary_category=a_spa.uuid)
 
@@ -389,7 +389,7 @@ class TestImportContent(
         a_spa = self.create_category(ws1, locale='spa_ES', source=a_eng.uuid)
         a1_eng = self.create_page(
             ws1, locale='eng_GB', primary_category=a_eng.uuid)
-        a1_spa = self.create_page(
+        self.create_page(
             ws1, locale='spa_ES', source=a1_eng.uuid,
             primary_category=a_spa.uuid)
 
