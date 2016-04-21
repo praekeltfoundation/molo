@@ -118,12 +118,37 @@ class TestValidateContent(
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
 
         self.assertEquals(res, {
+            'warnings': [],
             'errors': [{
                 'type': 'wrong_main_language_exist_in_wagtail',
                 'details': {
                     'repo': 'repo1',
                     'lang': 'English',
                     'selected_lang': 'Spanish'
+                }
+            }]
+        })
+
+    def test_strays(self):
+        self.english = SiteLanguage.objects.create(locale='en')
+
+        ws1 = self.create_workspace(prefix='1')
+        repo1 = Repo(ws1, 'repo1', 'Repo 1')
+
+        self.add_languages(ws1, 'eng_GB')
+        self.create_category(ws1, locale='eng_GB')
+
+        res = api.validate_content([repo1], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        self.assertEquals(res, {
+            'errors': [],
+            'warnings': [{
+                'type': 'language_not_in_repo',
+                'details': {
+                    'repo': 'repo1',
+                    'locale': 'spa_ES'
                 }
             }]
         })
@@ -173,6 +198,7 @@ class TestValidateContent(
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
         self.assertEquals(res, {
+            'warnings': [],
             'errors': [{
                 'type': 'no_primary_category',
                 'details': {
@@ -238,6 +264,7 @@ class TestValidateContent(
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
         self.assertEquals(res, {
+            'warnings': [],
             'errors': [{
                 'type': 'no_source_found_for_category',
                 'details': {
