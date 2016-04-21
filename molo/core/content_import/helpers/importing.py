@@ -2,14 +2,17 @@ import json
 
 from babel import Locale
 
+from unicore.content.models import Category, Page
+
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
 from molo.core.content_import.helpers.get_image import get_image_file
-
-from unicore.content.models import Category, Page
+from molo.core.content_import.helpers.locales import filter_locales_in_repo
 
 
 def import_repo(repo, main_locale, children, should_nest=False):
+    children = filter_locales_in_repo(repo, children)
+
     main = Main.objects.all().first()
 
     for locale in [main_locale] + children:
@@ -57,7 +60,7 @@ def main_section_datum(repo, lang):
     # since we need to retrieve the section if it already exists instead of
     # creating it again. This means we need to find the section by its
     # corresponding repository's name and the locale that the section was
-    # created for.  At the moment, we use the uuid field for this, though isn't
+    # created for. At the moment, we use the uuid field for this, though isn't
     # quite right -- uuid's need to be universally unique. A more robust
     # solution might be to support a metadata field on the SectionPage model
     # and query by this field for this case

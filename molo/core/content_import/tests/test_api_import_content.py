@@ -21,12 +21,6 @@ class TestImportContent(
         ModelBaseTest, MoloTestCaseMixin, ElasticGitTestMixin):
 
     def setUp(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
-        self.spanish = SiteLanguage.objects.create(
-            locale='es',
-        )
         self.mk_main()
 
     def test_no_main_language(self):
@@ -116,6 +110,8 @@ class TestImportContent(
         }])
 
     def test_import_sections_for_primary_language(self):
+        SiteLanguage.objects.create(locale='en')
+        SiteLanguage.objects.create(locale='es')
         repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
         ws1 = repo1.workspace
         self.add_languages(ws1, 'eng_GB', 'spa_ES')
@@ -444,3 +440,20 @@ class TestImportContent(
         self.assertEquals(
             ArticlePage.objects.all().first().image.title,
             'some-uuid-for-the-image')
+
+    def test_strays_omitted(self):
+        repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
+        ws1 = repo1.workspace
+
+        self.add_languages(ws1, 'eng_GB')
+        self.create_category(ws1, locale='eng_GB', title='A Eng')
+
+        api.import_content([repo1], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        languages = SiteLanguage.objects.all().order_by('locale')
+        sections = SectionPage.objects.all().order_by('title', 'uuid')
+
+        self.assertEqual(languages.count(), 1)
+        self.assertEqual(sections.all().count(), 1)
