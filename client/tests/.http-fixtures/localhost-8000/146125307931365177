@@ -1,0 +1,13 @@
+GET /import/languages/?repo=unicore-cms-content-ffl-sn-prod
+accept: application/json, text/plain, */*
+
+HTTP/1.0 200 OK
+date: Thu, 21 Apr 2016 15:37:59 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language, Cookie
+x-frame-options: SAMEORIGIN
+content-type: application/json
+content-language: en-gb
+allow: OPTIONS, GET
+
+{"locales":[{"locale":"eng_GB","name":"English (United Kingdom)"},{"locale":"fre_FR","name":"French (France)"}],"warnings":[]}
