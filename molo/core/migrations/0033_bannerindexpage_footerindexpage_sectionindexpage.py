@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
             name='SectionIndexPage',
             fields=[
                 ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('commenting_state', models.CharField(blank=True, max_length=1, null=True, choices=[(b'O', b'Open'), (b'C', b'Closed'), (b'D', b'Disabled'), (b'T', b'Timestamped')])),
+                ('commenting_state', models.CharField(default=b'O', max_length=1, null=True, blank=True, choices=[(b'O', b'Open'), (b'C', b'Closed'), (b'D', b'Disabled'), (b'T', b'Timestamped')])),
                 ('commenting_open_time', models.DateTimeField(null=True, blank=True)),
                 ('commenting_close_time', models.DateTimeField(null=True, blank=True)),
             ],

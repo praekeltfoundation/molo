@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 
 def create_banner_index(apps, schema_editor):
-    from molo.core.models import BannerPage, BannerIndexPage, Main
+    from molo.core.models import BannerIndexPage, Main
     main = Main.objects.all().first()
 
     if main:
@@ -13,13 +13,9 @@ def create_banner_index(apps, schema_editor):
         main.add_child(instance=banner_index)
         banner_index.save_revision().publish()
 
-        # Move existing banners
-        for page in BannerPage.objects.all():
-            page.move(banner_index, pos='last-child')
-
 
 def create_section_index(apps, schema_editor):
-    from molo.core.models import SectionPage, SectionIndexPage, Main
+    from molo.core.models import SectionIndexPage, Main
     main = Main.objects.all().first()
 
     if main:
@@ -27,23 +23,15 @@ def create_section_index(apps, schema_editor):
         main.add_child(instance=section_index)
         section_index.save_revision().publish()
 
-        # Move existing banners
-        for page in SectionPage.objects.all().child_of(main):
-            page.move(section_index, pos='last-child')
-
 
 def create_footer_index(apps, schema_editor):
-    from molo.core.models import FooterPage, FooterIndexPage, Main
+    from molo.core.models import FooterIndexPage, Main
     main = Main.objects.all().first()
 
     if main:
         footer_index = FooterIndexPage(title='Footer pages', slug='footer-pages')
         main.add_child(instance=footer_index)
         footer_index.save_revision().publish()
-
-        # Move existing banners
-        for page in FooterPage.objects.all():
-            page.move(footer_index, pos='last-child')
 
 
 class Migration(migrations.Migration):
