@@ -7,24 +7,41 @@ from rest_framework.authentication import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import parser_classes
 
-from molo.core.content_import import api
 from unicore.content.models import Localisation
+
+from molo.core.content_import import api
+from molo.core.content_import.errors import (
+    InvalidParametersError, SiteResponseError)
 
 
 @api_view(['GET'])
-def get_repos(request):
-    return Response({'repos': api.get_repo_summaries()})
+def get_repo_summaries(request):
+    params = request.query_params
+
+    try:
+        return Response({
+            'repos': api.get_repo_summaries({
+                'port': params.get('port'),
+                'path': params.get('path'),
+                'host': params.get('host'),
+                'protocol': params.get('protocol')
+            })
+        })
+    except SiteResponseError:
+        return Response(status=422, data={'type': 'site_response_error'})
+    except InvalidParametersError as e:
+        return invalid_parameters_response(e)
 
 
 @api_view(['GET'])
 def get_repo_languages(request):
     names = request.query_params.getlist('repo')
     repos = api.get_repos(names, models=(Localisation,))
-    locales, errors = api.get_languages(repos)
+    result = api.get_languages(repos)
 
     return Response({
-        'locales': locales,
-        'errors': errors
+        'locales': result['locales'],
+        'warnings': result['warnings']
     })
 
 
@@ -36,12 +53,16 @@ def import_content(request):
     data = request.data
     names, locales = data['repos'], data['locales']
     repos = api.get_repos(names)
-    errors = api.validate_content(repos, locales)
 
-    if errors:
+    try:
+        result = api.validate_content(repos, locales)
+    except InvalidParametersError as e:
+        return invalid_parameters_response(e)
+
+    if result['errors']:
         return Response(status=422, data={
             'type': 'validation_failure',
-            'errors': errors
+            'errors': result['errors']
         })
     else:
         api.import_content(repos, locales)
@@ -56,10 +77,21 @@ def import_validate(request):
     data = request.data
     names, locales = data['repos'], data['locales']
     repos = api.get_repos(names)
-    errors = api.validate_content(repos, locales)
+
+    try:
+        result = api.validate_content(repos, locales)
+    except InvalidParametersError as e:
+        return invalid_parameters_response(e)
 
     return Response(data={
         'repos': names,
         'locales': locales,
-        'errors': errors
+        'errors': result['errors']
+    })
+
+
+def invalid_parameters_response(error):
+    return Response(status=422, data={
+        'type': 'invalid_parameters',
+        'errors': error.errors,
     })

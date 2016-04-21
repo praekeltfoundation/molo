@@ -5,178 +5,225 @@ from babel import Locale
 from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
 from molo.core.content_import.helpers.get_image import get_image_file
-from molo.core.content_import.errors import ImportError
 
 from unicore.content.models import Category, Page
 
 
-class ContentImportHelper(object):
-    def __init__(self, ws):
-        self.ws = ws
+def import_repo(repo, main_locale, children, should_nest=False):
+    main = Main.objects.all().first()
 
-    def get_or_create(self, cls, obj, parent):
-        if cls.objects.filter(uuid=obj.uuid).exists():
-            return cls.objects.get(uuid=obj.uuid)
+    for locale in [main_locale] + children:
+        lang = create_language(repo, locale, locale == main_locale)
+        parent = get_or_create_main_section(repo, lang, main, should_nest)
+        import_locale_content(repo, lang, parent)
 
-        instance = cls(uuid=obj.uuid, title=obj.title)
-        parent.add_child(instance=instance)
-        print 'created', obj.title
-        return instance
+    update_pages_with_linked_page_field(repo)
 
-    def get_or_create_translation(self, cls, obj, parent, language):
-        if cls.objects.filter(uuid=obj.uuid).exists():
-            return cls.objects.get(uuid=obj.uuid)
 
-        instance = cls(uuid=obj.uuid, title=obj.title)
-        parent.add_child(instance=instance)
-        language_relation = instance.languages.first()
-        language_relation.language = language
-        language_relation.save()
-        print 'created translation', obj.title
-        return instance
+def get_models(repo, cls, **kw):
+    qs = repo.workspace.S(cls)
+    qs = qs.filter(**kw)
 
-    def import_section_content(self, c, site_language):
-        main = Main.objects.all().first()
-        if site_language.is_main_language:
-            section = self.get_or_create(SectionPage, c, main)
-        else:
-            section = self.get_or_create_translation(
-                SectionPage, c, main, site_language)
+    # S() only returns 10 results if you don't ask for more
+    return qs.order_by('position')[:10000]
 
-        section.description = c.subtitle
-        if c.image_host and c.image:
-            section.image = get_image_file(c.image_host, c.image)
 
-        section.save_revision().publish()
+def get_or_create_main_section(repo, lang, main, should_nest):
+    if should_nest:
+        return main_section_for_language(repo, lang, main)
+    else:
+        return main
 
-        return section
 
-    def import_page_content(self, p, site_language):
-        if site_language.is_main_language:
-            if p.primary_category:
-                try:
-                    section = SectionPage.objects.get(
-                        uuid=p.primary_category)
-                    page = self.get_or_create(ArticlePage, p, section)
-                except SectionPage.DoesNotExist:
-                    print "couldn't find primary category ", \
-                        p.primary_category, \
-                        SectionPage.objects.all().values('uuid')
-                    return None
-            else:
-                # special case for articles with no primary category
-                # this assumption is probably wrong..
-                # but we have no where else to put them
-                main = Main.objects.all().first()
-                page = self.get_or_create(FooterPage, p, main)
-        else:
-            try:
-                main_instance = ArticlePage.objects.get(
-                    uuid=p.source).specific
-                page = self.get_or_create_translation(
-                    main_instance.__class__, p, main_instance.get_parent(),
-                    site_language)
-                PageTranslation.objects.get_or_create(
-                    page=main_instance,
-                    translated_page=page)
-            except ArticlePage.DoesNotExist:
-                print "No source found for: ", p.source, (
-                    ArticlePage.objects.all().values('uuid'))
-                return None
+def create_language(repo, locale, is_main):
+    language, _ = SiteLanguage.objects.get_or_create(
+        locale=Locale.parse(locale).language,
+        is_main_language=is_main)
 
-        page.subtitle = p.subtitle
-        page.body = json.dumps([
-            {'type': 'paragraph', 'value': p.description},
-            {'type': 'paragraph', 'value': p.content}
-        ])
-        is_featured = p.featured if p.featured else False
-        is_featured_in_category = p.featured_in_category \
-            if p.featured_in_category else False
+    return {
+        'locale': locale,
+        'language': language,
+    }
 
-        page.featured_in_latest = is_featured
-        page.featured_in_homepage = is_featured_in_category
-        for tag in p.author_tags:
-            page.metadata_tags.add(tag)
-        if p.image_host and p.image:
-            page.image = get_image_file(p.image_host, p.image)
 
-        page.save_revision().publish()
+def import_locale_content(repo, lang, parent):
+    import_all_categories(repo, lang, parent)
+    import_all_pages(repo, lang)
 
-        return page
 
-    def update_pages_with_linked_page_field(self):
-        for p in self.ws.S(Page).all()[:10000]:
-            if p.linked_pages:
-                for lp in p.linked_pages:
-                    try:
-                        page = ArticlePage.objects.get(uuid=p.uuid)
-                        page.body.stream_data.append(
-                            {u'type': u'page',
-                             u'value': ArticlePage.objects.get(uuid=lp).pk})
-                        page.save_revision().publish()
-                    except ArticlePage.DoesNotExist:
-                        print 'Linked page does not exist %s' % lp
+def main_section_datum(repo, lang):
+    # NOTE For sections that correspond to a repository (for the multi-repo
+    # import case), We can't simply rely on the ORM to create a uuid for us,
+    # since we need to retrieve the section if it already exists instead of
+    # creating it again. This means we need to find the section by its
+    # corresponding repository's name and the locale that the section was
+    # created for.  At the moment, we use the uuid field for this, though isn't
+    # quite right -- uuid's need to be universally unique. A more robust
+    # solution might be to support a metadata field on the SectionPage model
+    # and query by this field for this case
 
-    def import_categories_for_child_language(
-            self, category, selected_locale, site_language):
-        if category.source:
-            try:
-                parent = SectionPage.objects.get(
-                    uuid=category.source)
-                translated_section = self.import_section_content(
-                    category, site_language)
-                PageTranslation.objects.get_or_create(
-                    page=parent,
-                    translated_page=translated_section)
-            except SectionPage.DoesNotExist:
-                print "couldn't find", category.source, (
-                    SectionPage.objects.all().values('uuid'))
-        else:
-            print "no source found for: ", category.source, (
+    # NOTE At the moment, we are using the repository title as the title for
+    # the corresponding section we create, regardless of the language the
+    # section is created for. We need a way of creating a title from the
+    # repository in the given language
+    return {
+        'uuid': '%s-%s' % (repo.name, lang['locale']),
+        'title': repo.title
+    }
+
+
+def main_section_for_language(repo, lang, main):
+    datum = main_section_datum(repo, lang)
+
+    if is_main_language(lang):
+        return get_or_create(SectionPage, main, **datum)
+    else:
+        return get_or_create_translation(SectionPage, lang, main, **datum)
+
+
+def import_categories_for_child_language(repo, category, lang, parent):
+    if category.source:
+        try:
+            main_lang_page = SectionPage.objects.get(uuid=category.source)
+            translated_section = import_section_content(
+                repo, category, lang, parent)
+            PageTranslation.objects.get_or_create(
+                page=main_lang_page,
+                translated_page=translated_section)
+        except SectionPage.DoesNotExist:
+            print "couldn't find", category.source, (
                 SectionPage.objects.all().values('uuid'))
+    else:
+        print "no source found for: ", category.source, (
+            SectionPage.objects.all().values('uuid'))
 
-    @classmethod
-    def get_main_language(cls, locales):
-        mains = [locale for locale in locales if locale.get('is_main')]
 
-        if not mains:
-            raise ImportError("No main languages have been given")
-        elif len(mains) > 1:
-            raise ImportError("Cannot have multiple main languages")
+def import_all_categories(repo, lang, parent):
+    category_qs = get_models(repo, Category, language=lang['locale'])
+
+    if lang['language'].is_main_language:
+        import_fn = import_section_content
+    else:
+        import_fn = import_categories_for_child_language
+
+    for c in category_qs:
+        import_fn(repo, c, lang, parent)
+
+
+def import_all_pages(repo, lang):
+    for p in get_models(repo, Page, language=lang['locale']):
+        import_page_content(repo, p, lang)
+
+
+def is_main_language(lang):
+    return lang['language'].is_main_language
+
+
+def get_or_create_from_model(cls, obj, parent):
+    return get_or_create(cls, parent, obj.uuid, obj.title)
+
+
+def get_or_create_translation_from_model(cls, obj, lang, parent):
+    return get_or_create_translation(cls, lang, parent, obj.uuid, obj.title)
+
+
+def get_or_create(cls, parent, uuid, title):
+    if cls.objects.filter(uuid=uuid).exists():
+        return cls.objects.get(uuid=uuid)
+
+    instance = cls(uuid=uuid, title=title)
+    parent.add_child(instance=instance)
+    return instance
+
+
+def get_or_create_translation(cls, lang, parent, uuid, title):
+    instance = get_or_create(cls, parent, uuid, title)
+
+    language_relation = instance.languages.first()
+    language_relation.language = lang['language']
+    language_relation.save()
+
+    return instance
+
+
+def import_section_content(repo, c, lang, parent):
+    if is_main_language(lang):
+        section = get_or_create_from_model(SectionPage, c, parent)
+    else:
+        section = get_or_create_translation_from_model(
+            SectionPage, c, lang, parent)
+
+    section.description = c.subtitle
+    if c.image_host and c.image:
+        section.image = get_image_file(c.image_host, c.image)
+
+    section.save_revision().publish()
+
+    return section
+
+
+def import_page_content(repo, p, lang):
+    if is_main_language(lang):
+        if p.primary_category:
+            try:
+                section = SectionPage.objects.get(uuid=p.primary_category)
+                page = get_or_create_from_model(ArticlePage, p, section)
+            except SectionPage.DoesNotExist:
+                print "couldn't find primary category ", \
+                    p.primary_category, \
+                    SectionPage.objects.all().values('uuid')
+                return None
         else:
-            return mains[0]
+            # special case for articles with no primary category
+            # this assumption is probably wrong..
+            # but we have no where else to put them
+            main = Main.objects.all().first()
+            page = get_or_create_from_model(FooterPage, p, main)
+    else:
+        try:
+            main_instance = ArticlePage.objects.get(uuid=p.source).specific
 
-    def import_content_for(self, locales):
-        main = self.get_main_language(locales)
-        locales = [main] + [
-            locale for locale in locales if not locale.get('is_main')]
-        for selected_locale in locales:
-            site_language, _ = SiteLanguage.objects.get_or_create(
-                locale=Locale.parse(selected_locale.get('locale')).language,
-                is_main_language=selected_locale.get('is_main'))
+            page = get_or_create_translation_from_model(
+                main_instance.__class__, p, lang, main_instance.get_parent())
 
-            self.import_all_categories(site_language, selected_locale)
-            self.import_all_pages(site_language, selected_locale)
+            PageTranslation.objects.get_or_create(
+                page=main_instance,
+                translated_page=page)
+        except ArticlePage.DoesNotExist:
+            print "No source found for: ", p.source, (
+                ArticlePage.objects.all().values('uuid'))
+            return None
 
-        self.update_pages_with_linked_page_field()
+    page.subtitle = p.subtitle
+    page.body = json.dumps([
+        {'type': 'paragraph', 'value': p.description},
+        {'type': 'paragraph', 'value': p.content}
+    ])
+    is_featured = p.featured if p.featured else False
+    is_featured_in_category = p.featured_in_category \
+        if p.featured_in_category else False
 
-    def import_all_categories(self, site_language, selected_locale):
-        category_qs = self.ws.S(Category).filter(
-            language=selected_locale.get('locale')
-        ).order_by('position')[:10000]
-        # S() only returns 10 results if you don't ask for more
-        if site_language.is_main_language:
-            for c in category_qs:
-                self.import_section_content(c, site_language)
-        else:
-            for c in category_qs:
-                self.import_categories_for_child_language(
-                    c, selected_locale, site_language)
+    page.featured_in_latest = is_featured
+    page.featured_in_homepage = is_featured_in_category
+    for tag in p.author_tags:
+        page.metadata_tags.add(tag)
+    if p.image_host and p.image:
+        page.image = get_image_file(p.image_host, p.image)
 
-    def import_all_pages(self, site_language, selected_locale):
-        for p in self.ws.S(Page).filter(
-            language=selected_locale.get('locale')
-        ).order_by('position')[:10000]:
-            # S() only returns 10 results if you don't ask for more
+    page.save_revision().publish()
 
-            self.import_page_content(p, site_language)
+    return page
+
+
+def update_pages_with_linked_page_field(repo):
+    for p in repo.workspace.S(Page).all()[:10000]:
+        if p.linked_pages:
+            for lp in p.linked_pages:
+                try:
+                    page = ArticlePage.objects.get(uuid=p.uuid)
+                    page.body.stream_data.append(
+                        {u'type': u'page',
+                         u'value': ArticlePage.objects.get(uuid=lp).pk})
+                    page.save_revision().publish()
+                except ArticlePage.DoesNotExist:
+                    print 'Linked page does not exist %s' % lp
