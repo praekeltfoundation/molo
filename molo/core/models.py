@@ -263,7 +263,7 @@ class SectionIndexPage(CommentedPageMixin, Page):
         choices=constants.COMMENTING_STATE_CHOICES,
         blank=True,
         null=True,
-        default='O')
+        default=constants.COMMENTING_OPEN)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
