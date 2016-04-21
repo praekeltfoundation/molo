@@ -29,7 +29,6 @@ def locales_from_parsed(parsed, uniqs):
         locale
         for d in parsed
         for locale in d['locales']
-        if locale['locale'] in uniqs
     ])
 
 
