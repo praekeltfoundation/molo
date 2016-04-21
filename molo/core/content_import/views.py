@@ -1,37 +1,26 @@
-import requests
-
-from django.conf import settings
-from elasticgit.workspace import RemoteWorkspace
-
-
-from molo.core.content_import.helper import (
-    ContentImportHelper)
-from molo.core.content_import.validation import ContentImportValidation
-
+from rest_framework.parsers import JSONParser
 from rest_framework.decorators import (
     api_view, authentication_classes, permission_classes)
 from rest_framework.response import Response
 from rest_framework.authentication import (
     SessionAuthentication, BasicAuthentication)
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import parser_classes
 
-from unicore.content.models import Localisation, Category, Page
+from molo.core.content_import import api
+from unicore.content.models import Localisation
 
 
 @api_view(['GET'])
 def get_repos(request):
-    response = requests.get(
-        '%s/repos.json' % settings.UNICORE_DISTRIBUTE_API).json()
-    return Response({
-        'repos': [repo.get('name') for repo in response]})
+    return Response({'repos': api.get_repo_summaries()})
 
 
 @api_view(['GET'])
-def get_repo_languages(request, name):
-    ws = RemoteWorkspace('%s/repos/%s.json' % (
-        settings.UNICORE_DISTRIBUTE_API, name))
-    ws.sync(Localisation)
-    locales, errors = ContentImportHelper(ws).parse_locales()
+def get_repo_languages(request):
+    names = request.query_params.getlist('repo')
+    repos = api.get_repos(names, models=(Localisation,))
+    locales, errors = api.get_languages(repos)
 
     return Response({
         'locales': locales,
@@ -39,41 +28,38 @@ def get_repo_languages(request, name):
     })
 
 
-@api_view(['POST'])
+@api_view(['PUT'])
+@parser_classes((JSONParser,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticated,))
-def import_content(request, name):
-    ws = RemoteWorkspace('%s/repos/%s.json' % (
-        settings.UNICORE_DISTRIBUTE_API, name))
-    ws.sync(Localisation)
-    ws.sync(Category)
-    ws.sync(Page)
-
-    # create wagtail content
-    locales = request.data.get('locales')
-    errors = ContentImportValidation(ws).is_validate_for(locales)
+def import_content(request):
+    data = request.data
+    names, locales = data['repos'], data['locales']
+    repos = api.get_repos(names)
+    errors = api.validate_content(repos, locales)
 
     if errors:
-        return Response(status=422, data={'errors': errors})
+        return Response(status=422, data={
+            'type': 'validation_failure',
+            'errors': errors
+        })
     else:
-        ContentImportHelper(ws).import_content_for(locales)
-        return Response()
+        api.import_content(repos, locales)
+        return Response(status=204)
 
 
 @api_view(['POST'])
+@parser_classes((JSONParser,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 @permission_classes((IsAuthenticated,))
-def import_validate(request, name):
-    ws = RemoteWorkspace('%s/repos/%s.json' % (
-        settings.UNICORE_DISTRIBUTE_API, name))
-    ws.sync(Localisation)
-    ws.sync(Category)
-    ws.sync(Page)
+def import_validate(request):
+    data = request.data
+    names, locales = data['repos'], data['locales']
+    repos = api.get_repos(names)
+    errors = api.validate_content(repos, locales)
 
-    # validate import content
-    locales = request.data.get('locales')
-    errors = ContentImportValidation(ws).is_validate_for(locales)
-    if errors:
-        return Response(status=422, data={'errors': errors})
-    else:
-        return Response()
+    return Response(data={
+        'repos': names,
+        'locales': locales,
+        'errors': errors
+    })
