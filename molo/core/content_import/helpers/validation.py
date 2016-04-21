@@ -3,114 +3,104 @@ from babel import Locale
 from molo.core.models import SiteLanguage
 
 from unicore.content.models import Category, Page
-from molo.core.content_import.errors import ImportError
 
 
 class ContentImportValidation(object):
     errors = []
 
-    def __init__(self, ws):
-        self.ws = ws
+    def __init__(self, repo):
+        self.repo = repo
+        self.ws = self.repo.workspace
 
-    def get_main_language(self, locales):
-        mains = [locale for locale in locales if locale.get('is_main')]
-
-        if not mains:
-            raise ImportError("No main languages have been given")
-        elif len(mains) > 1:
-            raise ImportError("Cannot have multiple main languages")
-        else:
-            return mains[0].get('locale')
-
-    def is_validate_for(self, locales):
+    def validate_for(self, main, children):
         self.errors = []
-        main_language = self.get_main_language(locales)
 
-        self.validate_wagtail_has_no_language(main_language)
-        for l in locales:
-            self.validate_translated_content_has_source(l)
+        self.validate_wagtail_has_no_language(main)
+        for l in [main] + children:
+            self.validate_translated_content_has_source(l, main)
             self.validate_page_primary_category_exists(l)
-            self.validate_translated_content_source_exists(l, main_language)
+            self.validate_translated_content_source_exists(l, main)
 
         return self.errors
 
-    def validate_wagtail_has_no_language(self, main_language):
-        main_language = Locale.parse(main_language).language
+    def validate_wagtail_has_no_language(self, main):
+        main = Locale.parse(main).language
 
         wagtail_main_language = SiteLanguage.objects.filter(
             is_main_language=True).first()
         if (wagtail_main_language and not
-                wagtail_main_language.locale == main_language):
+                wagtail_main_language.locale == main):
             self.errors.append({
                 'type': 'wrong_main_language_exist_in_wagtail',
                 'details': {
+                    'repo': self.repo.name,
                     'lang': wagtail_main_language.get_locale_display(),
-                    'selected_lang': Locale.parse(main_language).english_name
+                    'selected_lang': Locale.parse(main).english_name
                 }})
 
-    def validate_translated_content_has_source(self, l):
-        if not l.get('is_main'):
-            child_language = l.get('locale')
-
+    def validate_translated_content_has_source(self, locale, main):
+        if locale != main:
             categories = self.ws.S(Category).filter(
-                language=child_language).order_by('position')[:10000]
+                language=locale).order_by('position')[:10000]
             for c in categories:
                 if not c.source:
                     self.errors.append({
                         'type': 'no_source_found_for_category',
                         'details': {
+                            'repo': self.repo.name,
                             'category': c.title,
-                            'lang': Locale.parse(child_language).english_name
+                            'lang': Locale.parse(locale).english_name
                         }})
 
-            pages = self.ws.S(Page).filter(language=child_language)[:10000]
+            pages = self.ws.S(Page).filter(language=locale)[:10000]
             for p in pages:
                 if not p.source:
                     self.errors.append({
                         'type': 'no_source_found_for_page',
                         'details': {
+                            'repo': self.repo.name,
                             'article': p.title,
-                            'lang': Locale.parse(child_language).english_name
+                            'lang': Locale.parse(locale).english_name
                         }})
 
-    def validate_translated_content_source_exists(self, l, main_language):
-        if not l.get('is_main'):
-            child_language = l.get('locale')
-
+    def validate_translated_content_source_exists(self, locale, main):
+        if locale != main:
             categories = self.ws.S(Category).filter(
-                language=child_language).order_by('position')[:10000]
+                language=locale).order_by('position')[:10000]
             for c in categories:
                 if c.source and not self.validate_source_exists(
-                        Category, c.source, main_language):
+                        Category, c.source, main):
                     self.errors.append({
                         'type': 'category_source_not_exists',
                         'details': {
+                            'repo': self.repo.name,
                             'category': c.title,
-                            'lang': Locale.parse(child_language).english_name
+                            'lang': Locale.parse(locale).english_name
                         }})
 
-            pages = self.ws.S(Page).filter(language=child_language)[:10000]
+            pages = self.ws.S(Page).filter(language=locale)[:10000]
             for p in pages:
                 if p.source and not self.validate_source_exists(
-                        Page, p.source, main_language):
+                        Page, p.source, main):
                     self.errors.append({
                         'type': 'page_source_not_exists',
                         'details': {
+                            'repo': self.repo.name,
                             'page': p.title,
-                            'lang': Locale.parse(child_language).english_name
+                            'lang': Locale.parse(locale).english_name
                         }})
 
-    def validate_page_primary_category_exists(self, l):
-        language = l.get('locale')
-        pages = self.ws.S(Page).filter(language=language)[:10000]
+    def validate_page_primary_category_exists(self, locale):
+        pages = self.ws.S(Page).filter(language=locale)[:10000]
         for p in pages:
             if p.primary_category and not self.validate_category_exists(
-                    p.primary_category, language):
+                    p.primary_category, locale):
                 self.errors.append({
                     'type': 'no_primary_category',
                     'details': {
+                        'repo': self.repo.name,
                         'article': p.title,
-                        'lang': Locale.parse(language).english_name
+                        'lang': Locale.parse(locale).english_name
                     }})
 
     def validate_category_exists(self, uuid, locale):

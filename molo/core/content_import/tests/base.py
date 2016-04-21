@@ -1,3 +1,4 @@
+from time import time
 import json
 import responses
 
@@ -77,8 +78,18 @@ class ElasticGitTestMixin(object):
             content_type="application/json",
             status=status)
 
-    def create_workspace(self, **kw):
-        ws = self.mk_workspace(**kw)
+    def create_workspace(self, prefix=None, **kw):
+        if prefix is None:
+            index_prefix = self.mk_index_prefix()
+        else:
+            index_prefix = '%s-%s' % (self.mk_index_prefix(), prefix)
+
+        # HACK We seem to be leaking repos, causing weird test failures. These
+        # only seem to be an issue when a test creates multiple workspaces
+        # (even when we are given the workspaces different index prefixes)
+        index_prefix = '%s-%s' % (index_prefix, index_counter.next())
+
+        ws = self.mk_workspace(index_prefix=index_prefix, **kw)
 
         ws.setup_custom_mapping(eg_models.Localisation, {
             'properties': {
@@ -104,3 +115,42 @@ class ElasticGitTestMixin(object):
         })
 
         return ws
+
+    def create_category(self, *args, **kw):
+        [cat] = self.create_categories(*args, count=1, **kw)
+        return cat
+
+    def create_page(self, *args, **kw):
+        [page] = self.create_pages(*args, count=1, **kw)
+        return page
+
+    def add_languages(self, ws, *locales):
+        for locale in locales:
+            lang = eg_models.Localisation({'locale': locale})
+            ws.save(lang, 'Added %s' % locale)
+
+    def catch(self, error_cls, fn):
+        error = None
+
+        try:
+            fn()
+        except error_cls as e:
+            error = e
+
+        self.assertTrue(
+            error is not None,
+            "Expected an error to be raised")
+
+        return error
+
+
+class Counter(object):
+    def __init__(self, i=0):
+        self.i = i
+
+    def next(self):
+        self.i = self.i + 1
+        return self.i
+
+
+index_counter = Counter(int(time()))
