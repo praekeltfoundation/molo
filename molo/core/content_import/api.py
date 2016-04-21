@@ -1,20 +1,26 @@
 from django.conf import settings
 
-import requests
 from elasticgit.workspace import RemoteWorkspace
 from unicore.content.models import Localisation, Category, Page
 
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
+from molo.core.content_import.helpers.summaries import get_summaries
 from molo.core.content_import.helpers.importing import import_repo
 from molo.core.content_import.helpers.validation import ContentImportValidation
 from molo.core.content_import.helpers.parse import (
-    parse_validate_content, parse_import_content)
+    parse_get_repo_summaries, parse_validate_content, parse_import_content)
 
 
-def get_repo_summaries():
-    response = requests.get('%s/repos.json' % settings.UNICORE_DISTRIBUTE_API)
-    return [d.get('name') for d in response.json()]
+def get_repo_summaries(url_parts):
+    result = parse_get_repo_summaries(url_parts)
+
+    if result['errors']:
+        raise InvalidParametersError(
+            "Invalid parameters given for repo summaries retrieval",
+            result['errors'])
+
+    return get_summaries(result['url'])
 
 
 def get_languages(repos):
@@ -66,6 +72,14 @@ def validate_repo(repo, main, children):
     return validator.validate_for(main, children)
 
 
+def get_repos_by_name(names, models=(Localisation, Category, Page)):
+    return [get_repo_by_name(name, models) for name in names]
+
+
+def get_repo_by_name(name, models=(Localisation, Category, Page)):
+    return get_repo({'name': name}, models=models)
+
+
 def get_repos(data, models=(Localisation, Category, Page)):
     return [get_repo(d, models) for d in data]
 
@@ -81,7 +95,7 @@ def get_repo(datum, models=(Localisation, Category, Page)):
 
 
 class Repo(object):
-    def __init__(self, workspace, name, title):
+    def __init__(self, workspace, name, title=None):
         self.workspace = workspace
         self.name = name
         self.title = title

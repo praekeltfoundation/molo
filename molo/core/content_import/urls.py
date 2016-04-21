@@ -7,8 +7,8 @@ urlpatterns = patterns(
         'rest_framework.urls', namespace='rest_framework')),
     url(
         r'^repos/$',
-        'molo.core.content_import.views.get_repos',
-        name='get_repos'
+        'molo.core.content_import.views.get_repo_summaries',
+        name='get_repo_summaries'
     ),
     url(
         r'^languages/$',
