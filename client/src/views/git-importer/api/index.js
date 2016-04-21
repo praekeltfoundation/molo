@@ -3,11 +3,11 @@ import constant from 'lodash/constant';
 import * as endpoints from 'src/views/git-importer/api/endpoints';
 import * as parse from 'src/views/git-importer/api/parse';
 import * as serialize from 'src/views/git-importer/api/serialize';
-import { catchResponse, catchResponseCode } from 'src/http';
+import { catchResponse, catchResponseCode, throwResponse } from 'src/http';
 
 
 const CODES = {
-  VALIDATION_FAIL: 422
+  PARSE_ERROR: 422
 };
 
 
@@ -23,18 +23,14 @@ export function languages(repos, opts) {
 }
 
 
-export function importContent(id, languages, opts) {
-  return Promise.resolve(languages)
-    .then(serialize.languages)
-    .then(languages => endpoints.importContent(id, languages, opts))
-    .then(request)
+export function importContent(repos, languages, opts) {
+  repos = repos.map(serialize.repo);
+  languages = serialize.languages(languages);
+
+  return request(endpoints.importContent(repos, languages, opts))
     .then(
-      constant({
-        errors: []
-      }),
-      catchResponseCode(CODES.VALIDATION_FAIL, resp => ({
-        errors: resp.data.errors
-      })));
+      constant({errors: []}),
+      catchResponseCode(CODES.PARSE_ERROR, importContentParseError));
 }
 
 
@@ -43,4 +39,11 @@ export function checkContent(repos, languages, opts) {
   languages = serialize.languages(languages);
   return request(endpoints.validateContent(repos, languages, opts))
     .then(resp => ({errors: resp.data.errors}), catchResponse());
+}
+
+
+function importContentParseError(resp) {
+  return resp.data.type === 'validation_failure'
+    ? {errors: resp.data.errors}
+    : throwResponse(resp);
 }

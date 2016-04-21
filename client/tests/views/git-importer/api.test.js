@@ -51,15 +51,18 @@ describe(`api`, () => {
 
   describe(`importContent`, () => {
     it(`should import content for the chosen langauges`, () => {
-      return api.importContent('unicore-cms-content-ffl-sn-prod', [{
+      return api.importContent([{
+          id: 'unicore-cms-content-ffl-sn-prod',
+          title: 'Facts for Life'
+        }], [{
           id: 'fre_FR',
           name: 'French (France)',
-          isMain: true,
-          isChosen: true
+          isMain: false,
+          isChosen: false
         }, {
           id: 'eng_GB',
           name: 'English (United Kingdom)',
-          isMain: false,
+          isMain: true,
           isChosen: true
         }])
         .then(sites => expect(sites).to.deep.equal({
@@ -68,7 +71,10 @@ describe(`api`, () => {
     });
 
     it(`should return validation errors`, () => {
-      return api.importContent('unicore-cms-content-mama-mx-prod', [{
+      return api.importContent([{
+          id: 'unicore-cms-content-mama-mx-prod',
+          title: 'Mama Mexico'
+        }], [{
           id: 'spa_MX',
           name: 'Spanish (Mexico)',
           isMain:true,
@@ -88,13 +94,15 @@ describe(`api`, () => {
           errors: [{
             type: 'wrong_main_language_exist_in_wagtail',
             details: {
-              lang: 'French',
-              selected_lang: 'Spanish (Mexico)'
+              lang: 'English',
+              repo: 'unicore-cms-content-mama-mx-prod',
+              selected_lang: 'Spanish'
             }
           }, {
             type: 'no_primary_category',
             details: {
               lang: 'Spanish (Mexico)',
+              repo: 'unicore-cms-content-mama-mx-prod',
               article: 'Palabras sobre el embarazo y el parto'
             }
           }]

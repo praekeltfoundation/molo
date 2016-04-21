@@ -16,10 +16,13 @@ export const locales = (repoNames, opts) => endpoint(opts, {
 });
 
 
-export const importContent = (id, locales, opts) => endpoint(opts, {
-  method: 'POST',
-  url: `/import/repos/${id}/import/`,
-  data: {locales},
+export const importContent = (repos, locales, opts) => endpoint(opts, {
+  method: 'PUT',
+  url: `/import/content/`,
+  data: {
+    repos,
+    locales
+  },
   useAuth: true
 });
 
