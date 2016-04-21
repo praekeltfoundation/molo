@@ -1,11 +1,11 @@
 from urlparse import ParseResult, urlunparse
 
-from molo.core.content_import.utils import conj
+from molo.core.content_import.utils import conj, omit_nones
 from molo.core.content_import.helpers.locales import locales_not_in_repo
 
 
 def parse_get_repo_summaries(url_parts):
-    url_parts = conj(url_parts_defaults(), url_parts)
+    url_parts = conj(url_parts_defaults(), omit_nones(url_parts))
     errors = get_required_param_errors(url_parts)
 
     if errors:
