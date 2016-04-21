@@ -88,3 +88,43 @@ class TestGetRepoSummaries(TestCase):
             error.message,
             "https://www.foo.com:3000/bar/baz/repos.json responded "
             "with a 404 error")
+
+    @responses.activate
+    def test_get_repo_summaries_defaults(self):
+        responses.add(
+            responses.GET,
+            'https://www.foo.com:80/repos.json',
+            content_type='application/json',
+            status=200,
+            body=json.dumps([{
+                'index': 'repo1',
+                'slug': 'foo',
+                'data': {
+                    'name': 'win',
+                    'title': 'Repo 1',
+                    'owner': 'bar',
+                    'descriptor': 'baz',
+                },
+            }, {
+                'index': 'repo2',
+                'slug': 'quux',
+                'data': {
+                    'name': 'corege',
+                    'title': 'Repo 2',
+                    'owner': 'grault',
+                    'descriptor': 'garply',
+                },
+            }]))
+
+        self.assertEqual(api.get_repo_summaries({
+            'protocol': 'https',
+            'host': 'www.foo.com',
+            'path': None,
+            'port': None
+        }), [{
+            'name': 'repo1',
+            'title': 'Repo 1',
+        }, {
+            'name': 'repo2',
+            'title': 'Repo 2',
+        }])

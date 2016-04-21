@@ -16,8 +16,17 @@ from molo.core.content_import.errors import (
 
 @api_view(['GET'])
 def get_repo_summaries(request):
+    params = request.query_params
+
     try:
-        return Response({'repos': api.get_repo_summaries()})
+        return Response({
+            'repos': api.get_repo_summaries({
+                'port': params.get('port'),
+                'path': params.get('path'),
+                'host': params.get('host'),
+                'protocol': params.get('protocol')
+            })
+        })
     except SiteResponseError:
         return Response(status=422, data={'type': 'site_response_error'})
     except InvalidParametersError as e:
