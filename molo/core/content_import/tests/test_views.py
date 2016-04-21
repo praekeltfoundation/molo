@@ -19,25 +19,47 @@ class ContentImportAPITestCase(
 
     @mock.patch('molo.core.content_import.views.api')
     def test_get_repo_summaries(self, api):
+        def get_repo_summaries(d):
+            calls.append(d)
+            return ['foo']
+
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
-        api.get_repo_summaries = lambda: ['foo']
-        resp = self.client.get('/import/repos/')
+        calls = []
+        api.get_repo_summaries = get_repo_summaries
+        resp = self.client.get('/import/repos/', {
+            'path': 'bar/baz',
+            'port': '3000',
+            'host': 'foo.com',
+            'protocol': 'https'
+        })
+
+        self.assertEqual(calls, [{
+            'path': 'bar/baz',
+            'port': '3000',
+            'host': 'foo.com',
+            'protocol': 'https'
+        }])
 
         self.assertEquals(resp.data, {'repos': ['foo']})
         self.assertEquals(resp.status_code, 200)
 
     @mock.patch('molo.core.content_import.views.api')
     def test_get_repo_summaries_site_response_error(self, api):
-        def get_repo_summaries():
+        def get_repo_summaries(*a, **kw):
             raise SiteResponseError(':/')
 
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
         api.get_repo_summaries = get_repo_summaries
-        resp = self.client.get('/import/repos/')
+        resp = self.client.get('/import/repos/', {
+            'path': 'bar/baz',
+            'port': '3000',
+            'host': 'foo.com',
+            'protocol': 'https'
+        })
 
         self.assertEquals(resp.data, {'type': 'site_response_error'})
         self.assertEquals(resp.status_code, 422)

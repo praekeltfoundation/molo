@@ -15,9 +15,18 @@ from molo.core.content_import.errors import SiteResponseError
 
 @api_view(['GET'])
 def get_repo_summaries(request):
+    params = request.query_params
+
     # TODO handle `InvalidParameterError`s
     try:
-        return Response({'repos': api.get_repo_summaries()})
+        return Response({
+            'repos': api.get_repo_summaries({
+                'port': params.get('port'),
+                'path': params.get('path'),
+                'host': params.get('host'),
+                'protocol': params.get('protocol')
+            })
+        })
     except SiteResponseError:
         return Response(status=422, data={'type': 'site_response_error'})
 
