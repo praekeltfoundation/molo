@@ -7,7 +7,7 @@ def parse_validate_content(repos, locales):
 
     return {
         'main': main,
-        'children': get_children(main, locales),
+        'children': get_children_locales(main, locales),
         'errors': errors
     }
 
@@ -31,7 +31,7 @@ def check_languages_not_in_repo(repo, locales):
         return None
 
 
-def get_children(main, locales):
+def get_children_locales(main, locales):
     return [locale['locale'] for locale in locales if locale['locale'] != main]
 
 
