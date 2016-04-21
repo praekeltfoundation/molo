@@ -26,8 +26,8 @@ class TestGetLanguages(
 
         self.ws1 = self.create_workspace('1')
         self.ws2 = self.create_workspace('2')
-        self.repo1 = Repo('repo1', self.ws1)
-        self.repo2 = Repo('repo2', self.ws2)
+        self.repo1 = Repo(self.ws1, 'repo1', 'Repo 1')
+        self.repo2 = Repo(self.ws2, 'repo2', 'Repo 2')
 
     def test_get_locale(self):
         lang1 = eg_models.Localisation({'locale': 'eng_GB'})

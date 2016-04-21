@@ -25,7 +25,7 @@ class TestValidateContent(
             ])
 
         ws1 = self.create_workspace(prefix='1')
-        repo1 = Repo('repo1', ws1)
+        repo1 = Repo(ws1, 'repo1', 'Repo 1')
         self.add_languages(ws1, 'eng_GB', 'spa_ES')
         self.create_category(ws1, locale='eng_GB')
         self.create_category(ws1, locale='spa_ES')
@@ -48,7 +48,7 @@ class TestValidateContent(
             ])
 
         ws1 = self.create_workspace(prefix='1')
-        repo1 = Repo('repo1', ws1)
+        repo1 = Repo(ws1, 'repo1', 'Repo 1')
         self.add_languages(ws1, 'eng_GB', 'spa_ES')
         self.create_category(ws1, locale='eng_GB')
         self.create_category(ws1, locale='spa_ES')
@@ -72,10 +72,10 @@ class TestValidateContent(
             ])
 
         ws1 = self.create_workspace(prefix='1')
-        repo1 = Repo('repo1', ws1)
+        repo1 = Repo(ws1, 'repo1', 'Repo 1')
 
         ws2 = self.create_workspace(prefix='2')
-        repo2 = Repo('repo2', ws2)
+        repo2 = Repo(ws2, 'repo2', 'Repo 2')
 
         self.add_languages(ws1, 'eng_GB', 'spa_MX', 'spa_CU')
         self.create_category(ws1, locale='eng_GB')
@@ -107,7 +107,7 @@ class TestValidateContent(
         self.english = SiteLanguage.objects.create(locale='en')
 
         ws1 = self.create_workspace(prefix='1')
-        repo1 = Repo('repo1', ws1)
+        repo1 = Repo(ws1, 'repo1', 'Repo 1')
 
         self.add_languages(ws1, 'eng_GB', 'spa_ES')
         spa_cat = self.create_category(ws1, locale='spa_ES')
@@ -130,7 +130,7 @@ class TestValidateContent(
 
     def test_import_validation(self):
         ws1 = self.create_workspace(prefix='1')
-        repo1 = Repo('repo1', ws1)
+        repo1 = Repo(ws1, 'repo1', 'Repo 1')
         self.add_languages(ws1, 'eng_GB', 'spa_ES')
 
         eng_cat = self.create_category(ws1, locale='eng_GB')
@@ -220,10 +220,10 @@ class TestValidateContent(
 
     def test_import_validation_multirepo(self):
         ws1 = self.create_workspace(prefix='1')
-        repo1 = Repo('repo1', ws1)
+        repo1 = Repo(ws1, 'repo1', 'Repo 1')
 
         ws2 = self.create_workspace(prefix='2')
-        repo2 = Repo('repo2', ws2)
+        repo2 = Repo(ws2, 'repo2', 'Repo 2')
 
         self.add_languages(ws1, 'eng_GB', 'spa_ES')
         self.add_languages(ws2, 'eng_GB', 'spa_ES')

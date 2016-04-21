@@ -12,6 +12,10 @@ def parse_validate_content(repos, locales):
     }
 
 
+def parse_import_content(repos, locales):
+    return parse_validate_content(repos, locales)
+
+
 def check_languages_not_in_repos(repos, locales):
     errors = [check_languages_not_in_repo(repo, locales) for repo in repos]
     return [error for error in errors if error is not None]

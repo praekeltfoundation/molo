@@ -6,9 +6,10 @@ from unicore.content.models import Localisation, Category, Page
 
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
-from molo.core.content_import.helpers.parse import parse_validate_content
-from molo.core.content_import.helpers.importing import ContentImportHelper
+from molo.core.content_import.helpers.importing import import_repo
 from molo.core.content_import.helpers.validation import ContentImportValidation
+from molo.core.content_import.helpers.parse import (
+    parse_validate_content, parse_import_content)
 
 
 def get_repo_summaries():
@@ -21,18 +22,23 @@ def get_languages(repos):
 
 
 def import_content(repos, locales):
+    result = parse_import_content(repos, locales)
+    main, children = result['main'], result['children']
+
+    if result['errors']:
+        raise InvalidParametersError(
+            "Invalid parameters given for content import",
+            result['errors'])
+
     if len(repos) == 1:
-        import_content_repo(repos[0], locales)
+        import_repo(repos[0], main, children)
     elif len(repos) > 1:
-        import_content_multirepo(repos, locales)
+        import_multirepo(repos, main, children)
 
 
-def import_content_repo(repo, locales):
-    ContentImportHelper(repo.workspace).import_content_for(locales)
-
-
-def import_content_multirepo(repos, locales):
-    raise NotImplementedError()
+def import_multirepo(repos, main, children):
+    for repo in repos:
+        import_repo(repo, main, children, should_nest=True)
 
 
 def validate_content(repos, locales):
@@ -47,7 +53,7 @@ def validate_content(repos, locales):
     errors = [
         error
         for repo in repos
-        for error in validate_content_repo(repo, main, children)]
+        for error in validate_repo(repo, main, children)]
 
     # returns a dictionary to make provision for warnings
     return {
@@ -55,26 +61,27 @@ def validate_content(repos, locales):
     }
 
 
-def validate_content_repo(repo, main, children):
+def validate_repo(repo, main, children):
     validator = ContentImportValidation(repo)
     return validator.validate_for(main, children)
 
 
-def get_repos(names, models=(Localisation, Category, Page)):
-    return [get_repo(name, models) for name in names]
+def get_repos(data, models=(Localisation, Category, Page)):
+    return [get_repo(d, models) for d in data]
 
 
-def get_repo(name, models=(Localisation, Category, Page)):
+def get_repo(datum, models=(Localisation, Category, Page)):
     workspace = RemoteWorkspace('%s/repos/%s.json' % (
-        settings.UNICORE_DISTRIBUTE_API, name))
+        settings.UNICORE_DISTRIBUTE_API, datum['name']))
 
     for model in models:
         workspace.sync(model)
 
-    return Repo(name, workspace)
+    return Repo(workspace, **datum)
 
 
 class Repo(object):
-    def __init__(self, name, workspace):
-        self.name = name
+    def __init__(self, workspace, name, title):
         self.workspace = workspace
+        self.name = name
+        self.title = title
