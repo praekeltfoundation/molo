@@ -17,8 +17,8 @@ export function repos(url, opts) {
 }
 
 
-export function languages(id, opts) {
-  return request(endpoints.locales(id, opts))
+export function languages(repos, opts) {
+  return request(endpoints.locales(repos.map(serialize.repoName), opts))
     .then(resp => resp.data.locales.map(parse.locale), catchResponse());
 }
 

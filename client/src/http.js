@@ -1,10 +1,15 @@
 import isNull from 'lodash/isNull';
 import defaults from 'lodash/defaults';
 import conf from 'src/conf';
+import { stringify as stringifyQs } from 'query-string';'query-string';
 
 
 export function internalEndpoint(def) {
-  let d = defaults({}, def, {headers: {}});
+  let d = defaults({}, def, {
+    headers: {},
+    paramsSerializer: stringifyQs
+  });
+
   defaults(d.headers, conf.apiHeaders);
 
   if (d.useAuth && !isNull(conf.csrfToken))

@@ -31,15 +31,18 @@ describe(`api`, () => {
 
   describe(`languages`, () => {
     it(`should return the given site's available languages`, () => {
-      return api.languages('unicore-cms-content-ffl-sn-prod')
+      return api.languages([{
+          id: 'unicore-cms-content-ffl-sn-prod',
+          title: 'Facts For Life'
+        }])
         .then(sites => expect(sites).to.deep.equal([{
-          id: 'fre_FR',
-          name: 'French (France)',
+          id: 'eng_GB',
+          name: 'English (United Kingdom)',
           isMain: true,
           isChosen: false
         }, {
-          id: 'eng_GB',
-          name: 'English (United Kingdom)',
+          id: 'fre_FR',
+          name: 'French (France)',
           isMain: false,
           isChosen: false
         }]));

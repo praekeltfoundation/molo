@@ -9,9 +9,10 @@ export const repos = (urlParts, opts) => endpoint(opts, {
 });
 
 
-export const locales = (id, opts) => endpoint(opts, {
+export const locales = (repoNames, opts) => endpoint(opts, {
   method: 'GET',
-  url: `/import/repos/${id}/`
+  url: `/import/languages/`,
+  params: {repo: repoNames}
 });
 
 

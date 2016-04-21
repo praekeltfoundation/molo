@@ -4,6 +4,11 @@ import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';
 
 
+export function repoName(d) {
+  return d.id;
+}
+
+
 export function languages(data) {
   return data
     .filter(isChosen)
