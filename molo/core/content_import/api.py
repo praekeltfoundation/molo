@@ -72,6 +72,14 @@ def validate_repo(repo, main, children):
     return validator.validate_for(main, children)
 
 
+def get_repos_by_name(names, models=(Localisation, Category, Page)):
+    return [get_repo_by_name(name, models) for name in names]
+
+
+def get_repo_by_name(name, models=(Localisation, Category, Page)):
+    return get_repo({'name': name}, models=models)
+
+
 def get_repos(data, models=(Localisation, Category, Page)):
     return [get_repo(d, models) for d in data]
 
@@ -87,7 +95,7 @@ def get_repo(datum, models=(Localisation, Category, Page)):
 
 
 class Repo(object):
-    def __init__(self, workspace, name, title):
+    def __init__(self, workspace, name, title=None):
         self.workspace = workspace
         self.name = name
         self.title = title

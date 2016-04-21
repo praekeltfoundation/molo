@@ -36,7 +36,7 @@ def get_repo_summaries(request):
 @api_view(['GET'])
 def get_repo_languages(request):
     names = request.query_params.getlist('repo')
-    repos = api.get_repos(names, models=(Localisation,))
+    repos = api.get_repos_by_name(names, models=(Localisation,))
     result = api.get_languages(repos)
 
     return Response({
