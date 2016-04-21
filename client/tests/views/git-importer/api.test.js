@@ -1,17 +1,30 @@
 import { expect } from 'chai';
 import * as api from 'src/views/git-importer/api';
+import * as serialize from 'src/views/git-importer/api/serialize';
 
 
 describe(`api`, () => {
-  describe(`sites`, () => {
-    it(`should return the available sites`, () => {
-      return api.sites()
+  describe(`repos`, () => {
+    it(`should return the given site's repos`, () => {
+      return api.repos('http://www.00-iogt.apollo.unicore.io')
         .then(sites => expect(sites).to.deep.equal([{
           id: 'unicore-cms-content-barefootlaw-i1-prod',
-          name: 'unicore-cms-content-barefootlaw-i1-prod'
+          title: 'Your Rights'
         }, {
-          id: 'unicore-cms-content-ffl-sn-prod',
-          name: 'unicore-cms-content-ffl-sn-prod'
+          id: 'unicore-cms-content-connectsmart-i1-prod',
+          title: 'Connect Smart'
+        }, {
+          id: 'unicore-cms-content-ebola-i1-prod',
+          title: 'Emergency Information'
+        }, {
+          id: 'unicore-cms-content-ecd-i1-prod',
+          title: 'Early Life Tips!'
+        }, {
+          id: 'unicore-cms-content-ffl-i1-prod',
+          title: 'Facts For Life'
+        }, {
+          id: 'unicore-cms-content-hiv-i1-prod',
+          title: 'ALL IN'
         }]));
     });
   });
@@ -138,5 +151,34 @@ describe(`api`, () => {
         }));
     });
   });
-});
 
+  describe(`serialize`, () => {
+    describe(`url`, () => {
+      it(`should parse urls`, () => {
+        expect(serialize.url('https://www.a.com:3000/b/c?d=e&f=g#h/'))
+          .to.deep.equal({
+            protocol: 'https',
+            host: 'a.com',
+            port: '3000',
+            path: '/b/c'
+          });
+      });
+
+      it(`should support urls without protocols`, () => {
+        expect(serialize.url('www.a.com'))
+          .to.deep.equal({
+            protocol: 'http',
+            host: 'a.com'
+          });
+      });
+
+      it(`should support urls without www's or protocols`, () => {
+        expect(serialize.url('a.com'))
+          .to.deep.equal({
+            protocol: 'http',
+            host: 'a.com'
+          });
+      });
+    });
+  });
+});

@@ -2,9 +2,10 @@ import { conj } from 'src/utils';
 import { internalEndpoint } from 'src/http';
 
 
-export const repos = opts => endpoint(opts, {
+export const repos = (urlParts, opts) => endpoint(opts, {
   method: 'GET',
-  url: '/import/repos/'
+  url: '/import/repos/',
+  params: urlParts
 });
 
 

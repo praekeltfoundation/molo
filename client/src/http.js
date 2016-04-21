@@ -32,7 +32,7 @@ export function catchResponseCode(code, fn) {
 
 
 export function throwResponse(resp) {
-  throw new ResponseError(resp.toString());
+  throw new ResponseError(JSON.stringify(resp));
 }
 
 

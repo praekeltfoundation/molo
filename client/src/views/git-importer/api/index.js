@@ -11,8 +11,8 @@ const CODES = {
 };
 
 
-export function sites(opts) {
-  return request(endpoints.repos(opts))
+export function repos(url, opts) {
+  return request(endpoints.repos(serialize.url(url), opts))
     .then(resp => resp.data.repos.map(parse.repo), catchResponse());
 }
 

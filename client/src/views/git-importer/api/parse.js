@@ -1,7 +1,7 @@
-export function repo(name) {
+export function repo(d) {
   return {
-    id: name,
-    name
+    id: d.name,
+    title: d.title
   };
 }
 
