@@ -77,8 +77,8 @@ class ElasticGitTestMixin(object):
             content_type="application/json",
             status=status)
 
-    def create_workspace(self):
-        ws = self.mk_workspace()
+    def create_workspace(self, **kw):
+        ws = self.mk_workspace(**kw)
 
         ws.setup_custom_mapping(eg_models.Localisation, {
             'properties': {

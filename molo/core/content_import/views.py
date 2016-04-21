@@ -20,11 +20,11 @@ def get_repos(request):
 def get_repo_languages(request):
     names = request.query_params.getlist('repo')
     repos = api.get_repos(names, models=(Localisation,))
-    locales, errors = api.get_languages(repos)
+    result = api.get_languages(repos)
 
     return Response({
-        'locales': locales,
-        'errors': errors
+        'locales': result['locales'],
+        'warnings': result['warnings']
     })
 
 
