@@ -93,7 +93,7 @@ def breadcrumbs(context):
         ancestors = ()
     else:
         ancestors = Page.objects.live().ancestor_of(
-            self, inclusive=True).filter(depth__gt=2).specific()
+            self, inclusive=True).filter(depth__gt=3).specific()
 
     translated_ancestors = []
     for p in ancestors:
