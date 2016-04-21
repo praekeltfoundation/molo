@@ -75,7 +75,7 @@ class TestImportContent(
             'type': 'multiple_main_languages_given'
         }])
 
-    def test_languages_not_in_repo(self):
+    def test_main_not_in_repos(self):
         def run():
             api.import_content([repo1, repo2], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
@@ -92,8 +92,8 @@ class TestImportContent(
         self.add_languages(ws1, 'eng_GB', 'spa_MX', 'spa_CU')
         self.create_category(ws1, locale='eng_GB')
 
-        self.add_languages(ws2, 'spa_ES')
-        self.create_category(ws2, locale='spa_ES')
+        self.add_languages(ws2, 'spa_MX')
+        self.create_category(ws2, locale='spa_MX')
 
         error = self.catch(InvalidParametersError, run)
 
@@ -102,16 +102,16 @@ class TestImportContent(
             "Invalid parameters given for content import")
 
         self.assertEqual(error.errors, [{
-            'type': 'languages_not_in_repo',
+            'type': 'main_language_not_in_repo',
             'details': {
                 'repo': 'repo1',
-                'locales': ['spa_ES']
+                'locale': 'spa_ES'
             }
         }, {
-            'type': 'languages_not_in_repo',
+            'type': 'main_language_not_in_repo',
             'details': {
                 'repo': 'repo2',
-                'locales': ['eng_GB', 'spa_MX']
+                'locale': 'spa_ES'
             }
         }])
 

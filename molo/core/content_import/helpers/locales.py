@@ -14,14 +14,10 @@ def get_locales(repos):
     }
 
 
-def locales_not_in_repo(repo, locales):
+def locale_in_repo(repo, locale_key):
     result = parse_repo_locales(repo)
     repo_locales = set(locale['locale'] for locale in result['locales'])
-
-    return [
-        locale['locale']
-        for locale in locales
-        if locale['locale'] not in repo_locales]
+    return locale_key in repo_locales
 
 
 def locales_from_parsed(parsed, uniqs):
