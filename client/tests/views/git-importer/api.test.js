@@ -104,7 +104,10 @@ describe(`api`, () => {
 
   describe(`checkContent`, () => {
     it(`should check content for the chosen langauges`, () => {
-      return api.checkContent('unicore-cms-content-ffl-sn-prod', [{
+      return api.checkContent([{
+          id: 'unicore-cms-content-ffl-sn-prod',
+          title: 'Facts For Life'
+        }], [{
           id: 'fre_FR',
           name: 'French (France)',
           isMain: true,
@@ -121,7 +124,10 @@ describe(`api`, () => {
     });
 
     it(`should return validation errors`, () => {
-      return api.checkContent('unicore-cms-content-mama-mx-prod', [{
+      return api.checkContent([{
+          id: 'unicore-cms-content-mama-mx-prod',
+          title: 'Mama Mexico'
+        }], [{
           id: 'spa_MX',
           name: 'Spanish (Mexico)',
           isMain:true,
@@ -141,13 +147,15 @@ describe(`api`, () => {
           errors: [{
             type: 'wrong_main_language_exist_in_wagtail',
             details: {
-              lang: 'French',
-              selected_lang: 'Spanish (Mexico)'
+              lang: 'English',
+              repo: 'unicore-cms-content-mama-mx-prod',
+              selected_lang: 'Spanish'
             }
           }, {
             type: 'no_primary_category',
             details: {
               lang: 'Spanish (Mexico)',
+              repo: 'unicore-cms-content-mama-mx-prod',
               article: 'Palabras sobre el embarazo y el parto'
             }
           }]

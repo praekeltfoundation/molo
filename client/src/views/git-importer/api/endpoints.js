@@ -24,10 +24,13 @@ export const importContent = (id, locales, opts) => endpoint(opts, {
 });
 
 
-export const validateContent = (id, locales, opts) => endpoint(opts, {
+export const validateContent = (repos, locales, opts) => endpoint(opts, {
   method: 'POST',
-  url: `/import/repos/${id}/validate/`,
-  data: {locales},
+  url: '/import/validation/',
+  data: {
+    repos,
+    locales
+  },
   useAuth: true
 });
 

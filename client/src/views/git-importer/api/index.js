@@ -38,16 +38,9 @@ export function importContent(id, languages, opts) {
 }
 
 
-export function checkContent(id, languages, opts) {
-  return Promise.resolve(languages)
-    .then(serialize.languages)
-    .then(languages => endpoints.validateContent(id, languages, opts))
-    .then(request)
-    .then(
-      constant({
-        errors: []
-      }),
-      catchResponseCode(CODES.VALIDATION_FAIL, resp => ({
-        errors: resp.data.errors
-      })));
+export function checkContent(repos, languages, opts) {
+  repos = repos.map(serialize.repo);
+  languages = serialize.languages(languages);
+  return request(endpoints.validateContent(repos, languages, opts))
+    .then(resp => ({errors: resp.data.errors}), catchResponse());
 }

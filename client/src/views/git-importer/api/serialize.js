@@ -9,6 +9,14 @@ export function repoName(d) {
 }
 
 
+export function repo(d) {
+  return {
+    name: d.id,
+    title: d.title
+  };
+}
+
+
 export function languages(data) {
   return data
     .filter(isChosen)
