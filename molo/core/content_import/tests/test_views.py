@@ -122,7 +122,10 @@ class ContentImportAPITestCase(
         repos = fake_repos('r1', 'r2')
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.validate_content = lambda *a, **kw: {'errors': []}
+        api.validate_content = lambda *a, **kw: {
+            'errors': [],
+            'warnings': [{'type': 'fake_warning'}],
+        }
 
         api.import_content = lambda wses, locales: (
             imports.append((wses, locales)))
@@ -136,7 +139,14 @@ class ContentImportAPITestCase(
             (repos, ['en', 'fr'])
         ])
 
-        self.assertEquals(resp.status_code, 204)
+        self.assertEquals(resp.status_code, 200)
+
+        self.assertEquals(resp.data, {
+            'repos': ['r1', 'r2'],
+            'locales': ['en', 'fr'],
+            'errors': [],
+            'warnings': [{'type': 'fake_warning'}],
+        })
 
     @mock.patch('molo.core.content_import.views.api')
     def test_import_content_validation_errors(self, api):
@@ -149,7 +159,8 @@ class ContentImportAPITestCase(
 
         api.validate_content = lambda wses, locales: {
             (repos, ('en', 'fr')): {
-                'errors': [{'type': 'fake_error'}]
+                'errors': [{'type': 'fake_error'}],
+                'warnings': [{'type': 'fake_warning'}],
             }
         }[(wses, tuple(locales))]
 
@@ -164,6 +175,7 @@ class ContentImportAPITestCase(
         self.assertEquals(resp.data, {
             'type': 'validation_failure',
             'errors': [{'type': 'fake_error'}],
+            'warnings': [{'type': 'fake_warning'}],
         })
 
         self.assertEqual(imports, [])
@@ -206,7 +218,8 @@ class ContentImportAPITestCase(
 
         api.validate_content = lambda wses, locales: {
             (repos, ('en', 'fr')): {
-                'errors': [{'type': 'fake_error'}]
+                'errors': [{'type': 'fake_error'}],
+                'warnings': [{'type': 'fake_warning'}],
             }
         }[(wses, tuple(locales))]
 
@@ -219,6 +232,7 @@ class ContentImportAPITestCase(
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr'],
             'errors': [{'type': 'fake_error'}],
+            'warnings': [{'type': 'fake_warning'}],
         })
 
         self.assertEquals(resp.status_code, 200)
