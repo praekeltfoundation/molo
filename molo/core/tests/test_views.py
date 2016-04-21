@@ -365,3 +365,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(response, 'www.googletagmanager.com')
         self.assertContains(response, 'GTM-1234567')
+
+    def test_admin_doesnt_translate_when_frontend_locale_changed(self):
+        self.client.get('/locale/af/')
+
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        response = self.client.get('/admin/pages/%d/' % self.main.pk)
+        self.assertNotContains(response, 'Skrap')
+
+        response = self.client.get('/django-admin/')
+        self.assertNotContains(response, 'Voeg')
