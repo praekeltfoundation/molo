@@ -9,12 +9,14 @@ export function expandStep(name) {
 }
 
 
-export function chooseSite(id, api=httpApi) {
+export function chooseSite(url, api=httpApi) {
+  // TODO handle site not found
   return dispatch => Promise.resolve()
     .then(() => chooseSiteBusy())
     .then(dispatch)
-    .then(() => api.languages())
-    .then(languages => chooseSiteDone(languages))
+    .then(() => api.repos(url))
+    .then(repos => Promise.all([repos, api.languages(repos)]))
+    .then(([repos, languages]) => chooseSiteDone(repos, languages))
     .then(dispatch);
 }
 
@@ -24,10 +26,13 @@ function chooseSiteBusy() {
 }
 
 
-function chooseSiteDone(languages) {
+function chooseSiteDone(repos, languages) {
   return {
     type: 'CHOOSE_SITE/DONE',
-    payload: {languages}
+    payload: {
+      repos,
+      languages
+    }
   };
 }
 

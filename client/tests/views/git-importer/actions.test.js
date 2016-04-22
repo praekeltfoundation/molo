@@ -7,8 +7,15 @@ import { captureDispatches, resolvesTo } from 'tests/utils';
 
 describe(`actions`, () => {
   describe(`chooseSite`, done => {
-    it(`should return the list of sites to update with`, () => {
+    it(`should return the repos and languages to update with`, () => {
       let api = conj(fixtures('api'), {
+        repos: resolvesTo([{
+          id: 'foo-id',
+          title: 'foo'
+        }, {
+          id: 'bar-id',
+          title: 'bar'
+        }]),
         languages: resolvesTo([{
           id: 'en',
           name: 'English',
@@ -28,6 +35,13 @@ describe(`actions`, () => {
         }, {
           type: 'CHOOSE_SITE/DONE',
           payload: {
+            repos: [{
+              id: 'foo-id',
+              title: 'foo'
+            }, {
+              id: 'bar-id',
+              title: 'bar'
+            }],
             languages: [{
               id: 'en',
               name: 'English',

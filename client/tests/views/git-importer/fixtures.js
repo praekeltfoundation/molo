@@ -23,10 +23,6 @@ function gitImporterFixtures(name) {
             id: 'bar-id',
             name: 'bar'
           }],
-          site: {
-            id: 'foo-id',
-            name: 'foo'
-          },
           languages: [{
             id: 'en',
             name: 'English',
@@ -94,12 +90,12 @@ function gitImporterFixtures(name) {
 
     case 'api':
       return {
-        sites: resolvesTo([{
+        repos: resolvesTo([{
           id: 'foo-id',
-          name: 'foo'
+          title: 'foo'
         }, {
           id: 'bar-id',
-          name: 'bar'
+          title: 'bar'
         }]),
         languages: resolvesTo([{
           id: 'en',
