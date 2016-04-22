@@ -16,6 +16,7 @@ function gitImporterFixtures(name) {
           lastStep: 'languages'
         },
         data: {
+          siteUrl: 'foo.com',
           repos: [{
             id: 'foo-id',
             name: 'foo'
@@ -53,6 +54,7 @@ function gitImporterFixtures(name) {
           isMain: false,
           isChosen: true
         }],
+        siteUrl: 'foo.com',
         repos: [{
           id: 'foo-id',
           name: 'foo'

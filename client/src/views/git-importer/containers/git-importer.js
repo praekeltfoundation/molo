@@ -10,6 +10,7 @@ function stateToProps(state) {
   return {
     status: state.ui.status,
     errors: state.data.errors,
+    siteUrl: state.data.siteUrl,
     repos: state.data.repos,
     languages: state.data.languages,
     steps: mapValues(STEPS, (_, stepName) => ({
