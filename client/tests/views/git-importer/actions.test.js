@@ -6,34 +6,6 @@ import { captureDispatches, resolvesTo } from 'tests/utils';
 
 
 describe(`actions`, () => {
-  describe(`updateSites`, () => {
-    it(`should return the list of sites to update with`, () => {
-      let api = conj(fixtures('api'), {
-        sites: resolvesTo([{
-          id: 'foo-id',
-          name: 'foo'
-        }, {
-          id: 'bar-id',
-          name: 'bar'
-        }])
-      });
-
-      return captureDispatches(actions.updateSites(api))
-        .then(action => expect(action).to.deep.equal([{
-          type: 'UPDATE_SITES',
-          payload: {
-            sites: [{
-              id: 'foo-id',
-              name: 'foo'
-            }, {
-              id: 'bar-id',
-              name: 'bar'
-            }]
-          }
-        }]));
-      });
-  });
-
   describe(`chooseSite`, done => {
     it(`should return the list of sites to update with`, () => {
       let api = conj(fixtures('api'), {

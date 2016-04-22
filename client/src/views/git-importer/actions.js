@@ -9,16 +9,6 @@ export function expandStep(name) {
 }
 
 
-export function updateSites(api=httpApi) {
-  return dispatch => api.sites()
-    .then(sites => ({
-      type: 'UPDATE_SITES',
-      payload: {sites: sites}
-    }))
-    .then(dispatch);
-}
-
-
 export function chooseSite(id, api=httpApi) {
   return dispatch => Promise.resolve()
     .then(() => chooseSiteBusy())
