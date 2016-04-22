@@ -11,13 +11,6 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'UPDATE_SITES':
-      return conj(state, {
-        data: conj(state.data, {
-          sites: action.payload.sites
-        })
-      });
-
     case 'CHOOSE_SITE/BUSY':
       return conj(state, {
         ui: conj(state.ui, {
@@ -33,6 +26,7 @@ export default function gitImporter(state, action) {
           lastStep: 'main'
         }),
         data: conj(state.data, {
+          repos: action.payload.repos,
           languages: action.payload.languages
         })
       });

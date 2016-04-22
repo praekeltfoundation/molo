@@ -22,41 +22,6 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`UPDATE_SITES`, () => {
-    it(`should update the available sites`, () => {
-      const state = fixtures('state');
-
-      state.data.sites = [{
-        id: 'win',
-        name: 'rar'
-      }];
-
-      expect(gitImporter(state, {
-          type: 'UPDATE_SITES',
-          payload: {
-            sites: [{
-              id: 'foo-id',
-              name: 'foo'
-            }, {
-              id: 'bar-id',
-              name: 'bar'
-            }]
-          }
-        }))
-        .to.deep.equal(conj(fixtures('state'), {
-          data: conj(state.data, {
-            sites: [{
-              id: 'foo-id',
-              name: 'foo'
-            }, {
-              id: 'bar-id',
-              name: 'bar'
-            }]
-          })
-        }));
-    });
-  });
-
   describe(`CHOOSE_SITE/BUSY`, () => {
     it("should change the ui state to busy", () => {
       const state = fixtures('state');
@@ -83,6 +48,13 @@ describe(`gitImporter`, () => {
       expect(gitImporter(state, {
           type: 'CHOOSE_SITE/DONE',
           payload: {
+            repos: [{
+              id: 'foo-id',
+              name: 'foo'
+            }, {
+              id: 'bar-id',
+              name: 'bar'
+            }],
             languages: [{
               id: 'en',
               name: 'English',

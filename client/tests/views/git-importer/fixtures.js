@@ -16,7 +16,7 @@ function gitImporterFixtures(name) {
           lastStep: 'languages'
         },
         data: {
-          sites: [{
+          repos: [{
             id: 'foo-id',
             name: 'foo'
           }, {
