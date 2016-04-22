@@ -42,14 +42,6 @@ export function chooseMain() {
 }
 
 
-export function changeSite(id) {
-  return {
-    type: 'CHANGE_SITE',
-    payload: {id: id}
-  };
-}
-
-
 export function changeMain(id) {
   return {
     type: 'CHANGE_MAIN',
@@ -66,11 +58,11 @@ export function toggleLanguageChosen(id) {
 }
 
 
-export function importContent(id, languages, api=httpApi) {
+export function importContent(repos, languages, api=httpApi) {
   return dispatch => Promise.resolve()
     .then(() => importContentBusy())
     .then(dispatch)
-    .then(() => api.importContent(id, languages))
+    .then(() => api.importContent(repos, languages))
     .then(d => importContentDone(d))
     .then(dispatch);
 }
@@ -89,11 +81,11 @@ function importContentDone(d) {
 }
 
 
-export function checkContent(id, languages, api=httpApi) {
+export function checkContent(repos, languages, api=httpApi) {
   return dispatch => Promise.resolve()
     .then(() => checkContentBusy())
     .then(dispatch)
-    .then(() => api.checkContent(id, languages))
+    .then(() => api.checkContent(repos, languages))
     .then(d => checkContentDone(d))
     .then(dispatch);
 }

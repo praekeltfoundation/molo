@@ -29,7 +29,7 @@ describe(`actions`, () => {
         }])
       });
 
-      return captureDispatches(actions.chooseSite('foo-id', api))
+      return captureDispatches(actions.chooseSite('foo.com', api))
         .then(action => expect(action).to.deep.equal([{
           type: 'CHOOSE_SITE/BUSY'
         }, {
@@ -69,19 +69,12 @@ describe(`actions`, () => {
         })
       });
 
-      let languages = [{
-        id: 'en',
-        name: 'English',
-        isMain: true,
-        isChosen: false
-      }, {
-        id: 'sw',
-        name: 'Swahili',
-        isMain: false,
-        isChosen: false
-      }];
+      let {
+        repos,
+        languages
+      } = fixtures('state');
 
-      return captureDispatches(actions.importContent('foo-id', languages, api))
+      return captureDispatches(actions.importContent(repos, languages, api))
         .then(action => expect(action).to.deep.equal([{
           type: 'IMPORT_CONTENT/BUSY'
         }, {
@@ -107,19 +100,12 @@ describe(`actions`, () => {
         })
       });
 
-      let languages = [{
-        id: 'en',
-        name: 'English',
-        isMain: true,
-        isChosen: false
-      }, {
-        id: 'sw',
-        name: 'Swahili',
-        isMain: false,
-        isChosen: false
-      }];
+      let {
+        repos,
+        languages
+      } = fixtures('state');
 
-      return captureDispatches(actions.checkContent('foo-id', languages, api))
+      return captureDispatches(actions.checkContent(repos, languages, api))
         .then(action => expect(action).to.deep.equal([{
           type: 'CHECK_CONTENT/BUSY'
         }, {
