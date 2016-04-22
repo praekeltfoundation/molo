@@ -20,28 +20,25 @@ export function updateSites(api=httpApi) {
 
 
 export function chooseSite(id, api=httpApi) {
-  return dispatch => Promise.all([
-    chooseSiteLoading(dispatch, id, api),
-    chooseSiteDone(dispatch, id, api)
-  ]);
-}
-
-
-function chooseSiteLoading(dispatch, id, api) {
-  return Promise.resolve({
-      type: 'CHOOSE_SITE/BUSY'
-    })
+  return dispatch => Promise.resolve()
+    .then(() => chooseSiteBusy())
+    .then(dispatch)
+    .then(() => api.languages())
+    .then(languages => chooseSiteDone(languages))
     .then(dispatch);
 }
 
 
-function chooseSiteDone(dispatch, id, api) {
-  return api.languages(id)
-    .then(languages => ({
-      type: 'CHOOSE_SITE/DONE',
-      payload: {languages: languages}
-    }))
-    .then(dispatch);
+function chooseSiteBusy() {
+  return {type: 'CHOOSE_SITE/BUSY'};
+}
+
+
+function chooseSiteDone(languages) {
+  return {
+    type: 'CHOOSE_SITE/DONE',
+    payload: {languages}
+  };
 }
 
 
@@ -75,52 +72,46 @@ export function toggleLanguageChosen(id) {
 
 
 export function importContent(id, languages, api=httpApi) {
-  return dispatch => Promise.all([
-    importContentLoading(dispatch, id, languages, api),
-    importContentDone(dispatch, id, languages, api)
-  ]);
-}
-
-
-function importContentLoading(dispatch, id, languages, api) {
-  return Promise.resolve({
-      type: 'IMPORT_CONTENT/BUSY'
-    })
+  return dispatch => Promise.resolve()
+    .then(() => importContentBusy())
+    .then(dispatch)
+    .then(() => api.importContent(id, languages))
+    .then(d => importContentDone(d))
     .then(dispatch);
 }
 
 
-function importContentDone(dispatch, id, languages, api) {
-  return api.importContent(id, languages)
-    .then(d => ({
-      type: 'IMPORT_CONTENT/DONE',
-      payload: {errors: d.errors}
-    }))
-    .then(dispatch);
+function importContentBusy() {
+  return {type: 'IMPORT_CONTENT/BUSY'};
+}
+
+
+function importContentDone(d) {
+  return {
+    type: 'IMPORT_CONTENT/DONE',
+    payload: {errors: d.errors}
+  };
 }
 
 
 export function checkContent(id, languages, api=httpApi) {
-  return dispatch => Promise.all([
-    checkContentLoading(dispatch, id, languages, api),
-    checkContentDone(dispatch, id, languages, api)
-  ]);
-}
-
-
-function checkContentLoading(dispatch, id, languages, api) {
-  return Promise.resolve({
-      type: 'CHECK_CONTENT/BUSY'
-    })
+  return dispatch => Promise.resolve()
+    .then(() => checkContentBusy())
+    .then(dispatch)
+    .then(() => api.checkContent(id, languages))
+    .then(d => checkContentDone(d))
     .then(dispatch);
 }
 
 
-function checkContentDone(dispatch, id, languages, api) {
-  return api.checkContent(id, languages)
-    .then(d => ({
-      type: 'CHECK_CONTENT/DONE',
-      payload: {errors: d.errors}
-    }))
-    .then(dispatch);
+function checkContentBusy() {
+  return {type: 'CHECK_CONTENT/BUSY'};
+}
+
+
+function checkContentDone(d) {
+  return {
+    type: 'CHECK_CONTENT/DONE',
+    payload: {errors: d.errors}
+  };
 }

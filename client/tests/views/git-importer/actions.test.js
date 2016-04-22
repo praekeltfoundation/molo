@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import * as actions from 'src/views/git-importer/actions';
 import fixtures from 'tests/views/git-importer/fixtures';
 import { conj } from 'src/utils';
-import { doThunk, resolvesTo } from 'tests/utils';
+import { captureDispatches, resolvesTo } from 'tests/utils';
 
 
 describe(`actions`, () => {
@@ -18,8 +18,8 @@ describe(`actions`, () => {
         }])
       });
 
-      return doThunk(actions.updateSites(api))
-        .then(action => expect(action).to.deep.equal({
+      return captureDispatches(actions.updateSites(api))
+        .then(action => expect(action).to.deep.equal([{
           type: 'UPDATE_SITES',
           payload: {
             sites: [{
@@ -30,7 +30,7 @@ describe(`actions`, () => {
               name: 'bar'
             }]
           }
-        }));
+        }]));
       });
   });
 
@@ -50,7 +50,7 @@ describe(`actions`, () => {
         }])
       });
 
-      return doThunk(actions.chooseSite('foo-id', api))
+      return captureDispatches(actions.chooseSite('foo-id', api))
         .then(action => expect(action).to.deep.equal([{
           type: 'CHOOSE_SITE/BUSY'
         }, {
@@ -95,7 +95,7 @@ describe(`actions`, () => {
         isChosen: false
       }];
 
-      return doThunk(actions.importContent('foo-id', languages, api))
+      return captureDispatches(actions.importContent('foo-id', languages, api))
         .then(action => expect(action).to.deep.equal([{
           type: 'IMPORT_CONTENT/BUSY'
         }, {
@@ -133,7 +133,7 @@ describe(`actions`, () => {
         isChosen: false
       }];
 
-      return doThunk(actions.checkContent('foo-id', languages, api))
+      return captureDispatches(actions.checkContent('foo-id', languages, api))
         .then(action => expect(action).to.deep.equal([{
           type: 'CHECK_CONTENT/BUSY'
         }, {
