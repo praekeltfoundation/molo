@@ -1,5 +1,4 @@
-import find from 'lodash/find';
-import { conj, ensure } from 'src/utils';
+import { conj } from 'src/utils';
 
 
 export default function gitImporter(state, action) {
@@ -45,10 +44,10 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'CHANGE_SITE':
+    case 'CHANGE_SITE_URL':
       return conj(state, {
         data: conj(state.data, {
-          site: ensure(find(state.data.sites, {id: action.payload.id}), null)
+          siteUrl: action.payload.url
         })
       });
 

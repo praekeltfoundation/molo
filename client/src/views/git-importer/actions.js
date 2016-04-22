@@ -4,7 +4,15 @@ import * as httpApi from 'src/views/git-importer/api';
 export function expandStep(name) {
   return {
     type: 'EXPAND_STEP',
-    payload: {name: name}
+    payload: {name}
+  };
+}
+
+
+export function changeSiteUrl(url) {
+  return {
+    type: 'CHANGE_SITE_URL',
+    payload: {url}
   };
 }
 
