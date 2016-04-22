@@ -53,11 +53,7 @@ function gitImporterFixtures(name) {
           isMain: false,
           isChosen: true
         }],
-        site: {
-          id: 'foo-id',
-          name: 'foo'
-        },
-        sites: [{
+        repos: [{
           id: 'foo-id',
           name: 'foo'
         }, {
