@@ -61,9 +61,9 @@ describe(`ChooseSite`, () => {
     expect(button.prop('disabled')).to.be.true;
   });
 
-  it(`should disable 'Next' button if siteUrl is null`, () => {
+  it(`should disable 'Next' button if siteUrl is empty`, () => {
     const state = fixtures('git-importer');
-    state.siteUrl = null;
+    state.siteUrl = '';
 
     let el = draw(state);
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import isNull from 'lodash/isNull';
 
 
 const ChooseSite = (d) => (
@@ -14,7 +13,7 @@ const ChooseSite = (d) => (
     <button
       className="o-button c-choose-site__next"
       type="button"
-      disabled={isNull(d.siteUrl) || d.status === 'CHOOSE_SITE_BUSY'}
+      disabled={!d.siteUrl || d.status === 'CHOOSE_SITE_BUSY'}
       onClick={() => d.actions.chooseSite(d.siteUrl)}>
       {d.status === 'CHOOSE_SITE_BUSY'
         ? `Fetching languages...`
