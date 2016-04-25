@@ -89,7 +89,7 @@ class ContentImportAPITestCase(
         self.client.login(username='testuser', password='1234')
 
         repos = fake_repos('r1', 'r2')
-        api.get_repos = lambda names, **kw: find_repos(repos, names)
+        api.get_repos_by_name = lambda names, **kw: find_repos(repos, names)
 
         api.get_languages = lambda wses: {
             repos: {
