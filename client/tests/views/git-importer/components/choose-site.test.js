@@ -6,38 +6,35 @@ import fixtures from 'tests/views/git-importer/fixtures';
 import ChooseSite from 'src/views/git-importer/components/choose-site';
 
 
+function draw(state) {
+  return mount(
+    <ChooseSite
+      status={state.status}
+      siteUrl={state.siteUrl}
+      repos={state.repos}
+      actions={state.actions} />
+  );
+}
+
+
 describe(`ChooseSite`, () => {
-  it(`should call changeSite when user chooses a site`, () => {
+  it(`should call changeSiteUrl when user changes site url`, () => {
     const state = fixtures('git-importer');
-    state.actions.changeSite = spy();
+    state.actions.changeSiteUrl = spy();
 
-    state.sites = [{
-      id: 'foo-id',
-      name: 'foo'
-    }];
+    state.siteUrl = 'foo.com';
 
-    const el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    let el = draw(state);
 
-    el.find('.c-choose-site__search')
-      .find('.o-search__input')
+    el.find('.c-choose-site__input')
       .simulate('change', {
-        target: {value: 'fo'}
+        target: {value: 'bar.com'}
       });
 
-    el.find('.c-choose-site__search')
-      .find('.o-search__anchor')
-      .at(0)
-      .simulate('click');
-
-    expect(state.actions.changeSite.calledWith('foo-id'))
+    expect(state.actions.changeSiteUrl.calledWith('bar.com'))
       .to.be.true;
 
-    expect(state.actions.changeSite.calledOnce)
+    expect(state.actions.changeSiteUrl.calledOnce)
       .to.be.true;
   });
 
@@ -45,13 +42,7 @@ describe(`ChooseSite`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-site__next');
     expect(button.text()).to.equal('Next');
     expect(button.prop('disabled')).to.be.false;
@@ -70,31 +61,18 @@ describe(`ChooseSite`, () => {
     expect(button.prop('disabled')).to.be.true;
   });
 
-  it(`should disable 'Next' button if site is null`, () => {
+  it(`should disable 'Next' button if siteUrl is null`, () => {
     const state = fixtures('git-importer');
-    state.site = null;
+    state.siteUrl = null;
 
-    let el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    let el = draw(state);
 
     expect(el.find('.c-choose-site__next').prop('disabled'))
       .to.be.true;
 
-    state.site = {
-      id: 'foo-id',
-      name: 'foo'
-    };
+    state.siteUrl = 'bar.com';
 
-    el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    el = draw(state);
 
     expect(el.find('.c-choose-site__next').prop('disabled'))
       .to.be.false;
@@ -104,22 +82,14 @@ describe(`ChooseSite`, () => {
     const state = fixtures('git-importer');
     state.actions.chooseSite = spy();
 
-    state.site = {
-      id: 'foo-id',
-      name: 'foo'
-    };
+    state.siteUrl = 'foo.com';
 
-    const el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    let el = draw(state);
 
     el.find('.c-choose-site__next')
       .simulate('click');
 
-    expect(state.actions.chooseSite.calledWith('foo-id'))
+    expect(state.actions.chooseSite.calledWith('foo.com'))
       .to.be.true;
 
     expect(state.actions.chooseSite.calledOnce)

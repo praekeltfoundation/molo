@@ -6,6 +6,18 @@ import fixtures from 'tests/views/git-importer/fixtures';
 import ChooseLanguages from 'src/views/git-importer/components/choose-languages';
 
 
+function draw(state) {
+  return mount(
+    <ChooseLanguages
+      siteUrl={state.siteUrl}
+      repos={state.repos}
+      status={state.status}
+      actions={state.actions}
+      languages={state.languages} />
+  );
+}
+
+
 describe(`ChooseLanguages`, () => {
   it(`should render the available languages`, () => {
     const state = fixtures('git-importer');
@@ -22,12 +34,7 @@ describe(`ChooseLanguages`, () => {
       isChosen: false
     }];
 
-    const el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
+    let el = draw(state);
 
     expect(el.find('.c-choose-languages__language')
       .at(0)
@@ -54,12 +61,7 @@ describe(`ChooseLanguages`, () => {
       isMain: false
     }];
 
-    const el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
+    let el = draw(state);
 
     el.find('.c-choose-languages__language')
       .find('input')
@@ -79,17 +81,12 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     let importContent = state.actions.importContent = spy();
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
+    let el = draw(state);
 
     el.find('.c-choose-languages__import')
       .simulate('click');
 
-    expect(importContent.calledWith(state.site.id, state.languages))
+    expect(importContent.calledWith(state.repos, state.languages))
       .to.be.true;
 
     expect(importContent.calledOnce)
@@ -100,17 +97,12 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     let checkContent = state.actions.checkContent = spy();
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
+    let el = draw(state);
 
     el.find('.c-choose-languages__check')
       .simulate('click');
 
-    expect(checkContent.calledWith(state.site.id, state.languages))
+    expect(checkContent.calledWith(state.repos, state.languages))
       .to.be.true;
 
     expect(checkContent.calledOnce)
@@ -121,25 +113,14 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Import');
     expect(button.prop('disabled')).to.be.false;
 
     state.status = 'IMPORT_CONTENT_BUSY';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
+    el = draw(state);
 
     button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Importing content...');
@@ -150,25 +131,13 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Import');
 
     state.status = 'IMPORT_CONTENT_COMPLETE';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    el = draw(state);
     button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Import complete');
   });
@@ -177,25 +146,13 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Import');
 
     state.status = 'IMPORT_CONTENT_ERROR';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    el = draw(state);
     button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Could not import content');
   });
@@ -205,37 +162,19 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-languages__import');
     expect(button.prop('disabled')).to.be.false;
 
     state.status = 'CHECK_CONTENT_COMPLETE';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    el = draw(state);
     button = el.find('.c-choose-languages__import');
     expect(button.prop('disabled')).to.be.false;
 
     state.status = 'CHECK_CONTENT_ERROR';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    el = draw(state);
     button = el.find('.c-choose-languages__import');
     expect(button.prop('disabled')).to.be.true;
   });
@@ -244,26 +183,14 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-languages__check');
     expect(button.text()).to.equal('Check for errors');
     expect(button.prop('disabled')).to.be.false;
 
     state.status = 'CHECK_CONTENT_BUSY';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    el = draw(state);
     button = el.find('.c-choose-languages__check');
     expect(button.text()).to.equal('Checking for errors...');
     expect(button.prop('disabled')).to.be.true;
@@ -273,25 +200,13 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-languages__check');
     expect(button.text()).to.equal('Check for errors');
 
     state.status = 'CHECK_CONTENT_COMPLETE';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    el = draw(state);
     button = el.find('.c-choose-languages__check');
     expect(button.text()).to.equal('No errors found');
   });
@@ -300,25 +215,13 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-languages__check');
     expect(button.text()).to.equal('Check for errors');
 
     state.status = 'CHECK_CONTENT_ERROR';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    el = draw(state);
     button = el.find('.c-choose-languages__check');
     expect(button.text()).to.equal('Errors found');
   });
@@ -327,25 +230,13 @@ describe(`ChooseLanguages`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-languages__check');
     expect(button.prop('disabled')).to.be.false;
 
     state.status = 'CHECK_CONTENT_ERROR';
 
-    el = mount(
-      <ChooseLanguages
-        site={state.site}
-        status={state.status}
-        actions={state.actions}
-        languages={state.languages} />);
-
+    el = draw(state);
     button = el.find('.c-choose-languages__check');
     expect(button.prop('disabled')).to.be.true;
   });

@@ -16,3 +16,11 @@ export function doThunk(fn, ret=identity) {
 export function message(s, ...args) {
   return dedent(s, ...args).replace('\n', ' ');
 }
+
+
+export function captureDispatches(action) {
+  let dispatches = [];
+  return Promise.resolve(d => dispatches.push(d))
+    .then(action)
+    .then(resolvesTo(dispatches));
+}

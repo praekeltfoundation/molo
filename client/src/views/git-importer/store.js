@@ -10,8 +10,8 @@ const initialState = () => ({
     lastStep: 'site'
   },
   data: {
-    sites: [],
-    site: null,
+    siteUrl: '',
+    repos: [],
     languages: [],
     errors: []
   }

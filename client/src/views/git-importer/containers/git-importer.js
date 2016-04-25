@@ -10,8 +10,8 @@ function stateToProps(state) {
   return {
     status: state.ui.status,
     errors: state.data.errors,
-    site: state.data.site,
-    sites: state.data.sites,
+    siteUrl: state.data.siteUrl,
+    repos: state.data.repos,
     languages: state.data.languages,
     steps: mapValues(STEPS, (_, stepName) => ({
         isDisabled: stepIsDisabled(state, stepName),
