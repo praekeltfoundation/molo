@@ -7,6 +7,8 @@ from elasticgit.tests.base import ModelBaseTest
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.api import Repo
+from molo.core.content_import.errors import (
+    InvalidParametersError, SiteResponseError)
 
 
 @pytest.mark.django_db
@@ -17,14 +19,69 @@ class ContentImportAPITestCase(
         self.client = APIClient()
 
     @mock.patch('molo.core.content_import.views.api')
-    def test_get_repos(self, api):
+    def test_get_repo_summaries(self, api):
+        def get_repo_summaries(d):
+            calls.append(d)
+            return ['foo']
+
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
-        api.get_repo_summaries = lambda: ['foo']
-        resp = self.client.get('/import/repos/')
+        calls = []
+        api.get_repo_summaries = get_repo_summaries
+        resp = self.client.get('/import/repos/', {
+            'path': 'bar/baz',
+            'port': '3000',
+            'host': 'foo.com',
+            'protocol': 'https'
+        })
+
+        self.assertEqual(calls, [{
+            'path': 'bar/baz',
+            'port': '3000',
+            'host': 'foo.com',
+            'protocol': 'https'
+        }])
+
         self.assertEquals(resp.data, {'repos': ['foo']})
         self.assertEquals(resp.status_code, 200)
+
+    @mock.patch('molo.core.content_import.views.api')
+    def test_get_repo_summaries_site_response_error(self, api):
+        def get_repo_summaries(*a, **kw):
+            raise SiteResponseError(':/')
+
+        User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
+        self.client.login(username='testuser', password='1234')
+
+        api.get_repo_summaries = get_repo_summaries
+        resp = self.client.get('/import/repos/', {
+            'path': 'bar/baz',
+            'port': '3000',
+            'host': 'foo.com',
+            'protocol': 'https'
+        })
+
+        self.assertEquals(resp.data, {'type': 'site_response_error'})
+        self.assertEquals(resp.status_code, 422)
+
+    @mock.patch('molo.core.content_import.views.api')
+    def test_get_repo_summaries_invalid_parameters(self, api):
+        def get_repo_summaries(*a, **kw):
+            raise InvalidParametersError(':/', [{'type': 'fake_error'}])
+
+        User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
+        self.client.login(username='testuser', password='1234')
+
+        api.get_repo_summaries = get_repo_summaries
+        resp = self.client.get('/import/repos/')
+
+        self.assertEquals(resp.data, {
+            'type': 'invalid_parameters',
+            'errors': [{'type': 'fake_error'}]
+        })
+
+        self.assertEquals(resp.status_code, 422)
 
     @mock.patch('molo.core.content_import.views.api')
     def test_get_languages(self, api):
@@ -113,6 +170,33 @@ class ContentImportAPITestCase(
         self.assertEquals(resp.status_code, 422)
 
     @mock.patch('molo.core.content_import.views.api')
+    def test_import_content_invalid_parameters(self, api):
+        def validate_content(*a, **kw):
+            raise InvalidParametersError(':/', [{'type': 'fake_error'}])
+
+        User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
+        self.client.login(username='testuser', password='1234')
+
+        imports = []
+        repos = fake_repos('r1', 'r2')
+        api.get_repos = lambda names, **kw: find_repos(repos, names)
+
+        api.validate_content = validate_content
+
+        resp = self.client.put('/import/content/', data={
+            'repos': ['r1', 'r2'],
+            'locales': ['en', 'fr']
+        }, format='json')
+
+        self.assertEquals(resp.data, {
+            'type': 'invalid_parameters',
+            'errors': [{'type': 'fake_error'}],
+        })
+
+        self.assertEqual(imports, [])
+        self.assertEquals(resp.status_code, 422)
+
+    @mock.patch('molo.core.content_import.views.api')
     def test_validate_content(self, api):
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
@@ -138,6 +222,33 @@ class ContentImportAPITestCase(
         })
 
         self.assertEquals(resp.status_code, 200)
+
+    @mock.patch('molo.core.content_import.views.api')
+    def test_validate_content_invalid_parameters(self, api):
+        def validate_content(*a, **kw):
+            raise InvalidParametersError(':/', [{'type': 'fake_error'}])
+
+        User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
+        self.client.login(username='testuser', password='1234')
+
+        imports = []
+        repos = fake_repos('r1', 'r2')
+        api.get_repos = lambda names, **kw: find_repos(repos, names)
+
+        api.validate_content = validate_content
+
+        resp = self.client.post('/import/validation/', data={
+            'repos': ['r1', 'r2'],
+            'locales': ['en', 'fr']
+        }, format='json')
+
+        self.assertEquals(resp.data, {
+            'type': 'invalid_parameters',
+            'errors': [{'type': 'fake_error'}],
+        })
+
+        self.assertEqual(imports, [])
+        self.assertEquals(resp.status_code, 422)
 
 
 def fake_repos(*names):
