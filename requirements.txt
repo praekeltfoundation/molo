@@ -11,7 +11,7 @@ django-mptt
 requests
 elastic-git
 unicore.content
-wagtail==1.4.1
+wagtail==1.4.3
 responses
 babel
 wagtailmodeladmin

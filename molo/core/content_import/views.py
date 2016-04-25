@@ -51,8 +51,8 @@ def get_repo_languages(request):
 @permission_classes((IsAuthenticated,))
 def import_content(request):
     data = request.data
-    names, locales = data['repos'], data['locales']
-    repos = api.get_repos(names)
+    repo_data, locales = data['repos'], data['locales']
+    repos = api.get_repos(repo_data)
 
     try:
         result = api.validate_content(repos, locales)
@@ -75,8 +75,8 @@ def import_content(request):
 @permission_classes((IsAuthenticated,))
 def import_validate(request):
     data = request.data
-    names, locales = data['repos'], data['locales']
-    repos = api.get_repos(names)
+    repo_data, locales = data['repos'], data['locales']
+    repos = api.get_repos(repo_data)
 
     try:
         result = api.validate_content(repos, locales)
@@ -84,7 +84,7 @@ def import_validate(request):
         return invalid_parameters_response(e)
 
     return Response(data={
-        'repos': names,
+        'repos': repo_data,
         'locales': locales,
         'errors': result['errors']
     })

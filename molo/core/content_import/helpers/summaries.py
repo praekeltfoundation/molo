@@ -24,4 +24,4 @@ def parse_repo_summaries_response(resp):
 
 def is_error_response(resp):
     code = resp.status_code
-    return 400 <= code < 500 or 500 <= code < 600
+    return 400 <= code < 600
