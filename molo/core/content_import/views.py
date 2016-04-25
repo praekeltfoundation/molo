@@ -10,14 +10,14 @@ from rest_framework.decorators import parser_classes
 from unicore.content.models import Localisation
 
 from molo.core.content_import import api
-from molo.core.content_import.errors import SiteResponseError
+from molo.core.content_import.errors import (
+    InvalidParametersError, SiteResponseError)
 
 
 @api_view(['GET'])
 def get_repo_summaries(request):
     params = request.query_params
 
-    # TODO handle `InvalidParameterError`s
     try:
         return Response({
             'repos': api.get_repo_summaries({
@@ -29,6 +29,8 @@ def get_repo_summaries(request):
         })
     except SiteResponseError:
         return Response(status=422, data={'type': 'site_response_error'})
+    except InvalidParametersError as e:
+        return invalid_parameters_response(e)
 
 
 @api_view(['GET'])
@@ -52,8 +54,10 @@ def import_content(request):
     repo_data, locales = data['repos'], data['locales']
     repos = api.get_repos(repo_data)
 
-    # TODO handle `InvalidParameterError`s
-    result = api.validate_content(repos, locales)
+    try:
+        result = api.validate_content(repos, locales)
+    except InvalidParametersError as e:
+        return invalid_parameters_response(e)
 
     if result['errors']:
         return Response(status=422, data={
@@ -74,11 +78,20 @@ def import_validate(request):
     repo_data, locales = data['repos'], data['locales']
     repos = api.get_repos(repo_data)
 
-    # TODO handle `InvalidParameterError`s
-    result = api.validate_content(repos, locales)
+    try:
+        result = api.validate_content(repos, locales)
+    except InvalidParametersError as e:
+        return invalid_parameters_response(e)
 
     return Response(data={
         'repos': repo_data,
         'locales': locales,
         'errors': result['errors']
+    })
+
+
+def invalid_parameters_response(error):
+    return Response(status=422, data={
+        'type': 'invalid_parameters',
+        'errors': error.errors,
     })
