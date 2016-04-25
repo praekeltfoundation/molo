@@ -63,7 +63,7 @@ class TestValidateContent(
             'type': 'multiple_main_languages_given'
         }])
 
-    def test_languages_not_in_repo(self):
+    def test_main_not_in_repos(self):
         def run():
             api.validate_content([repo1, repo2], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
@@ -80,8 +80,8 @@ class TestValidateContent(
         self.add_languages(ws1, 'eng_GB', 'spa_MX', 'spa_CU')
         self.create_category(ws1, locale='eng_GB')
 
-        self.add_languages(ws2, 'spa_ES')
-        self.create_category(ws2, locale='spa_ES')
+        self.add_languages(ws2, 'spa_MX')
+        self.create_category(ws2, locale='spa_MX')
 
         error = self.catch(InvalidParametersError, run)
 
@@ -90,16 +90,16 @@ class TestValidateContent(
             "Invalid parameters given for content validation")
 
         self.assertEqual(error.errors, [{
-            'type': 'languages_not_in_repo',
+            'type': 'main_language_not_in_repo',
             'details': {
                 'repo': 'repo1',
-                'locales': ['spa_ES']
+                'locale': 'spa_ES'
             }
         }, {
-            'type': 'languages_not_in_repo',
+            'type': 'main_language_not_in_repo',
             'details': {
                 'repo': 'repo2',
-                'locales': ['eng_GB', 'spa_MX']
+                'locale': 'spa_ES'
             }
         }])
 
@@ -118,12 +118,37 @@ class TestValidateContent(
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}])
 
         self.assertEquals(res, {
+            'warnings': [],
             'errors': [{
                 'type': 'wrong_main_language_exist_in_wagtail',
                 'details': {
                     'repo': 'repo1',
                     'lang': 'English',
                     'selected_lang': 'Spanish'
+                }
+            }]
+        })
+
+    def test_strays(self):
+        self.english = SiteLanguage.objects.create(locale='en')
+
+        ws1 = self.create_workspace(prefix='1')
+        repo1 = Repo(ws1, 'repo1', 'Repo 1')
+
+        self.add_languages(ws1, 'eng_GB')
+        self.create_category(ws1, locale='eng_GB')
+
+        res = api.validate_content([repo1], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        self.assertEquals(res, {
+            'errors': [],
+            'warnings': [{
+                'type': 'language_not_in_repo',
+                'details': {
+                    'repo': 'repo1',
+                    'locale': 'spa_ES'
                 }
             }]
         })
@@ -173,6 +198,7 @@ class TestValidateContent(
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
         self.assertEquals(res, {
+            'warnings': [],
             'errors': [{
                 'type': 'no_primary_category',
                 'details': {
@@ -238,6 +264,7 @@ class TestValidateContent(
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
         self.assertEquals(res, {
+            'warnings': [],
             'errors': [{
                 'type': 'no_source_found_for_category',
                 'details': {

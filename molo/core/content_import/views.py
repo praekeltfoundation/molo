@@ -62,11 +62,17 @@ def import_content(request):
     if result['errors']:
         return Response(status=422, data={
             'type': 'validation_failure',
-            'errors': result['errors']
+            'errors': result['errors'],
+            'warnings': result['warnings']
         })
     else:
         api.import_content(repos, locales)
-        return Response(status=204)
+        return Response(status=200, data={
+            'repos': repo_data,
+            'locales': locales,
+            'errors': [],
+            'warnings': result['warnings']
+        })
 
 
 @api_view(['POST'])
@@ -86,7 +92,8 @@ def import_validate(request):
     return Response(data={
         'repos': repo_data,
         'locales': locales,
-        'errors': result['errors']
+        'errors': result['errors'],
+        'warnings': result['warnings']
     })
 
 

@@ -56,14 +56,17 @@ def validate_content(repos, locales):
             "Invalid parameters given for content validation",
             result['errors'])
 
-    errors = [
-        error
-        for repo in repos
-        for error in validate_repo(repo, main, children)]
+    results = [validate_repo(repo, main, children) for repo in repos]
 
-    # returns a dictionary to make provision for warnings
     return {
-        'errors': errors
+        'warnings': [
+            warning
+            for res in results
+            for warning in res['warnings']],
+        'errors': [
+            error
+            for res in results
+            for error in res['errors']]
     }
 
 

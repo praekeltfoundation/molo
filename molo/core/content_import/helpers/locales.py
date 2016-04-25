@@ -14,14 +14,25 @@ def get_locales(repos):
     }
 
 
-def locales_not_in_repo(repo, locales):
+def locale_in_repo(repo, locale_key):
+    result = parse_repo_locales(repo)
+    repo_locales = set(locale['locale'] for locale in result['locales'])
+    return locale_key in repo_locales
+
+
+def filter_locales_in_repo(repo, locales):
+    result = parse_repo_locales(repo)
+    repo_locales = set(locale['locale'] for locale in result['locales'])
+    return [locale for locale in locales if locale in repo_locales]
+
+
+def partition_locales_in_repo(repo, locales):
     result = parse_repo_locales(repo)
     repo_locales = set(locale['locale'] for locale in result['locales'])
 
-    return [
-        locale['locale']
-        for locale in locales
-        if locale['locale'] not in repo_locales]
+    return (
+        [locale for locale in locales if locale in repo_locales],
+        [locale for locale in locales if locale not in repo_locales])
 
 
 def locales_from_parsed(parsed, uniqs):
@@ -29,7 +40,6 @@ def locales_from_parsed(parsed, uniqs):
         locale
         for d in parsed
         for locale in d['locales']
-        if locale['locale'] in uniqs
     ])
 
 

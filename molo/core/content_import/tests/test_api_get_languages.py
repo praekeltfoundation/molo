@@ -103,6 +103,12 @@ class TestGetLanguages(
 
         self.assertEquals(res, {
             'locales': [{
+                'locale': 'eng_GB',
+                'name': 'English (United Kingdom)'
+            }, {
+                'locale': 'spa_CU',
+                'name': 'Spanish (Cuba)'
+            }, {
                 'locale': 'spa_ES',
                 'name': 'Spanish (Spain)'
             }, {

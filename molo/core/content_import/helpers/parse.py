@@ -1,7 +1,7 @@
 from urlparse import ParseResult, urlunparse
 
 from molo.core.content_import.utils import conj, omit_nones
-from molo.core.content_import.helpers.locales import locales_not_in_repo
+from molo.core.content_import.helpers.locales import locale_in_repo
 
 
 def parse_get_repo_summaries(url_parts):
@@ -22,7 +22,9 @@ def parse_get_repo_summaries(url_parts):
 
 def parse_validate_content(repos, locales):
     main, errors = get_main(locales)
-    errors = errors + check_languages_not_in_repos(repos, locales)
+
+    if main is not None:
+        errors = errors + check_main_language_in_repos(repos, main)
 
     return {
         'main': main,
@@ -65,19 +67,18 @@ def get_required_param_errors(params):
     } for name, v in params.iteritems() if v is None]
 
 
-def check_languages_not_in_repos(repos, locales):
-    errors = [check_languages_not_in_repo(repo, locales) for repo in repos]
+def check_main_language_in_repos(repos, main):
+    errors = [check_main_language_in_repo(repo, main) for repo in repos]
     return [error for error in errors if error is not None]
 
 
-def check_languages_not_in_repo(repo, locales):
-    missing = locales_not_in_repo(repo, locales)
-    if missing:
+def check_main_language_in_repo(repo, main):
+    if not locale_in_repo(repo, main):
         return {
-            'type': 'languages_not_in_repo',
+            'type': 'main_language_not_in_repo',
             'details': {
                 'repo': repo.name,
-                'locales': missing
+                'locale': main
             }
         }
     else:

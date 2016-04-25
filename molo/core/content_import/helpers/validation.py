@@ -1,8 +1,9 @@
 from babel import Locale
 
-from molo.core.models import SiteLanguage
-
 from unicore.content.models import Category, Page
+
+from molo.core.models import SiteLanguage
+from molo.core.content_import.helpers.locales import partition_locales_in_repo
 
 
 class ContentImportValidation(object):
@@ -11,9 +12,14 @@ class ContentImportValidation(object):
     def __init__(self, repo):
         self.repo = repo
         self.ws = self.repo.workspace
+        self.errors = []
+        self.warnings = []
 
     def validate_for(self, main, children):
-        self.errors = []
+        children, strays = partition_locales_in_repo(self.repo, children)
+
+        self.warnings.extend(
+            self.stray_locale_warning(stray) for stray in strays)
 
         self.validate_wagtail_has_no_language(main)
         for l in [main] + children:
@@ -21,7 +27,19 @@ class ContentImportValidation(object):
             self.validate_page_primary_category_exists(l)
             self.validate_translated_content_source_exists(l, main)
 
-        return self.errors
+        return {
+            'errors': self.errors,
+            'warnings': self.warnings
+        }
+
+    def stray_locale_warning(self, stray):
+        return {
+            'type': 'language_not_in_repo',
+            'details': {
+                'repo': self.repo.name,
+                'locale': stray
+            }
+        }
 
     def validate_wagtail_has_no_language(self, main):
         main = Locale.parse(main).language

@@ -22,12 +22,6 @@ class TestImportContent(
         ModelBaseTest, MoloTestCaseMixin, ElasticGitTestMixin):
 
     def setUp(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
-        self.spanish = SiteLanguage.objects.create(
-            locale='es',
-        )
         self.mk_main()
 
     def test_no_main_language(self):
@@ -76,7 +70,7 @@ class TestImportContent(
             'type': 'multiple_main_languages_given'
         }])
 
-    def test_languages_not_in_repo(self):
+    def test_main_not_in_repos(self):
         def run():
             api.import_content([repo1, repo2], [
                 {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
@@ -93,8 +87,8 @@ class TestImportContent(
         self.add_languages(ws1, 'eng_GB', 'spa_MX', 'spa_CU')
         self.create_category(ws1, locale='eng_GB')
 
-        self.add_languages(ws2, 'spa_ES')
-        self.create_category(ws2, locale='spa_ES')
+        self.add_languages(ws2, 'spa_MX')
+        self.create_category(ws2, locale='spa_MX')
 
         error = self.catch(InvalidParametersError, run)
 
@@ -103,20 +97,22 @@ class TestImportContent(
             "Invalid parameters given for content import")
 
         self.assertEqual(error.errors, [{
-            'type': 'languages_not_in_repo',
+            'type': 'main_language_not_in_repo',
             'details': {
                 'repo': 'repo1',
-                'locales': ['spa_ES']
+                'locale': 'spa_ES'
             }
         }, {
-            'type': 'languages_not_in_repo',
+            'type': 'main_language_not_in_repo',
             'details': {
                 'repo': 'repo2',
-                'locales': ['eng_GB', 'spa_MX']
+                'locale': 'spa_ES'
             }
         }])
 
     def test_import_sections_for_primary_language(self):
+        SiteLanguage.objects.create(locale='en')
+        SiteLanguage.objects.create(locale='es')
         repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
         ws1 = repo1.workspace
         self.add_languages(ws1, 'eng_GB', 'spa_ES')
@@ -445,3 +441,20 @@ class TestImportContent(
         self.assertEquals(
             ArticlePage.objects.all().first().image.title,
             'some-uuid-for-the-image')
+
+    def test_strays_omitted(self):
+        repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
+        ws1 = repo1.workspace
+
+        self.add_languages(ws1, 'eng_GB')
+        self.create_category(ws1, locale='eng_GB', title='A Eng')
+
+        api.import_content([repo1], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        languages = SiteLanguage.objects.all().order_by('locale')
+        sections = SectionPage.objects.all().order_by('title', 'uuid')
+
+        self.assertEqual(languages.count(), 1)
+        self.assertEqual(sections.all().count(), 1)
