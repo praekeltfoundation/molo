@@ -24,7 +24,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_main()
 
         self.yourmind = self.mk_section(
-            self.main, title='Your mind')
+            self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
 
@@ -38,15 +38,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_articles(self.yourmind_sub, count=10)
 
         response = self.client.get('/')
+        print response
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'Home')
 
-        response = self.client.get('/your-mind/')
+        response = self.client.get('/sections/your-mind/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, '<span class="active">Your mind</span>')
 
         response = self.client.get(
-            '/your-mind/your-mind-subsection/test-page-1/')
+            '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(
             response,
@@ -56,7 +57,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.footer = FooterPage(
             title='Footer Page',
             slug='footer-page')
-        self.main.add_child(instance=self.footer)
+        self.footer_index.add_child(instance=self.footer)
         footer_french = self.mk_article_translation(
             self.footer, self.french,
             title='Footer Page in french')
@@ -65,13 +66,13 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Footer Page')
         self.assertContains(
             response,
-            '<a href="/footer-page/">Footer Page</a>')
+            '<a href="/footer-pages/footer-page/">Footer Page</a>')
         self.assertNotContains(
             response,
             '<a href="/%s/">Footer Page in french</a>' % footer_french.slug)
 
         response = self.client.get(
-            '/your-mind/your-mind-subsection/')
+            '/sections/your-mind/your-mind-subsection/')
         self.assertContains(response, 'Footer Page')
         self.assertNotContains(response, 'Footer Page in french')
 
@@ -85,12 +86,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Your mind')
         self.assertContains(
             response,
-            '<a href="/your-mind/">Your mind</a>')
+            '<a href="/sections/your-mind/">Your mind</a>')
         self.assertContains(response, '<div class="articles nav yellow">')
 
         # Child page should have extra style from section
         response = self.client.get(
-            '/your-mind/your-mind-subsection/test-page-1/')
+            '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(response, '<div class="articles nav yellow">')
 
     def test_section_listing_in_french(self):
@@ -100,20 +101,20 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/your-mind/">Your mind</a>')
+            '<a href="/sections/your-mind/">Your mind</a>')
         self.assertNotContains(
             response,
-            '<a href="/your-mind-in-french/">Your mind in french</a>')
+            '<a href="/sections/your-mind-in-french/">Your mind in french</a>')
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
 
         self.assertNotContains(
             response,
-            '<a href="/your-mind/">Your mind</a>')
+            '<a href="/sections/your-mind/">Your mind</a>')
         self.assertContains(
             response,
-            '<a href="/your-mind-in-french/">Your mind in french</a>')
+            '<a href="/sections/your-mind-in-french/">Your mind in french</a>')
 
         # unpublished section should fallback to main language
         self.yourmind_fr.unpublish()
@@ -122,10 +123,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         self.assertContains(
             response,
-            '<a href="/your-mind/">Your mind</a>')
+            '<a href="/sections/your-mind/">Your mind</a>')
         self.assertNotContains(
             response,
-            '<a href="/your-mind-in-french/">Your mind in french</a>')
+            '<a href="/sections/your-mind-in-french/">Your mind in french</a>')
 
     def test_latest_listing(self):
         en_latest = self.mk_articles(
@@ -139,11 +140,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Latest')
         self.assertContains(
             response,
-            '<a href="/your-mind/your-mind-subsection/test-page-8/">'
+            '<a href="/sections/your-mind/your-mind-subsection/test-page-8/">'
             'Test page 8</a>')
         self.assertContains(
             response,
-            '<a href="/your-mind/your-mind-subsection/test-page-9/">'
+            '<a href="/sections/your-mind/your-mind-subsection/test-page-9/">'
             'Test page 9</a>')
         self.assertNotContains(
             response, 'Test page 9 in french')
@@ -164,12 +165,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Latest')
         self.assertContains(
             response,
-            '<a href="/your-mind/your-mind-subsection/test-page-8-in-french/">'
-            'Test page 8 in french</a>')
+            '<a href="/sections/your-mind/your-mind-subsection/'
+            'test-page-8-in-french/">Test page 8 in french</a>')
         self.assertContains(
             response,
-            '<a href="/your-mind/your-mind-subsection/test-page-9-in-french/">'
-            'Test page 9 in french</a>')
+            '<a href="/sections/your-mind/your-mind-subsection/'
+            'test-page-9-in-french/">Test page 9 in french</a>')
         self.assertNotContains(
             response, 'Test page 9</a>')
 
@@ -179,8 +180,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertNotContains(
             response,
-            '<a href="/your-mind/your-mind-subsection/test-page-9-in-french/">'
-            'Test page 9 in french</a>')
+            '<a href="/sections/your-mind/your-mind-subsection/'
+            'test-page-9-in-french/">Test page 9 in french</a>')
         self.assertContains(
             response, 'Test page 9</a>')
 
@@ -188,7 +189,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_articles(self.yourmind_sub, count=10)
 
         response = self.client.get(
-            '/your-mind/your-mind-subsection/test-page-1/')
+            '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
             '<span class="active">Test page 1</span>')
@@ -203,7 +204,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                          'dolor <em>sit amet</em>'}]))
 
         response = self.client.get(
-            '/your-mind/your-mind-subsection/test-page-1/')
+            '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
             '<strong>Lorem ipsum</strong> dolor <em>sit amet</em>')
@@ -270,36 +271,38 @@ class TestPages(TestCase, MoloTestCaseMixin):
             title=en_page.title + ' in french',
             subtitle=en_page.subtitle + ' in french')
 
-        response = self.client.get('/your-mind/')
+        response = self.client.get('/sections/your-mind/')
         self.assertEquals(response.status_code, 200)
 
-        response = self.client.get('/your-mind/test-page-0/')
+        response = self.client.get('/sections/your-mind/test-page-0/')
         self.assertEquals(response.status_code, 200)
 
         response = self.client.get('/locale/fr/')
 
-        response = self.client.get('/your-mind/')
-        self.assertRedirects(response, '/your-mind-in-french/')
+        response = self.client.get('/sections/your-mind/')
+        self.assertRedirects(response, 'sections/your-mind-in-french/')
 
-        response = self.client.get('/your-mind/test-page-0/')
-        self.assertRedirects(response, '/your-mind/test-page-0-in-french/')
+        response = self.client.get('/sections/your-mind/test-page-0/')
+        self.assertRedirects(response,
+                             '/sections/your-mind/test-page-0-in-french/')
 
         # redirect from translation to main language should also work
         response = self.client.get('/locale/en/')
 
-        response = self.client.get('/your-mind-in-french/')
-        self.assertRedirects(response, '/your-mind/')
+        response = self.client.get('/sections/your-mind-in-french/')
+        self.assertRedirects(response, '/sections/your-mind/')
 
-        response = self.client.get('/your-mind/test-page-0-in-french/')
-        self.assertRedirects(response, '/your-mind/test-page-0/')
+        response = self.client.get('/sections/your-mind/'
+                                   'test-page-0-in-french/')
+        self.assertRedirects(response, '/sections/your-mind/test-page-0/')
 
         # unpublished translation will not result in a redirect
         self.yourmind_fr.unpublish()
-        response = self.client.get('/your-mind/')
+        response = self.client.get('/sections/your-mind/')
         self.assertEquals(response.status_code, 200)
 
         fr_page.unpublish()
-        response = self.client.get('/your-mind/test-page-0/')
+        response = self.client.get('/sections/your-mind/test-page-0/')
         self.assertEquals(response.status_code, 200)
 
     def test_subsection_is_translated(self):
@@ -309,19 +312,19 @@ class TestPages(TestCase, MoloTestCaseMixin):
             title=en_page.title + ' in french',
             subtitle=en_page.subtitle + ' in french')
 
-        response = self.client.get('/your-mind/')
+        response = self.client.get('/sections/your-mind/')
         self.assertContains(response, 'Your mind subsection</a>')
         self.assertNotContains(response, 'Your mind subsection in french</a>')
 
         response = self.client.get('/locale/fr/')
-        response = self.client.get('/your-mind-in-french/')
+        response = self.client.get('/sections/your-mind-in-french/')
 
         self.assertContains(response, 'Your mind subsection in french</a>')
         self.assertNotContains(response, 'Your mind subsection</a>')
 
         # ensure section fallbacks to main language
         self.yourmind_sub_fr.unpublish()
-        response = self.client.get('/your-mind-in-french/')
+        response = self.client.get('/sections/your-mind-in-french/')
 
         self.assertContains(response, 'Your mind subsection</a>')
         self.assertNotContains(response, 'Your mind subsection in french</a>')
@@ -365,3 +368,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(response, 'www.googletagmanager.com')
         self.assertContains(response, 'GTM-1234567')
+
+    def test_admin_doesnt_translate_when_frontend_locale_changed(self):
+        self.client.get('/locale/af/')
+
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        response = self.client.get('/admin/pages/%d/' % self.main.pk)
+        self.assertNotContains(response, 'Skrap')
+
+        response = self.client.get('/django-admin/')
+        self.assertNotContains(response, 'Voeg')
