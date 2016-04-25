@@ -9,6 +9,7 @@ from unicore.content.models import Page, Category, Localisation
 from unicore.content import models as eg_models
 
 from molo.core.models import PageTranslation
+from molo.core.content_import.tests.utils import catch
 
 
 class ElasticGitTestMixin(object):
@@ -131,12 +132,7 @@ class ElasticGitTestMixin(object):
             ws.save(lang, 'Added %s' % locale)
 
     def catch(self, error_cls, fn):
-        error = None
-
-        try:
-            fn()
-        except error_cls as e:
-            error = e
+        error = catch(error_cls, fn)
 
         self.assertTrue(
             error is not None,

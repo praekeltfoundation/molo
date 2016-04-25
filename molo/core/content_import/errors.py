@@ -8,3 +8,9 @@ class InvalidParametersError(Exception):
     def __init__(self, message, errors):
         super(InvalidParametersError, self).__init__(message)
         self.errors = errors
+
+
+class SiteResponseError(Exception):
+    """
+    Raised if we could not retrieve repo summaries from a given site url.
+    """
