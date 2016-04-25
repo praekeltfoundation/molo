@@ -54,6 +54,8 @@
     "classnames": "^2.2.3",
     "js-cookie": "^2.1.0",
     "lodash": "^4.6.1",
+    "normalize-url": "^1.4.1",
+    "query-string": "^4.1.0",
     "react": "^0.14.7",
     "react-collapse": "^2.0.0",
     "react-dom": "^0.14.7",
@@ -63,6 +65,7 @@
     "react-search": "^1.0.9",
     "react-typeahead": "^1.1.6",
     "redux": "^3.3.1",
-    "redux-thunk": "^2.0.1"
+    "redux-thunk": "^2.0.1",
+    "url-parse": "^1.1.1"
   }
 }

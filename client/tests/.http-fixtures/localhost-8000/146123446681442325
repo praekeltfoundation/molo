@@ -1,0 +1,14 @@
+GET /import/repos/?protocol=http&host=00-iogt.apollo.unicore.io
+accept: application/json, text/plain, */*
+
+HTTP/1.0 200 OK
+date: Thu, 21 Apr 2016 10:27:46 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language
+x-frame-options: SAMEORIGIN
+content-type: application/json
+content-language: en-gb
+allow: OPTIONS, GET
+set-cookie: sessionid=; expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; Path=/
+
+{"repos":[{"name":"unicore-cms-content-barefootlaw-i1-prod","title":"Your Rights"},{"name":"unicore-cms-content-connectsmart-i1-prod","title":"Connect Smart"},{"name":"unicore-cms-content-ebola-i1-prod","title":"Emergency Information"},{"name":"unicore-cms-content-ecd-i1-prod","title":"Early Life Tips!"},{"name":"unicore-cms-content-ffl-i1-prod","title":"Facts For Life"},{"name":"unicore-cms-content-hiv-i1-prod","title":"ALL IN"}]}

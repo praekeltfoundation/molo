@@ -3,17 +3,18 @@ import pytest
 
 from elasticgit.tests.base import ModelBaseTest
 
+from wagtail.wagtailimages.tests.utils import get_test_image_file
+
+from unicore.content.models import Category, Page, Localisation
+
 from molo.core.models import (
     Main, SiteLanguage, SectionPage, ArticlePage, FooterPage)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.api import Repo
+from molo.core.content_import.utils import hash
 from molo.core.content_import import api
-
-from unicore.content.models import Category, Page, Localisation
-
-from wagtail.wagtailimages.tests.utils import get_test_image_file
 
 
 @pytest.mark.django_db
@@ -293,16 +294,16 @@ class TestImportContent(
         }, {
             'title': 'B Spa',
         }, {
-            'uuid': 'repo1-eng_GB',
+            'uuid': hash(('repo1', 'eng_GB')),
             'title': 'Repo 1',
         }, {
-            'uuid': 'repo1-spa_ES',
+            'uuid': hash(('repo1', 'spa_ES')),
             'title': 'Repo 1',
         }, {
-            'uuid': 'repo2-eng_GB',
+            'uuid': hash(('repo2', 'eng_GB')),
             'title': 'Repo 2',
         }, {
-            'uuid': 'repo2-spa_ES',
+            'uuid': hash(('repo2', 'spa_ES')),
             'title': 'Repo 2',
         }])
 
@@ -317,25 +318,25 @@ class TestImportContent(
         }])
 
         self.assert_has_children(main, [
-            sections.get(uuid='repo1-eng_GB'),
-            sections.get(uuid='repo1-spa_ES'),
-            sections.get(uuid='repo2-eng_GB'),
-            sections.get(uuid='repo2-spa_ES')])
+            sections.get(uuid=hash(('repo1', 'eng_GB'))),
+            sections.get(uuid=hash(('repo1', 'spa_ES'))),
+            sections.get(uuid=hash(('repo2', 'eng_GB'))),
+            sections.get(uuid=hash(('repo2', 'spa_ES')))])
 
         self.assert_has_children(
-            sections.get(uuid='repo1-eng_GB'),
+            sections.get(uuid=hash(('repo1', 'eng_GB'))),
             [sections.get(title='A Eng')])
 
         self.assert_has_children(
-            sections.get(uuid='repo1-spa_ES'),
+            sections.get(uuid=hash(('repo1', 'spa_ES'))),
             [sections.get(title='A Spa')])
 
         self.assert_has_children(
-            sections.get(uuid='repo2-eng_GB'),
+            sections.get(uuid=hash(('repo2', 'eng_GB'))),
             [sections.get(title='B Eng')])
 
         self.assert_has_children(
-            sections.get(uuid='repo2-spa_ES'),
+            sections.get(uuid=hash(('repo2', 'spa_ES'))),
             [sections.get(title='B Spa')])
 
         self.assert_has_children(sections.get(title='A Eng'), [

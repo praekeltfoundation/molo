@@ -8,6 +8,7 @@ from molo.core.models import (
     Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
 from molo.core.content_import.helpers.get_image import get_image_file
 from molo.core.content_import.helpers.locales import filter_locales_in_repo
+from molo.core.content_import.utils import hash
 
 
 def import_repo(repo, main_locale, children, should_nest=False):
@@ -70,7 +71,7 @@ def main_section_datum(repo, lang):
     # section is created for. We need a way of creating a title from the
     # repository in the given language
     return {
-        'uuid': '%s-%s' % (repo.name, lang['locale']),
+        'uuid': hash((repo.name, lang['locale'])),
         'title': repo.title
     }
 
