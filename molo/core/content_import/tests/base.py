@@ -6,8 +6,10 @@ from django.conf import settings
 
 from wagtail.wagtailcore.utils import cautious_slugify
 from unicore.content.models import Page, Category, Localisation
-
 from unicore.content import models as eg_models
+
+from molo.core.models import PageTranslation
+from molo.core.content_import.tests.utils import catch
 
 
 class ElasticGitTestMixin(object):
@@ -130,18 +132,34 @@ class ElasticGitTestMixin(object):
             ws.save(lang, 'Added %s' % locale)
 
     def catch(self, error_cls, fn):
-        error = None
-
-        try:
-            fn()
-        except error_cls as e:
-            error = e
+        error = catch(error_cls, fn)
 
         self.assertTrue(
             error is not None,
             "Expected an error to be raised")
 
         return error
+
+    def assert_attrs_equal(self, obj, fields):
+        for k, v in fields.iteritems():
+            self.assertEqual(getattr(obj, k), v)
+
+    def assert_collection_attrs_equal(self, collection, fieldset):
+        for obj, fields in zip(collection, fieldset):
+            self.assert_attrs_equal(obj, fields)
+
+    def assert_has_children(self, parent, children):
+        for child in children:
+            self.assertTrue(child.is_child_of(parent))
+
+    def assert_has_translation(self, a, b):
+        self.assertEqual(
+            len(PageTranslation.objects.filter(page=a, translated_page=b)),
+            1)
+
+    def assert_has_language(self, page, language):
+        qs = page.languages.filter(language_id=language.id)
+        self.assertTrue(qs.exists())
 
 
 class Counter(object):

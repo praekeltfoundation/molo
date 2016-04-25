@@ -5,7 +5,9 @@ from django.contrib.contenttypes.models import ContentType
 
 from wagtail.wagtailcore.models import Site, Page, Collection
 
-from molo.core.models import Main, SectionPage, ArticlePage, PageTranslation
+from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
+                              SectionIndexPage, FooterIndexPage,
+                              BannerIndexPage)
 from molo.core.utils import generate_slug
 
 
@@ -52,6 +54,21 @@ class MoloTestCaseMixin(object):
             url_path='/home/',
         )
         self.main.save_revision().publish()
+
+        # Create index pages
+        self.section_index = SectionIndexPage(title='Sections',
+                                              slug='sections')
+        self.main.add_child(instance=self.section_index)
+        self.section_index.save_revision().publish()
+
+        self.footer_index = FooterIndexPage(title='Footer pages',
+                                            slug='footer-pages')
+        self.main.add_child(instance=self.footer_index)
+        self.footer_index.save_revision().publish()
+
+        self.banner_index = BannerIndexPage(title='Banners', slug='banners')
+        self.main.add_child(instance=self.banner_index)
+        self.banner_index.save_revision().publish()
 
         # Create root collection
         Collection.objects.create(
