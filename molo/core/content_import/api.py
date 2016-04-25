@@ -1,20 +1,26 @@
 from django.conf import settings
 
-import requests
 from elasticgit.workspace import RemoteWorkspace
 from unicore.content.models import Localisation, Category, Page
 
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
+from molo.core.content_import.helpers.summaries import get_summaries
 from molo.core.content_import.helpers.importing import import_repo
 from molo.core.content_import.helpers.validation import ContentImportValidation
 from molo.core.content_import.helpers.parse import (
-    parse_validate_content, parse_import_content)
+    parse_get_repo_summaries, parse_validate_content, parse_import_content)
 
 
-def get_repo_summaries():
-    response = requests.get('%s/repos.json' % settings.UNICORE_DISTRIBUTE_API)
-    return [d.get('name') for d in response.json()]
+def get_repo_summaries(url_parts):
+    result = parse_get_repo_summaries(url_parts)
+
+    if result['errors']:
+        raise InvalidParametersError(
+            "Invalid parameters given for repo summaries retrieval",
+            result['errors'])
+
+    return get_summaries(result['url'])
 
 
 def get_languages(repos):
