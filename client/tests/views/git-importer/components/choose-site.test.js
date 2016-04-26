@@ -11,7 +11,6 @@ function draw(state) {
     <ChooseSite
       status={state.status}
       siteUrl={state.siteUrl}
-      repos={state.repos}
       actions={state.actions} />
   );
 }
@@ -38,7 +37,7 @@ describe(`ChooseSite`, () => {
       .to.be.true;
   });
 
-  it(`should change 'Next' button to a busy button when busy`, () => {
+  it(`should change 'Next' button to a busy button when fetching repos`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
@@ -47,15 +46,44 @@ describe(`ChooseSite`, () => {
     expect(button.text()).to.equal('Next');
     expect(button.prop('disabled')).to.be.false;
 
-    state.status = 'CHOOSE_SITE_BUSY';
+    state.status = 'CHOOSE_SITE_FETCHING_REPOS';
 
-    el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    el = draw(state);
+    button = el.find('.c-choose-site__next');
+    expect(button.text()).to.equal('Fetching repos...');
+    expect(button.prop('disabled')).to.be.true;
+  });
 
+  it(`should show an error when no repos were found for a url`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let error = el.find('.c-choose-site__input_error');
+    expect(error).to.have.length(0);
+
+    state.status = 'CHOOSE_SITE_NO_REPOS_FOUND';
+    el = draw(state);
+
+    error = el.find('.c-choose-site__input-error');
+    expect(error).to.have.length(1);
+    expect(error.text()).to.equal(
+      `No content repositories were found for this site`);
+  });
+
+  it(`should change 'Next' button to a busy button when fetching languages`,
+  () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let button = el.find('.c-choose-site__next');
+    expect(button.text()).to.equal('Next');
+    expect(button.prop('disabled')).to.be.false;
+
+    state.status = 'CHOOSE_SITE_FETCHING_LANGUAGES';
+
+    el = draw(state);
     button = el.find('.c-choose-site__next');
     expect(button.text()).to.equal('Fetching languages...');
     expect(button.prop('disabled')).to.be.true;

@@ -12,3 +12,10 @@ export function ensure(v, defaultVal) {
     ? defaultVal
     : v;
 }
+
+
+export function when(truth, fn) {
+  return truth
+    ? fn()
+    : void 0;
+}
