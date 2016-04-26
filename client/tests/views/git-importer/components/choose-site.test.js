@@ -54,23 +54,6 @@ describe(`ChooseSite`, () => {
     expect(button.prop('disabled')).to.be.true;
   });
 
-  it(`should show an error when no repos were found for a url`, () => {
-    const state = fixtures('git-importer');
-    state.status = 'IDLE';
-
-    let el = draw(state);
-    let error = el.find('.c-choose-site__input_error');
-    expect(error).to.have.length(0);
-
-    state.status = 'CHOOSE_SITE_NO_REPOS_FOUND';
-    el = draw(state);
-
-    error = el.find('.c-choose-site__input-error');
-    expect(error).to.have.length(1);
-    expect(error.text()).to.equal(
-      `No content repositories were found for this site`);
-  });
-
   it(`should change 'Next' button to a busy button when fetching languages`,
   () => {
     const state = fixtures('git-importer');
@@ -122,5 +105,39 @@ describe(`ChooseSite`, () => {
 
     expect(state.actions.chooseSite.calledOnce)
       .to.be.true;
+  });
+
+  it(`should show an error when no repos were found for a url`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let error = el.find('.c-choose-site__input_error');
+    expect(error).to.have.length(0);
+
+    state.status = 'CHOOSE_SITE_NO_REPOS_FOUND';
+    el = draw(state);
+
+    error = el.find('.c-choose-site__input-error');
+    expect(error).to.have.length(1);
+    expect(error.text()).to.equal(
+      `No content repositories were found for this site`);
+  });
+
+  it(`should show an error when an invalid url is given`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let error = el.find('.c-choose-site__input_error');
+    expect(error).to.have.length(0);
+
+    state.status = 'CHOOSE_SITE_INVALID_URL';
+    el = draw(state);
+
+    error = el.find('.c-choose-site__input-error');
+    expect(error).to.have.length(1);
+    expect(error.text()).to.equal(
+      `Please enter a valid url (e.g. foo.bar.unicore.io)`);
   });
 });

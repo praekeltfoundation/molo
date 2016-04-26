@@ -12,10 +12,14 @@ const CODES = {
 
 
 export function repos(url, opts) {
-  return request(endpoints.repos(serialize.url(url), opts))
-    .then(
-      resp => resp.data.repos.map(parse.repo),
-      catchResponseCode(CODES.PARSE_ERROR, reposParseError));
+  return Promise.resolve(url)
+    .then(serialize.url)
+    .then(({error, value}) => !error
+      ? reposGet(value, opts)
+      : {
+        error: error,
+        value: null
+      });
 }
 
 
@@ -44,10 +48,36 @@ export function checkContent(repos, languages, opts) {
 }
 
 
+function reposGet(url, opts) {
+  return request(endpoints.repos(url, opts))
+    .then(
+      reposGetSuccess,
+      catchResponseCode(CODES.PARSE_ERROR, reposParseError));
+}
+
+
+function reposGetSuccess(resp) {
+  return !resp.data.repos.length
+    ? reposNoReposFound()
+    : {
+      error: null,
+      value: resp.data.repos.map(parse.repo)
+    };
+}
+
+
 function reposParseError(resp) {
   return resp.data.type !== 'site_response_error'
     ? throwResponse(resp)
-    : [];
+    : reposNoReposFound();
+}
+
+
+function reposNoReposFound() {
+  return {
+    error: {type: 'NO_REPOS_FOUND'},
+    value: null
+  };
 }
 
 

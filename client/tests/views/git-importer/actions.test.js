@@ -9,13 +9,16 @@ describe(`actions`, () => {
   describe(`chooseSite`, done => {
     it(`should return the repos and languages to update with`, () => {
       let api = conj(fixtures('api'), {
-        repos: resolvesTo([{
-          id: 'foo-id',
-          title: 'foo'
-        }, {
-          id: 'bar-id',
-          title: 'bar'
-        }]),
+        repos: resolvesTo({
+          error: null,
+          value: [{
+            id: 'foo-id',
+            title: 'foo'
+          }, {
+            id: 'bar-id',
+            title: 'bar'
+          }]
+        }),
         languages: resolvesTo([{
           id: 'en',
           name: 'English',
@@ -61,7 +64,10 @@ describe(`actions`, () => {
 
     it(`should dispatch NO_REPOS_FOUND if no repos were found`, () => {
       let api = conj(fixtures('api'), {
-        repos: resolvesTo([])
+        repos: resolvesTo({
+          error: {type: 'NO_REPOS_FOUND'},
+          value: null
+        })
       });
 
       return captureDispatches(actions.chooseSite('foo.com', api))

@@ -70,6 +70,22 @@ describe(`gitImporter`, () => {
     });
   });
 
+  describe(`CHOOSE_SITE/INVALID_URL`, () => {
+    it(`should change the ui status to CHOOSE_SITE_INVALID_URL`, () => {
+      const state = fixtures('state');
+      state.ui.status = 'IDLE';
+
+      expect(gitImporter(state, {
+          type: 'CHOOSE_SITE/INVALID_URL'
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          ui: conj(state.ui, {
+            status: 'CHOOSE_SITE_INVALID_URL'
+          })
+        }));
+    });
+  });
+
   describe(`CHOOSE_SITE/DONE`, () => {
     it("should change the current and last steps to 'main'", () => {
       const state = fixtures('state');

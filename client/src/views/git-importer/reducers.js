@@ -31,6 +31,13 @@ export default function gitImporter(state, action) {
         })
       });
 
+    case 'CHOOSE_SITE/INVALID_URL':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'CHOOSE_SITE_INVALID_URL'
+        })
+      });
+
     case 'CHOOSE_SITE/DONE':
       return conj(state, {
         ui: conj(state.ui, {

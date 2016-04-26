@@ -23,13 +23,20 @@ export function chooseSite(url, api=httpApi) {
     .then(() => chooseSiteFetchingRepos())
     .then(dispatch)
     .then(() => api.repos(url))
-    .then(repos => repos.length
-      ? chooseSiteHandleReposFound(dispatch, repos, api)
-      : chooseSiteHandleNoReposFound(dispatch, repos, api));
+    .then(({error, value}) => error
+      ? chooseSiteHandleError(dispatch, error, api)
+      : chooseSiteHandleSuccess(dispatch, value, api));
 }
 
 
-function chooseSiteHandleReposFound(dispatch, repos, api) {
+function chooseSiteHandleError(dispatch, error, api) {
+  return Promise.resolve()
+    .then(() => chooseSiteError(error))
+    .then(dispatch);
+}
+
+
+function chooseSiteHandleSuccess(dispatch, repos, api) {
   return Promise.resolve()
     .then(() => chooseSiteFetchingLanguages())
     .then(dispatch)
@@ -39,15 +46,14 @@ function chooseSiteHandleReposFound(dispatch, repos, api) {
 }
 
 
-function chooseSiteHandleNoReposFound(dispatch) {
-  return Promise.resolve()
-    .then(() => chooseSiteNoReposFound())
-    .then(dispatch);
-}
+function chooseSiteError(error) {
+  switch (error.type) {
+    case 'INVALID_URL':
+      return {type: 'CHOOSE_SITE/INVALID_URL'};
 
-
-function chooseSiteNoReposFound() {
-  return {type: 'CHOOSE_SITE/NO_REPOS_FOUND'};
+    case 'NO_REPOS_FOUND':
+      return {type: 'CHOOSE_SITE/NO_REPOS_FOUND'};
+  }
 }
 
 

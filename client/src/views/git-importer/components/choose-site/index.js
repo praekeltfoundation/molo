@@ -31,6 +31,7 @@ const ChooseSite = (d) => (
 
 function inputHasError(status) {
   return includes([
+    'CHOOSE_SITE_INVALID_URL',
     'CHOOSE_SITE_NO_REPOS_FOUND'
   ], status);
 }
@@ -38,6 +39,9 @@ function inputHasError(status) {
 
 function getInputError(status) {
   switch (status) {
+    case 'CHOOSE_SITE_INVALID_URL':
+      return 'Please enter a valid url (e.g. foo.bar.unicore.io)';
+
     case 'CHOOSE_SITE_NO_REPOS_FOUND':
       return 'No content repositories were found for this site';
   }
