@@ -31,7 +31,9 @@ describe(`actions`, () => {
 
       return captureDispatches(actions.chooseSite('foo.com', api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'CHOOSE_SITE/BUSY'
+          type: 'CHOOSE_SITE/FETCHING_REPOS'
+        }, {
+          type: 'CHOOSE_SITE/FETCHING_LANGUAGES'
         }, {
           type: 'CHOOSE_SITE/DONE',
           payload: {
@@ -54,6 +56,19 @@ describe(`actions`, () => {
               isChosen: false
             }]
           }
+        }]));
+    });
+
+    it(`should dispatch NO_REPOS_FOUND if no repos were found`, () => {
+      let api = conj(fixtures('api'), {
+        repos: resolvesTo([])
+      });
+
+      return captureDispatches(actions.chooseSite('foo.com', api))
+        .then(action => expect(action).to.deep.equal([{
+          type: 'CHOOSE_SITE/FETCHING_REPOS'
+        }, {
+          type: 'CHOOSE_SITE/NO_REPOS_FOUND'
         }]));
     });
   });

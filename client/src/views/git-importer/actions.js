@@ -20,17 +20,44 @@ export function changeSiteUrl(url) {
 export function chooseSite(url, api=httpApi) {
   // TODO handle site not found
   return dispatch => Promise.resolve()
-    .then(() => chooseSiteBusy())
+    .then(() => chooseSiteFetchingRepos())
     .then(dispatch)
     .then(() => api.repos(url))
-    .then(repos => Promise.all([repos, api.languages(repos)]))
+    .then(repos => repos.length
+      ? chooseSiteHandleReposFound(dispatch, repos, api)
+      : chooseSiteHandleNoReposFound(dispatch, repos, api));
+}
+
+
+function chooseSiteHandleReposFound(dispatch, repos, api) {
+  return Promise.resolve()
+    .then(() => chooseSiteFetchingLanguages())
+    .then(dispatch)
+    .then(() => Promise.all([repos, api.languages(repos)]))
     .then(([repos, languages]) => chooseSiteDone(repos, languages))
     .then(dispatch);
 }
 
 
-function chooseSiteBusy() {
-  return {type: 'CHOOSE_SITE/BUSY'};
+function chooseSiteHandleNoReposFound(dispatch) {
+  return Promise.resolve()
+    .then(() => chooseSiteNoReposFound())
+    .then(dispatch);
+}
+
+
+function chooseSiteNoReposFound() {
+  return {type: 'CHOOSE_SITE/NO_REPOS_FOUND'};
+}
+
+
+function chooseSiteFetchingRepos() {
+  return {type: 'CHOOSE_SITE/FETCHING_REPOS'};
+}
+
+
+function chooseSiteFetchingLanguages() {
+  return {type: 'CHOOSE_SITE/FETCHING_LANGUAGES'};
 }
 
 
