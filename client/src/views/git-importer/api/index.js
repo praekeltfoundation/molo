@@ -13,7 +13,9 @@ const CODES = {
 
 export function repos(url, opts) {
   return request(endpoints.repos(serialize.url(url), opts))
-    .then(resp => resp.data.repos.map(parse.repo), catchResponse());
+    .then(
+      resp => resp.data.repos.map(parse.repo),
+      catchResponseCode(CODES.PARSE_ERROR, reposParseError));
 }
 
 
@@ -39,6 +41,13 @@ export function checkContent(repos, languages, opts) {
   languages = serialize.languages(languages);
   return request(endpoints.validateContent(repos, languages, opts))
     .then(resp => ({errors: resp.data.errors}), catchResponse());
+}
+
+
+function reposParseError(resp) {
+  return resp.data.type !== 'site_response_error'
+    ? throwResponse(resp)
+    : [];
 }
 
 

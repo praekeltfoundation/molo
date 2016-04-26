@@ -27,6 +27,11 @@ describe(`api`, () => {
           title: 'ALL IN'
         }]));
     });
+
+    it(`should return an empty list if there was a site response error`, () => {
+      return api.repos('foo.com')
+        .then(sites => expect(sites).to.deep.equal([]));
+    });
   });
 
   describe(`languages`, () => {
