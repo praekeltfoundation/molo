@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
-import Collapse from 'react-collapse';
 import classNames from 'classnames';
+import Collapse from 'src/components/collapse';
 import ChooseSite from 'src/views/git-importer/components/choose-site';
 import ChooseMain from 'src/views/git-importer/components/choose-main';
 import ChooseLanguages from 'src/views/git-importer/components/choose-languages';

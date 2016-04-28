@@ -8,9 +8,10 @@ const ChooseSite = (d) => (
     <input
       type="text"
       className="c-choose-site__input"
-      placeholder="Enter a site to import (e.g. foo.bar.unicore.io)"
       value={d.siteUrl}
-      onChange={e => d.actions.changeSiteUrl(e.target.value)} />
+      onChange={e => d.actions.changeSiteUrl(e.target.value)}
+      placeholder="Enter a site to import (e.g. foo.bar.unicore.io)"
+      autoFocus />
 
     {when(inputHasError(d.status), () => (
     <p className="c-choose-site__input-error error-message">
