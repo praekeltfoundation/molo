@@ -6,7 +6,7 @@ const ChooseMain = (d) => (
     <ul className="o-input-group">
     {d.languages.map(language =>
     <li
-      key={language.name}
+      key={language.id}
       className="o-input-group__item c-choose-main__language">
       <input
         type="radio"

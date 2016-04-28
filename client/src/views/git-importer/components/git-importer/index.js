@@ -64,7 +64,7 @@ const GitImporter = (d) => (
           <div className="o-collapse-body">
             <ChooseLanguages
               status={d.status}
-              site={d.site}
+              repos={d.repos}
               languages={d.languages}
               actions={d.actions} />
           </div>

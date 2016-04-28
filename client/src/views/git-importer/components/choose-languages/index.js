@@ -7,7 +7,7 @@ const ChooseLanguages = (d) => (
     <ul className="o-input-group">
     {d.languages.map(language =>
     <li
-      key={language.name}
+      key={language.id}
       className="o-input-group__item c-choose-languages__language">
       {/* TODO make it clear that main language is always checked */}
       <input

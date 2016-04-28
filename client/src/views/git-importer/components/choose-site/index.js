@@ -7,6 +7,7 @@ const ChooseSite = (d) => (
   <div className="c-choose-site">
     <input
       type="text"
+      name="site-url"
       className="c-choose-site__input"
       value={d.siteUrl}
       onChange={e => d.actions.changeSiteUrl(e.target.value)}
