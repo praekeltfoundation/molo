@@ -35,12 +35,26 @@ export function language(d) {
 export function url(rawUrl) {
   let parts = parseUrl(normalizeUrl(rawUrl));
 
-  return omitBy({
-    protocol: parts.protocol.slice(0, -1),  // slice off ':' in 'http:'
-    host: parts.hostname,
-    port: parts.port,
-    path: parts.pathname
-  }, isEmpty);
+  return !urlIsValid(parts)
+    ? {
+      error: {type: 'INVALID_URL'},
+      value: null
+    }
+    : {
+      error: null,
+      value: omitBy({
+        protocol: parts.protocol.slice(0, -1),  // slice off ':' in 'http:'
+        host: parts.hostname,
+        port: parts.port,
+        path: parts.pathname
+      }, isEmpty)
+    };
+}
+
+
+function urlIsValid(parts) {
+  return parts.host
+      && parts.host.includes('.');
 }
 
 

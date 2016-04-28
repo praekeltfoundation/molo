@@ -10,10 +10,31 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'CHOOSE_SITE/BUSY':
+    case 'CHOOSE_SITE/FETCHING_REPOS':
       return conj(state, {
         ui: conj(state.ui, {
-          status: 'CHOOSE_SITE_BUSY'
+          status: 'CHOOSE_SITE_FETCHING_REPOS'
+        })
+      });
+
+    case 'CHOOSE_SITE/FETCHING_LANGUAGES':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'CHOOSE_SITE_FETCHING_LANGUAGES'
+        })
+      });
+
+    case 'CHOOSE_SITE/NO_REPOS_FOUND':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'CHOOSE_SITE_NO_REPOS_FOUND'
+        })
+      });
+
+    case 'CHOOSE_SITE/INVALID_URL':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'CHOOSE_SITE_INVALID_URL'
         })
       });
 
@@ -46,6 +67,9 @@ export default function gitImporter(state, action) {
 
     case 'CHANGE_SITE_URL':
       return conj(state, {
+        ui: conj(state.ui, {
+          status: 'IDLE'
+        }),
         data: conj(state.data, {
           siteUrl: action.payload.url
         })

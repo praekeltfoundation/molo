@@ -25,8 +25,7 @@ const GitImporter = (d) => (
           <div className="o-collapse-body">
             <ChooseSite
               status={d.status}
-              site={d.site}
-              sites={d.sites}
+              siteUrl={d.siteUrl}
               actions={d.actions} />
           </div>
         </Collapse>
