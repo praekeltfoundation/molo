@@ -5,7 +5,7 @@ from babel import Locale
 from unicore.content.models import Category, Page
 
 from molo.core.models import (
-    Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage,
+    SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage,
     SectionIndexPage, FooterIndexPage)
 from molo.core.content_import.helpers.get_image import get_image_file
 from molo.core.content_import.helpers.locales import filter_locales_in_repo
