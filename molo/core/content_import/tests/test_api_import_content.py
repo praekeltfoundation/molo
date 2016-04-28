@@ -8,7 +8,8 @@ from wagtail.wagtailimages.tests.utils import get_test_image_file
 from unicore.content.models import Category, Page, Localisation
 
 from molo.core.models import (
-    Main, SiteLanguage, SectionPage, ArticlePage, FooterPage)
+    SiteLanguage, SectionPage, ArticlePage, FooterPage,
+    SectionIndexPage, FooterIndexPage)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.errors import InvalidParametersError
@@ -268,7 +269,7 @@ class TestImportContent(
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
-        main = Main.objects.all().first()
+        index = SectionIndexPage.objects.all().first()
         languages = SiteLanguage.objects.all().order_by('locale')
         sections = SectionPage.objects.all().order_by('title', 'uuid')
         articles = ArticlePage.objects.all().order_by('title')
@@ -317,7 +318,7 @@ class TestImportContent(
             'title': 'B1 Spa',
         }])
 
-        self.assert_has_children(main, [
+        self.assert_has_children(index, [
             sections.get(uuid=hash(('repo1', 'eng_GB'))),
             sections.get(uuid=hash(('repo1', 'spa_ES'))),
             sections.get(uuid=hash(('repo2', 'eng_GB'))),
@@ -415,6 +416,35 @@ class TestImportContent(
         self.assertEqual(SiteLanguage.objects.all().count(), 2)
         self.assertEqual(SectionPage.objects.all().count(), 8)
         self.assertEqual(ArticlePage.objects.all().count(), 4)
+
+    def test_import_no_primary_category(self):
+        repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
+        ws1 = repo1.workspace
+
+        self.add_languages(ws1, 'eng_GB', 'spa_ES')
+
+        eng = self.create_page(ws1, locale='eng_GB', title='Eng')
+        self.create_page(ws1, locale='spa_ES', title='Spa', source=eng.uuid)
+
+        api.import_content([repo1], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        articles = ArticlePage.objects.all().order_by('title')
+        footer_index = FooterIndexPage.objects.all().first()
+
+        self.assert_collection_attrs_equal(articles, [
+            {'title': 'Eng'},
+            {'title': 'Spa'}])
+
+        self.assert_has_children(footer_index, [
+            articles.get(title='Eng'),
+            articles.get(title='Spa')
+        ])
+
+        self.assert_has_translation(
+            articles.get(title='Eng'),
+            articles.get(title='Spa'))
 
     @mock.patch(
         'molo.core.content_import.helpers.get_image.get_thumbor_image_file')

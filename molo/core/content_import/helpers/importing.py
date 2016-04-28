@@ -5,7 +5,8 @@ from babel import Locale
 from unicore.content.models import Category, Page
 
 from molo.core.models import (
-    Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage)
+    Main, SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage,
+    SectionIndexPage, FooterIndexPage)
 from molo.core.content_import.helpers.get_image import get_image_file
 from molo.core.content_import.helpers.locales import filter_locales_in_repo
 from molo.core.content_import.utils import hash
@@ -14,11 +15,9 @@ from molo.core.content_import.utils import hash
 def import_repo(repo, main_locale, children, should_nest=False):
     children = filter_locales_in_repo(repo, children)
 
-    main = Main.objects.all().first()
-
     for locale in [main_locale] + children:
         lang = create_language(repo, locale, locale == main_locale)
-        parent = get_or_create_main_section(repo, lang, main, should_nest)
+        parent = get_or_create_index(repo, lang, should_nest)
         import_locale_content(repo, lang, parent)
 
     update_pages_with_linked_page_field(repo)
@@ -32,11 +31,19 @@ def get_models(repo, cls, **kw):
     return qs.order_by('position')[:10000]
 
 
-def get_or_create_main_section(repo, lang, main, should_nest):
+def get_sections_index():
+    return SectionIndexPage.objects.live().first()
+
+
+def get_footer_index():
+    return FooterIndexPage.objects.live().first()
+
+
+def get_or_create_index(repo, lang, should_nest):
     if should_nest:
-        return main_section_for_language(repo, lang, main)
+        return repo_section_for_language(repo, lang)
     else:
-        return main
+        return get_sections_index()
 
 
 def create_language(repo, locale, is_main):
@@ -55,7 +62,7 @@ def import_locale_content(repo, lang, parent):
     import_all_pages(repo, lang)
 
 
-def main_section_datum(repo, lang):
+def repo_section_datum(repo, lang):
     # NOTE For sections that correspond to a repository (for the multi-repo
     # import case), We can't simply rely on the ORM to create a uuid for us,
     # since we need to retrieve the section if it already exists instead of
@@ -76,13 +83,14 @@ def main_section_datum(repo, lang):
     }
 
 
-def main_section_for_language(repo, lang, main):
-    datum = main_section_datum(repo, lang)
+def repo_section_for_language(repo, lang):
+    datum = repo_section_datum(repo, lang)
+    parent = get_sections_index()
 
     if is_main_language(lang):
-        return get_or_create(SectionPage, main, **datum)
+        return get_or_create(SectionPage, parent, **datum)
     else:
-        return get_or_create_translation(SectionPage, lang, main, **datum)
+        return get_or_create_translation(SectionPage, lang, parent, **datum)
 
 
 def import_categories_for_child_language(repo, category, lang, parent):
@@ -181,8 +189,7 @@ def import_page_content(repo, p, lang):
             # special case for articles with no primary category
             # this assumption is probably wrong..
             # but we have no where else to put them
-            main = Main.objects.all().first()
-            page = get_or_create_from_model(FooterPage, p, main)
+            page = get_or_create_from_model(FooterPage, p, get_footer_index())
     else:
         try:
             main_instance = ArticlePage.objects.get(uuid=p.source).specific
