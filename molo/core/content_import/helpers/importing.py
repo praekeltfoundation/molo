@@ -17,8 +17,9 @@ def import_repo(repo, main_locale, children, should_nest=False):
 
     for locale in [main_locale] + children:
         lang = create_language(repo, locale, locale == main_locale)
-        parent = get_or_create_index(repo, lang, should_nest)
-        import_locale_content(repo, lang, parent)
+        index = get_or_create_index(repo, lang, should_nest)
+        stray_index = get_or_create_stray_index(repo, lang, should_nest)
+        import_locale_content(repo, lang, index, stray_index)
 
     update_pages_with_linked_page_field(repo)
 
@@ -46,6 +47,13 @@ def get_or_create_index(repo, lang, should_nest):
         return get_sections_index()
 
 
+def get_or_create_stray_index(repo, lang, should_nest):
+    if should_nest:
+        return get_or_create_index(repo, lang, should_nest)
+    else:
+        return get_footer_index()
+
+
 def create_language(repo, locale, is_main):
     language, _ = SiteLanguage.objects.get_or_create(
         locale=Locale.parse(locale).language,
@@ -57,9 +65,9 @@ def create_language(repo, locale, is_main):
     }
 
 
-def import_locale_content(repo, lang, parent):
-    import_all_categories(repo, lang, parent)
-    import_all_pages(repo, lang)
+def import_locale_content(repo, lang, index, stray_index):
+    import_all_categories(repo, lang, index)
+    import_all_pages(repo, lang, stray_index)
 
 
 def repo_section_datum(repo, lang):
@@ -85,20 +93,20 @@ def repo_section_datum(repo, lang):
 
 def repo_section_for_language(repo, lang):
     datum = repo_section_datum(repo, lang)
-    parent = get_sections_index()
+    index = get_sections_index()
 
     if is_main_language(lang):
-        return get_or_create(SectionPage, parent, **datum)
+        return get_or_create(SectionPage, index, **datum)
     else:
-        return get_or_create_translation(SectionPage, lang, parent, **datum)
+        return get_or_create_translation(SectionPage, lang, index, **datum)
 
 
-def import_categories_for_child_language(repo, category, lang, parent):
+def import_categories_for_child_language(repo, category, lang, index):
     if category.source:
         try:
             main_lang_page = SectionPage.objects.get(uuid=category.source)
             translated_section = import_section_content(
-                repo, category, lang, parent)
+                repo, category, lang, index)
             PageTranslation.objects.get_or_create(
                 page=main_lang_page,
                 translated_page=translated_section)
@@ -110,7 +118,7 @@ def import_categories_for_child_language(repo, category, lang, parent):
             SectionPage.objects.all().values('uuid'))
 
 
-def import_all_categories(repo, lang, parent):
+def import_all_categories(repo, lang, index):
     category_qs = get_models(repo, Category, language=lang['locale'])
 
     if lang['language'].is_main_language:
@@ -119,12 +127,12 @@ def import_all_categories(repo, lang, parent):
         import_fn = import_categories_for_child_language
 
     for c in category_qs:
-        import_fn(repo, c, lang, parent)
+        import_fn(repo, c, lang, index)
 
 
-def import_all_pages(repo, lang):
+def import_all_pages(repo, lang, stray_index):
     for p in get_models(repo, Page, language=lang['locale']):
-        import_page_content(repo, p, lang)
+        import_page_content(repo, p, lang, stray_index)
 
 
 def is_main_language(lang):
@@ -174,7 +182,7 @@ def import_section_content(repo, c, lang, parent):
     return section
 
 
-def import_page_content(repo, p, lang):
+def import_page_content(repo, p, lang, stray_index):
     if is_main_language(lang):
         if p.primary_category:
             try:
@@ -189,7 +197,7 @@ def import_page_content(repo, p, lang):
             # special case for articles with no primary category
             # this assumption is probably wrong..
             # but we have no where else to put them
-            page = get_or_create_from_model(FooterPage, p, get_footer_index())
+            page = get_or_create_from_model(FooterPage, p, stray_index)
     else:
         try:
             main_instance = ArticlePage.objects.get(uuid=p.source).specific

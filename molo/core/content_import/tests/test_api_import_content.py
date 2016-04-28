@@ -430,8 +430,12 @@ class TestImportContent(
             {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
             {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
 
+        sections = SectionPage.objects.all().order_by('title', 'uuid')
         articles = ArticlePage.objects.all().order_by('title')
         footer_index = FooterIndexPage.objects.all().first()
+
+        self.assertEqual(sections.all().count(), 0)
+        self.assertEqual(articles.all().count(), 2)
 
         self.assert_collection_attrs_equal(articles, [
             {'title': 'Eng'},
@@ -445,6 +449,108 @@ class TestImportContent(
         self.assert_has_translation(
             articles.get(title='Eng'),
             articles.get(title='Spa'))
+
+    def test_import_multirepo_no_primary_category(self):
+        repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
+        repo2 = Repo(self.create_workspace(), 'repo2', 'Repo 2')
+        ws1 = repo1.workspace
+        ws2 = repo2.workspace
+
+        self.add_languages(ws1, 'eng_GB', 'spa_ES')
+        self.add_languages(ws2, 'eng_GB', 'spa_ES')
+
+        a1_eng = self.create_page(ws1, locale='eng_GB', title='A Eng')
+        self.create_page(
+            ws1, locale='spa_ES', title='A Spa', source=a1_eng.uuid)
+
+        b1_eng = self.create_page(ws2, locale='eng_GB', title='B Eng')
+        self.create_page(
+            ws2, locale='spa_ES', title='B Spa', source=b1_eng.uuid)
+
+        api.import_content([repo1, repo2], [
+            {'locale': 'eng_GB', 'site_language': 'en', 'is_main': True},
+            {'locale': 'spa_ES', 'site_language': 'es', 'is_main': False}])
+
+        index = SectionIndexPage.objects.all().first()
+        languages = SiteLanguage.objects.all().order_by('locale')
+        sections = SectionPage.objects.all().order_by('title', 'uuid')
+        articles = ArticlePage.objects.all().order_by('title')
+
+        self.assertEqual(languages.count(), 2)
+        self.assertEqual(sections.all().count(), 4)
+        self.assertEqual(articles.all().count(), 4)
+
+        self.assert_collection_attrs_equal(languages, [{
+            'locale': 'en',
+            'is_main_language': True,
+        }, {
+            'locale': 'es',
+            'is_main_language': False,
+        }])
+
+        self.assert_collection_attrs_equal(sections, [{
+            'uuid': hash(('repo1', 'eng_GB')),
+            'title': 'Repo 1',
+        }, {
+            'uuid': hash(('repo1', 'spa_ES')),
+            'title': 'Repo 1',
+        }, {
+            'uuid': hash(('repo2', 'eng_GB')),
+            'title': 'Repo 2',
+        }, {
+            'uuid': hash(('repo2', 'spa_ES')),
+            'title': 'Repo 2',
+        }])
+
+        self.assert_collection_attrs_equal(articles, [{
+            'title': 'A Eng',
+        }, {
+            'title': 'A Spa',
+        }, {
+            'title': 'B Eng',
+        }, {
+            'title': 'B Spa',
+        }])
+
+        self.assert_has_children(index, [
+            sections.get(uuid=hash(('repo1', 'eng_GB'))),
+            sections.get(uuid=hash(('repo1', 'spa_ES'))),
+            sections.get(uuid=hash(('repo2', 'eng_GB'))),
+            sections.get(uuid=hash(('repo2', 'spa_ES')))])
+
+        self.assert_has_children(
+            sections.get(uuid=hash(('repo1', 'eng_GB'))),
+            [articles.get(title='A Eng'),
+             articles.get(title='A Spa')])
+
+        self.assert_has_children(
+            sections.get(uuid=hash(('repo2', 'eng_GB'))),
+            [articles.get(title='B Eng'),
+             articles.get(title='B Spa')])
+
+        self.assert_has_translation(
+            articles.get(title='A Eng'),
+            articles.get(title='A Spa'))
+
+        self.assert_has_translation(
+            articles.get(title='B Eng'),
+            articles.get(title='B Spa'))
+
+        self.assert_has_language(
+            articles.get(title='A Eng'),
+            languages.get(locale='en'))
+
+        self.assert_has_language(
+            articles.get(title='A Spa'),
+            languages.get(locale='es'))
+
+        self.assert_has_language(
+            articles.get(title='B Eng'),
+            languages.get(locale='en'))
+
+        self.assert_has_language(
+            articles.get(title='B Spa'),
+            languages.get(locale='es'))
 
     @mock.patch(
         'molo.core.content_import.helpers.get_image.get_thumbor_image_file')
