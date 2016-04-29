@@ -6,95 +6,84 @@ import fixtures from 'tests/views/git-importer/fixtures';
 import ChooseSite from 'src/views/git-importer/components/choose-site';
 
 
+function draw(state) {
+  return mount(
+    <ChooseSite
+      status={state.status}
+      siteUrl={state.siteUrl}
+      actions={state.actions} />
+  );
+}
+
+
 describe(`ChooseSite`, () => {
-  it(`should call changeSite when user chooses a site`, () => {
+  it(`should call changeSiteUrl when user changes site url`, () => {
     const state = fixtures('git-importer');
-    state.actions.changeSite = spy();
+    state.actions.changeSiteUrl = spy();
 
-    state.sites = [{
-      id: 'foo-id',
-      name: 'foo'
-    }];
+    state.siteUrl = 'foo.com';
 
-    const el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    let el = draw(state);
 
-    el.find('.c-choose-site__search')
-      .find('.o-search__input')
+    el.find('.c-choose-site__input')
       .simulate('change', {
-        target: {value: 'fo'}
+        target: {value: 'bar.com'}
       });
 
-    el.find('.c-choose-site__search')
-      .find('.o-search__anchor')
-      .at(0)
-      .simulate('click');
-
-    expect(state.actions.changeSite.calledWith('foo-id'))
+    expect(state.actions.changeSiteUrl.calledWith('bar.com'))
       .to.be.true;
 
-    expect(state.actions.changeSite.calledOnce)
+    expect(state.actions.changeSiteUrl.calledOnce)
       .to.be.true;
   });
 
-  it(`should change 'Next' button to a busy button when busy`, () => {
+  it(`should change 'Next' button to a busy button when fetching repos`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
-    let el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
-
+    let el = draw(state);
     let button = el.find('.c-choose-site__next');
     expect(button.text()).to.equal('Next');
     expect(button.prop('disabled')).to.be.false;
 
-    state.status = 'CHOOSE_SITE_BUSY';
+    state.status = 'CHOOSE_SITE_FETCHING_REPOS';
 
-    el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    el = draw(state);
+    button = el.find('.c-choose-site__next');
+    expect(button.text()).to.equal('Fetching repos...');
+    expect(button.prop('disabled')).to.be.true;
+  });
 
+  it(`should change 'Next' button to a busy button when fetching languages`,
+  () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let button = el.find('.c-choose-site__next');
+    expect(button.text()).to.equal('Next');
+    expect(button.prop('disabled')).to.be.false;
+
+    state.status = 'CHOOSE_SITE_FETCHING_LANGUAGES';
+
+    el = draw(state);
     button = el.find('.c-choose-site__next');
     expect(button.text()).to.equal('Fetching languages...');
     expect(button.prop('disabled')).to.be.true;
   });
 
-  it(`should disable 'Next' button if site is null`, () => {
+  it(`should disable 'Next' button if siteUrl is empty`, () => {
     const state = fixtures('git-importer');
-    state.site = null;
+    state.siteUrl = '';
 
-    let el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    let el = draw(state);
 
     expect(el.find('.c-choose-site__next').prop('disabled'))
       .to.be.true;
 
-    state.site = {
-      id: 'foo-id',
-      name: 'foo'
-    };
+    state.siteUrl = 'bar.com';
 
-    el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    el = draw(state);
 
     expect(el.find('.c-choose-site__next').prop('disabled'))
       .to.be.false;
@@ -104,25 +93,51 @@ describe(`ChooseSite`, () => {
     const state = fixtures('git-importer');
     state.actions.chooseSite = spy();
 
-    state.site = {
-      id: 'foo-id',
-      name: 'foo'
-    };
+    state.siteUrl = 'foo.com';
 
-    const el = mount(
-      <ChooseSite
-        status={state.status}
-        site={state.site}
-        sites={state.sites}
-        actions={state.actions} />);
+    let el = draw(state);
 
     el.find('.c-choose-site__next')
       .simulate('click');
 
-    expect(state.actions.chooseSite.calledWith('foo-id'))
+    expect(state.actions.chooseSite.calledWith('foo.com'))
       .to.be.true;
 
     expect(state.actions.chooseSite.calledOnce)
       .to.be.true;
+  });
+
+  it(`should show an error when no repos were found for a url`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let error = el.find('.c-choose-site__input_error');
+    expect(error).to.have.length(0);
+
+    state.status = 'CHOOSE_SITE_NO_REPOS_FOUND';
+    el = draw(state);
+
+    error = el.find('.c-choose-site__input-error');
+    expect(error).to.have.length(1);
+    expect(error.text()).to.equal(
+      `No content repositories were found for this site`);
+  });
+
+  it(`should show an error when an invalid url is given`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let error = el.find('.c-choose-site__input_error');
+    expect(error).to.have.length(0);
+
+    state.status = 'CHOOSE_SITE_INVALID_URL';
+    el = draw(state);
+
+    error = el.find('.c-choose-site__input-error');
+    expect(error).to.have.length(1);
+    expect(error.text()).to.equal(
+      `Please enter a valid url (e.g. foo.bar.unicore.io)`);
   });
 });

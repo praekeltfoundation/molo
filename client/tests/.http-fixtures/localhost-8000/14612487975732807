@@ -1,0 +1,16 @@
+POST /import/validation/
+accept: application/json, text/plain, */*
+x-csrftoken: KmiM2MdLGtTMqIQpcsg2gtNtLtLHOEbP
+content-type: application/json;charset=utf-8
+body: {\"repos\":[{\"name\":\"unicore-cms-content-ffl-sn-prod\",\"title\":\"Facts For Life\"}],\"locales\":[{\"locale\":\"fre_FR\",\"is_main\":true},{\"locale\":\"eng_GB\",\"is_main\":false}]}
+
+HTTP/1.0 200 OK
+date: Thu, 21 Apr 2016 14:26:37 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language, Cookie
+x-frame-options: SAMEORIGIN
+content-type: application/json
+content-language: en-gb
+allow: POST, OPTIONS
+
+{"repos":[{"name":"unicore-cms-content-ffl-sn-prod","title":"Facts For Life"}],"errors":[],"locales":[{"locale":"fre_FR","is_main":true},{"locale":"eng_GB","is_main":false}]}

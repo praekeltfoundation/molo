@@ -7,21 +7,21 @@ urlpatterns = patterns(
         'rest_framework.urls', namespace='rest_framework')),
     url(
         r'^repos/$',
-        'molo.core.content_import.views.get_repos',
-        name='get_repos'
+        'molo.core.content_import.views.get_repo_summaries',
+        name='get_repo_summaries'
     ),
     url(
-        r'^repos/(?P<name>[\w-]+)/$',
+        r'^languages/$',
         'molo.core.content_import.views.get_repo_languages',
         name='get_repo_languages'
     ),
     url(
-        r'^repos/(?P<name>[\w-]+)/import/',
+        r'^content/',
         'molo.core.content_import.views.import_content',
         name='import_content'
     ),
     url(
-        r'^repos/(?P<name>[\w-]+)/validate/',
+        r'^validation/',
         'molo.core.content_import.views.import_validate',
         name='import_validate'
     ),

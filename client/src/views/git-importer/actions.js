@@ -4,57 +4,82 @@ import * as httpApi from 'src/views/git-importer/api';
 export function expandStep(name) {
   return {
     type: 'EXPAND_STEP',
-    payload: {name: name}
+    payload: {name}
   };
 }
 
 
-export function updateSites(api=httpApi) {
-  return dispatch => api.sites()
-    .then(sites => ({
-      type: 'UPDATE_SITES',
-      payload: {sites: sites}
-    }))
+export function changeSiteUrl(url) {
+  return {
+    type: 'CHANGE_SITE_URL',
+    payload: {url}
+  };
+}
+
+
+export function chooseSite(url, api=httpApi) {
+  // TODO handle site not found
+  return dispatch => Promise.resolve()
+    .then(() => chooseSiteFetchingRepos())
+    .then(dispatch)
+    .then(() => api.repos(url))
+    .then(({error, value}) => error
+      ? chooseSiteHandleError(dispatch, error, api)
+      : chooseSiteHandleSuccess(dispatch, value, api));
+}
+
+
+function chooseSiteHandleError(dispatch, error, api) {
+  return Promise.resolve()
+    .then(() => chooseSiteError(error))
     .then(dispatch);
 }
 
 
-export function chooseSite(id, api=httpApi) {
-  return dispatch => Promise.all([
-    chooseSiteLoading(dispatch, id, api),
-    chooseSiteDone(dispatch, id, api)
-  ]);
-}
-
-
-function chooseSiteLoading(dispatch, id, api) {
-  return Promise.resolve({
-      type: 'CHOOSE_SITE/BUSY'
-    })
+function chooseSiteHandleSuccess(dispatch, repos, api) {
+  return Promise.resolve()
+    .then(() => chooseSiteFetchingLanguages())
+    .then(dispatch)
+    .then(() => Promise.all([repos, api.languages(repos)]))
+    .then(([repos, languages]) => chooseSiteDone(repos, languages))
     .then(dispatch);
 }
 
 
-function chooseSiteDone(dispatch, id, api) {
-  return api.languages(id)
-    .then(languages => ({
-      type: 'CHOOSE_SITE/DONE',
-      payload: {languages: languages}
-    }))
-    .then(dispatch);
+function chooseSiteError(error) {
+  switch (error.type) {
+    case 'INVALID_URL':
+      return {type: 'CHOOSE_SITE/INVALID_URL'};
+
+    case 'NO_REPOS_FOUND':
+      return {type: 'CHOOSE_SITE/NO_REPOS_FOUND'};
+  }
+}
+
+
+function chooseSiteFetchingRepos() {
+  return {type: 'CHOOSE_SITE/FETCHING_REPOS'};
+}
+
+
+function chooseSiteFetchingLanguages() {
+  return {type: 'CHOOSE_SITE/FETCHING_LANGUAGES'};
+}
+
+
+function chooseSiteDone(repos, languages) {
+  return {
+    type: 'CHOOSE_SITE/DONE',
+    payload: {
+      repos,
+      languages
+    }
+  };
 }
 
 
 export function chooseMain() {
   return {type: 'CHOOSE_MAIN'};
-}
-
-
-export function changeSite(id) {
-  return {
-    type: 'CHANGE_SITE',
-    payload: {id: id}
-  };
 }
 
 
@@ -74,53 +99,47 @@ export function toggleLanguageChosen(id) {
 }
 
 
-export function importContent(id, languages, api=httpApi) {
-  return dispatch => Promise.all([
-    importContentLoading(dispatch, id, languages, api),
-    importContentDone(dispatch, id, languages, api)
-  ]);
-}
-
-
-function importContentLoading(dispatch, id, languages, api) {
-  return Promise.resolve({
-      type: 'IMPORT_CONTENT/BUSY'
-    })
+export function importContent(repos, languages, api=httpApi) {
+  return dispatch => Promise.resolve()
+    .then(() => importContentBusy())
+    .then(dispatch)
+    .then(() => api.importContent(repos, languages))
+    .then(d => importContentDone(d))
     .then(dispatch);
 }
 
 
-function importContentDone(dispatch, id, languages, api) {
-  return api.importContent(id, languages)
-    .then(d => ({
-      type: 'IMPORT_CONTENT/DONE',
-      payload: {errors: d.errors}
-    }))
+function importContentBusy() {
+  return {type: 'IMPORT_CONTENT/BUSY'};
+}
+
+
+function importContentDone(d) {
+  return {
+    type: 'IMPORT_CONTENT/DONE',
+    payload: {errors: d.errors}
+  };
+}
+
+
+export function checkContent(repos, languages, api=httpApi) {
+  return dispatch => Promise.resolve()
+    .then(() => checkContentBusy())
+    .then(dispatch)
+    .then(() => api.checkContent(repos, languages))
+    .then(d => checkContentDone(d))
     .then(dispatch);
 }
 
 
-export function checkContent(id, languages, api=httpApi) {
-  return dispatch => Promise.all([
-    checkContentLoading(dispatch, id, languages, api),
-    checkContentDone(dispatch, id, languages, api)
-  ]);
+function checkContentBusy() {
+  return {type: 'CHECK_CONTENT/BUSY'};
 }
 
 
-function checkContentLoading(dispatch, id, languages, api) {
-  return Promise.resolve({
-      type: 'CHECK_CONTENT/BUSY'
-    })
-    .then(dispatch);
-}
-
-
-function checkContentDone(dispatch, id, languages, api) {
-  return api.checkContent(id, languages)
-    .then(d => ({
-      type: 'CHECK_CONTENT/DONE',
-      payload: {errors: d.errors}
-    }))
-    .then(dispatch);
+function checkContentDone(d) {
+  return {
+    type: 'CHECK_CONTENT/DONE',
+    payload: {errors: d.errors}
+  };
 }

@@ -1,0 +1,13 @@
+GET /import/repos/?host=bar.com&protocol=http
+accept: application/json, text/plain, */*
+
+HTTP/1.0 200 OK
+date: Thu, 21 Apr 2016 15:37:35 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language, Cookie
+x-frame-options: SAMEORIGIN
+content-type: application/json
+content-language: en-gb
+allow: OPTIONS, GET
+
+{"repos":[]}

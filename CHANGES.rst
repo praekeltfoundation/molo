@@ -1,6 +1,21 @@
 CHANGE LOG
 ==========
 
+3.0rc8
+------
+- Update import API to support multiple repos
+- Update import API to support fetching repos from site url
+- Update import UI to support multiple repos
+- Changed content structure to introduce index pages
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
+
+3.0rc7
+------
+- Add GA tag manager field to site settings
+
 3.0rc6
 ------
 - Remove commenting settings from the BannerPage model

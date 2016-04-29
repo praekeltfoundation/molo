@@ -1,5 +1,4 @@
-import find from 'lodash/find';
-import { conj, ensure } from 'src/utils';
+import { conj } from 'src/utils';
 
 
 export default function gitImporter(state, action) {
@@ -11,17 +10,31 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'UPDATE_SITES':
+    case 'CHOOSE_SITE/FETCHING_REPOS':
       return conj(state, {
-        data: conj(state.data, {
-          sites: action.payload.sites
+        ui: conj(state.ui, {
+          status: 'CHOOSE_SITE_FETCHING_REPOS'
         })
       });
 
-    case 'CHOOSE_SITE/BUSY':
+    case 'CHOOSE_SITE/FETCHING_LANGUAGES':
       return conj(state, {
         ui: conj(state.ui, {
-          status: 'CHOOSE_SITE_BUSY'
+          status: 'CHOOSE_SITE_FETCHING_LANGUAGES'
+        })
+      });
+
+    case 'CHOOSE_SITE/NO_REPOS_FOUND':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'CHOOSE_SITE_NO_REPOS_FOUND'
+        })
+      });
+
+    case 'CHOOSE_SITE/INVALID_URL':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'CHOOSE_SITE_INVALID_URL'
         })
       });
 
@@ -33,6 +46,7 @@ export default function gitImporter(state, action) {
           lastStep: 'main'
         }),
         data: conj(state.data, {
+          repos: action.payload.repos,
           languages: action.payload.languages
         })
       });
@@ -51,10 +65,13 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'CHANGE_SITE':
+    case 'CHANGE_SITE_URL':
       return conj(state, {
+        ui: conj(state.ui, {
+          status: 'IDLE'
+        }),
         data: conj(state.data, {
-          site: ensure(find(state.data.sites, {id: action.payload.id}), null)
+          siteUrl: action.payload.url
         })
       });
 

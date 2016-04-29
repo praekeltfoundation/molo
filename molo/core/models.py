@@ -37,8 +37,17 @@ class SiteSettings(BaseSetting):
         related_name='+'
     )
 
+    ga_tag_manager = models.CharField(
+        verbose_name=_('GA Tag Manager'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_("GA Tag Manager tracking code (e.g GTM-XXX)")
+    )
+
     panels = [
         ImageChooserPanel('logo'),
+        FieldPanel('ga_tag_manager'),
     ]
 
 
@@ -124,7 +133,15 @@ class TranslatablePageMixin(object):
         return super(TranslatablePageMixin, self).serve(request)
 
 
+class BannerIndexPage(Page):
+    parent_page_types = []
+    subpage_types = ['BannerPage']
+
+
 class BannerPage(TranslatablePageMixin, Page):
+    parent_page_types = ['core.BannerIndexPage']
+    subpage_types = []
+
     banner = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -141,9 +158,6 @@ class BannerPage(TranslatablePageMixin, Page):
         help_text=_('Optional page to which the banner will link to')
     )
 
-    parent_page_types = ['core.Main']
-    subpage_types = []
-
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
@@ -153,22 +167,15 @@ BannerPage.content_panels = [
 
 class Main(CommentedPageMixin, Page):
     parent_page_types = []
-    subpage_types = ['core.BannerPage', 'core.SectionPage',
-                     'core.FooterPage']
-    commenting_state = models.CharField(
-        max_length=1,
-        choices=constants.COMMENTING_STATE_CHOICES,
-        blank=False,
-        default='C')
-    commenting_open_time = models.DateTimeField(null=True, blank=True)
-    commenting_close_time = models.DateTimeField(null=True, blank=True)
+    subpage_types = []
 
     def bannerpages(self):
-        return BannerPage.objects.live().child_of(self).filter(
+        return BannerPage.objects.live().filter(
             languages__language__is_main_language=True).specific()
 
     def sections(self):
-        return SectionPage.objects.live().child_of(self).filter(
+        index_page = SectionIndexPage.objects.live().all().first()
+        return SectionPage.objects.live().child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 
     def latest_articles(self):
@@ -178,19 +185,8 @@ class Main(CommentedPageMixin, Page):
                 '-latest_revision_created_at').specific()
 
     def footers(self):
-        return FooterPage.objects.live().child_of(self).filter(
+        return FooterPage.objects.live().filter(
             languages__language__is_main_language=True).specific()
-
-
-Main.content_panels = [
-    MultiFieldPanel(
-        [
-            FieldPanel('commenting_state'),
-            FieldPanel('commenting_open_time'),
-            FieldPanel('commenting_close_time'),
-        ],
-        heading="Commenting Settings",)
-]
 
 
 class LanguagePage(CommentedPageMixin, Page):
@@ -198,7 +194,7 @@ class LanguagePage(CommentedPageMixin, Page):
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
 
-    parent_page_types = ['core.Main']
+    parent_page_types = []
     subpage_types = []
 
     commenting_state = models.CharField(
@@ -256,6 +252,31 @@ class SiteLanguage(models.Model):
 
     class Meta:
         verbose_name = _('Language')
+
+
+class SectionIndexPage(CommentedPageMixin, Page):
+    parent_page_types = []
+    subpage_types = ['SectionPage']
+
+    commenting_state = models.CharField(
+        max_length=1,
+        choices=constants.COMMENTING_STATE_CHOICES,
+        blank=True,
+        null=True,
+        default=constants.COMMENTING_OPEN)
+    commenting_open_time = models.DateTimeField(null=True, blank=True)
+    commenting_close_time = models.DateTimeField(null=True, blank=True)
+
+SectionIndexPage.content_panels = [
+    FieldPanel('title', classname='full title'),
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_state'),
+            FieldPanel('commenting_open_time'),
+            FieldPanel('commenting_close_time'),
+        ],
+        heading="Commenting Settings",)
+]
 
 
 class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
@@ -501,8 +522,13 @@ ArticlePage.promote_panels = [
         "Common page configuration", "collapsible collapsed")]
 
 
+class FooterIndexPage(Page):
+    parent_page_types = []
+    subpage_types = ['FooterPage']
+
+
 class FooterPage(ArticlePage):
-    parent_page_types = ['core.Main']
+    parent_page_types = ['FooterIndexPage']
     subpage_types = []
 
 FooterPage.content_panels = ArticlePage.content_panels

@@ -22,52 +22,65 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`UPDATE_SITES`, () => {
-    it(`should update the available sites`, () => {
+  describe(`CHOOSE_SITE/FETCHING_REPOS`, () => {
+    it(`should change the ui status to CHOOSE_SITE_FETCHING_REPOS`, () => {
       const state = fixtures('state');
-
-      state.data.sites = [{
-        id: 'win',
-        name: 'rar'
-      }];
+      state.ui.status = 'IDLE';
 
       expect(gitImporter(state, {
-          type: 'UPDATE_SITES',
-          payload: {
-            sites: [{
-              id: 'foo-id',
-              name: 'foo'
-            }, {
-              id: 'bar-id',
-              name: 'bar'
-            }]
-          }
+          type: 'CHOOSE_SITE/FETCHING_REPOS'
         }))
         .to.deep.equal(conj(fixtures('state'), {
-          data: conj(state.data, {
-            sites: [{
-              id: 'foo-id',
-              name: 'foo'
-            }, {
-              id: 'bar-id',
-              name: 'bar'
-            }]
+          ui: conj(state.ui, {
+            status: 'CHOOSE_SITE_FETCHING_REPOS'
           })
         }));
     });
   });
 
-  describe(`CHOOSE_SITE/BUSY`, () => {
-    it("should change the ui state to busy", () => {
+  describe(`CHOOSE_SITE/FETCHING_LANGUAGES`, () => {
+    it(`should change the ui status to CHOOSE_SITE_FETCHING_LANGUAGES`, () => {
       const state = fixtures('state');
-      state.ui.status = 'CHOOSE_SITE_BUSY';
+      state.ui.status = 'IDLE';
 
       expect(gitImporter(state, {
-          type: 'CHOOSE_SITE/BUSY'
+          type: 'CHOOSE_SITE/FETCHING_LANGUAGES'
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            status: 'CHOOSE_SITE_BUSY'
+            status: 'CHOOSE_SITE_FETCHING_LANGUAGES'
+          })
+        }));
+    });
+  });
+
+  describe(`CHOOSE_SITE/NO_REPOS_FOUND`, () => {
+    it(`should change the ui status to CHOOSE_SITE_NO_REPOS_FOUND`, () => {
+      const state = fixtures('state');
+      state.ui.status = 'IDLE';
+
+      expect(gitImporter(state, {
+          type: 'CHOOSE_SITE/NO_REPOS_FOUND'
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          ui: conj(state.ui, {
+            status: 'CHOOSE_SITE_NO_REPOS_FOUND'
+          })
+        }));
+    });
+  });
+
+  describe(`CHOOSE_SITE/INVALID_URL`, () => {
+    it(`should change the ui status to CHOOSE_SITE_INVALID_URL`, () => {
+      const state = fixtures('state');
+      state.ui.status = 'IDLE';
+
+      expect(gitImporter(state, {
+          type: 'CHOOSE_SITE/INVALID_URL'
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          ui: conj(state.ui, {
+            status: 'CHOOSE_SITE_INVALID_URL'
           })
         }));
     });
@@ -83,6 +96,13 @@ describe(`gitImporter`, () => {
       expect(gitImporter(state, {
           type: 'CHOOSE_SITE/DONE',
           payload: {
+            repos: [{
+              id: 'foo-id',
+              name: 'foo'
+            }, {
+              id: 'bar-id',
+              name: 'bar'
+            }],
             languages: [{
               id: 'en',
               name: 'English',
@@ -164,35 +184,31 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`CHANGE_SITE`, () => {
-    it(`should change site if the site exists`, () => {
+  describe(`CHANGE_SITE_URL`, () => {
+    it(`should update the site url`, () => {
       const state = fixtures('state');
 
-      state.data.sites = [{
-        id: 'foo-id',
-        name: 'foo'
-      }];
-
-      expect(gitImporter(state, {
-          type: 'CHANGE_SITE',
-          payload: {id: 'bar-id'}
+      expect(gitImporter(fixtures('state'), {
+          type: 'CHANGE_SITE_URL',
+          payload: {url: 'foo.com'}
         }))
-        .to.deep.equal(conj(fixtures('state'), {
+        .to.deep.equal(conj(state, {
           data: conj(state.data, {
-            site: null
+            siteUrl: 'foo.com'
           })
         }));
+    });
 
-      expect(gitImporter(state, {
-          type: 'CHANGE_SITE',
-          payload: {id: 'foo-id'},
+    it(`should change the ui status to IDLE`, () => {
+      const state = fixtures('state');
+
+      expect(gitImporter(fixtures('state'), {
+          type: 'CHANGE_SITE_URL',
+          payload: {url: 'foo.com'}
         }))
-        .to.deep.equal(conj(fixtures('state'), {
-          data: conj(state.data, {
-            site: {
-              id: 'foo-id',
-              name: 'foo'
-            }
+        .to.deep.equal(conj(state, {
+          ui: conj(state.ui, {
+            status: 'IDLE'
           })
         }));
     });
