@@ -6,7 +6,7 @@ markdown
 django-libsass
 certifi
 dj-database-url
-django-cas-ng
+django-cas-ng==3.5.3
 django-mptt
 requests
 elastic-git
