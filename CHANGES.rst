@@ -1,5 +1,8 @@
 CHANGE LOG
 ==========
+3.0rc8
+------
+- Pined django-cas-ng version to 3.5.3
 
 3.0rc8
 ------
