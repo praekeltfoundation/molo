@@ -433,6 +433,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
     search_fields = Page.search_fields + TagSearchable.search_fields + (
         index.SearchField('subtitle'),
         index.SearchField('body'),
+        index.FilterField('locale'),
     )
 
     commenting_state = models.CharField(
