@@ -88,7 +88,6 @@ class TestSearch(TestCase, MoloTestCaseMixin):
         response = self.client.get(reverse('search'), {
             'q': 'article'
         })
-        print response
         self.assertContains(response, 'English article')
         self.assertNotContains(response, 'French article')
 
