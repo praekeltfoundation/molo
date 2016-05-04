@@ -1,4 +1,6 @@
 from django import template
+from django.utils.safestring import mark_safe
+from markdown import markdown
 
 from molo.core.models import Page, SiteLanguage, ArticlePage, SectionPage
 
@@ -196,3 +198,15 @@ def load_child_sections_for_section(context, section, count=5):
         return qs[:count]
 
     return [a.get_translation_for(locale) or a for a in qs[:count]]
+
+
+@register.filter
+def handle_markdown(value):
+    md = markdown(
+        value,
+        [
+            'markdown.extensions.fenced_code',
+            'codehilite',
+        ]
+    )
+    return mark_safe(md)
