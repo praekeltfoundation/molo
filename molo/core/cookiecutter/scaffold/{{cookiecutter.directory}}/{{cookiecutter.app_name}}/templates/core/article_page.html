@@ -25,11 +25,19 @@
       {% if block.block_type == 'numbered_list' %}
         <ol>
         {% for item in block.value %}
-          <li>{{item}}</li>
+          <li>{{handle_markdown|item}}</li>
+        {% endfor %}
+        </ol>
+      {% else %}
+      {% if block.block_type == 'list' %}
+        <ol>
+        {% for item in block.value %}
+          <li>{{ item|handle_markdown }}</li>
         {% endfor %}
         </ol>
       {% else %}
           {{ block }}
+      {% endif %}
       {% endif %}
       {% endif %}
       {% endif %}
