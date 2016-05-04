@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
-3.0rc8
+3.0rc10
+------
+- Added multi-languages support for search
+
+3.0rc9
 ------
 - Pined django-cas-ng version to 3.5.3
 
