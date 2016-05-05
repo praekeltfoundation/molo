@@ -18,18 +18,15 @@
   {% for block in self.body %}
       {% if block.block_type == 'heading' %}
           <h1>{{ block.value }}</h1>
-      {% else %}
-      {% if block.block_type == 'image' %}
+      {% elif block.block_type == 'image' %}
         {% image block.value width-240 %}
-      {% else %}
-      {% if block.block_type == 'numbered_list' %}
+      {% elif block.block_type == 'numbered_list' %}
         <ol>
         {% for item in block.value %}
           <li>{{ item|handle_markdown }}</li>
         {% endfor %}
         </ol>
-      {% else %}
-      {% if block.block_type == 'list' %}
+      {% elif block.block_type == 'list' %}
         <ol>
         {% for item in block.value %}
           <li>{{ item|handle_markdown }}</li>
@@ -37,9 +34,6 @@
         </ol>
       {% else %}
           {{ block }}
-      {% endif %}
-      {% endif %}
-      {% endif %}
       {% endif %}
   {% endfor %}
 </article>
