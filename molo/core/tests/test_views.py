@@ -225,16 +225,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
-            '<li><p><strong>Lorem ipsum</strong></p></li>')
+            '<li><strong>Lorem ipsum</strong></li>')
         self.assertContains(
             response,
-            '<li><p>dolor <em>sit amet</em></p></li>')
+            '<li>dolor <em>sit amet</em></li>')
         self.assertContains(
             response,
-            '<li><p><em>ad nec</em></p></li>')
+            '<li><em>ad nec</em></li>')
         self.assertContains(
             response,
-            '<li><p>aeque <em>saepe albucius</em></p></li>')
+            '<li>aeque <em>saepe albucius</em></li>')
 
     def test_featured_homepage_listing(self):
         self.mk_article(self.yourmind_sub, featured_in_homepage=True)
