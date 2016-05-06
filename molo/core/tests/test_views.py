@@ -217,19 +217,23 @@ class TestPages(TestCase, MoloTestCaseMixin):
                  'value': ['<strong>Lorem ipsum</strong>',
                            'dolor <em>sit amet</em>']},
                 {'type': 'numbered_list',
-                 'value': ['<strong>ad nec</strong>',
-                           'aeque <em>saepe albucius</em>']}
+                 'value': ['_ad nec_',
+                           'aeque *saepe albucius*']}
             ]))
 
         response = self.client.get(
             '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
-            '<li><p><strong>Lorem ipsum</strong></p></li>'
+            '<li><p><strong>Lorem ipsum</strong></p></li>')
+        self.assertContains(
+            response,
             '<li><p>dolor <em>sit amet</em></p></li>')
         self.assertContains(
             response,
-            '<li><p><strong>>ad nec</strong></p></li>'
+            '<li><p><em>ad nec</em></p></li>')
+        self.assertContains(
+            response,
             '<li><p>aeque <em>saepe albucius</em></p></li>')
 
     def test_featured_homepage_listing(self):
