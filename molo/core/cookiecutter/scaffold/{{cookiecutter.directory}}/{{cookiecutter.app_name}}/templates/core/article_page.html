@@ -27,11 +27,11 @@
         {% endfor %}
         </ol>
       {% elif block.block_type == 'list' %}
-        <ol>
+        <ul>
         {% for item in block.value %}
           <li>{{ item|handle_markdown }}</li>
         {% endfor %}
-        </ol>
+      </ul>
       {% else %}
           {{ block }}
       {% endif %}
