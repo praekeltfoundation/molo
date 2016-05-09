@@ -16,3 +16,4 @@ responses
 babel
 wagtailmodeladmin
 django-extensions
+django-modelcluster>=2.0
