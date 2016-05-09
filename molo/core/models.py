@@ -33,8 +33,28 @@ class SiteSettings(BaseSetting):
         related_name='+'
     )
 
+    content_rotation = models.BooleanField(
+        default=False,
+        help_text=_(
+            "This option allows content to be rotated randomly and"
+            " automatically")
+    )
+
+    content_rotation_time = models.TimeField(
+        null=True,
+        blank=True,
+        help_text=_(
+            "This is the time that content willbe rotated every day.")
+    )
+
     panels = [
         ImageChooserPanel('logo'),
+        MultiFieldPanel(
+            [
+                FieldPanel('content_rotation'),
+                FieldPanel('content_rotation_time'),
+            ],
+            heading="Content Rotation Settings",)
     ]
 
 
