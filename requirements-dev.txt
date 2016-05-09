@@ -3,3 +3,4 @@ pytest-django
 pytest-cov
 pytest-xdist
 flake8
+django-celery
