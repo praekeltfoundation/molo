@@ -209,6 +209,33 @@ class TestPages(TestCase, MoloTestCaseMixin):
             response,
             '<strong>Lorem ipsum</strong> dolor <em>sit amet</em>')
 
+    def test_markdown_in_article_page_list(self):
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            body=json.dumps([
+                {'type': 'list',
+                 'value': ['<strong>Lorem ipsum</strong>',
+                           'dolor <em>sit amet</em>']},
+                {'type': 'numbered_list',
+                 'value': ['_ad nec_',
+                           'aeque *saepe albucius*']}
+            ]))
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/test-page-1/')
+        self.assertContains(
+            response,
+            '<li><strong>Lorem ipsum</strong></li>')
+        self.assertContains(
+            response,
+            '<li>dolor <em>sit amet</em></li>')
+        self.assertContains(
+            response,
+            '<li><em>ad nec</em></li>')
+        self.assertContains(
+            response,
+            '<li>aeque <em>saepe albucius</em></li>')
+
     def test_featured_homepage_listing(self):
         self.mk_article(self.yourmind_sub, featured_in_homepage=True)
         response = self.client.get('/')
