@@ -36,8 +36,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         last_article_old = self.english.latest_articles()[9].pk
         SiteSettings.content_rotation = True
         d = datetime.now()
-        hour = d.hour + d.minute / 60. + d.second / 3600.
-        SiteSettings.content_rotation_time = hour
+        SiteSettings.content_rotation_time = d.hour
         rotate_content()
 
         self.assertEquals(self.english.latest_articles().count(), 10)

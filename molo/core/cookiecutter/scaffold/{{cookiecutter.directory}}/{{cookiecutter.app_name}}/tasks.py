@@ -7,9 +7,7 @@ from datetime import datetime
 
 @celery_app.task(ignore_result=True)
 def rotate_content():
-    d = datetime.now()
-    hour = d.hour + d.minute / 60. + d.second / 3600.
-    if SiteSettings.content_rotation_time == hour:
+    if SiteSettings.content_rotation_time == datetime.now().hour:
         language_page = LanguagePage.objects.live().first()
         if language_page:
             random_article = ArticlePage.objects.live().filter(
