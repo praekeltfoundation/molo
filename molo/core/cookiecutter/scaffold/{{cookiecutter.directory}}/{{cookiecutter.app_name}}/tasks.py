@@ -1,4 +1,7 @@
-from molo.core.models import ArticlePage, SiteSettings, LanguagePage
+from molo.core.models import ArticlePage, LanguagePage
+
+from wagtail.wagtailcore.models import Site
+from wagtail.contrib.settings.context_processors import SettingsProxy
 
 from {{cookiecutter.app_name}} import celery_app
 
@@ -7,15 +10,19 @@ from datetime import datetime
 
 @celery_app.task(ignore_result=True)
 def rotate_content():
-    if SiteSettings.content_rotation_time == datetime.now().hour:
-        language_page = LanguagePage.objects.live().first()
-        if language_page:
-            random_article = ArticlePage.objects.live().filter(
-                featured_in_latest=False).order_by('?').first()
-            if random_article:
-                random_article.featured_in_latest = True
-                random_article.save_revision().publish()
+    site = Site.objects.get(is_default_site=True)
+    settings = SettingsProxy(site)
+    site_settings = settings['core']['SiteSettings']
+    if site_settings.content_rotation:
+        if site_settings.content_rotation_time == datetime.now().hour:
+            languages = LanguagePage.objects.live()
+            for language_page in languages:
+                random_article = ArticlePage.objects.live().filter(
+                    featured_in_latest=False).order_by('?').first()
+                if random_article:
+                    random_article.featured_in_latest = True
+                    random_article.save_revision().publish()
 
-                article = language_page.latest_articles().last()
-                article.featured_in_latest = False
-                article.save_revision().publish()
+                    article = language_page.latest_articles().last()
+                    article.featured_in_latest = False
+                    article.save_revision().publish()
