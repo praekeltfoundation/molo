@@ -63,46 +63,6 @@ class TestValidateContent(
             'type': 'multiple_main_languages_given'
         }])
 
-    def test_main_not_in_repos(self):
-        def run():
-            api.validate_content([repo1, repo2], [
-                {'locale': 'eng_GB', 'site_language': 'en', 'is_main': False},
-                {'locale': 'spa_MX', 'site_language': 'es', 'is_main': False},
-                {'locale': 'spa_ES', 'site_language': 'es', 'is_main': True}
-            ])
-
-        ws1 = self.create_workspace(prefix='1')
-        repo1 = Repo(ws1, 'repo1', 'Repo 1')
-
-        ws2 = self.create_workspace(prefix='2')
-        repo2 = Repo(ws2, 'repo2', 'Repo 2')
-
-        self.add_languages(ws1, 'eng_GB', 'spa_MX', 'spa_CU')
-        self.create_category(ws1, locale='eng_GB')
-
-        self.add_languages(ws2, 'spa_MX')
-        self.create_category(ws2, locale='spa_MX')
-
-        error = self.catch(InvalidParametersError, run)
-
-        self.assertEqual(
-            error.message,
-            "Invalid parameters given for content validation")
-
-        self.assertEqual(error.errors, [{
-            'type': 'main_language_not_in_repo',
-            'details': {
-                'repo': 'repo1',
-                'locale': 'spa_ES'
-            }
-        }, {
-            'type': 'main_language_not_in_repo',
-            'details': {
-                'repo': 'repo2',
-                'locale': 'spa_ES'
-            }
-        }])
-
     def test_wagtail_language_validation(self):
         self.english = SiteLanguage.objects.create(locale='en')
 
