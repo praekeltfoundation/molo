@@ -22,6 +22,8 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
 
+from django.core.validators import MaxValueValidator, MinValueValidator
+
 
 @register_setting
 class SiteSettings(BaseSetting):
@@ -40,9 +42,13 @@ class SiteSettings(BaseSetting):
             " automatically")
     )
 
-    content_rotation_time = models.TimeField(
+    content_rotation_time = models.IntegerField(
         null=True,
         blank=True,
+        validators=[
+            MaxValueValidator(24),
+            MinValueValidator(1)
+        ],
         help_text=_(
             "This is the time that content willbe rotated every day.")
     )

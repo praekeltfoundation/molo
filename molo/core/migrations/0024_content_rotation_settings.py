@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.core.validators
 
 
 class Migration(migrations.Migration):
@@ -19,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='content_rotation_time',
-            field=models.TimeField(help_text='This is the time that content willbe rotated every day.', null=True, blank=True),
+            field=models.IntegerField(blank=True, help_text='This is the time that content willbe rotated every day.', null=True, validators=[django.core.validators.MaxValueValidator(24), django.core.validators.MinValueValidator(1)]),
         ),
     ]
