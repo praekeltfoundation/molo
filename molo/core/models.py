@@ -50,7 +50,8 @@ class SiteSettings(BaseSetting):
             MinValueValidator(1)
         ],
         help_text=_(
-            "This is the time that content willbe rotated every day.")
+            "This is the time that content will be rotated every day. "
+            "If the content should rotate at 14h, then fill in 14")
     )
 
     panels = [

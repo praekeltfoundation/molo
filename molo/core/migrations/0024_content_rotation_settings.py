@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='content_rotation_time',
-            field=models.IntegerField(blank=True, help_text='This is the time that content willbe rotated every day.', null=True, validators=[django.core.validators.MaxValueValidator(24), django.core.validators.MinValueValidator(1)]),
+            field=models.IntegerField(blank=True, help_text='This is the time that content will be rotated every day. If the content should rotate at 14h, then fill in 14', null=True, validators=[django.core.validators.MaxValueValidator(24), django.core.validators.MinValueValidator(1)]),
         ),
     ]
