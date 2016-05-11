@@ -22,6 +22,8 @@ from wagtail.wagtailadmin.taggable import TagSearchable
 from molo.core.blocks import MarkDownBlock
 from molo.core import constants
 
+from django.core.validators import MaxValueValidator, MinValueValidator
+
 
 @register_setting
 class SiteSettings(BaseSetting):
@@ -33,8 +35,33 @@ class SiteSettings(BaseSetting):
         related_name='+'
     )
 
+    content_rotation = models.BooleanField(
+        default=False,
+        help_text=_(
+            "This option allows content to be rotated randomly and"
+            " automatically")
+    )
+
+    content_rotation_time = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[
+            MaxValueValidator(23),
+            MinValueValidator(0)
+        ],
+        help_text=_(
+            "This is the time that content will be rotated every day. "
+            "If the content should rotate at 14h, then fill in 14")
+    )
+
     panels = [
         ImageChooserPanel('logo'),
+        MultiFieldPanel(
+            [
+                FieldPanel('content_rotation'),
+                FieldPanel('content_rotation_time'),
+            ],
+            heading="Content Rotation Settings",)
     ]
 
 
