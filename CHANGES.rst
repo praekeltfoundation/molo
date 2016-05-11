@@ -1,5 +1,8 @@
 CHANGE LOG
 ==========
+2.6.15
+------
+- Add random content rotation
 
 2.6.14
 ------
