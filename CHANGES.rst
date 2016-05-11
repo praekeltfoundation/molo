@@ -1,5 +1,63 @@
 CHANGE LOG
 ==========
+3.0rc10
+------
+- Added multi-languages support for search
+
+3.0rc9
+------
+- Pined django-cas-ng version to 3.5.3
+
+3.0rc8
+------
+- Update import API to support multiple repos
+- Update import API to support fetching repos from site url
+- Update import UI to support multiple repos
+- Changed content structure to introduce index pages
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
+
+3.0rc7
+------
+- Add GA tag manager field to site settings
+
+3.0rc6
+------
+- Remove commenting settings from the BannerPage model
+
+3.0rc5
+------
+- Re-release of version 3.0rc3 because we forgot to increment the version
+  number.
+
+3.0rc3
+------
+- Bug fixes
+
+3.0rc2
+------
+- Fixed migration conflict
+
+3.0rc1
+------
+- added multilanguage support
+- added content import from UC content repos (using REACT)
+- rename ``HomePage`` module to ``BannerPage``
+- upgrade wagtail to 1.4.1
+- updated language switcher url to include ``?next={{request.path}}``
+- ``section_page.html`` now uses new template tags (see below)
+- ``section_listing_homepage.html`` now uses new template tags (see below)
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- deprecated use of ``LanguagePage``: all pages are now direct children of ``Main`` (use ``SiteLanguage`` for multilanguage support)
+- deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
+- deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
+- deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
+- deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+
 2.6.15
 ------
 - Add random content rotation
@@ -37,7 +95,7 @@ CHANGE LOG
 
 2.6.7
 -----
-- Core urls are not defined correctly
+- core urls are not defined correctly
 
 2.6.6
 -----

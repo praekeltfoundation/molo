@@ -1,0 +1,30 @@
+POST /import/repos/unicore-cms-content-mama-mx-prod/validate/
+accept: application/json, text/plain, */*
+x-csrftoken: ZC4jl7ZzhT3ufnJsEqlCwZJ5mCowUeJh
+content-type: application/json;charset=utf-8
+body: {\"locales\":[{\"locale\":\"spa_MX\",\"is_main\":true},{\"locale\":\"spa_ES\",\"is_main\":false}]}
+
+HTTP/1.0 422 UNPROCESSABLE ENTITY
+date: Tue, 22 Mar 2016 12:38:17 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language, Cookie
+x-frame-options: SAMEORIGIN
+content-type: application/json
+content-language: en-gb
+allow: POST, OPTIONS
+
+{
+  "errors": [{
+    "type": "wrong_main_language_exist_in_wagtail",
+    "details": {
+      "lang": "French",
+      "selected_lang": "Spanish (Mexico)"
+    }
+  }, {
+    "type": "no_primary_category",
+    "details": {
+      "lang": "Spanish (Mexico)",
+      "article": "Palabras sobre el embarazo y el parto"
+    }
+  }]
+}
