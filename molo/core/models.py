@@ -46,8 +46,8 @@ class SiteSettings(BaseSetting):
         null=True,
         blank=True,
         validators=[
-            MaxValueValidator(24),
-            MinValueValidator(1)
+            MaxValueValidator(23),
+            MinValueValidator(0)
         ],
         help_text=_(
             "This is the time that content will be rotated every day. "
