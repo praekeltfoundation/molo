@@ -18,7 +18,8 @@ def rotate_content():
             languages = LanguagePage.objects.live()
             for language_page in languages:
                 random_article = ArticlePage.objects.live().filter(
-                    featured_in_latest=False).order_by('?').first()
+                    featured_in_latest=False
+                ).descendant_of(language_page).order_by('?').first()
                 if random_article:
                     random_article.featured_in_latest = True
                     random_article.save_revision().publish()

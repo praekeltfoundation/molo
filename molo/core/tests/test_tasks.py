@@ -27,6 +27,13 @@ class TestTasks(TestCase, MoloTestCaseMixin):
 
         self.mk_main()
 
+        self.french = LanguagePage(
+            title='French',
+            code='fr',
+            slug='french')
+        self.main.add_child(instance=self.french)
+        self.french.save_revision().publish()
+
         self.yourmind = self.mk_section(
             self.english, title='Your mind')
         self.yourmind_sub = self.mk_section(
@@ -59,13 +66,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             last_article_old, self.english.latest_articles()[9].pk)
         self.assertEquals(
             second_last_article_old, self.english.latest_articles()[9].pk)
-
-        self.french = LanguagePage(
-            title='French',
-            code='fr',
-            slug='french')
-        self.main.add_child(instance=self.french)
-        self.french.save_revision().publish()
 
         self.yourmind_fr = self.mk_section(
             self.french, title='Your mind french')
