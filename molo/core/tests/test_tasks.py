@@ -7,7 +7,7 @@ from django.test import TestCase
 from molo.core.models import LanguagePage
 from molo.core.tests.base import MoloTestCaseMixin
 
-from testapp.tasks import rotate_content
+from molo.core.tasks import rotate_content
 
 from wagtail.wagtailimages.models import Image
 from wagtail.wagtailimages.tests.utils import get_test_image_file
