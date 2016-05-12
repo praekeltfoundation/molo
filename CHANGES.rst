@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.6.17
+------
+- moved tasks.py to core
+
 2.6.16
 ------
 - moved content rotation from cookiecutter to core
