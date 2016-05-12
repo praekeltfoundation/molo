@@ -1,0 +1,8 @@
+{% raw %}
+{% load i18n wagtailadmin_tags staticfiles %}
+{% if error %}
+<div class="nice-padding panel-upgrade-notification" style="display:none">
+    <div class="help-block help-warning"><strong>Your site does not have a language.</strong> Click <a style="display: inline;"href="/admin/modeladmin/core/sitelanguage/">here</a> to add a language.</div>
+</div>
+{% endif %}
+{% endraw %}
