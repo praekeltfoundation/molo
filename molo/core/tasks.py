@@ -4,8 +4,10 @@ from wagtail.wagtailcore.models import Site
 from wagtail.contrib.settings.context_processors import SettingsProxy
 
 from datetime import datetime
+from celery import task
 
 
+@task(ignore_result=True)
 def rotate_content():
     site = Site.objects.get(is_default_site=True)
     settings = SettingsProxy(site)

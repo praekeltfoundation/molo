@@ -121,12 +121,12 @@ DATABASES = {'default': dj_database_url.config(
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
-CELERY_IMPORTS = ('{{cookiecutter.app_name}}.tasks')
+CELERY_IMPORTS = ('molo.core.tasks')
 BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERYBEAT_SCHEDULE = {
     'rotate_content': {
-        'task': '{{cookiecutter.app_name}}.tasks.rotate_content',
+        'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },
 }
