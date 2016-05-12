@@ -1,5 +1,10 @@
 CHANGE LOG
 ==========
+
+2.6.16
+------
+- moved content rotation from cookiecutter to core
+
 2.6.15
 ------
 - Add random content rotation
