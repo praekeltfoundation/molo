@@ -16,10 +16,16 @@ def get_summaries(url):
 
 
 def parse_repo_summaries_response(resp):
-    return [{
-        'name': d['index'],
-        'title': d['data']['title']
-    } for d in resp]
+    return [parse_repo_summary(d) for d in resp]
+
+
+def parse_repo_summary(d):
+    index = d['index']
+
+    return {
+        'name': index,
+        'title': d.get('data', {}).get('title', index)
+    }
 
 
 def is_error_response(resp):
