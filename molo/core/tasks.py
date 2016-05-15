@@ -20,7 +20,7 @@ def rotate_content():
             random_article = ArticlePage.objects.live().filter(
                 featured_in_latest=False, languages__language__id=main_lang.id
             ).descendant_of(main).order_by('?').first()
-            print random_article
+
             if random_article:
                 random_article.featured_in_latest = True
                 random_article.save_revision().publish()
