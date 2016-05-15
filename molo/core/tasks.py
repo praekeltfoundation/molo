@@ -15,7 +15,7 @@ def rotate_content():
     settings = SettingsProxy(site)
     site_settings = settings['core']['SiteSettings']
     if site_settings.content_rotation and \
-            site_settings.content_rotation_time == datetime.now().hour or True:
+            site_settings.content_rotation_time == datetime.now().hour:
         if main:
             random_article = ArticlePage.objects.live().filter(
                 featured_in_latest=False, languages__language__id=main_lang.id
