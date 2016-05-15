@@ -58,6 +58,18 @@ Backwards incompatible changes
 - deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
+2.6.17
+------
+- moved tasks.py to core
+
+2.6.16
+------
+- moved content rotation from cookiecutter to core
+
+2.6.15
+------
+- Add random content rotation
+
 2.6.14
 ------
 - Added plugins version comparison
