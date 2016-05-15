@@ -1,4 +1,4 @@
-from molo.core.models import ArticlePage, LanguagePage
+from molo.core.models import ArticlePage, Main, SiteLanguage
 
 from wagtail.wagtailcore.models import Site
 from wagtail.contrib.settings.context_processors import SettingsProxy
@@ -9,20 +9,22 @@ from celery import task
 
 @task(ignore_result=True)
 def rotate_content():
+    main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
+    main = Main.objects.all().first()
     site = Site.objects.get(is_default_site=True)
     settings = SettingsProxy(site)
     site_settings = settings['core']['SiteSettings']
     if site_settings.content_rotation and \
-            site_settings.content_rotation_time == datetime.now().hour:
-        languages = LanguagePage.objects.live()
-        for language_page in languages:
+            site_settings.content_rotation_time == datetime.now().hour or True:
+        if main:
             random_article = ArticlePage.objects.live().filter(
-                featured_in_latest=False
-            ).descendant_of(language_page).order_by('?').first()
+                featured_in_latest=False, languages__language__id=main_lang.id
+            ).descendant_of(main).order_by('?').first()
+            print random_article
             if random_article:
                 random_article.featured_in_latest = True
                 random_article.save_revision().publish()
 
-                article = language_page.latest_articles().last()
+                article = main.latest_articles().last()
                 article.featured_in_latest = False
                 article.save_revision().publish()
