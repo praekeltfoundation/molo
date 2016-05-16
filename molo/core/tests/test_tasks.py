@@ -4,7 +4,7 @@ import pytest
 from django.test import TestCase
 
 
-from molo.core.models import SiteLanguage, FooterPage, ArticlePage
+from molo.core.models import SiteLanguage, FooterPage
 from molo.core.tests.base import MoloTestCaseMixin
 
 from molo.core.tasks import rotate_content
@@ -29,15 +29,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.yourmind, title='Your mind subsection')
 
     def test_latest_rotation(self):
-        self.footer = FooterPage(title='Footer Page', slug='footer-page')
-        self.footer_index.add_child(instance=self.footer)
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
-        self.assertEquals(self.main.latest_articles().count(), 10)
-        first_article_old = self.main.latest_articles()[0].pk
-        second_last_article_old = self.main.latest_articles()[8].pk
-        last_article_old = self.main.latest_articles()[9].pk
-
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
@@ -46,9 +37,24 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         d = datetime.now()
         site_settings.content_rotation_time = d.hour
         site_settings.save()
-        rotate_content()
 
-        self.assertIsInstance(self.main.latest_articles()[0], ArticlePage)
+        for i in range(5):
+            self.footer = FooterPage(
+                title='Footer Page %s', slug='footer-page-%s' % (i, ))
+            self.footer_index.add_child(instance=self.footer)
+
+        rotate_content()
+        self.assertEquals(FooterPage.objects.live().count(), 5)
+        self.assertEquals(self.main.latest_articles().count(), 0)
+
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
+        self.assertEquals(self.main.latest_articles().count(), 10)
+        first_article_old = self.main.latest_articles()[0].pk
+        second_last_article_old = self.main.latest_articles()[8].pk
+        last_article_old = self.main.latest_articles()[9].pk
+
+        rotate_content()
         self.assertEquals(self.main.latest_articles().count(), 10)
         self.assertNotEquals(
             first_article_old, self.main.latest_articles()[0].pk)
