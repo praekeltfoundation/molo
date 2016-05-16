@@ -377,7 +377,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                     status=200)
 
             response = self.client.get(reverse('versions'))
-            self.assertContains(response, '3.0.0')
+            self.assertContains(response, '9.0.0')
             self.assertContains(response, 'Compare')
             self.assertContains(response, 'Not installed')
         get_pypi_version()
