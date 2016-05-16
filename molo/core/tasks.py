@@ -17,7 +17,7 @@ def rotate_content():
     site_settings = settings['core']['SiteSettings']
     if site_settings.content_rotation and \
             site_settings.content_rotation_time == datetime.now().hour:
-        if main:
+        if main and index:
             random_article = ArticlePage.objects.live().filter(
                 featured_in_latest=False, languages__language__id=main_lang.id
             ).descendant_of(index).order_by('?').first()
