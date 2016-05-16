@@ -1,34 +1,38 @@
 CHANGE LOG
 ==========
 
+3.0.1
+------
+- Minor bug fixes
+
 3.0.0
 ------
-- added multi-language support
-- added content import from Universal Core content repos (using REACT)
-- renamed ``HomePage`` module to ``BannerPage``
-- updated language switcher url to include ``?next={{request.path}}``
+- Added multi-language support
+- Added content import from Universal Core content repos (using REACT)
+- Renamed ``HomePage`` module to ``BannerPage``
+- Updated language switcher url to include ``?next={{request.path}}``
 - ``section_page.html`` now uses new template tags (see below)
 - ``section_listing_homepage.html`` now uses new template tags (see below)
-- changed content structure to introduce index pages
-- added GA tag manager field to site settings
-- upgraded wagtail to 1.4.3
+- Changed content structure to introduce index pages
+- Added GA tag manager field to site settings
+- Upgraded wagtail to 1.4.3
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- deprecated use of ``LanguagePage``: use ``SiteLanguage`` for multi-language support
-- deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
-- deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
-- deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
-- deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
-- deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+- Deprecated use of ``LanguagePage``: use ``SiteLanguage`` for multi-language support
+- Deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
+- Deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
+- Deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
+- Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
+- Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
 2.6.17
 ------
-- moved tasks.py to core
+- Moved tasks.py to core
 
 2.6.16
 ------
-- moved content rotation from cookiecutter to core
+- Moved content rotation from cookiecutter to core
 
 2.6.15
 ------
