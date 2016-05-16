@@ -372,7 +372,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 responses.add(
                     responses.GET, (
                         'https://pypi.python.org/pypi/%s/json' % plugin[0]),
-                    body=json.dumps({'info': {'version': '3.0.0'}}),
+                    body=json.dumps({'info': {'version': '9.0.0'}}),
                     content_type="application/json",
                     status=200)
 
