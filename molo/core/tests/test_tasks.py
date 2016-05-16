@@ -4,7 +4,7 @@ import pytest
 from django.test import TestCase
 
 
-from molo.core.models import SiteLanguage
+from molo.core.models import SiteLanguage, FooterPage, ArticlePage
 from molo.core.tests.base import MoloTestCaseMixin
 
 from molo.core.tasks import rotate_content
@@ -29,6 +29,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.yourmind, title='Your mind subsection')
 
     def test_latest_rotation(self):
+        self.footer = FooterPage(title='Footer Page', slug='footer-page')
+        self.footer_index.add_child(instance=self.footer)
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
@@ -46,6 +48,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         site_settings.save()
         rotate_content()
 
+        self.assertIsInstance(self.main.latest_articles()[0], ArticlePage)
         self.assertEquals(self.main.latest_articles().count(), 10)
         self.assertNotEquals(
             first_article_old, self.main.latest_articles()[0].pk)

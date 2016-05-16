@@ -127,9 +127,9 @@ DATABASES = {'default': dj_database_url.config(
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 CELERY_IMPORTS = ('molo.core.tasks')
-BROKER_URL = environ.get('BROKER_URL') or 'redis://localhost:6379/0'
+BROKER_URL = environ.get('BROKER_URL'), 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = environ.get(
-    'CELERY_RESULT_BACKEND') or 'redis://localhost:6379/0'
+    'CELERY_RESULT_BACKEND'), 'redis://localhost:6379/0'
 CELERYBEAT_SCHEDULE = {
     'rotate_content': {
         'task': 'molo.core.tasks.rotate_content',
