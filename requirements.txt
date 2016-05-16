@@ -16,3 +16,5 @@ responses
 babel
 wagtailmodeladmin
 django-extensions
+django-celery
+redis

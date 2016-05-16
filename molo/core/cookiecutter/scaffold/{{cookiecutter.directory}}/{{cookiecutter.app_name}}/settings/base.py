@@ -13,6 +13,7 @@ from os import environ
 from django.conf import global_settings
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
+from celery.schedules import crontab
 
 # Absolute filesystem path to the Django project directory:
 PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
@@ -71,6 +72,7 @@ INSTALLED_APPS = (
     'wagtail.contrib.settings',
 
     'mptt',
+    'djcelery',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}
     'raven.contrib.django.raven_compat',
@@ -124,6 +126,16 @@ DATABASES = {'default': dj_database_url.config(
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
+CELERY_IMPORTS = ('molo.core.tasks')
+BROKER_URL = environ.get('BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = environ.get(
+    'CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERYBEAT_SCHEDULE = {
+    'rotate_content': {
+        'task': 'molo.core.tasks.rotate_content',
+        'schedule': crontab(minute=0),
+    },
+}
 
 LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'Africa/Johannesburg'
