@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.0.3
+------
+- Improved performance of UC content import
+
 3.0.2
 ------
 - Minor bug fixes
