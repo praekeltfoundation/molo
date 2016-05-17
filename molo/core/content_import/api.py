@@ -83,16 +83,13 @@ def get_repo_by_name(name, models=(Localisation, Category, Page)):
     return get_repo({'name': name}, models=models)
 
 
-def get_repos(data, models=(Localisation, Category, Page)):
-    return [get_repo(d, models) for d in data]
+def get_repos(data):
+    return [get_repo(d) for d in data]
 
 
-def get_repo(datum, models=(Localisation, Category, Page)):
+def get_repo(datum):
     workspace = RemoteWorkspace('%s/repos/%s.json' % (
         settings.UNICORE_DISTRIBUTE_API, datum['name']))
-
-    for model in models:
-        workspace.sync(model)
 
     return Repo(workspace, **datum)
 
