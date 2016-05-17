@@ -307,7 +307,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/locale/fr/')
 
         response = self.client.get('/sections/your-mind/')
-        self.assertRedirects(response, 'sections/your-mind-in-french/')
+        self.assertRedirects(response, '/sections/your-mind-in-french/')
 
         response = self.client.get('/sections/your-mind/test-page-0/')
         self.assertRedirects(response,
