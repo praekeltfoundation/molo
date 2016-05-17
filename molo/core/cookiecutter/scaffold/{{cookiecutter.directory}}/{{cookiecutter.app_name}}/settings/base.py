@@ -97,6 +97,24 @@ MIDDLEWARE_CLASSES = [
     'molo.core.middleware.AdminLocaleMiddleware',
 ]
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'molo.core.context_processors.locale',
+                'wagtail.contrib.settings.context_processors.settings',
+            ],
+        },
+    },
+]
+
 ROOT_URLCONF = '{{cookiecutter.app_name}}.urls'
 WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 
@@ -182,15 +200,6 @@ MEDIA_URL = '/media/'
 
 COMPRESS_PRECOMPILERS = [
     ('text/x-scss', 'django_libsass.SassCompiler'),
-]
-
-
-# Template configuration
-
-TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + [
-    'django.core.context_processors.request',
-    'molo.core.context_processors.locale',
-    'wagtail.contrib.settings.context_processors.settings',
 ]
 
 
