@@ -1,7 +1,6 @@
 from django.conf import settings
 
 from elasticgit.workspace import RemoteWorkspace
-from unicore.content.models import Localisation, Category, Page
 
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
@@ -75,12 +74,12 @@ def validate_repo(repo, main, children):
     return validator.validate_for(main, children)
 
 
-def get_repos_by_name(names, models=(Localisation, Category, Page)):
-    return [get_repo_by_name(name, models) for name in names]
+def get_repos_by_name(names):
+    return [get_repo_by_name(name) for name in names]
 
 
-def get_repo_by_name(name, models=(Localisation, Category, Page)):
-    return get_repo({'name': name}, models=models)
+def get_repo_by_name(name):
+    return get_repo({'name': name})
 
 
 def get_repos(data):
