@@ -7,8 +7,6 @@ from rest_framework.authentication import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import parser_classes
 
-from unicore.content.models import Localisation
-
 from molo.core.content_import import api
 from molo.core.content_import.errors import (
     InvalidParametersError, SiteResponseError)
@@ -36,7 +34,7 @@ def get_repo_summaries(request):
 @api_view(['GET'])
 def get_repo_languages(request):
     names = request.query_params.getlist('repo')
-    repos = api.get_repos_by_name(names, models=(Localisation,))
+    repos = api.get_repos_by_name(names)
     result = api.get_languages(repos)
 
     return Response({
