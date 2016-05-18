@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.1.1
+------
+- Pined django-cas-ng to 3.5.4
+
 3.1.0
 ------
 - Upgraded to Django 1.9 and Wagtail 1.4.4
@@ -11,11 +15,11 @@ CHANGE LOG
 
 3.0.2
 ------
-- Minor bug fixes
+- Changed molo.core version number in get_pypi_version test
 
 3.0.1
 ------
-- Minor bug fixes
+- Changed molo.core version number in versions_comparison test
 
 3.0.0
 ------
