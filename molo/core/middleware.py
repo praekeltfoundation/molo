@@ -32,7 +32,7 @@ class MoloCASMiddleware(CASMiddleware):
             if request.user.is_staff:
                 return None
             else:
-                return permission_denied(request)
+                return permission_denied(request, 'error')
         return super(MoloCASMiddleware, self).process_view(
             request, view_func, view_args, view_kwargs)
 
@@ -44,7 +44,7 @@ class Custom403Middleware(object):
         for message in storage:
             pass
         if isinstance(response, HttpResponseForbidden):
-            return permission_denied(request)
+            return permission_denied(request, 'error')
         return response
 
 
