@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.1.0
+------
+- Upgraded to Django 1.9 and Wagtail 1.4.4
+
 3.0.3
 ------
 - Improved performance of UC content import
