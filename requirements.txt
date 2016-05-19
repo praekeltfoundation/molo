@@ -18,3 +18,4 @@ wagtailmodeladmin
 django-extensions
 django-celery
 redis
+six>=1.9
