@@ -12,10 +12,10 @@ requests
 elastic-git
 unicore.content
 wagtail==1.4.4
-django-modelcluster>=2.0,<3.0
 responses
 babel
 wagtailmodeladmin
 django-extensions
 django-celery
 redis
+django-modelcluster>=2.0,<3.0
