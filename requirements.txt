@@ -11,8 +11,8 @@ django-mptt
 requests
 elastic-git
 unicore.content
-django-modelcluster>=2.0,<3.0
 wagtail==1.4.4
+django-modelcluster>=2.0,<3.0
 responses
 babel
 wagtailmodeladmin
