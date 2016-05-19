@@ -100,7 +100,7 @@ MIDDLEWARE_CLASSES = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [join(PROJECT_ROOT, '{{cookiecutter.app_name}}', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
