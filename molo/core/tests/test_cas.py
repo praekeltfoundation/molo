@@ -2,7 +2,11 @@ from mock import patch
 from django.test import TestCase, Client, override_settings
 from django.contrib.auth.models import User
 from django.conf.urls import patterns, url, include
-from django.template.base import TemplateDoesNotExist
+
+try:
+    from django.template.base import TemplateDoesNotExist
+except ImportError:  # Removed in Django 1.9
+    from django.template import TemplateDoesNotExist
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.urls import urlpatterns

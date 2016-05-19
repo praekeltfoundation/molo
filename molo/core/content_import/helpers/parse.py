@@ -1,7 +1,6 @@
 from urlparse import ParseResult, urlunparse
 
 from molo.core.content_import.utils import conj, omit_nones
-from molo.core.content_import.helpers.locales import locale_in_repo
 
 
 def parse_get_repo_summaries(url_parts):
@@ -22,9 +21,6 @@ def parse_get_repo_summaries(url_parts):
 
 def parse_validate_content(repos, locales):
     main, errors = get_main(locales)
-
-    if main is not None:
-        errors = errors + check_main_language_in_repos(repos, main)
 
     return {
         'main': main,
@@ -65,24 +61,6 @@ def get_required_param_errors(params):
         'type': 'missing_required_parameter',
         'details': {'name': name}
     } for name, v in params.iteritems() if v is None]
-
-
-def check_main_language_in_repos(repos, main):
-    errors = [check_main_language_in_repo(repo, main) for repo in repos]
-    return [error for error in errors if error is not None]
-
-
-def check_main_language_in_repo(repo, main):
-    if not locale_in_repo(repo, main):
-        return {
-            'type': 'main_language_not_in_repo',
-            'details': {
-                'repo': repo.name,
-                'locale': main
-            }
-        }
-    else:
-        return None
 
 
 def get_children_locales(main, locales):

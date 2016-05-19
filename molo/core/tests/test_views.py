@@ -307,7 +307,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/locale/fr/')
 
         response = self.client.get('/sections/your-mind/')
-        self.assertRedirects(response, 'sections/your-mind-in-french/')
+        self.assertRedirects(response, '/sections/your-mind-in-french/')
 
         response = self.client.get('/sections/your-mind/test-page-0/')
         self.assertRedirects(response,
@@ -372,12 +372,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 responses.add(
                     responses.GET, (
                         'https://pypi.python.org/pypi/%s/json' % plugin[0]),
-                    body=json.dumps({'info': {'version': '3.0.0'}}),
+                    body=json.dumps({'info': {'version': '9.0.0'}}),
                     content_type="application/json",
                     status=200)
 
             response = self.client.get(reverse('versions'))
-            self.assertContains(response, '3.0.0')
+            self.assertContains(response, '9.0.0')
             self.assertContains(response, 'Compare')
             self.assertContains(response, 'Not installed')
         get_pypi_version()
