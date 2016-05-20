@@ -34,9 +34,7 @@ export function importContent(repos, languages, opts) {
   languages = serialize.languages(languages);
 
   return request(endpoints.importContent(repos, languages, opts))
-    .then(
-      constant({errors: []}),
-      catchResponseCode(CODES.PARSE_ERROR, importContentParseError));
+    .then(constant(null), catchResponse());
 }
 
 
@@ -78,11 +76,4 @@ function reposNoReposFound() {
     error: {type: 'NO_REPOS_FOUND'},
     value: null
   };
-}
-
-
-function importContentParseError(resp) {
-  return resp.data.type === 'validation_failure'
-    ? {errors: resp.data.errors}
-    : throwResponse(resp);
 }

@@ -104,15 +104,10 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'IMPORT_CONTENT/DONE':
+    case 'IMPORT_CONTENT/STARTED':
       return conj(state, {
         ui: conj(state.ui, {
-          status: action.payload.errors.length
-            ? 'IMPORT_CONTENT_ERROR'
-            : 'IMPORT_CONTENT_COMPLETE'
-        }),
-        data: conj(state.data, {
-          errors: action.payload.errors
+          status: 'IMPORT_CONTENT_STARTED'
         })
       });
 
