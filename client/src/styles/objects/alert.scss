@@ -1,0 +1,14 @@
+.o-alert {
+  padding: 0.618em 2em;
+  background: $bg1;
+  color: $fg1;
+  border: 1px solid $border0;
+  border-radius: $border-radius;
+}
+
+
+.o-alert--success {
+  border-color: $bg-success;
+  background: $bg-success;
+  color: $fg-success;
+}

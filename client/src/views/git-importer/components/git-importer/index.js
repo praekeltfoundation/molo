@@ -71,13 +71,27 @@ const GitImporter = (d) => (
         </Collapse>
       </div>
 
-      {renderErrors(d)}
+      {statusInfo(d)}
+      {errors(d)}
     </div>
   </form>
 );
 
 
-function renderErrors(d) {
+function statusInfo(d) {
+  switch (d.status) {
+    case 'IMPORT_CONTENT_STARTED':
+      return (
+        <div className="c-git-import-status o-alert o-alert--success">
+          Your import has been started. You will receive an email once the
+          import is complete.
+         </div>
+      );
+  }
+}
+
+
+function errors(d) {
   if (d.errors.length) return (<ErrorList errors={d.errors} />);
 }
 
