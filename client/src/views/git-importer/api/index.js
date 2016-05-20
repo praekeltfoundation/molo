@@ -34,9 +34,7 @@ export function importContent(repos, languages, opts) {
   languages = serialize.languages(languages);
 
   return request(endpoints.importContent(repos, languages, opts))
-    .then(
-      constant({errors: []}),
-      catchResponseCode(CODES.PARSE_ERROR, importContentParseError));
+    .then(constant(null), catchResponse());
 }
 
 
@@ -44,7 +42,7 @@ export function checkContent(repos, languages, opts) {
   repos = repos.map(serialize.repo);
   languages = serialize.languages(languages);
   return request(endpoints.validateContent(repos, languages, opts))
-    .then(resp => ({errors: resp.data.errors}), catchResponse());
+    .then(constant(null), catchResponse());
 }
 
 
@@ -78,11 +76,4 @@ function reposNoReposFound() {
     error: {type: 'NO_REPOS_FOUND'},
     value: null
   };
-}
-
-
-function importContentParseError(resp) {
-  return resp.data.type === 'validation_failure'
-    ? {errors: resp.data.errors}
-    : throwResponse(resp);
 }
