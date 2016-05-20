@@ -70,7 +70,7 @@ def import_content(request):
             request.user.username,
             request.user.email,
             request.get_host())
-        return Response(status=200, data={
+        return Response(status=201, data={
             'repos': repo_data,
             'locales': locales,
             'errors': [],
