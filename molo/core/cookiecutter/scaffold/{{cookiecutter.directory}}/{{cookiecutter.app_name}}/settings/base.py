@@ -13,7 +13,9 @@ from os import environ
 from django.conf import global_settings
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
+import djcelery
 from celery.schedules import crontab
+djcelery.setup_loader()
 
 # Absolute filesystem path to the Django project directory:
 PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
@@ -141,9 +143,9 @@ DATABASES = {'default': dj_database_url.config(
 #     }
 # }
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.7/topics/i18n/
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 CELERY_IMPORTS = ('molo.core.tasks')
 BROKER_URL = environ.get('BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = environ.get(
@@ -155,6 +157,8 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
+# Internationalization
+# https://docs.djangoproject.com/en/1.7/topics/i18n/
 LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'Africa/Johannesburg'
 USE_I18N = True
