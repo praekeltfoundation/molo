@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.1.3
+------
+- Content import now happens in a celery task
+
 3.1.2
 ------
 - Added templates for forgot password
