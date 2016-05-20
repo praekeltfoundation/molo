@@ -10,6 +10,7 @@ from rest_framework.decorators import parser_classes
 from molo.core.content_import import api
 from molo.core.content_import.errors import (
     InvalidParametersError, SiteResponseError)
+from molo.core import tasks
 
 
 @api_view(['GET'])
@@ -64,8 +65,12 @@ def import_content(request):
             'warnings': result['warnings']
         })
     else:
-        api.import_content(repos, locales)
-        return Response(status=200, data={
+        tasks.import_content.delay(
+            data,
+            request.user.username,
+            request.user.email,
+            request.get_host())
+        return Response(status=201, data={
             'repos': repo_data,
             'locales': locales,
             'errors': [],
