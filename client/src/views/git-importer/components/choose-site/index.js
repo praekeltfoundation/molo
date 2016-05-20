@@ -1,45 +1,75 @@
 import React from 'react';
-import isNull from 'lodash/isNull';
-import { Typeahead as Search } from 'react-typeahead';
+import includes from 'lodash/includes';
+import { when } from 'src/utils';
 
 
 const ChooseSite = (d) => (
   <div className="c-choose-site">
-    {/* TODO handle keyups */}
-    <Search
-      placeholder="Enter a site to search for (e.g. unicore-cms-content-site)"
-      value={displaySite(d.site)}
-      options={d.sites}
-      maxVisible={10}
-      filterOption="name"
-      displayOption={displaySite}
-      className="o-search c-choose-site__search"
-      customClasses={{
-        input: 'o-search__input',
-        results: 'o-search__results',
-        listItem: 'o-search__item',
-        listAnchor: 'o-search__anchor',
-        typeahead: 'o-serach__typeahead'
-      }}
-      onOptionSelected={site => d.actions.changeSite(site.id)} />
+    <input
+      type="text"
+      name="site-url"
+      className="c-choose-site__input"
+      value={d.siteUrl}
+      onChange={e => d.actions.changeSiteUrl(e.target.value)}
+      placeholder="Enter a site to import (e.g. foo.bar.unicore.io)"
+      autoFocus />
+
+    {when(inputHasError(d.status), () => (
+    <p className="c-choose-site__input-error error-message">
+      <span>{getInputError(d.status)}</span>
+    </p>
+    ))}
 
     <button
       className="o-button c-choose-site__next"
       type="button"
-      disabled={isNull(d.site) || d.status === 'CHOOSE_SITE_BUSY'}
-      onClick={() => d.actions.chooseSite(d.site.id)}>
-      {d.status === 'CHOOSE_SITE_BUSY'
-        ? `Fetching languages...`
-        : `Next`}
+      disabled={nextButtonIsDisabled(d.siteUrl, d.status)}
+      onClick={() => d.actions.chooseSite(d.siteUrl)}>
+      {nextButtonText(d.status)}
     </button>
   </div>
 );
 
 
-function displaySite(site) {
-  return !isNull(site)
-    ? site.name
-    : null;
+function inputHasError(status) {
+  return includes([
+    'CHOOSE_SITE_INVALID_URL',
+    'CHOOSE_SITE_NO_REPOS_FOUND'
+  ], status);
+}
+
+
+function getInputError(status) {
+  switch (status) {
+    case 'CHOOSE_SITE_INVALID_URL':
+      return 'Please enter a valid url (e.g. foo.bar.unicore.io)';
+
+    case 'CHOOSE_SITE_NO_REPOS_FOUND':
+      return 'No content repositories were found for this site';
+  }
+}
+
+
+function nextButtonText(status) {
+  switch (status) {
+    case 'CHOOSE_SITE_FETCHING_REPOS':
+      return 'Fetching repos...';
+
+    case 'CHOOSE_SITE_FETCHING_LANGUAGES':
+      return 'Fetching languages...';
+
+    default:
+      return 'Next';
+  }
+}
+
+
+function nextButtonIsDisabled(siteUrl, status) {
+  return !siteUrl
+      || includes([
+          'CHOOSE_SITE_FETCHING_REPOS',
+          'CHOOSE_SITE_FETCHING_LANGUAGES'
+        ], status);
 }
 
 

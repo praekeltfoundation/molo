@@ -16,17 +16,14 @@ function gitImporterFixtures(name) {
           lastStep: 'languages'
         },
         data: {
-          sites: [{
+          siteUrl: 'foo.com',
+          repos: [{
             id: 'foo-id',
             name: 'foo'
           }, {
             id: 'bar-id',
             name: 'bar'
           }],
-          site: {
-            id: 'foo-id',
-            name: 'foo'
-          },
           languages: [{
             id: 'en',
             name: 'English',
@@ -57,11 +54,8 @@ function gitImporterFixtures(name) {
           isMain: false,
           isChosen: true
         }],
-        site: {
-          id: 'foo-id',
-          name: 'foo'
-        },
-        sites: [{
+        siteUrl: 'foo.com',
+        repos: [{
           id: 'foo-id',
           name: 'foo'
         }, {
@@ -94,12 +88,12 @@ function gitImporterFixtures(name) {
 
     case 'api':
       return {
-        sites: resolvesTo([{
+        repos: resolvesTo([{
           id: 'foo-id',
-          name: 'foo'
+          title: 'foo'
         }, {
           id: 'bar-id',
-          name: 'bar'
+          title: 'bar'
         }]),
         languages: resolvesTo([{
           id: 'en',

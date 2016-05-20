@@ -8,6 +8,7 @@ from django.contrib.auth.views import login, logout
 from django.conf import settings
 # test
 from django.contrib.messages import get_messages
+from django.utils.translation import activate
 
 
 class MoloCASMiddleware(CASMiddleware):
@@ -31,7 +32,7 @@ class MoloCASMiddleware(CASMiddleware):
             if request.user.is_staff:
                 return None
             else:
-                return permission_denied(request)
+                return permission_denied(request, 'error')
         return super(MoloCASMiddleware, self).process_view(
             request, view_func, view_args, view_kwargs)
 
@@ -43,5 +44,14 @@ class Custom403Middleware(object):
         for message in storage:
             pass
         if isinstance(response, HttpResponseForbidden):
-            return permission_denied(request)
+            return permission_denied(request, 'error')
         return response
+
+
+class AdminLocaleMiddleware(object):
+    """Ensures that the admin locale doesn't change with user selection"""
+    def process_request(self, request):
+
+        if request.path.startswith('/admin/') or \
+           request.path.startswith('/django-admin/'):
+            activate(settings.ADMIN_LANGUAGE_CODE)

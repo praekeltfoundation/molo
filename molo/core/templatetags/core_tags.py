@@ -1,4 +1,6 @@
 from django import template
+from django.utils.safestring import mark_safe
+from markdown import markdown
 
 from molo.core.models import Page, SiteLanguage, ArticlePage, SectionPage
 
@@ -93,7 +95,7 @@ def breadcrumbs(context):
         ancestors = ()
     else:
         ancestors = Page.objects.live().ancestor_of(
-            self, inclusive=True).filter(depth__gt=2).specific()
+            self, inclusive=True).filter(depth__gt=3).specific()
 
     translated_ancestors = []
     for p in ancestors:
@@ -196,3 +198,22 @@ def load_child_sections_for_section(context, section, count=5):
         return qs[:count]
 
     return [a.get_translation_for(locale) or a for a in qs[:count]]
+
+
+@register.filter
+def handle_markdown(value):
+    md = markdown(
+        value,
+        [
+            'markdown.extensions.fenced_code',
+            'codehilite',
+        ]
+    )
+    """ For some unknown reason markdown wraps the value in <p> tags.
+        Currently there doesn't seem to be an extension to turn this off.
+    """
+    open_tag = '<p>'
+    close_tag = '</p>'
+    if md.startswith(open_tag) and md.endswith(close_tag):
+        md = md[len(open_tag):-len(close_tag)]
+    return mark_safe(md)

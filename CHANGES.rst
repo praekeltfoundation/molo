@@ -1,44 +1,62 @@
 CHANGE LOG
 ==========
 
-3.0rc7
+3.1.2
 ------
-- Add GA tag manager field to site settings
+- Added templates for forgot password
 
-3.0rc6
+3.1.1
 ------
-- Remove commenting settings from the BannerPage model
+- Pined django-cas-ng to 3.5.4
 
-3.0rc5
+3.1.0
 ------
-- Re-release of version 3.0rc3 because we forgot to increment the version
-  number.
+- Upgraded to Django 1.9 and Wagtail 1.4.4
 
-3.0rc3
+3.0.3
 ------
-- Bug fixes
+- Improved performance of UC content import
 
-3.0rc2
+3.0.2
 ------
-- Fixed migration conflict
+- Changed molo.core version number in get_pypi_version test
 
-3.0rc1
+3.0.1
 ------
-- added multilanguage support
-- added content import from UC content repos (using REACT)
-- rename ``HomePage`` module to ``BannerPage``
-- upgrade wagtail to 1.4.1
-- updated language switcher url to include ``?next={{request.path}}``
+- Changed molo.core version number in versions_comparison test
+
+3.0.0
+------
+- Added multi-language support
+- Added content import from Universal Core content repos (using REACT)
+- Renamed ``HomePage`` module to ``BannerPage``
+- Updated language switcher url to include ``?next={{request.path}}``
 - ``section_page.html`` now uses new template tags (see below)
 - ``section_listing_homepage.html`` now uses new template tags (see below)
+- Changed content structure to introduce index pages
+- Added GA tag manager field to site settings
+- Upgraded wagtail to 1.4.3
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- deprecated use of ``LanguagePage``: all pages are now direct children of ``Main`` (use ``SiteLanguage`` for multilanguage support)
-- deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
-- deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
-- deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
-- deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+- Deprecated use of ``LanguagePage``: use ``SiteLanguage`` for multi-language support
+- Deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
+- Deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
+- Deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
+- Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
+- Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+
+2.6.17
+------
+- Moved tasks.py to core
+
+2.6.16
+------
+- Moved content rotation from cookiecutter to core
+
+2.6.15
+------
+- Added automatic content rotation
 
 2.6.14
 ------

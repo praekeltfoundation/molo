@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
-import Collapse from 'react-collapse';
 import classNames from 'classnames';
+import Collapse from 'src/components/collapse';
 import ChooseSite from 'src/views/git-importer/components/choose-site';
 import ChooseMain from 'src/views/git-importer/components/choose-main';
 import ChooseLanguages from 'src/views/git-importer/components/choose-languages';
@@ -25,8 +25,7 @@ const GitImporter = (d) => (
           <div className="o-collapse-body">
             <ChooseSite
               status={d.status}
-              site={d.site}
-              sites={d.sites}
+              siteUrl={d.siteUrl}
               actions={d.actions} />
           </div>
         </Collapse>
@@ -65,7 +64,7 @@ const GitImporter = (d) => (
           <div className="o-collapse-body">
             <ChooseLanguages
               status={d.status}
-              site={d.site}
+              repos={d.repos}
               languages={d.languages}
               actions={d.actions} />
           </div>

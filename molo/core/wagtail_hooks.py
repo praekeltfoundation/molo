@@ -52,7 +52,7 @@ def register_admin_urls():
 def show_main_language_only(parent_page, pages, request):
     main_language = SiteLanguage.objects.filter(is_main_language=True).first()
 
-    if main_language and not parent_page.depth == 1:
+    if main_language and not parent_page.depth == 2:
         return pages.filter(languages__language__id=main_language.id)
 
     return pages
@@ -85,3 +85,21 @@ class LanguageSummaryItem(SummaryItem):
 @hooks.register('construct_homepage_summary_items')
 def add_languages_summary_item(request, items):
     items.append(LanguageSummaryItem(request))
+
+
+class LanguageErrorMessage(SummaryItem):
+    order = 100
+    template = 'admin/language_error_message.html'
+
+
+@hooks.register('construct_homepage_panels')
+def add_language_error_message_panel(request, panels):
+    if not SiteLanguage.objects.all().exists():
+        panels[:] = [LanguageErrorMessage(request)]
+
+
+@hooks.register('construct_main_menu')
+def hide_menu_items_if_no_language(request, menu_items):
+    if not SiteLanguage.objects.all().exists():
+        menu_items[:] = [
+            item for item in menu_items if item.name == 'settings']

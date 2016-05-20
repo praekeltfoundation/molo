@@ -2,41 +2,23 @@ import { expect } from 'chai';
 import * as actions from 'src/views/git-importer/actions';
 import fixtures from 'tests/views/git-importer/fixtures';
 import { conj } from 'src/utils';
-import { doThunk, resolvesTo } from 'tests/utils';
+import { captureDispatches, resolvesTo } from 'tests/utils';
 
 
 describe(`actions`, () => {
-  describe(`updateSites`, () => {
-    it(`should return the list of sites to update with`, () => {
-      let api = conj(fixtures('api'), {
-        sites: resolvesTo([{
-          id: 'foo-id',
-          name: 'foo'
-        }, {
-          id: 'bar-id',
-          name: 'bar'
-        }])
-      });
-
-      return doThunk(actions.updateSites(api))
-        .then(action => expect(action).to.deep.equal({
-          type: 'UPDATE_SITES',
-          payload: {
-            sites: [{
-              id: 'foo-id',
-              name: 'foo'
-            }, {
-              id: 'bar-id',
-              name: 'bar'
-            }]
-          }
-        }));
-      });
-  });
-
   describe(`chooseSite`, done => {
-    it(`should return the list of sites to update with`, () => {
+    it(`should return the repos and languages to update with`, () => {
       let api = conj(fixtures('api'), {
+        repos: resolvesTo({
+          error: null,
+          value: [{
+            id: 'foo-id',
+            title: 'foo'
+          }, {
+            id: 'bar-id',
+            title: 'bar'
+          }]
+        }),
         languages: resolvesTo([{
           id: 'en',
           name: 'English',
@@ -50,12 +32,21 @@ describe(`actions`, () => {
         }])
       });
 
-      return doThunk(actions.chooseSite('foo-id', api))
+      return captureDispatches(actions.chooseSite('foo.com', api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'CHOOSE_SITE/BUSY'
+          type: 'CHOOSE_SITE/FETCHING_REPOS'
+        }, {
+          type: 'CHOOSE_SITE/FETCHING_LANGUAGES'
         }, {
           type: 'CHOOSE_SITE/DONE',
           payload: {
+            repos: [{
+              id: 'foo-id',
+              title: 'foo'
+            }, {
+              id: 'bar-id',
+              title: 'bar'
+            }],
             languages: [{
               id: 'en',
               name: 'English',
@@ -68,6 +59,22 @@ describe(`actions`, () => {
               isChosen: false
             }]
           }
+        }]));
+    });
+
+    it(`should dispatch NO_REPOS_FOUND if no repos were found`, () => {
+      let api = conj(fixtures('api'), {
+        repos: resolvesTo({
+          error: {type: 'NO_REPOS_FOUND'},
+          value: null
+        })
+      });
+
+      return captureDispatches(actions.chooseSite('foo.com', api))
+        .then(action => expect(action).to.deep.equal([{
+          type: 'CHOOSE_SITE/FETCHING_REPOS'
+        }, {
+          type: 'CHOOSE_SITE/NO_REPOS_FOUND'
         }]));
     });
   });
@@ -83,19 +90,12 @@ describe(`actions`, () => {
         })
       });
 
-      let languages = [{
-        id: 'en',
-        name: 'English',
-        isMain: true,
-        isChosen: false
-      }, {
-        id: 'sw',
-        name: 'Swahili',
-        isMain: false,
-        isChosen: false
-      }];
+      let {
+        repos,
+        languages
+      } = fixtures('state');
 
-      return doThunk(actions.importContent('foo-id', languages, api))
+      return captureDispatches(actions.importContent(repos, languages, api))
         .then(action => expect(action).to.deep.equal([{
           type: 'IMPORT_CONTENT/BUSY'
         }, {
@@ -121,19 +121,12 @@ describe(`actions`, () => {
         })
       });
 
-      let languages = [{
-        id: 'en',
-        name: 'English',
-        isMain: true,
-        isChosen: false
-      }, {
-        id: 'sw',
-        name: 'Swahili',
-        isMain: false,
-        isChosen: false
-      }];
+      let {
+        repos,
+        languages
+      } = fixtures('state');
 
-      return doThunk(actions.checkContent('foo-id', languages, api))
+      return captureDispatches(actions.checkContent(repos, languages, api))
         .then(action => expect(action).to.deep.equal([{
           type: 'CHECK_CONTENT/BUSY'
         }, {

@@ -7,7 +7,7 @@ const ChooseLanguages = (d) => (
     <ul className="o-input-group">
     {d.languages.map(language =>
     <li
-      key={language.name}
+      key={language.id}
       className="o-input-group__item c-choose-languages__language">
       {/* TODO make it clear that main language is always checked */}
       <input
@@ -25,7 +25,7 @@ const ChooseLanguages = (d) => (
         type="button"
         className={checkButtonClasses(d.status)}
         disabled={checkButtonDisabled(d.status)}
-        onClick={() => d.actions.checkContent(d.site.id, d.languages)}>
+        onClick={() => d.actions.checkContent(d.repos, d.languages)}>
         {checkButtonText(d.status)}
       </button>
 
@@ -33,7 +33,7 @@ const ChooseLanguages = (d) => (
         type="button"
         className={importButtonClasses(d.status)}
         disabled={importButtonDisabled(d.status)}
-        onClick={() => d.actions.importContent(d.site.id, d.languages)}>
+        onClick={() => d.actions.importContent(d.repos, d.languages)}>
         {importButtonText(d.status)}
       </button>
     </div>

@@ -9,9 +9,11 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 from os.path import abspath, dirname, join
+from os import environ
 from django.conf import global_settings
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
+from celery.schedules import crontab
 
 # Absolute filesystem path to the Django project directory:
 PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
@@ -39,7 +41,7 @@ BASE_URL = 'http://example.com'
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,16 +72,17 @@ INSTALLED_APPS = (
     'wagtail.contrib.settings',
 
     'mptt',
+    'djcelery',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}
     'raven.contrib.django.raven_compat',
     'django_cas_ng',
     'compressor',
-)
+]
 
 SITE_ID = 1
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -91,7 +94,26 @@ MIDDLEWARE_CLASSES = (
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
     'wagtailmodeladmin.middleware.ModelAdminMiddleware',
-)
+    'molo.core.middleware.AdminLocaleMiddleware',
+]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'molo.core.context_processors.locale',
+                'wagtail.contrib.settings.context_processors.settings',
+            ],
+        },
+    },
+]
 
 ROOT_URLCONF = '{{cookiecutter.app_name}}.urls'
 WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
@@ -122,6 +144,16 @@ DATABASES = {'default': dj_database_url.config(
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
+CELERY_IMPORTS = ('molo.core.tasks')
+BROKER_URL = environ.get('BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = environ.get(
+    'CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERYBEAT_SCHEDULE = {
+    'rotate_content': {
+        'task': 'molo.core.tasks.rotate_content',
+        'schedule': crontab(minute=0),
+    },
+}
 
 LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'Africa/Johannesburg'
@@ -132,7 +164,7 @@ USE_TZ = True
 # Native South African languages are currently not included in the default
 # list of languges in django
 # https://github.com/django/django/blob/master/django/conf/global_settings.py#L50
-LANGUAGES = global_settings.LANGUAGES + (
+LANGUAGES = global_settings.LANGUAGES + [
     ('zu', _('Zulu')),
     ('xh', _('Xhosa')),
     ('st', _('Sotho')),
@@ -141,11 +173,11 @@ LANGUAGES = global_settings.LANGUAGES + (
     ('ts', _('Tsonga')),
     ('ss', _('Swati')),
     ('nr', _('Ndebele')),
-)
+]
 
-LOCALE_PATHS = (
+LOCALE_PATHS = [
     join(PROJECT_ROOT, "locale"),
-)
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -153,11 +185,11 @@ LOCALE_PATHS = (
 STATIC_ROOT = join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
-)
+]
 
 MEDIA_ROOT = join(PROJECT_ROOT, 'media')
 MEDIA_URL = '/media/'
@@ -166,18 +198,9 @@ MEDIA_URL = '/media/'
 # Django compressor settings
 # http://django-compressor.readthedocs.org/en/latest/settings/
 
-COMPRESS_PRECOMPILERS = (
+COMPRESS_PRECOMPILERS = [
     ('text/x-scss', 'django_libsass.SassCompiler'),
-)
-
-
-# Template configuration
-
-TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
-    'django.core.context_processors.request',
-    'molo.core.context_processors.locale',
-    'wagtail.contrib.settings.context_processors.settings',
-)
+]
 
 
 # Wagtail settings
@@ -208,3 +231,5 @@ WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
 ENABLE_SSO = False
 
 UNICORE_DISTRIBUTE_API = 'http://localhost:6543'
+
+ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
