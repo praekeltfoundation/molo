@@ -135,10 +135,6 @@ class ContentImportAPITestCase(
             'locales': ['en', 'fr']
         }, format='json')
 
-        self.assertEqual(imports, [
-            (repos, ['en', 'fr'])
-        ])
-
         self.assertEquals(resp.status_code, 200)
 
         self.assertEquals(resp.data, {
