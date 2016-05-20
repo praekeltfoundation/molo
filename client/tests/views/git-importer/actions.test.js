@@ -80,14 +80,9 @@ describe(`actions`, () => {
   });
 
   describe(`importContent`, done => {
-    it(`should return errors that occured during the import`, () => {
+    it(`should dispatch BUSY and STARTED`, () => {
       let api = conj(fixtures('api'), {
-        importContent: resolvesTo({
-          errors: [{
-            type: 'foo',
-            details: {bar: 'baz'}
-          }]
-        })
+        importContent: resolvesTo(null)
       });
 
       let {
@@ -99,19 +94,13 @@ describe(`actions`, () => {
         .then(action => expect(action).to.deep.equal([{
           type: 'IMPORT_CONTENT/BUSY'
         }, {
-          type: 'IMPORT_CONTENT/DONE',
-          payload: {
-            errors: [{
-              type: 'foo',
-              details: {bar: 'baz'}
-            }]
-          }
+          type: 'IMPORT_CONTENT/STARTED'
         }]));
     });
   });
 
   describe(`checkContent`, done => {
-    it(`should return errors that occured during the check`, () => {
+    it(`should dispatch BUSY and STARTED`, () => {
       let api = conj(fixtures('api'), {
         checkContent: resolvesTo({
           errors: [{
@@ -130,13 +119,7 @@ describe(`actions`, () => {
         .then(action => expect(action).to.deep.equal([{
           type: 'CHECK_CONTENT/BUSY'
         }, {
-          type: 'CHECK_CONTENT/DONE',
-          payload: {
-            errors: [{
-              type: 'foo',
-              details: {bar: 'baz'}
-            }]
-          }
+          type: 'CHECK_CONTENT/STARTED'
         }]));
     });
   });
