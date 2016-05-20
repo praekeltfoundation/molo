@@ -69,9 +69,32 @@ const GitImporter = (d) => (
           </div>
         </Collapse>
       </div>
+
+      {statusInfo(d)}
     </div>
   </form>
 );
+
+
+function statusInfo(d) {
+  switch (d.status) {
+    case 'IMPORT_CONTENT_STARTED':
+      return (
+        <div className="c-git-import-status o-alert o-alert--success">
+          Your import has been started. You will receive an email once the
+          import is complete.
+         </div>
+      );
+
+    case 'CHECK_CONTENT_STARTED':
+      return (
+        <div className="c-git-import-status o-alert o-alert--success">
+          Error checking has been started. You will receive an email of the
+          results once checking is complete.
+        </div>
+      );
+  }
+}
 
 
 function expandedClass(isExpanded) {
