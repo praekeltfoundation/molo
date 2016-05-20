@@ -114,7 +114,7 @@ function importContentBusy() {
 }
 
 
-function importContentStarted(d) {
+function importContentStarted() {
   return {
     type: 'IMPORT_CONTENT/STARTED',
   };
