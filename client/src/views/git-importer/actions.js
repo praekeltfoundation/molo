@@ -136,7 +136,7 @@ function checkContentBusy() {
 }
 
 
-function checkContentStarted(d) {
+function checkContentStarted() {
   return {
     type: 'CHECK_CONTENT/STARTED'
   };
