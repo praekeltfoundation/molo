@@ -52,7 +52,7 @@ Molo Team
 """
 
     send_mail(
-        'Molo Content Import',
+        settings.CONTENT_IMPORT_SUBJECT,
         message % {'name': username, 'host': host},
         settings.FROM_EMAIL,
         [email], fail_silently=False)
