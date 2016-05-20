@@ -1,4 +1,4 @@
-Django>=1.8,<1.9
+Django>=1.9,<1.10
 cookiecutter==1.0.0
 psycopg2cffi
 raven==5.0.0
@@ -6,13 +6,16 @@ markdown
 django-libsass
 certifi
 dj-database-url
-django-cas-ng==3.5.3
+django-cas-ng==3.5.4
 django-mptt
 requests
 elastic-git
 unicore.content
-wagtail==1.4.3
+wagtail==1.4.4
 responses
 babel
 wagtailmodeladmin
 django-extensions
+django-celery
+redis
+six>=1.9

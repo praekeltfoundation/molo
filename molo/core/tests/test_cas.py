@@ -2,12 +2,12 @@ from mock import patch
 from django.test import TestCase, Client, override_settings
 from django.contrib.auth.models import User
 from django.conf.urls import patterns, url, include
-from django.template.base import TemplateDoesNotExist
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.urls import urlpatterns
 
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
+from wagtail.wagtailcore import urls as wagtail_urls
 
 urlpatterns += patterns(
     '',
@@ -19,7 +19,9 @@ urlpatterns += patterns(
         r'^profiles/logout/$',
         'django.contrib.auth.views.logout',
         name='auth_logout'),
+    url('^', include('django.contrib.auth.urls')),
     url(r'^admin/', include(wagtailadmin_urls)),
+    url(r'', include(wagtail_urls)),
 )
 
 
@@ -125,13 +127,8 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         self.mk_main()
 
         client = Client()
-        try:
-            client.get('/profiles/login/')
-
-            # this should always fail. We're expecting an error
-            self.assertFalse(True)
-        except TemplateDoesNotExist:
-            pass
+        response = client.get('/profiles/login/')
+        self.assertEquals(response.status_code, 200)
 
     @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
     def test_normal_profiles_logout_works_when_cas_enabled(self):

@@ -313,9 +313,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
                 social_media_image=self.image).count(), 1)
 
         response = self.client.get('/sections/your-mind/new-article/')
-
         self.assertEquals(response.status_code, 200)
-        self.assertNotContains(response, 'media title')
+        self.assertContains(response, 'content= "media title"')
 
     def test_site_languages(self):
         self.english = SiteLanguage.objects.create(

@@ -85,3 +85,21 @@ class LanguageSummaryItem(SummaryItem):
 @hooks.register('construct_homepage_summary_items')
 def add_languages_summary_item(request, items):
     items.append(LanguageSummaryItem(request))
+
+
+class LanguageErrorMessage(SummaryItem):
+    order = 100
+    template = 'admin/language_error_message.html'
+
+
+@hooks.register('construct_homepage_panels')
+def add_language_error_message_panel(request, panels):
+    if not SiteLanguage.objects.all().exists():
+        panels[:] = [LanguageErrorMessage(request)]
+
+
+@hooks.register('construct_main_menu')
+def hide_menu_items_if_no_language(request, menu_items):
+    if not SiteLanguage.objects.all().exists():
+        menu_items[:] = [
+            item for item in menu_items if item.name == 'settings']
