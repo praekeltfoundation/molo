@@ -233,3 +233,4 @@ ENABLE_SSO = False
 UNICORE_DISTRIBUTE_API = 'http://localhost:6543'
 
 ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
+FROM_EMAIL = environ.get('FROM_EMAIL', "support@moloproject.org")
