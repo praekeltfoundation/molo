@@ -370,20 +370,46 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`CHECK_CONTENT/STARTED`, () => {
-    it("should set the status to started", () => {
+  describe(`CHECK_CONTENT/DONE`, () => {
+    it("should set the status to complete if there are no errors", () => {
       const state = fixtures('state');
       state.ui.status = 'CHECK_CONTENT_BUSY';
 
       expect(gitImporter(state, {
-          type: 'CHECK_CONTENT/STARTED'
+          type: 'CHECK_CONTENT/DONE',
+          payload: {errors: []}
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            status: 'CHECK_CONTENT_STARTED'
+            status: 'CHECK_CONTENT_COMPLETE'
           })
         }));
     });
+
+    it("should add errors to the returned state", () => {
+      const state = fixtures('state');
+      state.ui.status = 'CHECK_CONTENT_BUSY';
+
+      expect(gitImporter(state, {
+        type: 'CHECK_CONTENT/DONE',
+        payload: {
+          errors: [{
+            type: 'foo',
+            details: {bar: 'baz'}
+          }]
+        }
+      }))
+      .to.deep.equal(conj(fixtures('state'), {
+        ui: conj(state.ui, {
+          status: 'CHECK_CONTENT_ERROR'
+        }),
+        data: conj(state.data, {
+          errors: [{
+            type: 'foo',
+            details: {bar: 'baz'}
+          }]
+        })
+      }));
+    });
   });
 });
-

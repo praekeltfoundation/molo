@@ -100,7 +100,7 @@ describe(`actions`, () => {
   });
 
   describe(`checkContent`, done => {
-    it(`should dispatch BUSY and STARTED`, () => {
+    it(`should return errors that occured during the check`, () => {
       let api = conj(fixtures('api'), {
         checkContent: resolvesTo({
           errors: [{
@@ -119,7 +119,13 @@ describe(`actions`, () => {
         .then(action => expect(action).to.deep.equal([{
           type: 'CHECK_CONTENT/BUSY'
         }, {
-          type: 'CHECK_CONTENT/STARTED'
+          type: 'CHECK_CONTENT/DONE',
+          payload: {
+            errors: [{
+              type: 'foo',
+              details: {bar: 'baz'}
+            }]
+          }
         }]));
     });
   });

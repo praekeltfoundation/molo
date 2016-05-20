@@ -177,11 +177,11 @@ describe(`ChooseLanguages`, () => {
 
     el = draw(state);
     button = el.find('.c-choose-languages__check');
-    expect(button.text()).to.equal('Starting error checking...');
+    expect(button.text()).to.equal('Checking for errors...');
     expect(button.prop('disabled')).to.be.true;
   });
 
-  it(`should change check button to a started button when started`, () => {
+  it(`should change check button to a done button when done`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
@@ -189,11 +189,26 @@ describe(`ChooseLanguages`, () => {
     let button = el.find('.c-choose-languages__check');
     expect(button.text()).to.equal('Check for errors');
 
-    state.status = 'CHECK_CONTENT_STARTED';
+    state.status = 'CHECK_CONTENT_COMPLETE';
 
     el = draw(state);
     button = el.find('.c-choose-languages__check');
-    expect(button.text()).to.equal('Error checking started');
+    expect(button.text()).to.equal('No errors found');
+  });
+
+  it(`should change check button to an error button on error`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let button = el.find('.c-choose-languages__check');
+    expect(button.text()).to.equal('Check for errors');
+
+    state.status = 'CHECK_CONTENT_ERROR';
+
+    el = draw(state);
+    button = el.find('.c-choose-languages__check');
+    expect(button.text()).to.equal('Errors found');
   });
 
   it(`should disable the check button if the status is not IDLE`, () => {

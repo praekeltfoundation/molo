@@ -44,10 +44,13 @@ const ChooseLanguages = (d) => (
 function checkButtonText(status) {
   switch (status) {
     case 'CHECK_CONTENT_BUSY':
-      return `Starting error checking...`;
+      return `Checking for errors...`;
 
-    case 'CHECK_CONTENT_STARTED':
-      return `Error checking started`;
+    case 'CHECK_CONTENT_COMPLETE':
+      return `No errors found`;
+
+    case 'CHECK_CONTENT_ERROR':
+      return `Errors found`;
 
     default:
       return `Check for errors`;
@@ -74,8 +77,11 @@ function checkButtonClasses(status) {
     case 'CHECK_CONTENT_BUSY':
       return 'o-button c-choose-languages__check';
 
-    case 'CHECK_CONTENT_STARTED':
+    case 'CHECK_CONTENT_COMPLETE':
       return 'o-button o-button--success c-choose-languages__check';
+
+    case 'CHECK_CONTENT_ERROR':
+      return 'o-button o-button--failure c-choose-languages__check';
 
     default:
       return 'o-button c-choose-languages__check';

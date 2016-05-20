@@ -4,6 +4,7 @@ import Collapse from 'src/components/collapse';
 import ChooseSite from 'src/views/git-importer/components/choose-site';
 import ChooseMain from 'src/views/git-importer/components/choose-main';
 import ChooseLanguages from 'src/views/git-importer/components/choose-languages';
+import ErrorList from 'src/views/git-importer/components/error-list';
 
 
 const GitImporter = (d) => (
@@ -71,6 +72,7 @@ const GitImporter = (d) => (
       </div>
 
       {statusInfo(d)}
+      {errors(d)}
     </div>
   </form>
 );
@@ -85,15 +87,12 @@ function statusInfo(d) {
           import is complete.
          </div>
       );
-
-    case 'CHECK_CONTENT_STARTED':
-      return (
-        <div className="c-git-import-status o-alert o-alert--success">
-          Error checking has been started. You will receive an email of the
-          results once checking is complete.
-        </div>
-      );
   }
+}
+
+
+function errors(d) {
+  if (d.errors.length) return (<ErrorList errors={d.errors} />);
 }
 
 

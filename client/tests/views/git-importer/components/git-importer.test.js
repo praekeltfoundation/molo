@@ -91,17 +91,32 @@ describe(`GitImporter`, () => {
       .to.contain(`Your import has been started`);
   });
 
-  it(`should show an alert when checking has been started`, () => {
+  it(`should render errors`, () => {
     const state = fixtures('git-importer');
-    let el = shallow(<GitImporter {...state} />);
-    expect(el.find('.c-git-import-status')).to.have.length(0);
+    state.errors = [];
 
-    state.status = 'CHECK_CONTENT_STARTED';
+    let el = mount(<GitImporter {...state} />);
 
-    el = shallow(<GitImporter {...state} />);
-    const status = el.find('.c-git-import-status');
+    expect(el.find('.c-import-error-item'))
+      .to.have.length(0);
 
-    expect(status.text())
-      .to.contain(`Error checking has been started`);
-  });
+    state.errors = [{
+      type: 'wrong_main_language_exist_in_wagtail',
+      details: {
+        lang: 'French',
+        selected_lang: 'Spanish (Mexico)'
+      }
+    }, {
+      type: 'no_primary_category',
+      details: {
+        lang: 'Spanish (Mexico)',
+        article: 'Palabras sobre el embarazo y el parto'
+      }
+    }];
+
+    el = mount(<GitImporter {...state} />);
+
+    expect(el.find('.c-import-error-item'))
+      .to.have.length(2);
+   });
 });
