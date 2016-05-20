@@ -97,10 +97,27 @@ export default function gitImporter(state, action) {
         })
       });
 
-    case 'IMPORT_CONTENT/BUSY':
+    case 'IMPORT_CONTENT/CHECKING':
       return conj(state, {
         ui: conj(state.ui, {
-          status: 'IMPORT_CONTENT_BUSY'
+          status: 'IMPORT_CONTENT_CHECKING'
+        })
+      });
+
+    case 'IMPORT_CONTENT/STARTING':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'IMPORT_CONTENT_STARTING'
+        })
+      });
+
+    case 'IMPORT_CONTENT/INVALID':
+      return conj(state, {
+        ui: conj(state.ui, {
+          status: 'IMPORT_CONTENT_INVALID'
+        }),
+        data: conj(state.data, {
+          errors: action.payload.errors
         })
       });
 
@@ -122,7 +139,7 @@ export default function gitImporter(state, action) {
       return conj(state, {
         ui: conj(state.ui, {
           status: action.payload.errors.length
-            ? 'CHECK_CONTENT_ERROR'
+            ? 'CHECK_CONTENT_INVALID'
             : 'CHECK_CONTENT_COMPLETE'
         }),
         data: conj(state.data, {
