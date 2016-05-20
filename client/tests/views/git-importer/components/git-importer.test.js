@@ -76,4 +76,47 @@ describe(`GitImporter`, () => {
     expect(state.actions.expandStep.calledOnce)
       .to.be.true;
   });
+
+  it(`should show an alert when an import has been started`, () => {
+    const state = fixtures('git-importer');
+    let el = shallow(<GitImporter {...state} />);
+    expect(el.find('.c-git-import-status')).to.have.length(0);
+
+    state.status = 'IMPORT_CONTENT_STARTED';
+
+    el = shallow(<GitImporter {...state} />);
+    const status = el.find('.c-git-import-status');
+
+    expect(status.text())
+      .to.contain(`Your import has been started`);
+  });
+
+  it(`should render errors`, () => {
+    const state = fixtures('git-importer');
+    state.errors = [];
+
+    let el = mount(<GitImporter {...state} />);
+
+    expect(el.find('.c-import-error-item'))
+      .to.have.length(0);
+
+    state.errors = [{
+      type: 'wrong_main_language_exist_in_wagtail',
+      details: {
+        lang: 'French',
+        selected_lang: 'Spanish (Mexico)'
+      }
+    }, {
+      type: 'no_primary_category',
+      details: {
+        lang: 'Spanish (Mexico)',
+        article: 'Palabras sobre el embarazo y el parto'
+      }
+    }];
+
+    el = mount(<GitImporter {...state} />);
+
+    expect(el.find('.c-import-error-item'))
+      .to.have.length(2);
+   });
 });

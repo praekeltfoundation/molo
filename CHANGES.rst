@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.1.2
+------
+- Added templates for forgot password
+
 3.1.1
 ------
 - Pined django-cas-ng to 3.5.4
