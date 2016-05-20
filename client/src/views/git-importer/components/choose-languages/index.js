@@ -44,13 +44,10 @@ const ChooseLanguages = (d) => (
 function checkButtonText(status) {
   switch (status) {
     case 'CHECK_CONTENT_BUSY':
-      return `Checking for errors...`;
+      return `Starting error checking...`;
 
-    case 'CHECK_CONTENT_COMPLETE':
-      return `No errors found`;
-
-    case 'CHECK_CONTENT_ERROR':
-      return `Errors found`;
+    case 'CHECK_CONTENT_STARTED':
+      return `Error checking started`;
 
     default:
       return `Check for errors`;
@@ -61,13 +58,10 @@ function checkButtonText(status) {
 function importButtonText(status) {
   switch (status) {
     case 'IMPORT_CONTENT_BUSY':
-      return `Importing content...`;
+      return `Starting import...`;
 
-    case 'IMPORT_CONTENT_COMPLETE':
-      return `Import complete`;
-
-    case 'IMPORT_CONTENT_ERROR':
-      return `Could not import content`;
+    case 'IMPORT_CONTENT_STARTED':
+      return `Import started`;
 
     default:
       return `Import`;
@@ -80,11 +74,8 @@ function checkButtonClasses(status) {
     case 'CHECK_CONTENT_BUSY':
       return 'o-button c-choose-languages__check';
 
-    case 'CHECK_CONTENT_COMPLETE':
+    case 'CHECK_CONTENT_STARTED':
       return 'o-button o-button--success c-choose-languages__check';
-
-    case 'CHECK_CONTENT_ERROR':
-      return 'o-button o-button--failure c-choose-languages__check';
 
     default:
       return 'o-button c-choose-languages__check';
@@ -97,11 +88,8 @@ function importButtonClasses(status) {
     case 'IMPORT_CONTENT_BUSY':
       return 'o-button c-choose-languages__import';
 
-    case 'IMPORT_CONTENT_COMPLETE':
+    case 'IMPORT_CONTENT_STARTED':
       return 'o-button o-button--success c-choose-languages__import';
-
-    case 'IMPORT_CONTENT_ERROR':
-      return 'o-button o-button--failure c-choose-languages__import';
 
     default:
       return 'o-button c-choose-languages__import';
