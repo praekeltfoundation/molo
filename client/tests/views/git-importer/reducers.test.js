@@ -338,44 +338,17 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`IMPORT_CONTENT/DONE`, () => {
-    it("should add import errors to the returned state", () => {
+  describe(`IMPORT_CONTENT/STARTED`, () => {
+    it("should set the status to started", () => {
       const state = fixtures('state');
-      state.ui.status = 'IMPORT_CONTENT_BUSY';
+      state.ui.status = 'IMPORT_CONTENT_STARTED';
 
       expect(gitImporter(state, {
-          type: 'IMPORT_CONTENT/DONE',
-          payload: {
-            errors: [{
-              type: 'foo',
-              details: {bar: 'baz'}
-            }]
-          }
+          type: 'IMPORT_CONTENT/STARTED'
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            status: 'IMPORT_CONTENT_ERROR'
-          }),
-          data: conj(state.data, {
-            errors: [{
-              type: 'foo',
-              details: {bar: 'baz'}
-            }]
-          })
-        }));
-    });
-
-    it("should set the status to complete if there are no errors", () => {
-      const state = fixtures('state');
-      state.ui.status = 'IMPORT_CONTENT_BUSY';
-
-      expect(gitImporter(state, {
-          type: 'IMPORT_CONTENT/DONE',
-          payload: {errors: []}
-        }))
-        .to.deep.equal(conj(fixtures('state'), {
-          ui: conj(state.ui, {
-            status: 'IMPORT_CONTENT_COMPLETE'
+            status: 'IMPORT_CONTENT_STARTED'
           })
         }));
     });
@@ -397,44 +370,17 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`CHECK_CONTENT/DONE`, () => {
-    it("should add check errors to the returned state", () => {
+  describe(`CHECK_CONTENT/STARTED`, () => {
+    it("should set the status to started", () => {
       const state = fixtures('state');
       state.ui.status = 'CHECK_CONTENT_BUSY';
 
       expect(gitImporter(state, {
-          type: 'CHECK_CONTENT/DONE',
-          payload: {
-            errors: [{
-              type: 'foo',
-              details: {bar: 'baz'}
-            }]
-          }
+          type: 'CHECK_CONTENT/STARTED'
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            status: 'CHECK_CONTENT_ERROR'
-          }),
-          data: conj(state.data, {
-            errors: [{
-              type: 'foo',
-              details: {bar: 'baz'}
-            }]
-          })
-        }));
-    });
-
-    it("should set the status to complete if there are no errors", () => {
-      const state = fixtures('state');
-      state.ui.status = 'CHECK_CONTENT_BUSY';
-
-      expect(gitImporter(state, {
-          type: 'CHECK_CONTENT/DONE',
-          payload: {errors: []}
-        }))
-        .to.deep.equal(conj(fixtures('state'), {
-          ui: conj(state.ui, {
-            status: 'CHECK_CONTENT_COMPLETE'
+            status: 'CHECK_CONTENT_STARTED'
           })
         }));
     });
