@@ -83,39 +83,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
             len(load_descendant_articles_for_section(
                 {}, self.yourmind, featured_in_latest=True)), 2)
 
-    def test_extra_css(self):
-        # extra_css set on current section
-        new_section = self.mk_section(
-            self.section_index,
-            title="New Section",
-            extra_style_hints='primary')
-        self.assertEquals(
-            new_section.get_effective_extra_style_hints(), 'primary')
-
-        # extra_css not set to use inherited value
-        new_section2 = self.mk_section(new_section, title="New Section 2")
-        self.assertEquals(
-            new_section2.get_effective_extra_style_hints(), 'primary')
-
-        # extra_css not set on either so should be blank
-        new_section3 = self.mk_section(
-            self.section_index, title="New Section 3", slug="new-section-3")
-        self.assertEquals(new_section3.get_effective_extra_style_hints(), '')
-
-        # extra_css not set on child so should use parent value
-        new_section4 = self.mk_section(
-            new_section2, title="New Section 4", slug="new-section-4")
-        self.assertEquals(
-            new_section4.get_effective_extra_style_hints(), 'primary')
-
-        # extra_css is set on child so should use child value
-        new_section5 = self.mk_section(
-            new_section,
-            title="New Section 5", slug="new-section-5",
-            extra_style_hints='secondary')
-        self.assertEquals(
-            new_section5.get_effective_extra_style_hints(), 'secondary')
-
     def test_image(self):
         new_section = self.mk_section(
             self.section_index,

@@ -347,24 +347,37 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
             languages__language__is_main_language=True)
 
     def get_effective_extra_style_hints(self):
+        if self.extra_style_hints:
+            return self.extra_style_hints
+
         # The extra css is inherited from the parent SectionPage.
         # This will either return the current value or a value
         # from its parents.
-        parent_section = SectionPage.objects.all().ancestor_of(self).last()
-        if parent_section:
-            return self.extra_style_hints or \
-                parent_section.get_effective_extra_style_hints()
+        main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
+        language_rel = self.languages.all().first()
+        if language_rel and main_lang == language_rel.language:
+            parent_section = SectionPage.objects.all().ancestor_of(self).last()
+            if parent_section:
+                return parent_section.get_effective_extra_style_hints()
+            return ''
         else:
-            return self.extra_style_hints
+            page = self.get_main_language_page()
+            return page.specific.get_effective_extra_style_hints()
 
     def get_effective_image(self):
-
-        parent_section = SectionPage.objects.all().ancestor_of(self).last()
-        if parent_section:
-            return self.image or \
-                parent_section.get_effective_image()
-        else:
+        if self.image:
             return self.image
+
+        main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
+        language_rel = self.languages.all().first()
+        if language_rel and main_lang == language_rel.language:
+            parent_section = SectionPage.objects.all().ancestor_of(self).last()
+            if parent_section:
+                return parent_section.get_effective_image()
+            return ''
+        else:
+            page = self.get_main_language_page()
+            return page.specific.get_effective_image()
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()

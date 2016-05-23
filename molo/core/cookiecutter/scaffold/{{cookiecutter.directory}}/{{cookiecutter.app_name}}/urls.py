@@ -35,6 +35,7 @@ urlpatterns += patterns(
                 app_name='{{app_name}}')),
 {% endfor %}
     url(r'', include('molo.core.urls')),
+    url('^', include('django.contrib.auth.urls')),
     url(r'', include(wagtail_urls)),
 )
 

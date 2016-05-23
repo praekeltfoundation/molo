@@ -34,21 +34,21 @@ describe(`api`, () => {
     it(`should return a NO_REPOS_FOUND error if there was a response error`,
     () => {
       return api.repos('foo.com')
-      .then(sites => expect(sites)
-        .to.deep.equal({
-          error: {type: 'NO_REPOS_FOUND'},
-          value: null
-        }));
+        .then(sites => expect(sites)
+          .to.deep.equal({
+            error: {type: 'NO_REPOS_FOUND'},
+            value: null
+          }));
     });
 
     it(`should return a NO_REPOS_FOUND error if the repo list is empty`,
     () => {
       return api.repos('bar.com')
-      .then(sites => expect(sites)
-        .to.deep.equal({
-          error: {type: 'NO_REPOS_FOUND'},
-          value: null
-        }));
+        .then(sites => expect(sites)
+          .to.deep.equal({
+            error: {type: 'NO_REPOS_FOUND'},
+            value: null
+          }));
     });
   });
 
@@ -88,48 +88,7 @@ describe(`api`, () => {
           isMain: true,
           isChosen: true
         }])
-        .then(sites => expect(sites).to.deep.equal({
-          errors: []
-        }));
-    });
-
-    it(`should return validation errors`, () => {
-      return api.importContent([{
-          id: 'unicore-cms-content-mama-mx-prod',
-          title: 'Mama Mexico'
-        }], [{
-          id: 'spa_MX',
-          name: 'Spanish (Mexico)',
-          isMain:true,
-          isChosen:true
-        }, {
-          id: 'eng_GB',
-          name: 'English (United Kingdom)',
-          isMain:false,
-          isChosen:false
-        },{
-          id: 'spa_ES',
-          name: 'Spanish (Spain)',
-          isMain:false,
-          isChosen:true
-        }])
-        .then(sites => expect(sites).to.deep.equal({
-          errors: [{
-            type: 'wrong_main_language_exist_in_wagtail',
-            details: {
-              lang: 'English',
-              repo: 'unicore-cms-content-mama-mx-prod',
-              selected_lang: 'Spanish'
-            }
-          }, {
-            type: 'no_primary_category',
-            details: {
-              lang: 'Spanish (Mexico)',
-              repo: 'unicore-cms-content-mama-mx-prod',
-              article: 'Palabras sobre el embarazo y el parto'
-            }
-          }]
-        }));
+        .then(res => expect(res).to.be.null);
     });
   });
 
@@ -156,41 +115,41 @@ describe(`api`, () => {
 
     it(`should return validation errors`, () => {
       return api.checkContent([{
-          id: 'unicore-cms-content-mama-mx-prod',
-          title: 'Mama Mexico'
-        }], [{
-          id: 'spa_MX',
-          name: 'Spanish (Mexico)',
-          isMain:true,
-          isChosen:true
+        id: 'unicore-cms-content-mama-mx-prod',
+        title: 'Mama Mexico'
+      }], [{
+        id: 'spa_MX',
+        name: 'Spanish (Mexico)',
+        isMain: true,
+        isChosen: true
+      }, {
+        id: 'eng_GB',
+        name: 'English (United Kingdom)',
+        isMain: false,
+        isChosen: false
+      },{
+        id: 'spa_ES',
+        name: 'Spanish (Spain)',
+        isMain: false,
+        isChosen: true
+      }])
+      .then(sites => expect(sites).to.deep.equal({
+        errors: [{
+          type: 'wrong_main_language_exist_in_wagtail',
+          details: {
+            lang: 'English',
+            repo: 'unicore-cms-content-mama-mx-prod',
+            selected_lang: 'Spanish'
+          }
         }, {
-          id: 'eng_GB',
-          name: 'English (United Kingdom)',
-          isMain:false,
-          isChosen:false
-        },{
-          id: 'spa_ES',
-          name: 'Spanish (Spain)',
-          isMain:false,
-          isChosen:true
-        }])
-        .then(sites => expect(sites).to.deep.equal({
-          errors: [{
-            type: 'wrong_main_language_exist_in_wagtail',
-            details: {
-              lang: 'English',
-              repo: 'unicore-cms-content-mama-mx-prod',
-              selected_lang: 'Spanish'
-            }
-          }, {
-            type: 'no_primary_category',
-            details: {
-              lang: 'Spanish (Mexico)',
-              repo: 'unicore-cms-content-mama-mx-prod',
-              article: 'Palabras sobre el embarazo y el parto'
-            }
-          }]
-        }));
+          type: 'no_primary_category',
+          details: {
+            lang: 'Spanish (Mexico)',
+            repo: 'unicore-cms-content-mama-mx-prod',
+            article: 'Palabras sobre el embarazo y el parto'
+          }
+        }]
+      }));
     });
   });
 

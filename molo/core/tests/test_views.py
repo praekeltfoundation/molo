@@ -38,7 +38,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_articles(self.yourmind_sub, count=10)
 
         response = self.client.get('/')
-        print response
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'Home')
 

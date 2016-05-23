@@ -94,7 +94,7 @@ export function changeMain(id) {
 export function toggleLanguageChosen(id) {
   return {
     type: 'TOGGLE_LANGUAGE_CHOSEN',
-    payload: {id: id}
+    payload: {id}
   };
 }
 
@@ -104,7 +104,7 @@ export function importContent(repos, languages, api=httpApi) {
     .then(() => importContentBusy())
     .then(dispatch)
     .then(() => api.importContent(repos, languages))
-    .then(d => importContentDone(d))
+    .then(() => importContentStarted())
     .then(dispatch);
 }
 
@@ -114,11 +114,8 @@ function importContentBusy() {
 }
 
 
-function importContentDone(d) {
-  return {
-    type: 'IMPORT_CONTENT/DONE',
-    payload: {errors: d.errors}
-  };
+function importContentStarted() {
+  return {type: 'IMPORT_CONTENT/STARTED'};
 }
 
 
@@ -137,9 +134,9 @@ function checkContentBusy() {
 }
 
 
-function checkContentDone(d) {
+function checkContentDone({errors}) {
   return {
     type: 'CHECK_CONTENT/DONE',
-    payload: {errors: d.errors}
+    payload: {errors}
   };
 }

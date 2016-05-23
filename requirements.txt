@@ -11,10 +11,11 @@ django-mptt
 requests
 elastic-git
 unicore.content
-wagtail==1.4.4
+wagtail==1.4.5
 responses
 babel
 wagtailmodeladmin
 django-extensions
 django-celery
 redis
+six>=1.9
