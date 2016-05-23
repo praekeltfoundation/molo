@@ -80,9 +80,10 @@ describe(`actions`, () => {
   });
 
   describe(`importContent`, done => {
-    it(`should dispatch BUSY and STARTED`, () => {
+    it(`should dispatch CHECKING, STARTING and STARTED`, () => {
       let api = conj(fixtures('api'), {
-        importContent: resolvesTo(null)
+        importContent: resolvesTo(null),
+        checkContent: resolvesTo({errors: []})
       });
 
       let {
@@ -92,9 +93,41 @@ describe(`actions`, () => {
 
       return captureDispatches(actions.importContent(repos, languages, api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'IMPORT_CONTENT/BUSY'
+          type: 'IMPORT_CONTENT/CHECKING'
+        }, {
+          type: 'IMPORT_CONTENT/STARTING'
         }, {
           type: 'IMPORT_CONTENT/STARTED'
+        }]));
+    });
+
+    it(`should dispatch INVALID on validation errors`, () => {
+      let api = conj(fixtures('api'), {
+        importContent: () => Promise.reject(new Error('wrong code path')),
+        checkContent: resolvesTo({
+          errors: [{
+            type: 'foo',
+            details: {bar: 'baz'}
+          }]
+        })
+      });
+
+      let {
+        repos,
+        languages
+      } = fixtures('state');
+
+      return captureDispatches(actions.importContent(repos, languages, api))
+        .then(action => expect(action).to.deep.equal([{
+          type: 'IMPORT_CONTENT/CHECKING'
+        }, {
+          type: 'IMPORT_CONTENT/INVALID',
+          payload: {
+            errors: [{
+              type: 'foo',
+              details: {bar: 'baz'}
+            }]
+          }
         }]));
     });
   });

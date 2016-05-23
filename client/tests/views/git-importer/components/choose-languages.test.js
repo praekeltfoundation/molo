@@ -109,22 +109,36 @@ describe(`ChooseLanguages`, () => {
       .to.be.true;
   });
 
-  it(`should change import button to a busy button when busy`, () => {
+  it(`should change import button to a checking button when checking`, () => {
     const state = fixtures('git-importer');
     state.status = 'IDLE';
 
     let el = draw(state);
     let button = el.find('.c-choose-languages__import');
-    expect(button.text()).to.equal('Import');
+    expect(button.text()).to.equal('Check and import content');
     expect(button.prop('disabled')).to.be.false;
 
-    state.status = 'IMPORT_CONTENT_BUSY';
-
+    state.status = 'IMPORT_CONTENT_CHECKING';
     el = draw(state);
 
     button = el.find('.c-choose-languages__import');
-    expect(button.text()).to.equal('Starting import...');
+    expect(button.text()).to.equal('Checking for errors...');
     expect(button.prop('disabled')).to.be.true;
+  });
+
+  it(`should change import button to a starting button when starting`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Check and import content');
+
+    state.status = 'IMPORT_CONTENT_STARTING';
+
+    el = draw(state);
+    button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Starting import...');
   });
 
   it(`should change import button to a completed button when complete`, () => {
@@ -133,13 +147,28 @@ describe(`ChooseLanguages`, () => {
 
     let el = draw(state);
     let button = el.find('.c-choose-languages__import');
-    expect(button.text()).to.equal('Import');
+    expect(button.text()).to.equal('Check and import content');
 
     state.status = 'IMPORT_CONTENT_STARTED';
 
     el = draw(state);
     button = el.find('.c-choose-languages__import');
     expect(button.text()).to.equal('Import started');
+  });
+
+  it(`should change import button to an error button on error`, () => {
+    const state = fixtures('git-importer');
+    state.status = 'IDLE';
+
+    let el = draw(state);
+    let button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Check and import content');
+
+    state.status = 'IMPORT_CONTENT_INVALID';
+
+    el = draw(state);
+    button = el.find('.c-choose-languages__import');
+    expect(button.text()).to.equal('Errors found');
   });
 
   it(`should disable the import button if the status is not
@@ -157,7 +186,7 @@ describe(`ChooseLanguages`, () => {
     button = el.find('.c-choose-languages__import');
     expect(button.prop('disabled')).to.be.false;
 
-    state.status = 'CHECK_CONTENT_ERROR';
+    state.status = 'CHECK_CONTENT_INVALID';
 
     el = draw(state);
     button = el.find('.c-choose-languages__import');
@@ -204,7 +233,7 @@ describe(`ChooseLanguages`, () => {
     let button = el.find('.c-choose-languages__check');
     expect(button.text()).to.equal('Check for errors');
 
-    state.status = 'CHECK_CONTENT_ERROR';
+    state.status = 'CHECK_CONTENT_INVALID';
 
     el = draw(state);
     button = el.find('.c-choose-languages__check');
@@ -219,7 +248,7 @@ describe(`ChooseLanguages`, () => {
     let button = el.find('.c-choose-languages__check');
     expect(button.prop('disabled')).to.be.false;
 
-    state.status = 'CHECK_CONTENT_ERROR';
+    state.status = 'CHECK_CONTENT_INVALID';
 
     el = draw(state);
     button = el.find('.c-choose-languages__check');
