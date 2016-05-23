@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.1.5
+------
+- Importing validation errors to be shown in the UI for celery taks
+
 3.1.4
 ------
 - Upgraded wagtail to 1.4.5
