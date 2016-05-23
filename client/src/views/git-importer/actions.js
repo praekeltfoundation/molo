@@ -101,7 +101,18 @@ export function toggleLanguageChosen(id) {
 
 export function importContent(repos, languages, api=httpApi) {
   return dispatch => Promise.resolve()
-    .then(() => importContentBusy())
+    .then(() => importContentChecking())
+    .then(dispatch)
+    .then(() => api.checkContent(repos, languages))
+    .then(({errors}) => !errors.length
+      ? importContentHandleValid(dispatch, repos, languages, api)
+      : importContentHandleInvalid(dispatch, errors, repos, languages, api));
+}
+
+
+function importContentHandleValid(dispatch, repos, languages, api) {
+  return Promise.resolve()
+    .then(() => importContentStarting())
     .then(dispatch)
     .then(() => api.importContent(repos, languages))
     .then(() => importContentStarted())
@@ -109,13 +120,33 @@ export function importContent(repos, languages, api=httpApi) {
 }
 
 
-function importContentBusy() {
-  return {type: 'IMPORT_CONTENT/BUSY'};
+function importContentHandleInvalid(dispatch, errors, repos, languages, api) {
+  return Promise.resolve(errors)
+    .then(importContentInvalid)
+    .then(dispatch);
+}
+
+
+function importContentChecking() {
+  return {type: 'IMPORT_CONTENT/CHECKING'};
+}
+
+
+function importContentStarting() {
+  return {type: 'IMPORT_CONTENT/STARTING'};
 }
 
 
 function importContentStarted() {
   return {type: 'IMPORT_CONTENT/STARTED'};
+}
+
+
+function importContentInvalid(errors) {
+  return {
+    type: 'IMPORT_CONTENT/INVALID',
+    payload: {errors}
+  };
 }
 
 
