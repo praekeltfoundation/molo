@@ -2,3 +2,4 @@ molo.core=={{cookiecutter.molo_version}}
 {% for requirement in cookiecutter.require %}
 {{requirement}}
 {% endfor %}
+django-modelcluster>=2.0,<3.0
