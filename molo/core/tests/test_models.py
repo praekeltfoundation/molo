@@ -102,6 +102,23 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title="New Section 3", slug="new-section-3")
         self.assertEquals(new_section3.get_effective_extra_style_hints(), '')
 
+        self.client.get('/locale/fr/')
+        self.mk_section_translation(
+            new_section3, self.french, title=new_section3.title + ' in french')
+        response = self.client.get(
+            '/sections/new-section-3-in-french/')
+        self.assertContains(response, '<div class="articles nav ">')
+
+        new_section6 = self.mk_section(
+            new_section3,
+            title="New Section 6", slug="new-section-6")
+
+        self.mk_section_translation(
+            new_section6, self.french, title=new_section6.title + ' in french')
+        response = self.client.get(
+            '/sections/new-section-3/new-section-6-in-french/')
+        self.assertContains(response, '<div class="articles nav ">')
+
         # extra_css not set on child so should use parent value
         new_section4 = self.mk_section(
             new_section2, title="New Section 4", slug="new-section-4")
@@ -115,6 +132,34 @@ class TestModels(TestCase, MoloTestCaseMixin):
             extra_style_hints='secondary')
         self.assertEquals(
             new_section5.get_effective_extra_style_hints(), 'secondary')
+
+        self.client.get('/locale/fr/')
+        # extra_css is not set on translated page so should use
+        # main language page value
+        self.mk_section_translation(
+            new_section4, self.french, title=new_section4.title + ' in french')
+
+        response = self.client.get(
+            '/sections/new-section/new-section-2/new-section-4-in-french/')
+        self.assertContains(response, '<div class="articles nav primary">')
+
+        new_section7 = self.mk_section(
+            new_section3, title="New Section 7",
+            slug="new-section-7", extra_style_hints='en-hint')
+        self.mk_section_translation(
+            new_section7, self.french, title=new_section7.title + ' in french')
+        response = self.client.get(
+            '/sections/new-section-3/new-section-7-in-french/')
+        self.assertContains(response, '<div class="articles nav en-hint">')
+
+        # extra_css is set on translated page so should use
+        # translated page value
+        self.mk_section_translation(
+            new_section5, self.french, title=new_section5.title + ' in french',
+            extra_style_hints='french-hint')
+        response = self.client.get(
+            '/sections/new-section/new-section-5-in-french/')
+        self.assertContains(response, '<div class="articles nav french-hint">')
 
     def test_image(self):
         new_section = self.mk_section(
