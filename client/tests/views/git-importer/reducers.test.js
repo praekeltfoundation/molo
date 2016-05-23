@@ -322,19 +322,63 @@ describe(`gitImporter`, () => {
     });
   });
 
-  describe(`IMPORT_CONTENT/BUSY`, () => {
-    it("should change the ui state to busy", () => {
+  describe(`IMPORT_CONTENT/CHECKING`, () => {
+    it("should change the ui state to checking", () => {
       const state = fixtures('state');
       state.ui.status = 'IDLE';
 
       expect(gitImporter(state, {
-          type: 'IMPORT_CONTENT/BUSY'
+          type: 'IMPORT_CONTENT/CHECKING'
         }))
         .to.deep.equal(conj(fixtures('state'), {
           ui: conj(state.ui, {
-            status: 'IMPORT_CONTENT_BUSY'
+            status: 'IMPORT_CONTENT_CHECKING'
           })
         }));
+    });
+  });
+
+  describe(`IMPORT_CONTENT/STARTING`, () => {
+    it("should change the ui state to starting", () => {
+      const state = fixtures('state');
+      state.ui.status = 'IDLE';
+
+      expect(gitImporter(state, {
+          type: 'IMPORT_CONTENT/STARTING'
+        }))
+        .to.deep.equal(conj(fixtures('state'), {
+          ui: conj(state.ui, {
+            status: 'IMPORT_CONTENT_STARTING'
+          })
+        }));
+    });
+  });
+
+  describe(`IMPORT_CONTENT/INVALID`, () => {
+    it("should change the ui state and errors", () => {
+      const state = fixtures('state');
+      state.ui.status = 'IDLE';
+
+      expect(gitImporter(state, {
+        type: 'IMPORT_CONTENT/INVALID',
+        payload: {
+          errors: [{
+            type: 'foo',
+            details: {bar: 'baz'}
+          }]
+        }
+      }))
+      .to.deep.equal(conj(fixtures('state'), {
+        ui: conj(state.ui, {
+          status: 'IMPORT_CONTENT_INVALID'
+        }),
+        data: conj(state.data, {
+          errors: [{
+            type: 'foo',
+            details: {bar: 'baz'}
+          }]
+        })
+      }));
     });
   });
 
@@ -401,7 +445,7 @@ describe(`gitImporter`, () => {
       }))
       .to.deep.equal(conj(fixtures('state'), {
         ui: conj(state.ui, {
-          status: 'CHECK_CONTENT_ERROR'
+          status: 'CHECK_CONTENT_INVALID'
         }),
         data: conj(state.data, {
           errors: [{
