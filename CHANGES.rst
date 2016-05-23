@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.1.4
+------
+- Upgraded wagtail to 1.4.5
+- Effective style hint to support multi-language
+
 3.1.3
 ------
 - Content import now happens in a celery task
