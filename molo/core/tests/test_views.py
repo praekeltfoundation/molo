@@ -446,11 +446,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Page 2 of 3')
         self.assertContains(response, 'Test page 7 in french')
 
-        response = self.client.get('/sections/your-mind-in-french/?p=3')
-
+        response = self.client.get(
+            '/locale/en/?next=/sections/your-mind-in-french/?p=3', follow=True)
+        print response
         self.assertContains(response, 'Page 3 of 3')
-        self.assertNotContains(response, 'Test page 2 in french')
-        self.assertContains(response, 'Test page 2')
+        self.assertNotContains(response, 'Test page 11 in french')
+        self.assertContains(response, 'Test page 11')
 
     def test_pagination_for_articles_in_sub_sections(self):
         self.mk_articles(self.yourmind_sub, count=15)
