@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import template
 from django.utils.safestring import mark_safe
 from markdown import markdown
@@ -171,14 +172,26 @@ def load_child_articles_for_section(context, section, count=5):
     '''
     page = section.get_main_language_page()
     locale = context.get('locale_code')
+    p = context.get('p', 1)
 
     qs = ArticlePage.objects.live().child_of(page).filter(
         languages__language__is_main_language=True)
 
-    if not locale:
-        return qs[:count]
+    # Pagination
+    paginator = Paginator(qs, count)
+    try:
+        articles = paginator.page(p)
+    except PageNotAnInteger:
+        articles = paginator.page(1)
+    except EmptyPage:
+        articles = paginator.page(paginator.num_pages)
 
-    return [a.get_translation_for(locale) or a for a in qs[:count]]
+    if not locale:
+        return articles
+
+    context.update({'articles_paginated': articles})
+
+    return [a.get_translation_for(locale) or a for a in articles]
 
 
 @register.assignment_tag(takes_context=True)
