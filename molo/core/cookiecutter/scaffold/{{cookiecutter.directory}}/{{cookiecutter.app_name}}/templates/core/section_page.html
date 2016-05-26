@@ -48,6 +48,21 @@
         </li>
       </ul>
       {% endfor %}
+
+      {% if articles %}
+      <div class="step-links l-indent l-indent--tall">
+        {% if articles_paginated.has_previous %}
+            <a href="?p={{ articles_paginated.previous_page_number }}">&larr;</a>
+        {% endif %}
+        <span class="current">
+            Page {{ articles_paginated.number }} of {{ articles_paginated.paginator.num_pages }}
+        </span>
+        {% if articles_paginated.has_next %}
+            <a href="?p={{ articles_paginated.next_page_number }}">&rarr;</a>
+        {% endif %}
+      </div>
+      {% endif %}
+      
     </div>
 {% endblock %}
 {% endraw %}
