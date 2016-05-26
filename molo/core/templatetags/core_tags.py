@@ -7,6 +7,19 @@ from molo.core.models import Page, SiteLanguage, ArticlePage, SectionPage
 register = template.Library()
 
 
+@register.assignment_tag(takes_context=True)
+def load_sections(context):
+    request = context['request']
+    locale_code = context.get('locale_code')
+
+    if request.site:
+        qs = request.site.root_page.specific.sections()
+    else:
+        qs = []
+
+    return [a.get_translation_for(locale_code) or a for a in qs]
+
+
 @register.inclusion_tag(
     'core/tags/section_listing_homepage.html',
     takes_context=True
