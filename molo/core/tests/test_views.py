@@ -306,21 +306,21 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/locale/fr/')
 
         response = self.client.get('/sections/your-mind/')
-        self.assertRedirects(response, '/sections/your-mind-in-french/')
+        self.assertRedirects(response, '/sections/your-mind-in-french/?')
 
         response = self.client.get('/sections/your-mind/test-page-0/')
         self.assertRedirects(response,
-                             '/sections/your-mind/test-page-0-in-french/')
+                             '/sections/your-mind/test-page-0-in-french/?')
 
         # redirect from translation to main language should also work
         response = self.client.get('/locale/en/')
 
         response = self.client.get('/sections/your-mind-in-french/')
-        self.assertRedirects(response, '/sections/your-mind/')
+        self.assertRedirects(response, '/sections/your-mind/?')
 
         response = self.client.get('/sections/your-mind/'
                                    'test-page-0-in-french/')
-        self.assertRedirects(response, '/sections/your-mind/test-page-0/')
+        self.assertRedirects(response, '/sections/your-mind/test-page-0/?')
 
         # unpublished translation will not result in a redirect
         self.yourmind_fr.unpublish()
