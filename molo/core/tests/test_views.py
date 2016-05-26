@@ -407,3 +407,73 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/django-admin/')
         self.assertNotContains(response, 'Voeg')
+
+    def test_pagination_for_articles_in_sections(self):
+        self.mk_articles(self.yourmind, count=15)
+
+        response = self.client.get('/sections/your-mind/')
+        self.assertContains(response, 'Page 1 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertNotContains(response, '&larr;')
+
+        response = self.client.get('/sections/your-mind/?p=2')
+
+        self.assertContains(response, 'Page 2 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+        response = self.client.get('/sections/your-mind/?p=3')
+
+        self.assertContains(response, 'Page 3 of 3')
+        self.assertNotContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+    def test_pagination_for_translated_articles_in_sections(self):
+        en_articles = self.mk_articles(self.yourmind, count=10)
+        self.mk_articles(self.yourmind, count=5)
+
+        for p in en_articles:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/your-mind/')
+        self.assertContains(response, 'Page 1 of 3')
+        self.assertContains(response, 'Test page 0 in french')
+
+        response = self.client.get('/sections/your-mind/?p=2')
+
+        self.assertContains(response, 'Page 2 of 3')
+        self.assertContains(response, 'Test page 7 in french')
+
+        response = self.client.get('/sections/your-mind/?p=3')
+
+        self.assertContains(response, 'Page 3 of 3')
+        self.assertNotContains(response, 'Test page 13 in french')
+        self.assertContains(response, 'Test page 13')
+
+    def test_pagination_for_articles_in_sub_sections(self):
+        self.mk_articles(self.yourmind_sub, count=15)
+
+        response = self.client.get('/sections/your-mind/')
+        self.assertNotContains(response, 'Page 1 of 3')
+
+        response = self.client.get('/sections/your-mind/your-mind-subsection/')
+        self.assertContains(response, 'Page 1 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertNotContains(response, '&larr;')
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/?p=2')
+
+        self.assertContains(response, 'Page 2 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/?p=3')
+
+        self.assertContains(response, 'Page 3 of 3')
+        self.assertNotContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
