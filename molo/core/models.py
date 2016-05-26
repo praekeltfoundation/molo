@@ -382,6 +382,17 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
 
+    def get_context(self, request):
+        context = super(SectionPage, self).get_context(request)
+
+        try:
+            p = int(request.GET.get('p', 1))
+        except ValueError:
+            p = 1
+
+        context['p'] = p
+        return context
+
     class Meta:
         verbose_name = _('Section')
 
