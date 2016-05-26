@@ -25,17 +25,10 @@ def load_sections(context):
     takes_context=True
 )
 def section_listing_homepage(context):
-    request = context['request']
     locale_code = context.get('locale_code')
 
-    if request.site:
-        sections = request.site.root_page.specific.sections()
-    else:
-        sections = []
-
     return {
-        'sections': [
-            a.get_translation_for(locale_code) or a for a in sections],
+        'sections': load_sections(context),
         'request': context['request'],
         'locale_code': locale_code,
     }
