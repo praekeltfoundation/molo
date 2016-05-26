@@ -448,7 +448,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/locale/en/?next=/sections/your-mind-in-french/?p=3', follow=True)
-        print response
+
         self.assertContains(response, 'Page 3 of 3')
         self.assertNotContains(response, 'Test page 11 in french')
         self.assertContains(response, 'Test page 11')

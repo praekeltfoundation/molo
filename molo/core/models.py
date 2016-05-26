@@ -155,7 +155,8 @@ class TranslatablePageMixin(object):
         locale_code = get_locale_code(get_language_from_request(request))
         translation = self.get_translation_for(locale_code)
         if translation:
-            return redirect(translation.url)
+            return redirect(
+                '%s?%s' % (translation.url, request.GET.urlencode()))
 
         return super(TranslatablePageMixin, self).serve(request)
 
