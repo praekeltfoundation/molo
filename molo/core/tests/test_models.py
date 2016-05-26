@@ -1,3 +1,4 @@
+# coding=utf-8
 import pytest
 import datetime as dt
 from datetime import datetime, timedelta
@@ -294,7 +295,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
             locale='sp', is_active=False
         )
         response = self.client.get('/')
-
         self.assertContains(response, 'English')
-        self.assertContains(response, 'French')
-        self.assertNotContains(response, 'Spanish')
+        self.assertContains(response, 'français')
+        self.assertNotContains(response, 'español')
