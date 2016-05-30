@@ -86,7 +86,7 @@ export function chooseMain() {
 export function changeMain(id) {
   return {
     type: 'CHANGE_MAIN',
-    payload: {id: id}
+    payload: {id}
   };
 }
 
@@ -101,18 +101,7 @@ export function toggleLanguageChosen(id) {
 
 export function importContent(repos, languages, api=httpApi) {
   return dispatch => Promise.resolve()
-    .then(() => importContentChecking())
-    .then(dispatch)
-    .then(() => api.checkContent(repos, languages))
-    .then(({errors}) => !errors.length
-      ? importContentHandleValid(dispatch, repos, languages, api)
-      : importContentHandleInvalid(dispatch, errors, repos, languages, api));
-}
-
-
-function importContentHandleValid(dispatch, repos, languages, api) {
-  return Promise.resolve()
-    .then(() => importContentStarting())
+    .then(() => importContentBusy())
     .then(dispatch)
     .then(() => api.importContent(repos, languages))
     .then(() => importContentStarted())
@@ -120,32 +109,14 @@ function importContentHandleValid(dispatch, repos, languages, api) {
 }
 
 
-function importContentHandleInvalid(dispatch, errors, repos, languages, api) {
-  return Promise.resolve(errors)
-    .then(importContentInvalid)
-    .then(dispatch);
-}
-
-
-function importContentChecking() {
-  return {type: 'IMPORT_CONTENT/CHECKING'};
-}
-
-
-function importContentStarting() {
-  return {type: 'IMPORT_CONTENT/STARTING'};
+function importContentBusy() {
+  return {type: 'IMPORT_CONTENT/BUSY'};
 }
 
 
 function importContentStarted() {
-  return {type: 'IMPORT_CONTENT/STARTED'};
-}
-
-
-function importContentInvalid(errors) {
   return {
-    type: 'IMPORT_CONTENT/INVALID',
-    payload: {errors}
+    type: 'IMPORT_CONTENT/STARTED',
   };
 }
 
@@ -155,7 +126,7 @@ export function checkContent(repos, languages, api=httpApi) {
     .then(() => checkContentBusy())
     .then(dispatch)
     .then(() => api.checkContent(repos, languages))
-    .then(d => checkContentDone(d))
+    .then(() => checkContentStarted())
     .then(dispatch);
 }
 
@@ -165,9 +136,8 @@ function checkContentBusy() {
 }
 
 
-function checkContentDone({errors}) {
+function checkContentStarted() {
   return {
-    type: 'CHECK_CONTENT/DONE',
-    payload: {errors}
+    type: 'CHECK_CONTENT/STARTED'
   };
 }
