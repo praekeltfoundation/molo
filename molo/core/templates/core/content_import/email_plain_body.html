@@ -1,3 +1,4 @@
+{% load core_import_tags %}
 Hi {{name}},
 
 {% if errors %}
@@ -9,7 +10,7 @@ Errors
 --
 
 {% for error in errors %}
-{{error}}
+{{error|format_import_error}}
 {% endfor %}
 
 {% elif warnings %}
@@ -24,12 +25,12 @@ Warnings
 --
 
 {% for warn in warnings %}
-{{warn}}
+{{warn|format_import_error}}
 {% endfor %}
 
 {% else %}
 
-The content import for {{host}}is complete.
+The content import for {{host}} is complete.
 
 You can now visit the site to see the content.
 {% endif %}
