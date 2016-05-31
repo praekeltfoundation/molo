@@ -1,5 +1,7 @@
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 from molo.core.models import ArticlePage, Main, SiteLanguage, SectionIndexPage
 from molo.core.content_import import api
@@ -34,25 +36,38 @@ def rotate_content():
                 article.save_revision().publish()
 
 
+def send_import_email(to_email, context):
+    from_email = settings.FROM_EMAIL
+    plain_body_template = "email_plain_body.html"
+    html_body_template = "email_html_body.html"
+
+    subject = settings.CONTENT_IMPORT_SUBJECT
+    plain_body = loader.render_to_string(plain_body_template, context)
+    html_body = loader.render_to_string(html_body_template, context)
+
+    email_message = EmailMultiAlternatives(
+        subject, plain_body, from_email, [to_email])
+    email_message.attach_alternative(html_body, 'text/html')
+    email_message.send()
+
+
 @task(ignore_result=True)
 def import_content(data, username, email, host):
-    repo_data, locales = data['repos'], data['locales']
     repos = api.get_repos(repo_data)
+    repo_data, locales = data['repos'], data['locales']
+
+    try:
+        result = api.validate_content(repos, locales)
+    except InvalidParametersError as e:
+        return invalid_parameters_response(e)
+
+    if result['errors']:
+        send_import_email(email, {
+            'name': username, 'host': host,
+            'type': 'validation_failure',
+            'errors': result['errors'],
+            'warnings': result['warnings']
+        })
+
     api.import_content(repos, locales)
-
-    message = """
-Hi %(name)s,
-
-The content import for %(host)s is complete.
-
-You can now visit the site to see the content.
-
-Regards,
-Molo Team
-"""
-
-    send_mail(
-        settings.CONTENT_IMPORT_SUBJECT,
-        message % {'name': username, 'host': host},
-        settings.FROM_EMAIL,
-        [email], fail_silently=False)
+    send_import_email(email, {'name': username, 'host': host})

@@ -1,0 +1,38 @@
+Hi {{name}},
+
+{% if errors %}
+
+The content validation for {{host}} has failed.
+Please see errors below:
+
+Errors
+--
+
+{% for error in errors %}
+{{error}}
+{% endfor %}
+
+{% elif warnings %}
+The content validation for {{host}} has passed, but there are some warnings.
+Importing will still go ahead.
+
+You will get an email notification when importing is complete.
+
+Please see warnings below:
+
+Warnings
+--
+
+{% for warn in warnings %}
+{{warn}}
+{% endfor %}
+
+{% else %}
+
+The content import for {{host}}is complete.
+
+You can now visit the site to see the content.
+{% endif %}
+
+Regards,
+Molo Team

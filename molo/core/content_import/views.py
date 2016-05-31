@@ -51,31 +51,17 @@ def get_repo_languages(request):
 def import_content(request):
     data = request.data
     repo_data, locales = data['repos'], data['locales']
-    repos = api.get_repos(repo_data)
-
-    try:
-        result = api.validate_content(repos, locales)
-    except InvalidParametersError as e:
-        return invalid_parameters_response(e)
-
-    if result['errors']:
-        return Response(status=422, data={
-            'type': 'validation_failure',
-            'errors': result['errors'],
-            'warnings': result['warnings']
-        })
-    else:
-        tasks.import_content.delay(
-            data,
-            request.user.username,
-            request.user.email,
-            request.get_host())
-        return Response(status=202, data={
-            'repos': repo_data,
-            'locales': locales,
-            'errors': [],
-            'warnings': result['warnings']
-        })
+    tasks.import_content.delay(
+        data,
+        request.user.username,
+        request.user.email,
+        request.get_host())
+    return Response(status=202, data={
+        'repos': repo_data,
+        'locales': locales,
+        'errors': [],
+        'warnings': result['warnings']
+    })
 
 
 @api_view(['POST'])
