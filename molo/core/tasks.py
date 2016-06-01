@@ -7,7 +7,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from molo.core.content_import import api
-from molo.core.content_import.errors import InvalidParametersError
 from molo.core.models import ArticlePage, Main, SectionIndexPage, SiteLanguage
 
 from wagtail.contrib.settings.context_processors import SettingsProxy
@@ -55,16 +54,7 @@ def send_import_email(to_email, context):
 @task(ignore_result=True)
 def import_content(data, locales, username, email, host):
     repos = api.get_repos(data)
-
-    try:
-        result = api.validate_content(repos, locales)
-    except InvalidParametersError as e:
-        send_import_email(email, {
-            'name': username, 'host': host,
-            'type': 'validation_failure',
-            'errors': e.errors
-        })
-        return
+    result = api.validate_content(repos, locales)
 
     if result['errors']:
         send_import_email(email, {
@@ -82,16 +72,7 @@ def import_content(data, locales, username, email, host):
 @task(ignore_result=True)
 def import_validate(data, locales, username, email, host):
     repos = api.get_repos(data)
-
-    try:
-        result = api.validate_content(repos, locales)
-    except InvalidParametersError as e:
-        send_import_email(email, {
-            'name': username, 'host': host,
-            'type': 'validation_failure',
-            'errors': e.errors
-        })
-        return
+    result = api.validate_content(repos, locales)
 
     send_import_email(email, {
         'name': username, 'host': host,
