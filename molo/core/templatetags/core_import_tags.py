@@ -15,26 +15,26 @@ def format_import_error(error):
 
     elif error.get('type') == 'no_primary_category':
         message = (
-            "%(lang)s No primary category found for page `%(article)s`" % {
+            "%(lang)s: No primary category found for page `%(article)s`" % {
                 'lang': error['details']['lang'],
                 'article': error['details']['article']
             })
 
     elif error.get('type') == 'no_source_found_for_category':
-        message = "%(lang)s No source found for category `%(category)s`" % {
+        message = "%(lang)s: No source found for category `%(category)s`" % {
             'lang': error['details']['lang'],
             'category': error['details']['category']
         }
 
     elif error.get('type') == 'no_source_found_for_page':
-        message = "%(lang)s No source found for page `%(article)s`" % {
+        message = "%(lang)s: No source found for page `%(article)s`" % {
             'lang': error['details']['lang'],
             'article': error['details']['article']
         }
 
     elif error.get('type') == 'category_source_not_exists':
         message = (
-            "%(lang)s The source for category `%(category)s` "
+            "%(lang)s: The source for category `%(category)s` "
             "does not exist" % {
                 'lang': error['details']['lang'],
                 'category': error['details']['category']
@@ -42,7 +42,7 @@ def format_import_error(error):
 
     elif error.get('type') == 'page_source_not_exists':
         message = (
-            "%(lang)s The source for page `%(page)s` does not exist" % {
+            "%(lang)s: The source for page `%(page)s` does not exist" % {
                 'lang': error['details']['lang'],
                 'page': error['details']['page']
             })

@@ -3,7 +3,7 @@ from datetime import datetime
 from celery import task
 
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
 from molo.core.content_import import api
@@ -11,6 +11,10 @@ from molo.core.models import ArticlePage, Main, SectionIndexPage, SiteLanguage
 
 from wagtail.contrib.settings.context_processors import SettingsProxy
 from wagtail.wagtailcore.models import Site
+
+
+IMPORT_EMAIL_TEMPLATE = "core/content_import/import_email.html"
+VALIDATE_EMAIL_TEMPLATE = "core/content_import/validate_email.html"
 
 
 @task(ignore_result=True)
@@ -38,16 +42,10 @@ def rotate_content():
 
 def send_import_email(to_email, context):
     from_email = settings.FROM_EMAIL
-    plain_body_template = "core/content_import/email_plain_body.html"
-    html_body_template = "core/content_import/email_html_body.html"
-
     subject = settings.CONTENT_IMPORT_SUBJECT
-    plain_body = render_to_string(plain_body_template, context)
-    html_body = render_to_string(html_body_template, context)
+    body = render_to_string(IMPORT_EMAIL_TEMPLATE, context)
 
-    email_message = EmailMultiAlternatives(
-        subject, plain_body, from_email, [to_email])
-    email_message.attach_alternative(html_body, 'text/html')
+    email_message = EmailMessage(subject, body, from_email, [to_email])
     email_message.send()
 
 
@@ -56,17 +54,15 @@ def import_content(data, locales, username, email, host):
     repos = api.get_repos(data)
     result = api.validate_content(repos, locales)
 
-    if result['errors']:
-        send_import_email(email, {
-            'name': username, 'host': host,
-            'type': 'validation_failure',
-            'errors': result['errors'],
-            'warnings': result['warnings']
-        })
-        return
+    if not result['errors']:
+        api.import_content(repos, locales)
 
-    api.import_content(repos, locales)
-    send_import_email(email, {'name': username, 'host': host})
+    send_import_email(email, {
+        'name': username,
+        'host': host,
+        'errors': result['errors'],
+        'warnings': result['warnings']
+    })
 
 
 @task(ignore_result=True)
@@ -75,7 +71,8 @@ def import_validate(data, locales, username, email, host):
     result = api.validate_content(repos, locales)
 
     send_import_email(email, {
-        'name': username, 'host': host,
+        'name': username,
+        'host': host,
         'type': 'import_failure',
         'errors': result['errors'],
         'warnings': result['warnings']

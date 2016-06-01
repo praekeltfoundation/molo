@@ -2,6 +2,7 @@ from django.conf import settings
 
 from elasticgit.workspace import RemoteWorkspace
 
+from molo.core.content_import.utils import schedule
 from molo.core.content_import.errors import InvalidParametersError
 from molo.core.content_import.helpers.locales import get_locales
 from molo.core.content_import.helpers.summaries import get_summaries
@@ -72,22 +73,16 @@ def validate_content(repos, locales):
     }
 
 
-def schedule_import_content(repos, locales, username, email, host):
-    tasks.import_content.delay(
-        [r.serialize() for r in repos],
-        locales,
-        username,
-        email,
-        host)
+def schedule_import_content(repos, locales, username, email, host, delay=True):
+    task = get_tasks().import_content
+    data = [r.serialize() for r in repos]
+    schedule(task, delay, data, locales, username, email, host)
 
 
-def schedule_validate_content(repos, locales, username, email, host):
-    tasks.validate_content.delay(
-        [r.serialize() for r in repos],
-        locales,
-        username,
-        email,
-        host)
+def schedule_validate_content(repos, locales, username, email, host, delay=True):
+    task = get_tasks().validate_content
+    data = [r.serialize() for r in repos]
+    schedule(task, delay, data, locales, username, email, host)
 
 
 def get_repo_by_name(name):
@@ -111,6 +106,12 @@ def validate_repo(repo, main, children):
     return validator.validate_for(main, children)
 
 
+def get_tasks():
+    # avoid circular import
+    from molo.core import tasks
+    return tasks
+
+
 class Repo(object):
     def __init__(self, workspace, name, title=None):
         self.workspace = workspace
@@ -119,6 +120,6 @@ class Repo(object):
 
     def serialize(self):
         return {
-            'name': name,
-            'title': title,
+            'name': self.name,
+            'title': self.title,
         }

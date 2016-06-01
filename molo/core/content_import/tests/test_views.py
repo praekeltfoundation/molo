@@ -6,7 +6,7 @@ from elasticgit.tests.base import ModelBaseTest
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
-from molo.core.content_import.api import Repo
+from molo.core.content_import.tests.utils import fake_repos, find_repos
 from molo.core.content_import.errors import (
     InvalidParametersError, SiteResponseError)
 
@@ -202,11 +202,3 @@ class ContentImportAPITestCase(
         })
 
         self.assertEquals(resp.status_code, 422)
-
-
-def fake_repos(*names):
-    return tuple(Repo(None, name, name) for name in names)
-
-
-def find_repos(repos, names):
-    return tuple(r for r in repos if r.name in names)
