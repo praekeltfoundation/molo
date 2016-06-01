@@ -44,7 +44,14 @@ def send_import_email(to_email, context):
     from_email = settings.FROM_EMAIL
     subject = settings.CONTENT_IMPORT_SUBJECT
     body = render_to_string(IMPORT_EMAIL_TEMPLATE, context)
+    email_message = EmailMessage(subject, body, from_email, [to_email])
+    email_message.send()
 
+
+def send_validate_email(to_email, context):
+    from_email = settings.FROM_EMAIL
+    subject = settings.CONTENT_IMPORT_SUBJECT
+    body = render_to_string(VALIDATE_EMAIL_TEMPLATE, context)
     email_message = EmailMessage(subject, body, from_email, [to_email])
     email_message.send()
 
@@ -66,7 +73,7 @@ def import_content(data, locales, username, email, host):
 
 
 @task(ignore_result=True)
-def import_validate(data, locales, username, email, host):
+def validate_content(data, locales, username, email, host):
     repos = api.get_repos(data)
     result = api.validate_content(repos, locales)
 
