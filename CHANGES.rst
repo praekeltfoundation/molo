@@ -1,9 +1,15 @@
 CHANGE LOG
 ==========
 
+3.1.6
+------
+- Added pagination for articles in section
+- Show the active language and display the local name
+- Added load_sections template tag
+
 3.1.5
 ------
-- Importing validation errors to be shown in the UI for celery taks
+- Importing validation errors to be shown in the UI for celery task
 
 3.1.4
 ------

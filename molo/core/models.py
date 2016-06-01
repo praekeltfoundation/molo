@@ -155,7 +155,8 @@ class TranslatablePageMixin(object):
         locale_code = get_locale_code(get_language_from_request(request))
         translation = self.get_translation_for(locale_code)
         if translation:
-            return redirect(translation.url)
+            return redirect(
+                '%s?%s' % (translation.url, request.GET.urlencode()))
 
         return super(TranslatablePageMixin, self).serve(request)
 
@@ -381,6 +382,17 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
+
+    def get_context(self, request):
+        context = super(SectionPage, self).get_context(request)
+
+        try:
+            p = int(request.GET.get('p', 1))
+        except ValueError:
+            p = 1
+
+        context['p'] = p
+        return context
 
     class Meta:
         verbose_name = _('Section')
