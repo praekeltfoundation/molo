@@ -1,14 +1,20 @@
-from django.core.mail import send_mail
-from django.conf import settings
-
-from molo.core.models import ArticlePage, Main, SiteLanguage, SectionIndexPage
-from molo.core.content_import import api
-
-from wagtail.wagtailcore.models import Site
-from wagtail.contrib.settings.context_processors import SettingsProxy
-
 from datetime import datetime
+
 from celery import task
+
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+
+from molo.core.content_import import api
+from molo.core.models import ArticlePage, Main, SectionIndexPage, SiteLanguage
+
+from wagtail.contrib.settings.context_processors import SettingsProxy
+from wagtail.wagtailcore.models import Site
+
+
+IMPORT_EMAIL_TEMPLATE = "core/content_import/import_email.html"
+VALIDATE_EMAIL_TEMPLATE = "core/content_import/validate_email.html"
 
 
 @task(ignore_result=True)
@@ -34,25 +40,47 @@ def rotate_content():
                 article.save_revision().publish()
 
 
+def send_import_email(to_email, context):
+    from_email = settings.FROM_EMAIL
+    subject = settings.CONTENT_IMPORT_SUBJECT
+    body = render_to_string(IMPORT_EMAIL_TEMPLATE, context)
+    email_message = EmailMessage(subject, body, from_email, [to_email])
+    email_message.send()
+
+
+def send_validate_email(to_email, context):
+    from_email = settings.FROM_EMAIL
+    subject = settings.CONTENT_IMPORT_SUBJECT
+    body = render_to_string(VALIDATE_EMAIL_TEMPLATE, context)
+    email_message = EmailMessage(subject, body, from_email, [to_email])
+    email_message.send()
+
+
 @task(ignore_result=True)
-def import_content(data, username, email, host):
-    repo_data, locales = data['repos'], data['locales']
-    repos = api.get_repos(repo_data)
-    api.import_content(repos, locales)
+def import_content(data, locales, username, email, host):
+    repos = api.get_repos(data)
+    result = api.validate_content(repos, locales)
 
-    message = """
-Hi %(name)s,
+    if not result['errors']:
+        api.import_content(repos, locales)
 
-The content import for %(host)s is complete.
+    send_import_email(email, {
+        'name': username,
+        'host': host,
+        'errors': result['errors'],
+        'warnings': result['warnings']
+    })
 
-You can now visit the site to see the content.
 
-Regards,
-Molo Team
-"""
+@task(ignore_result=True)
+def validate_content(data, locales, username, email, host):
+    repos = api.get_repos(data)
+    result = api.validate_content(repos, locales)
 
-    send_mail(
-        settings.CONTENT_IMPORT_SUBJECT,
-        message % {'name': username, 'host': host},
-        settings.FROM_EMAIL,
-        [email], fail_silently=False)
+    send_import_email(email, {
+        'name': username,
+        'host': host,
+        'type': 'import_failure',
+        'errors': result['errors'],
+        'warnings': result['warnings']
+    })
