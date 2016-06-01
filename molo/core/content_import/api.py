@@ -73,16 +73,16 @@ def validate_content(repos, locales):
     }
 
 
-def schedule_import_content(repos, locales, username, email, host, delay=True):
+def schedule_import_content(repos, locales, user, email, host, delay=True):
     task = get_tasks().import_content
     data = [r.serialize() for r in repos]
-    schedule(task, delay, data, locales, username, email, host)
+    schedule(task, delay, data, locales, user, email, host)
 
 
-def schedule_validate_content(repos, locales, username, email, host, delay=True):
+def schedule_validate_content(repos, locales, user, email, host, delay=True):
     task = get_tasks().validate_content
     data = [r.serialize() for r in repos]
-    schedule(task, delay, data, locales, username, email, host)
+    schedule(task, delay, data, locales, user, email, host)
 
 
 def get_repo_by_name(name):
