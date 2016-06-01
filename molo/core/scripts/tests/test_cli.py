@@ -109,13 +109,6 @@ class TestCli(TestCase):
             }
         })
 
-    def test_unpack_templates_bad_source(self):
-        from molo.core.scripts import cli
-        runner = CliRunner()
-        result = runner.invoke(cli.unpack_templates, ['molo.core', 'testapp'])
-        self.assertTrue(
-            'molo.core does not have a templates directory' in result.output)
-
     @patch('molo.core.scripts.cli.get_package')
     @patch('molo.core.scripts.cli.get_template_dirs')
     @patch('shutil.copytree')
@@ -138,6 +131,3 @@ class TestCli(TestCase):
         from molo.core.scripts.cli import get_package
         self.assertRaisesRegexp(
             UsageError, 'molo.foo is not installed.', get_package, 'molo.foo')
-        self.assertRaisesRegexp(
-            UsageError, 'molo.core does not have a templates directory.',
-            get_package, 'molo.core')

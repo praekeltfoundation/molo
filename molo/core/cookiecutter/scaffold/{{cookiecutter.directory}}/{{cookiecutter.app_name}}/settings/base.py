@@ -30,8 +30,6 @@ SECRET_KEY = "{{cookiecutter.secret_key}}"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = ['*']
 
 
@@ -96,6 +94,7 @@ MIDDLEWARE_CLASSES = [
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
     'wagtailmodeladmin.middleware.ModelAdminMiddleware',
+
     'molo.core.middleware.AdminLocaleMiddleware',
 ]
 
@@ -227,6 +226,8 @@ WAGTAIL_SITE_NAME = "base"
 #     },
 # }
 
+SITE_NAME = environ.get('SITE_NAME', "{{cookiecutter.app_name}}")
+WAGTAIL_SITE_NAME = SITE_NAME
 
 # Whether to use face/feature detection to improve image
 # cropping - requires OpenCV

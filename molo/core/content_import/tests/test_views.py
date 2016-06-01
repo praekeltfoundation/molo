@@ -6,7 +6,7 @@ from elasticgit.tests.base import ModelBaseTest
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
-from molo.core.content_import.api import Repo
+from molo.core.content_import.tests.utils import fake_repos, find_repos
 from molo.core.content_import.errors import (
     InvalidParametersError, SiteResponseError)
 
@@ -91,7 +91,7 @@ class ContentImportAPITestCase(
         repos = fake_repos('r1', 'r2')
         api.get_repos_by_name = lambda names, **kw: find_repos(repos, names)
 
-        api.get_languages = lambda wses: {
+        api.get_languages = lambda repos: {
             repos: {
                 'locales': [{
                     'locale': 'eng_GB',
@@ -99,7 +99,7 @@ class ContentImportAPITestCase(
                 }],
                 'warnings': []
             },
-        }[wses]
+        }[repos]
 
         resp = self.client.get('/import/languages/?repo=r1&repo=r2')
 
@@ -122,74 +122,28 @@ class ContentImportAPITestCase(
         repos = fake_repos('r1', 'r2')
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.validate_content = lambda *a, **kw: {
-            'errors': [],
-            'warnings': [{'type': 'fake_warning'}],
-        }
-
-        api.import_content = lambda wses, locales: (
-            imports.append((wses, locales)))
+        api.schedule_import_content = lambda repos, locales, *a: (
+            imports.append((repos, locales)))
 
         resp = self.client.put('/import/content/', data={
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr']
         }, format='json')
 
+        self.assertEqual(imports, [(repos, ['en', 'fr'])])
         self.assertEquals(resp.status_code, 202)
-
-        self.assertEquals(resp.data, {
-            'repos': ['r1', 'r2'],
-            'locales': ['en', 'fr'],
-            'errors': [],
-            'warnings': [{'type': 'fake_warning'}],
-        })
-
-    @mock.patch('molo.core.content_import.views.api')
-    def test_import_content_validation_errors(self, api):
-        User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
-        self.client.login(username='testuser', password='1234')
-
-        imports = []
-        repos = fake_repos('r1', 'r2')
-        api.get_repos = lambda names, **kw: find_repos(repos, names)
-
-        api.validate_content = lambda wses, locales: {
-            (repos, ('en', 'fr')): {
-                'errors': [{'type': 'fake_error'}],
-                'warnings': [{'type': 'fake_warning'}],
-            }
-        }[(wses, tuple(locales))]
-
-        api.import_content = lambda wses, locales: (
-            imports.append((wses, locales)))
-
-        resp = self.client.put('/import/content/', data={
-            'repos': ['r1', 'r2'],
-            'locales': ['en', 'fr']
-        }, format='json')
-
-        self.assertEquals(resp.data, {
-            'type': 'validation_failure',
-            'errors': [{'type': 'fake_error'}],
-            'warnings': [{'type': 'fake_warning'}],
-        })
-
-        self.assertEqual(imports, [])
-        self.assertEquals(resp.status_code, 422)
 
     @mock.patch('molo.core.content_import.views.api')
     def test_import_content_invalid_parameters(self, api):
-        def validate_content(*a, **kw):
+        def schedule_import_content(*a, **kw):
             raise InvalidParametersError(':/', [{'type': 'fake_error'}])
 
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
-        imports = []
         repos = fake_repos('r1', 'r2')
         api.get_repos = lambda names, **kw: find_repos(repos, names)
-
-        api.validate_content = validate_content
+        api.schedule_import_content = schedule_import_content
 
         resp = self.client.put('/import/content/', data={
             'repos': ['r1', 'r2'],
@@ -201,7 +155,6 @@ class ContentImportAPITestCase(
             'errors': [{'type': 'fake_error'}],
         })
 
-        self.assertEqual(imports, [])
         self.assertEquals(resp.status_code, 422)
 
     @mock.patch('molo.core.content_import.views.api')
@@ -209,43 +162,34 @@ class ContentImportAPITestCase(
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
+        validates = []
         repos = fake_repos('r1', 'r2')
+
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.validate_content = lambda wses, locales: {
-            (repos, ('en', 'fr')): {
-                'errors': [{'type': 'fake_error'}],
-                'warnings': [{'type': 'fake_warning'}],
-            }
-        }[(wses, tuple(locales))]
+        api.schedule_validate_content = lambda repos, locales, *a: (
+            validates.append((repos, locales)))
 
         resp = self.client.post('/import/validation/', data={
             'repos': ['r1', 'r2'],
             'locales': ['en', 'fr']
         }, format='json')
 
-        self.assertEquals(resp.data, {
-            'repos': ['r1', 'r2'],
-            'locales': ['en', 'fr'],
-            'errors': [{'type': 'fake_error'}],
-            'warnings': [{'type': 'fake_warning'}],
-        })
-
-        self.assertEquals(resp.status_code, 200)
+        self.assertEqual(validates, [(repos, ['en', 'fr'])])
+        self.assertEquals(resp.status_code, 202)
 
     @mock.patch('molo.core.content_import.views.api')
     def test_validate_content_invalid_parameters(self, api):
-        def validate_content(*a, **kw):
+        def schedule_validate_content(*a, **kw):
             raise InvalidParametersError(':/', [{'type': 'fake_error'}])
 
         User.objects.create_superuser('testuser', 'testuser@email.com', '1234')
         self.client.login(username='testuser', password='1234')
 
-        imports = []
         repos = fake_repos('r1', 'r2')
         api.get_repos = lambda names, **kw: find_repos(repos, names)
 
-        api.validate_content = validate_content
+        api.schedule_validate_content = schedule_validate_content
 
         resp = self.client.post('/import/validation/', data={
             'repos': ['r1', 'r2'],
@@ -257,13 +201,4 @@ class ContentImportAPITestCase(
             'errors': [{'type': 'fake_error'}],
         })
 
-        self.assertEqual(imports, [])
         self.assertEquals(resp.status_code, 422)
-
-
-def fake_repos(*names):
-    return tuple(Repo(None, name, name) for name in names)
-
-
-def find_repos(repos, names):
-    return tuple(r for r in repos if r.name in names)
