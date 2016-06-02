@@ -514,9 +514,9 @@ class MultimediaViewTest(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections/your-mind/test-article/')
         self.assertContains(
             response,
-            '<div><audio controls><source src="{0}" \
-            type="audio/mpeg">Click here to download\
-            <a href="{0}">{1}</a> </audio></div>'
+            '''<div><audio controls><source src="{0}"
+type="audio/mpeg">Click here to download
+<a href="{0}">{1}</a></audio></div>'''
             .format(self.media.file.url, self.media.title)
         )
 
@@ -525,9 +525,8 @@ class MultimediaViewTest(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections/your-mind/test-article/')
         self.assertContains(
             response,
-            '<div><video width="320" height="240" controls> \
-            <source src="{0}" type="video/mp4"> \
-            Click here to download <a href="{0}">{1}</a> \
-            </video></div>'
+            '''<div><video width="320" height="240" controls>
+<source src="{0}" type="video/mp4">Click here to download
+<a href="{0}">{1}</a></video></div>'''
             .format(self.media.file.url, self.media.title)
         )
