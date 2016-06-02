@@ -31,14 +31,14 @@ class MultimediaBlock(AbstractMediaChooserBlock):
             return ''
 
         if value.type == 'video':
-            player_code = '<div><video width="320" height="240" controls> \
-                          <source src="{0}" type="video/mp4"> \
-                          Click here to download <a href="{0}">{1}</a> \
-                          </video></div>'
+            player_code = '''<div><video width="320" height="240" controls>
+<source src="{0}" type="video/mp4">Click here to download
+<a href="{0}">{1}</a></video></div>'''
+
         else:
-            player_code = '<div><audio controls><source src="{0}" \
-                           type="audio/mpeg">Click here to download\
-                           <a href="{0}">{1}</a> </audio></div>'
+            player_code = '''<div><audio controls><source src="{0}"
+type="audio/mpeg">Click here to download
+<a href="{0}">{1}</a></audio></div>'''
 
         md = markdown(
             player_code.format(value.file.url, value.title),
