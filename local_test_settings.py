@@ -14,10 +14,6 @@ AUTHENTICATION_BACKENDS = (
     'molo.core.backends.MoloCASBackend',
 )
 
-INSTALLED_APPS += (
-    'wagtailmedia',
-)
-
 CAS_SERVER_URL = 'http://testcasserver'
 CAS_ADMIN_PREFIX = '/admin/'
 LOGIN_URL = '/accounts/login/'
