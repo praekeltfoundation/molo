@@ -1,6 +1,14 @@
 CHANGE LOG
 ==========
 
+3.1.8
+------
+- Limit import content to users belonging to `Universal Core Importers` group
+
+3.1.7
+------
+- Content validation now happens in a celery task
+
 3.1.6
 ------
 - Added pagination for articles in section

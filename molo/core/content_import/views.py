@@ -10,7 +10,6 @@ from rest_framework.decorators import parser_classes
 from molo.core.content_import import api
 from molo.core.content_import.errors import (
     InvalidParametersError, SiteResponseError)
-from molo.core import tasks
 
 
 @api_view(['GET'])
@@ -54,28 +53,16 @@ def import_content(request):
     repos = api.get_repos(repo_data)
 
     try:
-        result = api.validate_content(repos, locales)
-    except InvalidParametersError as e:
-        return invalid_parameters_response(e)
-
-    if result['errors']:
-        return Response(status=422, data={
-            'type': 'validation_failure',
-            'errors': result['errors'],
-            'warnings': result['warnings']
-        })
-    else:
-        tasks.import_content.delay(
-            data,
+        api.schedule_import_content(
+            repos,
+            locales,
             request.user.username,
             request.user.email,
             request.get_host())
-        return Response(status=202, data={
-            'repos': repo_data,
-            'locales': locales,
-            'errors': [],
-            'warnings': result['warnings']
-        })
+    except InvalidParametersError as e:
+        return invalid_parameters_response(e)
+
+    return Response(status=202)
 
 
 @api_view(['POST'])
@@ -88,16 +75,16 @@ def import_validate(request):
     repos = api.get_repos(repo_data)
 
     try:
-        result = api.validate_content(repos, locales)
+        api.schedule_validate_content(
+            repos,
+            locales,
+            request.user.username,
+            request.user.email,
+            request.get_host())
     except InvalidParametersError as e:
         return invalid_parameters_response(e)
 
-    return Response(data={
-        'repos': repo_data,
-        'locales': locales,
-        'errors': result['errors'],
-        'warnings': result['warnings']
-    })
+    return Response(status=202)
 
 
 def invalid_parameters_response(error):

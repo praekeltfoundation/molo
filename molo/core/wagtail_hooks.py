@@ -4,6 +4,7 @@ from molo.core.models import SiteLanguage
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 
 from wagtailmodeladmin.options import(
     ModelAdmin, wagtailmodeladmin_register)
@@ -102,4 +103,14 @@ def add_language_error_message_panel(request, panels):
 def hide_menu_items_if_no_language(request, menu_items):
     if not SiteLanguage.objects.all().exists():
         menu_items[:] = [
-            item for item in menu_items if item.name == 'settings']
+            item for item in menu_items if (
+                item.name == 'settings' or item.name == 'import-content')]
+
+
+@hooks.register('construct_main_menu')
+def hide_import_content_if_not_uc_user(request, menu_items):
+    if not User.objects.filter(
+            pk=request.user.pk,
+            groups__name='Universal Core Importers').exists():
+        menu_items[:] = [
+            item for item in menu_items if item.name != 'import-content']
