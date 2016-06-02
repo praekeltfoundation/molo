@@ -512,9 +512,22 @@ class MultimediaViewTest(TestCase, MoloTestCaseMixin):
     def test_audio_media(self):
         self.add_media('audio')
         response = self.client.get('/sections/your-mind/test-article/')
-        self.assertContains(response, 'audio')
+        self.assertContains(
+            response,
+            '<div><audio controls><source src="{0}" \
+            type="audio/mpeg">Click here to download\
+            <a href="{0}">{1}</a> </audio></div>'
+            .format(self.media.file.url, self.media.title)
+        )
 
     def test_video_media(self):
         self.add_media('video')
         response = self.client.get('/sections/your-mind/test-article/')
-        self.assertContains(response, 'video')
+        self.assertContains(
+            response,
+            '<div><video width="320" height="240" controls> \
+            <source src="{0}" type="video/mp4"> \
+            Click here to download <a href="{0}">{1}</a> \
+            </video></div>'
+            .format(self.media.file.url, self.media.title)
+        )
