@@ -3,7 +3,6 @@ from itertools import chain
 from django.utils import timezone
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
@@ -347,7 +346,8 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
             ArticlePage.objects.live().filter(
                 related_sections__section__slug=self.slug,
                 languages__language__is_main_language=True)
-            ))
+        )
+        )
 
     def sections(self):
         main_language_page = self.get_main_language_page()
