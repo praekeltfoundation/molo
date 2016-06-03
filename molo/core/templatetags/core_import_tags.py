@@ -49,7 +49,7 @@ def format_import_error(error):
 
     elif error.get('type') == 'language_not_in_repo':
         message = (
-            "Repository %(repo) does not have content for %(lang)s" % {
+            "Repository %(repo)s does not have content for %(lang)s" % {
                 'lang': error['details']['lang'],
                 'repo': error['details']['repo']
             })
