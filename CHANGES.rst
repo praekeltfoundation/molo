@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.1.9
+------
+- Fixed a bug with UC content validation
+
 3.1.8
 ------
 - Limit import content to users belonging to `Universal Core Importers` group
