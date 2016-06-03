@@ -46,6 +46,13 @@ def format_import_error(error):
                 'lang': error['details']['lang'],
                 'page': error['details']['page']
             })
+
+    elif error.get('type') == 'language_not_in_repo':
+        message = (
+            "Repository %(repo) does not have content for %(lang)s" % {
+                'lang': error['details']['lang'],
+                'repo': error['details']['repo']
+            })
     else:
         message = error.get('type')
 
