@@ -37,7 +37,7 @@ class ContentImportValidation(object):
             'type': 'language_not_in_repo',
             'details': {
                 'repo': self.repo.name,
-                'locale': stray
+                'lang': Locale.parse(stray).english_name
             }
         }
 
