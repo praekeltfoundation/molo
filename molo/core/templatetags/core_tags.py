@@ -176,7 +176,6 @@ def load_child_articles_for_section(context, section, count=5):
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
     '''
-    page = section.get_main_language_page()
     locale = context.get('locale_code')
     p = context.get('p', 1)
 

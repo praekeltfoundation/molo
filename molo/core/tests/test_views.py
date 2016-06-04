@@ -477,3 +477,34 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Page 3 of 3')
         self.assertNotContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
+
+
+class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+        self.section_1 = self.mk_section(
+            self.section_index, title='Section 1')
+
+        self.section_2 = self.mk_section(
+            self.section_index, title='Section 2')
+
+        self.article_1 = self.mk_article(self.section_1,
+                                         title='Article 1')
+
+        self.article_1.related_sections.create(
+            page=self.article_1,
+            section=self.section_2
+        )
+
+        self.article_1.save_revision().publish()
+
+    def test_article_section(self):
+        response = self.client.get('/sections/section-1/')
+        self.assertContains(response, '/sections/section-1/article-1/')
+
+    def test_article_related_section(self):
+        response = self.client.get('/sections/section-2/')
+        self.assertContains(response, '/sections/section-1/article-1/')
