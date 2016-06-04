@@ -11,7 +11,6 @@ from molo.core.content_import.helpers.get_image import get_image_file
 from molo.core.content_import.helpers.locales import filter_locales_in_repo
 from molo.core.content_import.utils import hash
 
-
 def import_repo(repo, main_locale, children, should_nest=False):
     children = filter_locales_in_repo(repo, children)
 
@@ -150,9 +149,9 @@ def get_or_create_translation_from_model(cls, obj, lang, parent):
 def get_or_create(cls, parent, uuid, title):
     if cls.objects.filter(uuid=uuid).exists():
         return cls.objects.get(uuid=uuid)
-
-    instance = cls(uuid=uuid, title=title)
+    instance = cls(uuid=uuid, title=title, slug=uuid)
     parent.add_child(instance=instance)
+    instance.save_revision().publish()
     return instance
 
 
