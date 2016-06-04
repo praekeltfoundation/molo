@@ -11,6 +11,7 @@ from molo.core.content_import.helpers.get_image import get_image_file
 from molo.core.content_import.helpers.locales import filter_locales_in_repo
 from molo.core.content_import.utils import hash
 
+
 def import_repo(repo, main_locale, children, should_nest=False):
     children = filter_locales_in_repo(repo, children)
 
