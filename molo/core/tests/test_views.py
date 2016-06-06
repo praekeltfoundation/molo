@@ -1,6 +1,7 @@
 import json
 import pytest
 import responses
+from django.core.files.base import ContentFile
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -11,8 +12,10 @@ from molo.core.models import SiteLanguage, FooterPage, SiteSettings
 from molo.core.known_plugins import known_plugins
 
 from mock import patch, Mock
+from six import b
 
 from wagtail.wagtailcore.models import Site
+from wagtailmedia.models import Media
 
 
 @pytest.mark.django_db
@@ -477,6 +480,56 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Page 3 of 3')
         self.assertNotContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
+
+
+class MultimediaViewTest(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+
+        self.article_page = self.mk_article(self.yourmind,
+                                            title='Test Article')
+
+    def add_media(self, media_type):
+        fake_file = ContentFile(b("media"))
+        fake_file.name = 'media.mp3'
+        self.media = Media.objects.create(title="Test Media",
+                                          file=fake_file,
+                                          duration=100,
+                                          type=media_type)
+
+        self.article_page.body = json.dumps([{
+            'type': 'media',
+            'value': self.media.id,
+        }])
+
+        self.article_page.save_revision().publish()
+
+    def test_audio_media(self):
+        self.add_media('audio')
+        response = self.client.get('/sections/your-mind/test-article/')
+        self.assertContains(
+            response,
+            '''<div><audio controls><source src="{0}"
+type="audio/mpeg">Click here to download
+<a href="{0}">{1}</a></audio></div>'''
+            .format(self.media.file.url, self.media.title)
+        )
+
+    def test_video_media(self):
+        self.add_media('video')
+        response = self.client.get('/sections/your-mind/test-article/')
+        self.assertContains(
+            response,
+            '''<div><video width="320" height="240" controls>
+<source src="{0}" type="video/mp4">Click here to download
+<a href="{0}">{1}</a></video></div>'''
+            .format(self.media.file.url, self.media.title)
+        )
 
 
 class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):

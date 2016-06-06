@@ -49,8 +49,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
-
-        self.assertContains(response, 'Welcome to the base Wagtail CMS')
+        self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
 
     @patch('cas.CASClientV2.verify_ticket')
     def test_failed_login(self, mock_verify):

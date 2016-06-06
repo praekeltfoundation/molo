@@ -42,7 +42,7 @@ export function checkContent(repos, languages, opts) {
   repos = repos.map(serialize.repo);
   languages = serialize.languages(languages);
   return request(endpoints.validateContent(repos, languages, opts))
-    .then(resp => ({errors: resp.data.errors}), catchResponse());
+    .then(constant(null), catchResponse());
 }
 
 

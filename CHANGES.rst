@@ -1,6 +1,27 @@
 CHANGE LOG
 ==========
 
+3.1.11
+------
+
+- Fixed bugs with UC content importing, Arabic slugs and path issue
+
+3.1.10
+------
+- Fixed another small bug with UC content validation
+
+3.1.9
+------
+- Fixed a bug with UC content validation
+
+3.1.8
+------
+- Limit import content to users belonging to `Universal Core Importers` group
+
+3.1.7
+------
+- Content validation now happens in a celery task
+
 3.1.6
 ------
 - Added pagination for articles in section
