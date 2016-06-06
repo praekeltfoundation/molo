@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.1.11
+------
+
+- Fixed bugs with UC content importing, Arabic slugs and path issue
+
 3.1.10
 ------
 - Fixed another small bug with UC content validation
