@@ -478,16 +478,6 @@ class TestImportContent(
             sections.get(uuid=hash(('repo2', 'eng_GB'))),
             sections.get(uuid=hash(('repo2', 'spa_ES')))])
 
-        self.assert_has_children(
-            sections.get(uuid=hash(('repo1', 'eng_GB'))),
-            [articles.get(title='A Eng'),
-             articles.get(title='A Spa')])
-
-        self.assert_has_children(
-            sections.get(uuid=hash(('repo2', 'eng_GB'))),
-            [articles.get(title='B Eng'),
-             articles.get(title='B Spa')])
-
         self.assert_has_translation(
             articles.get(title='A Eng'),
             articles.get(title='A Spa'))
