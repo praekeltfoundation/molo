@@ -15,6 +15,7 @@ wagtail==1.4.5
 responses
 babel
 wagtailmodeladmin
+wagtailmedia
 django-extensions
 django-celery
 redis

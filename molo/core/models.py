@@ -22,7 +22,7 @@ from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtailadmin.taggable import TagSearchable
 
-from molo.core.blocks import MarkDownBlock
+from molo.core.blocks import MarkDownBlock, MultimediaBlock
 from molo.core import constants
 from molo.core.utils import get_locale_code
 
@@ -471,6 +471,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
+        ('media', MultimediaBlock()),
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
