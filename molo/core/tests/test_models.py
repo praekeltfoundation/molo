@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from molo.core.models import ArticlePage, SiteLanguage
+from molo.core.models import ArticlePage, SiteLanguage, PageTranslation
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_descendant_articles_for_section)
@@ -306,3 +306,22 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'English')
         self.assertContains(response, 'français')
         self.assertNotContains(response, 'español')
+
+    def test_signal_on_page_delete_removes_translations(self):
+        page1a, page1b, page1c = self.mk_articles(self.main, 3)
+        page2a, page2b = self.mk_articles(self.main, 2)
+
+        PageTranslation.objects.create(page=page1a, translated_page=page1b)
+        PageTranslation.objects.create(page=page1a, translated_page=page1c)
+        translation2ab = PageTranslation.objects.create(
+            page=page2a, translated_page=page2b)
+
+        page1a.delete()
+
+        self.assertEqual(
+            list(ArticlePage.objects.all().values('id')),
+            [{'id': page2a.id}, {'id': page2b.id}])
+
+        self.assertEqual(
+            list(PageTranslation.objects.all().values('id')),
+            [{'id': translation2ab.id}])
