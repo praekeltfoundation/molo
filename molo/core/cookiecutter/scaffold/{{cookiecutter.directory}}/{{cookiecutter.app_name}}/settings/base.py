@@ -179,6 +179,61 @@ LANGUAGES = global_settings.LANGUAGES + [
     ('nr', _('Ndebele')),
 ]
 
+EXTRA_LANG_INFO = {
+    'zu': {
+        'bidi': False,
+        'code': 'zu',
+        'name': 'Zulu',
+        'name_local': 'isiZulu',
+    },
+    'xh': {
+        'bidi': False,
+        'code': 'xh',
+        'name': 'Xhosa',
+        'name_local': 'isiXhosa',
+    },
+    'st': {
+        'bidi': False,
+        'code': 'st',
+        'name': 'Sotho',
+        'name_local': 'seSotho',
+    },
+    've': {
+        'bidi': False,
+        'code': 've',
+        'name': 'Venda',
+        'name_local': u'tshiVenḓa',
+    },
+    'tn': {
+        'bidi': False,
+        'code': 'tn',
+        'name': 'Tswana',
+        'name_local': 'Setswana',
+    },
+    'ts': {
+        'bidi': False,
+        'code': 'ts',
+        'name': 'Tsonga',
+        'name_local': 'xiTsonga',
+    },
+    'ss': {
+        'bidi': False,
+        'code': 'ss',
+        'name': 'Swati',
+        'name_local': 'siSwati',
+    },
+    'nr': {
+        'bidi': False,
+        'code': 'nr',
+        'name': 'Ndebele',
+        'name_local': 'isiNdebele',
+    }
+}
+
+django.conf.locale.LANG_INFO = dict(
+    django.conf.locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
+
+
 LOCALE_PATHS = [
     join(PROJECT_ROOT, "locale"),
 ]
