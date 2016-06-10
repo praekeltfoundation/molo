@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for base {{cookiecutter.app_name}}.
 
