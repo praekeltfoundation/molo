@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 from os.path import abspath, dirname, join
 from os import environ
-from django.conf import global_settings
+from django.conf import global_settings, locale
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
 import djcelery
@@ -230,8 +230,7 @@ EXTRA_LANG_INFO = {
     }
 }
 
-django.conf.locale.LANG_INFO = dict(
-    django.conf.locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
+locale.LANG_INFO = dict(locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
 
 
 LOCALE_PATHS = [
