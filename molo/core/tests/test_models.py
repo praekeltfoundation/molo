@@ -185,6 +185,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         post_data = {
             'title': 'this is a test article',
             'slug': 'this-is-a-test-article',
+            'related_sections-INITIAL_FORMS': 0,
+            'related_sections-MAX_NUM_FORMS': 1000,
+            'related_sections-MIN_NUM_FORMS': 0,
+            'related_sections-TOTAL_FORMS': 0,
             'body-count': 1,
             'body-0-value': 'Hello',
             'body-0-deleted': False,
@@ -222,6 +226,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         post_data = {
             'title': 'this is a test article',
             'slug': 'this-is-a-test-article',
+            'related_sections-INITIAL_FORMS': 0,
+            'related_sections-MAX_NUM_FORMS': 1000,
+            'related_sections-MIN_NUM_FORMS': 0,
+            'related_sections-TOTAL_FORMS': 0,
             'body-count': 1,
             'body-0-value': 'Hello',
             'body-0-deleted': False,

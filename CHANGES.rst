@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+3.2.0
+------
+
+- Added wagtail multimedia support
+- Allow articles to exist in multiple sections
+
 3.1.11
 ------
 

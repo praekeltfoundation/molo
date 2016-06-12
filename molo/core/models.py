@@ -1,5 +1,6 @@
-from django.utils import timezone
+from itertools import chain
 
+from django.utils import timezone
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -11,18 +12,18 @@ from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 
 from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.wagtailcore.models import Page
+from wagtail.wagtailcore.models import Page, Orderable
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, FieldRowPanel, StreamFieldPanel, PageChooserPanel,
-    MultiFieldPanel)
+    MultiFieldPanel, InlinePanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtailadmin.taggable import TagSearchable
 
-from molo.core.blocks import MarkDownBlock
+from molo.core.blocks import MarkDownBlock, MultimediaBlock
 from molo.core import constants
 from molo.core.utils import get_locale_code
 
@@ -339,8 +340,14 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
 
     def articles(self):
         main_language_page = self.get_main_language_page()
-        return ArticlePage.objects.live().child_of(main_language_page).filter(
-            languages__language__is_main_language=True)
+        return list(chain(
+            ArticlePage.objects.live().child_of(main_language_page).filter(
+                languages__language__is_main_language=True),
+            ArticlePage.objects.live().filter(
+                related_sections__section__slug=self.slug,
+                languages__language__is_main_language=True)
+        )
+        )
 
     def sections(self):
         main_language_page = self.get_main_language_page()
@@ -471,6 +478,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
+        ('media', MultimediaBlock()),
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
@@ -564,7 +572,8 @@ ArticlePage.content_panels = [
             FieldPanel('social_media_description'),
             ImageChooserPanel('social_media_image'),
         ],
-        heading="Social Media",)
+        heading="Social Media",),
+    InlinePanel('related_sections', label="Related Sections"),
 ]
 
 ArticlePage.promote_panels = [
@@ -573,6 +582,19 @@ ArticlePage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
+
+
+class ArticlePageRelatedSections(Orderable):
+    page = ParentalKey(ArticlePage, related_name='related_sections')
+    section = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Section that this page also belongs too')
+    )
+    panels = [PageChooserPanel('section', 'core.SectionPage')]
 
 
 class FooterIndexPage(Page):
