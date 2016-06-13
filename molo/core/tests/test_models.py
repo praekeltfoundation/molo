@@ -308,13 +308,13 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, 'español')
 
     def test_signal_on_page_delete_removes_translations(self):
-        page1a, page1b, page1c = self.mk_articles(self.main, 3)
-        page2a, page2b = self.mk_articles(self.main, 2)
+        section = self.mk_section(
+            self.section_index, title="Section", slug="section")
 
-        PageTranslation.objects.create(page=page1a, translated_page=page1b)
-        PageTranslation.objects.create(page=page1a, translated_page=page1c)
-        translation2ab = PageTranslation.objects.create(
-            page=page2a, translated_page=page2b)
+        page1a, page2a = self.mk_articles(section, 2)
+        self.mk_article_translation(page1a, self.french)
+        page2b = self.mk_article_translation(page2a, self.french)
+        translation2ab = PageTranslation.objects.get(translated_page=page2b)
 
         page1a.delete()
 
