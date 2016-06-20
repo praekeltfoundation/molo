@@ -31,7 +31,7 @@ def generate_slug(text, tail_number=0):
         text = 'no-title'
 
     # use django slugify filter to slugify
-    slug = cautious_slugify(text)
+    slug = cautious_slugify(text)[:255]
 
     values_list = Page.objects.filter(
         slug__startswith=slug

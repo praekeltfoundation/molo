@@ -1,4 +1,4 @@
-from .base import *
+from .base import *  # noqa
 
 
 # Disable debug mode
@@ -61,6 +61,6 @@ LOGIN_URL = '/accounts/login/'
 CAS_VERSION = '3'
 
 try:
-    from .local import *
+    from .local import *  # noqa
 except ImportError:
     pass

@@ -176,12 +176,10 @@ def load_child_articles_for_section(context, section, count=5):
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
     '''
-    page = section.get_main_language_page()
     locale = context.get('locale_code')
     p = context.get('p', 1)
 
-    qs = ArticlePage.objects.live().child_of(page).filter(
-        languages__language__is_main_language=True)
+    qs = section.articles()
 
     # Pagination
     paginator = Paginator(qs, count)

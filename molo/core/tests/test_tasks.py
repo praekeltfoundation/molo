@@ -1,4 +1,4 @@
-from datetime import *
+from datetime import datetime
 
 import pytest
 from django.test import TestCase
