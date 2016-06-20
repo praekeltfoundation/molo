@@ -1,4 +1,4 @@
-from {{cookiecutter.app_name}}.settings import *
+from {{cookiecutter.app_name}}.settings import *  # noqa
 
 DATABASES = {
     'default': {
