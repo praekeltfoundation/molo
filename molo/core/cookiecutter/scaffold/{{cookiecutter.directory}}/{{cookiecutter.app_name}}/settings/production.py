@@ -1,4 +1,4 @@
-from .base import *  # noqa ignore = F405
+from .base import *  # noqa
 
 
 # Disable debug mode
