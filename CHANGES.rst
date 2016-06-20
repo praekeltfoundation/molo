@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.2.2
+------
+
+- Handling import * error with noqa
+
 3.2.1
 ------
 
