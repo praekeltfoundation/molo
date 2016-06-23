@@ -1,6 +1,17 @@
 CHANGE LOG
 ==========
 
+3.2.2
+------
+
+- Handling import * error with noqa
+
+3.2.1
+------
+
+- Delete translated page when a page is deleted
+- Added extra lang info for languages that django doesn't support
+
 3.2.0
 ------
 

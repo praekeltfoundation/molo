@@ -6,7 +6,7 @@ from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from wagtailmodeladmin.options import(
+from wagtailmodeladmin.options import (
     ModelAdmin, wagtailmodeladmin_register)
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
