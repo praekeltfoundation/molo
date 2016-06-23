@@ -174,8 +174,11 @@ class TestImportContent(
 
         page = ArticlePage.objects.get(uuid=page_with_linked_page.uuid)
         linked_page = ArticlePage.objects.get(uuid=page_en.uuid)
-        self.assertEquals(page.body.stream_data[2],
-                          {u'type': u'page', u'value': linked_page.pk})
+
+        self.assertEquals(page.body.stream_data[1], {
+            'type': 'page',
+            'value': linked_page.pk
+        })
 
         # run import twice
         api.import_content([repo1], [
