@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.2.3
+------
+
+- Add session key middleware for each user to use with GTM when javascript is disabled
+
 3.2.2
 ------
 
