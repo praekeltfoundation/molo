@@ -1,0 +1,39 @@
+{% load core_import_tags %}
+Hi {{name}},
+
+{% if errors and warnings %}
+The content validation for {{host}} has failed.
+Please see errors and warnings below:
+{% elif errors %}
+The content validation for {{host}} has failed.
+Please see errors below:
+{% elif warnings %}
+The content validation for {{host}} has passed, but there are some warnings.
+Importing will still go ahead.
+
+You will get an email notification when importing is complete.
+
+Please see warnings below:
+{% else %}
+The content import for {{host}} is complete.
+
+You can now visit the site to see the content.
+{% endif %}
+{% if errors %}
+Errors
+--
+
+{% for error in errors %}
+* {{error|format_import_error}}
+{% endfor %}
+{% endif %}
+{% if warnings %}
+Warnings
+--
+
+{% for warn in warnings %}
+* {{warn|format_import_error}}
+{% endfor %}
+{% endif %}
+Regards,
+Molo Team

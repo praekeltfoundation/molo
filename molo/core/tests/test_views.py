@@ -1,6 +1,7 @@
 import json
 import pytest
 import responses
+from django.core.files.base import ContentFile
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -11,8 +12,10 @@ from molo.core.models import SiteLanguage, FooterPage, SiteSettings
 from molo.core.known_plugins import known_plugins
 
 from mock import patch, Mock
+from six import b
 
 from wagtail.wagtailcore.models import Site
+from wagtailmedia.models import Media
 
 
 @pytest.mark.django_db
@@ -306,21 +309,21 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/locale/fr/')
 
         response = self.client.get('/sections/your-mind/')
-        self.assertRedirects(response, '/sections/your-mind-in-french/')
+        self.assertRedirects(response, '/sections/your-mind-in-french/?')
 
         response = self.client.get('/sections/your-mind/test-page-0/')
         self.assertRedirects(response,
-                             '/sections/your-mind/test-page-0-in-french/')
+                             '/sections/your-mind/test-page-0-in-french/?')
 
         # redirect from translation to main language should also work
         response = self.client.get('/locale/en/')
 
         response = self.client.get('/sections/your-mind-in-french/')
-        self.assertRedirects(response, '/sections/your-mind/')
+        self.assertRedirects(response, '/sections/your-mind/?')
 
         response = self.client.get('/sections/your-mind/'
                                    'test-page-0-in-french/')
-        self.assertRedirects(response, '/sections/your-mind/test-page-0/')
+        self.assertRedirects(response, '/sections/your-mind/test-page-0/?')
 
         # unpublished translation will not result in a redirect
         self.yourmind_fr.unpublish()
@@ -381,6 +384,23 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.assertContains(response, 'Not installed')
         get_pypi_version()
 
+    def test_ga_session_for_noscript_middleware(self):
+        # GA session doesn't exist until the middleware sets it
+        self.assertFalse('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
+
+        self.client.get('/')
+        self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
+
+        current_session_key = self.client.session[
+            'MOLO_GA_SESSION_FOR_NOSCRIPT']
+
+        self.client.get('/')
+
+        # session key should be the same after subsequent requests
+        self.assertEquals(
+            self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'],
+            current_session_key)
+
     def test_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
@@ -395,6 +415,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'www.googletagmanager.com')
         self.assertContains(response, 'GTM-1234567')
 
+        self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
+        self.assertContains(
+            response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
+
     def test_admin_doesnt_translate_when_frontend_locale_changed(self):
         self.client.get('/locale/af/')
 
@@ -407,3 +431,154 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/django-admin/')
         self.assertNotContains(response, 'Voeg')
+
+    def test_pagination_for_articles_in_sections(self):
+        self.mk_articles(self.yourmind, count=15)
+
+        response = self.client.get('/sections/your-mind/')
+        self.assertContains(response, 'Page 1 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertNotContains(response, '&larr;')
+
+        response = self.client.get('/sections/your-mind/?p=2')
+
+        self.assertContains(response, 'Page 2 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+        response = self.client.get('/sections/your-mind/?p=3')
+
+        self.assertContains(response, 'Page 3 of 3')
+        self.assertNotContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+    def test_pagination_for_translated_articles_in_sections(self):
+        en_articles = self.mk_articles(self.yourmind, count=12)
+        self.mk_articles(self.yourmind, count=3)
+
+        for p in en_articles:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/your-mind-in-french/')
+        self.assertContains(response, 'Page 1 of 3')
+        self.assertContains(response, 'Test page 0 in french')
+
+        response = self.client.get('/sections/your-mind-in-french/?p=2')
+        self.assertContains(response, 'Page 2 of 3')
+        self.assertContains(response, 'Test page 7 in french')
+
+        response = self.client.get(
+            '/locale/en/?next=/sections/your-mind-in-french/?p=3', follow=True)
+
+        self.assertContains(response, 'Page 3 of 3')
+        self.assertNotContains(response, 'Test page 11 in french')
+        self.assertContains(response, 'Test page 11')
+
+    def test_pagination_for_articles_in_sub_sections(self):
+        self.mk_articles(self.yourmind_sub, count=15)
+
+        response = self.client.get('/sections/your-mind/')
+        self.assertNotContains(response, 'Page 1 of 3')
+
+        response = self.client.get('/sections/your-mind/your-mind-subsection/')
+        self.assertContains(response, 'Page 1 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertNotContains(response, '&larr;')
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/?p=2')
+
+        self.assertContains(response, 'Page 2 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/?p=3')
+
+        self.assertContains(response, 'Page 3 of 3')
+        self.assertNotContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+
+class MultimediaViewTest(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+
+        self.article_page = self.mk_article(self.yourmind,
+                                            title='Test Article')
+
+    def add_media(self, media_type):
+        fake_file = ContentFile(b("media"))
+        fake_file.name = 'media.mp3'
+        self.media = Media.objects.create(title="Test Media",
+                                          file=fake_file,
+                                          duration=100,
+                                          type=media_type)
+
+        self.article_page.body = json.dumps([{
+            'type': 'media',
+            'value': self.media.id,
+        }])
+
+        self.article_page.save_revision().publish()
+
+    def test_audio_media(self):
+        self.add_media('audio')
+        response = self.client.get('/sections/your-mind/test-article/')
+        self.assertContains(
+            response,
+            '''<div><audio controls><source src="{0}"
+type="audio/mpeg">Click here to download
+<a href="{0}">{1}</a></audio></div>'''
+            .format(self.media.file.url, self.media.title)
+        )
+
+    def test_video_media(self):
+        self.add_media('video')
+        response = self.client.get('/sections/your-mind/test-article/')
+        self.assertContains(
+            response,
+            '''<div><video width="320" height="240" controls>
+<source src="{0}" type="video/mp4">Click here to download
+<a href="{0}">{1}</a></video></div>'''
+            .format(self.media.file.url, self.media.title)
+        )
+
+
+class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+        self.section_1 = self.mk_section(
+            self.section_index, title='Section 1')
+
+        self.section_2 = self.mk_section(
+            self.section_index, title='Section 2')
+
+        self.article_1 = self.mk_article(self.section_1,
+                                         title='Article 1')
+
+        self.article_1.related_sections.create(
+            page=self.article_1,
+            section=self.section_2
+        )
+
+        self.article_1.save_revision().publish()
+
+    def test_article_section(self):
+        response = self.client.get('/sections/section-1/')
+        self.assertContains(response, '/sections/section-1/article-1/')
+
+    def test_article_related_section(self):
+        response = self.client.get('/sections/section-2/')
+        self.assertContains(response, '/sections/section-1/article-1/')

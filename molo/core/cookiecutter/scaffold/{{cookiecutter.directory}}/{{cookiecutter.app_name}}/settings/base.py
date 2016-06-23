@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for base {{cookiecutter.app_name}}.
 
@@ -10,7 +11,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 from os.path import abspath, dirname, join
 from os import environ
-from django.conf import global_settings
+from django.conf import global_settings, locale
 from django.utils.translation import ugettext_lazy as _
 import dj_database_url
 import djcelery
@@ -29,8 +30,6 @@ SECRET_KEY = "{{cookiecutter.secret_key}}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -71,6 +70,7 @@ INSTALLED_APPS = [
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
     'wagtailmodeladmin',
+    'wagtailmedia',
     'wagtail.contrib.settings',
 
     'mptt',
@@ -96,7 +96,9 @@ MIDDLEWARE_CLASSES = [
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
     'wagtailmodeladmin.middleware.ModelAdminMiddleware',
+
     'molo.core.middleware.AdminLocaleMiddleware',
+    'molo.core.middleware.NoScriptGASessionMiddleware',
 ]
 
 TEMPLATES = [
@@ -179,6 +181,60 @@ LANGUAGES = global_settings.LANGUAGES + [
     ('nr', _('Ndebele')),
 ]
 
+EXTRA_LANG_INFO = {
+    'zu': {
+        'bidi': False,
+        'code': 'zu',
+        'name': 'Zulu',
+        'name_local': 'isiZulu',
+    },
+    'xh': {
+        'bidi': False,
+        'code': 'xh',
+        'name': 'Xhosa',
+        'name_local': 'isiXhosa',
+    },
+    'st': {
+        'bidi': False,
+        'code': 'st',
+        'name': 'Sotho',
+        'name_local': 'seSotho',
+    },
+    've': {
+        'bidi': False,
+        'code': 've',
+        'name': 'Venda',
+        'name_local': u'tshiVenḓa',
+    },
+    'tn': {
+        'bidi': False,
+        'code': 'tn',
+        'name': 'Tswana',
+        'name_local': 'Setswana',
+    },
+    'ts': {
+        'bidi': False,
+        'code': 'ts',
+        'name': 'Tsonga',
+        'name_local': 'xiTsonga',
+    },
+    'ss': {
+        'bidi': False,
+        'code': 'ss',
+        'name': 'Swati',
+        'name_local': 'siSwati',
+    },
+    'nr': {
+        'bidi': False,
+        'code': 'nr',
+        'name': 'Ndebele',
+        'name_local': 'isiNdebele',
+    }
+}
+
+locale.LANG_INFO = dict(locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
+
+
 LOCALE_PATHS = [
     join(PROJECT_ROOT, "locale"),
 ]
@@ -227,6 +283,8 @@ WAGTAIL_SITE_NAME = "base"
 #     },
 # }
 
+SITE_NAME = environ.get('SITE_NAME', "{{cookiecutter.app_name}}")
+WAGTAIL_SITE_NAME = SITE_NAME
 
 # Whether to use face/feature detection to improve image
 # cropping - requires OpenCV

@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import template
 from django.utils.safestring import mark_safe
 from markdown import markdown
@@ -7,22 +8,28 @@ from molo.core.models import Page, SiteLanguage, ArticlePage, SectionPage
 register = template.Library()
 
 
+@register.assignment_tag(takes_context=True)
+def load_sections(context):
+    request = context['request']
+    locale_code = context.get('locale_code')
+
+    if request.site:
+        qs = request.site.root_page.specific.sections()
+    else:
+        qs = []
+
+    return [a.get_translation_for(locale_code) or a for a in qs]
+
+
 @register.inclusion_tag(
     'core/tags/section_listing_homepage.html',
     takes_context=True
 )
 def section_listing_homepage(context):
-    request = context['request']
     locale_code = context.get('locale_code')
 
-    if request.site:
-        sections = request.site.root_page.specific.sections()
-    else:
-        sections = []
-
     return {
-        'sections': [
-            a.get_translation_for(locale_code) or a for a in sections],
+        'sections': load_sections(context),
         'request': context['request'],
         'locale_code': locale_code,
     }
@@ -169,16 +176,26 @@ def load_child_articles_for_section(context, section, count=5):
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
     '''
-    page = section.get_main_language_page()
     locale = context.get('locale_code')
+    p = context.get('p', 1)
 
-    qs = ArticlePage.objects.live().child_of(page).filter(
-        languages__language__is_main_language=True)
+    qs = section.articles()
+
+    # Pagination
+    paginator = Paginator(qs, count)
+    try:
+        articles = paginator.page(p)
+    except PageNotAnInteger:
+        articles = paginator.page(1)
+    except EmptyPage:
+        articles = paginator.page(paginator.num_pages)
 
     if not locale:
-        return qs[:count]
+        return articles
 
-    return [a.get_translation_for(locale) or a for a in qs[:count]]
+    context.update({'articles_paginated': articles})
+
+    return [a.get_translation_for(locale) or a for a in articles]
 
 
 @register.assignment_tag(takes_context=True)

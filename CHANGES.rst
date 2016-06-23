@@ -1,9 +1,58 @@
 CHANGE LOG
 ==========
 
+3.2.3
+------
+
+- Add session key middleware for each user to use with GTM when javascript is disabled
+
+3.2.2
+------
+
+- Handling import * error with noqa
+
+3.2.1
+------
+
+- Delete translated page when a page is deleted
+- Added extra lang info for languages that django doesn't support
+
+3.2.0
+------
+
+- Added wagtail multimedia support
+- Allow articles to exist in multiple sections
+
+3.1.11
+------
+
+- Fixed bugs with UC content importing, Arabic slugs and path issue
+
+3.1.10
+------
+- Fixed another small bug with UC content validation
+
+3.1.9
+------
+- Fixed a bug with UC content validation
+
+3.1.8
+------
+- Limit import content to users belonging to `Universal Core Importers` group
+
+3.1.7
+------
+- Content validation now happens in a celery task
+
+3.1.6
+------
+- Added pagination for articles in section
+- Show the active language and display the local name
+- Added load_sections template tag
+
 3.1.5
 ------
-- Importing validation errors to be shown in the UI for celery taks
+- Importing validation errors to be shown in the UI for celery task
 
 3.1.4
 ------

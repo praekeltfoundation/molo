@@ -1,3 +1,4 @@
+# coding=utf-8
 import pytest
 import datetime as dt
 from datetime import datetime, timedelta
@@ -6,7 +7,7 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from molo.core.models import ArticlePage, SiteLanguage
+from molo.core.models import ArticlePage, SiteLanguage, PageTranslation
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_descendant_articles_for_section)
@@ -184,6 +185,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         post_data = {
             'title': 'this is a test article',
             'slug': 'this-is-a-test-article',
+            'related_sections-INITIAL_FORMS': 0,
+            'related_sections-MAX_NUM_FORMS': 1000,
+            'related_sections-MIN_NUM_FORMS': 0,
+            'related_sections-TOTAL_FORMS': 0,
             'body-count': 1,
             'body-0-value': 'Hello',
             'body-0-deleted': False,
@@ -221,6 +226,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         post_data = {
             'title': 'this is a test article',
             'slug': 'this-is-a-test-article',
+            'related_sections-INITIAL_FORMS': 0,
+            'related_sections-MAX_NUM_FORMS': 1000,
+            'related_sections-MIN_NUM_FORMS': 0,
+            'related_sections-TOTAL_FORMS': 0,
             'body-count': 1,
             'body-0-value': 'Hello',
             'body-0-deleted': False,
@@ -294,7 +303,25 @@ class TestModels(TestCase, MoloTestCaseMixin):
             locale='sp', is_active=False
         )
         response = self.client.get('/')
-
         self.assertContains(response, 'English')
-        self.assertContains(response, 'French')
-        self.assertNotContains(response, 'Spanish')
+        self.assertContains(response, 'français')
+        self.assertNotContains(response, 'español')
+
+    def test_signal_on_page_delete_removes_translations(self):
+        section = self.mk_section(
+            self.section_index, title="Section", slug="section")
+
+        page1a, page2a = self.mk_articles(section, 2)
+        self.mk_article_translation(page1a, self.french)
+        page2b = self.mk_article_translation(page2a, self.french)
+        translation2ab = PageTranslation.objects.get(translated_page=page2b)
+
+        page1a.delete()
+
+        self.assertEqual(
+            list(ArticlePage.objects.all().values('id')),
+            [{'id': page2a.id}, {'id': page2b.id}])
+
+        self.assertEqual(
+            list(PageTranslation.objects.all().values('id')),
+            [{'id': translation2ab.id}])

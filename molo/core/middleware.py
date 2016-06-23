@@ -1,3 +1,4 @@
+import uuid
 
 from django.http import HttpResponseForbidden
 from django.views.defaults import permission_denied
@@ -51,7 +52,14 @@ class Custom403Middleware(object):
 class AdminLocaleMiddleware(object):
     """Ensures that the admin locale doesn't change with user selection"""
     def process_request(self, request):
-
         if request.path.startswith('/admin/') or \
            request.path.startswith('/django-admin/'):
             activate(settings.ADMIN_LANGUAGE_CODE)
+
+
+class NoScriptGASessionMiddleware(object):
+    """Store a unique session key for use with GTM"""
+    def process_request(self, request):
+        if 'MOLO_GA_SESSION_FOR_NOSCRIPT' not in request.session:
+            request.session[
+                'MOLO_GA_SESSION_FOR_NOSCRIPT'] = uuid.uuid4().hex

@@ -8,7 +8,7 @@
     "build": "NODE_PATH=. NODE_ENV=production gulp build",
     "build-dev": "NODE_PATH=. NODE_ENV=development gulp build",
     "watch": "NODE_PATH=. NODE_ENV=development gulp watch",
-    "ci": "gulp ci"
+    "ci": "NODE_PATH=. gulp ci"
   },
   "repository": {
     "type": "git",

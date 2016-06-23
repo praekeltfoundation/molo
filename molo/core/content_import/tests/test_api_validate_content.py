@@ -108,7 +108,7 @@ class TestValidateContent(
                 'type': 'language_not_in_repo',
                 'details': {
                     'repo': 'repo1',
-                    'locale': 'spa_ES'
+                    'lang': 'Spanish (Spain)'
                 }
             }]
         })

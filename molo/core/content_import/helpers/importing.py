@@ -2,6 +2,8 @@ import json
 
 from babel import Locale
 
+from django.db.models.base import ValidationError
+
 from unicore.content.models import Category, Page
 
 from molo.core.models import (
@@ -10,6 +12,7 @@ from molo.core.models import (
 from molo.core.content_import.helpers.get_image import get_image_file
 from molo.core.content_import.helpers.locales import filter_locales_in_repo
 from molo.core.content_import.utils import hash
+from molo.core.utils import generate_slug
 
 
 def import_repo(repo, main_locale, children, should_nest=False):
@@ -18,10 +21,9 @@ def import_repo(repo, main_locale, children, should_nest=False):
     for locale in [main_locale] + children:
         lang = create_language(repo, locale, locale == main_locale)
         index = get_or_create_index(repo, lang, should_nest)
-        stray_index = get_or_create_stray_index(repo, lang, should_nest)
+        stray_index = get_or_create_stray_index(repo, lang, False)
         import_locale_content(repo, lang, index, stray_index)
-
-    update_pages_with_linked_page_field(repo)
+        update_pages_with_linked_page_field(repo, locale)
 
 
 def get_models(repo, cls, **kw):
@@ -152,7 +154,15 @@ def get_or_create(cls, parent, uuid, title):
         return cls.objects.get(uuid=uuid)
 
     instance = cls(uuid=uuid, title=title)
-    parent.add_child(instance=instance)
+
+    try:
+        parent.add_child(instance=instance)
+    except ValidationError:
+        # non-ascii titles need slugs to be manually generated
+        instance.slug = generate_slug(title)
+        parent.add_child(instance=instance)
+
+    instance.save_revision().publish()
     return instance
 
 
@@ -213,11 +223,12 @@ def import_page_content(repo, p, lang, stray_index):
                 ArticlePage.objects.all().values('uuid'))
             return None
 
-    page.subtitle = p.subtitle
-    page.body = json.dumps([
-        {'type': 'paragraph', 'value': p.description},
-        {'type': 'paragraph', 'value': p.content}
-    ])
+    page.subtitle = p.description
+    page.body = json.dumps([{
+        'type': 'paragraph',
+        'value': p.content
+    }])
+
     is_featured = p.featured if p.featured else False
     is_featured_in_category = p.featured_in_category \
         if p.featured_in_category else False
@@ -234,8 +245,8 @@ def import_page_content(repo, p, lang, stray_index):
     return page
 
 
-def update_pages_with_linked_page_field(repo):
-    for p in repo.workspace.S(Page).all()[:10000]:
+def update_pages_with_linked_page_field(repo, locale):
+    for p in repo.workspace.S(Page).filter(language=locale)[:10000]:
         if p.linked_pages:
             for lp in p.linked_pages:
                 try:

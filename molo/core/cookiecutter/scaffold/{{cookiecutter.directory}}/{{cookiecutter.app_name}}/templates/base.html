@@ -78,7 +78,7 @@
 
         {% if settings.core.SiteSettings.ga_tag_manager %}
         <!-- Google Tag Manager -->
-        <noscript><iframe src="//www.googletagmanager.com/ns.html?id={{settings.core.SiteSettings.ga_tag_manager}}"
+        <noscript><iframe src="//www.googletagmanager.com/ns.html?id={{settings.core.SiteSettings.ga_tag_manager}}&client_session_id={{request.session.MOLO_GA_SESSION_FOR_NOSCRIPT}}"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -98,8 +98,9 @@
           {% endif %}
 
           {% trans "Site Language:" %}
+          {% get_current_language as LANGUAGE_CODE %}
           {% for language in languages %}
-            <a href="{% url 'locale_set' language.locale %}?next={{request.path}}">{{language}} </a>
+            <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" {% if LANGUAGE_CODE == language.locale %} class="active" {% endif %}>{{language.locale|language_name_local}}</a>
           {% endfor %}
         {% endif %}
         </div>

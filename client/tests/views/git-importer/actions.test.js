@@ -80,10 +80,9 @@ describe(`actions`, () => {
   });
 
   describe(`importContent`, done => {
-    it(`should dispatch CHECKING, STARTING and STARTED`, () => {
+    it(`should dispatch BUSY and STARTED`, () => {
       let api = conj(fixtures('api'), {
-        importContent: resolvesTo(null),
-        checkContent: resolvesTo({errors: []})
+        importContent: resolvesTo(null)
       });
 
       let {
@@ -93,47 +92,15 @@ describe(`actions`, () => {
 
       return captureDispatches(actions.importContent(repos, languages, api))
         .then(action => expect(action).to.deep.equal([{
-          type: 'IMPORT_CONTENT/CHECKING'
-        }, {
-          type: 'IMPORT_CONTENT/STARTING'
+          type: 'IMPORT_CONTENT/BUSY'
         }, {
           type: 'IMPORT_CONTENT/STARTED'
-        }]));
-    });
-
-    it(`should dispatch INVALID on validation errors`, () => {
-      let api = conj(fixtures('api'), {
-        importContent: () => Promise.reject(new Error('wrong code path')),
-        checkContent: resolvesTo({
-          errors: [{
-            type: 'foo',
-            details: {bar: 'baz'}
-          }]
-        })
-      });
-
-      let {
-        repos,
-        languages
-      } = fixtures('state');
-
-      return captureDispatches(actions.importContent(repos, languages, api))
-        .then(action => expect(action).to.deep.equal([{
-          type: 'IMPORT_CONTENT/CHECKING'
-        }, {
-          type: 'IMPORT_CONTENT/INVALID',
-          payload: {
-            errors: [{
-              type: 'foo',
-              details: {bar: 'baz'}
-            }]
-          }
         }]));
     });
   });
 
   describe(`checkContent`, done => {
-    it(`should return errors that occured during the check`, () => {
+    it(`should dispatch BUSY and STARTED`, () => {
       let api = conj(fixtures('api'), {
         checkContent: resolvesTo({
           errors: [{
@@ -152,13 +119,7 @@ describe(`actions`, () => {
         .then(action => expect(action).to.deep.equal([{
           type: 'CHECK_CONTENT/BUSY'
         }, {
-          type: 'CHECK_CONTENT/DONE',
-          payload: {
-            errors: [{
-              type: 'foo',
-              details: {bar: 'baz'}
-            }]
-          }
+          type: 'CHECK_CONTENT/STARTED'
         }]));
     });
   });
