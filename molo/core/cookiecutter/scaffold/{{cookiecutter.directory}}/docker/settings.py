@@ -17,8 +17,6 @@ PROJECT_ROOT = (
 RAVEN_DSN = environ.get('RAVEN_DSN')
 RAVEN_CONFIG = {'dsn': RAVEN_DSN} if RAVEN_DSN else {}
 
-UNICORE_DISTRIBUTE_API = environ.get('UNICORE_DISTRIBUTE_API') or ''
-
 COMPRESS_OFFLINE = True
 
 DATABASES = {
@@ -33,14 +31,4 @@ LOCALE_PATHS = (
     join(PROJECT_ROOT, "locale"),
 )
 
-# SMTP Settings
-EMAIL_HOST = environ.get('EMAIL_HOST', 'localhost')
-EMAIL_PORT = environ.get('EMAIL_PORT', 25)
-EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD', '')
-
 ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
-
-FROM_EMAIL = environ.get('FROM_EMAIL', "support@moloproject.org")
-CONTENT_IMPORT_SUBJECT = environ.get(
-    'CONTENT_IMPORT_SUBJECT', 'Molo Content Import')
