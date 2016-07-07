@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 MAINTAINER {{cookiecutter.full_name}} {{cookiecutter.email}}
 RUN apt-get update && apt-get -y --force-yes install libjpeg-dev zlib1g-dev libxslt1-dev libpq-dev nginx redis-server supervisor python-dev python-pip
-RUN apt-get install libffi-dev
+RUN apt-get -y install libffi-dev gettext
 
 RUN pip install --upgrade pip
 
