@@ -170,7 +170,7 @@ def load_descendant_articles_for_section(
 
 
 @register.assignment_tag(takes_context=True)
-def load_child_articles_for_section(context, section, count=5):
+def load_child_articles_for_section(context, section, count=None):
     '''
     Returns all child articles
     If the `locale_code` in the context is not the main language, it will
@@ -181,6 +181,9 @@ def load_child_articles_for_section(context, section, count=5):
 
     qs = section.articles()
 
+    print count
+    if not count:
+        count = 1
     # Pagination
     paginator = Paginator(qs, count)
 
