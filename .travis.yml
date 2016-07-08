@@ -32,6 +32,7 @@ install:
 script:
   - flake8 molo
   - molo scaffold testapp
+  - cp molo/core/test_templates/section_page.html testapp/testapp/templates/core/section_page.html
   - flake8 testapp
   - pip install -e testapp
   - bash -c $TEST_RUNNER
