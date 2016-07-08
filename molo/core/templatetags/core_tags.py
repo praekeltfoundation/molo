@@ -178,10 +178,8 @@ def load_child_articles_for_section(context, section, count=None):
     '''
     locale = context.get('locale_code')
     p = context.get('p', 1)
-
     qs = section.articles()
 
-    print count
     if not count:
         count = 1
     # Pagination
