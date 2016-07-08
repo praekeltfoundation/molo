@@ -170,7 +170,7 @@ def load_descendant_articles_for_section(
 
 
 @register.assignment_tag(takes_context=True)
-def load_child_articles_for_section(context, section, count=1):
+def load_child_articles_for_section(context, section, count=5):
     '''
     Returns all child articles
     If the `locale_code` in the context is not the main language, it will
