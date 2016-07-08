@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.2.4
+------
+
+- Default count for sections set to 0
+
 3.2.3
 ------
 

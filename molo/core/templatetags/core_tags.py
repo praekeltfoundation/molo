@@ -178,11 +178,11 @@ def load_child_articles_for_section(context, section, count=5):
     '''
     locale = context.get('locale_code')
     p = context.get('p', 1)
-
     qs = section.articles()
 
     # Pagination
     paginator = Paginator(qs, count)
+
     try:
         articles = paginator.page(p)
     except PageNotAnInteger:
@@ -199,7 +199,7 @@ def load_child_articles_for_section(context, section, count=5):
 
 
 @register.assignment_tag(takes_context=True)
-def load_child_sections_for_section(context, section, count=5):
+def load_child_sections_for_section(context, section, count=None):
     '''
     Returns all child articles
     If the `locale_code` in the context is not the main language, it will
