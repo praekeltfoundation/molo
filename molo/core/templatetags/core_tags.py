@@ -213,7 +213,6 @@ def load_child_sections_for_section(context, section, count=None):
 
     if not locale:
         return qs
-    print count
     return [a.get_translation_for(locale) or a for a in qs]
 
 
