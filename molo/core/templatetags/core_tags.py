@@ -142,7 +142,7 @@ def render_translations(context, page):
 @register.assignment_tag(takes_context=True)
 def load_descendant_articles_for_section(
         context, section, featured_in_homepage=None, featured_in_section=None,
-        featured_in_latest=None, count=5):
+        featured_in_latest=None, count=None):
     '''
     Returns all descendant articles (filtered using the parameters)
     If the `locale_code` in the context is not the main language, it will
@@ -170,7 +170,7 @@ def load_descendant_articles_for_section(
 
 
 @register.assignment_tag(takes_context=True)
-def load_child_articles_for_section(context, section, count=5):
+def load_child_articles_for_section(context, section, count=None):
     '''
     Returns all child articles
     If the `locale_code` in the context is not the main language, it will
@@ -212,8 +212,9 @@ def load_child_sections_for_section(context, section, count=None):
         languages__language__is_main_language=True)
 
     if not locale:
-        return qs
-    return [a.get_translation_for(locale) or a for a in qs]
+        return qs[:count]
+
+    return [a.get_translation_for(locale) or a for a in qs[:count]]
 
 
 @register.filter
