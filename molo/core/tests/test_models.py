@@ -105,16 +105,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             new_section3.get_effective_image(), new_section.image)
 
     def test_number_of_child_sections(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
-        new_section = self.mk_section(
-            self.section_index, title="New Section", slug="new-section")
-        for i in range(12):
-            self.mk_section(
-                new_section, title=("section" + str(i)), slug=i)
-        response = self.client.get('/sections/new-section/')
-        self.assertContains(response, 'section11')
+        new_section = self.mk_section(self.section_index)
+        self.mk_sections(new_section, count=12)
+        response = self.client.get('/sections/test-section-0/')
+        self.assertContains(response, 'Test Section 11')
 
     def test_parent_section(self):
         new_section = self.mk_section(
