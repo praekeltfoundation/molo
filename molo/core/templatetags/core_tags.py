@@ -181,8 +181,11 @@ def load_child_articles_for_section(context, section, count=None):
 
     qs = section.articles()
 
+    if not count:
+        count = 1
     # Pagination
     paginator = Paginator(qs, count)
+
     try:
         articles = paginator.page(p)
     except PageNotAnInteger:
