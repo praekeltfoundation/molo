@@ -622,6 +622,11 @@ def on_page_delete(sender, instance, *a, **kw):
 
 @receiver(post_delete, sender=Page)
 def on_post_page_delete(sender, instance, *a, **kw):
+    # When we try to delete a translated page in our pre_delete, wagtail
+    # pre_delete function would want to get the same page too, but since we
+    # have already deleted it, wagtail would not be able to find it, therefore
+    # we have to get the translated page in our pre_delete and use a global
+    # variable to store it and pass it into the post_delete and remove it here
     for p in pages_to_delete:
         p.delete()
 
