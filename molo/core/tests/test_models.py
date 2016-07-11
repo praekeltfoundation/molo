@@ -24,7 +24,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.mk_main()
         self.english = SiteLanguage.objects.create(locale='en')
         self.french = SiteLanguage.objects.create(locale='fr')
-        self.spanish = SiteLanguage.objects.create(locale='es')
 
         # Create an image for running tests on
         self.image = Image.objects.create(
@@ -310,17 +309,19 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, 'español')
 
     def test_signal_on_page_delete_removes_translations(self):
+        spanish = SiteLanguage.objects.create(locale='es')
+
         section = self.mk_section(
             self.section_index, title="Section", slug="section")
         self.mk_section_translation(section, self.french)
-        self.mk_section_translation(section, self.spanish)
+        self.mk_section_translation(section, spanish)
 
         section_sub1 = self.mk_section(
             section, title='Section subsection')
         self.mk_section_translation(section_sub1, self.french)
         p1, p2 = self.mk_articles(section_sub1, 2)
         self.mk_article_translation(p1, self.french)
-        self.mk_article_translation(p1, self.spanish)
+        self.mk_article_translation(p1, spanish)
 
         section_sub2 = self.mk_section(
             section, title='Section subsection')
@@ -335,7 +336,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         p7, p8, p9 = self.mk_articles(self.yourmind_sub, 3)
         self.mk_article_translation(p7, self.french)
-        self.mk_article_translation(p7, self.spanish)
+        self.mk_article_translation(p7, spanish)
         self.mk_article_translation(p8, self.french)
         sub_sec = self.mk_section(self.yourmind_sub, title='Sub sec')
 
