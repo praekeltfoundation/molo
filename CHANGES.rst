@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.2.6
+-----
+
+- Delete the translated page when a page is deleted
+
 3.2.5
 -----
 
