@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.2.5
+-----
+
+- Return Marathon app & version information in the health checks.
+
 3.2.4
 ------
 
