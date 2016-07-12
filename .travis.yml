@@ -10,9 +10,8 @@ matrix:
   include:
     - python: pypy
       env: COVERAGE=false TEST_RUNNER="py.test" PYPY_VERSION="5.3.1"
-    - node_js: "5.6.0"
-      python: "2.7"  # no python version confuses travis
-      env: COVERAGE=false NODE=1 TEST_RUNNER="cd client; npm run ci"
+    - python: "2.7"
+      env: COVERAGE=false TEST_RUNNER="cd client; npm run ci" NODE_VERSION="5.6.0"
 cache:
   - pip
   - directories:
@@ -23,12 +22,18 @@ before_install:
         wget https://github.com/praekeltfoundation/travis-pypy/releases/download/0.1.0/setup-pypy.sh
         source setup-pypy.sh
       fi
+  - |
+      if [[ -n "$NODE_VERSION" ]]; then
+        wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh | bash
+        source ~/.nvm/nvm.sh
+      fi
+
 install:
   - pip install --upgrade pip
   - pip install -e .
   - pip install -r requirements-dev.txt
   - if [[ "$COVERAGE" == "true" ]]; then pip install coveralls; fi
-  - '[[ -z $NODE ]] || (cd client; travis_retry npm install)'
+  - '[[ -z $NODE_VERSION ]] || (cd client; travis_retry npm install)'
 script:
   - flake8 molo
   - molo scaffold testapp
