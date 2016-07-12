@@ -22,10 +22,10 @@ cache:
   - pip
 install:
   - pip install --upgrade pip
-  - pip install coveralls
   - pip install "Django >=1.8,<1.9"
-  - pip install -r requirements-dev.txt
   - pip install -e .
+  - pip install -r requirements-dev.txt
+  - pip install coveralls
   - '[[ -z $NODE ]] || (cd client; travis_retry npm install)'
 script:
   - flake8 molo
