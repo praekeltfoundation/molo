@@ -4,14 +4,14 @@
 {% if articles %}
 <div class="articles nav">
   <h2 class="list-header">{% trans "Latest" %}</h2>
-  {% for page in articles %}
+  {% for article in articles %}
   <ul class="list-block">
     <li>
-      {% if page.image %}
-      <a href="{% pageurl page %}">{% image page.image width-60 %}</a>
+      {% if article.image %}
+      <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
       {% endif %}
-      <h3><a href="{% pageurl page %}">{{page.title}}</a></h3>
-      <p>{{page.subtitle}}</p>
+      <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+      <p>{{article.subtitle}}</p>
     </li>
   </ul>
   {% endfor %}

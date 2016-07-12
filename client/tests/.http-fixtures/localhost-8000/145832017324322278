@@ -1,0 +1,14 @@
+POST /import/repos/unicore-cms-content-ffl-sn-prod/import/
+accept: application/json, text/plain, */*
+x-csrftoken: ZC4jl7ZzhT3ufnJsEqlCwZJ5mCowUeJh
+content-type: application/json;charset=utf-8
+body: {\"locales\":[{\"locale\":\"fre_FR\",\"is_main\":true},{\"locale\":\"eng_GB\",\"is_main\":false}]}
+
+HTTP/1.0 200 OK
+date: Fri, 18 Mar 2016 16:56:13 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language, Cookie
+x-frame-options: SAMEORIGIN
+content-language: en-gb
+allow: POST, OPTIONS
+

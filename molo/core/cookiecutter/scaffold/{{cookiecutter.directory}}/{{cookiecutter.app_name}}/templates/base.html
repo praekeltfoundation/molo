@@ -1,28 +1,38 @@
 {% raw %}
-{% load wagtailcore_tags compress static wagtailuserbar core_tags %}
+{% load wagtailcore_tags compress static wagtailuserbar core_tags i18n %}
+{% load wagtailsettings_tags wagtailimages_tags %}
+{% get_settings %}
+
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width initial-scale=1">
-        <title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %}</title>
-        <meta name="description" content="" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %}</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="{% if self.social_media_title %}{{ self.social_media_title }}{% elif self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}"/>
+  <meta name="twitter:description" content="{% if self.social_media_description %}{{ self.social_media_description }}{% else %}{{ self.subtitle }}{% endif %}"/>
+  {% image self.social_media_image width-300 as tmp_photo %}
+  <meta name="twitter:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+  <meta property="og:title" content= "{% if self.social_media_title %}{{ self.social_media_title }}{% elif self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}" />
+  <meta property="og:description" content="{% if self.social_media_description %}{{ self.social_media_description }}{% else %}{{ self.subtitle }}{% endif %}"/>
+  {% image self.social_media_image width-300 as tmp_photo %}
+  <meta property="og:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+  <meta property="og:image:url" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        {% compress css %}
+  {% compress css %}
+      <link rel="stylesheet" type="text/x-scss" href="{% static 'css/style.scss' %}">
+  {% endcompress %}
 
-            <link rel="stylesheet" type="text/x-scss" href="{% static 'css/style.scss' %}">
-            <link rel="stylesheet" type="text/x-scss" media="screen and (min-width: 20em)" href="{% static 'css/enhanced.scss' %}">
-        {% endcompress %}
-
-        {% block extra_css %}
-
-        {% endblock %}
+  {% block extra_css %}
+  {% endblock %}
 
         <script type="text/javascript">
           WebFontConfig = {
@@ -57,20 +67,43 @@
           loadJS( "{% static 'js/main.js' %}" );
         }
         </script>
+
+        <!-- this section should always be last in the head -->
+        {% compress css file enhanced %}
+          <link rel="stylesheet" type="text/x-scss" href="{% static 'css/enhanced.scss' %}">
+        {% endcompress %}
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
 
-        {% wagtailuserbar %}
-
-        {% if languages %}
-        <ul>
-            {% for language in languages %}
-            <li><a href="{% url 'locale_set' language.code %}">{{language.title}}</a></li>
-            {% endfor %}
-        </ul>
+        {% if settings.core.SiteSettings.ga_tag_manager %}
+        <!-- Google Tag Manager -->
+        <noscript><iframe src="//www.googletagmanager.com/ns.html?id={{settings.core.SiteSettings.ga_tag_manager}}&client_session_id={{request.session.MOLO_GA_SESSION_FOR_NOSCRIPT}}"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','{{settings.core.SiteSettings.ga_tag_manager}}');</script>
+        <!-- End Google Tag Manager -->
         {% endif %}
 
+        {% wagtailuserbar %}
+
+
+        <div class="logo">
+        {% if languages %}
+          {% if settings.core.SiteSettings.logo %}
+            {% image settings.core.SiteSettings.logo height-30 %}
+          {% endif %}
+
+          {% trans "Site Language:" %}
+          {% get_current_language as LANGUAGE_CODE %}
+          {% for language in languages %}
+            <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" {% if LANGUAGE_CODE == language.locale %} class="active" {% endif %}>{{language.locale|language_name_local}}</a>
+          {% endfor %}
+        {% endif %}
+        </div>
 
         {% breadcrumbs %}
 
@@ -79,15 +112,16 @@
         {% block extra_js %}
         {% endblock %}
 
-        {% block footer %}
-        {% if language_page.footers %}
-          <ul>
-          {% for page in language_page.footers %}
-          <li><a href="{% pageurl page %}">{{page.title}}</a></li>
-          {% endfor %}
-          </ul>
-        {% endif %}
+        {% block search %}
+          {% if languages %}
+            {% include "search/search_block.html" %}
+          {% endif %}
         {% endblock %}
+
+        {% block footer %}
+          {% footer_page %}
+        {% endblock %}
+
     </body>
 </html>
 {% endraw %}

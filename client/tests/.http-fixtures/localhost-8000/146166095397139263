@@ -1,0 +1,14 @@
+GET /import/repos/?host=foo.com&protocol=http
+accept: application/json, text/plain, */*
+
+HTTP/1.0 422 UNPROCESSABLE ENTITY
+date: Tue, 26 Apr 2016 08:55:53 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language
+x-frame-options: SAMEORIGIN
+content-type: application/json
+content-language: en-gb
+allow: OPTIONS, GET
+set-cookie: sessionid=; expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; Path=/
+
+{"type":"site_response_error"}

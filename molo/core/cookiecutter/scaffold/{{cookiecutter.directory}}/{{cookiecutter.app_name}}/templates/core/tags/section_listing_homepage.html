@@ -1,5 +1,5 @@
 {% raw %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
 
 {% if sections %}
 {% for section in sections %}
@@ -7,14 +7,15 @@
   <h2 class="list-header">
     <a href="{% pageurl section %}">{{section.title}}</a>
   </h2>
-  {% for page in section.featured_articles %}
+  {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+  {% for article in featured_articles %}
   <ul class="list-block">
     <li>
-      {% if page.image %}
-      <a href="{% pageurl page %}">{% image page.image width-60 %}</a>
+      {% if article.image %}
+      <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
       {% endif %}
-      <h3><a href="{% pageurl page %}">{{page.title}}</a></h3>
-      <p>{{page.subtitle}}</p>
+      <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+      <p>{{article.subtitle}}</p>
     </li>
   </ul>
   {% endfor %}

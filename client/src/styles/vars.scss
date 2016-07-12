@@ -1,0 +1,35 @@
+// taken from wagtail
+$color-teal: #43b1b0;
+$color-teal-darker: darken($color-teal, 10%);
+$color-teal-dark: #246060;
+$color-blue: #71b2d4;
+$color-red: #cd3238;
+$color-orange: #e9b04d;
+$color-green: #189370;
+$color-salmon: #f37e77;
+$color-salmon-light: #fcf2f2;
+$color-white: #fff;
+$color-black: #000;
+$color-grey-1: #333;
+$color-grey-1-1: #404040;
+$color-grey-2: #666;
+$color-grey-3: #d9d9d9;
+$color-grey-4: #e6e6e6;
+$color-grey-5: #fafafa;
+
+$bg0: #fff;
+$fg0: #666;
+$fg1: lighten($fg0, 20%);
+$bg1: #fafafa;
+$border0: #e6e6e6;
+$fg-primary: #fff;
+$bg-primary: #43b1b0;
+$bg-disabled: #d9d9d9;
+$fg-disabled: #9a9a9a;
+$bg-success: $color-green;
+$fg-success: #fff;
+$border-success: #58b59b;
+$bg-failure: $color-salmon;
+$fg-failure: #fff;
+$border-failure: $color-salmon-light;
+$border-radius: 0.4em;

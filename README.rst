@@ -17,17 +17,35 @@ Molo
     :target: http://badge.fury.io/py/molo.core
     :alt: Pypi Package
 
+Installation
+============
+
+Molo requires `Python`_ (version 2.6 or 2.7) to be installed. This installation method also requires `pip`_. Both of these must be installed before following the installation steps below.
+
+Installing Molo
+---------------
+
+Molo can be then installed using::
+
+    $ virtualenv ve
+    $ source ve/bin/activate
+    (ve)$ pip install molo.core
+
+.. _python: https://www.python.org/
+.. _pip: https://pip.pypa.io/en/latest/index.html
+
+Getting Started
+===============
+
+Molo scaffolds a Django application for you with sensible defaults, packages
+and configuration to help you get going as soon as possible.
+
 Scaffold a site using Molo
 --------------------------
-
-Molo is a set of tools for publishing mobi sites with a community focus.
-It scaffolds a Django application for you with sensible defaults, packages
-and configuration to help you get going as soon as possible:
 
 The goal of Molo is to provide a solid base of proven, stable packages that
 help Praekelt Foundation and partners to deliver on project scope::
 
-   $ pip install molo.core
    $ molo scaffold myapp
    $ cd myapp/
    $ ./manage.py migrate
@@ -50,7 +68,7 @@ To scaffold an application called ``myapp`` in the current directory do::
    $ molo scaffold myapp .
 
 Specifying extra requires
-=========================
+-------------------------
 
 Molo in itself is not expected to be enough to deliver on a client request.
 During scaffolding use the ``--require`` commandline parameter to include
@@ -64,10 +82,10 @@ is read by the generated package's ``setup.py`` file.
 Multiple requires can be specified on the command line::
 
    $ molo scaffold myapp --require=django-contrib-comments \
-                         --require=molo.profiles
+   >   --require=molo.profiles
 
 Automatically adding installed apps
-===================================
+-----------------------------------
 
 If you're including a Django app chances are you're going to want to
 add it to your ``INSTALLED_APPS`` settings as well as adding an entry
@@ -85,8 +103,16 @@ This results in the following ``urls.py`` entry::
 .. note:: multiple includes can be specified on the command line, the format
           is ``--include=<app_name> <regex-for-urls>``
 
+For convenience, here's the full scaffold command for the current plugins::
+
+    $ molo scaffold myapp \
+        --require=molo.profiles --include=molo.profiles ^profiles/ \
+        --require=django-contrib-comments --include=django_comments ^comments/ \
+        --require=molo.commenting --include=molo.commenting ^commenting/ \
+        --require=molo.yourwords --include=molo.yourwords ^yourwords/
+
 Molo, Django & settings files
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 What you have now is a standard Django application set up for normal
 development like outlined in the Django documentation. The only main difference
@@ -99,7 +125,7 @@ folder. The ``settings/dev.py`` will automatically include those settings
 for your local development environment.
 
 Unpacking Templates from Packages
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Sometimes a package's existing templates simply are not enough and need
 some amount of customization. Use the ``unpack-templates`` command in the
@@ -130,7 +156,7 @@ The format is::
    $ molo unpack-templates <source package> <target package>
 
 Writing tests
--------------
+~~~~~~~~~~~~~
 
 Now develop your application and write tests for the features you add.
 Running your tests for Django works as you would expect::
@@ -164,9 +190,30 @@ Install the requirement development & testing dependencies::
 
 And then run the full test suite with::
 
-   $ ./run-tests.sh
+   $ py.test
 
 Pull requests are expected to follow Praekelt's `Ways Of Working`_.
 
 .. _`Ways of Working`: http://ways-of-working.rtfd.org
 .. _`Wagtail CMS`: http://wagtail.io
+
+Documentation
+-------------
+
+Documentation is available online at http://molo.readthedocs.org/
+and in the `docs` directory of the repository.
+
+.. |molo-docs| image:: https://readthedocs.org/projects/molo/badge/?version=latest
+    :alt: Documentation
+    :scale: 100%
+    :target: http://molo.readthedocs.org/
+
+To build the docs locally::
+
+    $ virtualenv ve
+    $ source ve/bin/activate
+    (ve)$ pip install -r requirements-docs.txt
+    (ve)$ cd docs
+    (ve)$ make html
+
+You'll find the docs in `docs/_build/index.html`

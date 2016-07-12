@@ -1,0 +1,58 @@
+@import '../vars';
+@import '../mixins/chevron';
+
+
+.o-collapse {
+  margin: 2em 0;
+}
+
+
+.o-collapse-header {
+  display: block;
+  width: 100%;
+  background: $bg-primary;
+  cursor: pointer;
+  border-radius: $border-radius;
+
+  &--is-expanded {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+    .o-collapse-header__title {
+      @include chevron-down();
+    }
+  }
+
+  &--is-collapsed {
+    .o-collapse-header__title {
+      @include chevron-right();
+    }
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    background: $bg-disabled;
+
+    .o-collapse-header__title {
+      color: $fg-disabled;
+    }
+  }
+}
+
+
+.o-collapse-header__title {
+  color: $fg-primary;
+  padding: 0.5em 1em;
+  margin: 0;
+}
+
+
+.o-collapse-body {
+  border-radius: $border-radius;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+
+  background: $bg1;
+  border: 1px solid $border0;
+  padding: 0.618em 2em;
+}

@@ -1,17 +1,23 @@
 sudo: false
 language: python
+services:
+  - elasticsearch
 python:
   - "2.7"
   - "pypy"
 env:
-  - COVERAGE=true TEST_RUNNER="py.test --cov molo"
+  - COVERAGE=true TEST_RUNNER="py.test"
   - COVERAGE=false TEST_RUNNER="py.test"
 matrix:
   exclude:
     - python: "pypy"
-      env: COVERAGE=true TEST_RUNNER="py.test --cov molo"
+      env: COVERAGE=true TEST_RUNNER="py.test"
     - python: "2.7"
       env: COVERAGE=false TEST_RUNNER="py.test"
+  include:
+    - node_js: "5.6.0"
+      python: "2.7"  # no python version confuses travis
+      env: COVERAGE=false NODE=1 TEST_RUNNER="cd client; npm run ci"
 cache:
   directories:
     - $HOME/.pip-cache/
@@ -19,14 +25,17 @@ install:
   - pip install --upgrade pip --cache-dir $HOME/.pip-cache/
   - pip install coveralls coverage --cache-dir $HOME/.pip-cache/
   - pip install flake8 --cache-dir $HOME/.pip-cache/
+  - pip install "Django >=1.8,<1.9"
   - pip install -r requirements-dev.txt --cache-dir $HOME/.pip-cache/
   - pip install -e . --cache-dir $HOME/.pip-cache/
+  - '[[ -z $NODE ]] || (cd client; travis_retry npm install)'
 script:
   - flake8 molo
   - molo scaffold testapp
+  - cp molo/core/test_templates/section_page.html testapp/testapp/templates/core/section_page.html
   - flake8 testapp
   - pip install -e testapp
-  - $TEST_RUNNER
+  - bash -c $TEST_RUNNER
 after_success:
   - coveralls
 deploy:

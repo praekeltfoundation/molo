@@ -1,0 +1,14 @@
+POST /import/validation/
+accept: application/json, text/plain, */*
+x-csrftoken: KmiM2MdLGtTMqIQpcsg2gtNtLtLHOEbP
+content-type: application/json;charset=utf-8
+body: {\"repos\":[{\"name\":\"unicore-cms-content-mama-mx-prod\",\"title\":\"Mama Mexico\"}],\"locales\":[{\"locale\":\"spa_MX\",\"is_main\":true},{\"locale\":\"spa_ES\",\"is_main\":false}]}
+
+HTTP/1.0 202 ACCEPTED
+date: Thu, 21 Apr 2016 14:38:30 GMT
+server: WSGIServer/0.1 Python/2.7.10
+vary: Accept, Accept-Language, Cookie
+x-frame-options: SAMEORIGIN
+content-type: application/json
+content-language: en-gb
+allow: POST, OPTIONS

@@ -1,0 +1,15 @@
+PUT /import/content/
+accept: application/json, text/plain, */*
+x-csrftoken: KmiM2MdLGtTMqIQpcsg2gtNtLtLHOEbP
+content-type: application/json;charset=utf-8
+body: {\"repos\":[{\"name\":\"unicore-cms-content-ffl-sn-prod\",\"title\":\"Facts for Life\"}],\"locales\":[{\"locale\":\"eng_GB\",\"is_main\":true}]}
+
+HTTP/1.0 202 ACCEPTED
+date: Thu, 21 Apr 2016 15:30:17 GMT
+server: WSGIServer/0.1 Python/2.7.10
+content-length: 0
+content-language: en-gb
+vary: Accept, Accept-Language, Cookie
+allow: PUT, OPTIONS
+x-frame-options: SAMEORIGIN
+
