@@ -10,7 +10,6 @@ matrix:
   include:
     - python: pypy
       env: COVERAGE=false TEST_RUNNER="py.test" PYPY_VERSION="5.3.1"
-  include:
     - node_js: "5.6.0"
       python: "2.7"  # no python version confuses travis
       env: COVERAGE=false NODE=1 TEST_RUNNER="cd client; npm run ci"
