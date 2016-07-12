@@ -25,7 +25,7 @@ install:
   - pip install "Django >=1.8,<1.9"
   - pip install -e .
   - pip install -r requirements-dev.txt
-  - pip install coveralls
+  - if [[ "$COVERAGE" == "true" ]]; then pip install coveralls; fi
   - '[[ -z $NODE ]] || (cd client; travis_retry npm install)'
 script:
   - flake8 molo
@@ -33,9 +33,10 @@ script:
   - cp molo/core/test_templates/section_page.html testapp/testapp/templates/core/section_page.html
   - flake8 testapp
   - pip install -e testapp
-  - bash -c $TEST_RUNNER
+  - if [[ "$COVERAGE" == "true" ]] && [[ "$TEST_RUNNER" == "py.test" ]]; then COVERAGE_OPT="--cov"; fi
+  - bash -c "$TEST_RUNNER $COVERAGE_OPT"
 after_success:
-  - coveralls
+  - if [[ "$COVERAGE" == "true" ]]; then coveralls; fi
 deploy:
   provider: pypi
   user: Praekelt
