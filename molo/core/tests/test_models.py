@@ -114,7 +114,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         new_section = self.mk_section(self.section_index)
         self.mk_articles(new_section, count=12)
         response = self.client.get('/sections/test-section-0/')
-        self.assertContains(response, 'Test Article 11')
+        self.assertContains(response, 'Test page 11')
 
     def test_parent_section(self):
         new_section = self.mk_section(
