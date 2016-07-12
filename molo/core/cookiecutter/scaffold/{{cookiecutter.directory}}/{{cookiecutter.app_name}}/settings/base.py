@@ -98,6 +98,7 @@ MIDDLEWARE_CLASSES = [
     'wagtailmodeladmin.middleware.ModelAdminMiddleware',
 
     'molo.core.middleware.AdminLocaleMiddleware',
+    'molo.core.middleware.NoScriptGASessionMiddleware',
 ]
 
 TEMPLATES = [

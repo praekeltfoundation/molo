@@ -1,6 +1,31 @@
 CHANGE LOG
 ==========
 
+3.2.6
+-----
+
+- Delete the translated page when a page is deleted
+
+3.2.5
+-----
+
+- Return Marathon app & version information in the health checks.
+
+3.2.4
+------
+
+- Default count for sections set to 0
+
+3.2.3
+------
+
+- Add session key middleware for each user to use with GTM when javascript is disabled
+
+3.2.2
+------
+
+- Handling import * error with noqa
+
 3.2.1
 ------
 

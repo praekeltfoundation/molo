@@ -7,7 +7,8 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from molo.core.models import ArticlePage, SiteLanguage, PageTranslation
+from molo.core.models import (
+    ArticlePage, SiteLanguage, PageTranslation, SectionPage)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_descendant_articles_for_section)
@@ -103,6 +104,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
             new_section2, title="New Section 3", slug="new-section-3")
         self.assertEquals(
             new_section3.get_effective_image(), new_section.image)
+
+    def test_number_of_child_sections(self):
+        new_section = self.mk_section(self.section_index)
+        self.mk_sections(new_section, count=12)
+        response = self.client.get('/sections/test-section-0/')
+        self.assertContains(response, 'Test Section 11')
 
     def test_parent_section(self):
         new_section = self.mk_section(
@@ -308,20 +315,67 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, 'español')
 
     def test_signal_on_page_delete_removes_translations(self):
+        spanish = SiteLanguage.objects.create(locale='es')
+
         section = self.mk_section(
             self.section_index, title="Section", slug="section")
+        self.mk_section_translation(section, self.french)
+        self.mk_section_translation(section, spanish)
 
-        page1a, page2a = self.mk_articles(section, 2)
-        self.mk_article_translation(page1a, self.french)
-        page2b = self.mk_article_translation(page2a, self.french)
-        translation2ab = PageTranslation.objects.get(translated_page=page2b)
+        section_sub1 = self.mk_section(
+            section, title='Section subsection')
+        self.mk_section_translation(section_sub1, self.french)
+        p1, p2 = self.mk_articles(section_sub1, 2)
+        self.mk_article_translation(p1, self.french)
+        self.mk_article_translation(p1, spanish)
 
-        page1a.delete()
+        section_sub2 = self.mk_section(
+            section, title='Section subsection')
+        p3, p4 = self.mk_articles(section_sub2, 2)
+        self.mk_article_translation(p4, self.french)
 
-        self.assertEqual(
-            list(ArticlePage.objects.all().values('id')),
-            [{'id': page2a.id}, {'id': page2b.id}])
+        p5, p6 = self.mk_articles(section, 2)
+        self.mk_article_translation(p5, self.french)
 
-        self.assertEqual(
-            list(PageTranslation.objects.all().values('id')),
-            [{'id': translation2ab.id}])
+        self.mk_section_translation(self.yourmind, self.french)
+        self.mk_section_translation(self.yourmind_sub, self.french)
+
+        p7, p8, p9 = self.mk_articles(self.yourmind_sub, 3)
+        self.mk_article_translation(p7, self.french)
+        self.mk_article_translation(p7, spanish)
+        self.mk_article_translation(p8, self.french)
+        sub_sec = self.mk_section(self.yourmind_sub, title='Sub sec')
+
+        self.assertEqual(ArticlePage.objects.all().count(), 16)
+        self.assertEqual(SectionPage.objects.all().count(), 11)
+        self.assertEqual(PageTranslation.objects.all().count(), 12)
+
+        section.delete()
+        self.assertEqual(ArticlePage.objects.all().count(), 6)
+        self.assertEqual(SectionPage.objects.all().count(), 5)
+        self.assertEqual(PageTranslation.objects.all().count(), 5)
+
+        p7.delete()
+        self.assertEqual(ArticlePage.objects.all().count(), 3)
+        self.assertEqual(SectionPage.objects.all().count(), 5)
+        self.assertEqual(PageTranslation.objects.all().count(), 3)
+
+        p9.delete()
+        self.assertEqual(ArticlePage.objects.all().count(), 2)
+        self.assertEqual(SectionPage.objects.all().count(), 5)
+        self.assertEqual(PageTranslation.objects.all().count(), 3)
+
+        sub_sec.delete()
+        self.assertEqual(ArticlePage.objects.all().count(), 2)
+        self.assertEqual(SectionPage.objects.all().count(), 4)
+        self.assertEqual(PageTranslation.objects.all().count(), 3)
+
+        self.yourmind_sub.delete()
+        self.assertEqual(ArticlePage.objects.all().count(), 0)
+        self.assertEqual(SectionPage.objects.all().count(), 2)
+        self.assertEqual(PageTranslation.objects.all().count(), 1)
+
+        self.yourmind.delete()
+        self.assertEqual(ArticlePage.objects.all().count(), 0)
+        self.assertEqual(SectionPage.objects.all().count(), 0)
+        self.assertEqual(PageTranslation.objects.all().count(), 0)

@@ -1,3 +1,4 @@
+from os import environ
 import json
 import pytest
 import responses
@@ -281,9 +282,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<p>Sample page description for 0 in french</p>')
 
     def test_health(self):
+        environ['MARATHON_APP_ID'] = 'marathon-app-id'
+        environ['MARATHON_APP_VERSION'] = 'marathon-app-version'
         response = self.client.get('/health/')
         self.assertEquals(
             response.status_code, 200)
+        self.assertEquals(
+            json.loads(response.content), {
+                'id': 'marathon-app-id',
+                'version': 'marathon-app-version',
+            })
 
     def test_issue_with_django_admin_not_loading(self):
         User.objects.create_superuser(
@@ -384,6 +392,23 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.assertContains(response, 'Not installed')
         get_pypi_version()
 
+    def test_ga_session_for_noscript_middleware(self):
+        # GA session doesn't exist until the middleware sets it
+        self.assertFalse('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
+
+        self.client.get('/')
+        self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
+
+        current_session_key = self.client.session[
+            'MOLO_GA_SESSION_FOR_NOSCRIPT']
+
+        self.client.get('/')
+
+        # session key should be the same after subsequent requests
+        self.assertEquals(
+            self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'],
+            current_session_key)
+
     def test_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
@@ -397,6 +422,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(response, 'www.googletagmanager.com')
         self.assertContains(response, 'GTM-1234567')
+
+        self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
+        self.assertContains(
+            response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
 
     def test_admin_doesnt_translate_when_frontend_locale_changed(self):
         self.client.get('/locale/af/')

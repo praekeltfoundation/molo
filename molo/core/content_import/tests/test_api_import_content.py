@@ -174,8 +174,11 @@ class TestImportContent(
 
         page = ArticlePage.objects.get(uuid=page_with_linked_page.uuid)
         linked_page = ArticlePage.objects.get(uuid=page_en.uuid)
-        self.assertEquals(page.body.stream_data[2],
-                          {u'type': u'page', u'value': linked_page.pk})
+
+        self.assertEquals(page.body.stream_data[1], {
+            'type': 'page',
+            'value': linked_page.pk
+        })
 
         # run import twice
         api.import_content([repo1], [
@@ -195,6 +198,30 @@ class TestImportContent(
             is_main_language=True).first()), 'English')
         self.assertEquals(str(SiteLanguage.objects.filter(
             is_main_language=False).first()), 'Spanish')
+
+    def test_import_page(self):
+        repo = Repo(self.create_workspace(), 'repo1', 'Repo 1')
+        ws = repo.workspace
+        self.add_languages(ws, 'eng_GB')
+
+        self.create_page(
+            ws,
+            locale='eng_GB',
+            title='Foo',
+            description='bar baz',
+            content='Quux. Corge Grault')
+
+        api.import_content([repo], [{
+            'locale': 'eng_GB',
+            'site_language': 'en',
+            'is_main': True
+        }])
+
+        [article] = ArticlePage.objects.all()
+
+        self.assertEqual(article.title, 'Foo')
+        self.assertEqual(article.subtitle, 'bar baz')
+        self.assertTrue('Quux. Corge Grault' in str(article.body))
 
     def test_import_multirepo(self):
         repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')

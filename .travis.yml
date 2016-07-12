@@ -4,39 +4,47 @@ services:
   - elasticsearch
 python:
   - "2.7"
-  - "pypy"
 env:
-  - COVERAGE=true TEST_RUNNER="py.test"
-  - COVERAGE=false TEST_RUNNER="py.test"
+  - TEST_RUNNER="py.test" COVERAGE=true
 matrix:
-  exclude:
-    - python: "pypy"
-      env: COVERAGE=true TEST_RUNNER="py.test"
-    - python: "2.7"
-      env: COVERAGE=false TEST_RUNNER="py.test"
   include:
-    - node_js: "5.6.0"
-      python: "2.7"  # no python version confuses travis
-      env: COVERAGE=false NODE=1 TEST_RUNNER="cd client; npm run ci"
+    - python: pypy
+      env: PYPY_VERSION="5.3.1" TEST_RUNNER="py.test" COVERAGE=false
+    - python: "2.7"
+      env: NODE_VERSION="5.6.0" TEST_RUNNER="cd client; npm run ci" COVERAGE=false
 cache:
-  directories:
-    - $HOME/.pip-cache/
+  - pip
+  - directories:
+    - $HOME/.pyenv_cache
+    - client/node_modules
+before_install:
+  - |
+      if [[ -n "$PYPY_VERSION" ]]; then
+        wget https://github.com/praekeltfoundation/travis-pypy/releases/download/0.1.0/setup-pypy.sh
+        source setup-pypy.sh
+      fi
+  - |
+      if [[ -n "$NODE_VERSION" ]]; then
+        nvm install "$NODE_VERSION"
+        nvm use "$NODE_VERSION"
+      fi
+
 install:
-  - pip install --upgrade pip --cache-dir $HOME/.pip-cache/
-  - pip install coveralls coverage --cache-dir $HOME/.pip-cache/
-  - pip install flake8 --cache-dir $HOME/.pip-cache/
-  - pip install "Django >=1.8,<1.9"
-  - pip install -r requirements-dev.txt --cache-dir $HOME/.pip-cache/
-  - pip install -e . --cache-dir $HOME/.pip-cache/
-  - '[[ -z $NODE ]] || (cd client; travis_retry npm install)'
+  - pip install --upgrade pip
+  - pip install -e .
+  - pip install -r requirements-dev.txt
+  - if [[ "$COVERAGE" == "true" ]]; then pip install coveralls; fi
+  - '[[ -z $NODE_VERSION ]] || (cd client; travis_retry npm install)'
 script:
   - flake8 molo
   - molo scaffold testapp
+  - cp molo/core/test_templates/section_page.html testapp/testapp/templates/core/section_page.html
   - flake8 testapp
   - pip install -e testapp
-  - bash -c $TEST_RUNNER
+  - if [[ "$COVERAGE" == "true" ]] && [[ "$TEST_RUNNER" == "py.test" ]]; then COVERAGE_OPT="--cov"; fi
+  - bash -c "$TEST_RUNNER $COVERAGE_OPT"
 after_success:
-  - coveralls
+  - if [[ "$COVERAGE" == "true" ]]; then coveralls; fi
 deploy:
   provider: pypi
   user: Praekelt

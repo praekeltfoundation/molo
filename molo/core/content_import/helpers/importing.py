@@ -223,11 +223,12 @@ def import_page_content(repo, p, lang, stray_index):
                 ArticlePage.objects.all().values('uuid'))
             return None
 
-    page.subtitle = p.subtitle
-    page.body = json.dumps([
-        {'type': 'paragraph', 'value': p.description},
-        {'type': 'paragraph', 'value': p.content}
-    ])
+    page.subtitle = p.description
+    page.body = json.dumps([{
+        'type': 'paragraph',
+        'value': p.content
+    }])
+
     is_featured = p.featured if p.featured else False
     is_featured_in_category = p.featured_in_category \
         if p.featured_in_category else False
