@@ -11,7 +11,7 @@ env:
 matrix:
   exclude:
     - python: "pypy"
-      env: COVERAGE=true TEST_RUNNER="py.test"
+      env: COVERAGE=true TEST_RUNNER="py.test" PYPY_VERSION="5.3.1"
     - python: "2.7"
       env: COVERAGE=false TEST_RUNNER="py.test"
   include:
@@ -20,6 +20,14 @@ matrix:
       env: COVERAGE=false NODE=1 TEST_RUNNER="cd client; npm run ci"
 cache:
   - pip
+  - directories:
+    - $HOME/.pyenv_cache
+before_install:
+  - |
+      if [[ -n "$PYPY_VERSION" ]]; then
+        wget https://github.com/praekeltfoundation/travis-pypy/releases/download/0.1.0/setup-pypy.sh
+        source setup-pypy.sh
+      fi
 install:
   - pip install --upgrade pip
   - pip install "Django >=1.8,<1.9"
