@@ -16,6 +16,7 @@ cache:
   - pip
   - directories:
     - $HOME/.pyenv_cache
+    - client/node_modules
 before_install:
   - |
       if [[ -n "$PYPY_VERSION" ]]; then
