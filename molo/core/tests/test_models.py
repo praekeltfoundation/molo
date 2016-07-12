@@ -104,7 +104,13 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             new_section3.get_effective_image(), new_section.image)
 
-    def test_number_of_child_articles_in_section_tag(self):
+    def test_number_of_child_sections(self):
+        new_section = self.mk_section(self.section_index)
+        self.mk_sections(new_section, count=12)
+        response = self.client.get('/sections/test-section-0/')
+        self.assertContains(response, 'Test Section 11')
+
+    def test_number_of_child_articles_in_section(self):
         new_section = self.mk_section(self.section_index)
         self.mk_articles(new_section, count=12)
         response = self.client.get('/sections/test-section-0/')
