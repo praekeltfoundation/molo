@@ -4,16 +4,12 @@ services:
   - elasticsearch
 python:
   - "2.7"
-  - "pypy"
 env:
   - COVERAGE=true TEST_RUNNER="py.test"
-  - COVERAGE=false TEST_RUNNER="py.test"
 matrix:
-  exclude:
-    - python: "pypy"
-      env: COVERAGE=true TEST_RUNNER="py.test" PYPY_VERSION="5.3.1"
-    - python: "2.7"
-      env: COVERAGE=false TEST_RUNNER="py.test"
+  include:
+    - python: pypy
+      env: COVERAGE=false TEST_RUNNER="py.test" PYPY_VERSION="5.3.1"
   include:
     - node_js: "5.6.0"
       python: "2.7"  # no python version confuses travis
