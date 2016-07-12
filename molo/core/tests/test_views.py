@@ -1,3 +1,4 @@
+from os import environ
 import json
 import pytest
 import responses
@@ -281,9 +282,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<p>Sample page description for 0 in french</p>')
 
     def test_health(self):
+        environ['MARATHON_APP_ID'] = 'marathon-app-id'
+        environ['MARATHON_APP_VERSION'] = 'marathon-app-version'
         response = self.client.get('/health/')
         self.assertEquals(
             response.status_code, 200)
+        self.assertEquals(
+            json.loads(response.content), {
+                'id': 'marathon-app-id',
+                'version': 'marathon-app-version',
+            })
 
     def test_issue_with_django_admin_not_loading(self):
         User.objects.create_superuser(
