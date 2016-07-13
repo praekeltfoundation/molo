@@ -390,5 +390,5 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_get_translation_template_tag(self):
         section = self.mk_section(self.section_index)
         translated_section = self.mk_section_translation(section, self.french)
-        qs = get_translation({'locale_code':'fr'}, section)
+        qs = get_translation({'locale_code': 'fr'}, section)
         self.assertEquals(translated_section.id, qs.id)
