@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.2.7
+-----
+
+- Add get_translation template tag
+
 3.2.6
 -----
 
