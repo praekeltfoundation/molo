@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from molo.core.models import ArticlePage, SiteLanguage, PageTranslation
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
-    load_descendant_articles_for_section)
+    load_descendant_articles_for_section, load_child_articles_for_section)
 from molo.core.tests.base import MoloTestCaseMixin
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -113,8 +113,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_number_of_child_articles_in_section(self):
         new_section = self.mk_section(self.section_index)
         self.mk_articles(new_section, count=12)
-        response = self.client.get('/sections/test-section-0/')
-        self.assertContains(response, 'Test page 11')
+        articles = load_child_articles_for_section({}, new_section, count=None)
+        self.assertEquals(len(articles), 12)
 
     def test_parent_section(self):
         new_section = self.mk_section(
