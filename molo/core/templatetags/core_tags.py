@@ -21,6 +21,15 @@ def load_sections(context):
     return [a.get_translation_for(locale_code) or a for a in qs]
 
 
+@register.assignment_tag(takes_context=True)
+def get_translation(context, page):
+    locale_code = context.get('locale_code')
+    if page.get_translation_for(locale_code):
+        return page.get_translation_for(locale_code)
+    else:
+        return page
+
+
 @register.inclusion_tag(
     'core/tags/section_listing_homepage.html',
     takes_context=True
@@ -177,19 +186,21 @@ def load_child_articles_for_section(context, section, count=5):
     return the translations of the live articles.
     '''
     locale = context.get('locale_code')
-    p = context.get('p', 1)
     qs = section.articles()
 
     # Pagination
-    paginator = Paginator(qs, count)
+    if count:
+        p = context.get('p', 1)
+        paginator = Paginator(qs, count)
 
-    try:
-        articles = paginator.page(p)
-    except PageNotAnInteger:
-        articles = paginator.page(1)
-    except EmptyPage:
-        articles = paginator.page(paginator.num_pages)
-
+        try:
+            articles = paginator.page(p)
+        except PageNotAnInteger:
+            articles = paginator.page(1)
+        except EmptyPage:
+            articles = paginator.page(paginator.num_pages)
+    else:
+        articles = qs
     if not locale:
         return articles
 

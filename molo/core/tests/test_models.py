@@ -11,7 +11,8 @@ from molo.core.models import (
     ArticlePage, SiteLanguage, PageTranslation, SectionPage)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
-    load_descendant_articles_for_section)
+    load_descendant_articles_for_section, load_child_articles_for_section,
+    get_translation)
 from molo.core.tests.base import MoloTestCaseMixin
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -110,6 +111,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.mk_sections(new_section, count=12)
         response = self.client.get('/sections/test-section-0/')
         self.assertContains(response, 'Test Section 11')
+
+    def test_number_of_child_articles_in_section(self):
+        new_section = self.mk_section(self.section_index)
+        self.mk_articles(new_section, count=12)
+        articles = load_child_articles_for_section({}, new_section, count=None)
+        self.assertEquals(len(articles), 12)
 
     def test_parent_section(self):
         new_section = self.mk_section(
@@ -379,3 +386,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(ArticlePage.objects.all().count(), 0)
         self.assertEqual(SectionPage.objects.all().count(), 0)
         self.assertEqual(PageTranslation.objects.all().count(), 0)
+
+    def test_get_translation_template_tag(self):
+        section = self.mk_section(self.section_index)
+        section2 = self.mk_section(self.section_index)
+        translated_section = self.mk_section_translation(section, self.french)
+        qs = get_translation({'locale_code': 'fr'}, section)
+        self.assertEquals(translated_section.id, qs.id)
+        qs = get_translation({'locale_code': 'fr'}, section2)
+        self.assertEquals(section2.id, qs.id)

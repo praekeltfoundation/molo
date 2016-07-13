@@ -36,7 +36,7 @@
         </h2>
       {% endfor %}
 
-      {% load_child_articles_for_section self count=5 as articles %}
+      {% load_child_articles_for_section self as articles %}
       {% for article in articles %}
       <ul class="list-block">
         <li>
