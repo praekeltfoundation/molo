@@ -177,19 +177,21 @@ def load_child_articles_for_section(context, section, count=5):
     return the translations of the live articles.
     '''
     locale = context.get('locale_code')
-    p = context.get('p', 1)
     qs = section.articles()
 
     # Pagination
-    paginator = Paginator(qs, count)
+    if count:
+        p = context.get('p', 1)
+        paginator = Paginator(qs, count)
 
-    try:
-        articles = paginator.page(p)
-    except PageNotAnInteger:
-        articles = paginator.page(1)
-    except EmptyPage:
-        articles = paginator.page(paginator.num_pages)
-
+        try:
+            articles = paginator.page(p)
+        except PageNotAnInteger:
+            articles = paginator.page(1)
+        except EmptyPage:
+            articles = paginator.page(paginator.num_pages)
+    else:
+        articles = qs
     if not locale:
         return articles
 
