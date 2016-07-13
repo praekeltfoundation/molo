@@ -21,6 +21,15 @@ def load_sections(context):
     return [a.get_translation_for(locale_code) or a for a in qs]
 
 
+@register.assignment_tag(takes_context=True)
+def get_translation(context, page):
+    locale_code = context.get('locale_code')
+    if page.get_translation_for(locale_code):
+        return page.get_translation_for(locale_code)
+    else:
+        return page
+
+
 @register.inclusion_tag(
     'core/tags/section_listing_homepage.html',
     takes_context=True
