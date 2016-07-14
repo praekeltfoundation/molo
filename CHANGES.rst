@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.2.8
+-----
+
+- Add global GA Tag model
+
 3.2.7
 -----
 
