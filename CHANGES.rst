@@ -1,6 +1,26 @@
 CHANGE LOG
 ==========
 
+3.2.8
+-----
+
+- Add global GA Tag model
+
+3.2.7
+-----
+
+- Add get_translation template tag
+
+3.2.6
+-----
+
+- Delete the translated page when a page is deleted
+
+3.2.5
+-----
+
+- Return Marathon app & version information in the health checks.
+
 3.2.4
 ------
 
