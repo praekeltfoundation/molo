@@ -43,11 +43,22 @@ class SiteSettings(BaseSetting):
     )
 
     ga_tag_manager = models.CharField(
-        verbose_name=_('GA Tag Manager'),
+        verbose_name=_('Local GA Tag Manager'),
         max_length=255,
         null=True,
         blank=True,
-        help_text=_("GA Tag Manager tracking code (e.g GTM-XXX)")
+        help_text=_(
+            "Local GA Tag Manager tracking code (e.g GTM-XXX) to be used to "
+            "view analytics on this site only")
+    )
+    global_ga_tag_manager = models.CharField(
+        verbose_name=_('Global GA Tag Manager'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "Global GA Tag Manager tracking code (e.g GTM-XXX) to be used"
+            " to view analytics on more than one site globally")
     )
 
     content_rotation = models.BooleanField(
@@ -71,7 +82,13 @@ class SiteSettings(BaseSetting):
 
     panels = [
         ImageChooserPanel('logo'),
-        FieldPanel('ga_tag_manager'),
+        MultiFieldPanel(
+            [
+                FieldPanel('ga_tag_manager'),
+                FieldPanel('global_ga_tag_manager'),
+            ],
+            heading="GA Tag Manager Settings",
+        ),
         MultiFieldPanel(
             [
                 FieldPanel('content_rotation'),
