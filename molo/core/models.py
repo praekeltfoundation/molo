@@ -64,8 +64,8 @@ class SiteSettings(BaseSetting):
     content_rotation = models.BooleanField(
         default=False,
         help_text=_(
-            "This option allows content to be rotated randomly and"
-            " automatically")
+            "This option allows articles featured in latest to be rotated"
+            "randomly and automatically")
     )
 
     content_rotation_time = models.IntegerField(
@@ -357,6 +357,13 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+    featured_in_latest_rotation = models.BooleanField(
+        default=False,
+        help_text=_(
+            "This option allows articles featured in homepage to be rotated"
+            "randomly and automatically for this section only")
+    )
+
     def articles(self):
         main_language_page = self.get_main_language_page()
         return list(chain(
@@ -409,6 +416,13 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
 
+    def featured_in_homepage_articles(self):
+        main_language_page = self.get_main_language_page()
+        return ArticlePage.objects.live().child_of(main_language_page).filter(
+            languages__language__is_main_language=True,
+            featured_in_homepage=True).order_by(
+                '-latest_revision_created_at').specific()
+
     def get_context(self, request):
         context = super(SectionPage, self).get_context(request)
 
@@ -439,6 +453,7 @@ SectionPage.content_panels = [
 SectionPage.settings_panels = [
     MultiFieldPanel(
         Page.settings_panels, "Scheduled publishing", "publishing"),
+    FieldPanel('featured_in_latest_rotation'),
     MultiFieldPanel(
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
