@@ -157,10 +157,6 @@ CELERYBEAT_SCHEDULE = {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },
-    'rotate_featured_in_latest_content': {
-        'task': 'molo.core.tasks.rotate_featured_in_latest_content',
-        'schedule': crontab(minute=0),
-    },
 }
 
 # Internationalization

@@ -81,7 +81,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
 
         non_rotating_articles = self.mk_articles(
             self.yourmind, count=3, featured_in_homepage=False)
-        rotate_featured_in_latest_content()
+        rotate_content()
         for article in non_rotating_articles:
             self.assertFalse(article.featured_in_latest)
         self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
@@ -99,7 +99,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         second_last_article_old = get_featured_articles(self.yourmind_sub)[8].pk
         last_article_old = get_featured_articles(self.yourmind_sub)[9].pk
 
-        rotate_featured_in_latest_content()
+        rotate_content()
         self.assertEquals(
             get_featured_articles(self.yourmind_sub).count(), 10)
         self.assertNotEquals(
