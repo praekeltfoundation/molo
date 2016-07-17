@@ -7,7 +7,7 @@ from django.test import TestCase
 from molo.core.models import SiteLanguage, FooterPage
 from molo.core.tests.base import MoloTestCaseMixin
 
-from molo.core.tasks import rotate_content, rotate_featured_in_latest_content
+from molo.core.tasks import rotate_content
 
 from wagtail.wagtailcore.models import Site
 from wagtail.contrib.settings.context_processors import SettingsProxy
@@ -96,7 +96,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             get_featured_articles(self.yourmind_sub).count(), 10)
         first_article_old = get_featured_articles(self.yourmind_sub)[0].pk
-        second_last_article_old = get_featured_articles(self.yourmind_sub)[8].pk
+        second_last_article_old = get_featured_articles(
+            self.yourmind_sub)[8].pk
         last_article_old = get_featured_articles(self.yourmind_sub)[9].pk
 
         rotate_content()
