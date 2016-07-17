@@ -50,7 +50,7 @@ def rotate_latest(main_lang, index, main):
 @task(ignore_result=True)
 def rotate_featured_in_homepage(main_lang):
     for section in SectionPage.objects.all():
-        if section.featured_in_latest_rotation:
+        if section.featured_in_homepage_rotation:
             random_article = ArticlePage.objects.live().filter(
                 featured_in_homepage=False,
                 languages__language__id=main_lang.id

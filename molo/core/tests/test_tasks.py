@@ -85,8 +85,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         for article in non_rotating_articles:
             self.assertFalse(article.featured_in_latest)
         self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
-        self.yourmind_sub.featured_in_latest_rotation = True
-        self.yourmind.featured_in_latest_rotation = False
+        self.yourmind_sub.featured_in_homepage_rotation = True
+        self.yourmind.featured_in_homepage_rotation = False
         self.yourmind.save_revision().publish()
         self.yourmind_sub.save_revision().publish()
         self.mk_articles(
