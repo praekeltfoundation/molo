@@ -357,7 +357,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    featured_in_latest_rotation = models.BooleanField(
+    featured_in_homepage_rotation = models.BooleanField(
         default=False,
         help_text=_(
             "This option allows articles featured in homepage to be rotated"
@@ -453,7 +453,7 @@ SectionPage.content_panels = [
 SectionPage.settings_panels = [
     MultiFieldPanel(
         Page.settings_panels, "Scheduled publishing", "publishing"),
-    FieldPanel('featured_in_latest_rotation'),
+    FieldPanel('featured_in_homepage_rotation'),
     MultiFieldPanel(
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],

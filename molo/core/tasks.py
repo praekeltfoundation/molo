@@ -29,8 +29,8 @@ def rotate_content():
     if main and index:
         if site_settings.content_rotation_time == datetime.now().hour:
             if site_settings.content_rotation:
-                    rotate_latest(main_lang, index, main)
-            rotate_featured_in_latest_content(main_lang)
+                rotate_latest(main_lang, index, main)
+            rotate_featured_in_homepage(main_lang)
 
 
 @task(ignore_result=True)
@@ -48,7 +48,7 @@ def rotate_latest(main_lang, index, main):
 
 
 @task(ignore_result=True)
-def rotate_featured_in_latest_content(main_lang):
+def rotate_featured_in_homepage(main_lang):
     for section in SectionPage.objects.all():
         if section.featured_in_latest_rotation:
             random_article = ArticlePage.objects.live().filter(
