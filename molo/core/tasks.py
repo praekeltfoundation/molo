@@ -33,7 +33,6 @@ def rotate_content():
             rotate_featured_in_homepage(main_lang)
 
 
-@task(ignore_result=True)
 def rotate_latest(main_lang, index, main):
     random_article = ArticlePage.objects.live().filter(
         featured_in_latest=False, languages__language__id=main_lang.id
@@ -47,7 +46,6 @@ def rotate_latest(main_lang, index, main):
         article.save_revision().publish()
 
 
-@task(ignore_result=True)
 def rotate_featured_in_homepage(main_lang):
     for section in SectionPage.objects.all():
         if section.featured_in_homepage_rotation:
