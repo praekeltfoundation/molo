@@ -7,7 +7,8 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
 from molo.core.content_import import api
-from molo.core.models import ArticlePage, Main, SectionIndexPage, SiteLanguage
+from molo.core.models import (
+    ArticlePage, Main, SectionIndexPage, SiteLanguage, SectionPage)
 
 from wagtail.contrib.settings.context_processors import SettingsProxy
 from wagtail.wagtailcore.models import Site
@@ -25,18 +26,38 @@ def rotate_content():
     site = Site.objects.get(is_default_site=True)
     settings = SettingsProxy(site)
     site_settings = settings['core']['SiteSettings']
-    if site_settings.content_rotation and \
-            site_settings.content_rotation_time == datetime.now().hour:
-        if main and index:
-            random_article = ArticlePage.objects.live().filter(
-                featured_in_latest=False, languages__language__id=main_lang.id
-            ).descendant_of(index).order_by('?').first()
-            if random_article:
-                random_article.featured_in_latest = True
-                random_article.save_revision().publish()
+    if main and index:
+        if site_settings.content_rotation_time == datetime.now().hour:
+            if site_settings.content_rotation:
+                rotate_latest(main_lang, index, main)
+            rotate_featured_in_homepage(main_lang)
 
-                article = main.latest_articles().last()
-                article.featured_in_latest = False
+
+def rotate_latest(main_lang, index, main):
+    random_article = ArticlePage.objects.live().filter(
+        featured_in_latest=False, languages__language__id=main_lang.id
+    ).descendant_of(index).order_by('?').first()
+    if random_article:
+        random_article.featured_in_latest = True
+        random_article.save_revision().publish()
+
+        article = main.latest_articles().last()
+        article.featured_in_latest = False
+        article.save_revision().publish()
+
+
+def rotate_featured_in_homepage(main_lang):
+    for section in SectionPage.objects.all():
+        if section.featured_in_homepage_rotation:
+            random_article = ArticlePage.objects.live().filter(
+                featured_in_homepage=False,
+                languages__language__id=main_lang.id
+            ).child_of(section).order_by('?').first()
+            if random_article:
+                random_article.featured_in_homepage = True
+                random_article.save_revision().publish()
+                article = section.featured_in_homepage_articles().last()
+                article.featured_in_homepage = False
                 article.save_revision().publish()
 
 
