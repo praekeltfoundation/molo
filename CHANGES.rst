@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.3.0
+-----
+
+- Add random content rotation for articles featured on homepage
+
 3.2.8
 -----
 
