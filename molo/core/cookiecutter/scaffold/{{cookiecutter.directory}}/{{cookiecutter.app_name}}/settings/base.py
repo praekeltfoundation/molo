@@ -56,8 +56,8 @@ INSTALLED_APPS = [
     'modelcluster',
 
     'molo.core',
-    'google_analytics',
     '{{cookiecutter.app_name}}',
+    'google_analytics',
 
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
