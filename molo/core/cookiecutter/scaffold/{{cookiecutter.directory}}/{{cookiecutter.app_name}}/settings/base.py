@@ -126,7 +126,7 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # Google analytics
 
 GOOGLE_ANALYTICS = {
-    'google_analytics_id': 'UA-80985533-1',
+    'google_analytics_id': 'xxx',
 }
 
 # Database
