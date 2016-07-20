@@ -112,7 +112,7 @@ class SiteSettings(BaseSetting):
                 FieldPanel('local_ga_tag_tracking_code'),
                 FieldPanel('global_ga_tag_tracking_code'),
             ],
-            heading="GA Tag Settings",
+            heading="GA Tracking Code Settings",
         ),
         MultiFieldPanel(
             [
