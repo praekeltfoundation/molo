@@ -1,3 +1,4 @@
+{% load google_analytics_tags %}
 {% raw %}
 {% load wagtailcore_tags compress static wagtailuserbar core_tags i18n %}
 {% load wagtailsettings_tags wagtailimages_tags %}
@@ -99,6 +100,13 @@
         })(window,document,'script','dataLayer','{{settings.core.SiteSettings.global_ga_tag_manager}}');</script>
         <!-- End Global Google Tag Manager -->
         {% endif %}
+
+        <div style="display:none">
+            <img src="{% google_analytics settings.core.SiteSettings.global_ga_tracking_code %}" width="0" height="0" />
+        </div>
+        <div style="display:none">
+            <img src="{% google_analytics settings.core.SiteSettings.local_ga_tracking_code %}" width="0" height="0" />
+        </div>
 
         {% wagtailuserbar %}
 
