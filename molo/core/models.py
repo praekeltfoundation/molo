@@ -61,6 +61,24 @@ class SiteSettings(BaseSetting):
             " to view analytics on more than one site globally")
     )
 
+    local_ga_tag = models.CharField(
+        verbose_name=_('Local GA Tag Manager'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "Local GA Tag tracking code to be used to "
+            "view analytics on this site only")
+    )
+    global_ga_tag = models.CharField(
+        verbose_name=_('Global GA Tag Manager'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "Global GA Tag tracking code to be used"
+            " to view analytics on more than one site globally")
+    )
     content_rotation = models.BooleanField(
         default=False,
         help_text=_(
@@ -88,6 +106,13 @@ class SiteSettings(BaseSetting):
                 FieldPanel('global_ga_tag_manager'),
             ],
             heading="GA Tag Manager Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('local_ga_tag'),
+                FieldPanel('global_ga_tag'),
+            ],
+            heading="GA Tag Settings",
         ),
         MultiFieldPanel(
             [
