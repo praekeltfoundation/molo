@@ -28,6 +28,8 @@ urlpatterns += patterns(
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'search/$', search, name='search'),
+    url(r'^djga/', include('google_analytics.urls')),
+
 {% for app_name, regex in cookiecutter.include %}
     url(r'{{regex}}',
         include('{{app_name}}.urls',
