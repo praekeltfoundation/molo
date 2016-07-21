@@ -21,4 +21,4 @@ django-extensions
 django-celery
 redis
 six>=1.9
-django-google-analytics-app==2.0.3
+django-google-analytics-app==2.0.4
