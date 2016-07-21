@@ -432,7 +432,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         setting = SiteSettings.objects.create(site=default_site)
 
         response = self.client.get('/')
-        self.assertContains(response, 'tracking_code=xxx')
+        self.assertNotContains(response, 'tracking_code=xxx')
 
         setting.local_ga_tracking_code = 'GTM-1234567'
         setting.save()
@@ -445,7 +445,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         setting = SiteSettings.objects.create(site=default_site)
 
         response = self.client.get('/')
-        self.assertContains(response, 'tracking_code=xxx')
+        self.assertNotContains(response, 'tracking_code=xxx')
 
         setting.global_ga_tracking_code = 'GTM-1234567'
         setting.save()
