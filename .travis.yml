@@ -39,6 +39,7 @@ script:
   - flake8 molo
   - molo scaffold testapp
   - cp molo/core/test_templates/section_page.html testapp/testapp/templates/core/section_page.html
+  - cp molo/core/test_templates/base.html testapp/testapp/templates/core/base.html
   - flake8 testapp
   - pip install -e testapp
   - if [[ "$COVERAGE" == "true" ]] && [[ "$TEST_RUNNER" == "py.test" ]]; then COVERAGE_OPT="--cov"; fi
