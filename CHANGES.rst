@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.4.0
+-----
+
+- Add local and global GA tracking codes
+
 3.3.0
 -----
 

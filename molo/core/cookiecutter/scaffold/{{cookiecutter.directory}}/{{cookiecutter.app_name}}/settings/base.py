@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     'molo.core',
     '{{cookiecutter.app_name}}',
+    'google_analytics',
 
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
@@ -122,6 +123,11 @@ TEMPLATES = [
 ROOT_URLCONF = '{{cookiecutter.app_name}}.urls'
 WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 
+# Google analytics
+
+GOOGLE_ANALYTICS = {
+    'google_analytics_id': 'xxx',
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
