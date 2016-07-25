@@ -21,4 +21,5 @@ urlpatterns = patterns(
         r'^versions/$',
         'molo.core.views.versions',
         name='versions'),
+    url(r'^djga/', include('google_analytics.urls')),
 )
