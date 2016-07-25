@@ -137,11 +137,20 @@ What is bundled with Molo?
 3. Basic models for the following tree structure:
 
    1. A site has languages
-   2. A language has a homepage
+    .. image:: choose_language.png
+
+   2. A language page has index pages. Index pages group sections, banners etc
+    .. image:: indexes.png
    3. Articles are organised into sections.
    4. Articles are composed from one or more blocks.
    5. Blocks can be headings, paragraphs, images, lists or
       links to other pages.
+    .. image:: article_blocks.png
+   6. Pages such as Articles or sections have translation options that show below when multiple languages are added.
+    .. image:: translation.png
+   7. A Settings tab that includes Site Settings. Site Settings is where the logo, google analytics and various other settings are set.
+    .. image:: site_settings.png
+
 
 Testing the Molo scaffolding tool
 ---------------------------------
