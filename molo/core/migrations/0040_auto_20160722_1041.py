@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0039_add content rotation to SectionPage'),
+        ('core', '0039_add_content_rotation_to_SectionPage'),
     ]
 
     operations = [
