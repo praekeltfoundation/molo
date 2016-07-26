@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+3.4.1
+-----
+
+- Add GA urls to Molo Urls
+- Pinned Flake8 to 2.6.2
+
 3.4.0
 -----
 
