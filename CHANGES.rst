@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.4.2
+-----
+
+- Fixed Migration Bug
+
 3.4.1
 -----
 
