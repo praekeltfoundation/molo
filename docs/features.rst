@@ -20,7 +20,7 @@ Core Features
     - Search
         - The ability to search for any content on the site
     - Multiple Languages
-        - Molo allows you to offer you content in multiple languages using the Wagtail's tree structure.
+        - Molo allows you to offer you content in multiple languages using the TranslatablePageMixin
 
 
 Existing Plugins

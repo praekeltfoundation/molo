@@ -22,6 +22,7 @@ Contents
    getting-started
    plugins
    features
+   multiple-languages
    release-notes
 
 .. _`Django`: https://www.djangoproject.com/
