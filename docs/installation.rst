@@ -1,4 +1,5 @@
 .. _installation:
+.. _multiple-languages:
 
 Installation
 ============

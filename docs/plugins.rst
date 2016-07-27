@@ -1,4 +1,5 @@
 .. _plugins:
+.. _multiple-languages:
 
 Plugins
 ===============
