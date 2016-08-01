@@ -23,6 +23,7 @@ Contents
    plugins
    features
    multiple-languages
+   template-tags
    release-notes
 
 .. _`Django`: https://www.djangoproject.com/

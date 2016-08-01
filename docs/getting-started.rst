@@ -1,4 +1,5 @@
 .. _getting-started:
+.. _template-tags:
 
 Getting Started
 ===============
