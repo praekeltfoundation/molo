@@ -1,5 +1,5 @@
-from datetime import datetime
-
+from datetime import datetime, timedelta
+from json import dumps
 import pytest
 from django.test import TestCase
 
@@ -28,14 +28,25 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
 
-    def test_latest_rotation(self):
+    def test_latest_rotation_on(self):
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
 
-        site_settings.content_rotation = True
-        d = datetime.now()
-        site_settings.content_rotation_time = d.hour
+        site_settings.content_rotation_start_date = datetime.now()
+        site_settings.content_rotation_end_date = datetime.now() + timedelta(
+            days=1)
+        time1 = str(datetime.now().time())
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())
+        site_settings.time = dumps([{
+            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+        site_settings.m = True
+        site_settings.tu = True
+        site_settings.w = True
+        site_settings.th = True
+        site_settings.f = True
+        site_settings.sa = True
+        site_settings.su = True
         site_settings.save()
 
         for i in range(5):
@@ -43,7 +54,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
                 title='Footer Page %s', slug='footer-page-%s' % (i, ))
             self.footer_index.add_child(instance=self.footer)
 
-        rotate_content()
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
@@ -51,19 +61,111 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
-        second_last_article_old = self.main.latest_articles()[8].pk
         last_article_old = self.main.latest_articles()[9].pk
 
         rotate_content()
+
         self.assertEquals(self.main.latest_articles().count(), 10)
         self.assertNotEquals(
             first_article_old, self.main.latest_articles()[0].pk)
         self.assertEquals(
-            first_article_old, self.main.latest_articles()[1].pk)
+            first_article_old, self.main.latest_articles()[2].pk)
         self.assertNotEquals(
-            last_article_old, self.main.latest_articles()[9].pk)
-        self.assertEquals(
-            second_last_article_old, self.main.latest_articles()[9].pk)
+            last_article_old, self.main.latest_articles()[8].pk)
+
+    def test_latest_rotation_no_days(self):
+        site = Site.objects.get(is_default_site=True)
+        settings = SettingsProxy(site)
+        site_settings = settings['core']['SiteSettings']
+
+        site_settings.content_rotation_start_date = datetime.now()
+        site_settings.content_rotation_end_date = datetime.now() + timedelta(
+            days=1)
+        time1 = str(datetime.now().time())
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())
+        site_settings.time = dumps([{
+            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+        site_settings.save()
+
+        for i in range(5):
+            self.footer = FooterPage(
+                title='Footer Page %s', slug='footer-page-%s' % (i, ))
+            self.footer_index.add_child(instance=self.footer)
+
+        self.assertEquals(FooterPage.objects.live().count(), 5)
+        self.assertEquals(self.main.latest_articles().count(), 0)
+
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
+        self.assertEquals(self.main.latest_articles().count(), 10)
+        first_article_old = self.main.latest_articles()[0].pk
+        last_article_old = self.main.latest_articles()[9].pk
+        rotate_content()
+        self.assertEquals(first_article_old, self.main.latest_articles()[0].pk)
+        self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
+
+    def test_latest_rotation_no_time(self):
+        site = Site.objects.get(is_default_site=True)
+        settings = SettingsProxy(site)
+        site_settings = settings['core']['SiteSettings']
+        site_settings.m = True
+        site_settings.tu = True
+        site_settings.w = True
+        site_settings.th = True
+        site_settings.f = True
+        site_settings.sa = True
+        site_settings.su = True
+        site_settings.content_rotation_start_date = datetime.now()
+        site_settings.content_rotation_end_date = datetime.now() + timedelta(
+            days=1)
+        site_settings.save()
+
+        for i in range(5):
+            self.footer = FooterPage(
+                title='Footer Page %s', slug='footer-page-%s' % (i, ))
+            self.footer_index.add_child(instance=self.footer)
+
+        self.assertEquals(FooterPage.objects.live().count(), 5)
+        self.assertEquals(self.main.latest_articles().count(), 0)
+
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
+        self.assertEquals(self.main.latest_articles().count(), 10)
+        first_article_old = self.main.latest_articles()[0].pk
+        last_article_old = self.main.latest_articles()[9].pk
+        rotate_content()
+        self.assertEquals(first_article_old, self.main.latest_articles()[0].pk)
+        self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
+
+    def test_latest_rotation_no_start_or_end_date(self):
+        site = Site.objects.get(is_default_site=True)
+        settings = SettingsProxy(site)
+        site_settings = settings['core']['SiteSettings']
+        site_settings.m = True
+        site_settings.tu = True
+        site_settings.w = True
+        site_settings.th = True
+        site_settings.f = True
+        site_settings.sa = True
+        site_settings.su = True
+        site_settings.save()
+
+        for i in range(5):
+            self.footer = FooterPage(
+                title='Footer Page %s', slug='footer-page-%s' % (i, ))
+            self.footer_index.add_child(instance=self.footer)
+
+        self.assertEquals(FooterPage.objects.live().count(), 5)
+        self.assertEquals(self.main.latest_articles().count(), 0)
+
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
+        self.assertEquals(self.main.latest_articles().count(), 10)
+        first_article_old = self.main.latest_articles()[0].pk
+        last_article_old = self.main.latest_articles()[9].pk
+        rotate_content()
+        self.assertEquals(first_article_old, self.main.latest_articles()[0].pk)
+        self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
 
     def test_homepage_rotation(self):
 
