@@ -79,12 +79,6 @@ class SiteSettings(BaseSetting):
             "Global GA tracking code to be used"
             " to view analytics on more than one site globally")
     )
-    content_rotation = models.BooleanField(
-        default=False,
-        help_text=_(
-            "This option allows articles featured in latest to be rotated"
-            "randomly and automatically")
-    )
 
     content_rotation_time = models.IntegerField(
         null=True,
@@ -97,6 +91,20 @@ class SiteSettings(BaseSetting):
             "This is the time that content will be rotated every day. "
             "If the content should rotate at 14h, then fill in 14")
     )
+    time = StreamField([
+        ('time', blocks.TimeBlock(required=False)),
+    ], null=True, blank=True)
+
+    m = models.BooleanField(default=False)
+    tu = models.BooleanField(default=False)
+    w = models.BooleanField(default=False)
+    th = models.BooleanField(default=False)
+    f = models.BooleanField(default=False)
+    sa = models.BooleanField(default=False)
+    su = models.BooleanField(default=False)
+
+    content_rotation_start_date = models.DateTimeField(null=True, blank=True)
+    content_rotation_end_date = models.DateTimeField(null=True, blank=True)
 
     panels = [
         ImageChooserPanel('logo'),
@@ -116,8 +124,18 @@ class SiteSettings(BaseSetting):
         ),
         MultiFieldPanel(
             [
-                FieldPanel('content_rotation'),
-                FieldPanel('content_rotation_time'),
+                FieldPanel('content_rotation_start_date'),
+                FieldPanel('content_rotation_end_date'),
+                FieldRowPanel([
+                    FieldPanel('m', classname='col1'),
+                    FieldPanel('tu', classname='col1'),
+                    FieldPanel('w', classname='col1'),
+                    FieldPanel('th', classname='col1'),
+                    FieldPanel('f', classname='col1'),
+                    FieldPanel('sa', classname='col1'),
+                    FieldPanel('su', classname='col1'),
+                ]),
+                StreamFieldPanel('time'),
             ],
             heading="Content Rotation Settings",)
     ]
