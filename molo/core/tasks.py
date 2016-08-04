@@ -12,7 +12,7 @@ from molo.core.models import (
 
 from wagtail.contrib.settings.context_processors import SettingsProxy
 from wagtail.wagtailcore.models import Site
-
+from django.utils import timezone
 
 IMPORT_EMAIL_TEMPLATE = "core/content_import/import_email.html"
 VALIDATE_EMAIL_TEMPLATE = "core/content_import/validate_email.html"
@@ -26,24 +26,32 @@ def rotate_content():
     site = Site.objects.get(is_default_site=True)
     settings = SettingsProxy(site)
     site_settings = settings['core']['SiteSettings']
+    day = datetime.today().weekday()
+    days = [
+        site_settings.m, site_settings.tu, site_settings.w, site_settings.th,
+        site_settings.f, site_settings.sa, site_settings.su]
     if main and index:
-        if site_settings.content_rotation_time == datetime.now().hour:
-            if site_settings.content_rotation:
-                rotate_latest(main_lang, index, main)
-            rotate_featured_in_homepage(main_lang)
+        rotate_latest(main_lang, index, main, site_settings, days, day)
+        rotate_featured_in_homepage(main_lang)
 
 
-def rotate_latest(main_lang, index, main):
-    random_article = ArticlePage.objects.live().filter(
-        featured_in_latest=False, languages__language__id=main_lang.id
-    ).descendant_of(index).order_by('?').first()
-    if random_article:
-        random_article.featured_in_latest = True
-        random_article.save_revision().publish()
+def rotate_latest(main_lang, index, main, site_settings, days, day):
+    if site_settings.content_rotation_start_date < timezone.now() \
+            < site_settings.content_rotation_end_date:
+        if days[day - 1] is True:
+            for hour in site_settings.time:
+                if str(hour)[:2] == str(datetime.now().hour):
+                    random_article = ArticlePage.objects.live().filter(
+                        featured_in_latest=False,
+                        languages__language__id=main_lang.id
+                    ).descendant_of(index).order_by('?').first()
+                    if random_article:
+                        random_article.featured_in_latest = True
+                        random_article.save_revision().publish()
 
-        article = main.latest_articles().last()
-        article.featured_in_latest = False
-        article.save_revision().publish()
+                        article = main.latest_articles().last()
+                        article.featured_in_latest = False
+                        article.save_revision().publish()
 
 
 def rotate_featured_in_homepage(main_lang):
