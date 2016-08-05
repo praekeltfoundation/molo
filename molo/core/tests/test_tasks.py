@@ -43,13 +43,13 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         time2 = str((datetime.now() + timedelta(minutes=1)).time())
         site_settings.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
-        site_settings.monday = True
-        site_settings.tuesday = True
-        site_settings.wednesday = True
-        site_settings.thursday = True
-        site_settings.friday = True
-        site_settings.saturday = True
-        site_settings.sunday = True
+        site_settings.monday_rotation = True
+        site_settings.tuesday_rotation = True
+        site_settings.wednesday_rotation = True
+        site_settings.thursday_rotation = True
+        site_settings.friday_rotation = True
+        site_settings.saturday_rotation = True
+        site_settings.sunday_rotation = True
         site_settings.save()
 
         # creates articles and pages, some set to feature in latest, others not
@@ -121,13 +121,13 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
-        site_settings.monday = True
-        site_settings.tuesday = True
-        site_settings.wednesday = True
-        site_settings.thursday = True
-        site_settings.friday = True
-        site_settings.saturday = True
-        site_settings.sunday = True
+        site_settings.monday_rotation = True
+        site_settings.tuesday_rotation = True
+        site_settings.wednesday_rotation = True
+        site_settings.thursday_rotation = True
+        site_settings.friday_rotation = True
+        site_settings.saturday_rotation = True
+        site_settings.sunday_rotation = True
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
             days=1)
@@ -156,13 +156,13 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
-        site_settings.monday = True
-        site_settings.tuesday = True
-        site_settings.wednesday = True
-        site_settings.thursday = True
-        site_settings.friday = True
-        site_settings.saturday = True
-        site_settings.sunday = True
+        site_settings.monday_rotation = True
+        site_settings.tuesday_rotation = True
+        site_settings.wednesday_rotation = True
+        site_settings.thursday_rotation = True
+        site_settings.friday_rotation = True
+        site_settings.saturday_rotation = True
+        site_settings.sunday_rotation = True
         site_settings.save()
 
         for i in range(5):
@@ -187,25 +187,12 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         def get_featured_articles(section):
             return section.featured_in_homepage_articles()
 
-        site = Site.objects.get(is_default_site=True)
-        settings = SettingsProxy(site)
-        site_settings = settings['core']['SiteSettings']
-
-        site_settings.featured_in_latest_rotation = True
-        d = datetime.now()
-        site_settings.content_rotation_time = d.hour
-        site_settings.save()
-
         non_rotating_articles = self.mk_articles(
             self.yourmind, count=3, featured_in_homepage=False)
         rotate_content()
         for article in non_rotating_articles:
             self.assertFalse(article.featured_in_latest)
         self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
-        self.yourmind_sub.featured_in_homepage_rotation = True
-        self.yourmind.featured_in_homepage_rotation = False
-        self.yourmind.save_revision().publish()
-        self.yourmind_sub.save_revision().publish()
         self.mk_articles(
             self.yourmind_sub, count=10, featured_in_homepage=True)
         self.mk_articles(
@@ -213,19 +200,27 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             get_featured_articles(self.yourmind_sub).count(), 10)
         first_article_old = get_featured_articles(self.yourmind_sub)[0].pk
-        second_last_article_old = get_featured_articles(
-            self.yourmind_sub)[8].pk
         last_article_old = get_featured_articles(self.yourmind_sub)[9].pk
-
+        self.yourmind_sub.content_rotation_start_date = datetime.now()
+        self.yourmind_sub.content_rotation_end_date = datetime.now() + timedelta(days=1)
+        time1 = str(datetime.now().time())
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())
+        self.yourmind_sub.time = dumps([{
+            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+        self.yourmind_sub.monday_rotation = True
+        self.yourmind_sub.tuesday_rotation = True
+        self.yourmind_sub.wednesday_rotation = True
+        self.yourmind_sub.thursday_rotation = True
+        self.yourmind_sub.friday_rotation = True
+        self.yourmind_sub.saturday_rotation = True
+        self.yourmind_sub.sunday_rotation = True
+        self.yourmind_sub.save_revision().publish()
         rotate_content()
         self.assertEquals(
             get_featured_articles(self.yourmind_sub).count(), 10)
         self.assertNotEquals(
             first_article_old, get_featured_articles(self.yourmind_sub)[0].pk)
         self.assertEquals(
-            first_article_old, get_featured_articles(self.yourmind_sub)[1].pk)
+            first_article_old, get_featured_articles(self.yourmind_sub)[2].pk)
         self.assertNotEquals(
             last_article_old, get_featured_articles(self.yourmind_sub)[9].pk)
-        self.assertEquals(
-            second_last_article_old,
-            get_featured_articles(self.yourmind_sub)[9].pk)
