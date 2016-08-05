@@ -29,8 +29,6 @@ from molo.core.blocks import MarkDownBlock, MultimediaBlock
 from molo.core import constants
 from molo.core.utils import get_locale_code
 
-from django.core.validators import MaxValueValidator, MinValueValidator
-
 
 @register_setting
 class SiteSettings(BaseSetting):
@@ -80,31 +78,28 @@ class SiteSettings(BaseSetting):
             " to view analytics on more than one site globally")
     )
 
-    content_rotation_time = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[
-            MaxValueValidator(23),
-            MinValueValidator(0)
-        ],
-        help_text=_(
-            "This is the time that content will be rotated every day. "
-            "If the content should rotate at 14h, then fill in 14")
-    )
     time = StreamField([
         ('time', blocks.TimeBlock(required=False)),
-    ], null=True, blank=True)
+    ], null=True, blank=True, help_text='The time/s content will be rotated')
 
-    monday = models.BooleanField(default=False)
-    tuesday = models.BooleanField(default=False)
-    wednesday = models.BooleanField(default=False)
-    thursday = models.BooleanField(default=False)
-    friday = models.BooleanField(default=False)
-    saturday = models.BooleanField(default=False)
-    sunday = models.BooleanField(default=False)
+    monday_rotation = models.BooleanField(default=False, verbose_name='Monday')
+    tuesday_rotation = models.BooleanField(
+        default=False, verbose_name='Tuesday')
+    wednesday_rotation = models.BooleanField(
+        default=False, verbose_name='Wednesday')
+    thursday_rotation = models.BooleanField(
+        default=False, verbose_name='Thursday')
+    friday_rotation = models.BooleanField(default=False, verbose_name='Friday')
+    saturday_rotation = models.BooleanField(
+        default=False, verbose_name='Saturday')
+    sunday_rotation = models.BooleanField(default=False, verbose_name='Sunday')
 
-    content_rotation_start_date = models.DateTimeField(null=True, blank=True)
-    content_rotation_end_date = models.DateTimeField(null=True, blank=True)
+    content_rotation_start_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will begin')
+    content_rotation_end_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will end')
 
     panels = [
         ImageChooserPanel('logo'),
@@ -127,13 +122,13 @@ class SiteSettings(BaseSetting):
                 FieldPanel('content_rotation_start_date'),
                 FieldPanel('content_rotation_end_date'),
                 FieldRowPanel([
-                    FieldPanel('monday', classname='col6'),
-                    FieldPanel('tuesday', classname='col6'),
-                    FieldPanel('wednesday', classname='col6'),
-                    FieldPanel('thursday', classname='col6'),
-                    FieldPanel('friday', classname='col6'),
-                    FieldPanel('saturday', classname='col6'),
-                    FieldPanel('sunday', classname='col6'),
+                    FieldPanel('monday_rotation', classname='col6'),
+                    FieldPanel('tuesday_rotation', classname='col6'),
+                    FieldPanel('wednesday_rotation', classname='col6'),
+                    FieldPanel('thursday_rotation', classname='col6'),
+                    FieldPanel('friday_rotation', classname='col6'),
+                    FieldPanel('saturday_rotation', classname='col6'),
+                    FieldPanel('sunday_rotation', classname='col6'),
                 ]),
                 StreamFieldPanel('time'),
             ],
@@ -400,12 +395,28 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    featured_in_homepage_rotation = models.BooleanField(
-        default=False,
-        help_text=_(
-            "This option allows articles featured in homepage to be rotated"
-            "randomly and automatically for this section only")
-    )
+    time = StreamField([
+        ('time', blocks.TimeBlock(required=False)),
+    ], null=True, blank=True, help_text='The time/s content will be rotated')
+
+    monday_rotation = models.BooleanField(default=False, verbose_name='Monday')
+    tuesday_rotation = models.BooleanField(
+        default=False, verbose_name='Tuesday')
+    wednesday_rotation = models.BooleanField(
+        default=False, verbose_name='Wednesday')
+    thursday_rotation = models.BooleanField(
+        default=False, verbose_name='Thursday')
+    friday_rotation = models.BooleanField(default=False, verbose_name='Friday')
+    saturday_rotation = models.BooleanField(
+        default=False, verbose_name='Saturday')
+    sunday_rotation = models.BooleanField(default=False, verbose_name='Sunday')
+
+    content_rotation_start_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will begin')
+    content_rotation_end_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will end')
 
     def articles(self):
         main_language_page = self.get_main_language_page()
@@ -496,7 +507,22 @@ SectionPage.content_panels = [
 SectionPage.settings_panels = [
     MultiFieldPanel(
         Page.settings_panels, "Scheduled publishing", "publishing"),
-    FieldPanel('featured_in_homepage_rotation'),
+    MultiFieldPanel(
+        [
+            FieldPanel('content_rotation_start_date'),
+            FieldPanel('content_rotation_end_date'),
+            FieldRowPanel([
+                FieldPanel('monday_rotation', classname='col6'),
+                FieldPanel('tuesday_rotation', classname='col6'),
+                FieldPanel('wednesday_rotation', classname='col6'),
+                FieldPanel('thursday_rotation', classname='col6'),
+                FieldPanel('friday_rotation', classname='col6'),
+                FieldPanel('saturday_rotation', classname='col6'),
+                FieldPanel('sunday_rotation', classname='col6'),
+            ]),
+            StreamFieldPanel('time'),
+        ],
+        heading="Content Rotation Settings",),
     MultiFieldPanel(
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
