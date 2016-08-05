@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from celery import task
+from time import strptime
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -52,7 +53,8 @@ def rotate_latest(main_lang, index, main, site_settings, days, day):
         # checks if the current weekday is set to rotate
         if days[day - 1]:
             for time in site_settings.time:
-                if str(time)[:2] == str(datetime.now().hour):
+                time = strptime(str(time), '%H:%M:%S.%f')
+                if time.tm_hour == datetime.now().hour:
                     # get a random article, set it to feature in latest
                     random_article = ArticlePage.objects.live().filter(
                         featured_in_latest=False,
