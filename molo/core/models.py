@@ -95,13 +95,13 @@ class SiteSettings(BaseSetting):
         ('time', blocks.TimeBlock(required=False)),
     ], null=True, blank=True)
 
-    m = models.BooleanField(default=False)
-    tu = models.BooleanField(default=False)
-    w = models.BooleanField(default=False)
-    th = models.BooleanField(default=False)
-    f = models.BooleanField(default=False)
-    sa = models.BooleanField(default=False)
-    su = models.BooleanField(default=False)
+    monday = models.BooleanField(default=False)
+    tuesday = models.BooleanField(default=False)
+    wednesday = models.BooleanField(default=False)
+    thursday = models.BooleanField(default=False)
+    friday = models.BooleanField(default=False)
+    saturday = models.BooleanField(default=False)
+    sunday = models.BooleanField(default=False)
 
     content_rotation_start_date = models.DateTimeField(null=True, blank=True)
     content_rotation_end_date = models.DateTimeField(null=True, blank=True)
@@ -127,13 +127,13 @@ class SiteSettings(BaseSetting):
                 FieldPanel('content_rotation_start_date'),
                 FieldPanel('content_rotation_end_date'),
                 FieldRowPanel([
-                    FieldPanel('m', classname='col1'),
-                    FieldPanel('tu', classname='col1'),
-                    FieldPanel('w', classname='col1'),
-                    FieldPanel('th', classname='col1'),
-                    FieldPanel('f', classname='col1'),
-                    FieldPanel('sa', classname='col1'),
-                    FieldPanel('su', classname='col1'),
+                    FieldPanel('monday', classname='col6'),
+                    FieldPanel('tuesday', classname='col6'),
+                    FieldPanel('wednesday', classname='col6'),
+                    FieldPanel('thursday', classname='col6'),
+                    FieldPanel('friday', classname='col6'),
+                    FieldPanel('saturday', classname='col6'),
+                    FieldPanel('sunday', classname='col6'),
                 ]),
                 StreamFieldPanel('time'),
             ],

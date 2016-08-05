@@ -20,6 +20,9 @@ VALIDATE_EMAIL_TEMPLATE = "core/content_import/validate_email.html"
 
 @task(ignore_result=True)
 def rotate_content():
+    """ this method gets the parameters that are needed for rotate_latest
+    and rotate_featured_in_homepage methods, and calls them both"""
+    # getting the content rotation settings from site settings
     main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
     main = Main.objects.all().first()
     index = SectionIndexPage.objects.live().first()
@@ -27,20 +30,30 @@ def rotate_content():
     settings = SettingsProxy(site)
     site_settings = settings['core']['SiteSettings']
     day = datetime.today().weekday()
+    # creates a days of the week list
     days = [
-        site_settings.m, site_settings.tu, site_settings.w, site_settings.th,
-        site_settings.f, site_settings.sa, site_settings.su]
+        site_settings.monday, site_settings.tuesday, site_settings.wednesday,
+        site_settings.thursday, site_settings.friday, site_settings.saturday,
+        site_settings.sunday]
+    # calls the two rotate methods with the necessary params
     if main and index:
         rotate_latest(main_lang, index, main, site_settings, days, day)
         rotate_featured_in_homepage(main_lang)
 
 
 def rotate_latest(main_lang, index, main, site_settings, days, day):
+    """This rotates all the articles that have been marked as
+    featured_in_latest. It checks whether current date falls within the set
+    date range for content rotation. It then checks whether the current weekday
+    is set to rotate, and then rotates an articles for each hour the admin has
+    set."""
     if site_settings.content_rotation_start_date < timezone.now() \
             < site_settings.content_rotation_end_date:
-        if days[day - 1] is True:
-            for hour in site_settings.time:
-                if str(hour)[:2] == str(datetime.now().hour):
+        # checks if the current weekday is set to rotate
+        if days[day - 1]:
+            for time in site_settings.time:
+                if str(time)[:2] == str(datetime.now().hour):
+                    # get a random article, set it to feature in latest
                     random_article = ArticlePage.objects.live().filter(
                         featured_in_latest=False,
                         languages__language__id=main_lang.id
@@ -49,6 +62,7 @@ def rotate_latest(main_lang, index, main, site_settings, days, day):
                         random_article.featured_in_latest = True
                         random_article.save_revision().publish()
 
+                        # set the last featured_in_latest article to false
                         article = main.latest_articles().last()
                         article.featured_in_latest = False
                         article.save_revision().publish()

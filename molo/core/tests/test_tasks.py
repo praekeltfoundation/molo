@@ -29,6 +29,9 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.yourmind, title='Your mind subsection')
 
     def test_latest_rotation_on(self):
+        """This test that if the date range, weekdays and times are set for
+        content rotation, that the content rotates accordingly"""
+        # sets the site settings
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
@@ -40,15 +43,16 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         time2 = str((datetime.now() + timedelta(minutes=1)).time())
         site_settings.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
-        site_settings.m = True
-        site_settings.tu = True
-        site_settings.w = True
-        site_settings.th = True
-        site_settings.f = True
-        site_settings.sa = True
-        site_settings.su = True
+        site_settings.monday = True
+        site_settings.tuesday = True
+        site_settings.wednesday = True
+        site_settings.thursday = True
+        site_settings.friday = True
+        site_settings.saturday = True
+        site_settings.sunday = True
         site_settings.save()
 
+        # creates articles and pages, some set to feature in latest, others not
         for i in range(5):
             self.footer = FooterPage(
                 title='Footer Page %s', slug='footer-page-%s' % (i, ))
@@ -60,20 +64,27 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
+        # gets the first and last articles of the list before it rotates
         first_article_old = self.main.latest_articles()[0].pk
         last_article_old = self.main.latest_articles()[9].pk
 
         rotate_content()
 
+        # checks to see that the number of latest articles has not increased
         self.assertEquals(self.main.latest_articles().count(), 10)
+        # checks to see the the old first articles is not still the first one
         self.assertNotEquals(
             first_article_old, self.main.latest_articles()[0].pk)
+        # checks to see the old first article has moved up 2 places
         self.assertEquals(
             first_article_old, self.main.latest_articles()[2].pk)
+        # checks to see the the old last article is not still last
         self.assertNotEquals(
             last_article_old, self.main.latest_articles()[8].pk)
 
     def test_latest_rotation_no_days(self):
+        """This test that if the date range and times are set for
+        content rotation, that it doesn't rotate without any weekdays set"""
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
@@ -105,16 +116,18 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
 
     def test_latest_rotation_no_time(self):
+        """This test that if the date range and weekdays are set for
+        content rotation, that the content doesn't rotates with no times set"""
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
-        site_settings.m = True
-        site_settings.tu = True
-        site_settings.w = True
-        site_settings.th = True
-        site_settings.f = True
-        site_settings.sa = True
-        site_settings.su = True
+        site_settings.monday = True
+        site_settings.tuesday = True
+        site_settings.wednesday = True
+        site_settings.thursday = True
+        site_settings.friday = True
+        site_settings.saturday = True
+        site_settings.sunday = True
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
             days=1)
@@ -138,16 +151,18 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
 
     def test_latest_rotation_no_start_or_end_date(self):
+        """This test that if the weekdays and times are set for
+        content rotation, that the content doesn't rotates with no dates set"""
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
-        site_settings.m = True
-        site_settings.tu = True
-        site_settings.w = True
-        site_settings.th = True
-        site_settings.f = True
-        site_settings.sa = True
-        site_settings.su = True
+        site_settings.monday = True
+        site_settings.tuesday = True
+        site_settings.wednesday = True
+        site_settings.thursday = True
+        site_settings.friday = True
+        site_settings.saturday = True
+        site_settings.sunday = True
         site_settings.save()
 
         for i in range(5):
