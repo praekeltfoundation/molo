@@ -48,26 +48,28 @@ def rotate_latest(main_lang, index, main, site_settings, days, day):
     date range for content rotation. It then checks whether the current weekday
     is set to rotate, and then rotates an articles for each hour the admin has
     set."""
-    if site_settings.content_rotation_start_date < timezone.now() \
-            < site_settings.content_rotation_end_date:
-        # checks if the current weekday is set to rotate
-        if days[day - 1]:
-            for time in site_settings.time:
-                time = strptime(str(time), '%H:%M:%S.%f')
-                if time.tm_hour == datetime.now().hour:
-                    # get a random article, set it to feature in latest
-                    random_article = ArticlePage.objects.live().filter(
-                        featured_in_latest=False,
-                        languages__language__id=main_lang.id
-                    ).descendant_of(index).order_by('?').first()
-                    if random_article:
-                        random_article.featured_in_latest = True
-                        random_article.save_revision().publish()
+    if site_settings.content_rotation_start_date and \
+            site_settings.content_rotation_end_date:
+        if site_settings.content_rotation_start_date < timezone.now() \
+                < site_settings.content_rotation_end_date:
+            # checks if the current weekday is set to rotate
+            if days[day - 1]:
+                for time in site_settings.time:
+                    time = strptime(str(time), '%H:%M:%S.%f')
+                    if time.tm_hour == datetime.now().hour:
+                        # get a random article, set it to feature in latest
+                        random_article = ArticlePage.objects.live().filter(
+                            featured_in_latest=False,
+                            languages__language__id=main_lang.id
+                        ).descendant_of(index).order_by('?').first()
+                        if random_article:
+                            random_article.featured_in_latest = True
+                            random_article.save_revision().publish()
 
-                        # set the last featured_in_latest article to false
-                        article = main.latest_articles().last()
-                        article.featured_in_latest = False
-                        article.save_revision().publish()
+                            # set the last featured_in_latest article to false
+                            article = main.latest_articles().last()
+                            article.featured_in_latest = False
+                            article.save_revision().publish()
 
 
 def rotate_featured_in_homepage(main_lang):
