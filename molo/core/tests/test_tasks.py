@@ -39,17 +39,11 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
             days=1)
-        time1 = str(datetime.now().time())
-        time2 = str((datetime.now() + timedelta(minutes=1)).time())
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         site_settings.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         site_settings.monday_rotation = True
-        site_settings.tuesday_rotation = True
-        site_settings.wednesday_rotation = True
-        site_settings.thursday_rotation = True
-        site_settings.friday_rotation = True
-        site_settings.saturday_rotation = True
-        site_settings.sunday_rotation = True
         site_settings.save()
 
         # creates articles and pages, some set to feature in latest, others not
@@ -68,7 +62,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         first_article_old = self.main.latest_articles()[0].pk
         last_article_old = self.main.latest_articles()[9].pk
 
-        rotate_content()
+        rotate_content(day=0)
 
         # checks to see that the number of latest articles has not increased
         self.assertEquals(self.main.latest_articles().count(), 10)
@@ -82,18 +76,18 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertNotEquals(
             last_article_old, self.main.latest_articles()[8].pk)
 
-    def test_latest_rotation_no_days(self):
+    def test_latest_rotation_no_valid_days(self):
         """This test that if the date range and times are set for
         content rotation, that it doesn't rotate without any weekdays set"""
         site = Site.objects.get(is_default_site=True)
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
-
+        site_settings.monday_rotation = True
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
             days=1)
-        time1 = str(datetime.now().time())
-        time2 = str((datetime.now() + timedelta(minutes=1)).time())
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         site_settings.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         site_settings.save()
@@ -111,7 +105,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
         last_article_old = self.main.latest_articles()[9].pk
-        rotate_content()
+        rotate_content(4)
         self.assertEquals(first_article_old, self.main.latest_articles()[0].pk)
         self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
 
@@ -122,12 +116,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         settings = SettingsProxy(site)
         site_settings = settings['core']['SiteSettings']
         site_settings.monday_rotation = True
-        site_settings.tuesday_rotation = True
-        site_settings.wednesday_rotation = True
-        site_settings.thursday_rotation = True
-        site_settings.friday_rotation = True
-        site_settings.saturday_rotation = True
-        site_settings.sunday_rotation = True
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
             days=1)
@@ -146,7 +134,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
         last_article_old = self.main.latest_articles()[9].pk
-        rotate_content()
+        rotate_content(0)
         self.assertEquals(first_article_old, self.main.latest_articles()[0].pk)
         self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
 
@@ -202,9 +190,10 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         first_article_old = get_featured_articles(self.yourmind_sub)[0].pk
         last_article_old = get_featured_articles(self.yourmind_sub)[9].pk
         self.yourmind_sub.content_rotation_start_date = datetime.now()
-        self.yourmind_sub.content_rotation_end_date = datetime.now() + timedelta(days=1)
-        time1 = str(datetime.now().time())
-        time2 = str((datetime.now() + timedelta(minutes=1)).time())
+        self.yourmind_sub.content_rotation_end_date = datetime.now() + \
+            timedelta(days=1)
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         self.yourmind_sub.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         self.yourmind_sub.monday_rotation = True

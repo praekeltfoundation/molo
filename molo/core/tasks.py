@@ -20,7 +20,7 @@ VALIDATE_EMAIL_TEMPLATE = "core/content_import/validate_email.html"
 
 
 @task(ignore_result=True)
-def rotate_content():
+def rotate_content(day=None):
     """ this method gets the parameters that are needed for rotate_latest
     and rotate_featured_in_homepage methods, and calls them both"""
     # getting the content rotation settings from site settings
@@ -30,7 +30,8 @@ def rotate_content():
     site = Site.objects.get(is_default_site=True)
     settings = SettingsProxy(site)
     site_settings = settings['core']['SiteSettings']
-    day = datetime.today().weekday()
+    if day is None:
+        day = datetime.today().weekday()
     # creates a days of the week list
 
     # calls the two rotate methods with the necessary params
@@ -55,9 +56,10 @@ def rotate_latest(main_lang, index, main, site_settings, day):
         if site_settings.content_rotation_start_date < timezone.now() \
                 < site_settings.content_rotation_end_date:
             # checks if the current weekday is set to rotate
-            if days[day - 1]:
+
+            if days[day]:
                 for time in site_settings.time:
-                    time = strptime(str(time), '%H:%M:%S.%f')
+                    time = strptime(str(time), '%H:%M:%S')
                     if time.tm_hour == datetime.now().hour:
                         # get a random article, set it to feature in latest
                         random_article = ArticlePage.objects.live().filter(
@@ -86,9 +88,9 @@ def rotate_featured_in_homepage(main_lang, day):
             if section.content_rotation_start_date < timezone.now() \
                     < section.content_rotation_end_date:
                 # checks if the current weekday is set to rotate
-                if days[day - 1]:
+                if days[day]:
                     for time in section.time:
-                        time = strptime(str(time), '%H:%M:%S.%f')
+                        time = strptime(str(time), '%H:%M:%S')
                         if time.tm_hour == datetime.now().hour:
                             random_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
@@ -97,7 +99,8 @@ def rotate_featured_in_homepage(main_lang, day):
                             if random_article:
                                 random_article.featured_in_homepage = True
                                 random_article.save_revision().publish()
-                                article = section.featured_in_homepage_articles().last()
+                                article = section.\
+                                    featured_in_homepage_articles().last()
                                 article.featured_in_homepage = False
                                 article.save_revision().publish()
 
