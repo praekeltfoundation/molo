@@ -3,22 +3,43 @@ from django import template
 from django.utils.safestring import mark_safe
 from markdown import markdown
 
+from wagtail.wagtailcore.models import Site
+from wagtail.contrib.settings.context_processors import SettingsProxy
+
 from molo.core.models import Page, SiteLanguage, ArticlePage, SectionPage
 
 register = template.Library()
 
 
+def get_pages(qs, locale):
+    language = SiteLanguage.objects.filter(locale=locale).first()
+    site = Site.objects.get(is_default_site=True)
+    settings = SettingsProxy(site)
+    site_settings = settings['core']['SiteSettings']
+    if site_settings.show_only_translated_pages:
+        if language.is_main_language:
+            return [a for a in qs]
+        else:
+            pages = []
+            for a in qs:
+                if a.get_translation_for(locale):
+                    pages.append(a.get_translation_for(locale))
+            return pages
+    else:
+        return [a.get_translation_for(locale) or a for a in qs]
+
+
 @register.assignment_tag(takes_context=True)
 def load_sections(context):
     request = context['request']
-    locale_code = context.get('locale_code')
+    locale = context.get('locale_code')
 
     if request.site:
         qs = request.site.root_page.specific.sections()
     else:
         qs = []
 
-    return [a.get_translation_for(locale_code) or a for a in qs]
+    return get_pages(qs, locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -50,7 +71,7 @@ def section_listing_homepage(context):
 )
 def latest_listing_homepage(context, num_count=5):
     request = context['request']
-    locale_code = context.get('locale_code')
+    locale = context.get('locale_code')
 
     if request.site:
         articles = request.site.root_page.specific\
@@ -59,17 +80,16 @@ def latest_listing_homepage(context, num_count=5):
         articles = []
 
     return {
-        'articles': [
-            a.get_translation_for(locale_code) or a for a in articles],
+        'articles': get_pages(articles, locale),
         'request': context['request'],
-        'locale_code': locale_code,
+        'locale_code': locale,
     }
 
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
 def bannerpages(context):
     request = context['request']
-    locale_code = context.get('locale_code')
+    locale = context.get('locale_code')
 
     if request.site:
         pages = request.site.root_page.specific.bannerpages()
@@ -77,17 +97,16 @@ def bannerpages(context):
         pages = []
 
     return {
-        'bannerpages': [
-            a.get_translation_for(locale_code) or a for a in pages],
+        'bannerpages': get_pages(pages, locale),
         'request': context['request'],
-        'locale_code': locale_code,
+        'locale_code': locale,
     }
 
 
 @register.inclusion_tag('core/tags/footerpage.html', takes_context=True)
 def footer_page(context):
     request = context['request']
-    locale_code = context.get('locale_code')
+    locale = context.get('locale_code')
 
     if request.site:
         pages = request.site.root_page.specific.footers()
@@ -95,9 +114,9 @@ def footer_page(context):
         pages = []
 
     return {
-        'footers': [a.get_translation_for(locale_code) or a for a in pages],
+        'footers': get_pages(pages, locale),
         'request': context['request'],
-        'locale_code': locale_code,
+        'locale_code': locale,
     }
 
 
@@ -175,7 +194,7 @@ def load_descendant_articles_for_section(
     if not locale:
         return qs[:count]
 
-    return [a.get_translation_for(locale) or a for a in qs[:count]]
+    return get_pages(qs[:count], locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -206,7 +225,7 @@ def load_child_articles_for_section(context, section, count=5):
 
     context.update({'articles_paginated': articles})
 
-    return [a.get_translation_for(locale) or a for a in articles]
+    return get_pages(articles, locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -225,7 +244,7 @@ def load_child_sections_for_section(context, section, count=None):
     if not locale:
         return qs[:count]
 
-    return [a.get_translation_for(locale) or a for a in qs[:count]]
+    return get_pages(qs, locale)
 
 
 @register.filter
