@@ -26,6 +26,9 @@ urlpatterns += patterns(
 
 
 class CASTestCase(TestCase, MoloTestCaseMixin):
+    def setUp(self):
+        # Creates main page
+        self.mk_main()
 
     def test_login_redirect(self):
         response = self.client.get('/admin/', follow=True)
