@@ -1,4 +1,5 @@
 .. _plugins:
+.. _template-tags:
 
 Features
 ========
@@ -20,7 +21,7 @@ Core Features
     - Search
         - The ability to search for any content on the site
     - Multiple Languages
-        - Molo allows you to offer you content in multiple languages using the Wagtail's tree structure.
+        - Molo allows you to offer you content in multiple languages using the TranslatablePageMixin
 
 
 Existing Plugins
@@ -93,3 +94,17 @@ Main features:
     - Exporting polls results as a CSV (currently in dev)
 
 .. _`Comments Framework`: http://django-contrib-comments.readthedocs.org
+
+.. _molo-usermetadata
+
+molo.usermetadata
+~~~~~~~~~~~~~~~~~
+
+
+``Github``: https://github.com/praekelt/molo.usermetadata
+
+
+User meta data allows one to create persona pages so that when a user visits a site for the first time, they are able to choose a persona, or choose to skip this. This does not require the user to log in.
+
+Main features:
+    - Creating and publishing persona pages to be displayed when the user visits the site for the first time

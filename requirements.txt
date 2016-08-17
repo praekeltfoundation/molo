@@ -12,6 +12,7 @@ requests
 elastic-git
 unicore.content
 wagtail==1.4.5
+html5lib==0.9999999
 responses
 babel
 wagtailmodeladmin
@@ -20,3 +21,4 @@ django-extensions
 django-celery
 redis
 six>=1.9
+django-google-analytics-app==2.1.0

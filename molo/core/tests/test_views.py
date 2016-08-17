@@ -409,7 +409,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'],
             current_session_key)
 
-    def test_ga_tag_manager_setting(self):
+    def test_local_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
 
@@ -422,6 +422,50 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(response, 'www.googletagmanager.com')
         self.assertContains(response, 'GTM-1234567')
+
+        self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
+        self.assertContains(
+            response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
+
+    def test_local_ga_tracking_code_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        response = self.client.get('/')
+        self.assertNotContains(response, 'tracking_code=xxx')
+
+        setting.local_ga_tracking_code = 'GTM-1234567'
+        setting.save()
+
+        response = self.client.get('/')
+        self.assertContains(response, 'tracking_code=GTM-1234567')
+
+    def test_global_ga_tracking_code_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        response = self.client.get('/')
+        self.assertNotContains(response, 'tracking_code=xxx')
+
+        setting.global_ga_tracking_code = 'GTM-1234567'
+        setting.save()
+
+        response = self.client.get('/')
+        self.assertContains(response, 'tracking_code=GTM-1234567')
+
+    def test_global_ga_tag_manager_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        response = self.client.get('/')
+        self.assertNotContains(response, 'www.googletagmanager.com')
+
+        setting.global_ga_tag_manager = 'GTM-2345678'
+        setting.save()
+
+        response = self.client.get('/')
+        self.assertContains(response, 'www.googletagmanager.com')
+        self.assertContains(response, 'GTM-2345678')
 
         self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
         self.assertContains(

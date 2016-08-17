@@ -29,8 +29,6 @@ from molo.core.blocks import MarkDownBlock, MultimediaBlock
 from molo.core import constants
 from molo.core.utils import get_locale_code
 
-from django.core.validators import MaxValueValidator, MinValueValidator
-
 
 @register_setting
 class SiteSettings(BaseSetting):
@@ -43,39 +41,96 @@ class SiteSettings(BaseSetting):
     )
 
     ga_tag_manager = models.CharField(
-        verbose_name=_('GA Tag Manager'),
+        verbose_name=_('Local GA Tag Manager'),
         max_length=255,
         null=True,
         blank=True,
-        help_text=_("GA Tag Manager tracking code (e.g GTM-XXX)")
-    )
-
-    content_rotation = models.BooleanField(
-        default=False,
         help_text=_(
-            "This option allows content to be rotated randomly and"
-            " automatically")
+            "Local GA Tag Manager tracking code (e.g GTM-XXX) to be used to "
+            "view analytics on this site only")
     )
-
-    content_rotation_time = models.IntegerField(
+    global_ga_tag_manager = models.CharField(
+        verbose_name=_('Global GA Tag Manager'),
+        max_length=255,
         null=True,
         blank=True,
-        validators=[
-            MaxValueValidator(23),
-            MinValueValidator(0)
-        ],
         help_text=_(
-            "This is the time that content will be rotated every day. "
-            "If the content should rotate at 14h, then fill in 14")
+            "Global GA Tag Manager tracking code (e.g GTM-XXX) to be used"
+            " to view analytics on more than one site globally")
     )
+
+    local_ga_tracking_code = models.CharField(
+        verbose_name=_('Local GA Tracking Code'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "Local GA tracking code to be used to "
+            "view analytics on this site only")
+    )
+    global_ga_tracking_code = models.CharField(
+        verbose_name=_('Global GA Tracking Code'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "Global GA tracking code to be used"
+            " to view analytics on more than one site globally")
+    )
+
+    time = StreamField([
+        ('time', blocks.TimeBlock(required=False)),
+    ], null=True, blank=True, help_text='The time/s content will be rotated')
+
+    monday_rotation = models.BooleanField(default=False, verbose_name='Monday')
+    tuesday_rotation = models.BooleanField(
+        default=False, verbose_name='Tuesday')
+    wednesday_rotation = models.BooleanField(
+        default=False, verbose_name='Wednesday')
+    thursday_rotation = models.BooleanField(
+        default=False, verbose_name='Thursday')
+    friday_rotation = models.BooleanField(default=False, verbose_name='Friday')
+    saturday_rotation = models.BooleanField(
+        default=False, verbose_name='Saturday')
+    sunday_rotation = models.BooleanField(default=False, verbose_name='Sunday')
+
+    content_rotation_start_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will begin')
+    content_rotation_end_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will end')
 
     panels = [
         ImageChooserPanel('logo'),
-        FieldPanel('ga_tag_manager'),
         MultiFieldPanel(
             [
-                FieldPanel('content_rotation'),
-                FieldPanel('content_rotation_time'),
+                FieldPanel('ga_tag_manager'),
+                FieldPanel('global_ga_tag_manager'),
+            ],
+            heading="GA Tag Manager Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('local_ga_tracking_code'),
+                FieldPanel('global_ga_tracking_code'),
+            ],
+            heading="GA Tracking Code Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('content_rotation_start_date'),
+                FieldPanel('content_rotation_end_date'),
+                FieldRowPanel([
+                    FieldPanel('monday_rotation', classname='col6'),
+                    FieldPanel('tuesday_rotation', classname='col6'),
+                    FieldPanel('wednesday_rotation', classname='col6'),
+                    FieldPanel('thursday_rotation', classname='col6'),
+                    FieldPanel('friday_rotation', classname='col6'),
+                    FieldPanel('saturday_rotation', classname='col6'),
+                    FieldPanel('sunday_rotation', classname='col6'),
+                ]),
+                StreamFieldPanel('time'),
             ],
             heading="Content Rotation Settings",)
     ]
@@ -340,6 +395,29 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+    time = StreamField([
+        ('time', blocks.TimeBlock(required=False)),
+    ], null=True, blank=True, help_text='The time/s content will be rotated')
+
+    monday_rotation = models.BooleanField(default=False, verbose_name='Monday')
+    tuesday_rotation = models.BooleanField(
+        default=False, verbose_name='Tuesday')
+    wednesday_rotation = models.BooleanField(
+        default=False, verbose_name='Wednesday')
+    thursday_rotation = models.BooleanField(
+        default=False, verbose_name='Thursday')
+    friday_rotation = models.BooleanField(default=False, verbose_name='Friday')
+    saturday_rotation = models.BooleanField(
+        default=False, verbose_name='Saturday')
+    sunday_rotation = models.BooleanField(default=False, verbose_name='Sunday')
+
+    content_rotation_start_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will begin')
+    content_rotation_end_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will end')
+
     def articles(self):
         main_language_page = self.get_main_language_page()
         return list(chain(
@@ -392,6 +470,13 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
 
+    def featured_in_homepage_articles(self):
+        main_language_page = self.get_main_language_page()
+        return ArticlePage.objects.live().child_of(main_language_page).filter(
+            languages__language__is_main_language=True,
+            featured_in_homepage=True).order_by(
+                '-latest_revision_created_at').specific()
+
     def get_context(self, request):
         context = super(SectionPage, self).get_context(request)
 
@@ -422,6 +507,22 @@ SectionPage.content_panels = [
 SectionPage.settings_panels = [
     MultiFieldPanel(
         Page.settings_panels, "Scheduled publishing", "publishing"),
+    MultiFieldPanel(
+        [
+            FieldPanel('content_rotation_start_date'),
+            FieldPanel('content_rotation_end_date'),
+            FieldRowPanel([
+                FieldPanel('monday_rotation', classname='col6'),
+                FieldPanel('tuesday_rotation', classname='col6'),
+                FieldPanel('wednesday_rotation', classname='col6'),
+                FieldPanel('thursday_rotation', classname='col6'),
+                FieldPanel('friday_rotation', classname='col6'),
+                FieldPanel('saturday_rotation', classname='col6'),
+                FieldPanel('sunday_rotation', classname='col6'),
+            ]),
+            StreamFieldPanel('time'),
+        ],
+        heading="Content Rotation Settings",),
     MultiFieldPanel(
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],

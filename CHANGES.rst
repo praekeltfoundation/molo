@@ -1,6 +1,37 @@
 CHANGE LOG
 ==========
 
+3.5.0
+-----
+
+- Add date and time options to content rotation
+
+3.4.2
+-----
+
+- Fixed Migration Bug
+
+3.4.1
+-----
+
+- Add GA urls to Molo Urls
+- Pinned Flake8 to 2.6.2
+
+3.4.0
+-----
+
+- Add local and global GA tracking codes
+
+3.3.0
+-----
+
+- Add random content rotation for articles featured on homepage
+
+3.2.8
+-----
+
+- Add global GA Tag model
+
 3.2.7
 -----
 
