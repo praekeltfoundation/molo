@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.5.0
+-----
+
+- Add date and time options to content rotation
+
 3.4.2
 -----
 
