@@ -3,19 +3,16 @@ from django import template
 from django.utils.safestring import mark_safe
 from markdown import markdown
 
-from wagtail.wagtailcore.models import Site
-from wagtail.contrib.settings.context_processors import SettingsProxy
-
-from molo.core.models import Page, SiteLanguage, ArticlePage, SectionPage
+from molo.core.models import (Page, SiteLanguage, ArticlePage, SectionPage,
+                              SiteSettings)
 
 register = template.Library()
 
 
-def get_pages(qs, locale):
+def get_pages(context, qs, locale):
     language = SiteLanguage.objects.filter(locale=locale).first()
-    site = Site.objects.get(is_default_site=True)
-    settings = SettingsProxy(site)
-    site_settings = settings['core']['SiteSettings']
+    request = context['request']
+    site_settings = SiteSettings.for_site(request.site)
     if site_settings.show_only_translated_pages:
         if language.is_main_language:
             return [a for a in qs]
@@ -39,7 +36,7 @@ def load_sections(context):
     else:
         qs = []
 
-    return get_pages(qs, locale)
+    return get_pages(context, qs, locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -80,7 +77,7 @@ def latest_listing_homepage(context, num_count=5):
         articles = []
 
     return {
-        'articles': get_pages(articles, locale),
+        'articles': get_pages(context, articles, locale),
         'request': context['request'],
         'locale_code': locale,
     }
@@ -97,7 +94,7 @@ def bannerpages(context):
         pages = []
 
     return {
-        'bannerpages': get_pages(pages, locale),
+        'bannerpages': get_pages(context, pages, locale),
         'request': context['request'],
         'locale_code': locale,
     }
@@ -114,7 +111,7 @@ def footer_page(context):
         pages = []
 
     return {
-        'footers': get_pages(pages, locale),
+        'footers': get_pages(context, pages, locale),
         'request': context['request'],
         'locale_code': locale,
     }
@@ -194,7 +191,7 @@ def load_descendant_articles_for_section(
     if not locale:
         return qs[:count]
 
-    return get_pages(qs[:count], locale)
+    return get_pages(context, qs[:count], locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -225,7 +222,7 @@ def load_child_articles_for_section(context, section, count=5):
 
     context.update({'articles_paginated': articles})
 
-    return get_pages(articles, locale)
+    return get_pages(context, articles, locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -244,7 +241,7 @@ def load_child_sections_for_section(context, section, count=None):
     if not locale:
         return qs[:count]
 
-    return get_pages(qs, locale)
+    return get_pages(context, qs, locale)
 
 
 @register.filter
