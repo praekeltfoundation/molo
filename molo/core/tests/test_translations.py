@@ -1,9 +1,12 @@
 import pytest
 
-from django.test import TestCase
-from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage, SectionPage
 from django.core.urlresolvers import reverse
+from django.test import TestCase
+
+from wagtail.wagtailcore.models import Site
+
+from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.models import SiteLanguage, SectionPage, SiteSettings
 
 
 @pytest.mark.django_db
@@ -170,3 +173,94 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         response = self.client.get(reverse('wagtailadmin_home'))
         self.assertContains(response, '<span>2</span>English Pages')
         self.assertContains(response, '<span>2</span>French Pages')
+
+    def test_that_only_translated_pages_are_shown_on_front_end(self):
+        # set the site settings show_only_translated_pages to True
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        setting.show_only_translated_pages = True
+        setting.save()
+
+        eng_section2 = self.mk_section(
+            self.section_index, title='English section2')
+        self.mk_section_translation(
+            eng_section2, self.french,
+            title=eng_section2.title + ' in french')
+
+        # tests that in Home page users will only see the sections
+        # that have been translated
+        response = self.client.get('/')
+
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/">English section</a>')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section2/">English section2</a>')
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section2-in-french/">'
+            'English section2 in french</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/sections/english-section/">English section</a>')
+
+        en_page = self.mk_article(self.english_section,
+                                  title='English article1',
+                                  featured_in_latest=True)
+        self.mk_article_translation(
+            en_page, self.french, title=en_page.title + ' in french',)
+
+        self.mk_article(self.english_section,
+                        title='English article2',
+                        featured_in_latest=True)
+
+        # tests that in english section users will only see the articles
+        # that have been translated
+        response = self.client.get('/locale/en/')
+        response = self.client.get('/sections/english-section/')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article1/">'
+            'English article1</a>')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article2/">'
+            'English article2</a>')
+
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/sections/english-section/')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article1-in-french/">'
+            'English article1 in french</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/sections/english-section/english-article2-in-french/">'
+            'English article2 in french</a>')
+
+        # tests that in latest block users will only see the articles
+        # that have been translated
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article1-in-french/">'
+            'English article1 in french</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/sections/english-section/english-article2/">'
+            'English article2</a>')
+
+        response = self.client.get('/locale/en/')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article2/">'
+            'English article2</a>')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article1/">'
+            'English article1</a>')
