@@ -79,7 +79,9 @@ class SiteSettings(BaseSetting):
     )
     show_only_translated_pages = models.BooleanField(
         default=False,
-        help_text='Hides the pages that do not have translations')
+        help_text='When selecting this option, untranslated pages'
+                  ' will not be visible to the front end user'
+                  ' when they viewing a child language of the site')
 
     time = StreamField([
         ('time', blocks.TimeBlock(required=False)),

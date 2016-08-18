@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='show_only_translated_pages',
-            field=models.BooleanField(default=False, help_text=b'Hides the pages that do not have translations'),
+            field=models.BooleanField(default=False, help_text=b'When selecting this option, untranslated pages will not be visible to the front end user when they viewing a child language of the site'),
         ),
     ]
