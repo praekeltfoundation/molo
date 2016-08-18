@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+3.6.0
+-----
+
+- Add the option that untranslated pages will not be visible to the front end user when they viewing a child language of the site
+
 3.5.0
 -----
 
