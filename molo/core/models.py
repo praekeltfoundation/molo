@@ -77,6 +77,11 @@ class SiteSettings(BaseSetting):
             "Global GA tracking code to be used"
             " to view analytics on more than one site globally")
     )
+    show_only_translated_pages = models.BooleanField(
+        default=False,
+        help_text='When selecting this option, untranslated pages'
+                  ' will not be visible to the front end user'
+                  ' when they viewing a child language of the site')
 
     time = StreamField([
         ('time', blocks.TimeBlock(required=False)),
@@ -103,6 +108,12 @@ class SiteSettings(BaseSetting):
 
     panels = [
         ImageChooserPanel('logo'),
+        MultiFieldPanel(
+            [
+                FieldPanel('show_only_translated_pages'),
+            ],
+            heading="Multi Language",
+        ),
         MultiFieldPanel(
             [
                 FieldPanel('ga_tag_manager'),
