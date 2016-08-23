@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import template
 from django.utils.safestring import mark_safe
@@ -15,7 +17,6 @@ def get_pages(context, qs, locale):
     site_settings = SiteSettings.for_site(request.site)
     if site_settings.show_only_translated_pages:
         if language.is_main_language:
-            print "1--->", dir(qs)
             return [a for a in qs.live()]
         else:
             pages = []
@@ -25,7 +26,6 @@ def get_pages(context, qs, locale):
             return pages
     else:
         if language.is_main_language:
-            print "2--->", qs, dir(qs)
             return [a for a in qs.live()]
         else:
             return [a.get_translation_for(locale) or a for a in qs]
@@ -207,7 +207,15 @@ def load_child_articles_for_section(context, section, count=5):
     return the translations of the live articles.
     '''
     locale = context.get('locale_code')
-    qs = section.articles()
+    main_language_page = section.get_main_language_page()
+    child_articles = ArticlePage.objects.child_of(main_language_page).filter(
+        languages__language__is_main_language=True)
+    related_articles = ArticlePage.objects.filter(
+        related_sections__section__slug=section.slug,
+        languages__language__is_main_language=True)
+    qs = list(chain(
+        get_pages(context, child_articles, locale),
+        get_pages(context, related_articles, locale)))
 
     # Pagination
     if count:
@@ -226,8 +234,7 @@ def load_child_articles_for_section(context, section, count=5):
         return articles
 
     context.update({'articles_paginated': articles})
-    print "##---->", articles
-    return get_pages(context, articles, locale)
+    return qs
 
 
 @register.assignment_tag(takes_context=True)
