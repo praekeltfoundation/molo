@@ -435,8 +435,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
             ArticlePage.objects.child_of(main_language_page).filter(
                 languages__language__is_main_language=True),
             ArticlePage.objects.filter(
-                related_sections__section__slug=self.slug,
-                languages__language__is_main_language=True)
+                related_sections__section__slug=self.slug)
         )
         )
 

@@ -28,6 +28,7 @@ def get_pages(context, qs, locale):
         if language.is_main_language:
             return [a for a in qs.live()]
         else:
+            print qs
             return [a.get_translation_for(locale) or a for a in qs]
 
 
@@ -211,8 +212,7 @@ def load_child_articles_for_section(context, section, count=5):
     child_articles = ArticlePage.objects.child_of(main_language_page).filter(
         languages__language__is_main_language=True)
     related_articles = ArticlePage.objects.filter(
-        related_sections__section__slug=section.slug,
-        languages__language__is_main_language=True)
+        related_sections__section__slug=section.slug)
     qs = list(chain(
         get_pages(context, child_articles, locale),
         get_pages(context, related_articles, locale)))
