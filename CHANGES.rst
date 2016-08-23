@@ -14,6 +14,7 @@ Main features::
 - Renamed HomePage module to BannerPage
 - Changed content structure to introduce index pages
 - Upgraded wagtail to 1.4.3
+- We've added the option to allow un-translated pages to be hidden
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
