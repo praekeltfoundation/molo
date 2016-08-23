@@ -11,7 +11,18 @@ Main features::
 - Revamped Multi Language support
 - We added content automated content rotation and a way to schedule when content should be cycled
 - We now offer specifying Google Analytics from the CMS for both GA and GTM
-- Upgraded wagtail to 1.4
+- Renamed HomePage module to BannerPage
+- Changed content structure to introduce index pages
+- Upgraded wagtail to 1.4.3
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Deprecated use of ``LanguagePage``: use ``SiteLanguage`` for multi-language support
+- Deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
+- Deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
+- Deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
+- Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
+- Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
 3.6.0
 ~~~~~
@@ -167,17 +178,9 @@ Main features::
 - Added GA tag manager field to site settings
 - Upgraded wagtail to 1.4.3
 
-Backwards incompatible changes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Deprecated use of ``LanguagePage``: use ``SiteLanguage`` for multi-language support
-- Deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
-- Deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
-- Deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
-- Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
-- Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
 2.x
-~~~
+---
 
 This is the initial release of Molo (1.x was considered beta)
 
@@ -186,6 +189,7 @@ Main features::
 - Scafolding a Wagtail site with basic models
 - Core features including Banners, Sections, Articles, Footer Pages, Search
 - Out the box support for plugins (molo.profiles, molo.commenting, molo.yourwords, molo.polls)
+- Upgraded Wagtail to 1.0
 
 2.6.17
 ~~~~~~
