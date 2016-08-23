@@ -234,7 +234,7 @@ def load_child_articles_for_section(context, section, count=5):
         return articles
 
     context.update({'articles_paginated': articles})
-    return qs
+    return articles
 
 
 @register.assignment_tag(takes_context=True)
