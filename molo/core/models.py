@@ -267,22 +267,22 @@ class Main(CommentedPageMixin, Page):
     subpage_types = []
 
     def bannerpages(self):
-        return BannerPage.objects.live().filter(
+        return BannerPage.objects.filter(
             languages__language__is_main_language=True).specific()
 
     def sections(self):
         index_page = SectionIndexPage.objects.live().all().first()
-        return SectionPage.objects.live().child_of(index_page).filter(
+        return SectionPage.objects.child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 
     def latest_articles(self):
-        return ArticlePage.objects.live().filter(
+        return ArticlePage.objects.filter(
             featured_in_latest=True,
             languages__language__is_main_language=True).order_by(
                 '-latest_revision_created_at').specific()
 
     def footers(self):
-        return FooterPage.objects.live().filter(
+        return FooterPage.objects.filter(
             languages__language__is_main_language=True).specific()
 
 
@@ -432,17 +432,16 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     def articles(self):
         main_language_page = self.get_main_language_page()
         return list(chain(
-            ArticlePage.objects.live().child_of(main_language_page).filter(
+            ArticlePage.objects.child_of(main_language_page).filter(
                 languages__language__is_main_language=True),
-            ArticlePage.objects.live().filter(
-                related_sections__section__slug=self.slug,
-                languages__language__is_main_language=True)
+            ArticlePage.objects.filter(
+                related_sections__section__slug=self.slug)
         )
         )
 
     def sections(self):
         main_language_page = self.get_main_language_page()
-        return SectionPage.objects.live().child_of(main_language_page).filter(
+        return SectionPage.objects.child_of(main_language_page).filter(
             languages__language__is_main_language=True)
 
     def get_effective_extra_style_hints(self):
@@ -483,7 +482,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
-        return ArticlePage.objects.live().child_of(main_language_page).filter(
+        return ArticlePage.objects.child_of(main_language_page).filter(
             languages__language__is_main_language=True,
             featured_in_homepage=True).order_by(
                 '-latest_revision_created_at').specific()

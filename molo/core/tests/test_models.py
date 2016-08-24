@@ -2,7 +2,7 @@
 import pytest
 import datetime as dt
 from datetime import datetime, timedelta
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -23,6 +23,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
+        self.factory = RequestFactory()
         self.english = SiteLanguage.objects.create(locale='en')
         self.french = SiteLanguage.objects.create(locale='fr')
 
@@ -115,7 +116,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_number_of_child_articles_in_section(self):
         new_section = self.mk_section(self.section_index)
         self.mk_articles(new_section, count=12)
-        articles = load_child_articles_for_section({}, new_section, count=None)
+        request = self.factory.get('/sections/test-section-0/')
+        request.site = self.site
+        articles = load_child_articles_for_section(
+            {'request': request, 'locale_code': 'en'}, new_section, count=None)
         self.assertEquals(len(articles), 12)
 
     def test_parent_section(self):
