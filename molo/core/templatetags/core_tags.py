@@ -28,7 +28,6 @@ def get_pages(context, qs, locale):
         if language.is_main_language:
             return [a for a in qs.live()]
         else:
-            print qs
             return [a.get_translation_for(locale) or a for a in qs]
 
 
