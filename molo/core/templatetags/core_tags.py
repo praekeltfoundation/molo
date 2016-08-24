@@ -21,14 +21,22 @@ def get_pages(context, qs, locale):
         else:
             pages = []
             for a in qs:
-                if a.get_translation_for(locale):
-                    pages.append(a.get_translation_for(locale))
+                translation = a.get_translation_for(locale)
+                if translation:
+                    pages.append(translation)
             return pages
     else:
-        if language.is_main_language:
+        if language and language.is_main_language:
             return [a for a in qs.live()]
         else:
-            return [a.get_translation_for(locale) or a for a in qs]
+            pages = []
+            for a in qs:
+                translation = a.get_translation_for(locale)
+                if translation:
+                    pages.append(translation)
+                elif a.live:
+                    pages.append(a)
+            return pages
 
 
 @register.assignment_tag(takes_context=True)
