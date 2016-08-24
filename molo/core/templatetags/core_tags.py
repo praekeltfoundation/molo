@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import template
 from django.utils.safestring import mark_safe
@@ -15,7 +17,7 @@ def get_pages(context, qs, locale):
     site_settings = SiteSettings.for_site(request.site)
     if site_settings.show_only_translated_pages:
         if language.is_main_language:
-            return [a for a in qs]
+            return [a for a in qs.live()]
         else:
             pages = []
             for a in qs:
@@ -23,7 +25,10 @@ def get_pages(context, qs, locale):
                     pages.append(a.get_translation_for(locale))
             return pages
     else:
-        return [a.get_translation_for(locale) or a for a in qs]
+        if language.is_main_language:
+            return [a for a in qs.live()]
+        else:
+            return [a.get_translation_for(locale) or a for a in qs]
 
 
 @register.assignment_tag(takes_context=True)
@@ -72,12 +77,12 @@ def latest_listing_homepage(context, num_count=5):
 
     if request.site:
         articles = request.site.root_page.specific\
-            .latest_articles()[:num_count]
+            .latest_articles()
     else:
         articles = []
 
     return {
-        'articles': get_pages(context, articles, locale),
+        'articles': get_pages(context, articles, locale)[:num_count],
         'request': context['request'],
         'locale_code': locale,
     }
@@ -176,7 +181,7 @@ def load_descendant_articles_for_section(
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
-    qs = ArticlePage.objects.live().descendant_of(page).filter(
+    qs = ArticlePage.objects.descendant_of(page).filter(
         languages__language__is_main_language=True)
 
     if featured_in_homepage is not None:
@@ -191,7 +196,7 @@ def load_descendant_articles_for_section(
     if not locale:
         return qs[:count]
 
-    return get_pages(context, qs[:count], locale)
+    return get_pages(context, qs, locale)[:count]
 
 
 @register.assignment_tag(takes_context=True)
@@ -202,7 +207,14 @@ def load_child_articles_for_section(context, section, count=5):
     return the translations of the live articles.
     '''
     locale = context.get('locale_code')
-    qs = section.articles()
+    main_language_page = section.get_main_language_page()
+    child_articles = ArticlePage.objects.child_of(main_language_page).filter(
+        languages__language__is_main_language=True)
+    related_articles = ArticlePage.objects.filter(
+        related_sections__section__slug=section.slug)
+    qs = list(chain(
+        get_pages(context, child_articles, locale),
+        get_pages(context, related_articles, locale)))
 
     # Pagination
     if count:
@@ -221,8 +233,7 @@ def load_child_articles_for_section(context, section, count=5):
         return articles
 
     context.update({'articles_paginated': articles})
-
-    return get_pages(context, articles, locale)
+    return articles
 
 
 @register.assignment_tag(takes_context=True)
@@ -235,7 +246,7 @@ def load_child_sections_for_section(context, section, count=None):
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
-    qs = SectionPage.objects.live().child_of(page).filter(
+    qs = SectionPage.objects.child_of(page).filter(
         languages__language__is_main_language=True)
 
     if not locale:

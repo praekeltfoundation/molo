@@ -264,3 +264,89 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             response,
             '<a href="/sections/english-section/english-article1/">'
             'English article1</a>')
+
+    def test_if_main_lang_page_unpublished_translated_page_still_shows(self):
+        eng_section2 = self.mk_section(
+            self.section_index, title='English section2')
+        self.mk_section_translation(
+            eng_section2, self.french,
+            title=eng_section2.title + ' in french')
+        eng_section2.unpublish()
+
+        en_page = self.mk_article(self.english_section,
+                                  title='English article1',
+                                  featured_in_latest=True)
+        self.mk_article_translation(
+            en_page, self.french, title=en_page.title + ' in french',)
+
+        en_page2 = self.mk_article(
+            self.english_section,
+            title='English article2',
+            featured_in_latest=True)
+        self.mk_article_translation(
+            en_page2, self.french, title=en_page2.title + ' in french',)
+
+        en_page2.unpublish()
+
+        # tests that on home page users will only
+        # see the pages that are published
+        response = self.client.get('/')
+
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/">English section</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/sections/english-section2/">English section2</a>')
+
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article1/">'
+            'English article1</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/sections/english-section/english-article2/">'
+            'English article2</a>')
+
+        response = self.client.get('/sections/english-section/')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article1/">'
+            'English article1</a>')
+        self.assertNotContains(
+            response,
+            '<a href="/sections/english-section/english-article2/">'
+            'English article2</a>')
+
+        # tests that when switching to a child language
+        # users will see all the published translated pages
+        # even if the main language page is unpublished
+
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section2-in-french/">'
+            'English section2 in french</a>')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/">'
+            'English section</a>')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article1-in-french/">'
+            'English article1 in french</a>')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article2-in-french/">'
+            'English article2 in french</a>')
+
+        response = self.client.get('/sections/english-section/')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article1-in-french/">'
+            'English article1 in french</a>')
+        self.assertContains(
+            response,
+            '<a href="/sections/english-section/english-article2-in-french/">'
+            'English article2 in french</a>')
