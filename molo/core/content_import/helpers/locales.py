@@ -90,12 +90,9 @@ def parse_repo_locales(repo):
                 'name': Locale.parse(l.locale).english_name
             })
         except UnknownLocaleError:
-            warnings.append({
-                'type': 'unknown_locale',
-                'details': {
-                    'repo': repo.name,
-                    'locale': l.locale
-                }
+            locales.append({
+                'locale': l.locale,
+                'name': l.locale
             })
 
     return {
