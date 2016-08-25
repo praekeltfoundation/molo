@@ -20,7 +20,9 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.french = SiteLanguage.objects.create(
             locale='fr',
         )
-
+        self.spanish_mexico = SiteLanguage.objects.create(
+            locale='es-mx',
+        )
         # Creates main page
         self.mk_main()
         # Creates a section under the main page
@@ -50,6 +52,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, 'title="English">English')
         # Checks if translation language exists
         self.assertContains(response, 'title="French">French')
+        self.assertContains(response,
+                            'title="español de Mexico">español de Mexico')
 
     def test_that_only_main_language_pages_are_listed(self):
         self.client.post(reverse(
