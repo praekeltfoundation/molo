@@ -194,6 +194,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         # tests that in Home page users will only see the sections
         # that have been translated
+        self.client.get('/locale/en/')
         response = self.client.get('/')
         self.assertContains(
             response,

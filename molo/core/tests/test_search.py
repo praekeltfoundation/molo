@@ -27,6 +27,7 @@ class TestSearch(TestCase, MoloTestCaseMixin):
             self.section_index, title='English section')
 
     def test_search(self):
+        self.client.get('/locale/en/')
         self.backend = get_search_backend('default')
         self.backend.reset_index()
 
