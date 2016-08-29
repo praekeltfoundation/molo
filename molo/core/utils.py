@@ -1,16 +1,10 @@
 import re
-from django.utils.translation import to_locale
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
 
 
 def get_locale_code(language_code=None):
-    # Simple implementation that uses the ISO 639-1 (2 char codes)
-    # discarding the country code
-    language_code = language_code or settings.LANGUAGE_CODE
-    locale_code, _, country_code = to_locale(language_code).partition('_')
-    return locale_code
-
+    return (language_code or settings.LANGUAGE_CODE).replace('_', '-')
 
 RE_NUMERICAL_SUFFIX = re.compile(r'^[\w-]*-(\d+)+$')
 

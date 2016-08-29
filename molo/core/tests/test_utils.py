@@ -9,10 +9,10 @@ class TestUtils(TestCase, MoloTestCaseMixin):
 
     def test_get_locale_code(self):
         self.assertEquals(utils.get_locale_code(), 'en')
-        self.assertEquals(utils.get_locale_code('en-GB'), 'en')
-        self.assertEquals(utils.get_locale_code('en_GB'), 'en')
-        self.assertEquals(utils.get_locale_code('fr_FR'), 'fr')
-        self.assertEquals(utils.get_locale_code('zu-ZA'), 'zu')
+        self.assertEquals(utils.get_locale_code('en-GB'), 'en-GB')
+        self.assertEquals(utils.get_locale_code('en_GB'), 'en-GB')
+        self.assertEquals(utils.get_locale_code('fr_FR'), 'fr-FR')
+        self.assertEquals(utils.get_locale_code('zu-ZA'), 'zu-ZA')
         self.assertEquals(utils.get_locale_code('en'), 'en')
 
     def test_slugify(self):
