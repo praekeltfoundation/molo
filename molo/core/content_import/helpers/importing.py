@@ -1,6 +1,7 @@
 import json
 
 from babel import Locale
+from babel.core import UnknownLocaleError
 
 from django.db.models.base import ValidationError
 
@@ -60,6 +61,15 @@ def create_language(repo, locale, is_main):
     language, _ = SiteLanguage.objects.get_or_create(
         locale=Locale.parse(locale).language,
         is_main_language=is_main)
+
+    try:
+        language, _ = SiteLanguage.objects.get_or_create(
+            locale=Locale.parse(locale).language,
+            is_main_language=is_main)
+    except UnknownLocaleError:
+        language, _ = SiteLanguage.objects.get_or_create(
+            locale=locale.replace('_', '-'),
+            is_main_language=False)
 
     return {
         'locale': locale,

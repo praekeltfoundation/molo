@@ -2,6 +2,7 @@ import pytest
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.conf import settings
 
 from wagtail.wagtailcore.models import Site
 
@@ -194,7 +195,6 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         # tests that in Home page users will only see the sections
         # that have been translated
-        self.client.get('/locale/en/')
         response = self.client.get('/')
         self.assertContains(
             response,
