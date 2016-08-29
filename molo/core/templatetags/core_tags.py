@@ -16,7 +16,7 @@ def get_pages(context, qs, locale):
     request = context['request']
     site_settings = SiteSettings.for_site(request.site)
     if site_settings.show_only_translated_pages:
-        if language.is_main_language:
+        if language and language.is_main_language:
             return [a for a in qs.live()]
         else:
             pages = []

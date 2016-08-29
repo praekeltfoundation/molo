@@ -34,7 +34,7 @@ wagtailmodeladmin_register(LanguageModelAdmin)
 def urlconf_translations():
     return [
         url(
-            r'^translations/add/(?P<page_id>\d+)/(?P<locale>\w+)/$',
+            r'^translations/add/(?P<page_id>\d+)/(?P<locale>[\w\-\_]+)/$',
             'molo.core.views.add_translation',
             name='add_translation'),
     ]
