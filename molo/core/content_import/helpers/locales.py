@@ -94,7 +94,7 @@ def parse_repo_locales(repo):
         try:
             locales.append({
                 'locale': l.locale,
-                'name': get_language(l.locale)
+                'name': get_locale_english_name(l.locale)
             })
         except UnknownLocaleError:
             locales.append({
