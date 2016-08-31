@@ -4,6 +4,13 @@ from babel.core import UnknownLocaleError
 from unicore.content.models import Localisation
 
 
+def get_locale_english_name(locale):
+    try:
+        return Locale.parse(locale).english_name
+    except UnknownLocaleError:
+        return locale
+
+
 def get_locales(repos):
     parsed = parse_repos_locales(repos)
     uniqs = uniqs_from_parsed(parsed)
@@ -87,7 +94,7 @@ def parse_repo_locales(repo):
         try:
             locales.append({
                 'locale': l.locale,
-                'name': Locale.parse(l.locale).english_name
+                'name': get_locale_english_name(l.locale)
             })
         except UnknownLocaleError:
             locales.append({
