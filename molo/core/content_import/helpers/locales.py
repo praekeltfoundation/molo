@@ -4,7 +4,7 @@ from babel.core import UnknownLocaleError
 from unicore.content.models import Localisation
 
 
-def get_language(locale):
+def get_locale_english_name(locale):
     try:
         return Locale.parse(locale).english_name
     except UnknownLocaleError:

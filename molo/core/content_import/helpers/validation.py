@@ -4,7 +4,7 @@ from unicore.content.models import Category, Page
 
 from molo.core.models import SiteLanguage
 from molo.core.content_import.helpers.locales import (
-    partition_locales_in_repo, get_language)
+    partition_locales_in_repo, get_locale_english_name)
 
 
 class ContentImportValidation(object):
@@ -38,7 +38,7 @@ class ContentImportValidation(object):
             'type': 'language_not_in_repo',
             'details': {
                 'repo': self.repo.name,
-                'lang': get_language(stray)
+                'lang': get_locale_english_name(stray)
             }
         }
 
@@ -54,7 +54,7 @@ class ContentImportValidation(object):
                 'details': {
                     'repo': self.repo.name,
                     'lang': wagtail_main_language.get_locale_display(),
-                    'selected_lang': get_language(main)
+                    'selected_lang': get_locale_english_name(main)
                 }})
 
     def validate_translated_content_has_source(self, locale, main):
@@ -68,7 +68,7 @@ class ContentImportValidation(object):
                         'details': {
                             'repo': self.repo.name,
                             'category': c.title,
-                            'lang': get_language(locale)
+                            'lang': get_locale_english_name(locale)
                         }})
 
             pages = self.ws.S(Page).filter(language=locale)[:10000]
@@ -79,7 +79,7 @@ class ContentImportValidation(object):
                         'details': {
                             'repo': self.repo.name,
                             'article': p.title,
-                            'lang': get_language(locale)
+                            'lang': get_locale_english_name(locale)
                         }})
 
     def validate_translated_content_source_exists(self, locale, main):
@@ -94,7 +94,7 @@ class ContentImportValidation(object):
                         'details': {
                             'repo': self.repo.name,
                             'category': c.title,
-                            'lang': get_language(locale)
+                            'lang': get_locale_english_name(locale)
                         }})
 
             pages = self.ws.S(Page).filter(language=locale)[:10000]
@@ -106,7 +106,7 @@ class ContentImportValidation(object):
                         'details': {
                             'repo': self.repo.name,
                             'page': p.title,
-                            'lang': get_language(locale)
+                            'lang': get_locale_english_name(locale)
                         }})
 
     def validate_page_primary_category_exists(self, locale):
@@ -119,7 +119,7 @@ class ContentImportValidation(object):
                     'details': {
                         'repo': self.repo.name,
                         'article': p.title,
-                        'lang': get_language(locale)
+                        'lang': get_locale_english_name(locale)
                     }})
 
     def validate_category_exists(self, uuid, locale):
