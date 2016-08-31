@@ -58,10 +58,6 @@ def get_or_create_stray_index(repo, lang, should_nest):
 
 
 def create_language(repo, locale, is_main):
-    language, _ = SiteLanguage.objects.get_or_create(
-        locale=Locale.parse(locale).language,
-        is_main_language=is_main)
-
     try:
         language, _ = SiteLanguage.objects.get_or_create(
             locale=Locale.parse(locale).language,
