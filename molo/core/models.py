@@ -23,7 +23,6 @@ from wagtail.wagtailadmin.edit_handlers import (
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock
 from molo.core import constants
@@ -550,8 +549,7 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
-                  TagSearchable):
+class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     subtitle = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     featured_in_latest = models.BooleanField(
@@ -603,10 +601,12 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
             'This is not visible to the user.'))
 
     subpage_types = []
-    search_fields = Page.search_fields + TagSearchable.search_fields + (
+    search_fields = Page.search_fields + (
         index.SearchField('subtitle'),
         index.SearchField('body'),
-        index.FilterField('locale'),
+        index.RelatedFields('tags', [
+            index.SearchField('name', partial_match=True, boost=2),
+        ]),
     )
 
     commenting_state = models.CharField(
