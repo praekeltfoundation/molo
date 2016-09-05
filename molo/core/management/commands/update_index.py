@@ -22,17 +22,6 @@ def group_models_by_index(backend, models):
     For example, Elasticsearch 2 requires all page models to be together, but
     separate from other content types (eg, images and documents) to prevent
     field mapping collisions (eg, images and documents):
-
-    >>> group_models_by_index(elasticsearch2_backend, [
-    ...     wagtailcore.Page,
-    ...     myapp.HomePage,
-    ...     myapp.StandardPage,
-    ...     wagtailimages.Image
-    ... ])
-    {
-        <Index wagtailcore_page>: [wagtailcore.Page, myapp.HomePage, myapp.StandardPage],
-        <Index wagtailimages_image>: [wagtailimages.Image],
-    }
     """
     indices = {}
     models_by_index = collections.OrderedDict()

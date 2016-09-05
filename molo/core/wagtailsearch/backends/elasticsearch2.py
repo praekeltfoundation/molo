@@ -17,16 +17,6 @@ def get_model_root(model):
     the highest concrete model that it descends from. If the model doesn't
     descend from another concrete model then the model is it's own root model so
     it is returned.
-
-    Examples:
-    >>> get_model_root(wagtailcore.Page)
-    wagtailcore.Page
-
-    >>> get_model_root(myapp.HomePage)
-    wagtailcore.Page
-
-    >>> get_model_root(wagtailimages.Image)
-    wagtailimages.Image
     """
     if model._meta.parents:
         parent_model = list(model._meta.parents.items())[0][0]
