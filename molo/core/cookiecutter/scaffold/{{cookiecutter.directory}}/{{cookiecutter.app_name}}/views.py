@@ -13,10 +13,15 @@ def search(request, results_per_page=10):
     locale = get_locale_code(get_language_from_request(request))
 
     if search_query:
-        results = ArticlePage.objects.filter(languages__language__locale=locale).values_list('pk', flat=True)
-        # Elasticsearch backend doesn't support filtering on related fields, at the moment.
-        # So we need to filter ArticlePage entries using DB, then, we will be able to search
-        results = ArticlePage.objects.filter(pk__in=results).live().search(search_query)
+        results = ArticlePage.objects.filter(
+            languages__language__locale=locale
+        ).values_list('pk', flat=True)
+        # Elasticsearch backend doesn't support filtering
+        # on related fields, at the moment.
+        # So we need to filter ArticlePage entries using DB,
+        # then, we will be able to search
+        results = ArticlePage.objects.filter(pk__in=results)
+        results = results.live().search(search_query)
 
         Query.get(search_query).add_hit()
     else:
