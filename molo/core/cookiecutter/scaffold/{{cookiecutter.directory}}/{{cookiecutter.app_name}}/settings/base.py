@@ -101,6 +101,8 @@ MIDDLEWARE_CLASSES = [
     'molo.core.middleware.ForceDefaultLanguageMiddleware',
     'molo.core.middleware.AdminLocaleMiddleware',
     'molo.core.middleware.NoScriptGASessionMiddleware',
+
+    'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
 ]
 
 TEMPLATES = [
@@ -129,6 +131,10 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 GOOGLE_ANALYTICS = {
     'google_analytics_id': 'xxx',
 }
+
+GOOGLE_ANALYTICS_IGNORE_PATH = [
+    '/health/', '/favicon.ico', '/robots.txt', '/admin/', '/django-admin/',
+]
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases

@@ -11,6 +11,11 @@ from django.conf import settings
 from django.contrib.messages import get_messages
 from django.utils.translation import activate
 
+from google_analytics.utils import build_ga_params, set_cookie
+from google_analytics.tasks import send_ga_tracking
+
+from molo.core.models import SiteSettings
+
 
 class MoloCASMiddleware(CASMiddleware):
 
@@ -80,3 +85,34 @@ class NoScriptGASessionMiddleware(object):
         if 'MOLO_GA_SESSION_FOR_NOSCRIPT' not in request.session:
             request.session[
                 'MOLO_GA_SESSION_FOR_NOSCRIPT'] = uuid.uuid4().hex
+
+
+class MoloGoogleAnalyticsMiddleware(object):
+    """Uses GA IDs stored in Wagtail to track pageviews using celery"""
+    def submit_tracking(self, account, request, response):
+        path = request.path
+        referer = request.META.get('HTTP_REFERER', '')
+        params = build_ga_params(request, account, path=path, referer=referer)
+        response = set_cookie(params, response)
+        send_ga_tracking.delay(params)
+        return response
+
+    def process_response(self, request, response):
+        if hasattr(settings, 'GOOGLE_ANALYTICS_IGNORE_PATH'):
+            exclude = [p for p in settings.GOOGLE_ANALYTICS_IGNORE_PATH
+                       if request.path.startswith(p)]
+            if any(exclude):
+                return response
+
+        site_settings = SiteSettings.for_site(request.site)
+        local_ga_account = site_settings.local_ga_tracking_code or \
+            settings.GOOGLE_ANALYTICS.get('google_analytics_id')
+
+        if local_ga_account:
+            response = self.submit_tracking(local_ga_account, response)
+
+        if site_settings.global_ga_tracking_code:
+            response = self.submit_tracking(
+                site_settings.global_ga_tracking_code, response)
+
+        return response
