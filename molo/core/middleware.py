@@ -104,6 +104,10 @@ class MoloGoogleAnalyticsMiddleware(object):
             if any(exclude):
                 return response
 
+        # Only track 200 responses. Non 200 responses don't have `request.site`
+        if not response.status_code == 200:
+            return response
+
         site_settings = SiteSettings.for_site(request.site)
         local_ga_account = site_settings.local_ga_tracking_code or \
             settings.GOOGLE_ANALYTICS.get('google_analytics_id')

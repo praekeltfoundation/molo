@@ -4,7 +4,7 @@ import pytest
 import responses
 from django.core.files.base import ContentFile
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
@@ -20,6 +20,7 @@ from wagtailmedia.models import Media
 
 
 @pytest.mark.django_db
+@override_settings(GOOGLE_ANALYTICS={})
 class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
@@ -482,8 +483,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
             'http://www.google-analytics.com/collect'))
         self.assertTrue(responses.calls[1].request.url.startswith(
             'http://www.google-analytics.com/collect'))
-        self.assertContains(responses.calls[0].request.url, 'GA-1234567')
-        self.assertContains(responses.calls[1].request.url, 'GA-246810')
+        self.assertTrue('GA-1234567' in responses.calls[0].request.url)
+        self.assertTrue('GA-246810' in responses.calls[1].request.url)
 
     def test_global_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
