@@ -134,6 +134,9 @@ GOOGLE_ANALYTICS = {
 
 GOOGLE_ANALYTICS_IGNORE_PATH = [
     '/health/', '/favicon.ico', '/robots.txt', '/admin/', '/django-admin/',
+    # when using nginx, we handle statics and media
+    # but putting them here just incase
+    '/media/', '/static/',
 ]
 
 # Database
