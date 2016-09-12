@@ -427,31 +427,63 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
 
+    @responses.activate
     def test_local_ga_tracking_code_setting(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
 
-        response = self.client.get('/')
-        self.assertNotContains(response, 'tracking_code=xxx')
+        responses.add(
+            responses.GET, 'http://www.google-analytics.com/collect',
+            body='',
+            status=200)
 
-        setting.local_ga_tracking_code = 'GTM-1234567'
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
+
+        setting.local_ga_tracking_code = 'GA-1234567'
         setting.save()
 
-        response = self.client.get('/')
-        self.assertContains(response, 'tracking_code=GTM-1234567')
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 1)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
 
+    @responses.activate
     def test_global_ga_tracking_code_setting(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
 
-        response = self.client.get('/')
-        self.assertNotContains(response, 'tracking_code=xxx')
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
 
-        setting.global_ga_tracking_code = 'GTM-1234567'
+        setting.global_ga_tracking_code = 'GA-1234567'
         setting.save()
 
-        response = self.client.get('/')
-        self.assertContains(response, 'tracking_code=GTM-1234567')
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 1)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+
+    @responses.activate
+    def test_both_local_and_global_ga_tracking_code_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
+
+        setting.local_ga_tracking_code = 'GA-1234567'
+        setting.global_ga_tracking_code = 'GA-246810'
+        setting.save()
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 2)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+        self.assertTrue(responses.calls[1].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+        self.assertContains(responses.calls[0].request.url, 'GA-1234567')
+        self.assertContains(responses.calls[1].request.url, 'GA-246810')
 
     def test_global_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)

@@ -109,10 +109,11 @@ class MoloGoogleAnalyticsMiddleware(object):
             settings.GOOGLE_ANALYTICS.get('google_analytics_id')
 
         if local_ga_account:
-            response = self.submit_tracking(local_ga_account, response)
+            response = self.submit_tracking(
+                local_ga_account, request, response)
 
         if site_settings.global_ga_tracking_code:
             response = self.submit_tracking(
-                site_settings.global_ga_tracking_code, response)
+                site_settings.global_ga_tracking_code, request, response)
 
         return response
