@@ -108,9 +108,13 @@ class MoloGoogleAnalyticsMiddleware(object):
         if not response.status_code == 200:
             return response
 
+        if hasattr(settings, 'GOOGLE_ANALYTICS') and settings.GOOGLE_ANALYTICS:
+            ga_id_from_settings = settings.GOOGLE_ANALYTICS.get(
+                'google_analytics_id')
+
         site_settings = SiteSettings.for_site(request.site)
         local_ga_account = site_settings.local_ga_tracking_code or \
-            settings.GOOGLE_ANALYTICS.get('google_analytics_id')
+            ga_id_from_settings
 
         if local_ga_account:
             response = self.submit_tracking(

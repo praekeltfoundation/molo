@@ -20,7 +20,7 @@ from wagtailmedia.models import Media
 
 
 @pytest.mark.django_db
-@override_settings(GOOGLE_ANALYTICS={})
+@override_settings(GOOGLE_ANALYTICS=None)
 class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
