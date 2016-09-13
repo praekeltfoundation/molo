@@ -1,4 +1,6 @@
 .. _installation:
+.. _multiple-languages:
+.. _template-tags:
 
 Installation
 ============

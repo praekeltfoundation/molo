@@ -5,7 +5,7 @@ from django.conf.urls import patterns, url, include
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.urls import urlpatterns
-
+from molo.core.models import SiteLanguage
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 
@@ -26,6 +26,10 @@ urlpatterns += patterns(
 
 
 class CASTestCase(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.mk_main()
 
     def test_login_redirect(self):
         response = self.client.get('/admin/', follow=True)
@@ -123,8 +127,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
     def test_normal_profiles_login_works_when_cas_enabled(self):
-        self.mk_main()
-
         client = Client()
         response = client.get('/profiles/login/')
         self.assertEquals(response.status_code, 200)
@@ -140,8 +142,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         self.assertRedirects(response, '/health/')
 
     def test_normal_views_after_login_when_cas_enabled(self):
-        self.mk_main()
-
         client = Client()
         User.objects.create_user(
             username='testuser', password='password', email='test@email.com')

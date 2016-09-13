@@ -1,4 +1,6 @@
 .. _plugins:
+.. _multiple-languages:
+.. _template-tags:
 
 Plugins
 ===============

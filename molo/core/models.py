@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_delete
 from django.dispatch import receiver
 
 from taggit.models import TaggedItemBase
@@ -29,8 +29,6 @@ from molo.core.blocks import MarkDownBlock, MultimediaBlock
 from molo.core import constants
 from molo.core.utils import get_locale_code
 
-from django.core.validators import MaxValueValidator, MinValueValidator
-
 
 @register_setting
 class SiteSettings(BaseSetting):
@@ -43,39 +41,107 @@ class SiteSettings(BaseSetting):
     )
 
     ga_tag_manager = models.CharField(
-        verbose_name=_('GA Tag Manager'),
+        verbose_name=_('Local GA Tag Manager'),
         max_length=255,
         null=True,
         blank=True,
-        help_text=_("GA Tag Manager tracking code (e.g GTM-XXX)")
-    )
-
-    content_rotation = models.BooleanField(
-        default=False,
         help_text=_(
-            "This option allows content to be rotated randomly and"
-            " automatically")
+            "Local GA Tag Manager tracking code (e.g GTM-XXX) to be used to "
+            "view analytics on this site only")
     )
-
-    content_rotation_time = models.IntegerField(
+    global_ga_tag_manager = models.CharField(
+        verbose_name=_('Global GA Tag Manager'),
+        max_length=255,
         null=True,
         blank=True,
-        validators=[
-            MaxValueValidator(23),
-            MinValueValidator(0)
-        ],
         help_text=_(
-            "This is the time that content will be rotated every day. "
-            "If the content should rotate at 14h, then fill in 14")
+            "Global GA Tag Manager tracking code (e.g GTM-XXX) to be used"
+            " to view analytics on more than one site globally")
     )
+
+    local_ga_tracking_code = models.CharField(
+        verbose_name=_('Local GA Tracking Code'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "Local GA tracking code to be used to "
+            "view analytics on this site only")
+    )
+    global_ga_tracking_code = models.CharField(
+        verbose_name=_('Global GA Tracking Code'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "Global GA tracking code to be used"
+            " to view analytics on more than one site globally")
+    )
+    show_only_translated_pages = models.BooleanField(
+        default=False,
+        help_text='When selecting this option, untranslated pages'
+                  ' will not be visible to the front end user'
+                  ' when they viewing a child language of the site')
+
+    time = StreamField([
+        ('time', blocks.TimeBlock(required=False)),
+    ], null=True, blank=True, help_text='The time/s content will be rotated')
+
+    monday_rotation = models.BooleanField(default=False, verbose_name='Monday')
+    tuesday_rotation = models.BooleanField(
+        default=False, verbose_name='Tuesday')
+    wednesday_rotation = models.BooleanField(
+        default=False, verbose_name='Wednesday')
+    thursday_rotation = models.BooleanField(
+        default=False, verbose_name='Thursday')
+    friday_rotation = models.BooleanField(default=False, verbose_name='Friday')
+    saturday_rotation = models.BooleanField(
+        default=False, verbose_name='Saturday')
+    sunday_rotation = models.BooleanField(default=False, verbose_name='Sunday')
+
+    content_rotation_start_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will begin')
+    content_rotation_end_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will end')
 
     panels = [
         ImageChooserPanel('logo'),
-        FieldPanel('ga_tag_manager'),
         MultiFieldPanel(
             [
-                FieldPanel('content_rotation'),
-                FieldPanel('content_rotation_time'),
+                FieldPanel('show_only_translated_pages'),
+            ],
+            heading="Multi Language",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('ga_tag_manager'),
+                FieldPanel('global_ga_tag_manager'),
+            ],
+            heading="GA Tag Manager Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('local_ga_tracking_code'),
+                FieldPanel('global_ga_tracking_code'),
+            ],
+            heading="GA Tracking Code Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('content_rotation_start_date'),
+                FieldPanel('content_rotation_end_date'),
+                FieldRowPanel([
+                    FieldPanel('monday_rotation', classname='col6'),
+                    FieldPanel('tuesday_rotation', classname='col6'),
+                    FieldPanel('wednesday_rotation', classname='col6'),
+                    FieldPanel('thursday_rotation', classname='col6'),
+                    FieldPanel('friday_rotation', classname='col6'),
+                    FieldPanel('saturday_rotation', classname='col6'),
+                    FieldPanel('sunday_rotation', classname='col6'),
+                ]),
+                StreamFieldPanel('time'),
             ],
             heading="Content Rotation Settings",)
     ]
@@ -201,22 +267,22 @@ class Main(CommentedPageMixin, Page):
     subpage_types = []
 
     def bannerpages(self):
-        return BannerPage.objects.live().filter(
+        return BannerPage.objects.filter(
             languages__language__is_main_language=True).specific()
 
     def sections(self):
         index_page = SectionIndexPage.objects.live().all().first()
-        return SectionPage.objects.live().child_of(index_page).filter(
+        return SectionPage.objects.child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 
     def latest_articles(self):
-        return ArticlePage.objects.live().filter(
+        return ArticlePage.objects.filter(
             featured_in_latest=True,
             languages__language__is_main_language=True).order_by(
                 '-latest_revision_created_at').specific()
 
     def footers(self):
-        return FooterPage.objects.live().filter(
+        return FooterPage.objects.filter(
             languages__language__is_main_language=True).specific()
 
 
@@ -340,20 +406,42 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+    time = StreamField([
+        ('time', blocks.TimeBlock(required=False)),
+    ], null=True, blank=True, help_text='The time/s content will be rotated')
+
+    monday_rotation = models.BooleanField(default=False, verbose_name='Monday')
+    tuesday_rotation = models.BooleanField(
+        default=False, verbose_name='Tuesday')
+    wednesday_rotation = models.BooleanField(
+        default=False, verbose_name='Wednesday')
+    thursday_rotation = models.BooleanField(
+        default=False, verbose_name='Thursday')
+    friday_rotation = models.BooleanField(default=False, verbose_name='Friday')
+    saturday_rotation = models.BooleanField(
+        default=False, verbose_name='Saturday')
+    sunday_rotation = models.BooleanField(default=False, verbose_name='Sunday')
+
+    content_rotation_start_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will begin')
+    content_rotation_end_date = models.DateTimeField(
+        null=True, blank=True,
+        help_text='The date rotation will end')
+
     def articles(self):
         main_language_page = self.get_main_language_page()
         return list(chain(
-            ArticlePage.objects.live().child_of(main_language_page).filter(
+            ArticlePage.objects.child_of(main_language_page).filter(
                 languages__language__is_main_language=True),
-            ArticlePage.objects.live().filter(
-                related_sections__section__slug=self.slug,
-                languages__language__is_main_language=True)
+            ArticlePage.objects.filter(
+                related_sections__section__slug=self.slug)
         )
         )
 
     def sections(self):
         main_language_page = self.get_main_language_page()
-        return SectionPage.objects.live().child_of(main_language_page).filter(
+        return SectionPage.objects.child_of(main_language_page).filter(
             languages__language__is_main_language=True)
 
     def get_effective_extra_style_hints(self):
@@ -392,6 +480,13 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
 
+    def featured_in_homepage_articles(self):
+        main_language_page = self.get_main_language_page()
+        return ArticlePage.objects.child_of(main_language_page).filter(
+            languages__language__is_main_language=True,
+            featured_in_homepage=True).order_by(
+                '-latest_revision_created_at').specific()
+
     def get_context(self, request):
         context = super(SectionPage, self).get_context(request)
 
@@ -422,6 +517,22 @@ SectionPage.content_panels = [
 SectionPage.settings_panels = [
     MultiFieldPanel(
         Page.settings_panels, "Scheduled publishing", "publishing"),
+    MultiFieldPanel(
+        [
+            FieldPanel('content_rotation_start_date'),
+            FieldPanel('content_rotation_end_date'),
+            FieldRowPanel([
+                FieldPanel('monday_rotation', classname='col6'),
+                FieldPanel('tuesday_rotation', classname='col6'),
+                FieldPanel('wednesday_rotation', classname='col6'),
+                FieldPanel('thursday_rotation', classname='col6'),
+                FieldPanel('friday_rotation', classname='col6'),
+                FieldPanel('saturday_rotation', classname='col6'),
+                FieldPanel('sunday_rotation', classname='col6'),
+            ]),
+            StreamFieldPanel('time'),
+        ],
+        heading="Content Rotation Settings",),
     MultiFieldPanel(
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
@@ -610,9 +721,25 @@ class FooterPage(ArticlePage):
 
 FooterPage.content_panels = ArticlePage.content_panels
 
+pages_to_delete = []
+
 
 @receiver(pre_delete, sender=Page)
 def on_page_delete(sender, instance, *a, **kw):
-    for translation in PageTranslation.objects.filter(page=instance):
-        translation.translated_page.delete()
-        translation.delete()
+    ids = PageTranslation.objects.filter(
+        page=instance).values_list('translated_page__id')
+    pages_to_delete.extend(Page.objects.filter(id__in=ids))
+
+
+@receiver(post_delete, sender=Page)
+def on_post_page_delete(sender, instance, *a, **kw):
+    # When we try to delete a translated page in our pre_delete, wagtail
+    # pre_delete function would want to get the same page too, but since we
+    # have already deleted it, wagtail would not be able to find it, therefore
+    # we have to get the translated page in our pre_delete and use a global
+    # variable to store it and pass it into the post_delete and remove it here
+    for p in pages_to_delete:
+        p.delete()
+
+    global pages_to_delete
+    del pages_to_delete[:]

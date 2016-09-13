@@ -145,15 +145,9 @@ class TestGetLanguages(
         res = api.get_languages([self.repo1])
 
         self.assertEquals(res, {
-            'locales': [{
-                'locale': 'eng_GB',
-                'name': 'English (United Kingdom)'
-            }],
-            'warnings': [{
-                'type': 'unknown_locale',
-                'details': {
-                    'repo': self.repo1.name,
-                    'locale': 'Zre_ZR'
-                }
-            }]
+            'locales': [
+                {'locale': u'Zre_ZR', 'name': u'Zre_ZR'},
+                {'locale': 'eng_GB', 'name': 'English (United Kingdom)'}
+            ],
+            'warnings': []
         })

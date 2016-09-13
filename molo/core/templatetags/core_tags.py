@@ -1,24 +1,64 @@
+from itertools import chain
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import template
 from django.utils.safestring import mark_safe
 from markdown import markdown
 
-from molo.core.models import Page, SiteLanguage, ArticlePage, SectionPage
+from molo.core.models import (Page, SiteLanguage, ArticlePage, SectionPage,
+                              SiteSettings)
 
 register = template.Library()
+
+
+def get_pages(context, qs, locale):
+    language = SiteLanguage.objects.filter(locale=locale).first()
+    request = context['request']
+    site_settings = SiteSettings.for_site(request.site)
+    if site_settings.show_only_translated_pages:
+        if language and language.is_main_language:
+            return [a for a in qs.live()]
+        else:
+            pages = []
+            for a in qs:
+                translation = a.get_translation_for(locale)
+                if translation:
+                    pages.append(translation)
+            return pages
+    else:
+        if language and language.is_main_language:
+            return [a for a in qs.live()]
+        else:
+            pages = []
+            for a in qs:
+                translation = a.get_translation_for(locale)
+                if translation:
+                    pages.append(translation)
+                elif a.live:
+                    pages.append(a)
+            return pages
 
 
 @register.assignment_tag(takes_context=True)
 def load_sections(context):
     request = context['request']
-    locale_code = context.get('locale_code')
+    locale = context.get('locale_code')
 
     if request.site:
         qs = request.site.root_page.specific.sections()
     else:
         qs = []
 
-    return [a.get_translation_for(locale_code) or a for a in qs]
+    return get_pages(context, qs, locale)
+
+
+@register.assignment_tag(takes_context=True)
+def get_translation(context, page):
+    locale_code = context.get('locale_code')
+    if page.get_translation_for(locale_code):
+        return page.get_translation_for(locale_code)
+    else:
+        return page
 
 
 @register.inclusion_tag(
@@ -41,26 +81,25 @@ def section_listing_homepage(context):
 )
 def latest_listing_homepage(context, num_count=5):
     request = context['request']
-    locale_code = context.get('locale_code')
+    locale = context.get('locale_code')
 
     if request.site:
         articles = request.site.root_page.specific\
-            .latest_articles()[:num_count]
+            .latest_articles()
     else:
         articles = []
 
     return {
-        'articles': [
-            a.get_translation_for(locale_code) or a for a in articles],
+        'articles': get_pages(context, articles, locale)[:num_count],
         'request': context['request'],
-        'locale_code': locale_code,
+        'locale_code': locale,
     }
 
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
 def bannerpages(context):
     request = context['request']
-    locale_code = context.get('locale_code')
+    locale = context.get('locale_code')
 
     if request.site:
         pages = request.site.root_page.specific.bannerpages()
@@ -68,17 +107,16 @@ def bannerpages(context):
         pages = []
 
     return {
-        'bannerpages': [
-            a.get_translation_for(locale_code) or a for a in pages],
+        'bannerpages': get_pages(context, pages, locale),
         'request': context['request'],
-        'locale_code': locale_code,
+        'locale_code': locale,
     }
 
 
 @register.inclusion_tag('core/tags/footerpage.html', takes_context=True)
 def footer_page(context):
     request = context['request']
-    locale_code = context.get('locale_code')
+    locale = context.get('locale_code')
 
     if request.site:
         pages = request.site.root_page.specific.footers()
@@ -86,9 +124,9 @@ def footer_page(context):
         pages = []
 
     return {
-        'footers': [a.get_translation_for(locale_code) or a for a in pages],
+        'footers': get_pages(context, pages, locale),
         'request': context['request'],
-        'locale_code': locale_code,
+        'locale_code': locale,
     }
 
 
@@ -151,7 +189,7 @@ def load_descendant_articles_for_section(
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
-    qs = ArticlePage.objects.live().descendant_of(page).filter(
+    qs = ArticlePage.objects.descendant_of(page).filter(
         languages__language__is_main_language=True)
 
     if featured_in_homepage is not None:
@@ -166,7 +204,7 @@ def load_descendant_articles_for_section(
     if not locale:
         return qs[:count]
 
-    return [a.get_translation_for(locale) or a for a in qs[:count]]
+    return get_pages(context, qs, locale)[:count]
 
 
 @register.assignment_tag(takes_context=True)
@@ -177,29 +215,37 @@ def load_child_articles_for_section(context, section, count=5):
     return the translations of the live articles.
     '''
     locale = context.get('locale_code')
-    p = context.get('p', 1)
-
-    qs = section.articles()
+    main_language_page = section.get_main_language_page()
+    child_articles = ArticlePage.objects.child_of(main_language_page).filter(
+        languages__language__is_main_language=True)
+    related_articles = ArticlePage.objects.filter(
+        related_sections__section__slug=section.slug)
+    qs = list(chain(
+        get_pages(context, child_articles, locale),
+        get_pages(context, related_articles, locale)))
 
     # Pagination
-    paginator = Paginator(qs, count)
-    try:
-        articles = paginator.page(p)
-    except PageNotAnInteger:
-        articles = paginator.page(1)
-    except EmptyPage:
-        articles = paginator.page(paginator.num_pages)
+    if count:
+        p = context.get('p', 1)
+        paginator = Paginator(qs, count)
 
+        try:
+            articles = paginator.page(p)
+        except PageNotAnInteger:
+            articles = paginator.page(1)
+        except EmptyPage:
+            articles = paginator.page(paginator.num_pages)
+    else:
+        articles = qs
     if not locale:
         return articles
 
     context.update({'articles_paginated': articles})
-
-    return [a.get_translation_for(locale) or a for a in articles]
+    return articles
 
 
 @register.assignment_tag(takes_context=True)
-def load_child_sections_for_section(context, section, count=5):
+def load_child_sections_for_section(context, section, count=None):
     '''
     Returns all child articles
     If the `locale_code` in the context is not the main language, it will
@@ -208,13 +254,13 @@ def load_child_sections_for_section(context, section, count=5):
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
-    qs = SectionPage.objects.live().child_of(page).filter(
+    qs = SectionPage.objects.child_of(page).filter(
         languages__language__is_main_language=True)
 
     if not locale:
         return qs[:count]
 
-    return [a.get_translation_for(locale) or a for a in qs[:count]]
+    return get_pages(context, qs, locale)
 
 
 @register.filter

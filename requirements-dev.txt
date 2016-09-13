@@ -1,5 +1,5 @@
-pytest
-pytest-django
+pytest==2.9.2
+pytest-django==2.9.1
 pytest-cov
 pytest-xdist
-flake8
+flake8==2.6.2

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     'molo.core',
     '{{cookiecutter.app_name}}',
+    'google_analytics',
 
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
@@ -97,8 +98,11 @@ MIDDLEWARE_CLASSES = [
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
     'wagtailmodeladmin.middleware.ModelAdminMiddleware',
 
+    'molo.core.middleware.ForceDefaultLanguageMiddleware',
     'molo.core.middleware.AdminLocaleMiddleware',
     'molo.core.middleware.NoScriptGASessionMiddleware',
+
+    'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
 ]
 
 TEMPLATES = [
@@ -122,6 +126,25 @@ TEMPLATES = [
 ROOT_URLCONF = '{{cookiecutter.app_name}}.urls'
 WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 
+# Google analytics
+
+GOOGLE_ANALYTICS = {
+    'google_analytics_id': 'xxx',
+}
+
+GOOGLE_ANALYTICS_IGNORE_PATH = [
+    # health check used by marathon
+    '/health/',
+    # admin interfaces for wagtail and django
+    '/admin/', '/django-admin/',
+    # Universal Core content import URL
+    '/import/',
+    # browser troll paths
+    '/favicon.ico', '/robots.txt',
+    # when using nginx, we handle statics and media
+    # but including them here just incase
+    '/media/', '/static/',
+]
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -161,7 +184,7 @@ CELERYBEAT_SCHEDULE = {
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
-LANGUAGE_CODE = 'en-gb'
+LANGUAGE_CODE = environ.get('LANGUAGE_CODE', 'en')
 TIME_ZONE = 'Africa/Johannesburg'
 USE_I18N = True
 USE_L10N = True

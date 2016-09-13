@@ -1,9 +1,10 @@
+from os import environ
 import pkg_resources
 import requests
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.utils.translation import ugettext as _
@@ -21,7 +22,9 @@ def locale_set(request, locale):
 
 
 def health(request):
-    return HttpResponse(status=200)
+    app_id = environ.get('MARATHON_APP_ID', None)
+    ver = environ.get('MARATHON_APP_VERSION', None)
+    return JsonResponse({'id': app_id, 'version': ver})
 
 
 def add_translation(request, page_id, locale):

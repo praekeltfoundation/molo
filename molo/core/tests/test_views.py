@@ -1,9 +1,10 @@
+from os import environ
 import json
 import pytest
 import responses
 from django.core.files.base import ContentFile
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
@@ -19,6 +20,7 @@ from wagtailmedia.models import Media
 
 
 @pytest.mark.django_db
+@override_settings(GOOGLE_ANALYTICS={})
 class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
@@ -281,9 +283,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<p>Sample page description for 0 in french</p>')
 
     def test_health(self):
+        environ['MARATHON_APP_ID'] = 'marathon-app-id'
+        environ['MARATHON_APP_VERSION'] = 'marathon-app-version'
         response = self.client.get('/health/')
         self.assertEquals(
             response.status_code, 200)
+        self.assertEquals(
+            json.loads(response.content), {
+                'id': 'marathon-app-id',
+                'version': 'marathon-app-version',
+            })
 
     def test_issue_with_django_admin_not_loading(self):
         User.objects.create_superuser(
@@ -401,7 +410,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'],
             current_session_key)
 
-    def test_ga_tag_manager_setting(self):
+    def test_local_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
 
@@ -414,6 +423,82 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(response, 'www.googletagmanager.com')
         self.assertContains(response, 'GTM-1234567')
+
+        self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
+        self.assertContains(
+            response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
+
+    @responses.activate
+    def test_local_ga_tracking_code_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        responses.add(
+            responses.GET, 'http://www.google-analytics.com/collect',
+            body='',
+            status=200)
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
+
+        setting.local_ga_tracking_code = 'GA-1234567'
+        setting.save()
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 1)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+
+    @responses.activate
+    def test_global_ga_tracking_code_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
+
+        setting.global_ga_tracking_code = 'GA-1234567'
+        setting.save()
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 1)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+
+    @responses.activate
+    def test_both_local_and_global_ga_tracking_code_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
+
+        setting.local_ga_tracking_code = 'GA-1234567'
+        setting.global_ga_tracking_code = 'GA-246810'
+        setting.save()
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 2)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+        self.assertTrue(responses.calls[1].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+        self.assertTrue('GA-1234567' in responses.calls[0].request.url)
+        self.assertTrue('GA-246810' in responses.calls[1].request.url)
+
+    def test_global_ga_tag_manager_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        response = self.client.get('/')
+        self.assertNotContains(response, 'www.googletagmanager.com')
+
+        setting.global_ga_tag_manager = 'GTM-2345678'
+        setting.save()
+
+        response = self.client.get('/')
+        self.assertContains(response, 'www.googletagmanager.com')
+        self.assertContains(response, 'GTM-2345678')
 
         self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
         self.assertContains(
