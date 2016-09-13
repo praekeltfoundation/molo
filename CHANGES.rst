@@ -10,7 +10,7 @@ Main features::
 
 - Revamped Multi Language support
 - We added content automated content rotation and a way to schedule when content should be cycled
-- We now offer specifying Google Analytics from the CMS for both GA and GTM
+- We now offer specifying Google Analytics from the CMS for both GA and GTM (this uses celery for GA)
 - Renamed HomePage module to BannerPage
 - Changed content structure to introduce index pages
 - Upgraded wagtail to 1.4.3
@@ -25,6 +25,12 @@ Backwards incompatible changes
 - Deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
 - Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+
+3.8.0
+~~~~~
+
+- Add custom GA celery middleware
+- Use celery for GA instead of gif pixel
 
 3.7.5
 ~~~~~
