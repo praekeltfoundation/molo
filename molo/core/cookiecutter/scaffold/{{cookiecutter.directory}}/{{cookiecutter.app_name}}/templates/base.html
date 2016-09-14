@@ -101,21 +101,6 @@
         <!-- End Global Google Tag Manager -->
         {% endif %}
 
-        {% if settings.core.SiteSettings.global_ga_tracking_code %}
-        <div style="display:none">
-            <img src="{% google_analytics settings.core.SiteSettings.global_ga_tracking_code %}" width="0" height="0" />
-        </div>
-        <!-- Global End Google Tracking Code -->
-        {% endif %}
-
-        {% if settings.core.SiteSettings.local_ga_tracking_code %}
-        <div style="display:none">
-            <img src="{% google_analytics settings.core.SiteSettings.local_ga_tracking_code %}" width="0" height="0" />
-        </div>
-        <!-- Local End Google Tracking Code -->
-        {% endif %}
-
-
         {% wagtailuserbar %}
 
 

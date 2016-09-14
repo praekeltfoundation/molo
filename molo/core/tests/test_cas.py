@@ -97,8 +97,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     @patch('cas.CASClientV2.verify_ticket')
     def test_failed_login(self, mock_verify):
-        self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
         service = ('http%3A%2F%2Ftestserver'
                    '%2Fadmin%2Flogin%2F%3Fnext%3D%252Fadmin%252F')
 
@@ -118,8 +116,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     @patch('cas.CASClientV2.verify_ticket')
     def test_successful_login_but_no_permissions(self, mock_verify):
-        self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
         service = ('http%3A%2F%2Ftestserver'
                    '%2Fadmin%2Flogin%2F%3Fnext%3D%252Fadmin%252F')
 
@@ -138,8 +134,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             status_code=403)
 
     def test_normal_user_login_has_no_permissions(self):
-        self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
         User.objects.create_user(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
@@ -174,8 +168,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
     def test_normal_profiles_login_works_when_cas_enabled(self):
-        self.mk_main()
-
         client = Client()
         response = client.get('/profiles/login/')
         self.assertEquals(response.status_code, 200)
@@ -191,8 +183,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         self.assertRedirects(response, '/health/')
 
     def test_normal_views_after_login_when_cas_enabled(self):
-        self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
         client = Client()
         User.objects.create_user(
             username='testuser', password='password', email='test@email.com')
