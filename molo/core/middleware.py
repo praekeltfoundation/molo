@@ -94,7 +94,8 @@ class MoloGoogleAnalyticsMiddleware(object):
     def submit_tracking(self, account, request, response):
         try:
             title = BeautifulSoup(
-                response.content, "html.parser").html.head.title.text
+                response.content, "html.parser"
+            ).html.head.title.text.encode('utf-8')
         except:
             title = None
 
