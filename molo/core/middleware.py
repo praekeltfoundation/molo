@@ -1,5 +1,7 @@
 import uuid
 
+from bs4 import BeautifulSoup
+
 from django.http import HttpResponseForbidden
 from django.views.defaults import permission_denied
 
@@ -90,9 +92,16 @@ class NoScriptGASessionMiddleware(object):
 class MoloGoogleAnalyticsMiddleware(object):
     """Uses GA IDs stored in Wagtail to track pageviews using celery"""
     def submit_tracking(self, account, request, response):
+        try:
+            title = BeautifulSoup(
+                response.content, "html.parser").html.head.title.text
+        except:
+            title = None
+
         path = request.path
         referer = request.META.get('HTTP_REFERER', '')
-        params = build_ga_params(request, account, path=path, referer=referer)
+        params = build_ga_params(
+            request, account, path=path, referer=referer, title=title)
         response = set_cookie(params, response)
         send_ga_tracking.delay(params)
         return response
