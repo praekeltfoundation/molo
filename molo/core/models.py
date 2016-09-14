@@ -26,7 +26,7 @@ from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock
-from molo.core import constants
+from molo.core import constants, forms
 from molo.core.utils import get_locale_code
 
 
@@ -617,10 +617,24 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+    feature_as_topic_of_the_day = models.BooleanField(
+        default=False,
+        help_text=_('Article to be featured as the Topic of the Day'))
+    promote_date = models.DateTimeField(blank=True, null=True)
+    demote_date = models.DateTimeField(blank=True, null=True)
+
+    base_form_class = forms.ArticlePageForm
+
     featured_promote_panels = [
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
+    ]
+
+    topic_of_the_day_panels = [
+        FieldPanel('feature_as_topic_of_the_day'),
+        FieldPanel('promote_date'),
+        FieldPanel('demote_date'),
     ]
 
     metedata_promote_panels = [
@@ -666,6 +680,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
     class Meta:
         verbose_name = _('Article')
 
+
 ArticlePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('subtitle'),
@@ -691,6 +706,7 @@ ArticlePage.content_panels = [
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
+    MultiFieldPanel(ArticlePage.topic_of_the_day_panels, "Topic of the Day"),
     MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
         Page.promote_panels,
