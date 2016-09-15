@@ -2,9 +2,11 @@ from os import environ
 import json
 import pytest
 import responses
-from django.core.files.base import ContentFile
 
-from django.test import TestCase
+from urlparse import parse_qs
+
+from django.core.files.base import ContentFile
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
@@ -20,6 +22,7 @@ from wagtailmedia.models import Media
 
 
 @pytest.mark.django_db
+@override_settings(GOOGLE_ANALYTICS={})
 class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
@@ -427,31 +430,66 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
 
+    @responses.activate
     def test_local_ga_tracking_code_setting(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
 
-        response = self.client.get('/')
-        self.assertNotContains(response, 'tracking_code=xxx')
+        responses.add(
+            responses.GET, 'http://www.google-analytics.com/collect',
+            body='',
+            status=200)
 
-        setting.local_ga_tracking_code = 'GTM-1234567'
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
+
+        setting.local_ga_tracking_code = 'GA-1234567'
         setting.save()
 
-        response = self.client.get('/')
-        self.assertContains(response, 'tracking_code=GTM-1234567')
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 1)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
 
+    @responses.activate
     def test_global_ga_tracking_code_setting(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
 
-        response = self.client.get('/')
-        self.assertNotContains(response, 'tracking_code=xxx')
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
 
-        setting.global_ga_tracking_code = 'GTM-1234567'
+        setting.global_ga_tracking_code = 'GA-1234567'
         setting.save()
 
-        response = self.client.get('/')
-        self.assertContains(response, 'tracking_code=GTM-1234567')
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 1)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+
+    @responses.activate
+    def test_ga_title_is_filled_in_using_middleware(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 0)
+
+        setting.local_ga_tracking_code = 'GA-1234567'
+        setting.save()
+
+        self.client.get('/')
+        self.assertEqual(len(responses.calls), 1)
+        self.assertTrue(responses.calls[0].request.url.startswith(
+            'http://www.google-analytics.com/collect'))
+        self.assertTrue('GA-1234567' in responses.calls[0].request.url)
+
+        ga_url = responses.calls[0].request.url
+
+        self.assertEqual(parse_qs(ga_url).get('t'), ['pageview'])
+        self.assertEqual(parse_qs(ga_url).get('dp'), ['/'])
+        self.assertEqual(parse_qs(ga_url).get('dt'), ['Main'])
+        self.assertEqual(parse_qs(ga_url).get('tid'), ['GA-1234567'])
 
     def test_global_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
