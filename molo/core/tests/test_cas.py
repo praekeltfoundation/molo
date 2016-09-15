@@ -2,16 +2,14 @@ from mock import patch
 from django.test import TestCase, Client, override_settings
 from django.contrib.auth.models import User
 from django.conf.urls import patterns, url, include
-from django import VERSION as DJANGO_VERSION
 from django.contrib.contenttypes.models import ContentType
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.urls import urlpatterns
-from molo.core.models import SiteLanguage
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtailcore import urls as wagtail_urls
-from django.contrib.auth.models import Group
-from wagtail.wagtailcore.models import GroupPagePermission, Page
+from django.contrib.auth.models import Group, Permission
+from wagtail.wagtailcore.models import GroupPagePermission
 
 urlpatterns += patterns(
     '',
@@ -38,19 +36,35 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         # Create group permissions
         GroupPagePermission.objects.create(
             group=moderators_group,
-            page=self.root,
+            page=self.main,
             permission_type='add',
         )
         GroupPagePermission.objects.create(
             group=moderators_group,
-            page=self.root,
+            page=self.main,
             permission_type='edit',
         )
         GroupPagePermission.objects.create(
             group=moderators_group,
-            page=self.root,
+            page=self.main,
             permission_type='publish',
         )
+
+        wagtailadmin_content_type, created = ContentType.objects.get_or_create(
+            app_label='wagtailadmin',
+            model='admin'
+        )
+
+        # Create admin permission
+        admin_permission, created = Permission.objects.get_or_create(
+            content_type=wagtailadmin_content_type,
+            codename='access_admin',
+            name='Can access Wagtail admin'
+        )
+
+        # Assign it to Editors and Moderators groups
+        for group in Group.objects.filter(name__in=['Editors', 'Moderators']):
+            group.permissions.add(admin_permission)
 
     def test_login_redirect(self):
         response = self.client.get('/admin/', follow=True)
