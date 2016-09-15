@@ -37,7 +37,11 @@ class MoloCASMiddleware(CASMiddleware):
             return None
 
         if request.user.is_authenticated():
-            if request.user.is_staff:
+            if request.user.has_perm('wagtailadmin.access_admin'):
+                """
+                Implemented using wagtails permissions model
+                https://github.com/torchbox/wagtail/blob/master/wagtail/wagtailadmin/views/account.py#L112 # noqa
+                """
                 return None
             else:
                 return permission_denied(request, 'error')
