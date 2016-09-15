@@ -22,12 +22,12 @@ class MoloCASBackend(CASBackend):
                     name='Moderators').first()
                 if moderator_group:
                     user.groups.add(moderator_group)
-                else:
-                    pass
-                    """
-                    We need to log this or find ways of notifying users that
-                    the moderator group was removed or renamed
-                    """
+                """
+                TODO: Handle case where Moderator group does not exist.
+                We need to log this or find ways of notifying users that
+                the moderator group was removed or renamed.
+                There isn't much we can do about this case though.
+                """
         else:
             user.is_staff = False
             user.is_superuser = False
