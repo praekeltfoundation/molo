@@ -30,7 +30,7 @@ class MoloTestCaseMixin(object):
         )
 
         # Create root page
-        Page.objects.create(
+        self.root = Page.objects.create(
             title="Root",
             slug='root',
             content_type=page_content_type,

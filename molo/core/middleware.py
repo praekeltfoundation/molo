@@ -1,5 +1,7 @@
 import uuid
 
+from bs4 import BeautifulSoup
+
 from django.http import HttpResponseForbidden
 from django.views.defaults import permission_denied
 
@@ -35,7 +37,11 @@ class MoloCASMiddleware(CASMiddleware):
             return None
 
         if request.user.is_authenticated():
-            if request.user.is_staff:
+            if request.user.has_perm('wagtailadmin.access_admin'):
+                """
+                Implemented using wagtails permissions model
+                https://github.com/torchbox/wagtail/blob/master/wagtail/wagtailadmin/views/account.py#L112 # noqa
+                """
                 return None
             else:
                 return permission_denied(request, 'error')
@@ -90,9 +96,17 @@ class NoScriptGASessionMiddleware(object):
 class MoloGoogleAnalyticsMiddleware(object):
     """Uses GA IDs stored in Wagtail to track pageviews using celery"""
     def submit_tracking(self, account, request, response):
+        try:
+            title = BeautifulSoup(
+                response.content, "html.parser"
+            ).html.head.title.text.encode('utf-8')
+        except:
+            title = None
+
         path = request.path
         referer = request.META.get('HTTP_REFERER', '')
-        params = build_ga_params(request, account, path=path, referer=referer)
+        params = build_ga_params(
+            request, account, path=path, referer=referer, title=title)
         response = set_cookie(params, response)
         send_ga_tracking.delay(params)
         return response
