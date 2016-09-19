@@ -108,6 +108,7 @@ class MoloGoogleAnalyticsMiddleware(object):
         if not response.status_code == 200:
             return response
 
+        ga_id_from_settings = None
         if hasattr(settings, 'GOOGLE_ANALYTICS') and settings.GOOGLE_ANALYTICS:
             ga_id_from_settings = settings.GOOGLE_ANALYTICS.get(
                 'google_analytics_id')
