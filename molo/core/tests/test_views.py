@@ -28,6 +28,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.english = SiteLanguage.objects.create(locale='en')
         self.french = SiteLanguage.objects.create(locale='fr')
+        self.spanish = SiteLanguage.objects.create(locale='es')
+        self.arabic = SiteLanguage.objects.create(locale='ar')
         self.mk_main()
 
         self.yourmind = self.mk_section(
@@ -133,6 +135,36 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(
             response,
             '<a href="/sections/your-mind-in-french/">Your mind in french</a>')
+
+    def test_switching_between_child_languages(self):
+        self.yourmind_es = self.mk_section_translation(
+            self.yourmind, self.spanish, title='Your mind in spanish')
+        self.yourmind_ar = self.mk_section_translation(
+            self.yourmind, self.arabic, title='Your mind in arabic')
+
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/your-mind/">Your mind</a>')
+
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/your-mind-in-french/">Your mind in french</a>')
+
+        response = self.client.get('/locale/es/')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/your-mind-in-spanish/">'
+            'Your mind in spanish</a>')
+
+        response = self.client.get('/locale/ar/')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/your-mind-in-arabic/">Your mind in arabic</a>')
 
     def test_latest_listing(self):
         en_latest = self.mk_articles(
