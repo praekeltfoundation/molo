@@ -96,6 +96,27 @@ def latest_listing_homepage(context, num_count=5):
     }
 
 
+@register.inclusion_tag(
+    'core/tags/topic_of_the_day.html',
+    takes_context=True
+)
+def topic_of_the_day(context):
+    request = context['request']
+    locale = context.get('locale_code')
+
+    if request.site:
+        articles = request.site.root_page.specific\
+            .topic_of_the_day()
+    else:
+        articles = None
+
+    return {
+        'articles': get_pages(context, articles, locale),
+        'request': context['request'],
+        'locale_code': locale,
+    }
+
+
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
 def bannerpages(context):
     request = context['request']
