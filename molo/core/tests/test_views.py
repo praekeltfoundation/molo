@@ -141,30 +141,49 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.yourmind, self.spanish, title='Your mind in spanish')
         self.yourmind_ar = self.mk_section_translation(
             self.yourmind, self.arabic, title='Your mind in arabic')
+        en_page = self.mk_article(self.yourmind)
 
         response = self.client.get('/')
         self.assertContains(
             response,
             '<a href="/sections/your-mind/">Your mind</a>')
 
+        response = self.client.get('/sections/your-mind/%s/' % (en_page.slug))
+        self.assertContains(
+            response,
+            ' <p>Sample page content for 0</p>')
+
+        fr_page = self.mk_article_translation(
+            en_page, self.french,
+            title=en_page.title + ' in french',
+            subtitle=en_page.subtitle + ' in french',
+            body=json.dumps([{
+                            'type': 'paragraph',
+                            'value': 'Sample page content for %s' % (
+                                en_page.title + ' in french')}]),
+        )
+
         response = self.client.get('/locale/fr/')
-        response = self.client.get('/')
-        self.assertContains(
-            response,
-            '<a href="/sections/your-mind-in-french/">Your mind in french</a>')
 
-        response = self.client.get('/locale/es/')
-        response = self.client.get('/')
-        self.assertContains(
-            response,
-            '<a href="/sections/your-mind-in-spanish/">'
-            'Your mind in spanish</a>')
+        response = self.client.get('/sections/your-mind/%s/' % (fr_page.slug))
+        self.assertContains(response, 'Sample page content for %s' % (
+            en_page.title + ' in french'))
 
-        response = self.client.get('/locale/ar/')
-        response = self.client.get('/')
-        self.assertContains(
-            response,
-            '<a href="/sections/your-mind-in-arabic/">Your mind in arabic</a>')
+        self.mk_article_translation(
+            en_page, self.spanish,
+            title=en_page.title + ' in spanish',
+            subtitle=en_page.subtitle + ' in spanish',
+            body=json.dumps([{
+                            'type': 'paragraph',
+                            'value': 'Sample page content for %s' % (
+                                en_page.title + ' in spanish')}]),
+        )
+
+        response = self.client.get(
+            '/locale/es/?next=/sections/your-mind/%s/' % (fr_page.slug),
+            follow=True)
+        self.assertContains(response, 'Sample page content for %s' % (
+            en_page.title + ' in spanish'))
 
     def test_latest_listing(self):
         en_latest = self.mk_articles(
