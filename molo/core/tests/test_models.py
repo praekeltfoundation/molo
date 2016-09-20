@@ -470,3 +470,23 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ValidationError,
             "The article cannot be demoted before it has been promoted."
         )
+
+    def test_is_topic_of_the_day(self):
+        promote_date = timezone.now() + timedelta(days=-1)
+        demote_date = timezone.now() + timedelta(days=1)
+        article_1 = ArticlePage(
+            title="New article",
+            feature_as_topic_of_the_day=True,
+            promote_date=promote_date,
+            demote_date=demote_date
+        )
+        self.assertTrue(article_1.is_current_topic_of_the_day())
+
+        promote_date = timezone.now() + timedelta(days=2)
+        demote_date = timezone.now() + timedelta(days=4)
+        article_2 = ArticlePage(
+            title="New article",
+            promote_date=promote_date,
+            demote_date=demote_date
+        )
+        self.assertFalse(article_2.is_current_topic_of_the_day())
