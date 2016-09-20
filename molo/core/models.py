@@ -278,8 +278,19 @@ class Main(CommentedPageMixin, Page):
     def latest_articles(self):
         return ArticlePage.objects.filter(
             featured_in_latest=True,
-            languages__language__is_main_language=True).order_by(
-                '-latest_revision_created_at').specific()
+            languages__language__is_main_language=True).exclude(
+                feature_as_topic_of_the_day=True,
+                promote_date__lte=timezone.now(),
+                demote_date__gte=timezone.now()).order_by(
+                    '-promote_date', '-latest_revision_created_at').specific()
+
+    def topic_of_the_day(self):
+        return ArticlePage.objects.filter(
+            feature_as_topic_of_the_day=True,
+            languages__language__is_main_language=True,
+            promote_date__lte=timezone.now(),
+            demote_date__gte=timezone.now()).order_by(
+            '-promote_date').specific()
 
     def footers(self):
         return FooterPage.objects.filter(
@@ -623,8 +634,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
     promote_date = models.DateTimeField(blank=True, null=True)
     demote_date = models.DateTimeField(blank=True, null=True)
 
-    base_form_class = forms.ArticlePageForm
-
     featured_promote_panels = [
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
@@ -640,6 +649,8 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
     metedata_promote_panels = [
         FieldPanel('metadata_tags'),
     ]
+
+    base_form_class = forms.ArticlePageForm
 
     def get_absolute_url(self):  # pragma: no cover
         return self.url
@@ -669,6 +680,11 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
                         return True
             return False
         return True
+
+    def is_current_topic_of_the_day(self):
+        if self.feature_as_topic_of_the_day:
+            return self.promote_date <= timezone.now() <= self.demote_date
+        return False
 
     def is_commenting_enabled(self):
         commenting_settings = self.get_effective_commenting_settings()
