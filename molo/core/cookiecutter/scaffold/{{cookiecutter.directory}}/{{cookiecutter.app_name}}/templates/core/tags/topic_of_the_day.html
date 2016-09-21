@@ -1,0 +1,21 @@
+{% raw %}
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+
+{% if articles %}
+    <div class="ListTitle ListTitle--latest" id="latest">
+        <h1 class="ListTitle-name">{% trans "Topic of the Day" %}</h1>
+    </div>
+        {% for article in articles %}
+            <ul class="ListView ListView--latest">
+                <li class="ListItemWrapper--latest">
+                    {% if article.image %}
+                        <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+                    {% endif %}
+                    <h3 class="ListItem-title"><a class="ListItem ListItem--rightIcon" href="{% pageurl article %}">{{ article.title }}</a></h3>
+                    <p class="ListItem-desc">{{ article.subtitle }}</p>
+                </li>
+            </ul>
+        {% endfor %}
+{% endif %}
+{% endraw %}
+
