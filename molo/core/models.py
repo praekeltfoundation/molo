@@ -222,8 +222,15 @@ class TranslatablePageMixin(object):
 
     def serve(self, request):
         locale_code = get_locale_code(get_language_from_request(request))
-        translation = self.get_translation_for(locale_code)
-        if translation:
+        parent = self.get_main_language_page()
+        translation = parent.specific.get_translation_for(locale_code)
+        language_rel = self.languages.all().first()
+
+        main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
+        if main_lang.locale == locale_code:
+            translation = parent
+
+        if translation and language_rel.language.locale != locale_code:
             return redirect(
                 '%s?%s' % (translation.url, request.GET.urlencode()))
 
@@ -446,7 +453,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
             ArticlePage.objects.child_of(main_language_page).filter(
                 languages__language__is_main_language=True),
             ArticlePage.objects.filter(
-                related_sections__section__slug=self.slug)
+                related_sections__section__slug=main_language_page.slug)
         )
         )
 
