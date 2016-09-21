@@ -16,6 +16,7 @@ Main features::
 - Upgraded wagtail to 1.4.3
 - We've added the option to allow un-translated pages to be hidden
 - We now show a translated page on the front end when it's main language page is unpublished
+- Add Topic of the Day functionality
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,6 +26,11 @@ Backwards incompatible changes
 - Deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
 - Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+
+3.10.0
+~~~~~
+
+- Add Topic of the Day functionality
 
 3.9.2
 ~~~~~
