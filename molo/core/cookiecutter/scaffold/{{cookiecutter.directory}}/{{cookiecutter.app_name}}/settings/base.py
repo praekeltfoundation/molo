@@ -129,7 +129,7 @@ WSGI_APPLICATION = '{{cookiecutter.app_name}}.wsgi.application'
 # Google analytics
 
 GOOGLE_ANALYTICS = {
-    'google_analytics_id': 'xxx',
+    'google_analytics_id': None,
 }
 
 GOOGLE_ANALYTICS_IGNORE_PATH = [
