@@ -3,12 +3,14 @@ import json
 import pytest
 import responses
 
+from datetime import timedelta
 from urlparse import parse_qs
 
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import SiteLanguage, FooterPage, SiteSettings
@@ -299,6 +301,20 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<p>Sample page description for 0</p>')
+
+    def test_featured_topic_of_the_day(self):
+        promote_date = timezone.now() + timedelta(days=-1)
+        demote_date = timezone.now() + timedelta(days=1)
+        self.mk_article(
+            self.yourmind_sub,
+            feature_as_topic_of_the_day=True,
+            promote_date=promote_date,
+            demote_date=demote_date
+        )
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            'Topic of the Day')
 
     def test_featured_homepage_listing_in_french(self):
         en_page = self.mk_article(self.yourmind_sub, featured_in_homepage=True)
