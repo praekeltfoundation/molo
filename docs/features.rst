@@ -20,6 +20,61 @@ Core Features
         - Content pages mostly used for About, Terms and Contact information
     - Search
         - The ability to search for any content on the site
+
+        You can use Elasticsearch 1 with the following settings::
+
+            WAGTAILSEARCH_BACKENDS = {
+                'default': {
+                    'BACKEND': 'molo.core.wagtailsearch.backends.elasticsearch',
+                    'INDEX': 'base',
+                },
+            }
+
+        Or Elasticsearch 2::
+
+            WAGTAILSEARCH_BACKENDS = {
+                'default': {
+                    'BACKEND': 'molo.core.wagtailsearch.backends.elasticsearch2',
+                    'INDEX': 'base',
+                },
+            }
+
+        In order to show the highlighted word in the search results page, with the following logic:
+
+        1. Display the title field always: highlight it, if the term appear in this field. If the term doesn't appear, display the original content of the title field.
+        2. Display highlighted subtitle or body, if the term appear in them. If term appear in the title only, display the original content of the subtitle field.
+
+        You need to update the `search_results.html` page with the following code::
+
+            {% for page in search_results %}
+              {% with parent_section=page.get_parent_section ancestor=page.get_parent_section.get_ancestors.last %}
+                <a href="{% pageurl page %}">
+                  <div class="nav">
+                    {% if ancestor.sectionpage.image %}
+                        <h6>{{ancestor.title}}</h6>
+                    {% else %}
+                        <h6>{{parent_section.title}}</h6>
+                    {% endif %}
+                    {% if page.title_highlight %}
+                        <h3>{{page.title_highlight|safe}}</h3>
+                    {% else %}
+                        <h3>{{page.title}}</h3>
+                    {% endif %}
+                    {% if page.subtitle_highlight or page.body_highlight %}
+                        {% if page.subtitle_highlight %}
+                            <p>{{page.subtitle_highlight|safe}}</p>
+                        {% elif page.body_highlight %}
+                            <p>{{page.body_highlight|safe}}</p>
+                        {% endif %}
+                    {% else %}
+                        <p>{{page.subtitle}}</p>
+                    {% endif %}
+                  </div>
+                </a>
+              {% endwith %}
+            {% endfor %}
+
+
     - Multiple Languages
         - Molo allows you to offer you content in multiple languages using the TranslatablePageMixin
 
