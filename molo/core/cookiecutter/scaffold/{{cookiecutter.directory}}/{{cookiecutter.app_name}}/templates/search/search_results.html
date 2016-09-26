@@ -9,23 +9,29 @@
   </div>
   {% for page in search_results %}
     {% with parent_section=page.get_parent_section ancestor=page.get_parent_section.get_ancestors.last %}
-    {% if ancestor.sectionpage.image %}
       <a href="{% pageurl page %}">
         <div class="nav">
-          <h6>{{ancestor.title}}</h6>
-          <h3>{{page.title}}</h3>
-          <p>{{page.subtitle}}</p>
+          {% if ancestor.sectionpage.image %}
+              <h6>{{ancestor.title}}</h6>
+          {% else %}
+              <h6>{{parent_section.title}}</h6>
+          {% endif %}
+          {% if page.title_highlight %}
+              <h3>{{page.title_highlight|safe}}</h3>
+          {% else %}
+              <h3>{{page.title}}</h3>
+          {% endif %}
+          {% if page.subtitle_highlight or page.body_highlight %}
+              {% if page.subtitle_highlight %}
+                  <p>{{page.subtitle_highlight|safe}}</p>
+              {% elif page.body_highlight %}
+                  <p>{{page.body_highlight|safe}}</p>
+              {% endif %}
+          {% else %}
+              <p>{{page.subtitle}}</p>
+          {% endif %}
         </div>
       </a>
-    {% else %}
-      <a href="{% pageurl page %}">
-        <div class="nav">
-          <h6>{{parent_section.title}}</h6>
-          <h3>{{page.title}}</h3>
-          <p>{{page.subtitle}}</p>
-        </div>
-      </a>
-    {% endif %}
     {% endwith %}
   {% endfor %}
 

@@ -36,6 +36,17 @@ def search(request, results_per_page=10):
         results = ArticlePage.objects.filter(pk__in=results)
         results = results.live().search(search_query)
 
+        # At the moment only ES backends have highlight API.
+        if hasattr(results, 'highlight'):
+            results = results.highlight(
+                fields={
+                    'title': {},
+                    'subtitle': {},
+                    'body': {},
+                },
+                require_field_match=False
+            )
+
         Query.get(search_query).add_hit()
     else:
         results = ArticlePage.objects.none()
