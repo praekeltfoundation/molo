@@ -42,6 +42,7 @@ def search(request, results_per_page=10):
                 fields={
                     'title': {},
                     'subtitle': {},
+                    'body': {},
                 },
                 require_field_match=False
             )
