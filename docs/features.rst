@@ -23,7 +23,7 @@ Core Features
         - The ability to show a highlighted term in the results
         - Support for both Elastichsearch 1.x & 2.x
 
-            Search highlighting is only supported by the Elasticsearch backend.
+.. note:: Search highlighting is only supported by the Elasticsearch backend.
         
         You can use Elasticsearch 1 with the following settings::
 
