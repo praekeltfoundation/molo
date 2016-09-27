@@ -20,7 +20,11 @@ Core Features
         - Content pages mostly used for About, Terms and Contact information
     - Search
         - The ability to search for any content on the site
+        - The ability to show a highlighted term in the results
+        - Support for both Elastichsearch 1.x & 2.x
 
+            Search highlighting is only supported by the Elasticsearch backend.
+        
         You can use Elasticsearch 1 with the following settings::
 
             WAGTAILSEARCH_BACKENDS = {
@@ -38,11 +42,11 @@ Core Features
                     'INDEX': 'base',
                 },
             }
+        
+        The example below shows how to show the highlighted word in the search results page with the following rules:
 
-        In order to show the highlighted word in the search results page, with the following logic:
-
-        1. Display the title field always: highlight it, if the term appear in this field. If the term doesn't appear, display the original content of the title field.
-        2. Display highlighted subtitle or body, if the term appear in them. If term appear in the title only, display the original content of the subtitle field.
+        1. Title field is always displayed: if the term appears in this field, it will be highlighted.
+        2. Display highlighted term in subtitle or body. If the term appears in the title only, display the original content of the subtitle field.
 
         You need to update the `search_results.html` page with the following code::
 
