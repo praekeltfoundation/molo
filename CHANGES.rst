@@ -17,6 +17,8 @@ Main features::
 - We've added the option to allow un-translated pages to be hidden
 - We now show a translated page on the front end when it's main language page is unpublished
 - Add Topic of the Day functionality
+- Add Support for both Elastichsearch 1.x & 2.x
+- Add ability to show a highlighted term in the results
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -26,6 +28,13 @@ Backwards incompatible changes
 - Deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
 - Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+
+3.11.0
+~~~~~
+
+- Add Support for both Elastichsearch 1.x & 2.x
+- Add ability to show a highlighted term in the results
+Note: Search highlighting is only supported by the Elasticsearch backend.
 
 3.10.0
 ~~~~~
