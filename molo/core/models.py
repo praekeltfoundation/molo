@@ -142,7 +142,14 @@ class SiteSettings(BaseSetting):
                 ]),
                 StreamFieldPanel('time'),
             ],
-            heading="Content Rotation Settings",)
+            heading="Content Rotation Settings",),
+        MultiFieldPanel(
+            [
+                FieldPanel('Social media links on footer pages'),
+                FieldPanel('Social media share button article pages'),
+            ],
+            heading="Social Media",
+        ),
     ]
 
 
