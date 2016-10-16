@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 from molo.core.models import (
-    ArticlePage, SiteLanguage, PageTranslation, SectionPage)
+    ArticlePage, SiteLanguage, PageTranslation, SectionPage, Main)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_descendant_articles_for_section, load_child_articles_for_section,
@@ -490,3 +490,38 @@ class TestModels(TestCase, MoloTestCaseMixin):
             demote_date=demote_date
         )
         self.assertFalse(article_2.is_current_topic_of_the_day())
+
+    # exclude future-scheduled topic of the day articles from the
+    # latest articles queryset.
+    # Create two articles, one with present promote date and one
+    # with future promote date. Verify that the article with a
+    # future promote date does not appear in latest articles
+    # queryset.
+    def test_future_topic_of_the_day_not_in_latest(self):
+        promote_date = timezone.now() + timedelta(days=2)
+        demote_date = timezone.now() + timedelta(days=4)
+        future_article = ArticlePage(
+            title="Future article",
+            promote_date=promote_date,
+            demote_date=demote_date,
+            depth="1",
+            path="0003",
+            featured_in_latest=True,
+            feature_as_topic_of_the_day=True
+        )
+        future_article.save()
+        self.assertQuerysetEqual(Main().latest_articles(), [])
+
+        promote_date = timezone.now() + timedelta(days=-2)
+        demote_date = timezone.now() + timedelta(days=-1)
+        present_article = ArticlePage(
+            title="Present article",
+            promote_date=promote_date,
+            demote_date=demote_date,
+            depth="1",
+            path="0004",
+            featured_in_latest=True,
+            feature_as_topic_of_the_day=True
+        )
+        present_article.save()
+        self.assertQuerysetEqual(Main().latest_articles(), [repr(present_article), ])
