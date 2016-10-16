@@ -524,4 +524,5 @@ class TestModels(TestCase, MoloTestCaseMixin):
             feature_as_topic_of_the_day=True
         )
         present_article.save()
-        self.assertQuerysetEqual(Main().latest_articles(), [repr(present_article), ])
+        self.assertQuerysetEqual(
+            Main().latest_articles(), [repr(present_article), ])
