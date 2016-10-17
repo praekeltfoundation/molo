@@ -286,8 +286,7 @@ class Main(CommentedPageMixin, Page):
             featured_in_latest=True,
             languages__language__is_main_language=True).exclude(
                 feature_as_topic_of_the_day=True,
-                promote_date__lte=timezone.now(),
-                demote_date__gte=timezone.now()).order_by(
+                demote_date__gt=timezone.now()).order_by(
                     '-promote_date', '-latest_revision_created_at').specific()
 
     def topic_of_the_day(self):
