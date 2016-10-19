@@ -1,6 +1,5 @@
 from django.utils import timezone
 
-from molo.core import constants
 from wagtail.wagtailadmin.forms import WagtailAdminPageForm
 
 
