@@ -312,6 +312,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             demote_date=demote_date
         )
         response = self.client.get('/')
+        print response
         self.assertContains(
             response,
             'Topic of the Day')
