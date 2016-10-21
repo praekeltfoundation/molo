@@ -330,3 +330,6 @@ EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD', '')
 
 CSRF_FAILURE_VIEW = 'molo.core.views.csrf_failure'
+
+FREE_BASICS_URL_FOR_CSRF_MESSAGE = environ.get(
+    'FREE_BASICS_URL_FOR_CSRF_MESSAGE', '')
