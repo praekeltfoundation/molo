@@ -5,7 +5,7 @@ from .views import search
 
 urlpatterns = patterns(
     '',
-    url(r'search/$', search, name='search'),
+    url(r'^search/$', search, name='search'),
     url(
         r'^locale/(?P<locale>[\w\-\_]+)/$',
         'molo.core.views.locale_set',
