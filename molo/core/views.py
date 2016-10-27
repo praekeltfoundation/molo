@@ -2,18 +2,74 @@ from os import environ
 import pkg_resources
 import requests
 
+from django.conf import settings
 from django.contrib import messages
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404, render
-from django.utils.translation import LANGUAGE_SESSION_KEY
+from django.utils.translation import (
+    LANGUAGE_SESSION_KEY,
+    get_language_from_request
+)
 from django.utils.translation import ugettext as _
-
-from molo.core.utils import generate_slug
-from molo.core.models import PageTranslation, SiteLanguage
-
 from wagtail.wagtailcore.models import Page
+from wagtail.wagtailsearch.models import Query
+
+from molo.core.utils import generate_slug, get_locale_code
+from molo.core.models import PageTranslation, SiteLanguage, ArticlePage
 from molo.core.known_plugins import known_plugins
+
+
+def csrf_failure(request, reason=""):
+    freebasics_url = settings.FREE_BASICS_URL_FOR_CSRF_MESSAGE
+    return render(request, '403_csrf.html', {'freebasics_url': freebasics_url})
+
+
+def search(request, results_per_page=10):
+    search_query = request.GET.get('q', None)
+    page = request.GET.get('p', 1)
+    locale = get_locale_code(get_language_from_request(request))
+
+    if search_query:
+        results = ArticlePage.objects.filter(
+            languages__language__locale=locale
+        ).values_list('pk', flat=True)
+        # Elasticsearch backend doesn't support filtering
+        # on related fields, at the moment.
+        # So we need to filter ArticlePage entries using DB,
+        # then, we will be able to search
+        results = ArticlePage.objects.filter(pk__in=results)
+        results = results.live().search(search_query)
+
+        # At the moment only ES backends have highlight API.
+        if hasattr(results, 'highlight'):
+            results = results.highlight(
+                fields={
+                    'title': {},
+                    'subtitle': {},
+                    'body': {},
+                },
+                require_field_match=False
+            )
+
+        Query.get(search_query).add_hit()
+    else:
+        results = ArticlePage.objects.none()
+
+    paginator = Paginator(results, results_per_page)
+    try:
+        search_results = paginator.page(page)
+    except PageNotAnInteger:
+        search_results = paginator.page(1)
+    except EmptyPage:
+        search_results = paginator.page(paginator.num_pages)
+
+    return render(request, 'search/search_results.html', {
+        'search_query': search_query,
+        'search_results': search_results,
+        'results': results,
+    })
 
 
 def locale_set(request, locale):

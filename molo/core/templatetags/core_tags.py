@@ -96,6 +96,27 @@ def latest_listing_homepage(context, num_count=5):
     }
 
 
+@register.inclusion_tag(
+    'core/tags/topic_of_the_day.html',
+    takes_context=True
+)
+def topic_of_the_day(context):
+    request = context['request']
+    locale = context.get('locale_code')
+
+    if request.site:
+        articles = request.site.root_page.specific\
+            .topic_of_the_day()
+    else:
+        articles = ArticlePage.objects.None()
+
+    return {
+        'articles': get_pages(context, articles, locale),
+        'request': context['request'],
+        'locale_code': locale,
+    }
+
+
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
 def bannerpages(context):
     request = context['request']
@@ -219,7 +240,7 @@ def load_child_articles_for_section(context, section, count=5):
     child_articles = ArticlePage.objects.child_of(main_language_page).filter(
         languages__language__is_main_language=True)
     related_articles = ArticlePage.objects.filter(
-        related_sections__section__slug=section.slug)
+        related_sections__section__slug=main_language_page.slug)
     qs = list(chain(
         get_pages(context, child_articles, locale),
         get_pages(context, related_articles, locale)))

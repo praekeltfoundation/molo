@@ -7,8 +7,10 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
+from django.core.exceptions import ValidationError
+
 from molo.core.models import (
-    ArticlePage, SiteLanguage, PageTranslation, SectionPage)
+    ArticlePage, SiteLanguage, PageTranslation, SectionPage, Main)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_descendant_articles_for_section, load_child_articles_for_section,
@@ -399,3 +401,128 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEquals(translated_section.id, qs.id)
         qs = get_translation({'locale_code': 'fr'}, section2)
         self.assertEquals(section2.id, qs.id)
+
+    def test_topic_of_the_day(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        # create a new article and go to it's edit page
+        new_section = self.mk_section(
+            self.section_index, title="New Section", slug="new-section")
+        new_article = self.mk_article(new_section, title="New article",)
+        response = self.client.get(
+            reverse('wagtailadmin_pages:edit', args=(new_article.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # Marking article as Topic of the day with no promote date
+        # or demote date raises error
+        post_data = {
+            "feature_as_topic_of_the_day": True,
+            'title': 'this is a test article',
+            'slug': 'this-is-a-test-article',
+            'related_sections-INITIAL_FORMS': 0,
+            'related_sections-MAX_NUM_FORMS': 1000,
+            'related_sections-MIN_NUM_FORMS': 0,
+            'related_sections-TOTAL_FORMS': 0,
+            'body-count': 1,
+            'body-0-value': 'Hello',
+            'body-0-deleted': False,
+            'body-0-order': 1,
+            'body-0-type': 'paragraph',
+            'metadata_tags': 'love, happiness',
+            'action-publish': 'Publish'
+        }
+        self.client.post(
+            reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
+            post_data
+        )
+        self.assertRaisesMessage(
+            ValidationError,
+            "Please specify the date and time that you would like this "
+            "article to appear as the Topic of the Day."
+        )
+
+        # Raises error if promote_date is in the past
+        post_data.update({
+            "promote_date": timezone.now() + timedelta(days=-1),
+        })
+        self.client.post(
+            reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
+            post_data
+        )
+        self.assertRaisesMessage(
+            ValidationError,
+            "Please select the present date, or a future date."
+        )
+
+        # Raise error is demote date is before
+        # promote date
+        post_data.update({
+            "promote_date": timezone.now(),
+            "demote_date": timezone.now() + timedelta(days=-1)
+        })
+        self.client.post(
+            reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
+            post_data
+        )
+        self.assertRaisesMessage(
+            ValidationError,
+            "The article cannot be demoted before it has been promoted."
+        )
+
+    def test_is_topic_of_the_day(self):
+        promote_date = timezone.now() + timedelta(days=-1)
+        demote_date = timezone.now() + timedelta(days=1)
+        article_1 = ArticlePage(
+            title="New article",
+            feature_as_topic_of_the_day=True,
+            promote_date=promote_date,
+            demote_date=demote_date
+        )
+        self.assertTrue(article_1.is_current_topic_of_the_day())
+
+        promote_date = timezone.now() + timedelta(days=2)
+        demote_date = timezone.now() + timedelta(days=4)
+        article_2 = ArticlePage(
+            title="New article",
+            promote_date=promote_date,
+            demote_date=demote_date
+        )
+        self.assertFalse(article_2.is_current_topic_of_the_day())
+
+    # exclude future-scheduled topic of the day articles from the
+    # latest articles queryset.
+    # Create two articles, one with present promote date and one
+    # with future promote date. Verify that the article with a
+    # future promote date does not appear in latest articles
+    # queryset.
+    def test_future_topic_of_the_day_not_in_latest(self):
+        promote_date = timezone.now() + timedelta(days=2)
+        demote_date = timezone.now() + timedelta(days=4)
+        future_article = ArticlePage(
+            title="Future article",
+            promote_date=promote_date,
+            demote_date=demote_date,
+            depth="1",
+            path="0003",
+            featured_in_latest=True,
+            feature_as_topic_of_the_day=True
+        )
+        future_article.save()
+        self.assertQuerysetEqual(Main().latest_articles(), [])
+
+        promote_date = timezone.now() + timedelta(days=-2)
+        demote_date = timezone.now() + timedelta(days=-1)
+        present_article = ArticlePage(
+            title="Present article",
+            promote_date=promote_date,
+            demote_date=demote_date,
+            depth="1",
+            path="0004",
+            featured_in_latest=True,
+            feature_as_topic_of_the_day=True
+        )
+        present_article.save()
+        self.assertQuerysetEqual(
+            Main().latest_articles(), [repr(present_article), ])

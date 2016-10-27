@@ -3,12 +3,14 @@ import json
 import pytest
 import responses
 
+from datetime import timedelta
 from urlparse import parse_qs
 
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import SiteLanguage, FooterPage, SiteSettings
@@ -28,6 +30,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.english = SiteLanguage.objects.create(locale='en')
         self.french = SiteLanguage.objects.create(locale='fr')
+        self.spanish = SiteLanguage.objects.create(locale='es')
+        self.arabic = SiteLanguage.objects.create(locale='ar')
         self.mk_main()
 
         self.yourmind = self.mk_section(
@@ -133,6 +137,55 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(
             response,
             '<a href="/sections/your-mind-in-french/">Your mind in french</a>')
+
+    def test_switching_between_child_languages(self):
+        self.yourmind_es = self.mk_section_translation(
+            self.yourmind, self.spanish, title='Your mind in spanish')
+        self.yourmind_ar = self.mk_section_translation(
+            self.yourmind, self.arabic, title='Your mind in arabic')
+        en_page = self.mk_article(self.yourmind)
+
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections/your-mind/">Your mind</a>')
+
+        response = self.client.get('/sections/your-mind/%s/' % (en_page.slug))
+        self.assertContains(
+            response,
+            ' <p>Sample page content for 0</p>')
+
+        fr_page = self.mk_article_translation(
+            en_page, self.french,
+            title=en_page.title + ' in french',
+            subtitle=en_page.subtitle + ' in french',
+            body=json.dumps([{
+                            'type': 'paragraph',
+                            'value': 'Sample page content for %s' % (
+                                en_page.title + ' in french')}]),
+        )
+
+        response = self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/your-mind/%s/' % (fr_page.slug))
+        self.assertContains(response, 'Sample page content for %s' % (
+            en_page.title + ' in french'))
+
+        self.mk_article_translation(
+            en_page, self.spanish,
+            title=en_page.title + ' in spanish',
+            subtitle=en_page.subtitle + ' in spanish',
+            body=json.dumps([{
+                            'type': 'paragraph',
+                            'value': 'Sample page content for %s' % (
+                                en_page.title + ' in spanish')}]),
+        )
+
+        response = self.client.get(
+            '/locale/es/?next=/sections/your-mind/%s/' % (fr_page.slug),
+            follow=True)
+        self.assertContains(response, 'Sample page content for %s' % (
+            en_page.title + ' in spanish'))
 
     def test_latest_listing(self):
         en_latest = self.mk_articles(
@@ -248,6 +301,20 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<p>Sample page description for 0</p>')
+
+    def test_featured_topic_of_the_day(self):
+        promote_date = timezone.now() + timedelta(days=-1)
+        demote_date = timezone.now() + timedelta(days=1)
+        self.mk_article(
+            self.yourmind_sub,
+            feature_as_topic_of_the_day=True,
+            promote_date=promote_date,
+            demote_date=demote_date
+        )
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            'Topic of the Day')
 
     def test_featured_homepage_listing_in_french(self):
         en_page = self.mk_article(self.yourmind_sub, featured_in_homepage=True)
@@ -648,27 +715,53 @@ class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.mk_main()
         self.english = SiteLanguage.objects.create(locale='en')
-
-        self.section_1 = self.mk_section(
-            self.section_index, title='Section 1')
-
-        self.section_2 = self.mk_section(
-            self.section_index, title='Section 2')
-
-        self.article_1 = self.mk_article(self.section_1,
-                                         title='Article 1')
-
-        self.article_1.related_sections.create(
-            page=self.article_1,
-            section=self.section_2
-        )
-
-        self.article_1.save_revision().publish()
-
-    def test_article_section(self):
-        response = self.client.get('/sections/section-1/')
-        self.assertContains(response, '/sections/section-1/article-1/')
+        self.french = SiteLanguage.objects.create(locale='fr')
 
     def test_article_related_section(self):
-        response = self.client.get('/sections/section-2/')
-        self.assertContains(response, '/sections/section-1/article-1/')
+        section_a = self.mk_section(self.section_index, title='Section A')
+        section_b = self.mk_section(self.section_index, title='Section B')
+
+        article_a = self.mk_article(section_a, title='Article A')
+        self.mk_article_translation(
+            article_a, self.french, title=article_a.title + ' in french',)
+        article_b = self.mk_article(section_b, title='Article B')
+        self.mk_article_translation(
+            article_b, self.french, title=article_b.title + ' in french',)
+
+        article_a.related_sections.create(page=article_a, section=section_b)
+        article_a.save_revision().publish()
+
+        # check article A from section A exist in section A and B
+        response = self.client.get('/sections/section-a/')
+        self.assertContains(response, '/sections/section-a/article-a/')
+        response = self.client.get('/sections/section-b/')
+        self.assertContains(response, '/sections/section-a/article-a/')
+
+        # check article A from section A exist in section A and B
+        # when switching to french language and section B is not translated
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/')
+        self.assertContains(
+            response, '/sections/section-a/article-a-in-french/')
+
+        response = self.client.get('/sections/section-b/')
+        self.assertContains(
+            response, '/sections/section-a/article-a-in-french/')
+        self.assertContains(
+            response, '/sections/section-b/article-b-in-french/')
+
+        # check article A from section A exist in section A and B
+        # when switching to french language and section B is translated
+        self.mk_section_translation(
+            section_b, self.french, title=section_b.title + ' in french')
+
+        response = self.client.get('/sections/section-a/')
+        self.assertContains(
+            response, '/sections/section-a/article-a-in-french/')
+
+        response = self.client.get('/sections/section-b-in-french/')
+        self.assertContains(
+            response, '/sections/section-b/article-b-in-french/')
+        self.assertContains(
+            response, '/sections/section-a/article-a-in-french/')

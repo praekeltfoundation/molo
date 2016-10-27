@@ -23,10 +23,9 @@ from wagtail.wagtailadmin.edit_handlers import (
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.wagtailadmin.taggable import TagSearchable
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock
-from molo.core import constants
+from molo.core import constants, forms
 from molo.core.utils import get_locale_code
 
 
@@ -222,8 +221,15 @@ class TranslatablePageMixin(object):
 
     def serve(self, request):
         locale_code = get_locale_code(get_language_from_request(request))
-        translation = self.get_translation_for(locale_code)
-        if translation:
+        parent = self.get_main_language_page()
+        translation = parent.specific.get_translation_for(locale_code)
+        language_rel = self.languages.all().first()
+
+        main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
+        if main_lang.locale == locale_code:
+            translation = parent
+
+        if translation and language_rel.language.locale != locale_code:
             return redirect(
                 '%s?%s' % (translation.url, request.GET.urlencode()))
 
@@ -278,8 +284,18 @@ class Main(CommentedPageMixin, Page):
     def latest_articles(self):
         return ArticlePage.objects.filter(
             featured_in_latest=True,
-            languages__language__is_main_language=True).order_by(
-                '-latest_revision_created_at').specific()
+            languages__language__is_main_language=True).exclude(
+                feature_as_topic_of_the_day=True,
+                demote_date__gt=timezone.now()).order_by(
+                    '-promote_date', '-latest_revision_created_at').specific()
+
+    def topic_of_the_day(self):
+        return ArticlePage.objects.filter(
+            feature_as_topic_of_the_day=True,
+            languages__language__is_main_language=True,
+            promote_date__lte=timezone.now(),
+            demote_date__gte=timezone.now()).order_by(
+            '-promote_date').specific()
 
     def footers(self):
         return FooterPage.objects.filter(
@@ -435,7 +451,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
             ArticlePage.objects.child_of(main_language_page).filter(
                 languages__language__is_main_language=True),
             ArticlePage.objects.filter(
-                related_sections__section__slug=self.slug)
+                related_sections__section__slug=main_language_page.slug)
         )
         )
 
@@ -550,8 +566,7 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
-                  TagSearchable):
+class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     subtitle = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     featured_in_latest = models.BooleanField(
@@ -603,10 +618,12 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
             'This is not visible to the user.'))
 
     subpage_types = []
-    search_fields = Page.search_fields + TagSearchable.search_fields + (
+    search_fields = Page.search_fields + (
         index.SearchField('subtitle'),
         index.SearchField('body'),
-        index.FilterField('locale'),
+        index.RelatedFields('tags', [
+            index.SearchField('name', partial_match=True, boost=2),
+        ]),
     )
 
     commenting_state = models.CharField(
@@ -617,15 +634,29 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+    feature_as_topic_of_the_day = models.BooleanField(
+        default=False,
+        help_text=_('Article to be featured as the Topic of the Day'))
+    promote_date = models.DateTimeField(blank=True, null=True)
+    demote_date = models.DateTimeField(blank=True, null=True)
+
     featured_promote_panels = [
         FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_section'),
         FieldPanel('featured_in_homepage'),
     ]
 
+    topic_of_the_day_panels = [
+        FieldPanel('feature_as_topic_of_the_day'),
+        FieldPanel('promote_date'),
+        FieldPanel('demote_date'),
+    ]
+
     metedata_promote_panels = [
         FieldPanel('metadata_tags'),
     ]
+
+    base_form_class = forms.ArticlePageForm
 
     def get_absolute_url(self):  # pragma: no cover
         return self.url
@@ -656,6 +687,11 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
             return False
         return True
 
+    def is_current_topic_of_the_day(self):
+        if self.feature_as_topic_of_the_day:
+            return self.promote_date <= timezone.now() <= self.demote_date
+        return False
+
     def is_commenting_enabled(self):
         commenting_settings = self.get_effective_commenting_settings()
         if (commenting_settings['state'] == constants.COMMENTING_DISABLED or
@@ -665,6 +701,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page,
 
     class Meta:
         verbose_name = _('Article')
+
 
 ArticlePage.content_panels = [
     FieldPanel('title', classname='full title'),
@@ -691,6 +728,7 @@ ArticlePage.content_panels = [
 
 ArticlePage.promote_panels = [
     MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
+    MultiFieldPanel(ArticlePage.topic_of_the_day_panels, "Topic of the Day"),
     MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
         Page.promote_panels,
