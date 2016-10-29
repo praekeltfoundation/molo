@@ -351,6 +351,39 @@ class TestPages(TestCase, MoloTestCaseMixin):
             response,
             '<p>Sample page description for 0 in french</p>')
 
+    def test_page_moving(self):
+        self.yourmind_es = self.mk_section_translation(
+            self.yourmind, self.spanish, title='Your mind in spanish')
+        self.yourmind_ar = self.mk_section_translation(
+            self.yourmind, self.arabic, title='Your mind in arabic')
+        en_page = self.mk_article(self.yourmind)
+
+        response = self.client.get('/')
+        self.assertContains(
+            response, '<a href="/sections/your-mind/">Your mind</a>')
+        response = self.client.get('/sections/your-mind/%s/' % (en_page.slug))
+        self.assertContains(
+            response, ' <p>Sample page content for 0</p>')
+        fr_page = self.mk_article_translation(
+            en_page, self.french,
+            title=en_page.title + ' in french',
+            subtitle=en_page.subtitle + ' in french',
+            body=json.dumps([{
+                            'type': 'paragraph',
+                            'value': 'Sample page content for %s' % (
+                                en_page.title + ' in french')}]),
+        )
+
+        response = self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/your-mind/%s/' % (fr_page.slug))
+        self.assertContains(response, 'Sample page content for %s' % (
+            en_page.title + ' in french'))
+
+        # TODO
+        # move article1 to section2
+        # test that the parent of article1_trans == section2
+
     def test_health(self):
         environ['MARATHON_APP_ID'] = 'marathon-app-id'
         environ['MARATHON_APP_VERSION'] = 'marathon-app-version'
