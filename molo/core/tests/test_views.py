@@ -352,8 +352,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<p>Sample page description for 0 in french</p>')
 
     def test_page_moving(self):
-        self.yourmind_es = self.mk_section_translation(
-            self.yourmind, self.spanish, title='Your mind in spanish')
+        self.yourmind_fr = self.mk_section_translation(
+            self.yourmind, self.french, title='Your mind in french')
         self.yourmind_ar = self.mk_section_translation(
             self.yourmind, self.arabic, title='Your mind in arabic')
         en_page = self.mk_article(self.yourmind)
@@ -380,9 +380,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Sample page content for %s' % (
             en_page.title + ' in french'))
 
-        # TODO
-        # move article1 to section2
-        # test that the parent of article1_trans == section2
+        en_page.move(self.yourmind_sub, pos='last-child')
+        self.assertEquals(en_page.get_parent(), self.yourmind_sub)
+        self.assertEquals(fr_page.get_parent(), self.yourmind_sub)
 
     def test_health(self):
         environ['MARATHON_APP_ID'] = 'marathon-app-id'
