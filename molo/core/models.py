@@ -260,11 +260,14 @@ class BannerPage(TranslatablePageMixin, Page):
         related_name='+',
         help_text=_('Optional page to which the banner will link to')
     )
+    external_link = models.TextField(null=True, blank=True)
+
 
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
-    PageChooserPanel('banner_link_page')
+    PageChooserPanel('banner_link_page'),
+    FieldPanel('external_link')
 ]
 
 
