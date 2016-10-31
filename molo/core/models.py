@@ -220,7 +220,7 @@ class TranslatablePageMixin(object):
         return response
 
     def move(self, target, pos=None):
-        super(TranslatablePageMixin, self).save(target, pos)
+        super(TranslatablePageMixin, self).move(target, pos)
 
         if hasattr(self, 'translations'):
             for p in self.translations.all():
