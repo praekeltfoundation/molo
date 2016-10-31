@@ -699,7 +699,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
             return False
         return True
 
-    def tags(self):
+    def tags_list(self):
         return self.tags.names()
 
     class Meta:
