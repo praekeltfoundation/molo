@@ -19,6 +19,7 @@ from wagtail.wagtailsearch.models import Query
 from molo.core.utils import generate_slug, get_locale_code
 from molo.core.models import PageTranslation, SiteLanguage, ArticlePage
 from molo.core.known_plugins import known_plugins
+from django.views.generic import ListView
 
 
 def csrf_failure(request, reason=""):
@@ -155,3 +156,11 @@ def get_pypi_version(plugin_name):
     url = "https://pypi.python.org/pypi/%s/json"
     content = requests.get(url % plugin_name).json()
     return content.get('info').get('version')
+
+
+class TagsListView(ListView):
+    template_name = "core/article_tags.html"
+
+    def get_queryset(self, **kwargs):
+        tag = self.kwargs["tag_name"]
+        return ArticlePage.objects.filter(tags__name__in=[tag])

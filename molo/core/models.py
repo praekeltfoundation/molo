@@ -699,6 +699,9 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
             return False
         return True
 
+    def tags(self):
+        return self.tags.names()
+
     class Meta:
         verbose_name = _('Article')
 
