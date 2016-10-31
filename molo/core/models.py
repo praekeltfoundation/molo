@@ -223,7 +223,7 @@ class TranslatablePageMixin(object):
         super(TranslatablePageMixin, self).save(target, pos)
 
         if hasattr(self, 'translations'):
-            for p in s.translations.all():
+            for p in self.translations.all():
                 p.translated_page.move(target, pos='last-child')
 
     def serve(self, request):
