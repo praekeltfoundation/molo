@@ -381,8 +381,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
             en_page.title + ' in french'))
 
         en_page.move(self.yourmind_sub, pos='last-child')
-        self.assertEquals(en_page.get_parent(), self.yourmind)
-        self.assertEquals(fr_page.get_parent(), self.yourmind)
+        self.assertEquals(en_page.get_parent(), self.yourmind_sub)
+        self.assertEquals(fr_page.get_parent(), self.yourmind_sub)
 
     def test_health(self):
         environ['MARATHON_APP_ID'] = 'marathon-app-id'
