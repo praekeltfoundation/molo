@@ -384,17 +384,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Sample page content for %s' % (
             en_page.title + ' in french'))
 
-        response = self.client.post(reverse('wagtailadmin_pages:move', args=(en_page.id,)))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(reverse('wagtailadmin_pages:move_choose_destination', args=(en_page.id, self.yourmind_sub.id)))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(reverse('wagtailadmin_pages:move_confirm', args=(en_page.id, self.yourmind_sub.id)))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(reverse('wagtailadmin_pages:set_page_position', args=(en_page.id, )))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:move_confirm',
+            args=(en_page.id, self.yourmind_sub.id)), data={'blank': 'blank'})
+        self.assertEqual(response.status_code, 302)
 
         page_en = ArticlePage.objects.get(pk=en_page.pk)
         self.assertEquals(page_en.get_parent().specific, self.yourmind_sub)
