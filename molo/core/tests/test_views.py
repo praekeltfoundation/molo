@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage, FooterPage, SiteSettings
+from molo.core.models import SiteLanguage, FooterPage, SiteSettings, ArticlePage
 from molo.core.known_plugins import known_plugins
 
 from mock import patch, Mock
@@ -381,8 +381,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
             en_page.title + ' in french'))
 
         en_page.move(self.yourmind_sub, pos='last-child')
-        self.assertEquals(en_page.get_parent(), self.yourmind_sub)
-        self.assertEquals(fr_page.get_parent(), self.yourmind_sub)
+
+        en_page = ArticlePage.objects.get(pk=en_page.pk)
+        self.assertEquals(en_page.get_parent().specific, self.yourmind_sub)
+
+        fr_page = ArticlePage.objects.get(pk=fr_page.pk)
+        self.assertEquals(fr_page.get_parent().specific, self.yourmind_sub)
 
     def test_health(self):
         environ['MARATHON_APP_ID'] = 'marathon-app-id'
