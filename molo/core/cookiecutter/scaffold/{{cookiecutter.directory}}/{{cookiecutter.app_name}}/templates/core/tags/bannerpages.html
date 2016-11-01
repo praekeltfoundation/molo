@@ -7,11 +7,11 @@
   {% if bannerpage.banner %}
 	    {% if bannerpage.banner_link_page %}
 	    <a href="{% pageurl bannerpage.banner_link_page %}">{% image bannerpage.banner width-320 %}</a>
+	    {% elif bannerpage.external_link %}
+	    <a href="{% pageurl bannerpage.external_link%}">{% image bannerpage.banner width-320 %}</a>
 	    {% else %}
 	    {% image bannerpage.banner width-320 %}
 	    {% endif %}
-    {% else %}
-    {% external_link %}
   	{% endif %}
 </div>
 {% endfor%}
