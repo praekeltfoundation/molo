@@ -13,7 +13,8 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage, FooterPage, SiteSettings, ArticlePage
+from molo.core.models import (SiteLanguage, FooterPage,
+                              SiteSettings, ArticlePage)
 from molo.core.known_plugins import known_plugins
 
 from mock import patch, Mock
