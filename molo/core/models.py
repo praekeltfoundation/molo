@@ -105,6 +105,9 @@ class SiteSettings(BaseSetting):
         null=True, blank=True,
         help_text='The date rotation will end')
 
+    enable_clickable_tags = models.BooleanField(
+        default=False, verbose_name='Display tags on Front-end')
+
     panels = [
         ImageChooserPanel('logo'),
         MultiFieldPanel(
@@ -142,7 +145,14 @@ class SiteSettings(BaseSetting):
                 ]),
                 StreamFieldPanel('time'),
             ],
-            heading="Content Rotation Settings",)
+            heading="Content Rotation Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('enable_clickable_tags'),
+            ],
+            heading="Article Tag Settings"
+        )
     ]
 
 
