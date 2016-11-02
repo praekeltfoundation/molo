@@ -15,7 +15,7 @@
   {% endif %}
 
 <article>
-  {% for block in self.body %}
+    {% for block in self.body %}
       {% if block.block_type == 'heading' %}
           <h1>{{ block.value }}</h1>
       {% elif block.block_type == 'image' %}
@@ -35,11 +35,13 @@
       {% else %}
           {{ block }}
       {% endif %}
-  {% endfor %}
-   {% for tag in self.tags_list %}
+    {% endfor %}
+</article>
+{% if settings.core.SiteSettings.enable_clickable_tags %}
+    {% for tag in self.tags_list %}
         <a href="{% url 'tags_list' tag %}">{{tag}}</a>
     {% endfor%}
-</article>
+{% endif %}
 </div>
 {% endblock %}
 {% endraw %}
