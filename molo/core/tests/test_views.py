@@ -13,7 +13,8 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage, FooterPage, SiteSettings
+from molo.core.models import (SiteLanguage, FooterPage,
+                              SiteSettings, ArticlePage)
 from molo.core.known_plugins import known_plugins
 
 from mock import patch, Mock
@@ -350,6 +351,49 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(
             response,
             '<p>Sample page description for 0 in french</p>')
+
+    def test_page_moving(self):
+        # Login
+        self.user = self.login()
+
+        self.yourmind_fr = self.mk_section_translation(
+            self.yourmind, self.french, title='Your mind in french')
+        self.yourmind_ar = self.mk_section_translation(
+            self.yourmind, self.arabic, title='Your mind in arabic')
+        en_page = self.mk_article(self.yourmind)
+
+        response = self.client.get('/')
+        self.assertContains(
+            response, '<a href="/sections/your-mind/">Your mind</a>')
+        response = self.client.get('/sections/your-mind/%s/' % (en_page.slug))
+        self.assertContains(
+            response, ' <p>Sample page content for 0</p>')
+        fr_page = self.mk_article_translation(
+            en_page, self.french,
+            title=en_page.title + ' in french',
+            subtitle=en_page.subtitle + ' in french',
+            body=json.dumps([{
+                            'type': 'paragraph',
+                            'value': 'Sample page content for %s' % (
+                                en_page.title + ' in french')}]),
+        )
+
+        response = self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/your-mind/%s/' % (fr_page.slug))
+        self.assertContains(response, 'Sample page content for %s' % (
+            en_page.title + ' in french'))
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:move_confirm',
+            args=(en_page.id, self.yourmind_sub.id)), data={'blank': 'blank'})
+        self.assertEqual(response.status_code, 302)
+
+        page_en = ArticlePage.objects.get(pk=en_page.pk)
+        self.assertEquals(page_en.get_parent().specific, self.yourmind_sub)
+
+        page_fr = ArticlePage.objects.get(pk=fr_page.pk)
+        self.assertEquals(page_fr.get_parent().specific, self.yourmind_sub)
 
     def test_health(self):
         environ['MARATHON_APP_ID'] = 'marathon-app-id'

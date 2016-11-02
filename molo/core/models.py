@@ -219,6 +219,13 @@ class TranslatablePageMixin(object):
                     is_main_language=True).first())
         return response
 
+    def move(self, target, pos=None):
+        super(TranslatablePageMixin, self).move(target, pos)
+
+        if hasattr(self, 'translations'):
+            for p in self.translations.all():
+                p.translated_page.move(target, pos='last-child')
+
     def serve(self, request):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
