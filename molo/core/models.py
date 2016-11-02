@@ -267,7 +267,10 @@ class BannerPage(TranslatablePageMixin, Page):
         related_name='+',
         help_text=_('Optional page to which the banner will link to')
     )
-    external_link = models.TextField(null=True, blank=True)
+    external_link = models.TextField(null=True, blank=True,
+                                     help_text='External link which a banner'
+                                     ' will link to. '
+                                     'eg https://www.google.co.za/')
 
 
 BannerPage.content_panels = [
