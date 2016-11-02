@@ -219,6 +219,13 @@ class TranslatablePageMixin(object):
                     is_main_language=True).first())
         return response
 
+    def move(self, target, pos=None):
+        super(TranslatablePageMixin, self).move(target, pos)
+
+        if hasattr(self, 'translations'):
+            for p in self.translations.all():
+                p.translated_page.move(target, pos='last-child')
+
     def serve(self, request):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
@@ -260,11 +267,14 @@ class BannerPage(TranslatablePageMixin, Page):
         related_name='+',
         help_text=_('Optional page to which the banner will link to')
     )
+    external_link = models.TextField(null=True, blank=True)
+
 
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
-    PageChooserPanel('banner_link_page')
+    PageChooserPanel('banner_link_page'),
+    FieldPanel('external_link')
 ]
 
 
