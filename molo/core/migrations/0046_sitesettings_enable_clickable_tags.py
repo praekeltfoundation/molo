@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0044_add_topic_of_the_day_fields'),
+        ('core', '0045_bannerpage_external_link'),
     ]
 
     operations = [
