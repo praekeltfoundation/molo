@@ -36,7 +36,7 @@
           {{ block }}
       {% endif %}
   {% endfor %}
-   {% for tag in self.tags %}
+   {% for tag in self.tags_list %}
         <a href="{% url 'tags_list' tag %}">{{tag}}</a>
     {% endfor%}
 </article>
