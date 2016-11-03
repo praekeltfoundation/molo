@@ -1,0 +1,10 @@
+{% raw %}
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+  {% for each_article in object_list %}
+    <a href="{% pageurl each_article %}">{{each_article.title}}</a><br>
+  {% endfor %}
+{% endblock %}
+{% endraw %}
