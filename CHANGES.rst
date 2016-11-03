@@ -30,6 +30,11 @@ Backwards incompatible changes
 - Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
+3.13.0
+~~~~~~
+
+- Add clickable front-end tags to articles
+
 3.12.3
 ~~~~~~
 
@@ -87,6 +92,11 @@ Note: Search highlighting is only supported by the Elasticsearch backend.
 ~~~~~
 
 - Update user permissions
+
+3.8.3
+~~~~~
+
+- Ensure title is encoded properly for GA
 
 3.8.2
 ~~~~~
