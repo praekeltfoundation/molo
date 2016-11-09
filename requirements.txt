@@ -16,9 +16,9 @@ html5lib==0.9999999
 responses
 babel
 wagtailmodeladmin
-wagtailmedia
+wagtailmedia==0.1.1
 django-extensions
-django-celery
+celery<4.0
 redis
 six>=1.9
 django-google-analytics-app==2.1.2
