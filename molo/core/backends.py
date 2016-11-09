@@ -19,7 +19,7 @@ class MoloCASBackend(CASBackend):
                 user.save()
             else:
                 moderator_group = Group.objects.filter(
-                    name='Moderators').first()
+                    name='Wagtail Login Only').first()
                 if moderator_group:
                     user.groups.add(moderator_group)
                 """

@@ -114,3 +114,27 @@ def hide_import_content_if_not_uc_user(request, menu_items):
             groups__name='Universal Core Importers').exists():
         menu_items[:] = [
             item for item in menu_items if item.name != 'import-content']
+
+
+@hooks.register('construct_main_menu')
+def hide_users_if_not_admin(request, menu_items):
+    u = User.objects.filter(pk=request.user.pk).first()
+    if not u.is_superuser:
+        for menu_item in menu_items:
+            if menu_item.name == 'settings':
+                menu_item.menu.registered_menu_items[:] = [
+                    item for item in menu_item.menu.registered_menu_items
+                    if item.name != 'users'
+                ]
+
+
+@hooks.register('construct_main_menu')
+def show_explorer_only_to_users_have_access(request, menu_items):
+    if User.objects.filter(
+        pk=request.user.pk, groups__name='Comment Moderator').exists() \
+        or User.objects.filter(
+            pk=request.user.pk, groups__name='Expert').exists() \
+        or User.objects.filter(
+            pk=request.user.pk, groups__name='Wagtail Login Only').exists():
+        menu_items[:] = [
+            item for item in menu_items if item.name != 'explorer']
