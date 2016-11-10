@@ -679,8 +679,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
         FieldPanel('metadata_tags'),
     ]
 
-    api_fields = ["subtitle", "featured_in_latest", "featured_in_section", "tags", ]
-
     base_form_class = forms.ArticlePageForm
 
     def get_absolute_url(self):  # pragma: no cover
