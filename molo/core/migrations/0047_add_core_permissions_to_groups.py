@@ -72,18 +72,6 @@ class Migration(migrations.Migration):
             permission_type='edit',
         )
 
-        footers = FooterIndexPage.objects.first()
-        GroupPagePermission.objects.get_or_create(
-            group=editor_group,
-            page=footers,
-            permission_type='add',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=editor_group,
-            page=footers,
-            permission_type='edit',
-        )
-
         add_sitelanguage = Permission.objects.get(codename='add_sitelanguage')
         editor_group.permissions.add(add_sitelanguage)
 
