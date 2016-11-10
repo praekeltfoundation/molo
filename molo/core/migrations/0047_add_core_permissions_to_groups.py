@@ -30,6 +30,9 @@ class Migration(migrations.Migration):
         if Group.objects.all().filter(name='Writer and Content Loader'):
             Group.objects.get(name='Writer and Content Loader').delete()
 
+        if Group.objects.all().filter(name='Publisher'):
+            Group.objects.get(name='Publisher').delete()
+
         # Create groups
         access_admin = Permission.objects.get(codename='access_admin')
 
