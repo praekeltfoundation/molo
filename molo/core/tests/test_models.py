@@ -93,7 +93,9 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french')
 
-        self.assertEquals(self.main.latest_articles().count(), 5)
+        self.assertEquals(
+            len(load_descendant_articles_for_section(
+                {}, self.yourmind, featured_in_homepage=True)), 3)
 
     def test_latest_homepage(self):
         self.mk_articles(self.yourmind_sub, count=2, featured_in_latest=True)
