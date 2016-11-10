@@ -105,6 +105,9 @@ class SiteSettings(BaseSetting):
         null=True, blank=True,
         help_text='The date rotation will end')
 
+    enable_clickable_tags = models.BooleanField(
+        default=False, verbose_name='Display tags on Front-end')
+
     panels = [
         ImageChooserPanel('logo'),
         MultiFieldPanel(
@@ -142,7 +145,14 @@ class SiteSettings(BaseSetting):
                 ]),
                 StreamFieldPanel('time'),
             ],
-            heading="Content Rotation Settings",)
+            heading="Content Rotation Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('enable_clickable_tags'),
+            ],
+            heading="Article Tag Settings"
+        )
     ]
 
 
@@ -219,6 +229,13 @@ class TranslatablePageMixin(object):
                     is_main_language=True).first())
         return response
 
+    def move(self, target, pos=None):
+        super(TranslatablePageMixin, self).move(target, pos)
+
+        if hasattr(self, 'translations'):
+            for p in self.translations.all():
+                p.translated_page.move(target, pos='last-child')
+
     def serve(self, request):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
@@ -260,11 +277,17 @@ class BannerPage(TranslatablePageMixin, Page):
         related_name='+',
         help_text=_('Optional page to which the banner will link to')
     )
+    external_link = models.TextField(null=True, blank=True,
+                                     help_text='External link which a banner'
+                                     ' will link to. '
+                                     'eg https://www.google.co.za/')
+
 
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('banner'),
-    PageChooserPanel('banner_link_page')
+    PageChooserPanel('banner_link_page'),
+    FieldPanel('external_link')
 ]
 
 
@@ -286,8 +309,7 @@ class Main(CommentedPageMixin, Page):
             featured_in_latest=True,
             languages__language__is_main_language=True).exclude(
                 feature_as_topic_of_the_day=True,
-                promote_date__lte=timezone.now(),
-                demote_date__gte=timezone.now()).order_by(
+                demote_date__gt=timezone.now()).order_by(
                     '-promote_date', '-latest_revision_created_at').specific()
 
     def topic_of_the_day(self):
@@ -699,6 +721,9 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
                 commenting_settings['state'] is None):
             return False
         return True
+
+    def tags_list(self):
+        return self.tags.names()
 
     class Meta:
         verbose_name = _('Article')

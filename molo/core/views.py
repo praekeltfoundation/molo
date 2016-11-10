@@ -2,6 +2,7 @@ from os import environ
 import pkg_resources
 import requests
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
@@ -18,6 +19,12 @@ from wagtail.wagtailsearch.models import Query
 from molo.core.utils import generate_slug, get_locale_code
 from molo.core.models import PageTranslation, SiteLanguage, ArticlePage
 from molo.core.known_plugins import known_plugins
+from django.views.generic import ListView
+
+
+def csrf_failure(request, reason=""):
+    freebasics_url = settings.FREE_BASICS_URL_FOR_CSRF_MESSAGE
+    return render(request, '403_csrf.html', {'freebasics_url': freebasics_url})
 
 
 def search(request, results_per_page=10):
@@ -149,3 +156,11 @@ def get_pypi_version(plugin_name):
     url = "https://pypi.python.org/pypi/%s/json"
     content = requests.get(url % plugin_name).json()
     return content.get('info').get('version')
+
+
+class TagsListView(ListView):
+    template_name = "core/article_tags.html"
+
+    def get_queryset(self, **kwargs):
+        tag = self.kwargs["tag_name"]
+        return ArticlePage.objects.filter(tags__name__in=[tag])

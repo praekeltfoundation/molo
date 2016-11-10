@@ -1,11 +1,11 @@
 from django.conf.urls import patterns, include, url
 
-from .views import search
+from .views import search, TagsListView
 
 
 urlpatterns = patterns(
     '',
-    url(r'search/$', search, name='search'),
+    url(r'^search/$', search, name='search'),
     url(
         r'^locale/(?P<locale>[\w\-\_]+)/$',
         'molo.core.views.locale_set',
@@ -25,4 +25,9 @@ urlpatterns = patterns(
         'molo.core.views.versions',
         name='versions'),
     url(r'^djga/', include('google_analytics.urls')),
+    url(
+        r'^tags/(?P<tag_name>[\w-]+)/$',
+        TagsListView.as_view(),
+        name='tags_list'
+    ),
 )
