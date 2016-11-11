@@ -809,3 +809,34 @@ class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):
             response, '/sections/section-b/article-b-in-french/')
         self.assertContains(
             response, '/sections/section-a/article-a-in-french/')
+
+
+class TestArticleTags(MoloTestCaseMixin, TestCase):
+    def setUp(self):
+        self.mk_main()
+
+    def test_articles_with_the_same_tag(self):
+        # create two articles with the same tag and check that they can
+        # be retrieved
+        new_section = self.mk_section(
+            self.section_index, title="New Section", slug="new-section")
+        first_article = self.mk_article(new_section, title="First article", )
+        second_article = self.mk_article(new_section, title="Second article", )
+
+        # add common tag to both articles
+        first_article.tags.add("common")
+        first_article.save_revision().publish()
+        second_article.tags.add("common")
+        second_article.save_revision().publish()
+
+        # create another article that doesn't have the tag, and check that
+        # it will be excluded from the return list
+        self.mk_article(new_section, title="Third article", )
+
+        response = self.client.get(
+            reverse("tags_list", kwargs={"tag_name": "common"})
+        )
+        self.assertEqual(
+            list(response.context["object_list"]),
+            [first_article, second_article]
+        )

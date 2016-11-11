@@ -109,6 +109,8 @@ class SiteSettings(BaseSetting):
     social_media = StreamField([
         ('social_media_site', SocialMediaLinkBlock()),
     ], null=True, blank=True)
+    enable_clickable_tags = models.BooleanField(
+        default=False, verbose_name='Display tags on Front-end')
 
     panels = [
         ImageChooserPanel('logo'),
@@ -148,7 +150,13 @@ class SiteSettings(BaseSetting):
                 StreamFieldPanel('time'),
             ],
             heading="Content Rotation Settings", ),
-        StreamFieldPanel('social_media')
+        StreamFieldPanel('social_media'),
+        MultiFieldPanel(
+            [
+                FieldPanel('enable_clickable_tags'),
+            ],
+            heading="Article Tag Settings"
+        )
     ]
 
 
@@ -272,7 +280,10 @@ class BannerPage(TranslatablePageMixin, Page):
         related_name='+',
         help_text=_('Optional page to which the banner will link to')
     )
-    external_link = models.TextField(null=True, blank=True)
+    external_link = models.TextField(null=True, blank=True,
+                                     help_text='External link which a banner'
+                                     ' will link to. '
+                                     'eg https://www.google.co.za/')
 
 
 BannerPage.content_panels = [
@@ -716,6 +727,9 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
                     commenting_settings['state'] is None):
             return False
         return True
+
+    def tags_list(self):
+        return self.tags.names()
 
     class Meta:
         verbose_name = _('Article')

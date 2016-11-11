@@ -33,6 +33,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         self.mk_main()
 
         moderators_group = Group.objects.create(name='Moderators')
+        Group.objects.create(name='Wagtail Login Only')
         # Create group permissions
         GroupPagePermission.objects.create(
             group=moderators_group,
@@ -63,7 +64,8 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         )
 
         # Assign it to Editors and Moderators groups
-        for group in Group.objects.filter(name__in=['Editors', 'Moderators']):
+        for group in Group.objects.filter(name__in=['Editors', 'Moderators',
+                                          'Wagtail Login Only']):
             group.permissions.add(admin_permission)
 
     def test_login_redirect(self):
