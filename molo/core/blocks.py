@@ -1,8 +1,10 @@
+from django.db import models
 from django.utils.safestring import mark_safe
 from markdown import markdown
 
 from wagtail.wagtailcore import blocks
 from wagtailmedia.blocks import AbstractMediaChooserBlock
+from wagtail.wagtailimages.blocks import ImageChooserBlock
 
 
 class MarkDownBlock(blocks.TextBlock):
@@ -49,3 +51,14 @@ type="audio/mpeg">Click here to download
         )
 
         return mark_safe(md)
+
+
+class SocialMediaLinkBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=True)
+    link = blocks.CharBlock(required=True)
+    image = ImageChooserBlock()
+
+
+class SocialMediaShareBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=True)
+    image = ImageChooserBlock()
