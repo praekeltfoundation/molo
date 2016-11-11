@@ -197,6 +197,7 @@ def render_translations(context, page):
         'page': page
     }
 
+
 @register.assignment_tag(takes_context=True)
 def load_descendant_articles_for_section(
         context, section, featured_in_homepage=None, featured_in_section=None,

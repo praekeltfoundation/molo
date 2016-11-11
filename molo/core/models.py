@@ -704,8 +704,8 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
                 close_time = commenting_settings['close_time']
                 return open_time < now < close_time
             if (commenting_settings['state'] == constants.COMMENTING_CLOSED or
-                        commenting_settings['state'] ==
-                        constants.COMMENTING_DISABLED):
+                    commenting_settings['state'] ==
+                    constants.COMMENTING_DISABLED):
                 # Allow automated reopening of commenting at a specified time
                 reopen_time = commenting_settings['open_time']
                 if (reopen_time):
@@ -724,7 +724,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     def is_commenting_enabled(self):
         commenting_settings = self.get_effective_commenting_settings()
         if (commenting_settings['state'] == constants.COMMENTING_DISABLED or
-                    commenting_settings['state'] is None):
+                commenting_settings['state'] is None):
             return False
         return True
 
