@@ -33,7 +33,7 @@ Backwards incompatible changes
 3.14.0
 ~~~~~~
 
-- redefine core permissions for groups
+- Redefine core permissions for groups
 
 3.13.0
 ~~~~~~
