@@ -30,6 +30,11 @@ Backwards incompatible changes
 - Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
+3.14.1
+~~~~~~
+
+- Change create to get_or_create in migration 47
+
 3.14.0
 ~~~~~~
 
