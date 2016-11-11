@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         access_admin = Permission.objects.get(codename='access_admin')
 
         # <- Wagtail Login Only ->
-        wagtail_login_only_group = Group.objects.create(
+        wagtail_login_only_group, _created = Group.objects.get_or_create(
             name='Wagtail Login Only')
         wagtail_login_only_group.permissions.add(access_admin)
 
