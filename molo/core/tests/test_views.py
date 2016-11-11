@@ -840,5 +840,3 @@ class TestArticleTags(MoloTestCaseMixin, TestCase):
             list(response.context["object_list"]),
             [first_article, second_article]
         )
-
-
