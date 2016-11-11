@@ -189,16 +189,13 @@ def render_translations(context, page):
 
     return {
         'translations': [{
-             'locale': {'title': title, 'code': code},
-             'translated':
-                 page.specific.get_translation_for(code,
-                                                   is_live=None)
-                 if hasattr(page.specific,
-                            'get_translation_for') else None}
-         for code, title in languages],
+            'locale': {'title': title, 'code': code},
+            'translated':
+                page.specific.get_translation_for(code, is_live=None)
+            if hasattr(page.specific, 'get_translation_for') else None}
+            for code, title in languages],
         'page': page
     }
-
 
 @register.assignment_tag(takes_context=True)
 def load_descendant_articles_for_section(
