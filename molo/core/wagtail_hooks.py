@@ -15,6 +15,8 @@ from wagtail.wagtailadmin.site_summary import SummaryItem
 
 from . import views
 
+from molo.core.content_import.api.views import ImportView
+
 
 class LanguageModelAdmin(ModelAdmin):
     model = SiteLanguage
@@ -114,3 +116,10 @@ def hide_import_content_if_not_uc_user(request, menu_items):
             groups__name='Universal Core Importers').exists():
         menu_items[:] = [
             item for item in menu_items if item.name != 'import-content']
+
+# API admin
+@hooks.register("register_admin_urls")
+def add_import_view():
+    return [
+        url(r'^test_link/$', ImportView.as_view, name='test-api-import-view'),
+    ]
