@@ -25,7 +25,7 @@ from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
-    SocialMediaLinkBlock, SocialMediaLinkBlock
+    SocialMediaLinkBlock
 from molo.core import constants, forms
 from molo.core.utils import get_locale_code
 
