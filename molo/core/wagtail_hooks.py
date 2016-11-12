@@ -121,5 +121,5 @@ def hide_import_content_if_not_uc_user(request, menu_items):
 @hooks.register("register_admin_urls")
 def add_import_view():
     return [
-        url(r'^test_link/$', ImportView.as_view, name='test-api-import-view'),
+        url(r'^test_link/$', ImportView.as_view(), name='test-api-import-view'),
     ]
