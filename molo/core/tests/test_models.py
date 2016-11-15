@@ -117,23 +117,31 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french')
 
-        en_articles_featured[2] = self.yourmind.unpublish()
+        en_articles_featured[0].unpublish()
+        en_articles_featured[2].unpublish()
 
         for p in en_articles:
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french',
                 featured_in_homepage=True)
 
-        self.assertEquals(
-            len(load_descendant_articles_for_section(
-                {}, self.yourmind, featured_in_homepage=True)), 1)
-
         request = self.factory.get('/sections/test-section-0/')
         request.site = self.site
+
+        print load_descendant_articles_for_section(
+                {'request': request, 'locale_code': 'en'},
+                self.yourmind, featured_in_homepage=True)[0].live
+
+        self.assertEquals(
+            len(load_descendant_articles_for_section(
+                {'request': request, 'locale_code': 'en'},
+                self.yourmind, featured_in_homepage=True)), 1)
+
+
         self.assertEquals(
             len(load_descendant_articles_for_section(
                 {'request': request, 'locale_code': 'fr'},
-                self.yourmind, featured_in_homepage=True)), 3)
+                self.yourmind, featured_in_homepage=True)), 5)
 
     def test_latest_homepage(self):
         self.mk_articles(self.yourmind_sub, count=2, featured_in_latest=True)
