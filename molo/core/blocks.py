@@ -56,8 +56,3 @@ class SocialMediaLinkBlock(blocks.StructBlock):
     title = blocks.CharBlock(required=True)
     link = blocks.CharBlock(required=True)
     image = ImageChooserBlock()
-
-
-class SocialMediaShareBlock(blocks.StructBlock):
-    title = blocks.CharBlock(required=True)
-    image = ImageChooserBlock()

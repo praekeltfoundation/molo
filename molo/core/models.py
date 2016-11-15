@@ -106,9 +106,29 @@ class SiteSettings(BaseSetting):
         null=True, blank=True,
         help_text='The date rotation will end')
 
-    social_media = StreamField([
+    social_media_links_on_footer_page = StreamField([
         ('social_media_site', SocialMediaLinkBlock()),
     ], null=True, blank=True)
+    facebook_sharing = models.BooleanField(
+        default=False, verbose_name='Facebook',
+        help_text='Enable this field to allow for sharing to Facebook.')
+    facebook_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    twitter_sharing = models.BooleanField(
+        default=False, verbose_name='Twitter',
+        help_text='Enable this field to allow for sharing to Twitter.')
+    twitter_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     enable_clickable_tags = models.BooleanField(
         default=False, verbose_name='Display tags on Front-end')
 
@@ -150,7 +170,24 @@ class SiteSettings(BaseSetting):
                 StreamFieldPanel('time'),
             ],
             heading="Content Rotation Settings", ),
-        StreamFieldPanel('social_media'),
+        MultiFieldPanel(
+            [
+                MultiFieldPanel(
+                    [
+                        StreamFieldPanel('social_media_links_on_footer_page'),
+                    ],
+                    heading="Social Media Footer Page", ),
+            ],
+            heading="Social Media Footer Page Links", ),
+        MultiFieldPanel(
+            [
+                FieldPanel('facebook_sharing'),
+                ImageChooserPanel('facebook_image'),
+                FieldPanel('twitter_sharing'),
+                ImageChooserPanel('twitter_image'),
+            ],
+            heading="Social Media Article Sharing Buttons",
+        ),
         MultiFieldPanel(
             [
                 FieldPanel('enable_clickable_tags'),
