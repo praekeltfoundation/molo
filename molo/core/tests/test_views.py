@@ -11,7 +11,6 @@ from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils import timezone
-from molo.core.blocks import SocialMediaLinkBlock
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteLanguage, FooterPage,
@@ -20,7 +19,6 @@ from molo.core.known_plugins import known_plugins
 
 from mock import patch, Mock
 from six import b
-from wagtail.wagtailcore.fields import StreamField
 
 from wagtail.wagtailcore.models import Site
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
