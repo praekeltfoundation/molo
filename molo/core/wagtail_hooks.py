@@ -15,7 +15,7 @@ from wagtail.wagtailadmin.site_summary import SummaryItem
 
 from . import views
 
-from molo.core.content_import.api.views import ImportView
+from molo.core.content_import.api import urls as molo_api_urls
 
 
 class LanguageModelAdmin(ModelAdmin):
@@ -120,6 +120,4 @@ def hide_import_content_if_not_uc_user(request, menu_items):
 # API admin
 @hooks.register("register_admin_urls")
 def add_import_view():
-    return [
-        url(r'^test_link/$', ImportView.as_view(), name='test-api-import-view'),
-    ]
+    return molo_api_urls.urlpatterns

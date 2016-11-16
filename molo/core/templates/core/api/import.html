@@ -1,6 +1,23 @@
 {% extends "wagtailadmin/base.html" %}
+{% load static i18n %}
 
 {% block content %}
     {% include "wagtailadmin/shared/header.html" with title="API Import" %}
+
+    <div>
+        <form action="{% url 'molo_api:test-api-import-view' %}" method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" class="Button" value="{% trans "Get content" %}"/>
+        </form>
+    </div>
+
+    <div>
+        {{ data.meta.total_count }} {% trans "articles were found" %}
+        {% for item in data.pages %}
+            <li><a href="">{{ item.title }}</a></li>
+        {% endfor %}
+    </div>
+
 {% endblock %}
 

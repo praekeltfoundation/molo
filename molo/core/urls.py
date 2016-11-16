@@ -20,6 +20,10 @@ urlpatterns = patterns(
 
     url(r'^import/', include(
         'molo.core.content_import.urls', namespace='content_import')),
+
+    url(r'^api/', include(
+        'molo.core.content_import.api.urls', namespace='molo_api')),
+
     url(
         r'^versions/$',
         'molo.core.views.versions',
