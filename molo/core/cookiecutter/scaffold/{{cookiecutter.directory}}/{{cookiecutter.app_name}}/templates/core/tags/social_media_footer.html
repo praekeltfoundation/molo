@@ -3,11 +3,9 @@
 
 {% if social_media %}
     {% for site in social_media %}
-        {% if site.value.image %}
-            <a href="https://{{ site.value.link }}">
-                {% image site.value.image width-50 %}
-            </a>
-        {% endif %}
+        <a href="https://{{ site.value.link }}">
+            {% image site.value.image width-50 %}
+        </a>
     {% endfor %}
 {% endif %}
 

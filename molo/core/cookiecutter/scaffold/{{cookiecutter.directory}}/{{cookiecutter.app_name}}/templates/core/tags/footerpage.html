@@ -1,7 +1,8 @@
 {% raw %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
 
 {% if footers %}
+  {% social_media_footer %}
   <ul>
   {% for page in footers %}
   <li><a href="{% pageurl page %}">{{page.title}}</a></li>
