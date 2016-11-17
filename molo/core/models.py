@@ -595,14 +595,22 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     featured_in_latest = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Latest module"))
+    featured_in_latest_start_date = models.DateTimeField(null=True, blank=True)
+    featured_in_latest_end_date = models.DateTimeField(null=True, blank=True)
     featured_in_section = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Section module"))
+    featured_in_section_start_date = models.DateTimeField(
+        null=True, blank=True)
+    featured_in_section_end_date = models.DateTimeField(null=True, blank=True)
     featured_in_homepage = models.BooleanField(
         default=False,
         help_text=_(
             "Article to be featured in the Homepage "
             "within the Section module"))
+    featured_in_homepage_start_date = models.DateTimeField(
+        null=True, blank=True)
+    featured_in_homepage_end_date = models.DateTimeField(null=True, blank=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -663,10 +671,21 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     promote_date = models.DateTimeField(blank=True, null=True)
     demote_date = models.DateTimeField(blank=True, null=True)
 
-    featured_promote_panels = [
+    featured_latest_promote_panels = [
         FieldPanel('featured_in_latest'),
+        FieldPanel('featured_in_latest_start_date'),
+        FieldPanel('featured_in_latest_end_date'),
+    ]
+    featured_section_promote_panels = [
         FieldPanel('featured_in_section'),
+        FieldPanel('featured_in_section_start_date'),
+        FieldPanel('featured_in_section_end_date'),
+
+    ]
+    featured_homepage_promote_panels = [
         FieldPanel('featured_in_homepage'),
+        FieldPanel('featured_in_homepage_start_date'),
+        FieldPanel('featured_in_homepage_end_date'),
     ]
 
     topic_of_the_day_panels = [
@@ -753,7 +772,12 @@ ArticlePage.content_panels = [
 ]
 
 ArticlePage.promote_panels = [
-    MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
+    MultiFieldPanel(
+        ArticlePage.featured_latest_promote_panels, "Featuring in Latest"),
+    MultiFieldPanel(
+        ArticlePage.featured_section_promote_panels, "Featuring in Section"),
+    MultiFieldPanel(
+        ArticlePage.featured_homepage_promote_panels, "Featuring in Homepage"),
     MultiFieldPanel(ArticlePage.topic_of_the_day_panels, "Topic of the Day"),
     MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
