@@ -5,22 +5,12 @@
     {% include "wagtailadmin/shared/header.html" with title="API Import" %}
 
     <div>
-        <form action="{% url 'molo_api:test-api-import-view' %}" method="POST">
+        <form action="{% url 'molo_api:article-import' %}" method="POST">
             {% csrf_token %}
             {{ form }}
             <input type="submit" class="Button" value="{% trans "Get content" %}"/>
         </form>
     </div>
-
-    {% if article_form %}
-    <div>
-        <form action="{% url 'molo_api:article-import' %}" method="POST">
-            {% csrf_token %}
-            {{ article_form.as_ul }}
-            <input type="submit" class="Button" value="{% trans "Save articles" %}"/>
-        </form>
-    </div>
-    {% endif %}
 
 {% endblock %}
 
