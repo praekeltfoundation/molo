@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from molo.core.content_import.api import admin_views
 
+
 urlpatterns = [
-    url(r'^test_link/$', admin_views.ImportView.as_view(), name='test-api-import-view'),
+    url(r"^import-articles/$", admin_views.ArticleImportView.as_view(), name="article-import"),
+    url(r"^parent/$", admin_views.ChooseParentView.as_view(model_admin=admin_views.ArticleModelAdmin()), name="test-parent"),
 ]
