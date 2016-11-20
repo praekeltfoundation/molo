@@ -12,12 +12,15 @@
         </form>
     </div>
 
+    {% if article_form %}
     <div>
-        {{ data.meta.total_count }} {% trans "articles were found" %}
-        {% for item in data.pages %}
-            <li><a href="">{{ item.title }}</a></li>
-        {% endfor %}
+        <form action="{% url 'molo_api:article-import' %}" method="POST">
+            {% csrf_token %}
+            {{ article_form.as_ul }}
+            <input type="submit" class="Button" value="{% trans "Save articles" %}"/>
+        </form>
     </div>
+    {% endif %}
 
 {% endblock %}
 
