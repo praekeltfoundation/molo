@@ -40,24 +40,14 @@ class ArticleImportView(FormView):
         return super(ArticleImportView, self).form_valid()
 
 
-class ModelAdminObject(object):
-    def __init__(self):
-        self.model = ArticlePage
-        self.is_pagemodel = True
-        self.permission_helper = PagePermissionHelper(ArticlePage)
-
-
 class ArticleModelAdmin(WagtailModelAdmin):
     model = ArticlePage
 
 
-class ChooserView(ChooseParentView):
+class ArticleChooserView(ChooseParentView):
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         import pdb;pdb.set_trace()
-        # form = self.get_form(request)
-        # import pdb;pdb.set_trace()
-        # if form.is_valid():
-        #     parent = form.cleaned_data['parent_page']
-        # context = {'view': self, 'form': form}
-        # return render(request, self.get_template(), context)
+        form = self.get_form(request)
+        if form.is_valid():
+            parent = form.cleaned_data['parent_page']
