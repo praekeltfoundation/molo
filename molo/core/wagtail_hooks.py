@@ -117,7 +117,27 @@ def hide_import_content_if_not_uc_user(request, menu_items):
         menu_items[:] = [
             item for item in menu_items if item.name != 'import-content']
 
+
 # API admin
 @hooks.register("register_admin_urls")
 def add_import_view():
     return molo_api_urls.urlpatterns
+
+
+@hooks.register('construct_main_menu')
+def hide_users_if_not_admin(request, menu_items):
+    if not request.user.is_superuser:
+        for menu_item in menu_items:
+            if menu_item.name == 'settings':
+                menu_item.menu.registered_menu_items[:] = [
+                    item for item in menu_item.menu.registered_menu_items
+                    if item.name != 'users'
+                ]
+
+
+@hooks.register('construct_main_menu')
+def show_explorer_only_to_users_have_access(request, menu_items):
+    if User.objects.filter(pk=request.user.pk, groups__name__in=[
+            'Comment Moderator', 'Expert', 'Wagtail Login Only']).exists():
+        menu_items[:] = [
+            item for item in menu_items if item.name != 'explorer']
