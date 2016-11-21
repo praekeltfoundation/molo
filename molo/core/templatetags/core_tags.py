@@ -84,7 +84,7 @@ def latest_listing_homepage(context, num_count=5):
     locale = context.get('locale_code')
 
     if request.site:
-        articles = request.site.root_page.specific\
+        articles = request.site.root_page.specific \
             .latest_articles()
     else:
         articles = []
@@ -105,7 +105,7 @@ def topic_of_the_day(context):
     locale = context.get('locale_code')
 
     if request.site:
-        articles = request.site.root_page.specific\
+        articles = request.site.root_page.specific \
             .topic_of_the_day()
     else:
         articles = ArticlePage.objects.None()
@@ -301,3 +301,47 @@ def handle_markdown(value):
     if md.startswith(open_tag) and md.endswith(close_tag):
         md = md[len(open_tag):-len(close_tag)]
     return mark_safe(md)
+
+
+@register.inclusion_tag(
+    'core/tags/social_media_footer.html',
+    takes_context=True
+)
+def social_media_footer(context):
+    request = context['request']
+    locale = context.get('locale_code')
+    social_media = SiteSettings.for_site(request.site).\
+        social_media_links_on_footer_page
+
+    return {
+        'social_media': social_media,
+        'request': context['request'],
+        'locale_code': locale,
+    }
+
+
+@register.inclusion_tag(
+    'core/tags/social_media_article.html',
+    takes_context=True
+)
+def social_media_article(context):
+    request = context['request']
+    locale = context.get('locale_code')
+    site_settings = SiteSettings.for_site(request.site)
+
+    if site_settings.facebook_sharing:
+        facebook = site_settings.facebook_image
+    else:
+        facebook = False
+
+    if site_settings.twitter_sharing:
+        twitter = site_settings.twitter_image
+    else:
+        twitter = False
+
+    return {
+        'facebook': facebook,
+        'twitter': twitter,
+        'request': context['request'],
+        'locale_code': locale,
+    }
