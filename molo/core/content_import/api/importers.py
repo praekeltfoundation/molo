@@ -1,6 +1,7 @@
 """
 Various importers for the different content types
 """
+import json
 import requests
 
 from wagtail.wagtailcore.models import Page
@@ -79,6 +80,9 @@ class ArticlePageImporter(object):
 
                 if ("metadata_tags" in nested_fields) and nested_fields["metadata_tags"]:
                     article.metadata_tags.add(", ".join(nested_fields["metadata_tags"]))
+
+                if ("body" in nested_fields) and nested_fields["body"]:
+                    article.body = json.dumps(nested_fields["body"])
 
                 parent.add_child(instance=article)
                 parent.save_revision().publish()
