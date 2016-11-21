@@ -1,26 +1,51 @@
+import requests
+
 from django import forms
 
+from wagtail.wagtailcore.models import Page
+
+from molo.core.content_import.api import constants
+from molo.core.models import ArticlePage
 
 # TODO: make the form return the valid JSON response
 class MainImportForm(forms.Form):
     url = forms.CharField(
+        required=True,
         max_length=100,
     )
 
-    def __init__(self, **kwargs):
-        self.importer = kwargs.pop("importer")
-        super(MainImportForm, self).__init__(**kwargs)
+    content_type = forms.ChoiceField(
+        choices=constants.CONTENT_TYPES,
+        required=True,
+        widget=forms.RadioSelect
+    )
+
+    def clean_url(self):
+        url = self.cleaned_data["url"]
+        response = requests.get(
+            url="http://localhost:8000/api/v1/pages/"
+        )
+
+        if not (response.status_code == 200):
+            self.add_error("url", forms.ValidationError(
+                "Please enter a valid URL."
+            ))
+
+        return url
 
 
 class ArticleImportForm(forms.Form):
-    url = forms.CharField(
-        max_length=100,
-        required=False
-    )
+    """
+    Form to be used for importing articles.
+    The list of available articles will be rendered dynamically
+    """
 
     def __init__(self, *args, **kwargs):
         # generate fields dynamically for each article found in the response
+        print "=========== in form ================"
+        print kwargs
         self.importer = kwargs.pop("importer")
+        self.parent_id = kwargs.pop("parent")
         super(ArticleImportForm, self).__init__(*args, **kwargs)
         if self.importer and self.importer.articles():
             for i, article in enumerate(self.importer.articles()):
@@ -30,14 +55,11 @@ class ArticleImportForm(forms.Form):
                 self.fields["%s" % i].required = False
 
     def save(self):
-        if not self.importer.articles():
-            self.importer.get_content_from_url("http://localhost:8000/api/v1/pages/")
-        else:
-            # there is content, and some fields could have been selected,
-            # get the IDs of the articles so they can be saved
-            selected_choices = [int(k) for k,v in self.cleaned_data.items() if v]
-
-            # save articles
-            # for id in selected_choices:
-            #     article = self.importer.save_articles(selected_choices)
+        # soe articles were selected, save them
+        selected_choices = [int(k) for k, v in self.cleaned_data.items() if v]
+        self.importer.save_articles(
+            ids=selected_choices, parent_id=self.parent_id
+        )
         return self.importer
+
+

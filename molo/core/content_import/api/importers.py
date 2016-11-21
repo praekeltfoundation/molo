@@ -3,6 +3,8 @@ Various importers for the different content types
 """
 import requests
 
+from wagtail.wagtailcore.models import Page
+
 from molo.core.models import ArticlePage, SectionPage
 
 
@@ -32,6 +34,22 @@ class ArticlePageImporter(object):
         sections = SectionPage.objects.all()
         return sections
 
+    def _separate_fields(self, fields):
+        """
+        Non-foreign key fields can be mapped to new article instances
+        directly. Foreign key fields require a bit more work.
+        This method returns a tuple, of the same format:
+        (flat fields, nested fields)
+        """
+        flat_fields = {}
+        for k, v in fields.items():
+            if type(v) in [type({}), type([])]:
+                pass
+            else:
+                flat_fields.update({k: v})
+                del fields[k]
+        return flat_fields, fields
+
     def _get_fields(self, id):
         if self.articles():
             self.articles()[id].pop("id")
@@ -39,8 +57,31 @@ class ArticlePageImporter(object):
             return self.articles()[id]
         return None
 
-    def save_articles(self, ids):
+    def _get_related_image(self, id):
+        pass
+
+    def save_articles(self, ids, parent_id):
         if self.articles():
-            for id in ids:
-                fields = self._get_fields(id)
-                article = ArticlePage(fields)
+            parent = Page.objects.get(id=parent_id)
+            for article_id in ids:
+                fields, nested_fields = self._separate_fields(
+                    self._get_fields(article_id)
+                )
+                article = ArticlePage(**fields)
+                # [u'metadata_tags', u'image', u'related_sections', u'body', u'tags']
+
+                # process the nested fields
+                print "============================="
+                print fields
+                # print nested_fields["image"]
+                if ("tags" in nested_fields) and nested_fields["tags"]:
+                    article.tags.add(", ".join(nested_fields["tags"]))
+
+                if ("metadata_tags" in nested_fields) and nested_fields["metadata_tags"]:
+                    article.metadata_tags.add(", ".join(nested_fields["metadata_tags"]))
+
+                parent.add_child(instance=article)
+                parent.save_revision().publish()
+
+
+

@@ -1,4 +1,8 @@
-CONTENT_TYPES = {
-    "Main Page": "core.Main",
-    "Article": "core.ArticlePage",
-}
+CONTENT_TYPES = [
+    ("core.ArticlePage", "Article"),
+    ("core.SectionPage", "Section"),
+]
+
+ENDPOINTS = [
+    ("page", "api/v1/pages")
+]
