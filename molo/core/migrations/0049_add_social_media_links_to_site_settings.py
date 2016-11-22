@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('wagtailimages', '0012_copy_image_permissions_to_collections'),
-        ('core', '0047_add_core_permissions_to_groups'),
+        ('core', '0048_promotion_dates'),
     ]
 
     operations = [
