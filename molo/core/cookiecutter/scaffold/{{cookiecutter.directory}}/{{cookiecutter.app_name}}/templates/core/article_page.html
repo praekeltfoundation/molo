@@ -13,7 +13,7 @@
   {% if self.image %}
   <div class="banner">{% image self.image width-240 %}</div>
   {% endif %}
-
+  {% social_media_article %}
 <article>
     {% for block in self.body %}
       {% if block.block_type == 'heading' %}
