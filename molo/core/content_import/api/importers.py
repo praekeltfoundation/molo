@@ -3,8 +3,12 @@ Various importers for the different content types
 """
 import json
 import requests
+from io import BytesIO
+
+from django.core.files.images import ImageFile
 
 from wagtail.wagtailcore.models import Page
+from wagtail.wagtailimages.models import Image
 
 from molo.core.models import ArticlePage, SectionPage
 
@@ -15,11 +19,13 @@ class ArticlePageImporter(object):
         self.content_type = "core.ArticlePage"
         self.fields = ArticlePage.get_api_fields()
         self.content = None
+        self.base_url = ""
 
     def get_content_from_url(self, base_url=None):
         url = base_url + "?type=" + self.content_type + \
             "&order=latest_revision_created_at" + "&fields=" + ",".join(self.fields)
         response = requests.get(url)
+        self.base_url = base_url
         self.content = response.json()
         return self.content
 
@@ -59,7 +65,18 @@ class ArticlePageImporter(object):
         return None
 
     def _get_related_image(self, id):
-        pass
+        image_attrs = requests.get(
+            "http://localhost:8000/api/v2/images/" + str(id)
+        ).json()
+        # import pdb;pdb.set_trace()
+        # image_file = requests.get(image_attrs["file"]["url"])
+        image_file = requests.get("http://localhost:8000/media/images/iStock_67508687_SMALL_-_Copy.original.jpg")
+        image = Image(
+            title=image_attrs["title"],
+            file=ImageFile(BytesIO(image_file.content), name=image_attrs["title"])
+        )
+        image.save()
+        return image
 
     def save_articles(self, ids, parent_id):
         if self.articles():
@@ -83,6 +100,9 @@ class ArticlePageImporter(object):
 
                 if ("body" in nested_fields) and nested_fields["body"]:
                     article.body = json.dumps(nested_fields["body"])
+
+                if ("image" in nested_fields) and nested_fields["image"]:
+                    article.image = self._get_related_image(nested_fields["image"]["id"])
 
                 parent.add_child(instance=article)
                 parent.save_revision().publish()

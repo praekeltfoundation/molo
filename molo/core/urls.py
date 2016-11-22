@@ -1,5 +1,9 @@
 from django.conf.urls import patterns, include, url
+from django.views.decorators.cache import never_cache
 
+from wagtail.utils.urlpatterns import decorate_urlpatterns
+
+from .content_import.api.urls import api_router
 from .views import search, TagsListView
 
 
@@ -23,6 +27,11 @@ urlpatterns = patterns(
 
     url(r'^api/', include(
         'molo.core.content_import.api.urls', namespace='molo_api')),
+
+    url(r'^api/v2/', include(
+        decorate_urlpatterns(api_router.get_urlpatterns(), never_cache),
+        namespace=api_router.url_namespace)
+    ),
 
     url(
         r'^versions/$',
