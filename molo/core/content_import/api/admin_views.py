@@ -31,6 +31,7 @@ class MainImportView(FormView):
 
 
 class ArticleModelAdmin(WagtailModelAdmin):
+    """ This is needed to instantiate the ArticleChooserView. """
     model = ArticlePage
 
 
