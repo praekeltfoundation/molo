@@ -1,19 +1,15 @@
 """
 Views for importing content from another wagtail instance
 """
-from django.http import HttpResponseRedirect, QueryDict
-from django.views.generic import FormView, View
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.views.generic import FormView
 
-from wagtailmodeladmin.views import CreateView, ChooseParentView
-
-from molo.core.content_import.api import forms
-from molo.core.content_import.api import importers
-
-from molo.core.models import ArticlePage
 from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin
-from wagtailmodeladmin.helpers import PagePermissionHelper
+from wagtailmodeladmin.views import ChooseParentView
+
+from molo.core.content_import.api import forms, importers
+from molo.core.models import ArticlePage
 
 
 class MainImportView(FormView):
