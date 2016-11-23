@@ -32,21 +32,31 @@ class ArticleModelAdmin(WagtailModelAdmin):
 
 
 class ArticleChooserView(ChooseParentView):
+    """
+    Select the parent page for the ArticlePage objects will be imported
+    """
+
+    def get(self, request, *args, **kwargs):
+        # The URL being imported from needs to be stored in the session
+        # before this view is accessed. Redirect to the MainImportView
+        # if it has not been set yet.
+        if "url" not in self.request.session:
+            return HttpResponseRedirect(reverse("molo_api:main-import"))
+        return super(ArticleChooserView, self).get(request, *args, **kwargs)
 
     def post(self, request):
+        # save the ID of the parent page in the session
         form = self.get_form(request)
         if form.is_valid():
             parent = form.cleaned_data["parent_page"]
             self.request.session["parent_page_id"] = parent.pk
-
-            if "url" not in self.request.session:
-                return HttpResponseRedirect(reverse("molo_api:main-import"))
-            return HttpResponseRedirect(reverse("molo_api:article-import"))
+        return HttpResponseRedirect(reverse("molo_api:article-import"))
 
 
 class ArticleImportView(FormView):
     """
-    View that will actually take care of article imports
+    Fetches available articles and renders them in a list.
+    The user can then select which articles to save
     """
     form_class = forms.ArticleImportForm
     success_url = reverse_lazy("molo_api:article-import")
