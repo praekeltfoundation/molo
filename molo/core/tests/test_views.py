@@ -21,6 +21,7 @@ from mock import patch, Mock
 from six import b
 
 from wagtail.wagtailcore.models import Site
+from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 from wagtailmedia.models import Media
 
 
@@ -45,6 +46,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.yourmind_sub_fr = self.mk_section_translation(
             self.yourmind_sub, self.french,
             title='Your mind subsection in french')
+
+        # Create an image for running tests on
+        self.image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
 
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)
@@ -316,6 +323,60 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             'Topic of the Day')
+
+    def test_social_media_footer(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.social_media_links_on_footer_page = json.dumps([
+            {
+                'type': 'social_media_site',
+                'value': {
+                    'title': 'Social Media Site',
+                    'link': 'www.socialmediasite.com',
+                    'image': 0,
+                }}
+        ])
+        setting.save()
+
+        self.footer = FooterPage(
+            title='Footer Page',
+            slug='footer-page')
+        self.footer_index.add_child(instance=self.footer)
+
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            'www.socialmediasite.com')
+
+    def test_social_media_facebook_sharing(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.facebook_sharing = True
+        setting.facebook_image = self.image
+        setting.save()
+
+        self.mk_articles(self.yourmind_sub, count=10)
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/test-page-1/')
+        self.assertContains(
+            response,
+            'href="http://www.facebook.com/sharer.php?u=http')
+
+    def test_social_media_twitter_sharing(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.twitter_sharing = True
+        setting.twitter_image = self.image
+        setting.save()
+
+        self.mk_articles(self.yourmind_sub, count=10)
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/test-page-1/')
+        self.assertContains(
+            response,
+            'href="https://twitter.com/share?url=http')
 
     def test_featured_homepage_listing_in_french(self):
         en_page = self.mk_article(self.yourmind_sub, featured_in_homepage=True)
