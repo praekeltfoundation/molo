@@ -8,6 +8,7 @@ from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
 from django.db.models.signals import pre_delete, post_delete
 from django.dispatch import receiver
+from django.db.models.signals import pre_save
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
@@ -350,7 +351,8 @@ class Main(CommentedPageMixin, Page):
             languages__language__is_main_language=True).exclude(
                 feature_as_topic_of_the_day=True,
                 demote_date__gt=timezone.now()).order_by(
-                '-promote_date', '-latest_revision_created_at').specific()
+                    '-featured_in_latest_timestamp',
+                    '-promote_date', '-latest_revision_created_at').specific()
 
     def topic_of_the_day(self):
         return ArticlePage.objects.filter(
@@ -640,12 +642,16 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
         help_text=_("Article to be featured in the Latest module"))
     featured_in_latest_start_date = models.DateTimeField(null=True, blank=True)
     featured_in_latest_end_date = models.DateTimeField(null=True, blank=True)
+    featured_in_latest_timestamp = models.DateTimeField(
+        null=True, blank=True)
     featured_in_section = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Section module"))
     featured_in_section_start_date = models.DateTimeField(
         null=True, blank=True)
     featured_in_section_end_date = models.DateTimeField(null=True, blank=True)
+    featured_in_section_timestamp = models.DateTimeField(
+        null=True, blank=True)
     featured_in_homepage = models.BooleanField(
         default=False,
         help_text=_(
@@ -654,6 +660,8 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     featured_in_homepage_start_date = models.DateTimeField(
         null=True, blank=True)
     featured_in_homepage_end_date = models.DateTimeField(null=True, blank=True)
+    featured_in_homepage_timestamp = models.DateTimeField(
+        null=True, blank=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -826,6 +834,17 @@ ArticlePage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
+
+
+@receiver(pre_save, sender=ArticlePage,
+          dispatch_uid="set_promotion_timestamp")
+def set_promotion_timestamp(sender, instance, **kwargs):
+    instance.featured_in_latest_timestamp = \
+        instance.featured_in_latest_start_date
+    instance.featured_in_section_timestamp = \
+        instance.featured_in_section_start_date
+    instance.featured_in_homepage_timestamp = \
+        instance.featured_in_homepage_start_date
 
 
 class ArticlePageRelatedSections(Orderable):
