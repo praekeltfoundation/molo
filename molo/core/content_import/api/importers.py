@@ -15,10 +15,10 @@ from molo.core.models import ArticlePage, SectionPage
 
 class ArticlePageImporter(object):
 
-    def __init__(self):
+    def __init__(self, content=None):
         self.content_type = "core.ArticlePage"
         self.fields = ArticlePage.get_api_fields()
-        self.content = None
+        self.content = content
         self.base_url = ""
 
     def get_content_from_url(self, base_url=None):
@@ -33,13 +33,6 @@ class ArticlePageImporter(object):
         if self.content:
             return self.content["pages"]
         return []
-
-    def _available_sections(self):
-        # ArticlePage objects can only be added to SectionPages. It's thus
-        # required that a list of available sections is obtained. If
-        # there are no SectionPages, then ArticlePages cannot be created.
-        sections = SectionPage.objects.all()
-        return sections
 
     def _separate_fields(self, fields):
         """
@@ -89,9 +82,6 @@ class ArticlePageImporter(object):
                 # [u'metadata_tags', u'image', u'related_sections', u'body', u'tags']
 
                 # process the nested fields
-                print "============================="
-                print fields
-                # print nested_fields["image"]
                 if ("tags" in nested_fields) and nested_fields["tags"]:
                     article.tags.add(", ".join(nested_fields["tags"]))
 

@@ -2,12 +2,9 @@ import requests
 
 from django import forms
 
-from wagtail.wagtailcore.models import Page
-
 from molo.core.content_import.api import constants
-from molo.core.models import ArticlePage
 
-# TODO: make the form return the valid JSON response
+
 class MainImportForm(forms.Form):
     url = forms.CharField(
         required=True,
@@ -42,8 +39,6 @@ class ArticleImportForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         # generate fields dynamically for each article found in the response
-        print "=========== in form ================"
-        print kwargs
         self.importer = kwargs.pop("importer")
         self.parent_id = kwargs.pop("parent")
         super(ArticleImportForm, self).__init__(*args, **kwargs)
