@@ -8,4 +8,3 @@ wagtail.wagtailimages.api.v2.endpoints
 """
 
 from wagtail.api.v2.endpoints import ImagesAPIEndpoint
-from wagtail.api.v2.serializers import ImageSerializer
