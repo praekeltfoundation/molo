@@ -56,5 +56,3 @@ class ArticleImportForm(forms.Form):
             ids=selected_choices, parent_id=self.parent_id
         )
         return self.importer
-
-

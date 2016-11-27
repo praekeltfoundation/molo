@@ -22,12 +22,21 @@ class ArticlePageImporter(object):
         self.base_url = ""
 
     def get_content_from_url(self, base_url=None):
+        # assemble url
         url = base_url + "?type=" + self.content_type + \
             "&order=latest_revision_created_at" + "&fields=" + ",".join(self.fields)
-        response = requests.get(url)
-        self.base_url = base_url
-        self.content = response.json()
-        return self.content
+
+        # make request
+        try:
+            response = requests.get(url)
+            self.base_url = base_url
+            self.content = response.json()
+            return self.content
+        except requests.excpetions.ConnectionError:
+            return "No content could be found from {}. " \
+                "Are you sure this is the correct URL?".format(base_url)
+        except requests.exceptions.RequestException:
+            return "Content could not be imported at this time. Please try again later."
 
     def articles(self):
         if self.content:
@@ -61,8 +70,6 @@ class ArticlePageImporter(object):
         image_attrs = requests.get(
             "http://localhost:8000/api/v2/images/" + str(id)
         ).json()
-        # import pdb;pdb.set_trace()
-        # image_file = requests.get(image_attrs["file"]["url"])
         image_file = requests.get("http://localhost:8000/media/images/iStock_67508687_SMALL_-_Copy.original.jpg")
         image = Image(
             title=image_attrs["title"],
