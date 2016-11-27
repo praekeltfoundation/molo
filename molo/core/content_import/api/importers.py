@@ -10,7 +10,10 @@ from django.core.files.images import ImageFile
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
-from molo.core.models import ArticlePage, SectionPage
+from molo.core.models import ArticlePage
+from molo.core.content_import.api.constants import (
+    API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
+)
 
 
 class ArticlePageImporter(object):
@@ -19,11 +22,12 @@ class ArticlePageImporter(object):
         self.content_type = "core.ArticlePage"
         self.fields = ArticlePage.get_api_fields()
         self.content = content
-        self.base_url = ""
+        self.base_url = None
 
-    def get_content_from_url(self, base_url=None):
+    def get_content_from_url(self, base_url):
         # assemble url
-        url = base_url + "?type=" + self.content_type + \
+        base_url = base_url.rstrip("/")
+        url = base_url + API_PAGES_ENDPOINT + "?type=" + self.content_type + \
             "&order=latest_revision_created_at" + "&fields=" + ",".join(self.fields)
 
         # make request

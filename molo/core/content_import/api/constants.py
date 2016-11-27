@@ -18,3 +18,6 @@ ARTICLE_SESSION_VARS = SESSION_VARS(
     first=("url", "content_type"),
     second="parent_page_id"
 )
+
+API_PAGES_ENDPOINT = "/api/v2/pages/"
+API_IMAGES_ENDPOINT = "/api/v2/images/"
