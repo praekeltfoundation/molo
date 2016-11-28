@@ -491,12 +491,26 @@ class TestModels(TestCase, MoloTestCaseMixin):
         )
         self.assertFalse(article_2.is_current_topic_of_the_day())
 
-    # exclude future-scheduled topic of the day articles from the
-    # latest articles queryset.
-    # Create two articles, one with present promote date and one
-    # with future promote date. Verify that the article with a
-    # future promote date does not appear in latest articles
-    # queryset.
+# exclude future-scheduled topic of the day articles from the
+# latest articles queryset.
+# Create two articles, one with present promote date and one
+# with future promote date. Verify that the article with a
+# future promote date does not appear in latest articles
+# queryset.
+    def test_topic_of_the_day_with_draft_article_only(self):
+        promote_date = timezone.now() + timedelta(days=-1)
+        demote_date = timezone.now() + timedelta(days=1)
+        article_1 = ArticlePage(
+            title="New article",
+            feature_as_topic_of_the_day=True,
+            promote_date=promote_date,
+            demote_date=demote_date,
+            live=False
+        )
+        self.assertTrue(article_1.is_current_topic_of_the_day())
+        self.assertFalse(article_1.live)
+        self.assertEquals(ArticlePage.objects.live().count(), 0)
+
     def test_future_topic_of_the_day_not_in_latest(self):
         promote_date = timezone.now() + timedelta(days=2)
         demote_date = timezone.now() + timedelta(days=4)
