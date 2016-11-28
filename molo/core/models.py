@@ -8,7 +8,6 @@ from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
 from django.db.models.signals import pre_delete, post_delete
 from django.dispatch import receiver
-from django.db.models.signals import pre_save
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
