@@ -82,7 +82,7 @@ class ArticleImportView(FormView):
         # pass valid importer to the form
         kwargs = super(ArticleImportView, self).get_form_kwargs()
         url = self.request.session["url"]
-        self.importer.get_content_from_url(url + "/api/v1/pages/")
+        self.importer.get_content_from_url(url)
         kwargs["importer"] = self.importer
         kwargs["parent"] = self.request.session["parent_page_id"]
         return kwargs

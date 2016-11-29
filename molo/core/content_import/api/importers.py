@@ -36,7 +36,7 @@ class ArticlePageImporter(object):
             self.base_url = base_url
             self.content = response.json()
             return self.content
-        except requests.excpetions.ConnectionError:
+        except requests.exceptions.ConnectionError:
             return "No content could be found from {}. " \
                 "Are you sure this is the correct URL?".format(base_url)
         except requests.exceptions.RequestException:
@@ -44,7 +44,7 @@ class ArticlePageImporter(object):
 
     def articles(self):
         if self.content:
-            return self.content["pages"]
+            return self.content["items"]
         return []
 
     def _separate_fields(self, fields):
@@ -56,11 +56,10 @@ class ArticlePageImporter(object):
         """
         flat_fields = {}
         for k, v in fields.items():
-            if type(v) in [type({}), type([])]:
-                pass
-            else:
+            if type(v) not in [type({}), type([])]:
                 flat_fields.update({k: v})
                 del fields[k]
+
         return flat_fields, fields
 
     def _get_fields(self, id):
@@ -71,10 +70,14 @@ class ArticlePageImporter(object):
         return None
 
     def _get_related_image(self, id):
+        # image detail page
         image_attrs = requests.get(
-            "http://localhost:8000/api/v2/images/" + str(id)
+            self.base_url + API_IMAGES_ENDPOINT + str(id)
         ).json()
-        image_file = requests.get("http://localhost:8000/media/images/iStock_67508687_SMALL_-_Copy.original.jpg")
+
+        # get image file
+        # TODO: guard against non-existent images
+        image_file = requests.get(image_attrs["file"])
         image = Image(
             title=image_attrs["title"],
             file=ImageFile(BytesIO(image_file.content), name=image_attrs["title"])
