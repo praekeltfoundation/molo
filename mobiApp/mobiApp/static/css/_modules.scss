@@ -1,0 +1,144 @@
+@import "variables";
+
+.nav {
+  a {
+    padding: 0.5em;
+  }
+  h3 {
+    padding: 0.5em;
+  }
+  p {
+    padding: 0.5em 1em;
+  }
+}
+
+article {
+  a {
+    padding: 0.5em;
+  }
+  p{
+    padding: 0.5em 1em;
+  }
+  h1 {
+    padding: 0.5em;
+    margin: 0;
+  }
+  img {
+    width: 100%;
+    max-width: 100%;
+  	padding: 0.5em;
+  }
+}
+
+.list-inline {
+	@include no-bull;
+	@include no-m;
+	padding: 0.5em 1em;
+	> li {
+		@include l-ib;
+		border-top: none;
+		border-right: none;
+		border-bottom: none;
+		border-left: solid 2px #ddd;
+		&:first-child {
+			border-left: none;
+		}
+	}
+}
+
+.list-plain {
+	@include no-bull;
+	* {
+		@include no-bull;
+	}
+}
+
+.list-block {
+	@include no-mp;
+	> li {
+		@include l-db;
+		border-top: none;
+		border-right: none;
+		border-bottom: 1px solid #ddd;
+		border-left: none;
+		clear: both;
+	}
+	a {
+		padding: 0.5em 1em;
+		@include l-db;
+	}
+	h2, h3 {
+		@include no-m;
+		font-size: 1em;
+        padding-bottom: 0;
+	}
+	p {
+		@include no-m;
+        padding-left: 1.5em;
+        padding-top: 0;
+	}
+}
+
+.list-header {
+	@include no-m;
+	padding: 0.5em;
+	font-size: 1em;
+	line-height: 1;
+    background: #eee;
+	a {
+		text-decoration: none;
+	}
+}
+
+.header-centered {
+	@include l-tac;
+}
+
+// text over img
+
+.over {
+	position: relative;
+	img {
+		width: 100%;
+	}
+}
+
+.over-text {
+	position: absolute;
+	right: 1em;
+	bottom: 4em;
+	left: 1em;
+	z-index: 1;
+	p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+a.over-text {
+	text-decoration: none;
+}
+
+.over {
+	.link-comments {
+		position: absolute;
+		right: 1em;
+		bottom: 1em;
+		z-index: 1;
+	}
+}
+
+// comments
+
+.link-comments {
+	line-height: 3;
+}
+
+.header {
+    img {
+        width: 100%;
+    }
+}
+
+.logo {
+    padding: 10px;
+}

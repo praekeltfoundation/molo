@@ -1,0 +1,4 @@
+{% load mote_tags %}
+{% mask element.json.data.Button as "button" %}
+
+<button class="Button Button {{ button.modifiers }}">{{ button.text }}</button>
