@@ -20,3 +20,5 @@ class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
     def test_importer_initializtion(self):
         content = json.dumps(constants.AVAILABLE_ARTICLES)
         importer = importers.ArticlePageImporter(content=content)
+
+        self.assertEqual(importer.articles(), content["items"])
