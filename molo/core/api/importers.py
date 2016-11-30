@@ -62,11 +62,13 @@ class ArticlePageImporter(object):
 
         return flat_fields, fields
 
-    def _get_fields(self, id):
+    def _get_fields(self, index):
         if self.articles():
-            self.articles()[id].pop("id")
-            self.articles()[id].pop("meta")
-            return self.articles()[id]
+            # remove the fields we do not need, i.e. "id" and "meta"
+            self.articles()[index].pop("id")
+            self.articles()[index].pop("meta")
+            
+            return self.articles()[index]
         return None
 
     def _get_related_image(self, id):
@@ -87,12 +89,12 @@ class ArticlePageImporter(object):
         image.save()
         return image
 
-    def save_articles(self, ids, parent_id):
+    def save_articles(self, article_indexes, parent_id):
         if self.articles():
             parent = Page.objects.get(id=parent_id)
-            for article_id in ids:
+            for index in article_indexes:
                 fields, nested_fields = self._separate_fields(
-                    self._get_fields(article_id)
+                    self._get_fields(index)
                 )
                 article = ArticlePage(**fields)
 

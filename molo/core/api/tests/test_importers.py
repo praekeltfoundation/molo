@@ -16,12 +16,15 @@ class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
 
     def setUp(self):
         self.mk_main()
+        self.importer = importers.ArticlePageImporter(
+            content=constants.AVAILABLE_ARTICLES
+        )
 
     def test_importer_initializtion(self):
-        content = json.dumps(constants.AVAILABLE_ARTICLES)
-        importer = importers.ArticlePageImporter(content=content)
-
-        self.assertEqual(importer.articles(), content["items"])
+        self.assertEqual(
+            self.importer.articles(),
+            constants.AVAILABLE_ARTICLES
+        )
 
     def test_articles_can_be_saved(self):
         pass
