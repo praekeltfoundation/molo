@@ -8,13 +8,16 @@ AVAILABLE_ARTICLES = {
             "meta": {
                 "type": "core.ArticlePage",
                 "detail_url": "http://localhost/api/v2/pages/48/",
-                "html_url": "http://localhost/sections/maternal-care/general-maternal-care/checking-hypertension-pregnancy/",
+                "html_url": "http://localhost/sections/maternal-care/"
+                            "general-maternal-care/"
+                            "checking-hypertension-pregnancy/",
                 "parent": {
                     "id": 10,
                     "meta": {
                         "type": "core.SectionPage",
                         "detail_url": "http://localhost/api/v2/pages/10/",
-                        "html_url": "http://localhost/sections/maternal-care/general-maternal-care/"
+                        "html_url": "http://localhost/sections/"
+                                    "maternal-care/general-maternal-care/"
                     }
                 },
                 "slug": "checking-hypertension-pregnancy",
@@ -28,14 +31,12 @@ AVAILABLE_ARTICLES = {
             "body": [
                 {
                     "type": "paragraph",
-                    "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque quis viverra ante"
+                    "value": "Lorem ipsum dolor sit amet"
                 },
                 {
                     "type": "list",
                     "value": [
-                        "Phasellus cursus eros turpis, vitae consequat sem "
-                        "dapibus at. Sed fermentum mauris vitae fringilla "
-                        "tristique. In hac habitasse platea dictumst."
+                        "Phasellus cursus eros turpis, vitae consequat sem."
                     ]
                 },
                 {
@@ -77,13 +78,17 @@ AVAILABLE_ARTICLES = {
             "meta": {
                 "type": "core.ArticlePage",
                 "detail_url": "http://localhost/api/v2/pages/53/",
-                "html_url": "http://localhost/sections/maternal-care/general-maternal-care/treating-severe-pre-eclampsia-or-imminent-eclampsia/",
+                "html_url": "http://localhost/sections/maternal-care/"
+                            "general-maternal-care/"
+                            "treating-severe-pre-eclampsia-or-imminent"
+                            "-eclampsia/",
                 "parent": {
                     "id": 10,
                     "meta": {
                         "type": "core.SectionPage",
                         "detail_url": "http://localhost/api/v2/pages/10/",
-                        "html_url": "http://localhost/sections/maternal-care/general-maternal-care/"
+                        "html_url": "http://localhost/sections/"
+                                    "maternal-care/general-maternal-care/"
                     }
                 },
                 "slug": "treating-severe-pre-eclampsia-or-imminent-eclampsia",
@@ -97,7 +102,7 @@ AVAILABLE_ARTICLES = {
             "body": [
                 {
                     "type": "paragraph",
-                    "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque quis viverra ante"
+                    "value": "Lorem ipsum dolor sit amet."
                 },
                 {
                     "type": "list",
@@ -156,13 +161,15 @@ AVAILABLE_ARTICLES = {
             "meta": {
                 "type": "core.ArticlePage",
                 "detail_url": "http://localhost/api/v2/pages/54/",
-                "html_url": "http://localhost/sections/maternal-care/general-maternal-care/know-when-refer/",
+                "html_url": "http://localhost/sections/maternal-care/"
+                            "general-maternal-care/know-when-refer/",
                 "parent": {
                     "id": 10,
                     "meta": {
                         "type": "core.SectionPage",
                         "detail_url": "http://localhost/api/v2/pages/10/",
-                        "html_url": "http://localhost/sections/maternal-care/general-maternal-care/"
+                        "html_url": "http://localhost/sections/"
+                                    "maternal-care/general-maternal-care/"
                     }
                 },
                 "slug": "know-when-refer",
@@ -176,7 +183,7 @@ AVAILABLE_ARTICLES = {
             "body": [
                 {
                     "type": "paragraph",
-                    "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque quis viverra ante"
+                    "value": "Lorem ipsum dolor sit amet."
                 },
                 {
                     "type": "list",

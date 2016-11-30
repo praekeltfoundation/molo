@@ -26,7 +26,8 @@ class ArticlePageImporter(object):
         # assemble url
         base_url = base_url.rstrip("/")
         url = base_url + API_PAGES_ENDPOINT + "?type=" + self.content_type + \
-            "&order=latest_revision_created_at" + "&fields=" + ",".join(self.fields)
+            "&fields=" + ",".join(self.fields) + \
+            "&order=latest_revision_created_at"
 
         # make request
         try:
@@ -38,7 +39,8 @@ class ArticlePageImporter(object):
             return "No content could be found from {}. " \
                 "Are you sure this is the correct URL?".format(base_url)
         except requests.exceptions.RequestException:
-            return "Content could not be imported at this time. Please try again later."
+            return "Content could not be imported at this time. " \
+                   "Please try again later."
 
     def articles(self):
         if self.content:
@@ -78,7 +80,9 @@ class ArticlePageImporter(object):
         image_file = requests.get(image_attrs["file"])
         image = Image(
             title=image_attrs["title"],
-            file=ImageFile(BytesIO(image_file.content), name=image_attrs["title"])
+            file=ImageFile(
+                BytesIO(image_file.content), name=image_attrs["title"]
+            )
         )
         image.save()
         return image
@@ -91,23 +95,25 @@ class ArticlePageImporter(object):
                     self._get_fields(article_id)
                 )
                 article = ArticlePage(**fields)
-                # [u'metadata_tags', u'image', u'related_sections', u'body', u'tags']
 
+                # TODO: u'related_sections'
                 # process the nested fields
                 if ("tags" in nested_fields) and nested_fields["tags"]:
                     article.tags.add(", ".join(nested_fields["tags"]))
 
-                if ("metadata_tags" in nested_fields) and nested_fields["metadata_tags"]:
-                    article.metadata_tags.add(", ".join(nested_fields["metadata_tags"]))
+                if ("metadata_tags" in nested_fields) and \
+                        nested_fields["metadata_tags"]:
+                    article.metadata_tags.add(
+                        ", ".join(nested_fields["metadata_tags"])
+                    )
 
                 if ("body" in nested_fields) and nested_fields["body"]:
                     article.body = json.dumps(nested_fields["body"])
 
                 if ("image" in nested_fields) and nested_fields["image"]:
-                    article.image = self._get_related_image(nested_fields["image"]["id"])
+                    article.image = self._get_related_image(
+                        nested_fields["image"]["id"]
+                    )
 
                 parent.add_child(instance=article)
                 parent.save_revision().publish()
-
-
-

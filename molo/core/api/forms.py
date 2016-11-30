@@ -44,7 +44,7 @@ class ArticleImportForm(forms.Form):
         super(ArticleImportForm, self).__init__(*args, **kwargs)
         if self.importer and self.importer.articles():
             for i, article in enumerate(self.importer.articles()):
-                self.fields["%s" %i] = forms.BooleanField(
+                self.fields["%s" % i] = forms.BooleanField(
                     label=article["title"]
                 )
                 self.fields["%s" % i].required = False

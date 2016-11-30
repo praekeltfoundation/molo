@@ -74,7 +74,9 @@ class ArticleImportView(FormView):
             return HttpResponseRedirect(reverse("molo_api:main-import"))
 
         if ARTICLE_SESSION_VARS.second not in self.request.session:
-            return HttpResponseRedirect(reverse("molo_api:article-parent-chooser"))
+            return HttpResponseRedirect(
+                reverse("molo_api:article-parent-chooser")
+            )
 
         return super(ArticleImportView, self).get(*args, **kwargs)
 
@@ -90,5 +92,3 @@ class ArticleImportView(FormView):
     def form_valid(self, form):
         self.importer = form.save()
         return super(ArticleImportView, self).form_valid(form)
-
-
