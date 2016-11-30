@@ -214,13 +214,15 @@ def load_descendant_articles_for_section(
         languages__language__is_main_language=True)
 
     if featured_in_homepage is not None:
-        qs = qs.filter(featured_in_homepage=featured_in_homepage)
+        qs = qs.filter(featured_in_homepage=featured_in_homepage).order_by(
+            '-featured_in_homepage_start_date')
 
     if featured_in_latest is not None:
         qs = qs.filter(featured_in_latest=featured_in_latest)
 
     if featured_in_section is not None:
-        qs = qs.filter(featured_in_section=featured_in_section)
+        qs = qs.filter(featured_in_section=featured_in_section).order_by(
+            '-featured_in_section_start_date')
 
     if not locale:
         return qs[:count]

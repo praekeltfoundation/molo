@@ -350,7 +350,8 @@ class Main(CommentedPageMixin, Page):
             languages__language__is_main_language=True).exclude(
                 feature_as_topic_of_the_day=True,
                 demote_date__gt=timezone.now()).order_by(
-                '-promote_date', '-latest_revision_created_at').specific()
+                    '-featured_in_latest_start_date',
+                    '-promote_date', '-latest_revision_created_at').specific()
 
     def topic_of_the_day(self):
         return ArticlePage.objects.filter(
@@ -715,18 +716,15 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     demote_date = models.DateTimeField(blank=True, null=True)
 
     featured_latest_promote_panels = [
-        FieldPanel('featured_in_latest'),
         FieldPanel('featured_in_latest_start_date'),
         FieldPanel('featured_in_latest_end_date'),
     ]
     featured_section_promote_panels = [
-        FieldPanel('featured_in_section'),
         FieldPanel('featured_in_section_start_date'),
         FieldPanel('featured_in_section_end_date'),
 
     ]
     featured_homepage_promote_panels = [
-        FieldPanel('featured_in_homepage'),
         FieldPanel('featured_in_homepage_start_date'),
         FieldPanel('featured_in_homepage_end_date'),
     ]
