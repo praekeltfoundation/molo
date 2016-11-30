@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 
 def set_promote_start_date(apps, schema_editor):
-    from molo.core.models import ArticlePage
+    ArticlePage = apps.get_model("core", "ArticlePage")
 
     latest_articles = ArticlePage.objects.filter(featured_in_latest=True)
     homepage_articles = ArticlePage.objects.filter(featured_in_homepage=True)
