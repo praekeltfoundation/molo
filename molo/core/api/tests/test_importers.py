@@ -8,8 +8,8 @@ import json
 from django.test import TestCase
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.content_import.api import importers
-from molo.core.content_import.api.tests import constants
+from molo.core.api import importers
+from molo.core.api.tests import constants
 
 
 class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
