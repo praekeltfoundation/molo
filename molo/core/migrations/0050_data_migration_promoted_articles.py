@@ -13,10 +13,13 @@ def set_promote_start_date(apps, schema_editor):
 
     for article in latest_articles:
       article.featured_in_latest_start_date = article.latest_revision_created_at
+      article.save()
     for article in homepage_articles:
       article.featured_in_homepage_start_date = article.latest_revision_created_at
+      article.save()
     for article in section_articles:
       article.featured_in_section_start_date = article.latest_revision_created_at
+      article.save()
 
 class Migration(migrations.Migration):
 
