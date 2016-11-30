@@ -22,3 +22,12 @@ class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
         importer = importers.ArticlePageImporter(content=content)
 
         self.assertEqual(importer.articles(), content["items"])
+
+    def test_articles_can_be_saved(self):
+        pass
+
+    def test_nested_fields_can_be_extracted(self):
+        pass
+
+    def test_related_image_can_be_retrieved(self):
+        pass
