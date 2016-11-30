@@ -3,8 +3,8 @@ from django.conf.urls import url
 from wagtail.api.v2.router import WagtailAPIRouter
 from wagtail.api.v2 import endpoints
 
-from molo.core.content_import.api import admin_views
-from molo.core.content_import.api.endpoints import MoloImagesAPIEndpoint
+from molo.core.api import admin_views
+from molo.core.api.endpoints import MoloImagesAPIEndpoint
 
 
 api_router = WagtailAPIRouter('wagtailapi_v2')

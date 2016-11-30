@@ -2,7 +2,7 @@ import requests
 
 from django import forms
 
-from molo.core.content_import.api import constants
+from molo.core.api import constants
 
 
 class MainImportForm(forms.Form):

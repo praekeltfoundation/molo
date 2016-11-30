@@ -11,9 +11,7 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
 from molo.core.models import ArticlePage
-from molo.core.content_import.api.constants import (
-    API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
-)
+from molo.core.api.constants import API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
 
 
 class ArticlePageImporter(object):

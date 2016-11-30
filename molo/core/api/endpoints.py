@@ -1,4 +1,4 @@
-from molo.core.content_import.api.compat import ImagesAPIEndpoint
+from molo.core.api.compat import ImagesAPIEndpoint
 
 
 class MoloImagesAPIEndpoint(ImagesAPIEndpoint):

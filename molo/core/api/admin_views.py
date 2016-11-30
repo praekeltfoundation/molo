@@ -8,8 +8,8 @@ from django.views.generic import FormView
 from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin
 from wagtailmodeladmin.views import ChooseParentView
 
-from molo.core.content_import.api import forms, importers
-from molo.core.content_import.api.constants import ARTICLE_SESSION_VARS
+from molo.core.api import forms, importers
+from molo.core.api.constants import ARTICLE_SESSION_VARS
 from molo.core.models import ArticlePage
 
 
