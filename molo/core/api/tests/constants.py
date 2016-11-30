@@ -179,7 +179,7 @@ AVAILABLE_ARTICLES = {
                 "first_published_at": "2016-10-06T20:11:03.012310Z"
             },
             "title": "Know when to refer",
-            "subtitle": "Sometimes you’ll need extra help from a hospital",
+            "subtitle": "Lorem ipusm dolor imet",
             "body": [
                 {
                     "type": "paragraph",
