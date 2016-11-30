@@ -15,7 +15,7 @@ from wagtail.wagtailadmin.site_summary import SummaryItem
 
 from . import views
 
-from molo.core.content_import.api import urls as molo_api_urls
+from molo.core.api import urls as molo_api_urls
 
 
 class LanguageModelAdmin(ModelAdmin):
