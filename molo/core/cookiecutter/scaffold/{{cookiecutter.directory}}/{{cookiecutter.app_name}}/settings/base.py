@@ -182,11 +182,11 @@ CELERYBEAT_SCHEDULE = {
     },
     'demote_articles': {
         'task': 'molo.core.tasks.demote_articles',
-        'schedule': crontab(minute=0),
+        'schedule': crontab(minute="*"),
     },
     'promote_articles': {
         'task': 'molo.core.tasks.promote_articles',
-        'schedule': crontab(minute=0),
+        'schedule': crontab(minute="*"),
     },
 }
 
