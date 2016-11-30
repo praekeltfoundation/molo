@@ -40,6 +40,7 @@ def rotate_content(day=None):
         rotate_featured_in_homepage(main_lang, day)
 
 
+@task(ignore_result=True)
 def demote_articles():
     ArticlePage.objects.live().filter(
         featured_in_latest_end_date__lte=datetime.now()).update(
@@ -70,8 +71,8 @@ def demote_articles():
             featured_in_homepage=False)
 
 
+@task(ignore_result=True)
 def promote_articles():
-
     ArticlePage.objects.live().filter(
         featured_in_latest_start_date__lte=datetime.now()).update(
         featured_in_latest=True)
