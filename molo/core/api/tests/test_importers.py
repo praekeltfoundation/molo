@@ -14,9 +14,7 @@ from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.api import importers
 from molo.core.api.tests import constants
-from molo.core.models import ArticlePage, SectionPage
-
-from wagtail.wagtailcore.models import Page
+from molo.core.models import ArticlePage
 
 
 @pytest.mark.django_db
@@ -70,4 +68,3 @@ class ArticleImportTestCase(TestCase, MoloTestCaseMixin):
         #     importers.get_image(base_url=self.importer.base_url, image_id=1),
         #     Image
         # )
-
