@@ -59,7 +59,4 @@ class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
 
         # form.save() saves the selected articles and returns the importer
         form.save()
-        self.assertQuerysetEqual(
-            ArticlePage.objects.all(),
-            ["<ArticlePage: Test article 2>", "<ArticlePage: Test article 1>"]
-        )
+        self.assertEqual(ArticlePage.objects.all().count(), 2)
