@@ -4,8 +4,6 @@ This module relies heavily on an external service and requires
 quite a bit of mocking.
 """
 
-import pytest
-
 from django.test import TestCase
 
 from mock import patch
@@ -17,8 +15,7 @@ from molo.core.api.tests import constants
 from molo.core.models import ArticlePage
 
 
-@pytest.mark.django_db
-class ArticleImportTestCase(TestCase, MoloTestCaseMixin):
+class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
 
     def setUp(self):
         self.mk_main()
@@ -43,8 +40,7 @@ class ArticleImportTestCase(TestCase, MoloTestCaseMixin):
 
         # Create parent page to which articles will be saved
         section = self.mk_section(
-            self.section_index, title="Parent Test Section",
-            slug="parent-test-section"
+            self.section_index, title="Parent Test Section 2",
         )
         self.assertEqual(ArticlePage.objects.all().count(), 0)
 

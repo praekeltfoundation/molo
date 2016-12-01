@@ -25,8 +25,7 @@ class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
         )
         self.section = self.mk_section(
             self.section_index,
-            title="Parent Section",
-            slug="test-parent-section"
+            title="Parent Section 1",
         )
 
     def test_article_render_as_field_choices(self):

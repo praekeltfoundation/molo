@@ -77,12 +77,14 @@ class ArticlePageImporter(object):
         (flat fields, nested fields)
         """
         flat_fields = {}
+        nested_fields = {}
         for k, v in fields.items():
             if type(v) not in [type({}), type([])]:
                 flat_fields.update({k: v})
-                del fields[k]
+            else:
+                nested_fields.update({k: v})
 
-        return flat_fields, fields
+        return flat_fields, nested_fields
 
     def _get_fields(self, index):
         if self.articles():
