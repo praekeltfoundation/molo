@@ -26,8 +26,8 @@ AVAILABLE_ARTICLES = {
                 "search_description": "",
                 "first_published_at": "2016-10-05T13:30:06.031257Z"
             },
-            "title": "Checking for Hypertension in pregnancy",
-            "subtitle": "Make sure to measure blood pressure properly",
+            "title": "Test article 1",
+            "subtitle": "Sub for test article 1",
             "body": [
                 {
                     "type": "paragraph",
@@ -48,9 +48,8 @@ AVAILABLE_ARTICLES = {
             "commenting_state": "O",
             "commenting_open_time": "2016-11-11T06:00:00Z",
             "commenting_close_time": "2016-11-14T06:00:00Z",
-            "social_media_title": "",
-            "social_media_description": "",
-            "social_media_image": False,
+            "social_media_title": "test image",
+            "social_media_description": "test image description",
             "related_sections": [],
             "featured_in_latest": False,
             "featured_in_latest_start_date": "2016-11-11T06:00:00Z",
@@ -66,7 +65,7 @@ AVAILABLE_ARTICLES = {
             "metadata_tags": [],
             "latest_revision_created_at": "2016-10-07T12:04:27.316423Z",
             "image": {
-                "id": 13,
+                "id": 1,
                 "meta": {
                     "type": "wagtailimages.Image",
                     "detail_url": "http://localhost/api/v2/images/13/"
@@ -97,8 +96,8 @@ AVAILABLE_ARTICLES = {
                 "search_description": "",
                 "first_published_at": "2016-10-06T19:52:44.105200Z"
             },
-            "title": "Treating severe pre-eclampsia or imminent eclampsia",
-            "subtitle": "Do you know what to do?",
+            "title": "Test article 2",
+            "subtitle": "Sub for test article 2",
             "body": [
                 {
                     "type": "paragraph",
@@ -124,9 +123,8 @@ AVAILABLE_ARTICLES = {
             "commenting_state": "O",
             "commenting_open_time": "2016-12-23T06:00:00Z",
             "commenting_close_time": "2016-12-26T06:00:00Z",
-            "social_media_title": "",
-            "social_media_description": "",
-            "social_media_image": None,
+            "social_media_title": "test image",
+            "social_media_description": "test image description",
             "related_sections": [
                 {
                     "id": 1,
@@ -149,7 +147,7 @@ AVAILABLE_ARTICLES = {
             "metadata_tags": [],
             "latest_revision_created_at": "2016-11-09T10:17:45.352864Z",
             "image": {
-                "id": 17,
+                "id": 1,
                 "meta": {
                     "type": "wagtailimages.Image",
                     "detail_url": "http://localhost/api/v2/images/17/"
@@ -178,8 +176,8 @@ AVAILABLE_ARTICLES = {
                 "search_description": "",
                 "first_published_at": "2016-10-06T20:11:03.012310Z"
             },
-            "title": "Know when to refer",
-            "subtitle": "Lorem ipusm dolor imet",
+            "title": "Test article 3",
+            "subtitle": "Sub for test article 3",
             "body": [
                 {
                     "type": "paragraph",
@@ -202,9 +200,8 @@ AVAILABLE_ARTICLES = {
             "commenting_state": "O",
             "commenting_open_time": "2017-01-25T06:00:00Z",
             "commenting_close_time": "2017-01-27T06:00:00Z",
-            "social_media_title": "",
-            "social_media_description": "",
-            "social_media_image": None,
+            "social_media_title": "test image",
+            "social_media_description": "test image description",
             "related_sections": [],
             "featured_in_latest": False,
             "featured_in_latest_start_date": "2016-12-23T06:00:00Z",
@@ -220,7 +217,7 @@ AVAILABLE_ARTICLES = {
             "metadata_tags": [],
             "latest_revision_created_at": "2016-10-10T11:04:36.153490Z",
             "image": {
-                "id": 60,
+                "id": 1,
                 "meta": {
                     "type": "wagtailimages.Image",
                     "detail_url": "http://localhost/api/v2/images/60/"
@@ -228,4 +225,17 @@ AVAILABLE_ARTICLES = {
             }
         },
     ]
+}
+
+RELATED_IMAGE = {
+    "id": 1,
+    "meta": {
+        "type": "wagtailimages.Image",
+        "detail_url": "http://localhost/api/v2/images/1/",
+        "tags": []
+    },
+    "title": "Image",
+    "width": 480,
+    "height": 480,
+    "file": "http://localhost:8000/media/original_images/test.png"
 }

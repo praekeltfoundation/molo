@@ -14,13 +14,36 @@ from molo.core.models import ArticlePage
 from molo.core.api.constants import API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
 
 
+#====================================================
+# functions used to find images
+def get_image_attributes(base_url, image_id):
+    image_attrs = requests.get(
+        base_url + API_IMAGES_ENDPOINT + str(image_id)
+    ).json()
+    return image_attrs
+
+
+def get_image(base_url, image_id):
+    # TODO: guard against non-existent images
+    image_attributes = get_image_attributes(base_url, image_id)
+    image_file = requests.get(image_attributes["file"])
+    image = Image(
+        title=image_attributes["title"],
+        file=ImageFile(
+            BytesIO(image_file.content), name=image_attributes["title"]
+        )
+    )
+    image.save()
+    return image
+
+
 class ArticlePageImporter(object):
 
-    def __init__(self, content=None):
+    def __init__(self, base_url=None, content=None):
         self.content_type = "core.ArticlePage"
         self.fields = ArticlePage.get_api_fields()
         self.content = content
-        self.base_url = None
+        self.base_url = base_url
 
     def get_content_from_url(self, base_url):
         # assemble url
@@ -67,27 +90,9 @@ class ArticlePageImporter(object):
             # remove the fields we do not need, i.e. "id" and "meta"
             self.articles()[index].pop("id")
             self.articles()[index].pop("meta")
-            
+
             return self.articles()[index]
         return None
-
-    def _get_related_image(self, id):
-        # image detail page
-        image_attrs = requests.get(
-            self.base_url + API_IMAGES_ENDPOINT + str(id)
-        ).json()
-
-        # get image file
-        # TODO: guard against non-existent images
-        image_file = requests.get(image_attrs["file"])
-        image = Image(
-            title=image_attrs["title"],
-            file=ImageFile(
-                BytesIO(image_file.content), name=image_attrs["title"]
-            )
-        )
-        image.save()
-        return image
 
     def save_articles(self, article_indexes, parent_id):
         if self.articles():
@@ -113,8 +118,8 @@ class ArticlePageImporter(object):
                     article.body = json.dumps(nested_fields["body"])
 
                 if ("image" in nested_fields) and nested_fields["image"]:
-                    article.image = self._get_related_image(
-                        nested_fields["image"]["id"]
+                    article.image = get_image(
+                        self.base_url, nested_fields["image"]["id"]
                     )
 
                 parent.add_child(instance=article)
