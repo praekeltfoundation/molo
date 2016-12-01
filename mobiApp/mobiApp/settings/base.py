@@ -108,7 +108,7 @@ MIDDLEWARE_CLASSES = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [PROJECT_ROOT + '/mote'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

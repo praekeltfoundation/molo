@@ -1,0 +1,4 @@
+{% load mote_tags %}
+
+{% mask element.json.data.Button as "button" %}
+<button type="submit" class="call-to-action__item call-to-action__item--{{ button.modifiers }}">{{ button.text }}</button>
