@@ -14,7 +14,6 @@ from molo.core.models import ArticlePage
 from molo.core.api.constants import API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
 
 
-#====================================================
 # functions used to find images
 def get_image_attributes(base_url, image_id):
     image_attrs = requests.get(
