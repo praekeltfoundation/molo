@@ -1,0 +1,25 @@
+
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+
+{% if sections %}
+{% for section in sections %}
+<div class="articles nav {{section.get_effective_extra_style_hints}}">
+  <h2 class="list-header">
+    <a href="{% pageurl section %}">{{section.title}}</a>
+  </h2>
+  {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+  {% for article in featured_articles %}
+  <ul class="list-block">
+    <li>
+      {% if article.image %}
+      <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+      {% endif %}
+      <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+      <p>{{article.subtitle}}</p>
+    </li>
+  </ul>
+  {% endfor %}
+</div>
+{% endfor%}
+{% endif %}
+

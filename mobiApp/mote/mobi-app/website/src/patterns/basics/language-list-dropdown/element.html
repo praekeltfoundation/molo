@@ -1,0 +1,6 @@
+{% load mote_tags %}
+
+{% mask element.json.data.Language_list_dropdown as "language_list_dropdown" %}
+{% for item in language_list_dropdown.languages %}
+    <option value="{{ item.value }}">{{ item.language }}</option>
+{% endfor %}

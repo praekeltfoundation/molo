@@ -1,0 +1,11 @@
+
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% if footers %}
+  <ul>
+  {% for page in footers %}
+  <li><a href="{% pageurl page %}">{{page.title}}</a></li>
+  {% endfor %}
+  </ul>
+{% endif %}
+
