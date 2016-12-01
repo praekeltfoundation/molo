@@ -13,10 +13,6 @@ from molo.core.models import ArticlePage
 
 class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
 
-    # @classmethod
-    # def setUpTestData(cls):
-    #     pass
-
     def setUp(self):
         self.mk_main()
         self.importer = importers.ArticlePageImporter(

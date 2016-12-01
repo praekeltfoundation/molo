@@ -19,8 +19,9 @@ class MainImportForm(forms.Form):
 
     def clean_url(self):
         url = self.cleaned_data["url"]
+        url = url.rstrip("/")
         response = requests.get(
-            url="http://localhost:8000/api/v1/pages/"
+            url + constants.API_PAGES_ENDPOINT
         )
 
         if not (response.status_code == 200):
