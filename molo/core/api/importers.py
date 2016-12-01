@@ -88,10 +88,14 @@ class ArticlePageImporter(object):
     def _get_fields(self, index):
         if self.articles():
             # remove the fields we do not need, i.e. "id" and "meta"
-            self.articles()[index].pop("id")
-            self.articles()[index].pop("meta")
+            if "id" in self.articles()[index]:
+                self.articles()[index].pop("id")
+
+            if "meta" in self.articles()[index]:
+                self.articles()[index].pop("meta")
 
             return self.articles()[index]
+
         return None
 
     def save_articles(self, article_indexes, parent_id):

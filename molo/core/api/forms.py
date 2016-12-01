@@ -53,6 +53,6 @@ class ArticleImportForm(forms.Form):
         # soe articles were selected, save them
         selected_choices = [int(k) for k, v in self.cleaned_data.items() if v]
         self.importer.save_articles(
-            ids=selected_choices, parent_id=self.parent_id
+            article_indexes=selected_choices, parent_id=self.parent_id
         )
         return self.importer

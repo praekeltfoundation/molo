@@ -9,8 +9,7 @@ import pytest
 from django.test import TestCase
 
 from mock import patch
-from wagtail.wagtailimages.models import Image
-from wagtail.wagtailimages.tests.utils import get_test_image_file
+from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.api import importers
@@ -45,16 +44,17 @@ class ArticleImportTestCase(TestCase, MoloTestCaseMixin):
         mock_image.return_value = image
 
         # Create parent page to which articles will be saved
-        section = self.mk_section(self.section_index, title="Parent Section", slug="test-parent-section")
-        self.assertQuerysetEqual(ArticlePage.objects.all(), [])
+        section = self.mk_section(
+            self.section_index, title="Parent Test Section",
+            slug="parent-test-section"
+        )
+        self.assertEqual(ArticlePage.objects.all().count(), 0)
 
         # Save the articles
         # Save the first available article
+        assert 0
         self.importer.save_articles([0, ], section.id)
-        self.assertQuerysetEqual(
-            ArticlePage.objects.all(),
-            ["<ArticlePage: Test article 1>", ]
-        )
+        self.assertEqual(ArticlePage.objects.all().count(), 1)
 
     def test_nested_fields_can_be_extracted(self):
         # It is necessary to separate nested fields in each article
