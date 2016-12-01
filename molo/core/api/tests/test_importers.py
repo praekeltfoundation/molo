@@ -50,7 +50,6 @@ class ArticleImportTestCase(TestCase, MoloTestCaseMixin):
 
         # Save the articles
         # Save the first available article
-        assert 0
         self.importer.save_articles([0, ], section.id)
         self.assertEqual(ArticlePage.objects.all().count(), 1)
 
