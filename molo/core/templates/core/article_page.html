@@ -1,4 +1,4 @@
- 
+
 {% extends "base.html" %}
 
 {% load static core_tags %}
@@ -7,6 +7,10 @@
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
 
 {% block content %}
+{% block scroll %}
+  {% include "patterns/components/back-scroll/top.html" with text="Move up"  %}
+{% endblock %}
+
 <div class="articles nav {{self.get_parent_section.get_effective_extra_style_hints}}">
   <h3 class="article-title">{{self.title}}</h3>
   <p>{{self.subtitle}}</p>
@@ -43,5 +47,7 @@
     {% endfor%}
 {% endif %}
 </div>
+
+
+
 {% endblock %}
- 

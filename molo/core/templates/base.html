@@ -1,4 +1,4 @@
- 
+
 {% load wagtailcore_tags compress static wagtailuserbar core_tags i18n %}
 {% load wagtailsettings_tags wagtailimages_tags %}
 {% load google_analytics_tags %}
@@ -68,11 +68,6 @@
           loadJS( "{% static 'js/main.js' %}" );
         }
         </script>
-
-        <!-- this section should always be last in the head -->
-        {% compress css file enhanced %}
-          <link rel="stylesheet" type="text/x-scss" href="{% static 'css/enhanced.scss' %}">
-        {% endcompress %}
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
@@ -138,4 +133,3 @@
 
     </body>
 </html>
- 
