@@ -56,3 +56,19 @@ class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
         # form.save() saves the selected articles and returns the importer
         form.save()
         self.assertEqual(ArticlePage.objects.all().count(), 2)
+
+#
+# class MainImportFormTestCase(MoloTestCaseMixin, TestCase):
+#
+#     def setUp(self):
+#         self.mk_main()
+#
+#     def test_valid_input(self):
+#         form_data = {
+#             "url": "http://localhost:8000/api/v2/pages",
+#             "content_type": "core.ArticlePage"
+#         }
+#         form = forms.MainImportForm(
+#             data=form_data
+#         )
+#         self.assertTrue(form.is_valid())
