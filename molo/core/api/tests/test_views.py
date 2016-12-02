@@ -46,7 +46,7 @@ class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
         self.assertContains(response, "Add Article")
 
 
-class ArticleParentChooserView(MoloTestCaseMixin, TestCase):
+class ArticleParentChooserTestCase(MoloTestCaseMixin, TestCase):
 
     def setUp(self):
         self.mk_main()
@@ -63,5 +63,23 @@ class ArticleParentChooserView(MoloTestCaseMixin, TestCase):
             reverse("molo_api:main-import")
         )
 
-    def test_redirects_to_article_import(self):
+
+class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
+
+    def setUp(self):
+        self.mk_main()
+        self.client = Client()
+        User.objects.create_superuser(
+            username="admin", email="admin@admin.com", password="admin"
+        )
+        self.client.login(username="admin", password="admin")
+
+    def test_redirects_to_main_page_if_session_not_set(self):
+        response = self.client.get(reverse("molo_api:article-import"))
+        self.assertEqual(
+            response["Location"],
+            reverse("molo_api:main-import")
+        )
+
+    def test_articles_can_be_imported(self):
         pass
