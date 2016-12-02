@@ -44,3 +44,24 @@ class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
             follow=True
         )
         self.assertContains(response, "Add Article")
+
+
+class ArticleParentChooserView(MoloTestCaseMixin, TestCase):
+
+    def setUp(self):
+        self.mk_main()
+        self.client = Client()
+        User.objects.create_superuser(
+            username="admin", email="admin@admin.com", password="admin"
+        )
+        self.client.login(username="admin", password="admin")
+
+    def test_redirects_to_first_page_if_session_not_set(self):
+        response = self.client.get(reverse("molo_api:article-parent-chooser"))
+        self.assertEqual(
+            response["Location"],
+            reverse("molo_api:main-import")
+        )
+
+    def test_redirects_to_article_import(self):
+        pass
