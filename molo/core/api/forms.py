@@ -18,23 +18,16 @@ class MainImportForm(forms.Form):
     )
 
     def clean_url(self):
-        try:
-            url = self.cleaned_data["url"]
-            url = url.rstrip("/")
-            print "=================================="
-            print url + constants.API_PAGES_ENDPOINT
-            requests.get(url + constants.API_PAGES_ENDPOINT)
-        except requests.exceptions.ConnectionError:
+        url = self.cleaned_data["url"]
+        url = url.rstrip("/")
+        print "=================================="
+        print url + constants.API_PAGES_ENDPOINT
+        response = requests.get(url + constants.API_PAGES_ENDPOINT)
+
+        if not (response.status_code == 200):
             self.add_error("url", forms.ValidationError(
                 "Please enter a valid URL."
             ))
-            return url
-        except requests.exceptions.RequestException:
-            self.add_error(
-                "Content could not be imported at this time. "
-                "Please try again later."
-            )
-            return url
 
         return url
 

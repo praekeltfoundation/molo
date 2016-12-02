@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.core.urlresolvers import reverse
 
 from mock import patch
@@ -12,6 +12,7 @@ class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
 
     def setUp(self):
         self.mk_main()
+        self.client = Client()
         User.objects.create_superuser(
             username="admin", email="admin@admin.com", password="admin"
         )
@@ -25,6 +26,7 @@ class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
         response = self.client.post(
             reverse("molo_api:main-import"),
             data=form_data,
+            follow=True
         )
         self.assertFormError(
             response, "form", "url", [u"Please enter a valid URL."]
@@ -33,11 +35,12 @@ class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
     @patch("molo.core.api.forms.requests.get", side_effect=mocked_requests_get)
     def test_redirects_to_parent_chooser(self, mock_get):
         form_data = {
-            "url": "http://localhost:8000/api/v2/pages/",
+            "url": "http://localhost:8000/",
             "content_type": "core.ArticlePage"
         }
         response = self.client.post(
             reverse("molo_api:main-import"),
             data=form_data,
+            follow=True
         )
-        self.assertEqual(response.status_code, 302)
+        self.assertContains(response, "Add Article")
