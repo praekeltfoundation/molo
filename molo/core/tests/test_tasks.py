@@ -114,21 +114,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_latest)
 
-    def test_demote_articles_latest_start_date_taken_away(self):
-        article = self.mk_article(
-            self.yourmind, title='article', slug='article')
-        article.featured_in_latest_start_date = datetime.now()
-        article.save()
-        demote_articles()
-        promote_articles()
-        article = ArticlePage.objects.all().first()
-        self.assertTrue(article.featured_in_latest)
-        article.featured_in_latest_start_date = None
-        article.save()
-        demote_articles()
-        article = ArticlePage.objects.all().first()
-        self.assertFalse(article.featured_in_latest)
-
     def test_demote_articles_latest(self):
         article = self.mk_article(
             self.yourmind, title='article', slug='article')
@@ -155,21 +140,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_homepage)
 
-    def test_demote_articles_homepage_start_date_taken_away(self):
-        article = self.mk_article(
-            self.yourmind, title='article', slug='article')
-        article.featured_in_homepage_start_date = datetime.now()
-        article.save()
-        demote_articles()
-        promote_articles()
-        article = ArticlePage.objects.all().first()
-        self.assertTrue(article.featured_in_homepage)
-        article.featured_in_homepage_start_date = None
-        article.save()
-        demote_articles()
-        article = ArticlePage.objects.all().first()
-        self.assertFalse(article.featured_in_homepage)
-
     def test_demote_articles_homepage(self):
         article = self.mk_article(
             self.yourmind, title='article', slug='article')
@@ -195,21 +165,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_section)
-
-    def test_demote_articles_section_start_date_taken_away(self):
-        article = self.mk_article(
-            self.yourmind, title='article', slug='article')
-        article.featured_in_section_start_date = datetime.now()
-        article.save()
-        demote_articles()
-        promote_articles()
-        article = ArticlePage.objects.all().first()
-        self.assertTrue(article.featured_in_section)
-        article.featured_in_section_start_date = None
-        article.save()
-        demote_articles()
-        article = ArticlePage.objects.all().first()
-        self.assertFalse(article.featured_in_section)
 
     def test_demote_articles_section(self):
         article = self.mk_article(

@@ -48,27 +48,15 @@ def demote_articles():
             featured_in_latest_start_date=None,
             featured_in_latest_end_date=None)
     ArticlePage.objects.live().filter(
-        featured_in_latest_end_date=None,
-        featured_in_latest_start_date=None).update(
-            featured_in_latest=False)
-    ArticlePage.objects.live().filter(
         featured_in_section_end_date__lte=datetime.now()).update(
             featured_in_section=False,
             featured_in_section_start_date=None,
             featured_in_section_end_date=None)
     ArticlePage.objects.live().filter(
-        featured_in_section_end_date=None,
-        featured_in_section_start_date=None).update(
-            featured_in_section=False)
-    ArticlePage.objects.live().filter(
         featured_in_homepage_end_date__lte=datetime.now()).update(
             featured_in_homepage=False,
             featured_in_homepage_start_date=None,
             featured_in_homepage_end_date=None)
-    ArticlePage.objects.live().filter(
-        featured_in_homepage_end_date=None,
-        featured_in_homepage_start_date=None).update(
-            featured_in_homepage=False)
 
 
 @task(ignore_result=True)

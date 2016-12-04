@@ -471,6 +471,33 @@ class TestModels(TestCase, MoloTestCaseMixin):
             "The article cannot be demoted before it has been promoted."
         )
 
+    def test_demote_articles_post_save(self):
+        article = self.mk_article(
+            self.yourmind_sub, title='article', slug='article',
+            featured_in_section=True, featured_in_homepage=True,
+            featured_in_latest=True)
+        self.assertFalse(article.featured_in_latest)
+        self.assertFalse(article.featured_in_homepage)
+        self.assertFalse(article.featured_in_section)
+
+        article.slug = 'article-slug'
+        article.save()
+        self.assertFalse(article.featured_in_latest)
+        self.assertFalse(article.featured_in_homepage)
+        self.assertFalse(article.featured_in_section)
+
+        article.featured_in_section = True
+        article.featured_in_homepage = True
+        article.featured_in_latest = True
+        self.assertTrue(article.featured_in_latest)
+        self.assertTrue(article.featured_in_homepage)
+        self.assertTrue(article.featured_in_section)
+
+        article.save()
+        self.assertFalse(article.featured_in_latest)
+        self.assertFalse(article.featured_in_homepage)
+        self.assertFalse(article.featured_in_section)
+
     def test_is_topic_of_the_day(self):
         promote_date = timezone.now() + timedelta(days=-1)
         demote_date = timezone.now() + timedelta(days=1)
