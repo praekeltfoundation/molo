@@ -75,11 +75,36 @@ class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
         self.client.login(username="admin", password="admin")
 
     def test_redirects_to_main_page_if_session_not_set(self):
-        response = self.client.get(reverse("molo_api:article-import"))
-        self.assertEqual(
-            response["Location"],
-            reverse("molo_api:main-import")
+        response = self.client.get(
+            reverse("molo_api:article-import"),
+            follow=True
         )
+        url, status_code = response.redirect_chain[-1]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(url, reverse("molo_api:main-import"))
 
-    def test_articles_can_be_imported(self):
-        pass
+    @patch("molo.core.api.forms.requests.get", side_effect=mocked_requests_get)
+    def test_articles_can_be_imported(self, mock_get):
+        # Choose URL and content type on article import first step
+        form_data = {
+            "url": "http://localhost:8000/",
+            "content_type": "core.ArticlePage"
+        }
+        response = self.client.post(
+            reverse("molo_api:main-import"),
+            data=form_data,
+            follow=True
+        )
+        url, status_code = response.redirect_chain[-1]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(url, reverse("molo_api:article-parent-chooser"))
+
+        # Select a parent for the articles that will be imported
+        # parent = self.mk_section(
+        #     self.section_index,
+        #     title="Test Parent Section For import"
+        # )
+
+        # TODO: test that a parent can be chosen
+
+        # TODO: test that an article can be saved
