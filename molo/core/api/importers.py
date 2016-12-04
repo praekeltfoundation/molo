@@ -129,3 +129,11 @@ class ArticlePageImporter(object):
 
                 parent.add_child(instance=article)
                 parent.save_revision().publish()
+
+
+class SectionPageImporter(object):
+    def __init__(self, base_url=None, content=None):
+        self.content_type = "core.SectionPage"
+        self.fields = ArticlePage.get_api_fields()
+        self.content = content
+        self.base_url = base_url

@@ -22,7 +22,7 @@ urlpatterns = [
         name="article-import"
     ),
     url(
-        r"^parent/$",
+        r"^choose-particle-parent/$",
         admin_views.ArticleChooserView.as_view(
             model_admin=admin_views.ArticleModelAdmin()
         ), name="article-parent-chooser"
@@ -31,5 +31,11 @@ urlpatterns = [
         r"^import-content/$",
         admin_views.MainImportView.as_view(),
         name="main-import"
+    ),
+    url(
+        r"^choose-section-parent/$",
+        admin_views.SectionParentChooserView.as_view(
+            model_admin=admin_views.SectionModelAdmin()
+        ), name="section-parent-chooser"
     ),
 ]
