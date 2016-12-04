@@ -134,34 +134,34 @@ class SectionImportView(FormView):
     Fetches available section and renders them in a list.
     The user can then select which section to save
     """
-    form_class = forms.ArticleImportForm
-    success_url = reverse_lazy("molo_api:article-import")
-    template_name = "core/api/article_import.html"
+    form_class = forms.SectionImportForm
+    success_url = reverse_lazy("molo_api:section-import")
+    template_name = "core/api/section_import.html"
 
-    importer = importers.ArticlePageImporter()
+    importer = importers.SectionPageImporter()
 
-    def get(self, *args, **kwargs):
-        if not all(
-            key in self.request.session for key in ARTICLE_SESSION_VARS.first
-        ):
-            return HttpResponseRedirect(reverse("molo_api:main-import"))
-
-        if ARTICLE_SESSION_VARS.second not in self.request.session:
-            return HttpResponseRedirect(
-                reverse("molo_api:article-parent-chooser")
-            )
-
-        return super(ArticleImportView, self).get(*args, **kwargs)
+    # def get(self, *args, **kwargs):
+    #     if not all(
+    #         key in self.request.session for key in ARTICLE_SESSION_VARS.first
+    #     ):
+    #         return HttpResponseRedirect(reverse("molo_api:main-import"))
+    #
+    #     if ARTICLE_SESSION_VARS.second not in self.request.session:
+    #         return HttpResponseRedirect(
+    #             reverse("molo_api:article-parent-chooser")
+    #         )
+    #
+    #     return super(SectionImportView, self).get(*args, **kwargs)
 
     def get_form_kwargs(self):
         # pass valid importer to the form
-        kwargs = super(ArticleImportView, self).get_form_kwargs()
+        kwargs = super(SectionImportView, self).get_form_kwargs()
         url = self.request.session["url"]
         self.importer.get_content_from_url(url)
         kwargs["importer"] = self.importer
-        kwargs["parent"] = self.request.session["article_parent_page_id"]
+        kwargs["parent"] = self.request.session["section_parent_page_id"]
         return kwargs
 
     def form_valid(self, form):
         self.importer = form.save()
-        return super(ArticleImportView, self).form_valid(form)
+        return super(SectionImportView, self).form_valid(form)

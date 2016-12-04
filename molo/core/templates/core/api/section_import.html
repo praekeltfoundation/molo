@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "wagtailadmin/base.html" %}
+{% load static i18n %}
+
+{% block content %}
+    {% include "wagtailadmin/shared/header.html" with title="API Import" %}
+
+    <div>
+        <form action="{% url 'molo_api:section-import' %}" method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" class="Button" value="{% trans "Get content" %}"/>
+        </form>
+    </div>
+
+{% endblock %}
+
