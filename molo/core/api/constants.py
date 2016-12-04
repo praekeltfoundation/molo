@@ -15,8 +15,8 @@ SESSION_VARS = namedtuple(
 )
 
 ARTICLE_SESSION_VARS = SESSION_VARS(
-    first=("url", "content_type"),
-    second="parent_page_id"
+    first=("url", "article_content_type"),
+    second="article_parent_page_id"
 )
 
 API_PAGES_ENDPOINT = "/api/v2/pages/"
