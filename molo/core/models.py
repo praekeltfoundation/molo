@@ -510,6 +510,19 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         null=True, blank=True,
         help_text='The date rotation will end')
 
+    api_fields = [
+        "title", "description", "image", "extra_style_hints",
+        "commenting_state", "commenting_open_time",
+        "commenting_close_time", "time", "monday_rotation",
+        "tuesday_rotation", "wednesday_rotation", "thursday_rotation",
+        "friday_rotation", "saturday_rotation", "sunday_rotation",
+        "content_rotation_start_date", "content_rotation_end_date",
+    ]
+
+    @classmethod
+    def get_api_fields(cls):
+        return cls.api_fields
+
     def articles(self):
         main_language_page = self.get_main_language_page()
         return list(chain(
