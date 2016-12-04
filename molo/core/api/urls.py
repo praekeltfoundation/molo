@@ -38,4 +38,9 @@ urlpatterns = [
             model_admin=admin_views.SectionModelAdmin()
         ), name="section-parent-chooser"
     ),
+    url(
+        r"^import-section/$",
+        admin_views.SectionImportView.as_view(),
+        name="section-import"
+    ),
 ]
