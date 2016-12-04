@@ -517,6 +517,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         "tuesday_rotation", "wednesday_rotation", "thursday_rotation",
         "friday_rotation", "saturday_rotation", "sunday_rotation",
         "content_rotation_start_date", "content_rotation_end_date",
+        "latest_revision_created_at"
     ]
 
     @classmethod
