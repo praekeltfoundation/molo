@@ -76,7 +76,7 @@ class SectionImportTestCase(MoloTestCaseMixin, TestCase):
 
     def test_section_importer_initializtion(self):
         self.assertEqual(
-            self.importer.articles(),
+            self.importer.content(),
             constants.AVAILABLE_ARTICLES["items"]
         )
 
