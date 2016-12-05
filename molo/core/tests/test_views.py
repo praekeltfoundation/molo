@@ -17,6 +17,8 @@ from molo.core.models import (SiteLanguage, FooterPage,
                               SiteSettings, ArticlePage)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
+from molo.core.templatetags.core_tags import \
+    load_descendant_articles_for_section
 
 from mock import patch, Mock
 from six import b
@@ -315,6 +317,18 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<p>Sample page description for 0</p>')
+
+    def test_featured_homepage_listing_draft_articles(self):
+        article = self.mk_article(self.yourmind_sub, featured_in_homepage=True)
+        article2 = self.mk_article(
+            self.yourmind_sub, featured_in_homepage=True)
+        article2.unpublish()
+        self.assertEquals(ArticlePage.objects.live().count(), 1)
+        featured_in_homepage_articles = load_descendant_articles_for_section(
+            {}, self.yourmind_sub, featured_in_homepage=True)
+        self.assertEquals(featured_in_homepage_articles.count(), 1)
+        self.assertEquals(
+            featured_in_homepage_articles.first().title, article.title)
 
     def test_featured_topic_of_the_day(self):
         promote_date = timezone.now() + timedelta(days=-1)
