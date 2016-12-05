@@ -19,6 +19,7 @@ from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
     load_descendant_articles_for_section
+from molo.core.tasks import promote_articles
 
 from mock import patch, Mock
 from six import b
@@ -221,6 +222,22 @@ class TestPages(TestCase, MoloTestCaseMixin):
             response, 'Test page 9 in french')
         self.assertNotContains(
             response, 'in french')
+
+    def test_latest(self):
+        en_latest = self.mk_articles(
+            self.yourmind_sub, count=4,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
+        for p in en_latest:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        fr_articles = self.mk_articles(self.yourmind_sub, count=10)
+        for p in fr_articles:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        self.assertEquals(self.main.latest_articles().count(), 4)
 
     def test_latest_listing_in_french(self):
         en_latest = self.mk_articles(
