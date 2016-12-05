@@ -209,7 +209,10 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         # gets the first and last articles of the list before it rotates
@@ -254,7 +257,10 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
@@ -283,7 +289,10 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
@@ -315,7 +324,10 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
@@ -336,7 +348,9 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.assertFalse(article.featured_in_latest)
         self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
         self.mk_articles(
-            self.yourmind_sub, count=10, featured_in_homepage=True)
+            self.yourmind_sub, count=10,
+            featured_in_homepage_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(
             self.yourmind_sub, count=10, featured_in_homepage=False)
         self.assertEquals(

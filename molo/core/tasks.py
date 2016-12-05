@@ -99,13 +99,17 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                             languages__language__id=main_lang.id
                         ).descendant_of(index).order_by('?').first()
                         if random_article:
-                            random_article.featured_in_latest = True
+                            random_article.featured_in_latest_start_date = \
+                                datetime.now()
                             random_article.save_revision().publish()
 
                             # set the last featured_in_latest article to false
                             article = main.latest_articles().last()
-                            article.featured_in_latest = False
+                            article.featured_in_latest_start_date = None
+                            article.featured_in_latest_end_date = None
                             article.save_revision().publish()
+                            demote_articles()
+                            promote_articles()
 
 
 def rotate_featured_in_homepage(main_lang, day):
@@ -124,17 +128,21 @@ def rotate_featured_in_homepage(main_lang, day):
                     for time in section.time:
                         time = strptime(str(time), '%H:%M:%S')
                         if time.tm_hour == datetime.now().hour:
-                            random_article = ArticlePage.objects.live().filter(
+                            ran_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
                                 languages__language__id=main_lang.id
                             ).child_of(section).order_by('?').first()
-                            if random_article:
-                                random_article.featured_in_homepage = True
-                                random_article.save_revision().publish()
+                            if ran_article:
+                                ran_article.featured_in_homepage_start_date = \
+                                    datetime.now()
+                                ran_article.save_revision().publish()
                                 article = section.\
                                     featured_in_homepage_articles().last()
-                                article.featured_in_homepage = False
+                                article.featured_in_homepage_start_date = None
+                                article.featured_in_homepage_end_date = None
                                 article.save_revision().publish()
+                                demote_articles()
+                                promote_articles()
 
 
 def send_import_email(to_email, context):
