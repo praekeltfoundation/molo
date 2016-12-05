@@ -24,7 +24,7 @@ class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
             content=constants.AVAILABLE_ARTICLES
         )
 
-    def test_importer_initializtion(self):
+    def test_article_importer_initializtion(self):
         self.assertEqual(
             self.importer.articles(),
             constants.AVAILABLE_ARTICLES["items"]
@@ -63,3 +63,35 @@ class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
         #     importers.get_image(base_url=self.importer.base_url, image_id=1),
         #     Image
         # )
+
+
+class SectionImportTestCase(MoloTestCaseMixin, TestCase):
+
+    def setUp(self):
+        self.mk_main()
+        self.importer = importers.SectionPageImporter(
+            base_url="http://localhost:8000",
+            content=constants.AVAILABLE_ARTICLES
+        )
+
+    def test_section_importer_initializtion(self):
+        self.assertEqual(
+            self.importer.articles(),
+            constants.AVAILABLE_ARTICLES["items"]
+        )
+
+    # @patch("molo.core.api.importers.get_image")
+    # def test_section_can_be_saved(self, mock_image):
+    #     image = Image.objects.create(
+    #         title="Test image",
+    #         file=get_test_image_file(),
+    #     )
+    #     mock_image.return_value = image
+    #
+    #     # Add new sections as children pf the SectionIndexPage
+    #     self.assertEqual(SectionPage.objects.all().count(), 0)
+    #
+    #     # Save the articles
+    #     # Save the first available article
+    #     self.importer.save([0, ], self.section_index.id)
+    #     self.assertEqual(SectionPage.objects.all().count(), 1)

@@ -175,7 +175,8 @@ class SectionPageImporter(object):
             response = requests.get(url)
             self._base_url = base_url
             self._content = response.json()
-            return self.content
+            self._content = self._content["items"]
+            return self._content
         except requests.exceptions.ConnectionError:
             return "No content could be found from {}. " \
                 "Are you sure this is the correct URL?".format(base_url)
@@ -249,7 +250,9 @@ class SectionPageImporter(object):
                     flat_fields, nested_fields = separate_fields(item)
                     child_article = ArticlePage(**flat_fields)
                     if ("tags" in nested_fields) and nested_fields["tags"]:
-                        child_article.tags.add(", ".join(nested_fields["tags"]))
+                        child_article.tags.add(
+                            ", ".join(nested_fields["tags"])
+                        )
 
                     if ("metadata_tags" in nested_fields) and \
                             nested_fields["metadata_tags"]:

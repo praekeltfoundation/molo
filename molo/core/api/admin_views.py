@@ -9,7 +9,7 @@ from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin
 from wagtailmodeladmin.views import ChooseParentView
 
 from molo.core.api import forms, importers
-from molo.core.api.constants import ARTICLE_SESSION_VARS, CONTENT_TYPES
+from molo.core.api.constants import ARTICLE_SESSION_VARS
 from molo.core.models import ArticlePage, SectionPage
 
 

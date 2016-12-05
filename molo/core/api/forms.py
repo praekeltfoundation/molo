@@ -81,4 +81,3 @@ class SectionImportForm(forms.Form):
             indexes=selected_choices, parent_id=self.parent_id
         )
         return self.importer
-
