@@ -189,6 +189,15 @@ class SectionPageImporter(object):
         return []
 
     def save(self, indexes, parent_id):
+        """
+        Save the selected section. This will save the selected section
+        as well as its direct child pages obtained through the ?child_of
+        query parameter. The ?descendant_of query parameter is probably
+         better suited because it all pages under that part of the tree will
+         be obtained. The problem , however, is that that will require being
+         able to traverse the tree and recreate parent-child relationships
+         after they are imported
+        """
         if self.content():
             parent = Page.objects.get(id=parent_id)
 
