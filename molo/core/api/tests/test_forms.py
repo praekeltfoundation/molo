@@ -74,3 +74,13 @@ class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
 #             data=form_data
 #         )
 #         self.assertTrue(form.is_valid())
+
+
+class SectionImportFormTestCase(MoloTestCaseMixin, TestCase):
+
+    def setUp(self):
+        self.mk_main()
+        self.importer = importers.SectionPageImporter(
+            base_url="http://localhost:8000",
+            content=constants.AVAILABLE_ARTICLES["items"]
+        )
