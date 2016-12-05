@@ -1,4 +1,33 @@
 {% load mote_tags %}
 
 {% mask element.json.data.Button as "button" %}
-<button type="submit" class="call-to-action__item call-to-action__item--{{ button.modifiers }}">{{ button.text }}</button>
+{% for item in button.buttons %}
+  {% if item.type == "a" %}
+    <a class="call-to-action__item call-to-action__item-text" href="{{ item.link_type }}">
+      {{ item.message }}
+    </a>
+    <a class="call-to-action__item call-to-action__item-text call-to-action__item-text-upper" href="{{ item.link_type }}">
+      {{ item.message }}
+    </a>
+    <a class="call-to-action__item call-to-action__item-button call-to-action__item-button--login" href="{{ item.link_type }}">
+      {{ item.message }}
+    </a>
+
+  {% elif item.type == "button" %}
+    <button class="call-to-action__item call-to-action__item-button call-to-action__item-button--dir" data-direction="right" type="{{ item.link_type }}">
+      {{ item.message }}
+    </button>
+
+    <button class="call-to-action__item call-to-action__item-button call-to-action__item-button--dir" data-direction="left" type="{{ item.link_type }}">
+      {{ item.message }}
+    </button>
+
+    <button class="call-to-action__item call-to-action__item-button call-to-action__item-button--secondary" type="{{ item.link_type }}">
+      {{ item.message }}
+    </button>
+  {% elif item.type == "input" %}
+    <input class="call-to-action__item call-to-action__item-button" type="{{ item.link_type }}" value="{{ item.message }}" />
+  {% else %}
+    <input class="call-to-action__item call-to-action__item-button" type="{{ item.link_type }}"  value="{{ item.message }}" />
+  {% endif %}
+{% endfor %}

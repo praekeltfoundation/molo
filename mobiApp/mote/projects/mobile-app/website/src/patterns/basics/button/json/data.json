@@ -1,6 +1,28 @@
 {
     "Button": {
-        "text": "Button Default",
-        "modifiers": "dummy-class"
+        "text": "Call to action",
+        "modifiers": "dummy-class",
+        "buttons":[
+          {
+            "type":"a",
+            "link_type":"href",
+            "message":"Click here for link"
+          },
+          {
+            "type":"button",
+            "link_type":"button",
+            "message":"Call to action"
+          },
+          {
+            "type":"input",
+            "link_type":"submit",
+            "message":"Submit"
+          },
+          {
+            "type":"input",
+            "link_type":"reset",
+            "message":"Reset"
+          }
+      ]
     }
 }
