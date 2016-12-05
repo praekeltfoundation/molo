@@ -225,7 +225,7 @@ def load_descendant_articles_for_section(
             '-featured_in_section_start_date')
 
     if not locale:
-        return qs[:count]
+        return qs.live()[:count]
 
     return get_pages(context, qs, locale)[:count]
 
@@ -239,8 +239,8 @@ def load_child_articles_for_section(context, section, count=5):
     '''
     locale = context.get('locale_code')
     main_language_page = section.get_main_language_page()
-    child_articles = ArticlePage.objects.child_of(main_language_page).filter(
-        languages__language__is_main_language=True)
+    child_articles = ArticlePage.objects.child_of(
+        main_language_page).filter(languages__language__is_main_language=True)
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
     qs = list(chain(
