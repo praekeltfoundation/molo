@@ -210,7 +210,7 @@ def load_descendant_articles_for_section(
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
-    qs = ArticlePage.objects.live().descendant_of(page).filter(
+    qs = ArticlePage.objects.descendant_of(page).filter(
         languages__language__is_main_language=True)
 
     if featured_in_homepage is not None:
@@ -225,7 +225,7 @@ def load_descendant_articles_for_section(
             '-featured_in_section_start_date')
 
     if not locale:
-        return qs[:count]
+        return qs.live()[:count]
 
     return get_pages(context, qs, locale)[:count]
 
