@@ -26,7 +26,7 @@ class MainImportForm(forms.Form):
         except requests.ConnectionError:
             self.add_error(
                 "url",
-                forms.ValidationError("Please enter valid URL")
+                forms.ValidationError("Please enter a valid URL.")
             )
         except requests.RequestException:
             self.add_error(

@@ -1,8 +1,9 @@
+import requests
+from mock import patch
+
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.core.urlresolvers import reverse
-
-from mock import patch
 
 from molo.core.api.tests.utils import mocked_requests_get
 from molo.core.tests.base import MoloTestCaseMixin
@@ -18,7 +19,11 @@ class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
         )
         self.client.login(username="admin", password="admin")
 
-    def test_raises_error_if_data_not_available(self):
+    @patch(
+        "molo.core.api.forms.requests.get",
+        side_effect=requests.ConnectionError
+    )
+    def test_raises_error_if_data_not_available(self, mock_get):
         form_data = {
             "url": "http://localhost:8000/api/v2/pages/",
             "content_type": "core.ArticlePage"
