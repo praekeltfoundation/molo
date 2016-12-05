@@ -18,19 +18,19 @@ class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
         )
         self.client.login(username="admin", password="admin")
 
-    # def test_raises_error_if_data_not_available(self):
-    #     form_data = {
-    #         "url": "http://localhost:8000/api/v2/pages/",
-    #         "content_type": "core.ArticlePage"
-    #     }
-    #     response = self.client.post(
-    #         reverse("molo_api:main-import"),
-    #         data=form_data,
-    #         follow=True
-    #     )
-    #     self.assertFormError(
-    #         response, "form", "url", [u"Please enter a valid URL."]
-    #     )
+    def test_raises_error_if_data_not_available(self):
+        form_data = {
+            "url": "http://localhost:8000/api/v2/pages/",
+            "content_type": "core.ArticlePage"
+        }
+        response = self.client.post(
+            reverse("molo_api:main-import"),
+            data=form_data,
+            follow=True
+        )
+        self.assertFormError(
+            response, "form", "url", [u"Please enter a valid URL."]
+        )
 
     @patch("molo.core.api.forms.requests.get", side_effect=mocked_requests_get)
     def test_redirects_to_parent_chooser(self, mock_get):
