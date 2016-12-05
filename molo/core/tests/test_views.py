@@ -19,7 +19,6 @@ from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
     load_descendant_articles_for_section
-from molo.core.tasks import promote_articles
 
 from mock import patch, Mock
 from six import b
