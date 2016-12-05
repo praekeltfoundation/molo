@@ -81,6 +81,68 @@ class TestModels(TestCase, MoloTestCaseMixin):
             len(load_descendant_articles_for_section(
                 {}, self.yourmind, featured_in_homepage=True)), 2)
 
+    def test_article_featured_homepage_with_trans(self):
+        en_articles_featured = self.mk_articles(
+            self.yourmind_sub, count=3, featured_in_homepage=True)
+        en_articles = self.mk_articles(
+            self.yourmind_sub, count=2)
+
+        for p in en_articles_featured:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        for p in en_articles:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french',
+                featured_in_homepage=True)
+
+        self.assertEquals(
+            len(load_descendant_articles_for_section(
+                {}, self.yourmind, featured_in_homepage=True)), 3)
+
+        request = self.factory.get('/sections/test-section-0/')
+        request.site = self.site
+        self.assertEquals(
+            len(load_descendant_articles_for_section(
+                {'request': request, 'locale_code': 'fr'},
+                self.yourmind, featured_in_homepage=True)), 5)
+
+    def test_article_featured_homepage_en(self):
+        en_articles_featured = self.mk_articles(
+            self.yourmind_sub, count=3, featured_in_homepage=True)
+        en_articles = self.mk_articles(
+            self.yourmind_sub, count=2)
+
+        for p in en_articles_featured:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        en_articles_featured[0].unpublish()
+        en_articles_featured[2].unpublish()
+
+        for p in en_articles:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french',
+                featured_in_homepage=True)
+
+        request = self.factory.get('/sections/test-section-0/')
+        request.site = self.site
+
+        print load_descendant_articles_for_section(
+                {'request': request, 'locale_code': 'en'},
+                self.yourmind, featured_in_homepage=True)[0].live
+
+        self.assertEquals(
+            len(load_descendant_articles_for_section(
+                {'request': request, 'locale_code': 'en'},
+                self.yourmind, featured_in_homepage=True)), 1)
+
+
+        self.assertEquals(
+            len(load_descendant_articles_for_section(
+                {'request': request, 'locale_code': 'fr'},
+                self.yourmind, featured_in_homepage=True)), 5)
+
     def test_latest_homepage(self):
         self.mk_articles(self.yourmind_sub, count=2, featured_in_latest=True)
         self.mk_articles(self.yourmind_sub, count=10)
