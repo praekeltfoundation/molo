@@ -239,3 +239,110 @@ RELATED_IMAGE = {
     "height": 480,
     "file": "http://localhost:8000/media/original_images/test.png"
 }
+
+AVAILABLE_SECTIONS = {
+    "meta": {
+        "total_count": 20
+    },
+    "items": [
+        {
+            "id": 28,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/28/",
+                "html_url": "http://localhost/sections/wellbeing/"
+                            "taking-care-yourself/"
+            },
+            "title": "Taking care of yourself",
+            "description": "",
+            "image": {
+                "id": 1,
+                "meta": {
+                    "type": "wagtailimages.Image",
+                    "detail_url": "http://localhost:8000/api/v2/images/1/"
+                }
+            },
+            "extra_style_hints": "",
+            "commenting_state": "D",
+            "commenting_open_time": "2017-01-25T06:00:00Z",
+            "commenting_close_time": "2017-01-26T06:00:00Z",
+            "time": [],
+            "monday_rotation": False,
+            "tuesday_rotation": False,
+            "wednesday_rotation": False,
+            "thursday_rotation": False,
+            "friday_rotation": False,
+            "saturday_rotation": False,
+            "sunday_rotation": False,
+            "content_rotation_start_date": "2017-01-25T06:00:00Z",
+            "content_rotation_end_date": "2017-01-26T06:00:00Z",
+            "latest_revision_created_at": "2016-10-04T10:23:59.504526Z"
+        },
+        {
+            "id": 27,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/27/",
+                "html_url": "http://localhost/sections/wellbeing/"
+                            "stress-management/"
+            },
+            "title": "Stress management",
+            "description": "",
+            "image": {
+                "id": 1,
+                "meta": {
+                    "type": "wagtailimages.Image",
+                    "detail_url": "http://localhost:8000/api/v2/images/1/"
+                }
+            },
+            "extra_style_hints": "",
+            "commenting_state": "D",
+            "commenting_open_time": "2017-01-25T06:00:00Z",
+            "commenting_close_time": "2017-01-26T06:00:00Z",
+            "time": [],
+            "monday_rotation": False,
+            "tuesday_rotation": False,
+            "wednesday_rotation": False,
+            "thursday_rotation": False,
+            "friday_rotation": False,
+            "saturday_rotation": False,
+            "sunday_rotation": False,
+            "content_rotation_start_date": "2017-01-25T06:00:00Z",
+            "content_rotation_end_date": "2017-01-26T06:00:00Z",
+            "latest_revision_created_at": "2016-10-04T10:24:05.826271Z"
+        },
+        {
+            "id": 13,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/13/",
+                "html_url": "http://localhost/sections/maternal-care/"
+                            "breastfeeding/"
+            },
+            "title": "Breastfeeding",
+            "description": "",
+            "image": {
+                "id": 1,
+                "meta": {
+                    "type": "wagtailimages.Image",
+                    "detail_url": "http://localhost:8000/api/v2/images/1/"
+                }
+            },
+            "extra_style_hints": "",
+            "commenting_state": "D",
+            "commenting_open_time": "2017-01-25T06:00:00Z",
+            "commenting_close_time": "2017-01-26T06:00:00Z",
+            "time": [],
+            "monday_rotation": False,
+            "tuesday_rotation": False,
+            "wednesday_rotation": False,
+            "thursday_rotation": False,
+            "friday_rotation": False,
+            "saturday_rotation": False,
+            "sunday_rotation": False,
+            "content_rotation_start_date": "2017-01-25T06:00:00Z",
+            "content_rotation_end_date": "2017-01-26T06:00:00Z",
+            "latest_revision_created_at": "2016-10-04T10:24:21.246246Z"
+        },
+    ]
+}
