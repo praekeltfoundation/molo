@@ -7,24 +7,7 @@ AVAILABLE_ARTICLES = {
             "id": 10,
             "meta": {
                 "type": "core.ArticlePage",
-                "detail_url": "http://localhost/api/v2/pages/48/",
-                "html_url": "http://localhost/sections/maternal-care/"
-                            "general-maternal-care/"
-                            "checking-hypertension-pregnancy/",
-                "parent": {
-                    "id": 10,
-                    "meta": {
-                        "type": "core.SectionPage",
-                        "detail_url": "http://localhost/api/v2/pages/10/",
-                        "html_url": "http://localhost/sections/"
-                                    "maternal-care/general-maternal-care/"
-                    }
-                },
-                "slug": "checking-hypertension-pregnancy",
-                "show_in_menus": False,
-                "seo_title": "",
-                "search_description": "",
-                "first_published_at": "2016-10-05T13:30:06.031257Z"
+                "detail_url": "http://localhost:8000/api/v2/pages/10/",
             },
             "title": "Test article 1",
             "subtitle": "Sub for test article 1",
@@ -76,25 +59,7 @@ AVAILABLE_ARTICLES = {
             "id": 11,
             "meta": {
                 "type": "core.ArticlePage",
-                "detail_url": "http://localhost/api/v2/pages/53/",
-                "html_url": "http://localhost/sections/maternal-care/"
-                            "general-maternal-care/"
-                            "treating-severe-pre-eclampsia-or-imminent"
-                            "-eclampsia/",
-                "parent": {
-                    "id": 10,
-                    "meta": {
-                        "type": "core.SectionPage",
-                        "detail_url": "http://localhost/api/v2/pages/10/",
-                        "html_url": "http://localhost/sections/"
-                                    "maternal-care/general-maternal-care/"
-                    }
-                },
-                "slug": "treating-severe-pre-eclampsia-or-imminent-eclampsia",
-                "show_in_menus": False,
-                "seo_title": "",
-                "search_description": "",
-                "first_published_at": "2016-10-06T19:52:44.105200Z"
+                "detail_url": "http://localhost:8000/api/v2/pages/11/",
             },
             "title": "Test article 2",
             "subtitle": "Sub for test article 2",
@@ -155,26 +120,10 @@ AVAILABLE_ARTICLES = {
             }
         },
         {
-            "id": 14,
+            "id": 12,
             "meta": {
                 "type": "core.ArticlePage",
-                "detail_url": "http://localhost/api/v2/pages/54/",
-                "html_url": "http://localhost/sections/maternal-care/"
-                            "general-maternal-care/know-when-refer/",
-                "parent": {
-                    "id": 10,
-                    "meta": {
-                        "type": "core.SectionPage",
-                        "detail_url": "http://localhost/api/v2/pages/10/",
-                        "html_url": "http://localhost/sections/"
-                                    "maternal-care/general-maternal-care/"
-                    }
-                },
-                "slug": "know-when-refer",
-                "show_in_menus": False,
-                "seo_title": "",
-                "search_description": "",
-                "first_published_at": "2016-10-06T20:11:03.012310Z"
+                "detail_url": "http://localhost:8000/api/v2/pages/12/",
             },
             "title": "Test article 3",
             "subtitle": "Sub for test article 3",
@@ -242,11 +191,11 @@ RELATED_IMAGE = {
 
 AVAILABLE_SECTIONS = {
     "meta": {
-        "total_count": 20
+        "total_count": 3
     },
     "items": [
         {
-            "id": 28,
+            "id": 2,
             "meta": {
                 "type": "core.SectionPage",
                 "detail_url": "http://localhost:8000/api/v2/pages/28/",
@@ -279,12 +228,10 @@ AVAILABLE_SECTIONS = {
             "latest_revision_created_at": "2016-10-04T10:23:59.504526Z"
         },
         {
-            "id": 27,
+            "id": 3,
             "meta": {
                 "type": "core.SectionPage",
-                "detail_url": "http://localhost:8000/api/v2/pages/27/",
-                "html_url": "http://localhost/sections/wellbeing/"
-                            "stress-management/"
+                "detail_url": "http://localhost:8000/api/v2/pages/3/",
             },
             "title": "Stress management",
             "description": "",
@@ -312,12 +259,10 @@ AVAILABLE_SECTIONS = {
             "latest_revision_created_at": "2016-10-04T10:24:05.826271Z"
         },
         {
-            "id": 13,
+            "id": 4,
             "meta": {
                 "type": "core.SectionPage",
-                "detail_url": "http://localhost:8000/api/v2/pages/13/",
-                "html_url": "http://localhost/sections/maternal-care/"
-                            "breastfeeding/"
+                "detail_url": "http://localhost:8000/api/v2/pages/4/",
             },
             "title": "Breastfeeding",
             "description": "",
@@ -343,6 +288,30 @@ AVAILABLE_SECTIONS = {
             "content_rotation_start_date": "2017-01-25T06:00:00Z",
             "content_rotation_end_date": "2017-01-26T06:00:00Z",
             "latest_revision_created_at": "2016-10-04T10:24:21.246246Z"
+        },
+    ]
+}
+
+AVAILABLE_SECTION_CHILDREN = {
+    "meta": {
+        "total_count": 2
+    },
+    "items": [
+        {
+            "id": 11,
+            "meta": {
+                "type": "core.ArticlePage",
+                "detail_url": "http://localhost:8000/api/v2/pages/11/",
+            },
+            "title": "Test article 11"
+        },
+        {
+            "id": 3,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/3/",
+            },
+            "title": "Test section 3"
         },
     ]
 }

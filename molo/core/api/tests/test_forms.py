@@ -8,7 +8,8 @@ from wagtail.wagtailimages.tests.utils import get_test_image_file
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.api import forms, importers
 from molo.core.api.tests import constants
-from molo.core.models import ArticlePage
+from molo.core.api.tests.utils import mocked_requests_get
+from molo.core.models import ArticlePage, SectionPage
 
 
 class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
@@ -59,6 +60,9 @@ class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
         form.save()
         self.assertEqual(ArticlePage.objects.all().count(), 2)
 
+    def tearDown(self):
+        del self.importer
+
 #
 # class MainImportFormTestCase(MoloTestCaseMixin, TestCase):
 #
@@ -82,5 +86,43 @@ class SectionImportFormTestCase(MoloTestCaseMixin, TestCase):
         self.mk_main()
         self.importer = importers.SectionPageImporter(
             base_url="http://localhost:8000",
-            content=constants.AVAILABLE_ARTICLES["items"]
+            content=constants.AVAILABLE_SECTIONS["items"]
         )
+
+    def test_sections_render_as_field_choices(self):
+        form = forms.SectionImportForm(
+            importer=self.importer,
+            parent=self.section_index.id
+        )
+        self.assertEqual(
+            len(form.fields),
+            len(constants.AVAILABLE_SECTIONS["items"])
+        )
+
+    @patch("molo.core.api.importers.requests.get", side_effect=mocked_requests_get)
+    @patch("molo.core.api.importers.get_image")
+    def test_selected_section_can_be_saved(self, mock_image,mock_get):
+        image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+        mock_image.return_value = image
+        form_data = {
+            "2": True,
+            "3": False,
+            "4": False,
+        }
+        form = forms.SectionImportForm(
+            data=form_data,
+            importer=self.importer,
+            parent=self.section_index.id
+        )
+        self.assertTrue(form.is_valid())
+
+        # form.save() saves the selected articles and returns the importer
+        form.save()
+        self.assertEqual(ArticlePage.objects.all().count(), 1)
+        self.assertEqual(SectionPage.objects.all().count(), 2)
+
+    def tearDown(self):
+        del self.importer

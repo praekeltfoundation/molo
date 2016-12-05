@@ -11,7 +11,9 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
 from molo.core.models import ArticlePage, SectionPage
-from molo.core.api.constants import API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
+from molo.core.api.constants import (
+    API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
+)
 
 
 # functions used to find images
@@ -45,11 +47,14 @@ def separate_fields(fields):
     """
     flat_fields = {}
     nested_fields = {}
+
+    # exclude "id" and "meta" elements
     for k, v in fields.items():
-        if type(v) not in [type({}), type([])]:
-            flat_fields.update({k: v})
-        else:
-            nested_fields.update({k: v})
+        if k not in KEYS_TO_EXCLUDE:
+            if type(v) not in [type({}), type([])]:
+                flat_fields.update({k: v})
+            else:
+                nested_fields.update({k: v})
 
     return flat_fields, nested_fields
 
@@ -111,9 +116,10 @@ class ArticlePageImporter(PageImporter):
             parent = Page.objects.get(id=parent_id)
             for index in indexes:
                 # Remove "id" and "meta" fields
-                self.content()[index].pop("id")
-                self.content()[index].pop("meta")
-                fields, nested_fields = separate_fields(self.content()[index])
+                selected_article = self.content()[index]
+                # selected_article.pop("id")
+                # selected_article.pop("meta")
+                fields, nested_fields = separate_fields(selected_article)
                 article = ArticlePage(**fields)
 
                 # TODO: u'related_sections'
@@ -170,13 +176,13 @@ class SectionPageImporter(PageImporter):
 
             # Save the selected section page
             response = requests.get(
-                self._base_url + API_PAGES_ENDPOINT + str(indexes[0])
+                self._base_url + API_PAGES_ENDPOINT + str(indexes[0]) + "/"
             )
 
-            page = response.json()
-            page.pop("id")
-            page.pop("meta")
-            flat_fields, nested_fields = separate_fields(page)
+            section_page = response.json()
+            # section_page.pop("id")
+            # section_page.pop("meta")
+            flat_fields, nested_fields = separate_fields(section_page)
             section = SectionPage(**flat_fields)
 
             if ("image" in nested_fields) and nested_fields["image"]:
@@ -190,6 +196,9 @@ class SectionPageImporter(PageImporter):
             # Save child pages to the newly imported SectionPage
             for page in children:
                 item = requests.get(page["meta"]["detail_url"]).json()
+                print "====================================="
+                print item
+                print "====================================="
                 if item["meta"]["type"] == "core.SectionPage":
                     item.pop("id")
                     item.pop("meta")

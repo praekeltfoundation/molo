@@ -21,3 +21,5 @@ ARTICLE_SESSION_VARS = SESSION_VARS(
 
 API_PAGES_ENDPOINT = "/api/v2/pages/"
 API_IMAGES_ENDPOINT = "/api/v2/images/"
+
+KEYS_TO_EXCLUDE = ["id", "meta", ]

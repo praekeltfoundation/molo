@@ -21,12 +21,12 @@ class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
         self.mk_main()
         self.importer = importers.ArticlePageImporter(
             base_url="http://localhost:8000",
-            content=constants.AVAILABLE_ARTICLES
+            content=constants.AVAILABLE_ARTICLES["items"]
         )
 
     def test_article_importer_initializtion(self):
         self.assertEqual(
-            self.importer.articles(),
+            self.importer.content(),
             constants.AVAILABLE_ARTICLES["items"]
         )
 
@@ -46,7 +46,8 @@ class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
 
         # Save the articles
         # Save the first available article
-        self.importer.save_articles([0, ], section.id)
+        # import pdb;pdb.set_trace()
+        self.importer.save([0, ], section.id)
         self.assertEqual(ArticlePage.objects.all().count(), 1)
 
     def test_nested_fields_can_be_extracted(self):
@@ -64,6 +65,9 @@ class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
         #     Image
         # )
 
+    def tearDown(self):
+        del self.importer
+
 
 class SectionImportTestCase(MoloTestCaseMixin, TestCase):
 
@@ -71,14 +75,17 @@ class SectionImportTestCase(MoloTestCaseMixin, TestCase):
         self.mk_main()
         self.importer = importers.SectionPageImporter(
             base_url="http://localhost:8000",
-            content=constants.AVAILABLE_ARTICLES
+            content=constants.AVAILABLE_SECTIONS["items"]
         )
 
     def test_section_importer_initializtion(self):
         self.assertEqual(
             self.importer.content(),
-            constants.AVAILABLE_ARTICLES["items"]
+            constants.AVAILABLE_SECTIONS["items"]
         )
+
+    def tearDown(self):
+        del self.importer
 
     # @patch("molo.core.api.importers.get_image")
     # def test_section_can_be_saved(self, mock_image):

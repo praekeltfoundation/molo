@@ -1,5 +1,9 @@
-from .constants import AVAILABLE_ARTICLES
-from .constants import RELATED_IMAGE
+import json
+
+from .constants import (
+    AVAILABLE_ARTICLES, AVAILABLE_SECTIONS,
+    AVAILABLE_SECTION_CHILDREN, RELATED_IMAGE
+)
 
 
 # Inspired by http://stackoverflow.com/a/28507806
@@ -13,9 +17,29 @@ def mocked_requests_get(url, *args, **kwargs):
         def content(self):
             return self.content
 
+        def json(self):
+            return self.content
+
     if url == "http://localhost:8000/api/v2/pages/":
         return MockResponse(AVAILABLE_ARTICLES, 200)
-    elif url == "http://localhost:8000/api/v2/images/1":
+    elif url == "http://localhost:8000/api/v2/images/1/":
         return MockResponse(RELATED_IMAGE, 200)
+    elif url == "http://localhost:8000/api/v2/pages/?child_of=2":
+        return MockResponse(AVAILABLE_SECTION_CHILDREN, 200)
+    # Responses for individual section page requests
+    elif url == "http://localhost:8000/api/v2/pages/2/":
+        return MockResponse(AVAILABLE_SECTIONS["items"][0], 200)
+    elif url == "http://localhost:8000/api/v2/pages/3/":
+        return MockResponse(AVAILABLE_SECTIONS["items"][1], 200)
+    elif url == "http://localhost:8000/api/v2/pages/4/":
+        return MockResponse(AVAILABLE_SECTIONS["items"][2], 200)
+
+    # Responses for individual article page requests
+    elif url == "http://localhost:8000/api/v2/pages/10/":
+        return MockResponse(AVAILABLE_ARTICLES["items"][0], 200)
+    elif url == "http://localhost:8000/api/v2/pages/11/":
+        return MockResponse(AVAILABLE_ARTICLES["items"][1], 200)
+    elif url == "http://localhost:8000/api/v2/pages/12/":
+        return MockResponse(AVAILABLE_ARTICLES["items"][2], 200)
 
     return MockResponse({}, 404)
