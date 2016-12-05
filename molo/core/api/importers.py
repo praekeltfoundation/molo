@@ -100,7 +100,9 @@ class PageImporter(object):
 class ArticlePageImporter(PageImporter):
 
     def __init__(self, base_url=None, content=None, content_type=None):
-        super(ArticlePageImporter, self).__init__()
+        super(ArticlePageImporter, self).__init__(
+            base_url=base_url, content=content, content_type=content_type
+        )
         self._content_type = "core.ArticlePage"
         self._fields = ArticlePage.get_api_fields()
 
@@ -140,7 +142,9 @@ class ArticlePageImporter(PageImporter):
 class SectionPageImporter(PageImporter):
 
     def __init__(self, base_url=None, content=None, content_type=None):
-        super(SectionPageImporter, self).__init__()
+        super(SectionPageImporter, self).__init__(
+            base_url=base_url, content=content, content_type=content_type
+        )
         self._content_type = "core.SectionPage"
         self._fields = SectionPage.get_api_fields()
 
