@@ -319,9 +319,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<p>Sample page description for 0</p>')
 
     def test_featured_homepage_listing_draft_articles(self):
-        article = self.mk_article(self.yourmind_sub, featured_in_homepage=True)
+        article = self.mk_article(
+            self.yourmind_sub, featured_in_homepage_start_date=datetime.now())
         article2 = self.mk_article(
-            self.yourmind_sub, featured_in_homepage=True)
+            self.yourmind_sub, featured_in_homepage_start_date=datetime.now())
+        promote_articles()
         article2.unpublish()
         self.assertEquals(ArticlePage.objects.live().count(), 1)
         featured_in_homepage_articles = load_descendant_articles_for_section(
