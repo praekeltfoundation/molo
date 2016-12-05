@@ -54,6 +54,49 @@ def separate_fields(fields):
     return flat_fields, nested_fields
 
 
+class PageImporter(object):
+
+    def __init__(self, base_url=None, content=None):
+        self._content_type = "core.SectionPage"
+        self._fields = SectionPage.get_api_fields()
+        self._content = content
+        self._base_url = base_url
+
+    def get_content_from_url(self, base_url):
+        """
+        Sections can have SectionPage and ArticlePage child objects.
+        These have different fields, and thus have to be treated
+        differently.
+        """
+        # assemble url
+        base_url = base_url.rstrip("/")
+        url = base_url + API_PAGES_ENDPOINT + "?type=" + self._content_type + \
+            "&fields=" + ",".join(self._fields) + \
+            "&order=latest_revision_created_at"
+
+        # make request
+        try:
+            response = requests.get(url)
+            self._base_url = base_url
+            self._content = response.json()
+            self._content = self._content["items"]
+            return self._content
+        except requests.exceptions.ConnectionError:
+            return "No content could be found from {}. " \
+                "Are you sure this is the correct URL?".format(base_url)
+        except requests.exceptions.RequestException:
+            return "Content could not be imported at this time. " \
+                   "Please try again later."
+
+    def content(self):
+        if self.content:
+            return self._content["items"]
+        return []
+
+    def save(self, indexes, parent_id):
+        pass
+
+
 class ArticlePageImporter(object):
 
     def __init__(self, base_url=None, content=None):
@@ -228,7 +271,7 @@ class SectionPageImporter(object):
             parent.add_child(instance=section)
             parent.save_revision().publish()
 
-            # Save child pages
+            # Save child pages to the newly imported SectionPage
             for page in children:
                 item = requests.get(page["meta"]["detail_url"]).json()
                 if item["meta"]["type"] == "core.SectionPage":
