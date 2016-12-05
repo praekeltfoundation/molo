@@ -56,9 +56,9 @@ def separate_fields(fields):
 
 class PageImporter(object):
 
-    def __init__(self, base_url=None, content=None):
-        self._content_type = "core.SectionPage"
-        self._fields = SectionPage.get_api_fields()
+    def __init__(self, base_url=None, content=None, content_type=None):
+        self._content_type = content_type
+        self._fields = []
         self._content = content
         self._base_url = base_url
 
@@ -89,8 +89,8 @@ class PageImporter(object):
                    "Please try again later."
 
     def content(self):
-        if self.content:
-            return self._content["items"]
+        if self._content:
+            return self._content
         return []
 
     def save(self, indexes, parent_id):
@@ -192,45 +192,13 @@ class ArticlePageImporter(object):
                 parent.save_revision().publish()
 
 
-class SectionPageImporter(object):
-    def __init__(self, base_url=None, content=None):
-        self._content_type = "core.SectionPage"
+class SectionPageImporter(PageImporter):
+
+    def __init__(self, base_url=None, content=None, content_type=None):
+        super(SectionPageImporter, self).__init__(
+            content_type="core.SectionPage"
+        )
         self._fields = SectionPage.get_api_fields()
-        self._content = content
-        self._base_url = base_url
-        self._child_sections = None
-        self._child_articles = None
-
-    def get_content_from_url(self, base_url):
-        """
-        Sections can have SectionPage and ArticlePage child objects.
-        These have different fields, and thus have to be treated
-        differently.
-        """
-        # assemble url
-        base_url = base_url.rstrip("/")
-        url = base_url + API_PAGES_ENDPOINT + "?type=" + self._content_type + \
-            "&fields=" + ",".join(self._fields) + \
-            "&order=latest_revision_created_at"
-
-        # make request
-        try:
-            response = requests.get(url)
-            self._base_url = base_url
-            self._content = response.json()
-            self._content = self._content["items"]
-            return self._content
-        except requests.exceptions.ConnectionError:
-            return "No content could be found from {}. " \
-                "Are you sure this is the correct URL?".format(base_url)
-        except requests.exceptions.RequestException:
-            return "Content could not be imported at this time. " \
-                   "Please try again later."
-
-    def content(self):
-        if self.content:
-            return self._content["items"]
-        return []
 
     def save(self, indexes, parent_id):
         """
@@ -282,7 +250,7 @@ class SectionPageImporter(object):
 
                     if ("image" in nested_fields) and nested_fields["image"]:
                         child_section.image = get_image(
-                            self.base_url, nested_fields["image"]["id"]
+                            self._base_url, nested_fields["image"]["id"]
                         )
 
                     section.add_child(instance=child_section)
@@ -308,7 +276,7 @@ class SectionPageImporter(object):
 
                     if ("image" in nested_fields) and nested_fields["image"]:
                         child_article.image = get_image(
-                            self.base_url, nested_fields["image"]["id"]
+                            self._base_url, nested_fields["image"]["id"]
                         )
 
                     section.add_child(instance=child_article)
