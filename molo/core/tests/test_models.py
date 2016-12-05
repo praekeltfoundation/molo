@@ -13,10 +13,10 @@ from molo.core.models import (
     ArticlePage, SiteLanguage, PageTranslation, SectionPage, Main)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
-    load_descendant_articles_for_section, load_child_articles_for_section,
+    load_child_articles_for_section,
     get_translation)
 from molo.core.tests.base import MoloTestCaseMixin
-
+from molo.core.tasks import promote_articles
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 
@@ -58,36 +58,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         self.assertEquals(
             self.yourmind_sub.articles()[0].title, article1.title)
-
-    def test_latest(self):
-        en_latest = self.mk_articles(
-            self.yourmind_sub, count=4, featured_in_latest=True)
-        for p in en_latest:
-            self.mk_article_translation(
-                p, self.french, title=p.title + ' in french')
-
-        fr_articles = self.mk_articles(self.yourmind_sub, count=10)
-        for p in fr_articles:
-            self.mk_article_translation(
-                p, self.french, title=p.title + ' in french')
-
-        self.assertEquals(self.main.latest_articles().count(), 4)
-
-    def test_featured_homepage(self):
-        self.mk_articles(self.yourmind_sub, count=2, featured_in_homepage=True)
-        self.mk_articles(self.yourmind_sub, count=10)
-
-        self.assertEquals(
-            len(load_descendant_articles_for_section(
-                {}, self.yourmind, featured_in_homepage=True)), 2)
-
-    def test_latest_homepage(self):
-        self.mk_articles(self.yourmind_sub, count=2, featured_in_latest=True)
-        self.mk_articles(self.yourmind_sub, count=10)
-
-        self.assertEquals(
-            len(load_descendant_articles_for_section(
-                {}, self.yourmind, featured_in_latest=True)), 2)
 
     def test_image(self):
         new_section = self.mk_section(
@@ -471,6 +441,33 @@ class TestModels(TestCase, MoloTestCaseMixin):
             "The article cannot be demoted before it has been promoted."
         )
 
+    def test_demote_articles_post_save(self):
+        article = self.mk_article(
+            self.yourmind_sub, title='article', slug='article',
+            featured_in_section=True, featured_in_homepage=True,
+            featured_in_latest=True)
+        self.assertFalse(article.featured_in_latest)
+        self.assertFalse(article.featured_in_homepage)
+        self.assertFalse(article.featured_in_section)
+
+        article.slug = 'article-slug'
+        article.save()
+        self.assertFalse(article.featured_in_latest)
+        self.assertFalse(article.featured_in_homepage)
+        self.assertFalse(article.featured_in_section)
+
+        article.featured_in_section = True
+        article.featured_in_homepage = True
+        article.featured_in_latest = True
+        self.assertTrue(article.featured_in_latest)
+        self.assertTrue(article.featured_in_homepage)
+        self.assertTrue(article.featured_in_section)
+
+        article.save()
+        self.assertFalse(article.featured_in_latest)
+        self.assertFalse(article.featured_in_homepage)
+        self.assertFalse(article.featured_in_section)
+
     def test_is_topic_of_the_day(self):
         promote_date = timezone.now() + timedelta(days=-1)
         demote_date = timezone.now() + timedelta(days=1)
@@ -520,9 +517,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             demote_date=demote_date,
             depth="1",
             path="0004",
-            featured_in_latest=True,
+            featured_in_latest_start_date=promote_date,
             feature_as_topic_of_the_day=True
         )
         present_article.save()
+        promote_articles()
         self.assertQuerysetEqual(
             Main().latest_articles(), [repr(present_article), ])
