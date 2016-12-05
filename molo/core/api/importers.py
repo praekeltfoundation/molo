@@ -97,76 +97,21 @@ class PageImporter(object):
         pass
 
 
-class ArticlePageImporter(object):
+class ArticlePageImporter(PageImporter):
 
-    def __init__(self, base_url=None, content=None):
-        self.content_type = "core.ArticlePage"
-        self.fields = ArticlePage.get_api_fields()
-        self.content = content
-        self.base_url = base_url
+    def __init__(self, base_url=None, content=None, content_type=None):
+        super(ArticlePageImporter, self).__init__()
+        self._content_type = "core.ArticlePage"
+        self._fields = ArticlePage.get_api_fields()
 
-    def get_content_from_url(self, base_url):
-        # assemble url
-        base_url = base_url.rstrip("/")
-        url = base_url + API_PAGES_ENDPOINT + "?type=" + self.content_type + \
-            "&fields=" + ",".join(self.fields) + \
-            "&order=latest_revision_created_at"
-
-        # make request
-        try:
-            response = requests.get(url)
-            self.base_url = base_url
-            self.content = response.json()
-            return self.content
-        except requests.exceptions.ConnectionError:
-            return "No content could be found from {}. " \
-                "Are you sure this is the correct URL?".format(base_url)
-        except requests.exceptions.RequestException:
-            return "Content could not be imported at this time. " \
-                   "Please try again later."
-
-    def articles(self):
-        if self.content:
-            return self.content["items"]
-        return []
-
-    def _separate_fields(self, fields):
-        """
-        Non-foreign key fields can be mapped to new article instances
-        directly. Foreign key fields require a bit more work.
-        This method returns a tuple, of the same format:
-        (flat fields, nested fields)
-        """
-        flat_fields = {}
-        nested_fields = {}
-        for k, v in fields.items():
-            if type(v) not in [type({}), type([])]:
-                flat_fields.update({k: v})
-            else:
-                nested_fields.update({k: v})
-
-        return flat_fields, nested_fields
-
-    def _get_fields(self, index):
-        if self.articles():
-            # remove the fields we do not need, i.e. "id" and "meta"
-            if "id" in self.articles()[index]:
-                self.articles()[index].pop("id")
-
-            if "meta" in self.articles()[index]:
-                self.articles()[index].pop("meta")
-
-            return self.articles()[index]
-
-        return None
-
-    def save_articles(self, article_indexes, parent_id):
-        if self.articles():
+    def save(self, indexes, parent_id):
+        if self.content():
             parent = Page.objects.get(id=parent_id)
-            for index in article_indexes:
-                fields, nested_fields = self._separate_fields(
-                    self._get_fields(index)
-                )
+            for index in indexes:
+                # Remove "id" and "meta" fields
+                self.content()[index].pop("id")
+                self.content()[index].pop("meta")
+                fields, nested_fields = separate_fields(self.content()[index])
                 article = ArticlePage(**fields)
 
                 # TODO: u'related_sections'
@@ -185,7 +130,7 @@ class ArticlePageImporter(object):
 
                 if ("image" in nested_fields) and nested_fields["image"]:
                     article.image = get_image(
-                        self.base_url, nested_fields["image"]["id"]
+                        self._base_url, nested_fields["image"]["id"]
                     )
 
                 parent.add_child(instance=article)
@@ -195,9 +140,8 @@ class ArticlePageImporter(object):
 class SectionPageImporter(PageImporter):
 
     def __init__(self, base_url=None, content=None, content_type=None):
-        super(SectionPageImporter, self).__init__(
-            content_type="core.SectionPage"
-        )
+        super(SectionPageImporter, self).__init__()
+        self._content_type = "core.SectionPage"
         self._fields = SectionPage.get_api_fields()
 
     def save(self, indexes, parent_id):

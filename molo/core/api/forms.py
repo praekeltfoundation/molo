@@ -41,8 +41,8 @@ class ArticleImportForm(forms.Form):
         self.importer = kwargs.pop("importer")
         self.parent_id = kwargs.pop("parent")
         super(ArticleImportForm, self).__init__(*args, **kwargs)
-        if self.importer and self.importer.articles():
-            for i, article in enumerate(self.importer.articles()):
+        if self.importer and self.importer.content():
+            for i, article in enumerate(self.importer.content()):
                 self.fields["%s" % i] = forms.BooleanField(
                     label=article["title"]
                 )
@@ -51,8 +51,8 @@ class ArticleImportForm(forms.Form):
     def save(self):
         # soe articles were selected, save them
         selected_choices = [int(k) for k, v in self.cleaned_data.items() if v]
-        self.importer.save_articles(
-            article_indexes=selected_choices, parent_id=self.parent_id
+        self.importer.save(
+            indexes=selected_choices, parent_id=self.parent_id
         )
         return self.importer
 
