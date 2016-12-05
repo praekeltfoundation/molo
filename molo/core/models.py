@@ -832,7 +832,7 @@ def demote_featured_articles(sender, instance, **kwargs):
     if instance.featured_in_latest_end_date is None and \
         instance.featured_in_latest_start_date is None and \
             instance.featured_in_latest is True:
-        instance. featured_in_latest = False
+        instance.featured_in_latest = False
     if instance.featured_in_homepage_end_date is None and \
         instance.featured_in_homepage_start_date is None and \
             instance.featured_in_homepage is True:
