@@ -128,14 +128,15 @@ def rotate_featured_in_homepage(main_lang, day):
                     for time in section.time:
                         time = strptime(str(time), '%H:%M:%S')
                         if time.tm_hour == datetime.now().hour:
-                            ran_article = ArticlePage.objects.live().filter(
+                            random_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
                                 languages__language__id=main_lang.id
                             ).child_of(section).order_by('?').first()
-                            if ran_article:
-                                ran_article.featured_in_homepage_start_date = \
+                            if random_article:
+                                random_article. \
+                                    featured_in_homepage_start_date = \
                                     datetime.now()
-                                ran_article.save_revision().publish()
+                                random_article.save_revision().publish()
                                 article = section.\
                                     featured_in_homepage_articles().last()
                                 article.featured_in_homepage_start_date = None
