@@ -20,14 +20,21 @@ class MainImportForm(forms.Form):
     def clean_url(self):
         url = self.cleaned_data["url"]
         url = url.rstrip("/")
-        response = requests.get(url + constants.API_PAGES_ENDPOINT)
 
-        if not (response.status_code == 200):
-            self.add_error("url", forms.ValidationError(
-                "Please enter a valid URL."
-            ))
-
-        return url
+        try:
+            requests.get(url + constants.API_PAGES_ENDPOINT)
+        except requests.ConnectionError:
+            self.add_error(
+                "url",
+                forms.ValidationError("Please enter valid URL")
+            )
+        except requests.RequestException:
+            self.add_error(
+                "url",
+                forms.ValidationError("Please try again later")
+            )
+        finally:
+            return url
 
 
 class ArticleImportForm(forms.Form):
