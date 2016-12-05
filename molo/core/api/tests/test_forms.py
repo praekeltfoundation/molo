@@ -15,9 +15,11 @@ class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
 
     def setUp(self):
         self.mk_main()
+
+        # content must be list of articles as received from the API endpoint
         self.importer = importers.ArticlePageImporter(
             base_url="http://localhost:8000",
-            content=constants.AVAILABLE_ARTICLES
+            content=constants.AVAILABLE_ARTICLES["items"]
         )
         self.section = self.mk_section(
             self.section_index,
