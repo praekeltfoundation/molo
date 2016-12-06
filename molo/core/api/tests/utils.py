@@ -41,5 +41,19 @@ def mocked_requests_get(url, *args, **kwargs):
         return MockResponse(AVAILABLE_ARTICLES["items"][1], 200)
     elif url == "http://localhost:8000/api/v2/pages/12/":
         return MockResponse(AVAILABLE_ARTICLES["items"][2], 200)
+    elif url == "http://localhost:8000/api/v2/pages/?type=core.ArticlePage" \
+                "&fields=title,subtitle,body,tags,commenting_state," \
+                "commenting_open_time,commenting_close_time," \
+                "social_media_title,social_media_description," \
+                "social_media_image,related_sections," \
+                "featured_in_latest,featured_in_latest_start_date" \
+                ",featured_in_latest_end_date,featured_in_section," \
+                "featured_in_section_start_date,featured_in_section_start_date" \
+                ",featured_in_homepage,featured_in_homepage_start_date" \
+                ",featured_in_homepage_end_date,feature_as_topic_of_the_day" \
+                ",promote_date,demote_date,metadata_tags,latest_revision_created_at," \
+                "image,social_media_image,social_media_description," \
+                "social_media_title&order=latest_revision_created_at":
+        return MockResponse(AVAILABLE_ARTICLES, 200)
 
     return MockResponse({}, 404)

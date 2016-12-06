@@ -5,8 +5,11 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.core.urlresolvers import reverse
 
+from wagtail.wagtailimages.tests.utils import get_test_image_file, Image
+
 from molo.core.api.tests.utils import mocked_requests_get
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.models import ArticlePage
 
 
 class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
@@ -88,8 +91,20 @@ class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(url, reverse("molo_api:main-import"))
 
-    @patch("molo.core.api.forms.requests.get", side_effect=mocked_requests_get)
-    def test_articles_can_be_imported(self, mock_get):
+    @patch("molo.core.api.importers.requests.get",
+           side_effect=mocked_requests_get)
+    @patch("molo.core.api.forms.requests.get",
+           side_effect=mocked_requests_get)
+    @patch("molo.core.api.importers.get_image")
+    def test_articles_can_be_imported(
+            self, mock_image, mock_get, mock_importer_get
+    ):
+        image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+        mock_image.return_value = image
+
         # Choose URL and content type on article import first step
         form_data = {
             "url": "http://localhost:8000/",
@@ -105,11 +120,33 @@ class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
         self.assertEqual(url, reverse("molo_api:article-parent-chooser"))
 
         # Select a parent for the articles that will be imported
-        # parent = self.mk_section(
-        #     self.section_index,
-        #     title="Test Parent Section For import"
-        # )
+        parent = self.mk_section(
+            self.section_index,
+            title="Test Parent Section For import"
+        )
+        form_data = {
+            "parent_page": parent.id,
+        }
+        response = self.client.post(
+            reverse("molo_api:article-parent-chooser"),
+            data=form_data,
+            follow=True
+        )
+        url, status_code = response.redirect_chain[-1]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(url, reverse("molo_api:article-import"))
 
-        # TODO: test that a parent can be chosen
+        # Select the articles that will be saved
+        form_data = {
+            "0": True,
+            "1": False,
+            "2": True,
+        }
+        response = self.client.post(
+            reverse("molo_api:article-import"),
+            data=form_data,
+            follow=True
+        )
 
-        # TODO: test that an article can be saved
+        # The articles should be saved, check them in the DB
+        self.assertEqual(ArticlePage.objects.all().count(), 2)

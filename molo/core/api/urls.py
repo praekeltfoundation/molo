@@ -22,7 +22,7 @@ urlpatterns = [
         name="article-import"
     ),
     url(
-        r"^choose-particle-parent/$",
+        r"^choose-article-parent/$",
         admin_views.ArticleChooserView.as_view(
             model_admin=admin_views.ArticleModelAdmin()
         ), name="article-parent-chooser"
