@@ -25,8 +25,8 @@ class Migration(migrations.Migration):
 
 
         # <- Moderator ->
-        moderator_group = Group.objects.filter(name='Moderators')
-        if moderator_group:
+        moderator_group = Group.objects.filter(name='Moderators').first()
+        if moderator_group.exists():
             change_user = Permission.objects.get(codename='change_user')
             moderator_group.permissions.remove(change_user)
 
