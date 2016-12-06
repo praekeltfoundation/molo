@@ -9,7 +9,7 @@ from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin
 from wagtailmodeladmin.views import ChooseParentView
 
 from molo.core.api import forms, importers
-from molo.core.api.constants import ARTICLE_SESSION_VARS
+from molo.core.api.constants import ARTICLE_SESSION_VARS, SECTION_SESSION_VARS
 from molo.core.models import ArticlePage, SectionPage
 
 
@@ -115,7 +115,9 @@ class SectionParentChooserView(ChooseParentView):
         # The URL being imported from needs to be stored in the session
         # before this view is accessed. Redirect to the MainImportView
         # if it has not been set yet.
-        if "section_content_type" not in request.session:
+        if not all(
+            key in self.request.session for key in SECTION_SESSION_VARS.first
+        ):
             return HttpResponseRedirect(reverse("molo_api:main-import"))
         return super(SectionParentChooserView, self).get(
             request, *args, **kwargs)
@@ -140,18 +142,18 @@ class SectionImportView(FormView):
 
     importer = importers.SectionPageImporter()
 
-    # def get(self, *args, **kwargs):
-    #     if not all(
-    #         key in self.request.session for key in ARTICLE_SESSION_VARS.first
-    #     ):
-    #         return HttpResponseRedirect(reverse("molo_api:main-import"))
-    #
-    #     if ARTICLE_SESSION_VARS.second not in self.request.session:
-    #         return HttpResponseRedirect(
-    #             reverse("molo_api:article-parent-chooser")
-    #         )
-    #
-    #     return super(SectionImportView, self).get(*args, **kwargs)
+    def get(self, *args, **kwargs):
+        if not all(
+            key in self.request.session for key in SECTION_SESSION_VARS.first
+        ):
+            return HttpResponseRedirect(reverse("molo_api:main-import"))
+
+        if SECTION_SESSION_VARS.second not in self.request.session:
+            return HttpResponseRedirect(
+                reverse("molo_api:section-parent-chooser")
+            )
+
+        return super(SectionImportView, self).get(*args, **kwargs)
 
     def get_form_kwargs(self):
         # pass valid importer to the form
