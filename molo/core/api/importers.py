@@ -117,8 +117,6 @@ class ArticlePageImporter(PageImporter):
             for index in indexes:
                 # Remove "id" and "meta" fields
                 selected_article = self.content()[index]
-                # selected_article.pop("id")
-                # selected_article.pop("meta")
                 fields, nested_fields = separate_fields(selected_article)
                 article = ArticlePage(**fields)
 
@@ -180,8 +178,6 @@ class SectionPageImporter(PageImporter):
             )
 
             section_page = response.json()
-            # section_page.pop("id")
-            # section_page.pop("meta")
             flat_fields, nested_fields = separate_fields(section_page)
             section = SectionPage(**flat_fields)
 
@@ -196,9 +192,6 @@ class SectionPageImporter(PageImporter):
             # Save child pages to the newly imported SectionPage
             for page in children:
                 item = requests.get(page["meta"]["detail_url"]).json()
-                print "====================================="
-                print item
-                print "====================================="
                 if item["meta"]["type"] == "core.SectionPage":
                     item.pop("id")
                     item.pop("meta")
