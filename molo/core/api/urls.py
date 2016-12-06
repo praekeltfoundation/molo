@@ -4,7 +4,7 @@ from wagtail.api.v2.router import WagtailAPIRouter
 from wagtail.api.v2 import endpoints
 
 from molo.core.api import admin_views
-from molo.core.api.endpoints import MoloImagesAPIEndpoint
+from molo.core.api.endpoints import MoloImagesAPIEndpoint, MoloPagesEndpoint
 
 # Adding extended images endpoint to new router.
 # For consistency, the "pages" and "documents"
@@ -12,7 +12,7 @@ from molo.core.api.endpoints import MoloImagesAPIEndpoint
 # not modified.
 api_router = WagtailAPIRouter("wagtailapi_v2")
 api_router.register_endpoint("images", MoloImagesAPIEndpoint)
-api_router.register_endpoint("pages", endpoints.PagesAPIEndpoint)
+api_router.register_endpoint("pages", MoloPagesEndpoint)
 api_router.register_endpoint("documents", endpoints.DocumentsAPIEndpoint)
 
 urlpatterns = [
