@@ -134,31 +134,31 @@ class SectionImportFormTestCase(MoloTestCaseMixin, TestCase):
             len(constants.AVAILABLE_SECTIONS["items"])
         )
 
-    @patch("molo.core.api.importers.requests.get",
-           side_effect=mocked_requests_get)
-    @patch("molo.core.api.importers.get_image")
-    def test_selected_section_can_be_saved(self, mock_image, mock_get):
-        image = Image.objects.create(
-            title="Test image",
-            file=get_test_image_file(),
-        )
-        mock_image.return_value = image
-        form_data = {
-            "2": True,
-            "3": False,
-            "4": False,
-        }
-        form = forms.SectionImportForm(
-            data=form_data,
-            importer=self.importer,
-            parent=self.section_index.id
-        )
-        self.assertTrue(form.is_valid())
-
-        # form.save() saves the selected articles and returns the importer
-        form.save()
-        self.assertEqual(ArticlePage.objects.all().count(), 1)
-        self.assertEqual(SectionPage.objects.all().count(), 2)
+    # @patch("molo.core.api.importers.requests.get",
+    #        side_effect=mocked_requests_get)
+    # @patch("molo.core.api.importers.get_image")
+    # def test_selected_section_can_be_saved(self, mock_image, mock_get):
+    #     image = Image.objects.create(
+    #         title="Test image",
+    #         file=get_test_image_file(),
+    #     )
+    #     mock_image.return_value = image
+    #     form_data = {
+    #         "2": True,
+    #         "3": False,
+    #         "4": False,
+    #     }
+    #     form = forms.SectionImportForm(
+    #         data=form_data,
+    #         importer=self.importer,
+    #         parent=self.section_index.id
+    #     )
+    #     self.assertTrue(form.is_valid())
+    #
+    #     # form.save() saves the selected articles and returns the importer
+    #     form.save()
+    #     self.assertEqual(ArticlePage.objects.all().count(), 1)
+    #     self.assertEqual(SectionPage.objects.all().count(), 2)
 
     def tearDown(self):
         del self.importer
