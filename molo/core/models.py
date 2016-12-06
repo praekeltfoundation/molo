@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
-from django.db.models.signals import pre_delete, post_delete
+from django.db.models.signals import pre_delete, post_delete, pre_save
 from django.dispatch import receiver
 
 from taggit.models import TaggedItemBase
@@ -824,6 +824,23 @@ ArticlePage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
+
+
+@receiver(
+    pre_save, sender=ArticlePage, dispatch_uid="demote_featured_articles")
+def demote_featured_articles(sender, instance, **kwargs):
+    if instance.featured_in_latest_end_date is None and \
+        instance.featured_in_latest_start_date is None and \
+            instance.featured_in_latest is True:
+        instance.featured_in_latest = False
+    if instance.featured_in_homepage_end_date is None and \
+        instance.featured_in_homepage_start_date is None and \
+            instance.featured_in_homepage is True:
+        instance.featured_in_homepage = False
+    if instance.featured_in_section_end_date is None and \
+        instance.featured_in_section_start_date is None and \
+            instance.featured_in_section is True:
+        instance.featured_in_section = False
 
 
 class ArticlePageRelatedSections(Orderable):
