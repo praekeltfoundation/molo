@@ -11,7 +11,8 @@ from molo.core.api import forms, importers
 from molo.core.api.constants import MAIN_IMPORT_FORM_MESSAGES
 from molo.core.api.tests import constants
 from molo.core.api.tests.utils import mocked_requests_get
-from molo.core.models import ArticlePage, SectionPage
+from molo.core.models import ArticlePage
+from molo.core.models import SectionPage  # noqa
 
 
 class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
