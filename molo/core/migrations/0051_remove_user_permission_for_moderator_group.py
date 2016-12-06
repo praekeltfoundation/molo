@@ -7,7 +7,7 @@ from django.core.management.sql import emit_post_migrate_signal
 
 
 class Migration(migrations.Migration):
-    def add_core_permissions_to_groups(apps, schema_editor):
+    def remove_user_permission_for_moderator_group(apps, schema_editor):
         db_alias = schema_editor.connection.alias
         try:
             # Django 1.9
@@ -44,5 +44,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_core_permissions_to_groups),
+        migrations.RunPython(remove_user_permission_for_moderator_group),
     ]
