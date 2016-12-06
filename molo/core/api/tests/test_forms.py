@@ -99,9 +99,10 @@ class SectionImportFormTestCase(MoloTestCaseMixin, TestCase):
             len(constants.AVAILABLE_SECTIONS["items"])
         )
 
-    @patch("molo.core.api.importers.requests.get", side_effect=mocked_requests_get)
+    @patch("molo.core.api.importers.requests.get",
+           side_effect=mocked_requests_get)
     @patch("molo.core.api.importers.get_image")
-    def test_selected_section_can_be_saved(self, mock_image,mock_get):
+    def test_selected_section_can_be_saved(self, mock_image, mock_get):
         image = Image.objects.create(
             title="Test image",
             file=get_test_image_file(),
