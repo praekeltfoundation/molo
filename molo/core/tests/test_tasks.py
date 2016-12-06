@@ -233,6 +233,42 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertNotEquals(
             last_article_old, self.main.latest_articles()[8].pk)
 
+    def test_latest_rotation_on_draft_articles_only(self):
+        """This test that if the date range, weekdays and times are set for
+        content rotation, that the content rotates accordingly"""
+        # sets the site settings
+        site = Site.objects.get(is_default_site=True)
+        settings = SettingsProxy(site)
+        site_settings = settings['core']['SiteSettings']
+
+        site_settings.content_rotation_start_date = datetime.now()
+        site_settings.content_rotation_end_date = datetime.now() + timedelta(
+            days=1)
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
+        site_settings.time = dumps([{
+            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+        site_settings.monday_rotation = True
+        site_settings.save()
+
+        self.assertEquals(self.main.latest_articles().count(), 0)
+
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
+        self.assertEquals(self.main.latest_articles().count(), 10)
+        ArticlePage.objects.all().update(live=False)
+        self.assertEquals(ArticlePage.objects.live().count(), 0)
+        # still passes on 10 ?
+        self.assertEquals(self.main.latest_articles().count(), 10)
+        # gets the first and last articles of the list before it rotates
+        first_article_old = self.main.latest_articles()[1].pk
+        last_article_old = self.main.latest_articles()[9].pk
+
+        rotate_or_promote_content(day=0)
+        self.assertEquals(first_article_old, self.main.latest_articles()[1].pk)
+        self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
+        self.assertEquals(ArticlePage.objects.live().count(), 0)
+
     def test_latest_rotation_no_valid_days(self):
         """This test that if the date range and times are set for
         content rotation, that it doesn't rotate without any weekdays set"""
@@ -380,4 +416,48 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             first_article_old, get_featured_articles(self.yourmind_sub)[2].pk)
         self.assertNotEquals(
+            last_article_old, get_featured_articles(self.yourmind_sub)[9].pk)
+
+    def test_homepage_rotation_draft_articles_only(self):
+
+        def get_featured_articles(section):
+            return section.featured_in_homepage_articles()
+
+        non_rotating_articles = self.mk_articles(
+            self.yourmind, count=3, featured_in_homepage=False)
+        rotate_or_promote_content()
+        for article in non_rotating_articles:
+            self.assertFalse(article.featured_in_latest)
+        self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
+        self.mk_articles(
+            self.yourmind_sub, count=10, featured_in_homepage=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10, featured_in_homepage=False)
+        self.assertEquals(
+            get_featured_articles(self.yourmind_sub).count(), 10)
+        ArticlePage.objects.all().update(live=False)
+        self.assertEquals(ArticlePage.objects.live().count(), 0)
+        first_article_old = get_featured_articles(self.yourmind_sub)[0].pk
+        last_article_old = get_featured_articles(self.yourmind_sub)[9].pk
+        self.yourmind_sub.content_rotation_start_date = datetime.now()
+        self.yourmind_sub.content_rotation_end_date = datetime.now() + \
+            timedelta(days=1)
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
+        self.yourmind_sub.time = dumps([{
+            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+        self.yourmind_sub.monday_rotation = True
+        self.yourmind_sub.tuesday_rotation = True
+        self.yourmind_sub.wednesday_rotation = True
+        self.yourmind_sub.thursday_rotation = True
+        self.yourmind_sub.friday_rotation = True
+        self.yourmind_sub.saturday_rotation = True
+        self.yourmind_sub.sunday_rotation = True
+        self.yourmind_sub.save_revision().publish()
+        rotate_or_promote_content()
+        self.assertEquals(
+            get_featured_articles(self.yourmind_sub).count(), 10)
+        self.assertEquals(
+            first_article_old, get_featured_articles(self.yourmind_sub)[0].pk)
+        self.assertEquals(
             last_article_old, get_featured_articles(self.yourmind_sub)[9].pk)
