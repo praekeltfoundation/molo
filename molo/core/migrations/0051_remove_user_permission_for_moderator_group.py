@@ -28,8 +28,7 @@ class Migration(migrations.Migration):
 
         moderator_group = Group.objects.get(name='Moderators')
 
-        change_user = Permission.objects.get(
-            codename='change_user')
+        change_user = Permission.objects.get(codename='change_user')
         moderator_group.permissions.remove(change_user)
 
 
