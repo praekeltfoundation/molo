@@ -222,13 +222,6 @@ class SectionPageImporter(PageImporter):
         if self.content():
             parent = Page.objects.get(id=parent_id)
 
-            # Get child articles pages
-            url = self._base_url + API_PAGES_ENDPOINT + \
-                "?child_of=" + str(indexes[0])
-            response = requests.get(url)
-            pages = response.json()
-            children = pages["items"]
-
             # Save the selected section page
             response = requests.get(
                 self._base_url + API_PAGES_ENDPOINT + str(indexes[0]) + "/"

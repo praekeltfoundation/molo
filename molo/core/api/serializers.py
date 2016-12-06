@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 from rest_framework import serializers
-from wagtail.wagtailcore.models import Page
 
 from molo.core.api.compat import PageSerializer
 
