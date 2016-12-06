@@ -23,3 +23,9 @@ API_PAGES_ENDPOINT = "/api/v2/pages/"
 API_IMAGES_ENDPOINT = "/api/v2/images/"
 
 KEYS_TO_EXCLUDE = ["id", "meta", ]
+
+# Form error messages
+MAIN_IMPORT_FORM_MESSAGES = {
+    "connection_error": "Please enter a valid URL.",
+    "bad_request": "Please try again later.",
+}

@@ -3,6 +3,7 @@ import requests
 from django import forms
 
 from molo.core.api import constants
+from molo.core.api.constants import MAIN_IMPORT_FORM_MESSAGES
 
 
 class MainImportForm(forms.Form):
@@ -26,12 +27,16 @@ class MainImportForm(forms.Form):
         except requests.ConnectionError:
             self.add_error(
                 "url",
-                forms.ValidationError("Please enter a valid URL.")
+                forms.ValidationError(
+                    MAIN_IMPORT_FORM_MESSAGES["connection_error"]
+                )
             )
         except requests.RequestException:
             self.add_error(
                 "url",
-                forms.ValidationError("Please try again later")
+                forms.ValidationError(
+                    MAIN_IMPORT_FORM_MESSAGES["bad_request"]
+                )
             )
         finally:
             return url

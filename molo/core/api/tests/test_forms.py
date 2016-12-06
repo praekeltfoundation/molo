@@ -1,12 +1,14 @@
-from django.test import TestCase
-
+import requests
 from mock import patch
+
+from django.test import TestCase
 
 from wagtail.wagtailimages.models import Image
 from wagtail.wagtailimages.tests.utils import get_test_image_file
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.api import forms, importers
+from molo.core.api.constants import MAIN_IMPORT_FORM_MESSAGES
 from molo.core.api.tests import constants
 from molo.core.api.tests.utils import mocked_requests_get
 from molo.core.models import ArticlePage, SectionPage
@@ -79,6 +81,38 @@ class MainImportFormTestCase(MoloTestCaseMixin, TestCase):
             data=form_data
         )
         self.assertTrue(form.is_valid())
+
+    @patch("molo.core.api.forms.requests.get",
+           side_effect=requests.ConnectionError)
+    def test_invalid_url_raises_connection_error(self, mock_get):
+        form_data = {
+            "url": "http://localhost:8000/api/v2/pages",
+            "content_type": "core.ArticlePage"
+        }
+        form = forms.MainImportForm(
+            data=form_data
+        )
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            [MAIN_IMPORT_FORM_MESSAGES["connection_error"], ],
+            form.errors["url"]
+        )
+
+    @patch("molo.core.api.forms.requests.get",
+           side_effect=requests.RequestException)
+    def test_invalid_url_raises_connection_error(self, mock_get):
+        form_data = {
+            "url": "http://localhost:8000/api/v2/pages",
+            "content_type": "core.ArticlePage"
+        }
+        form = forms.MainImportForm(
+            data=form_data
+        )
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            [MAIN_IMPORT_FORM_MESSAGES["bad_request"], ],
+            form.errors["url"]
+        )
 
 
 class SectionImportFormTestCase(MoloTestCaseMixin, TestCase):
