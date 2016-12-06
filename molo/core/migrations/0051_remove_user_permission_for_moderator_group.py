@@ -25,12 +25,10 @@ class Migration(migrations.Migration):
 
 
         # <- Moderator ->
-
-        moderator_group = Group.objects.get(name='Moderators')
-
-        change_user = Permission.objects.get(codename='change_user')
-        moderator_group.permissions.remove(change_user)
-
+        moderator_group = Group.objects.filter(name='Moderators')
+        if moderator_group:
+            change_user = Permission.objects.get(codename='change_user')
+            moderator_group.permissions.remove(change_user)
 
     dependencies = [
         ('core', '0050_data_migration_promoted_articles'),
