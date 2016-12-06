@@ -19,6 +19,11 @@ ARTICLE_SESSION_VARS = SESSION_VARS(
     second="article_parent_page_id"
 )
 
+SECTION_SESSION_VARS = SESSION_VARS(
+    first=("url", "section_content_type"),
+    second="section_parent_page_id"
+)
+
 API_PAGES_ENDPOINT = "/api/v2/pages/"
 API_IMAGES_ENDPOINT = "/api/v2/images/"
 
