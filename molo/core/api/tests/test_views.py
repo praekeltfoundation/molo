@@ -150,3 +150,21 @@ class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
 
         # The articles should be saved, check them in the DB
         self.assertEqual(ArticlePage.objects.all().count(), 2)
+
+
+class SectionParentChooserTestCase(MoloTestCaseMixin, TestCase):
+
+    def setUp(self):
+        self.mk_main()
+        self.client = Client()
+        User.objects.create_superuser(
+            username="admin", email="admin@admin.com", password="admin"
+        )
+        self.client.login(username="admin", password="admin")
+
+    def test_session_redirects_to_first_page_if_session_not_set(self):
+        response = self.client.get(reverse("molo_api:section-parent-chooser"))
+        self.assertEqual(
+            response["Location"],
+            reverse("molo_api:main-import")
+        )
