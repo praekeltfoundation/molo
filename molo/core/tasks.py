@@ -102,14 +102,13 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                             random_article.featured_in_latest_start_date = \
                                 datetime.now()
                             random_article.save_revision().publish()
-
+                            promote_articles()
                             # set the last featured_in_latest article to false
                             article = main.latest_articles().last()
                             article.featured_in_latest_start_date = None
                             article.featured_in_latest_end_date = None
                             article.save_revision().publish()
                             demote_articles()
-                            promote_articles()
 
 
 def rotate_featured_in_homepage(main_lang, day):
@@ -137,13 +136,13 @@ def rotate_featured_in_homepage(main_lang, day):
                                     featured_in_homepage_start_date = \
                                     datetime.now()
                                 random_article.save_revision().publish()
+                                promote_articles()
                                 article = section.\
                                     featured_in_homepage_articles().last()
                                 article.featured_in_homepage_start_date = None
                                 article.featured_in_homepage_end_date = None
                                 article.save_revision().publish()
                                 demote_articles()
-                                promote_articles()
 
 
 def send_import_email(to_email, context):
