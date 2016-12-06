@@ -20,7 +20,7 @@ VALIDATE_EMAIL_TEMPLATE = "core/content_import/validate_email.html"
 
 
 @task(ignore_result=True)
-def rotate_or_promote_content(day=None):
+def rotate_content(day=None):
     """ this method gets the parameters that are needed for rotate_latest
     and rotate_featured_in_homepage methods, and calls them both"""
     # getting the content rotation settings from site settings
@@ -38,10 +38,9 @@ def rotate_or_promote_content(day=None):
     if main and index:
         rotate_latest(main_lang, index, main, site_settings, day)
         rotate_featured_in_homepage(main_lang, day)
-        demote_articles()
-        promote_articles()
 
 
+@task(ignore_result=True)
 def demote_articles():
     ArticlePage.objects.live().filter(
         featured_in_latest_end_date__lte=datetime.now()).update(
@@ -60,8 +59,8 @@ def demote_articles():
             featured_in_homepage_end_date=None)
 
 
+@task(ignore_result=True)
 def promote_articles():
-
     ArticlePage.objects.live().filter(
         featured_in_latest_start_date__lte=datetime.now()).update(
         featured_in_latest=True)
@@ -100,13 +99,17 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                             languages__language__id=main_lang.id
                         ).descendant_of(index).order_by('?').first()
                         if random_article:
-                            random_article.featured_in_latest = True
+                            random_article.featured_in_latest_start_date = \
+                                datetime.now()
                             random_article.save_revision().publish()
 
                             # set the last featured_in_latest article to false
                             article = main.latest_articles().last()
-                            article.featured_in_latest = False
+                            article.featured_in_latest_start_date = None
+                            article.featured_in_latest_end_date = None
                             article.save_revision().publish()
+                            demote_articles()
+                            promote_articles()
 
 
 def rotate_featured_in_homepage(main_lang, day):
@@ -130,12 +133,17 @@ def rotate_featured_in_homepage(main_lang, day):
                                 languages__language__id=main_lang.id
                             ).child_of(section).order_by('?').first()
                             if random_article:
-                                random_article.featured_in_homepage = True
+                                random_article. \
+                                    featured_in_homepage_start_date = \
+                                    datetime.now()
                                 random_article.save_revision().publish()
                                 article = section.\
                                     featured_in_homepage_articles().last()
-                                article.featured_in_homepage = False
+                                article.featured_in_homepage_start_date = None
+                                article.featured_in_homepage_end_date = None
                                 article.save_revision().publish()
+                                demote_articles()
+                                promote_articles()
 
 
 def send_import_email(to_email, context):
