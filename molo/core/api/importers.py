@@ -235,23 +235,4 @@ class SectionPageImporter(PageImporter):
             )
 
             section_page = response.json()
-            # import pdb;pdb.set_trace()
-            # flat_fields, nested_fields = separate_fields(section_page)
-            # section = SectionPage(**flat_fields)
-            #
-            # if ("image" in nested_fields) and nested_fields["image"]:
-            #     section.image = get_image(
-            #         self._base_url, nested_fields["image"]["id"]
-            #     )
-            #
-            # parent.add_child(instance=section)
-            # parent.save_revision().publish()
-
-            # Save selected section page
             self.process_child_section(section_page["id"], parent)
-
-            # Save child pages to the newly imported SectionPage
-            # for page in children:
-            #     item = requests.get(page["meta"]["detail_url"]).json()
-            #     self._save_item(item, section)
-            #     self.process_child_section(page["id"], section)
