@@ -63,21 +63,22 @@ class ArticleImportFormTestCase(MoloTestCaseMixin, TestCase):
     def tearDown(self):
         del self.importer
 
-#
-# class MainImportFormTestCase(MoloTestCaseMixin, TestCase):
-#
-#     def setUp(self):
-#         self.mk_main()
-#
-#     def test_valid_input(self):
-#         form_data = {
-#             "url": "http://localhost:8000/api/v2/pages",
-#             "content_type": "core.ArticlePage"
-#         }
-#         form = forms.MainImportForm(
-#             data=form_data
-#         )
-#         self.assertTrue(form.is_valid())
+
+class MainImportFormTestCase(MoloTestCaseMixin, TestCase):
+
+    def setUp(self):
+        self.mk_main()
+
+    @patch("molo.core.api.forms.requests.get", side_effect=mocked_requests_get)
+    def test_valid_url_is_given(self, mock_get):
+        form_data = {
+            "url": "http://localhost:8000/api/v2/pages",
+            "content_type": "core.ArticlePage"
+        }
+        form = forms.MainImportForm(
+            data=form_data
+        )
+        self.assertTrue(form.is_valid())
 
 
 class SectionImportFormTestCase(MoloTestCaseMixin, TestCase):
