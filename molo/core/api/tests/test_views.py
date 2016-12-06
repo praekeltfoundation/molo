@@ -91,6 +91,29 @@ class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(url, reverse("molo_api:main-import"))
 
+    @patch("molo.core.api.forms.requests.get", side_effect=mocked_requests_get)
+    def test_redirect_to_article_chooser_if_session_not_set(self, mock_get):
+        form_data = {
+            "url": "http://localhost:8000/",
+            "content_type": "core.ArticlePage"
+        }
+        response = self.client.post(
+            reverse("molo_api:main-import"),
+            data=form_data,
+            follow=True
+        )
+        url, status_code = response.redirect_chain[-1]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(url, reverse("molo_api:article-parent-chooser"))
+
+        # Try to go to the next step of the session before choosing a
+        # parent page
+        response = self.client.get(reverse("molo_api:article-import"))
+        self.assertEqual(
+            response["Location"],
+            reverse("molo_api:article-parent-chooser")
+        )
+
     @patch("molo.core.api.importers.requests.get",
            side_effect=mocked_requests_get)
     @patch("molo.core.api.forms.requests.get",
