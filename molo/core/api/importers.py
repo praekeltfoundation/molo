@@ -152,6 +152,63 @@ class SectionPageImporter(PageImporter):
         self._content_type = "core.SectionPage"
         self._fields = SectionPage.get_api_fields()
 
+    def _save_item(self, item, parent):
+        if item["meta"]["type"] == "core.SectionPage":
+            flat_fields, nested_fields = separate_fields(item)
+            child_section = SectionPage(**flat_fields)
+
+            if ("image" in nested_fields) and nested_fields["image"]:
+                child_section.image = get_image(
+                    self._base_url, nested_fields["image"]["id"]
+                )
+
+            parent.add_child(instance=child_section)
+            parent.save_revision().publish()
+            return child_section
+
+        elif item["meta"]["type"] == "core.ArticlePage":
+            flat_fields, nested_fields = separate_fields(item)
+            child_article = ArticlePage(**flat_fields)
+            if ("tags" in nested_fields) and nested_fields["tags"]:
+                child_article.tags.add(
+                    ", ".join(nested_fields["tags"])
+                )
+
+            if ("metadata_tags" in nested_fields) and \
+                    nested_fields["metadata_tags"]:
+                child_article.metadata_tags.add(
+                    ", ".join(nested_fields["metadata_tags"])
+                )
+
+            if ("body" in nested_fields) and nested_fields["body"]:
+                child_article.body = json.dumps(nested_fields["body"])
+
+            if ("image" in nested_fields) and nested_fields["image"]:
+                child_article.image = get_image(
+                    self._base_url, nested_fields["image"]["id"]
+                )
+
+            parent.add_child(instance=child_article)
+            parent.save_revision().publish()
+            return child_article
+
+    def process_child_section(self, id, parent):
+        response = requests.get(
+            self._base_url + API_PAGES_ENDPOINT + str(id)
+        ).json()
+        ancestor = self._save_item(response, parent)
+        if response["meta"]["children"]:
+            for child_id in response["meta"]["children"]["items"]:
+                self.process_child_section(child_id, ancestor)
+        return ancestor
+
+    def recursive_children(self, node):
+        results = [node['id']]
+        if len(node['children']) > 0:
+            for child in node['children']:
+                results.extend(self.recursive_children(child))
+        return results
+
     def save(self, indexes, parent_id):
         """
         Save the selected section. This will save the selected section
@@ -178,56 +235,23 @@ class SectionPageImporter(PageImporter):
             )
 
             section_page = response.json()
-            flat_fields, nested_fields = separate_fields(section_page)
-            section = SectionPage(**flat_fields)
+            # import pdb;pdb.set_trace()
+            # flat_fields, nested_fields = separate_fields(section_page)
+            # section = SectionPage(**flat_fields)
+            #
+            # if ("image" in nested_fields) and nested_fields["image"]:
+            #     section.image = get_image(
+            #         self._base_url, nested_fields["image"]["id"]
+            #     )
+            #
+            # parent.add_child(instance=section)
+            # parent.save_revision().publish()
 
-            if ("image" in nested_fields) and nested_fields["image"]:
-                section.image = get_image(
-                    self._base_url, nested_fields["image"]["id"]
-                )
-
-            parent.add_child(instance=section)
-            parent.save_revision().publish()
+            # Save selected section page
+            self.process_child_section(section_page["id"], parent)
 
             # Save child pages to the newly imported SectionPage
-            for page in children:
-                item = requests.get(page["meta"]["detail_url"]).json()
-                if item["meta"]["type"] == "core.SectionPage":
-                    item.pop("id")
-                    item.pop("meta")
-                    flat_fields, nested_fields = separate_fields(item)
-                    child_section = SectionPage(**flat_fields)
-
-                    if ("image" in nested_fields) and nested_fields["image"]:
-                        child_section.image = get_image(
-                            self._base_url, nested_fields["image"]["id"]
-                        )
-
-                    section.add_child(instance=child_section)
-                    section.save_revision().publish()
-                elif item["meta"]["type"] == "core.ArticlePage":
-                    item.pop("id")
-                    item.pop("meta")
-                    flat_fields, nested_fields = separate_fields(item)
-                    child_article = ArticlePage(**flat_fields)
-                    if ("tags" in nested_fields) and nested_fields["tags"]:
-                        child_article.tags.add(
-                            ", ".join(nested_fields["tags"])
-                        )
-
-                    if ("metadata_tags" in nested_fields) and \
-                            nested_fields["metadata_tags"]:
-                        child_article.metadata_tags.add(
-                            ", ".join(nested_fields["metadata_tags"])
-                        )
-
-                    if ("body" in nested_fields) and nested_fields["body"]:
-                        child_article.body = json.dumps(nested_fields["body"])
-
-                    if ("image" in nested_fields) and nested_fields["image"]:
-                        child_article.image = get_image(
-                            self._base_url, nested_fields["image"]["id"]
-                        )
-
-                    section.add_child(instance=child_article)
-                    section.save_revision().publish()
+            # for page in children:
+            #     item = requests.get(page["meta"]["detail_url"]).json()
+            #     self._save_item(item, section)
+            #     self.process_child_section(page["id"], section)

@@ -20,12 +20,12 @@ class PageChildrenField(serializers.Field):
         return instance
 
     def to_representation(self, page):
-        tree = Page.dump_bulk(page)
-        if "children" in tree[0]:
-            children = tree[0]["children"]
+        if page.get_children():
+            items = []
+            for item in page.get_children():
+                items.append(item.id)
             return OrderedDict([
-                ('count', page.numchild),
-                ("items", children),
+                ("items", items),
             ])
 
 
