@@ -97,7 +97,12 @@
         {% endif %}
 
         {% wagtailuserbar %}
+        <!-- Get Language code-->
+        {% get_current_language as LANGUAGE_CODE %}
 
+        {% block language_dropdown %}
+          {% include "patterns/basics/language-dropdown.html" %}
+        {% endblock  %}
 
         <div class="logo">
         {% if languages %}
@@ -106,7 +111,6 @@
           {% endif %}
 
           {% trans "Site Language:" %}
-          {% get_current_language as LANGUAGE_CODE %}
           {% for language in languages %}
             <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" {% if LANGUAGE_CODE == language.locale %} class="active" {% endif %}>{{language.locale|language_name_local}}</a>
           {% endfor %}
@@ -115,7 +119,8 @@
 
         {% breadcrumbs %}
 
-        {% block content %}{% endblock %}
+        {% block content %}
+        {% endblock %}
 
         {% block extra_js %}
         {% endblock %}

@@ -26,8 +26,7 @@ urlpatterns += patterns(
     url(r'^django-admin/', include(admin.site.urls)),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
-    url(r'^mote/', include('mote.urls', namespace='mote')),
-
+    url(r"^mote/", include("mote.urls", namespace="mote")),
 
     url(r'', include('molo.core.urls')),
     url('^', include('django.contrib.auth.urls')),

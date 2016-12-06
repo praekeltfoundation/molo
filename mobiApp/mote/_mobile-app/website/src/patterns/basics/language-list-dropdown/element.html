@@ -1,4 +1,6 @@
-{% load i18n%}
+{% load mote_tags i18n%}
+
+{% mask element.json.data.Language_list_dropdown as "language_list_dropdown" %}
 {% if languages|length > 1 %}
 <div class="languages">
   <div class="languages__bar">
@@ -10,9 +12,9 @@
     <label class="language-select__change-label" for="language-select">{% trans "Change Language" %}</label>
     <div role="languages__bar" class="language-select">
       <ul class="language-list language-list--dropdown">
-        {% for language in languages %}
+        {% for item in language_list_dropdown.languages %}
           <li class="language-list__item">
-            {{ language.locale|language_name_local }}
+            {{ item.language }}
           </li>
         {% endfor %}
       </ul>
