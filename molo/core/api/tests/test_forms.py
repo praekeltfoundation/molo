@@ -100,7 +100,7 @@ class MainImportFormTestCase(MoloTestCaseMixin, TestCase):
 
     @patch("molo.core.api.forms.requests.get",
            side_effect=requests.RequestException)
-    def test_invalid_url_raises_connection_error(self, mock_get):
+    def test_bad_url_raises_requests_error(self, mock_get):
         form_data = {
             "url": "http://localhost:8000/api/v2/pages",
             "content_type": "core.ArticlePage"
