@@ -1,6 +1,7 @@
 from molo.core.api.compat import ImagesAPIEndpoint, PagesAPIEndpoint
 from molo.core.api.serializers import MoloPageSerializer
 
+
 class MoloImagesAPIEndpoint(ImagesAPIEndpoint):
     extra_body_fields = ImagesAPIEndpoint.extra_body_fields + [
         "file",
