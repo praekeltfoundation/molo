@@ -14,16 +14,6 @@ $colorThird: #1473ad; // blue
 $colorFourth: #ebebeb; // light grey
 $anotherShadeOfGrey: #67666b;
 
-@include links($colorFirst);
-
-
-a {
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
 input,
 textarea {
   font-family: "Exo 2", sans-serif;

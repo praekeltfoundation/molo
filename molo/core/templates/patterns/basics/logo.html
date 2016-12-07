@@ -1,7 +1,7 @@
 
 {% load wagtailimages_tags static i18n %}
-<div class="logo  {{class}}">
-  <a href="/">
+<div class="logo  logo--{{class}}">
+  <a href="/" class="logo__anchor">
    {% if settings.core.SiteSettings.logo %}
      {% image settings.core.SiteSettings.logo original %}
    {% else %}

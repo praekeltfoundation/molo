@@ -1,0 +1,14 @@
+.logo {
+  margin: 0;
+  display: inline-block;
+  img {
+    width: 100%;
+    @media screen and (min-width: 240px) {
+      width: auto;
+    }
+  }
+}
+
+.logo--center {
+  text-align: center;
+}
