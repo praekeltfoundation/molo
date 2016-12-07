@@ -1,10 +1,10 @@
- 
-{% load i18n %}
+ {% load i18n %}
 
-<div>
-  <form action="{% url 'search' %}">
-    <input placeholder="{% trans "Looking for something?" %}" name="q" type="text" value="{{search_query}}">
-    <input type="submit" value="{% trans "SEARCH"%}">
+<div class="search search--{{class}}">
+  <form action="{% url 'search' %}" class="search__form">
+    <fieldset>
+      <input placeholder="{% trans "Looking for something?" %}" name="q" type="text" value="{{search_query}}">
+      <input type="submit" value="{% trans "Search"%}" class="call-to-action__item call-to-action__item--search">
+    </fieldset>
   </form>
 </div>
- 

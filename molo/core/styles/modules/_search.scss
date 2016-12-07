@@ -1,0 +1,14 @@
+.search {
+  h1,h2,h3,h4,h5,h6, p {
+    padding: 0 15px;
+  }
+}
+.search__form {
+  position: relative;
+  padding: 0 15px;
+
+  input[type="text"],
+  input[type="search"] {
+    width: 100%;
+  }
+}
