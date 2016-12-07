@@ -87,6 +87,10 @@ input[type="radio"]  {
   margin-left: 10px;
 }
 
+input[type="submit"] {
+  background-color: transparent;
+}
+
 select {
   display: block;
   padding: 10px 5px;
