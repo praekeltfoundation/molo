@@ -1,12 +1,14 @@
- 
+
 {% extends "base.html" %}
 
 {% load static core_tags %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
+{% block body_class %}template-{{ self.get_verbose_name|slugify }}
+{% endblock %}
 
 {% block content %}
+  
     <div class="articles nav {{self.get_effective_extra_style_hints}}">
       <h2 class="list-header">
         {% if self.image %}
@@ -62,7 +64,6 @@
         {% endif %}
       </div>
       {% endif %}
-      
+
     </div>
 {% endblock %}
- 

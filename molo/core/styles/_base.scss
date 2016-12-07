@@ -1,0 +1,13 @@
+html {
+  background-color: #333;
+  margin: 0 auto;
+  max-width: 35em;
+  font-size: 16px;
+  @media (min-device-width: 320px) {
+    max-width: 20em;
+  }
+}
+
+body {
+  background-color: #fff;
+}

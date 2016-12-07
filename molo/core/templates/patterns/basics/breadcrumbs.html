@@ -1,0 +1,20 @@
+{% load i18n %}
+<div class="breadcrumbs">
+  <ul class="breadcrumbs-list">
+
+    <li class="breadcrumbs-list__item">
+      <a href="{{request.site.root_page.url}}"  class="breadcrumbs-list__anchor">{% trans "Home" %}</a>
+    </li>
+    <li class="breadcrumbs-list__item">
+
+      <a href="#"  class="breadcrumbs-list__anchor">{% trans "Category" %}</a>
+
+    </li>
+
+    <li class="breadcrumbs-list__item">
+      <a href="#"  class="breadcrumbs-list__anchor breadcrumbs-list__anchor--is-active">
+        {% trans "Article" %}
+      </a>
+    </li>
+  </ul>
+</div>

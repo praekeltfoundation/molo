@@ -1,0 +1,41 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+
+<div class="featured-article featured-article--{{self.get_effective_extra_style_hints}}">
+  <h6 class="heading heading--xx-small featured-article__label">
+    <a href="#" class="featured-article-tag__link">
+      {% if self.image %}
+        {% image self.image width-60 %}
+      {% endif %}
+      {{self.title}}
+    </a>
+  </h6>
+  
+  {% load_child_sections_for_section self as sections %}
+  {% for section in sections %}
+  <div class="featured-article-teaser">
+    <ul class="featured-article-list featured-article-list--more-in">
+      <li class="featured-article-list__item">
+        {% if section.image %}
+          <a href="{% pageurl section %}" class="featured-article-list__anchor">{% image section.image width-60 %}</a>
+        {% endif %}
+
+        <a href="#" class="featured-article-list__anchor">
+          <h1 class="heading heading--">{{section.title}}</h1>
+
+          {% if section.description %}
+            <p>{{section.description}}</p>
+          {% endif %}
+
+          {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
+          {% if featured_articles %}
+          {% for article in featured_articles %}
+            <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+            <p>{{article.subtitle}}</p>
+          {% endfor %}
+          {% endif %}
+        </a>
+      </li>
+    </ul>
+  </div>
+  {% endfor %}
+</div>

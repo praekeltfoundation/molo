@@ -1,7 +1,8 @@
- 
+
 {% load wagtailcore_tags wagtailimages_tags i18n %}
 
 {% if articles %}
+
 <div class="articles nav">
   <h2 class="list-header">{% trans "Latest" %}</h2>
   {% for article in articles %}
@@ -17,4 +18,3 @@
   {% endfor %}
 </div>
 {% endif %}
- 

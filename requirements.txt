@@ -21,5 +21,4 @@ django-extensions
 celery<4.0
 redis
 six>=1.9
-mote-prk
 django-google-analytics-app==2.1.2

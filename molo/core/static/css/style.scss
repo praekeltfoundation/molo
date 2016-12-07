@@ -4,7 +4,9 @@
 @import "base";
 @import "modules";
 @import "icons";
-@import "enhanced";
+
+
+@import "../styles/styles";
 
 $colorFirst: #e52d47; // red
 $colorSecond: #27262b; // dark grey
@@ -22,7 +24,6 @@ a {
   }
 }
 
-body,
 input,
 textarea {
   font-family: "Exo 2", sans-serif;

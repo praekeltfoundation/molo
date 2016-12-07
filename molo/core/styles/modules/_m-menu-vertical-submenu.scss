@@ -1,0 +1,9 @@
+.nav-submenu-list__anchor {
+  display: block;
+  padding-left: 25px;
+  color: #727172;
+  font-size: 14px;
+  @media screen and (min-width: 320px) {
+    text-decoration: none;
+  }
+}

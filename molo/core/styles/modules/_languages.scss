@@ -1,0 +1,23 @@
+
+.language-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px 15px;
+}
+
+.language-list__item--vertical {
+  display: block;
+}
+
+.language-list__item--horizontal {
+  display: inline-block;
+  &:after {
+    color: #5a5d5e;
+    content: "|";
+    padding: 0 5px;
+  }
+}
+
+.language-list__anchor {
+  color: #5a5d5e;
+}
