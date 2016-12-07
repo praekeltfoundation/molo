@@ -72,14 +72,15 @@ def promote_articles():
         featured_in_homepage=True)
 
 
-def get_days(section=None, site_settings=None):
-    if section:
+def get_days_section(section=None):
         return [
             section.monday_rotation, section.tuesday_rotation,
             section.wednesday_rotation, section.thursday_rotation,
             section.friday_rotation, section.saturday_rotation,
             section.sunday_rotation]
-    elif site_settings:
+
+
+def get_days_site_settings(site_settings):
         return [
             site_settings.monday_rotation, site_settings.tuesday_rotation,
             site_settings.wednesday_rotation, site_settings.thursday_rotation,
@@ -101,7 +102,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
         article.featured_in_latest_end_date = None
         article.save_revision().publish()
 
-    days = get_days(site_settings=site_settings)
+    days = get_days_site_settings(site_settings)
     # checks if the current date is within the content rotation range
     if site_settings.content_rotation_start_date and \
             site_settings.content_rotation_end_date:
@@ -140,7 +141,7 @@ def rotate_featured_in_homepage(main_lang, day):
             article.save_revision().publish()
 
     for section in SectionPage.objects.all():
-        days = get_days(section=section)
+        days = get_days_section(section)
         # checks if current date is within the rotation date range
         if section.content_rotation_start_date and \
                 section.content_rotation_end_date:
