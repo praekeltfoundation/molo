@@ -26,6 +26,17 @@ urlpatterns += patterns(
     url(r'^django-admin/', include(admin.site.urls)),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
+    url(r'^commenting/', include('molo.commenting.urls',
+        namespace='molo.commenting',
+        app_name='molo.commenting')),
+
+    url(r'', include('django_comments.urls')),
+
+    url(r'^commenting/comment_done/',
+        TemplateView.as_view(
+            template_name="comments/comment_done.html"
+        ),
+        name='comment_done'),
 
 {% for app_name, regex in cookiecutter.include %}
     url(r'{{regex}}',

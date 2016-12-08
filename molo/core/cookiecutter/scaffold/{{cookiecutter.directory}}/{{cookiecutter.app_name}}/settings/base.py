@@ -76,8 +76,10 @@ INSTALLED_APPS = [
 
     'mptt',
     'djcelery',
-{% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
-{% endfor %}
+    'molo.commenting',
+    'django_comments',
+    {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
+    {% endfor %}
     'raven.contrib.django.raven_compat',
     'django_cas_ng',
     'compressor',

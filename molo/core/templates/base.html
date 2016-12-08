@@ -110,9 +110,13 @@
         {% block extra_js %}
         {% endblock %}
 
+        {% block backToTop %}
+          {% include "patterns/basics/back-to-top.html" %}
+        {% endblock %}
+
         {% block search %}
           {% if languages %}
-            {% include "search/search_block.html" %}
+            {% include "search/search_block.html" with class="standard" %}
           {% endif %}
         {% endblock %}
 
@@ -120,7 +124,13 @@
           {% include "patterns/basics/subnav.html" %}
         {% endblock  %}
 
+
+
         {% block footer %}
+          {% include "patterns/basics/nav-footer.html" %}
+          {% block copyright %}
+            {% include "patterns/basics/copyright.html" %}
+          {% endblock %}
             {% social_media_footer %}
           {% footer_page %}
         {% endblock %}

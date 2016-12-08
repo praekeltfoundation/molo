@@ -1,0 +1,16 @@
+{% load wagtailcore_tags core_tags i18n comments molo_commenting_tags }
+
+{% get_comment_count for self as comment_count %}
+
+<div class="teaser-meta-list">
+  <div class="teaser-meta-list__likes-counter">
+    63
+    <span class="teaser-meta-list__liked-label">likes</span>
+  </div>
+  <div class="teaser-meta-list__comment-counter">
+    {% if comment_count > 0 %}
+      {{comment_count}}
+      <span class="teaser-meta-list__comment-label">{% trans "comment" %}{{comment_count|pluralize}}</span>
+    {% endif %}
+  </div>
+</div>
