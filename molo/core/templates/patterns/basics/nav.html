@@ -3,16 +3,14 @@
 {% block section_menu %}
 
 {% load_sections as sections %}
-<div class="navigation navigation--horizontal">
-  <ul class="nav-menu-list nav-menu-list--horizontal">
-    {% for section in sections %}
-      <li class="nav-menu-list__item nav-menu-list__item--horizontal">
-        <a href="" class="nav-menu-list__anchor nav-menu-list__anchor--horizontal">
-          {{section.title}}
-          {{section.description}}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
-</div>
+<ul class="nav-list nav-list--horizontal">
+  {% for section in sections %}
+    <li class="nav-list__item nav-list__item--horizontal">
+      <a href="" class="nav-list__anchor nav-list__anchor--horizontal">
+        {{section.title}}
+        <span class="nav-list__anchor-desc">{{section.description}}</span>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
 {% endblock %}

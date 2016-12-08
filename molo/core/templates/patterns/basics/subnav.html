@@ -5,19 +5,23 @@
 
 {% load_sections as sections %}
 <div class="navigation">
-  <ul class="nav-menu-list">
+  <ul class="nav-list">
     {% for section in sections %}
-      <li class="nav-menu-list__item">
-        <a href="" class="nav-menu-list__anchor nav-menu-list__anchor--submenu-list">
+      <li class="nav-list__item">
+        <a href="" class="nav-list__anchor">
           {{section.title}}
-          {{section.description}}
+          <span class="nav-list__anchor-desc">{{section.description}}</span>
         </a>
-        <ul class="nav-submenu-list">
-            <li class="nav-submenu-list__item">
-              <a href="" class="nav-submenu-list__anchor">
-
+        <ul class="submenu-list">
+          {% load_child_sections_for_section section as subsections %}
+          {% for subsection in subsections %}
+            <li class="submenu-list__item">
+              <a href="#" class="submenu-list__anchor">
+                {{subsection.title}}
+                <span class="submenu-list__anchor-desc">{{subsection.description}}</a>
               </a>
             </li>
+          {% endfor %}
         </ul>
       </li>
       {% endfor %}

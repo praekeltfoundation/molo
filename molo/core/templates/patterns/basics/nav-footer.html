@@ -4,15 +4,14 @@
 {% block section_menu %}
 
 {% load_sections as sections %}
-<div class="main-navigation">
-  <ul class="footer-nav-list">
-    {% for section in sections %}
-      <li class="footer-nav-list__item">
-        <a href="" class="footer-nav-list__anchor">
-
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
-</div>
+<ul class="footer-nav-list">
+  {% for section in sections %}
+    <li class="footer-nav-list__item">
+      <a href="#" class="footer-nav-list__anchor">
+        <{{section.title}}
+        <span class="footer-nav-list__anchor-desc">{{section.description}}</span>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
 {% endblock %}
