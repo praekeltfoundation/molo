@@ -100,9 +100,7 @@
           {% include "patterns/components/header-general.html" %}
         {% endblock  %}
 
-        {% block breadcrumbs %}
-          {% include "patterns/basics/breadcrumbs.html" %}
-        {% endblock %}
+        {% breadcrumbs %}
 
         {% block content %}
         {% endblock %}
@@ -124,14 +122,13 @@
           {% include "patterns/basics/subnav.html" %}
         {% endblock  %}
 
-
-
         {% block footer %}
           {% include "patterns/basics/nav-footer.html" %}
           {% block copyright %}
             {% include "patterns/basics/copyright.html" %}
           {% endblock %}
-            {% social_media_footer %}
+
+          {% social_media_footer %}
           {% footer_page %}
         {% endblock %}
 
