@@ -1,0 +1,29 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+
+<div class="categories">
+  <div class="category-article__list">
+    {% if section.image %}
+      <a href="{% pageurl section %}" class="category-article__image-link">
+        {% image section.image width-60 %}
+      </a>
+    {% endif %}
+
+    {% if section.get_parent_section %}
+      <h3 class="heading heading--large heading--article-subcat">
+        <a href="{% pageurl self.get_parent_section %}" class="featured-section__link">
+          {{section.get_parent_section}}
+        </a>
+      </h3>
+    {% endif %}
+
+    <h1 class="heading heading--xx-large heading--category">
+      <a href="{% pageurl section %}" class="featured-section__link">{{section.title}}</a>
+    </h1>
+
+    {% if section.description %}
+    <p class="category-article__description">
+      {{section.description}}
+    </p>
+    {% endif %}
+  </div>
+</div>

@@ -1,13 +1,10 @@
-
 {% load wagtailcore_tags wagtailimages_tags core_tags %}
 
 {% if sections %}
 {% for section in sections %}
 <div class="featured-section featured-section--{{self.get_effective_extra_style_hints}}">
-  <h2 class="heading heading--x-large featured-section__label">
-    <a href="{% pageurl section %}" class="featured-section__link">{{section.title}}</a>
-  </h2>
+  {% include "patterns/basics/category.html" %}
   {% include "patterns/basics/article-list.html" %}
 </div>
-{% endfor%}
+{% endfor %}
 {% endif %}
