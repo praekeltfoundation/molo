@@ -1,46 +1,39 @@
-
 {% extends "base.html" %}
 
-{% load static core_tags %}
-{% load wagtailcore_tags wagtailimages_tags %}
-
+{% load static core_tags wagtailcore_tags wagtailimages_tags %}
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
 
 {% block content %}
+<div class="articles  articles--{{self.get_parent_section.get_effective_extra_style_hints}}">
+  <h1 class="heading headin--xx-large">{{self.title}}</h1>
+  <p class="article__description">{{self.subtitle}}</p>
 
-<div class="articles nav {{self.get_parent_section.get_effective_extra_style_hints}}">
-  <h3 class="article-title">{{self.title}}</h3>
-  <p>{{self.subtitle}}</p>
-  {% if self.image %}
-  <div class="banner">{% image self.image width-240 %}</div>
-  {% endif %}
+  {% include "patterns/basics/banner.html" %}
   {% social_media_article %}
-<article>
+  <article>
     {% for block in self.body %}
       {% if block.block_type == 'heading' %}
-          <h1>{{ block.value }}</h1>
+        <h3 class="heading headin--large">{{ block.value }}</h3>
       {% elif block.block_type == 'image' %}
-        {% image block.value width-240 %}
+        {% image block.value width-320 %}
       {% elif block.block_type == 'numbered_list' %}
-        <ol>
+        <ol class="default-ordered-list">
         {% for item in block.value %}
-          <li>{{ item|handle_markdown }}</li>
+          <li class="default-ordered-list__item">{{ item|handle_markdown }}</li>
         {% endfor %}
         </ol>
       {% elif block.block_type == 'list' %}
-        <ul>
+        <ul class="default-unordered-list">
         {% for item in block.value %}
-          <li>{{ item|handle_markdown }}</li>
+          <li class="default-unordered-list__item">{{ item|handle_markdown }}</li>
         {% endfor %}
       </ul>
       {% else %}
           {{ block }}
       {% endif %}
     {% endfor %}
-</article>
+  </article>
 {% include "patterns/basics/article-tags.html" %}
 </div>
-
-
 
 {% endblock %}

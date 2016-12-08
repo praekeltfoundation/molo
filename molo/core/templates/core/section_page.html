@@ -5,34 +5,32 @@
 {% endblock %}
 
 {% block content %}
-  <div class="categories">
+<div class="categories">
+  <h2 class="heading heading--x-large">
+    {% if self.image %}
+      <a href="{% pageurl self %}">{% image self.image width-60 %}</a>
+    {% endif %}
+    {{self.title}}
+  </h2>
 
-      <h2 class="list-header">
-        {% if self.image %}
-          <a href="{% pageurl self %}">{% image self.image width-60 %}</a>
+  {% load_child_sections_for_section self as sections %}
+  {% for section in sections %}
+    {% include "patterns/basics/category.html" %}
+        {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
+        {% if featured_articles %}
+        {% for article in featured_articles %}
+          {% include "patterns/basics/article-list.html" %}
+        {% endfor %}
         {% endif %}
-        {{self.title}}
-      </h2>
+  {% endfor %}
 
-      {% load_child_sections_for_section self as sections %}
-      {% for section in sections %}
-        {% include "patterns/basics/category.html" %}
-            {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
-            {% if featured_articles %}
-            {% for article in featured_articles %}
-              {% include "patterns/basics/article-list.html" %}
-            {% endfor %}
-            {% endif %}
-      {% endfor %}
+  {% load_child_articles_for_section self as articles %}
+  {% for article in articles %}
+    {% include "patterns/basics/article-list.html" %}
+  {% endfor %}
 
-      {% load_child_articles_for_section self as articles %}
-      {% for article in articles %}
-        {% include "patterns/basics/article-list.html" %}
-      {% endfor %}
-
-      {% if articles %}
-        {% include "patterns/basics/pagination-counter.html" %}
-      {% endif %}
-
-  </div>
+  {% if articles %}
+    {% include "patterns/basics/pagination-counter.html" %}
+  {% endif %}
+</div>
 {% endblock %}
