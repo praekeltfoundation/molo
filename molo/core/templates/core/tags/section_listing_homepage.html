@@ -1,14 +1,13 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags %}
 
 {% if sections %}
-{% for section in sections %}
 <div class="featured-category featured-category--{{self.get_effective_extra_style_hints}}">
+{% for section in sections %}
   {% include "patterns/basics/category.html" %}
   {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
   {% for article in featured_articles %}
     {% include "patterns/basics/article-list.html" %}
   {% endfor %}
-
-</div>
 {% endfor %}
+</div>
 {% endif %}
