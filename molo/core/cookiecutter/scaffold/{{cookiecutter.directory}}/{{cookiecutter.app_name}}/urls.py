@@ -33,6 +33,7 @@ urlpatterns += patterns(
                 namespace='{{app_name}}',
                 app_name='{{app_name}}')),
 {% endfor %}
+    url(r"^mote/", include("mote.urls", namespace="mote")),
     url(r'', include('molo.core.urls')),
     url('^', include('django.contrib.auth.urls')),
     url(r'', include(wagtail_urls)),
