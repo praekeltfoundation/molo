@@ -1,7 +1,12 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static %}
-<!-- Show this if article is promoted -->
   <div class="category-article__list">
     <h1 class="heading heading--xx-large heading--category">
       <a href="{% pageurl section %}" class="featured-section__link">{{section.title}}</a>
     </h1>
+
+    {% if section.description %}
+    <p class="category-article__description">
+      {{section.description}}
+    </p>
+    {% endif %}
   </div>
