@@ -6,25 +6,16 @@
 
 {% block content %}
 <div class="categories">
-  <div class="category-article__list">
-    <h2 class="heading heading--x-large heading--category">
-      <a href="{% pageurl self %}" class="category__anchor">
-      {% if self.image %}
-        {% image self.image width-60 %}
-      {% endif %}
-      {{self.title}}
-      </a>
-    </h2>
-  </div>
+
 
   {% load_child_sections_for_section self as sections %}
   {% for section in sections %}
-    {% include "patterns/basics/category.html" %}
+    {% include "patterns/basics/category-with-image.html" %}
         {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
         {% if featured_articles %}
-        {% for article in featured_articles %}
-          {% include "patterns/basics/article-list.html" %}
-        {% endfor %}
+          {% for article in featured_articles %}
+            {% include "patterns/basics/article-list.html" %}
+          {% endfor %}
         {% endif %}
   {% endfor %}
 

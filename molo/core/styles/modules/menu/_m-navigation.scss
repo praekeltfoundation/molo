@@ -3,7 +3,10 @@
 }
 
 
-.nav-list {}
+.nav-list {
+  margin: 0;
+  padding: 0;
+}
 .nav-list__item  {
   border-bottom: 1px solid #B0B9BB;
   display: block;
@@ -30,7 +33,10 @@
   padding: 10px 0 0;
 }
 
-.submenu-list {}
+.submenu-list {
+  margin: 0;
+  padding: 0;
+}
 .submenu-list__item {
   display: block;
   list-style-type: none;

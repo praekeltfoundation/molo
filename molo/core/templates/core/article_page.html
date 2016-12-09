@@ -7,33 +7,10 @@
 <div class="articles  articles--{{self.get_parent_section.get_effective_extra_style_hints}}">
   <h1 class="heading headin--xx-large heading--article">{{self.title}}</h1>
   <p class="article__description">{{self.subtitle}}</p>
-
   {% include "patterns/basics/banner.html" %}
   {% social_media_article %}
-  <article>
-    {% for block in self.body %}
-      {% if block.block_type == 'heading' %}
-        <h3 class="heading headin--large">{{ block.value }}</h3>
-      {% elif block.block_type == 'image' %}
-        {% image block.value width-320 %}
-      {% elif block.block_type == 'numbered_list' %}
-        <ol class="default-ordered-list">
-        {% for item in block.value %}
-          <li class="default-ordered-list__item">{{ item|handle_markdown }}</li>
-        {% endfor %}
-        </ol>
-      {% elif block.block_type == 'list' %}
-        <ul class="default-unordered-list">
-        {% for item in block.value %}
-          <li class="default-unordered-list__item">{{ item|handle_markdown }}</li>
-        {% endfor %}
-      </ul>
-      {% else %}
-          {{ block }}
-      {% endif %}
-    {% endfor %}
-  </article>
-{% include "patterns/basics/article-tags.html" %}
+  {% include "patterns/basics/article-content.html" %}
+  {% include "patterns/basics/article-tags.html" %}
 </div>
 
 {% endblock %}
