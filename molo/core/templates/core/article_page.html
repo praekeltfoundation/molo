@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="articles  articles--{{self.get_parent_section.get_effective_extra_style_hints}}">
-  <h1 class="heading headin--xx-large">{{self.title}}</h1>
+  <h1 class="heading headin--xx-large heading--article">{{self.title}}</h1>
   <p class="article__description">{{self.subtitle}}</p>
 
   {% include "patterns/basics/banner.html" %}

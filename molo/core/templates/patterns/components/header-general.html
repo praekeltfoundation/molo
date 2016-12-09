@@ -1,8 +1,8 @@
 
+{% block language_dropdown %}
+  {% include "patterns/basics/languages-dropdown.html" with class="dropdown" %}
+{% endblock  %}
 <div class="header">
-  {% block language_dropdown %}
-    {% include "patterns/basics/languages.html" %}
-  {% endblock  %}
   <div class="header__menu">
     {% block logo %}
       {% include "patterns/basics/logo.html" with class="" %}

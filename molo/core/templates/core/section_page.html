@@ -6,12 +6,16 @@
 
 {% block content %}
 <div class="categories">
-  <h2 class="heading heading--x-large">
-    {% if self.image %}
-      <a href="{% pageurl self %}">{% image self.image width-60 %}</a>
-    {% endif %}
-    {{self.title}}
-  </h2>
+  <div class="category-article__list">
+    <h2 class="heading heading--x-large heading--category">
+      <a href="{% pageurl self %}" class="category__anchor">
+      {% if self.image %}
+        {% image self.image width-60 %}
+      {% endif %}
+      {{self.title}}
+      </a>
+    </h2>
+  </div>
 
   {% load_child_sections_for_section self as sections %}
   {% for section in sections %}

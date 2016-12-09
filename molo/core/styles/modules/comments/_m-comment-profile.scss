@@ -1,0 +1,24 @@
+.comment-list__profile,
+.comment__profile {
+  background: #017AF5;
+  border-radius: 100%;
+  padding: 0;
+  height: 50px;
+  text-align: center;
+  vertical-align: middle;
+  width: 50px;
+  display: none;
+  @media screen and (min-width: 320px) {
+    display: inline-block;
+  }
+}
+
+.comment__profile-image {
+  display: none;
+  padding: 10px;
+  width: 60%;
+  @media screen and (min-width: 320px) {
+    display: inline;
+    padding: 10px 15px 10px 10px;
+  }
+}

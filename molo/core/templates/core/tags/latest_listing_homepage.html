@@ -2,8 +2,8 @@
 {% load wagtailcore_tags wagtailimages_tags i18n %}
 
 {% if articles %}
-<div class="featured-section featured-section--latest">
-  <h2 class="heading heading--x-large featured-section__label">
+<div class="featured-section featured-article--latest">
+  <h2 class="heading heading--x-large featured-article__latest-label">
     <a href="#" class="featured-section__link">{% trans "Latest" %}</a>
   </h2>
   {% include "patterns/basics/article-list-latest.html" %}

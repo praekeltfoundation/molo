@@ -1,10 +1,12 @@
-html {
+html, body  {
   background-color: #333;
   margin: 0 auto;
   max-width: 35em;
   font-size: 16px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   @media (min-device-width: 320px) {
     max-width: 20em;
+    font-family: 'Quicksand', sans-serif;
   }
 }
 
@@ -19,6 +21,11 @@ a {
   }
 }
 
-h4,h5,h6 {
+h1,h2,h3,h4,h5,h6 {
   margin: 0;
+}
+
+ul, ol, li {
+  margin: 0;
+  padding: 0;
 }

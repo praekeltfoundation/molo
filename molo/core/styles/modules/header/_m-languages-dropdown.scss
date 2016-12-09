@@ -1,5 +1,11 @@
+.language-list--dropdown {
+  padding: 0;
+}
+.language-list__item--dropdown {
+  text-align: right;
+}
 
-//TOGGLE
+
 .language-select__toggle-input {
   visibility: hidden;
   position: absolute;
@@ -27,6 +33,7 @@
   cursor: pointer;
   text-decoration: underline;
   padding: 10px 0 10px 5px;
+  font-size: 14px;
 }
 .language-select {
   padding: 5px 15px;
