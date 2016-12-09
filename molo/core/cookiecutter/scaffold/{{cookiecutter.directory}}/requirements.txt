@@ -3,4 +3,3 @@ molo.core=={{cookiecutter.molo_version}}
 {{requirement}}
 {% endfor %}
 django-modelcluster>=2.0,<3.0
-molo.commenting==1.0.0
