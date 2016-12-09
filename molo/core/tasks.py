@@ -6,6 +6,7 @@ from time import strptime
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.core import management
 
 from molo.core.content_import import api
 from molo.core.models import (
@@ -38,6 +39,12 @@ def rotate_content(day=None):
     if main and index:
         rotate_latest(main_lang, index, main, site_settings, day)
         rotate_featured_in_homepage(main_lang, day)
+
+
+@task(ignore_result=True)
+def publish_scheduled_pages():
+    management.call_command(
+        'publish_scheduled_pages', verbosity=0, interactive=False)
 
 
 @task(ignore_result=True)
