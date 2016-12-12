@@ -1,7 +1,7 @@
 {
   "name": "molo",
   "version": "1.0.0",
-  "description": "iogt =========================",
+  "description": "Molo Core",
   "main": "gulpfile.js",
   "dependencies": {},
   "devDependencies": {
@@ -17,12 +17,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/praekelt/molo.git"
+    "url": "git+https://github.com/praekelt/molo.git"
   },
   "author": "Prakelt",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/praekelt/molo.git/issues"
   },
-  "homepage": "https://github.com/praekelt/molo.git#readme"
+  "homepage": "https://github.com/praekelt/molo.git#readme",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
