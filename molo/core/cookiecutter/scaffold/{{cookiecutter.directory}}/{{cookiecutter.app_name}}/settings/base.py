@@ -73,6 +73,9 @@ INSTALLED_APPS = [
     'wagtailmodeladmin',
     'wagtailmedia',
     'wagtail.contrib.settings',
+    
+    'wagalytics',
+    'wagtailfontawesome',
 
     'mptt',
     'djcelery',
