@@ -135,6 +135,9 @@ GOOGLE_ANALYTICS = {
     'google_analytics_id': None,
 }
 
+GA_KEY_FILEPATH = join(PROJECT_ROOT, 'molo-wagalytics/settings/client_secret_116944325595442492264.json')
+GA_VIEW_ID = 'ga:135611245'
+
 GOOGLE_ANALYTICS_IGNORE_PATH = [
     # health check used by marathon
     '/health/',
