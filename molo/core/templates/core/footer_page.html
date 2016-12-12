@@ -1,31 +1,26 @@
- 
 {% extends "base.html" %}
 
-{% load static core_tags %}
-{% load wagtailcore_tags wagtailimages_tags %}
-
+{% load static core_tags wagtailcore_tags wagtailimages_tags %}
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
 
 {% block content %}
-<div class="articles nav">
-  <h3 class="article-title">{{self.title}}</h3>
-  <p>{{self.subtitle}}</p>
-  {% if self.image %}
-  <div class="banner">{% image self.image width-240 %}</div>
-  {% endif %}
+<div class="footer-articles">
+  <h1 class="heading headin--xx-large">{{self.title}}</h1>
+  <p class="article__description">{{self.subtitle}}</p>
 
-<article>
-  {% for block in self.body %}
+  {% include "patterns/basics/banner.html" %}
+  <article>
+    {% for block in self.body %}
       {% if block.block_type == 'heading' %}
-          <h1>{{ block.value }}</h1>
+        <h3 class="heading headin--large">{{ block.value }}</h3>
       {% else %}
       {% if block.block_type == 'image' %}
-        {% image block.value width-240 %}
+        {% image block.value width-320 %}
       {% else %}
       {% if block.block_type == 'numbered_list' %}
-        <ol>
+        <ol class="default-ordered-list">
         {% for item in block.value %}
-          <li>{{item}}</li>
+          <li class="default-ordered-list__item">{{item}}</li>
         {% endfor %}
         </ol>
       {% else %}
@@ -33,8 +28,8 @@
       {% endif %}
       {% endif %}
       {% endif %}
-  {% endfor %}
-</article>
+    {% endfor %}
+  </article>
 </div>
+
 {% endblock %}
- 

@@ -1,0 +1,10 @@
+.profiles {
+  .select__month,
+  .select__date,
+  .select__year {
+    @media screen and (min-width: 320px) {
+      display: inline;
+      width: 100px;
+    }
+  }
+}

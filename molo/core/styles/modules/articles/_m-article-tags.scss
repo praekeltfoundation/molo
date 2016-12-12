@@ -1,0 +1,24 @@
+.tags {
+  background: #fff;
+  padding: 10px 15px;
+}
+
+.tags-list__item {
+  background: #EBEBEB;
+  display: inline-block;
+  padding: 10px;
+  margin: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  line-height: 1.5;
+  a {
+    color: #252627;
+    text-decoration: none;
+    word-break: break-word;
+  }
+}
+
+.tags-list__item--tags__title {
+  background: transparent;
+  padding: 0;
+}

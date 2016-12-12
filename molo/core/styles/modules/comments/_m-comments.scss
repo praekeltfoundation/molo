@@ -1,0 +1,41 @@
+
+.comment {
+  .heading {
+    padding-bottom: 0;
+  }
+  fieldset {
+    margin: 0;
+    padding: 0;
+  }
+  label {
+    padding: 0;
+  }
+  .call-to-action {
+    padding: 0;
+  }
+}
+
+.comment__call-to-action-message {
+  .heading {
+    font-weight: normal;
+  }
+}
+
+.comments-list {
+  .heading--username {
+    font-weight: normal;
+    padding-bottom: 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+.comment-list__date {
+  font-size: 12px;
+  color: #909497;
+  display: block;
+}
+
+.comment-list__content {
+  padding: 10px 0 20px;
+}

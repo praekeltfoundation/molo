@@ -1,0 +1,5 @@
+pytest
+pytest-django
+pytest-cov
+pytest-xdist
+flake8==2.6.2

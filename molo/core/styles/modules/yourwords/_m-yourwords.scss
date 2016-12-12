@@ -1,0 +1,18 @@
+
+.yourwords {
+  font-family: Quicksand,sans-serif;
+  background: #fff;
+  padding: 10px;
+  @media screen and (min-width: 320px) {
+    padding: 10px 15px;
+  }
+}
+
+.yourwords__banner {
+  @media screen and (min-width: 320px) {
+    width: 45%;
+    display: block;
+    margin: 0 auto;
+    width: 25%;
+  }
+}

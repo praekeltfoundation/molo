@@ -30,4 +30,5 @@ urlpatterns = patterns(
         TagsListView.as_view(),
         name='tags_list'
     ),
+    
 )

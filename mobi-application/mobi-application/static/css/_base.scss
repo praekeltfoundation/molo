@@ -1,0 +1,181 @@
+/* ==|== primary styles ===================================================== */
+
+body {
+  position: relative;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+::-moz-selection {
+  background-color: lighten($colorFirst, 65%);
+  color: $colorFirst;
+  text-shadow: none;
+}
+
+::selection {
+  background-color: lighten($colorFirst, 65%);
+  color: $colorFirst;
+  text-shadow: none;
+}
+
+/* Cancels out Firefox Mobile's gradient background */
+button {
+  background-image: none;
+}
+
+.main {
+  padding: 1em;
+}
+
+// img
+
+img {
+  border-width: 0;
+  vertical-align: middle;
+  -ms-interpolation-mode: bicubic;
+  max-width: 100%;
+  height: auto;
+}
+
+.banner {
+  img {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+// https://github.com/mrmrs/fluidity
+
+canvas, iframe, video, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Wrap tables or pre elements in a div with this class */
+.overflow-container { overflow-y: scroll; }
+
+// http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/
+
+@-webkit-viewport {
+  width : device-width;
+}
+
+@-moz-viewport {
+  width : device-width;
+}
+
+@-ms-viewport {
+  width : device-width;
+}
+
+@-o-viewport {
+  width : device-width;
+}
+
+@viewport {
+  width : device-width;
+}
+
+html {
+  -webkit-overflow-scrolling : touch;
+  -webkit-tap-highlight-color : lighten(#333, 75%);
+}
+
+/* ==|== Links ==== */
+
+:not(a):focus {
+  outline: none;
+}
+
+html {
+  font-family: $font-family-sans-serif;
+  line-height: 1.25;
+}
+
+body {
+  @include no-m;
+}
+
+body {
+  a {
+    word-wrap: break-word;
+  }
+}
+
+// Typography
+
+h1, h2, h3, h4 {
+  margin-top: 0;
+}
+
+// layout
+
+.l-row {
+  clear: both;
+  @include clearfix;
+}
+
+.l-half {
+  width: 50%;
+  &:first-child {
+    float: left;
+  }
+  &:last-child {
+    float: right;
+  }
+}
+
+// forms and validation
+
+input {
+  padding: 0.5em;
+  font-size: 0.9em;
+}
+
+input[type="search"] {
+  -webkit-appearance: textfield;
+}
+
+.error {
+  color: red;
+}
+
+.input-error {
+  border: solid 1px red;
+}
+
+.btn {
+  padding: 0.75em 1em;
+  border: none;
+}
+
+.btn-wide {
+  display: block;
+  text-align: center;
+}
+
+input.btn-wide {
+  width: 100%;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  font-size: 0.9em;
+}
+
+.label-wide, .input-wide {
+  display: block;
+  width: 100%;
+  margin-bottom: 1em;
+}
