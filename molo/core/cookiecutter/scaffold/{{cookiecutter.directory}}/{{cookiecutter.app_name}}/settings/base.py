@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     'molo.core',
     '{{cookiecutter.app_name}}',
+    'mote',
     'google_analytics',
 
     'wagtail.wagtailcore',
@@ -109,7 +110,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -119,6 +120,11 @@ TEMPLATES = [
                 'molo.core.context_processors.locale',
                 'wagtail.contrib.settings.context_processors.settings',
             ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "mote.loaders.app_directories.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ]
         },
     },
 ]
@@ -177,8 +183,20 @@ CELERY_RESULT_BACKEND = environ.get(
     'CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 CELERYBEAT_SCHEDULE = {
     'rotate_promote_content': {
-        'task': 'molo.core.tasks.rotate_promote_content',
+        'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
+    },
+    'demote_articles': {
+        'task': 'molo.core.tasks.demote_articles',
+        'schedule': crontab(minute="*"),
+    },
+    'promote_articles': {
+        'task': 'molo.core.tasks.promote_articles',
+        'schedule': crontab(minute="*"),
+    },
+    'publish_pages': {
+        'task': 'molo.core.tasks.publish_scheduled_pages',
+        'schedule': crontab(minute='*'),
     },
 }
 

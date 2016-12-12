@@ -1,13 +1,15 @@
 from datetime import datetime, timedelta
+from django.utils import timezone
+
 from json import dumps
 import pytest
 from django.test import TestCase
 
-
-from molo.core.models import SiteLanguage, FooterPage, ArticlePage
+from molo.core.models import SiteLanguage, FooterPage, ArticlePage, Main
 from molo.core.tests.base import MoloTestCaseMixin
-
-from molo.core.tasks import rotate_or_promote_content
+from molo.core.tasks import rotate_content, demote_articles, promote_articles
+from molo.core.templatetags.core_tags import \
+    load_descendant_articles_for_section
 
 from wagtail.wagtailcore.models import Site
 from wagtail.contrib.settings.context_processors import SettingsProxy
@@ -27,13 +29,94 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
+        self.yourmind_sub2 = self.mk_section(
+            self.yourmind, title='Your mind subsection2')
+        self.yourmind_sub3 = self.mk_section(
+            self.yourmind, title='Your mind subsection3')
+
+    def test_order_by_promote_date_latest(self):
+        article = self.mk_article(
+            self.yourmind, title='article', slug='article')
+        article.featured_in_latest_start_date = datetime.now()
+        article.save()
+        article2 = self.mk_article(
+            self.yourmind, title='article2', slug='article2')
+        article2.featured_in_latest_start_date = datetime.now()
+        article2.save()
+        article3 = self.mk_article(
+            self.yourmind, title='article3', slug='article3')
+        article3.featured_in_latest_start_date = datetime.now()
+        article3.save()
+        demote_articles()
+        promote_articles()
+        latest_articles = Main.objects.all().first().latest_articles()
+        self.assertEquals(latest_articles[0].title, 'article3')
+        article2.featured_in_latest_start_date = datetime.now()
+        article2.save()
+        demote_articles()
+        promote_articles()
+        latest_articles = Main.objects.all().first().latest_articles()
+        self.assertEquals(latest_articles[0].title, 'article2')
+
+    def test_order_by_promote_date_homepage(self):
+        article = self.mk_article(
+            self.yourmind, title='article', slug='article')
+        article.featured_in_homepage_start_date = datetime.now()
+        article.save()
+        article2 = self.mk_article(
+            self.yourmind, title='article2', slug='article2')
+        article2.featured_in_homepage_start_date = datetime.now()
+        article2.save()
+        article3 = self.mk_article(
+            self.yourmind, title='article3', slug='article3')
+        article3.featured_in_homepage_start_date = datetime.now()
+        article3.save()
+        demote_articles()
+        promote_articles()
+        homepage_articles = load_descendant_articles_for_section(
+            {}, self.yourmind, featured_in_homepage=5)
+        self.assertEquals(homepage_articles[0].title, 'article3')
+        article2.featured_in_homepage_start_date = datetime.now()
+        article2.save()
+        demote_articles()
+        promote_articles()
+        homepage_articles = load_descendant_articles_for_section(
+            {}, self.yourmind, featured_in_homepage=5)
+        self.assertEquals(homepage_articles[0].title, 'article2')
+
+    def test_order_by_promote_date_section(self):
+        article = self.mk_article(
+            self.yourmind, title='article', slug='article')
+        article.featured_in_section_start_date = datetime.now()
+        article.save()
+        article2 = self.mk_article(
+            self.yourmind, title='article2', slug='article2')
+        article2.featured_in_section_start_date = datetime.now()
+        article2.save()
+        article3 = self.mk_article(
+            self.yourmind, title='article3', slug='article3')
+        article3.featured_in_section_start_date = datetime.now()
+        article3.save()
+        demote_articles()
+        promote_articles()
+        section_articles = load_descendant_articles_for_section(
+            {}, self.yourmind, featured_in_section=5)
+        self.assertEquals(section_articles[0].title, 'article3')
+        article2.featured_in_section_start_date = datetime.now()
+        article2.save()
+        demote_articles()
+        promote_articles()
+        section_articles = load_descendant_articles_for_section(
+            {}, self.yourmind, featured_in_section=5)
+        self.assertEquals(section_articles[0].title, 'article2')
 
     def test_promote_articles_latest(self):
         article = self.mk_article(
             self.yourmind, title='article', slug='article')
         article.featured_in_latest_start_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_latest)
 
@@ -42,12 +125,14 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.yourmind, title='article', slug='article')
         article.featured_in_latest_start_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_latest)
         article.featured_in_latest_end_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertFalse(article.featured_in_latest)
 
@@ -56,7 +141,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.yourmind, title='article', slug='article')
         article.featured_in_homepage_start_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_homepage)
 
@@ -65,12 +151,14 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.yourmind, title='article', slug='article')
         article.featured_in_homepage_start_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_homepage)
         article.featured_in_homepage_end_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertFalse(article.featured_in_homepage)
 
@@ -79,7 +167,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.yourmind, title='article', slug='article')
         article.featured_in_section_start_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_section)
 
@@ -88,12 +177,14 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             self.yourmind, title='article', slug='article')
         article.featured_in_section_start_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertTrue(article.featured_in_section)
         article.featured_in_section_end_date = datetime.now()
         article.save()
-        rotate_or_promote_content()
+        demote_articles()
+        promote_articles()
         article = ArticlePage.objects.all().first()
         self.assertFalse(article.featured_in_section)
 
@@ -108,8 +199,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
             days=1)
-        time1 = str(datetime.now().time())[:8]
-        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(timezone.now().time())[:8]
+        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
         site_settings.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         site_settings.monday_rotation = True
@@ -124,14 +215,17 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         # gets the first and last articles of the list before it rotates
         first_article_old = self.main.latest_articles()[0].pk
         last_article_old = self.main.latest_articles()[9].pk
 
-        rotate_or_promote_content(day=0)
+        rotate_content(day=0)
 
         # checks to see that the number of latest articles has not increased
         self.assertEquals(self.main.latest_articles().count(), 10)
@@ -169,12 +263,15 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
         last_article_old = self.main.latest_articles()[9].pk
-        rotate_or_promote_content(4)
+        rotate_content(4)
         self.assertEquals(first_article_old, self.main.latest_articles()[0].pk)
         self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
 
@@ -198,12 +295,15 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
         last_article_old = self.main.latest_articles()[9].pk
-        rotate_or_promote_content(0)
+        rotate_content(0)
         self.assertEquals(first_article_old, self.main.latest_articles()[0].pk)
         self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
 
@@ -230,12 +330,15 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.assertEquals(FooterPage.objects.live().count(), 5)
         self.assertEquals(self.main.latest_articles().count(), 0)
 
-        self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=True)
+        self.mk_articles(
+            self.yourmind_sub, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(self.yourmind_sub, count=10, featured_in_latest=False)
         self.assertEquals(self.main.latest_articles().count(), 10)
         first_article_old = self.main.latest_articles()[0].pk
         last_article_old = self.main.latest_articles()[9].pk
-        rotate_or_promote_content()
+        rotate_content()
         self.assertEquals(first_article_old, self.main.latest_articles()[0].pk)
         self.assertEquals(last_article_old, self.main.latest_articles()[9].pk)
 
@@ -246,12 +349,14 @@ class TestTasks(TestCase, MoloTestCaseMixin):
 
         non_rotating_articles = self.mk_articles(
             self.yourmind, count=3, featured_in_homepage=False)
-        rotate_or_promote_content()
+        rotate_content()
         for article in non_rotating_articles:
             self.assertFalse(article.featured_in_latest)
         self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
         self.mk_articles(
-            self.yourmind_sub, count=10, featured_in_homepage=True)
+            self.yourmind_sub, count=10,
+            featured_in_homepage_start_date=datetime.now())
+        promote_articles()
         self.mk_articles(
             self.yourmind_sub, count=10, featured_in_homepage=False)
         self.assertEquals(
@@ -261,8 +366,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind_sub.content_rotation_start_date = datetime.now()
         self.yourmind_sub.content_rotation_end_date = datetime.now() + \
             timedelta(days=1)
-        time1 = str(datetime.now().time())[:8]
-        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(timezone.now().time())[:8]
+        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
         self.yourmind_sub.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         self.yourmind_sub.monday_rotation = True
@@ -273,7 +378,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind_sub.saturday_rotation = True
         self.yourmind_sub.sunday_rotation = True
         self.yourmind_sub.save_revision().publish()
-        rotate_or_promote_content()
+        rotate_content()
         self.assertEquals(
             get_featured_articles(self.yourmind_sub).count(), 10)
         self.assertNotEquals(
@@ -282,3 +387,55 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             first_article_old, get_featured_articles(self.yourmind_sub)[2].pk)
         self.assertNotEquals(
             last_article_old, get_featured_articles(self.yourmind_sub)[9].pk)
+
+    def test_homepage_rotation_subcategories(self):
+
+        def get_featured_articles(section):
+            return section.featured_in_homepage_articles()
+
+        non_rotating_articles = self.mk_articles(
+            self.yourmind_sub, count=3, featured_in_homepage=False)
+        rotate_content()
+        for article in non_rotating_articles:
+            self.assertFalse(article.featured_in_latest)
+        self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
+        self.mk_articles(
+            self.yourmind_sub2, count=5,
+            featured_in_homepage_start_date=datetime.now())
+        self.mk_articles(
+            self.yourmind_sub3, count=5,
+            featured_in_homepage_start_date=datetime.now())
+        promote_articles()
+        self.mk_articles(
+            self.yourmind_sub, count=10, featured_in_homepage=False)
+        self.mk_articles(
+            self.yourmind_sub2, count=10, featured_in_homepage=False)
+        self.mk_articles(
+            self.yourmind_sub3, count=10, featured_in_homepage=False)
+        self.assertEquals(
+            get_featured_articles(self.yourmind_sub).count(), 0)
+        self.assertEquals(
+            get_featured_articles(self.yourmind_sub2).count(), 5)
+        self.assertEquals(
+            get_featured_articles(self.yourmind_sub3).count(), 5)
+        self.yourmind_sub.content_rotation_start_date = datetime.now()
+        self.yourmind_sub.content_rotation_end_date = datetime.now() + \
+            timedelta(days=1)
+        time1 = str(timezone.now().time())[:8]
+        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
+        self.yourmind_sub.time = dumps([{
+            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+        self.yourmind_sub.monday_rotation = True
+        self.yourmind_sub.tuesday_rotation = True
+        self.yourmind_sub.wednesday_rotation = True
+        self.yourmind_sub.thursday_rotation = True
+        self.yourmind_sub.friday_rotation = True
+        self.yourmind_sub.saturday_rotation = True
+        self.yourmind_sub.sunday_rotation = True
+        self.yourmind_sub.save_revision().publish()
+        rotate_content()
+        self.assertEquals(
+            ArticlePage.objects.live().filter(
+                featured_in_homepage=True).count(), 10)
+        self.assertTrue(ArticlePage.objects.live().filter(
+            featured_in_homepage=True).child_of(self.yourmind_sub).exists())

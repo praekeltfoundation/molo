@@ -30,6 +30,29 @@ Backwards incompatible changes
 - Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
+3.17.0
+~~~~~~
+
+- Add celery task for publishing pages
+
+3.16.2
+~~~~~~
+
+- (bug) content rotation on homepage
+
+3.16.1
+~~~~~~
+
+- (bug) only show published articles on front end
+
+3.16.0
+~~~~~~
+
+- Add promote and demote dates to article promotion setting
+- Remove boolean promotion options
+- Data migration to set all articles with feature ticks to have a promotion start date
+- Order articles by promotion date
+
 3.15.0
 ~~~~~~
 
