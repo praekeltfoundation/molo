@@ -217,14 +217,3 @@ To build the docs locally::
     (ve)$ make html
 
 You'll find the docs in `docs/_build/index.html`
-
-
-
-
-MOTE INSTALL
--   Clone https://github.com/praekelt/mote
--  pip install -e /Users/Admin/Sites/www/mote
--  pip install -r /Users/Admin/Sites/www/mote/mote/tests/requirements/19.txt
-
-Add 'mote' to settings/base.py
-Add 'url.py' url(r'^mote/', include('mote.urls', namespace='mote'))
