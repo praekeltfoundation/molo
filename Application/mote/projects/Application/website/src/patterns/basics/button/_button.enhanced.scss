@@ -1,0 +1,101 @@
+.Button {
+    $block: &;
+
+    @include text(2, "e");
+    display: block;
+    width: 100%;
+    padding: 0;
+    border-width: px($border-width-hairline);
+    border-style: solid;
+    border-color: transparent;
+    background-color: transparent;
+    color: $color-text-brand;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    &-text {
+        vertical-align: middle;
+    }
+
+    &-icon {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        margin: 0 auto;
+        overflow: hidden;
+        vertical-align: middle;
+    }
+
+    &--image,
+    &--svg svg {
+        display: block;
+        width: auto;
+        max-width: 1em;
+        height: 100%;
+        max-height: 1em;
+        margin: 0 auto;
+    }
+
+    &--svg {
+        * {
+            fill: $color-text-white !important;
+        }
+    }
+
+    &--primary,
+    &--secondary {
+        padding: ms(0) ms(3);
+        transition: background-color $animation-duration-normal $animation-easing;
+        border-radius: ms(3);
+        border-color: $color-border-interactive;
+
+        &:hover,
+        &:focus {
+            background-color: tint($color-background-interactive, 20%);
+        }
+
+        &:active {
+            box-shadow: inset 5px 5px 5px $color-background-interactive;
+        }
+    }
+
+    &--primary {
+        background-color: $color-background-interactive;
+
+        @each $key, $value in $brand-colors-map {
+            &#{$block}--color#{capitalize($key)} {
+                border-color: $value;
+                background-color: $value;
+
+                &:hover,
+                &:focus {
+                    background-color: tint($value, 20%);
+                }
+
+                &:active {
+                    box-shadow: inset 5px 5px 5px $value;
+                }
+            }
+        }
+    }
+
+    &--secondary {
+        background-color: transparent;
+
+        @each $key, $value in $brand-colors-map {
+            &#{$block}--color#{capitalize($key)} {
+                border-color: $value;
+
+                &:hover,
+                &:focus {
+                    background-color: tint($value, 20%);
+                }
+
+                &:active {
+                    box-shadow: inset 5px 5px 5px $value;
+                }
+            }
+        }
+    }
+}

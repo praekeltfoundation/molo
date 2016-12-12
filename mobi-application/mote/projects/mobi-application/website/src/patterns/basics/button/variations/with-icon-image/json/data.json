@@ -1,0 +1,11 @@
+{
+    "Button": {
+        "text": "Button Default",
+        "modifiers": "Button--primary",
+        "contentType": "image",
+        "icon" : {
+          "modifiers" : "Button--image",
+          "value": "http://www.placehold.it/300x300"
+        }
+    }
+}

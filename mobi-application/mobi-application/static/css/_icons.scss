@@ -1,0 +1,118 @@
+// Placeholder styles
+
+// .i {
+//   display: inline-block;
+//   overflow: hidden;
+//   text-align: right;
+//   text-indent: 100%;
+//   background-image: url("/img/icons.png");
+//   background-color: transparent;
+//   background-repeat: no-repeat;
+//   white-space: nowrap;
+// }
+
+// .i-specific {
+//   background-position: 0 -16px;
+//   height: 42px;
+//   width: 42px;
+//   margin-right: 20px;
+// }
+
+.i {
+  display: inline-block;
+  overflow: hidden;
+  height: 30px;
+  width: 30px;
+  position: relative; 
+}
+
+.i-comment {
+  background: transparent url(img/icon-comment-count.png) 0 0 no-repeat;
+  top: 11px;
+  margin-right: 0.5em;
+  @media (min-device-pixel-ratio: 2),
+         (-webkit-min-device-pixel-ratio: 2) {
+    background-image: url(img/icon-comment-count-2x.png);
+    background-size: 30px;
+  }
+}
+
+.i-comment-alt {
+  background-image: url(img/icon-comment-count-red.png);
+  @media (min-device-pixel-ratio: 2),
+         (-webkit-min-device-pixel-ratio: 2) {
+    background-image: url(img/icon-comment-count-red-2x.png);
+    background-size: 30px;
+  }
+}
+
+.i-facebook {
+  background-image: url(img/icon-facebook.png);
+  @media (min-device-pixel-ratio: 2),
+         (-webkit-min-device-pixel-ratio: 2) {
+    background-image: url(img/icon-facebook-2x.png);
+    background-size: 30px;
+  }
+}
+
+.i-twitter {
+  background-image: url(img/icon-twitter.png);
+  @media (min-device-pixel-ratio: 2),
+         (-webkit-min-device-pixel-ratio: 2) {
+    background-image: url(img/icon-twitter-2x.png);
+    background-size: 30px;
+  }
+}
+
+.i-facebook-share {
+  background-image: url(img/icon-facebook-share.png);
+  margin-right: 4em;
+  @media (min-device-pixel-ratio: 2),
+         (-webkit-min-device-pixel-ratio: 2) {
+    background-image: url(img/icon-facebook-share-2x.png);
+    background-size: 30px;
+  }
+}
+
+.i-twitter-share {
+  background-image: url(img/icon-twitter-share.png);
+  @media (min-device-pixel-ratio: 2),
+         (-webkit-min-device-pixel-ratio: 2) {
+    background-image: url(img/icon-twitter-share-2x.png);
+    background-size: 30px;
+  }
+}
+
+.i-email-share {
+  background-image: url(img/icon-email-share.png);
+  margin-left: 4em;
+  @media (min-device-pixel-ratio: 2),
+         (-webkit-min-device-pixel-ratio: 2) {
+    background-image: url(img/icon-email-share-2x.png);
+    background-size: 30px;
+  }
+}
+
+.i-hamburger {
+  height: 20px;
+  width: 20px;
+  background-image: url(img/icon-hamburger.png);
+  margin-left: 1.5em;
+  @media (min-device-pixel-ratio: 2),
+         (-webkit-min-device-pixel-ratio: 2) {
+    background-image: url(img/icon-hamburger-2x.png);
+    background-size: 20px;
+  }
+}
+
+.i-close {
+  height: 20px;
+  width: 20px;
+  background-image: url(img/icon-close.png);
+}
+
+.i-back {
+  height: 20px;
+  width: 20px;
+  background-image: url(img/icon-back.png);
+}
