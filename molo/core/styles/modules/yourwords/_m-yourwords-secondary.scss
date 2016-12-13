@@ -1,0 +1,48 @@
+.yourwords--secondary {
+  background: #AE016D;
+  .back-to-top,
+  .call-to-action__item-back-to-top {
+    background: #AE016D;
+    color: #fff;
+  }
+  .call-to-action__item-back-to-top {
+    border-top: 1px solid #fff;
+  }
+
+  .back-to-top {
+    margin: 10px;
+    &:after {
+      stroke-color: #fff;
+      fill: #fff;
+    }
+  }
+}
+
+.heading--yourwords-secondary {
+  background: #00B8AE;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  font-weight: normal;
+  display: block;
+  @media screen and (min-width: 320px) {
+    display: inline-block;
+    width: auto;
+  }
+}
+.yourwords--secondary__inner {
+  text-align: center;
+  color: #fff;
+}
+
+.call-to-action__item--yourwords-secondary {
+  border-radius: 0;
+  color: #fff;
+  margin-left: 15px;
+  font-weight: bold;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  @media screen and (min-width: 320px) {
+    background: #fff;
+    color: #AD016C;
+  }
+}

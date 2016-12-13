@@ -1,0 +1,13 @@
+<div class="pagination">
+  {% if articles_paginated.has_previous %}
+    <a href="?p={{ articles_paginated.previous_page_number }}" class="pagination__nav-prev-anchor">&larr;</a>
+  {% endif %}
+
+  <span class="pagination__current-page">
+    Page {{ articles_paginated.number }} of {{ articles_paginated.paginator.num_pages }}
+  </span>
+
+  {% if articles_paginated.has_next %}
+      <a href="?p={{ articles_paginated.next_page_number }}" class="pagination__nav-next-anchor">&rarr;</a>
+  {% endif %}
+</div>

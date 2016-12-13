@@ -1,0 +1,35 @@
+.yourwords__article {
+  padding: 10px;
+  @media screen and (min-width:320px) {
+    padding: 10px 15px;
+  }
+  .default-ordered-list {
+    @media screen and (min-width:320px) {
+      padding: 10px 15px 20px;
+    }
+  }
+
+  p {
+    margin: 10px 0;
+  }
+}
+.yourwords__heading-block {
+  text-align: center;
+  padding-bottom: 20px;
+}
+.heading--yourwords-article {
+  padding: 0;
+}
+.heading--yourwords-article-large {
+  margin-bottom: 0;
+}
+.yourwords__terms-title {
+  padding: 15px 0 0;
+  font-weight: 700;
+  display: block;
+}
+.yourwords__terms-anchor {
+  font-weight: bold;
+  color: #5A5D5E;
+
+}

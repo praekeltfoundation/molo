@@ -36,7 +36,8 @@ nosetests.xml
 /ve/
 logs/*.log
 *.pid
-/testapp/
+/mobi-app/
+node_modules/
 
 /static/
 /media/

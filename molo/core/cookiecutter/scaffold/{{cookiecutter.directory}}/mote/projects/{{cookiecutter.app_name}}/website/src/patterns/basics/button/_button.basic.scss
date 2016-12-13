@@ -1,0 +1,66 @@
+.Button {
+    $block: &;
+
+    @include text(2, "e");
+    display: block;
+    width: 100%;
+    padding: 0;
+    border-width: px($border-width-hairline);
+    border-style: solid;
+    border-color: transparent;
+    background-color: transparent;
+    color: $color-text-brand;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    &--primary,
+    &--secondary {
+        padding: ms(0) ms(3);
+        border-color: $color-border-interactive;
+
+        &:hover,
+        &:focus {
+            background-color: tint($color-background-interactive, 20%);
+        }
+    }
+
+    &--primary {
+        background-color: $color-background-interactive;
+
+        @each $key, $value in $brand-colors-map {
+            &#{$block}--color#{capitalize($key)} {
+                border-color: $value;
+                background-color: $value;
+
+                &:hover,
+                &:focus {
+                    background-color: tint($value, 20%);
+                }
+
+                &:active {
+                    box-shadow: inset 5px 5px 5px $value;
+                }
+            }
+        }
+    }
+
+    &--secondary {
+        background-color: transparent;
+
+        @each $key, $value in $brand-colors-map {
+            &#{$block}--color#{capitalize($key)} {
+                border-color: $value;
+            }
+
+            &:hover,
+            &:focus {
+                background-color: tint($value, 20%);
+            }
+
+            &:active {
+                box-shadow: inset 5px 5px 5px $value;
+            }
+        }
+    }
+}

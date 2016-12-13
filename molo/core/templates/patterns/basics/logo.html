@@ -1,0 +1,12 @@
+{% load wagtailimages_tags static i18n %}
+<div class="logo  logo--{{class}}">
+  <a href="/" class="logo__anchor">
+   {% if settings.core.SiteSettings.logo %}
+     {% image settings.core.SiteSettings.logo original %}
+   {% else %}
+     {% block logo %}
+       <img src="{% static 'img/logo.png' %}" alt="{% trans "Logo" %}" />
+     {% endblock %}
+   {% endif %}
+  </a>
+</div>
