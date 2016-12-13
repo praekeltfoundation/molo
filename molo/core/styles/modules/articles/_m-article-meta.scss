@@ -1,11 +1,11 @@
 
-.article-list__meta {
+.article-meta-list {
   border-top: 1px solid #E5E7E9;
   padding: 10px 0 35px;
   margin: 5px 0 0;
 }
 
-.article-list__likes-counter {
+.teaser-meta-list__likes-counter {
   padding: 5px 0;
   display: inline-block;
   vertical-align: middle;
@@ -16,7 +16,7 @@
     flex-direction: row-reverse;
   }
 }
-.article-list__liked-label {
+.teaser-meta-list__liked-label {
     display: inline-block;
     padding: 0 5px;
     @media screen and (min-width: 320px)  {
@@ -27,7 +27,7 @@
     }
 }
 
-.article-list__comment-counter {
+.teaser-meta-list__comment-counter {
   padding: 5px 5px 5px 0;
   display: inline-block;
   vertical-align: middle;
@@ -39,7 +39,7 @@
   }
 }
 
-.article-list__comment-label {
+.teaser-meta-list__comment-label {
   display: inline-block;
   padding: 0 5px 0;
   @media screen and (min-width: 320px)  {
