@@ -2,24 +2,9 @@
 <div class="sg-wrapper" id="element-{{ element.id }}">
 
     {% comment %}
-    Find out what this does
-    <h2>button {% include "styleguide/link_out.html" with name=name %}</h2>
+      Find out what this does
+      <h2>button {% include "styleguide/link_out.html" with name=name %}</h2>
     {% endcomment %}
-
-    <h2 class="title">
-        {{ element.title }}
-        <small>
-            <a class="link-out" data-linksto="#iframe-{{ element.id }}" href="{% url "mote:element-iframe" project=element.project.id aspect=element.aspect.id pattern=element.pattern.id element=element.id %}" target="_blank">
-                <img src="{% static "img/rocket.png" %}" alt="">
-            </a>
-        </small>
-    </h2>
-
-    {% if element.description %}
-        <p class="description">
-            {{ element.description|safe }}
-        </p>
-    {% endif %}
 
     <ul class="tags">
         {% if 'refactor' in element.metadata.flags %}

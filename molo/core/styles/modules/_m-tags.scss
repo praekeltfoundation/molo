@@ -3,6 +3,10 @@
   padding: 10px 15px;
   font-family: 'Quicksand', sans-serif;
 }
+.tag__name {
+  color: #017AF5;
+  font-weight: bold;
+}
 
 .tag__link {
   display: block;
@@ -28,8 +32,42 @@
     margin-bottom: 8px;
   }
 }
+.tags {
+  background: #fff;
+  padding: 10px 15px;
+}
+.tags-list__item {
+  background: #EBEBEB;
+  display: inline-block;
+  padding: 5px;
+  margin: 5px 0;
+  font-size: 13px;
+  cursor: pointer;
+  line-height: 1.5;
+  a {
+    color: #252627;
+    text-decoration: none;
+    word-break: break-word;
+  }
+}
+.tags-list__item--tags__title {
+  background: transparent;
+  padding: 0;
+}
 
-.tag__name {
-  color: #017AF5;
-  font-weight: bold;
+
+.article-tag {
+  background: transparent;
+  padding: 0 15px;
+}
+.article-tag-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.article-tag__item {
+  display: inline-block;
+}
+.article-tag__item--tags__title:after {
+  content: ":";
 }

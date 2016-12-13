@@ -51,47 +51,9 @@ article {
 }
 
 
-.featured-article-list {
-  padding: 10px 15px;
-}
-
-.featured-article-list__item {
-  list-style-type: none;
-  display: block;
-  padding: 5px 0 10px;
-}
-.featured-article-list__anchor {
-  color: #000;
-  font-weight: bold;
-  text-transform: capitalize;
-  @media screen and (min-width: 320px) {
-    text-decoration: none;
-  }
-}
-
-.featured-article-list__item--label {
-  color: #A6ACAF;
-  text-transform: uppercase;
-  font-size: 14px;
-  padding: 0 0 15px;
-}
-.featured-article-list__tagname {
-  color: blue;
-  font-weight: bold;
-}
-
 .article-teaser__publish-date {
   color: #94989B;
   padding: 0 0 10px;
   display: block;
   font-size: 15px;
-}
-
-
-.featured-page-list__anchor {
-  color: #000;
-  display: block;
-  padding: 10px 15px;
-  text-transform: uppercase;
-  font-weight: bold;
 }

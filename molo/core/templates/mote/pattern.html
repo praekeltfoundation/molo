@@ -55,9 +55,20 @@
 {% block content %}
 {% for element in pattern.elements %}
   <div class="pattern__introduction">
-    <h3 class="pattern__intro-heading">
-      <a name="element-{{ element.id }}">{{ element.title }}</a></h3>
-    <h5 class="pattern__intro-desc">{{ element.description }}</h5>
+      <h3 class="title pattern__intro-heading">
+          <a name="element-{{ element.id }}">{{ element.title }}</a>
+          <small>
+              <a class="link-out" data-linksto="#iframe-{{ element.id }}" href="{% url "mote:element-iframe" project=element.project.id aspect=element.aspect.id pattern=element.pattern.id element=element.id %}" target="_blank">
+                  <img src="{% static "img/rocket.png" %}" alt="">
+              </a>
+          </small>
+      </h3>
+
+    {% if element.description %}
+        <h5 class="pattern__intro-desc">
+            {{ element.description|safe }}
+        </h5>
+    {% endif %}
   </div>
   {% render_element_index element %}
 {% endfor %}
