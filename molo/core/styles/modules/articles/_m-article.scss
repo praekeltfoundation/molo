@@ -8,6 +8,11 @@ article {
   margin: 0;
   padding: 0;
 }
+@each $name, $color in $color_scheme {
+  .article-list--#{$name} {
+    color: $color;
+  }
+}
 .articles {
   overflow: auto;
   padding-bottom: 20px;
