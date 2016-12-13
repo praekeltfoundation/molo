@@ -12,6 +12,11 @@
     <link rel="stylesheet" type="text/css" href="{% static "mote/css/fonts.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "mote/css/mote.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "mote/js/libs/prism/css/prism.css" %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    {% compress css %}
+      <link rel="stylesheet" type="text/x-scss" href="{% static 'css/mote.scss' %}">
+    {% endcompress %}
 
     <script src="{% static "mote/js/libs/jquery/js/jquery.js" %}"></script>
     <script src="{% static "mote/js/libs/sticky-kit/js/jquery.sticky-kit.js" %}"></script>

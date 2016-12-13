@@ -1,0 +1,31 @@
+body >header {
+  background-color: #242526;
+  .logo {
+    color: #fff;
+    text-decoration: none;
+    img {
+      margin: 0 0 15px;
+    }
+    small {
+      color: #A6ACAF;
+      padding: 0 0 0 15px;
+    }
+  }
+}
+
+.hero {
+  background-color: #fff;
+  padding: 50px 0 35px;
+  border-bottom: 1px solid #D7DBDD;
+  h1 {
+    color: #000;
+  }
+
+  *,p {
+    color:#5A5D5E;
+  }
+}
+
+main {
+margin-top: 35px;
+}
