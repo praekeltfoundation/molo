@@ -199,8 +199,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
             days=1)
-        time1 = str(timezone.now().time())[:8]
-        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         site_settings.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         site_settings.monday_rotation = True
@@ -366,8 +366,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind_sub.content_rotation_start_date = datetime.now()
         self.yourmind_sub.content_rotation_end_date = datetime.now() + \
             timedelta(days=1)
-        time1 = str(timezone.now().time())[:8]
-        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         self.yourmind_sub.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         self.yourmind_sub.monday_rotation = True
@@ -421,8 +421,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind_sub.content_rotation_start_date = datetime.now()
         self.yourmind_sub.content_rotation_end_date = datetime.now() + \
             timedelta(days=1)
-        time1 = str(timezone.now().time())[:8]
-        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         self.yourmind_sub.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         self.yourmind_sub.monday_rotation = True
