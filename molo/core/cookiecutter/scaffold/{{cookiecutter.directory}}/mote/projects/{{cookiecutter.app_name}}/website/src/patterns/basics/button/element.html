@@ -4,28 +4,15 @@
 {% mask element.json.data.Button as "button" %}
 
 {% if button.tag == "a" %}
-    <a class="call-to-action__item-text call-to-action__item-text--{{ button.modifiers }}" href="{{ button.href }}" {{ button.attrs }}>
+    <a class="call-to-action__item call-to-action__item--{{button.modifiers}}" data-direction="none" href="{{ button.href }}" {{ button.attrs }}>
       {{ button.text }}
     </a>
 {% elif button.tag == "input" %}
-    <input class="Button {{ button.modifiers }}" value="{{ button.text }}" {{ button.attrs }} />
+    <input type="{{button.type}}" class="call-to-action__item call-to-action__item--{{ button.modifiers }}" value="{{ button.text }}" {{ button.attrs }} />
+
 {% else %}
-    <button class="Button {{ button.modifiers }}" {{ button.attrs }}>
-        {% if button.icon %}
-            <i class="Button-icon">
-                {% if button.contentType == "image" %}
-                    <img class="Button-iconGraphic" src="{{ button.icon.value }}" alt="">
-                {% elif button.contentType == "svg" %}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="{{ button.icon.svg.viewbox }}">
-                    <use xlink:href="#area"></use>
-                    <image src="{{button.img.fallback}}" alt="" />
-                </svg>
-                {% else %}
-                    <span>{{ button.icon.value }}</span>
-                {% endif %}
-            </i>
-        {% endif %}
-        <span class="Button-text">{{ button.text }}</span>
+    <button class="call-to-action__item call-to-action__item--{{ button.modifiers }}" data-direction="left" {{ button.attrs }}>
+      {{ button.text }}
     </button>
 {% endif %}
 {% endraw %}

@@ -1,0 +1,39 @@
+
+{% load mote_tags %}
+
+{% mask element.json.data.Navigation as "nav" %}
+<ul class="navigation-list">
+  {% for item in nav.nav_list %}
+    <li class="navigation-list__item">
+      <a href="{{item.href}}" class="navigation-list__anchor">{{item.name}}</a>
+    </li>
+{% endfor %}
+</ul>
+
+
+<h3>Navigation List with Subnavigation</h3>
+<ul class="nav-list">
+  {% for item in nav.nav_list_with_subnav %}
+    <li class="nav-list__item">
+      <a href="{{item.href}}" class="nav-list__anchor">{{item.name}}</a>
+      {% if item.sub_nav %}
+      <ul class="sub-nav-list">
+        {% for sub_item in item.sub_nav %}
+          <li class="sub-nav-list__item">
+            <a href="" class="sub-nav-list__anchor">{{sub_item.name}}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+<h3>Footer Navigation</h3>
+<ul class="footer-nav-list">
+  {% for item in nav.nav_list %}
+    <li class="footer-nav-list__item">
+      <a href="{{item.href}}" class="footer-nav-list__anchor">{{item.name}}</a>
+    </li>
+{% endfor %}
+</ul>
+

@@ -1,0 +1,8 @@
+
+{% load mote_tags %}
+
+{% mask element.json.data.Language_list_horizontal as "language_list_horizontal" %}
+{% for item in language_list_horizontal.languages %}
+    <option value="{{ item.value }}">{{ item.language }}</option>
+{% endfor %}
+
