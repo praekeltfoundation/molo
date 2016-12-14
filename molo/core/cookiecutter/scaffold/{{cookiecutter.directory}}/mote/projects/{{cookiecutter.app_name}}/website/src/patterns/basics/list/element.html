@@ -2,5 +2,7 @@
 {% load mote_tags %}
 
 {% mask element.json.data.List as "list" %}
-{{ list.text }}
+<ul class="ordered-list">
+  <li>{{ list.text }}</li>
+</ul>
 {% endraw %}
