@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from django.utils import timezone
 
 from json import dumps
 import pytest
