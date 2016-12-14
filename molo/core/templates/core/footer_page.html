@@ -7,29 +7,12 @@
 <div class="footer-articles">
   <h1 class="heading headin--xx-large">{{self.title}}</h1>
   <p class="article__description">{{self.subtitle}}</p>
+  {% block banner %}
+    {% include "patterns/basics/banner.html" %}
+  {% endblock %}
 
-  {% include "patterns/basics/banner.html" %}
-  <article>
-    {% for block in self.body %}
-      {% if block.block_type == 'heading' %}
-        <h3 class="heading headin--large">{{ block.value }}</h3>
-      {% else %}
-      {% if block.block_type == 'image' %}
-        {% image block.value width-320 %}
-      {% else %}
-      {% if block.block_type == 'numbered_list' %}
-        <ol class="default-ordered-list">
-        {% for item in block.value %}
-          <li class="default-ordered-list__item">{{item}}</li>
-        {% endfor %}
-        </ol>
-      {% else %}
-          {{ block }}
-      {% endif %}
-      {% endif %}
-      {% endif %}
-    {% endfor %}
-  </article>
+  {% block article-content %}
+    {% include "patterns/basics/article-content.html" %}
+  {% endblock %}
 </div>
-
 {% endblock %}
