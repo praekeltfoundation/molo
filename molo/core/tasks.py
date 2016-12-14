@@ -6,6 +6,7 @@ from time import strptime
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.core import management
 
 from molo.core.content_import import api
 from molo.core.models import (
@@ -38,6 +39,12 @@ def rotate_content(day=None):
     if main and index:
         rotate_latest(main_lang, index, main, site_settings, day)
         rotate_featured_in_homepage(main_lang, day)
+
+
+@task(ignore_result=True)
+def publish_scheduled_pages():
+    management.call_command(
+        'publish_scheduled_pages', verbosity=0, interactive=False)
 
 
 @task(ignore_result=True)
@@ -113,7 +120,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
             if days[day]:
                 for time in site_settings.time:
                     time = strptime(str(time), '%H:%M:%S')
-                    if time.tm_hour == timezone.now().hour:
+                    if time.tm_hour == datetime.now().hour:
                         # get a random article
                         random_article = ArticlePage.objects.live().filter(
                             featured_in_latest=False,
@@ -123,7 +130,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                         # set random article to feature in latest
                         if random_article:
                             random_article.featured_in_latest_start_date = \
-                                timezone.now()
+                                datetime.now()
                             random_article.save_revision().publish()
                             promote_articles()
                             demote_last_featured_article()
@@ -152,7 +159,7 @@ def rotate_featured_in_homepage(main_lang, day):
                 if days[day]:
                     for time in section.time:
                         time = strptime(str(time), '%H:%M:%S')
-                        if time.tm_hour == timezone.now().hour:
+                        if time.tm_hour == datetime.now().hour:
                             random_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
                                 languages__language__id=main_lang.id
@@ -162,7 +169,7 @@ def rotate_featured_in_homepage(main_lang, day):
                             if random_article:
                                 random_article. \
                                     featured_in_homepage_start_date = \
-                                    timezone.now()
+                                    datetime.now()
                                 random_article.save_revision().publish()
                                 promote_articles()
                                 demote_last_featured_article()

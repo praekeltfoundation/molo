@@ -30,6 +30,16 @@ Backwards incompatible changes
 - Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
 
+3.17.1
+~~~~~~
+
+- (bug) use datetime instead of UTC timezone for rotation
+
+3.17.0
+~~~~~~
+
+- Add celery task for publishing pages
+
 3.16.2
 ~~~~~~
 
