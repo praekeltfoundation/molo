@@ -36,8 +36,8 @@ nosetests.xml
 /ve/
 logs/*.log
 *.pid
-/molo-tuneme/
 node_modules/
+test-app/
 
 /static/
 /media/

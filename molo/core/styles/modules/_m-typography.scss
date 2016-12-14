@@ -1,3 +1,6 @@
+.heading {
+  padding: 0 15px;
+}
 .heading--xx-large {
   @include heading-fontsize-scale($heading-xx-large);
 }

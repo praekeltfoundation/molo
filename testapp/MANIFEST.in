@@ -1,6 +1,0 @@
-include LICENSE
-include README.rst
-include VERSION
-include requirements.txt
-include requirements-dev.txt
-recursive-include testapp *.py *.txt *.scss *.js *.html

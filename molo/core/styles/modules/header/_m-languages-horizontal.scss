@@ -4,11 +4,15 @@
   padding: 5px 15px;
 }
 
-.language-list__item--horizontal {
+.language-list--horizontal {
   display: inline-block;
-  &:after {
+  .language-list__item {
+    display: inline-block;
     color: #5a5d5e;
-    content: "|";
-    padding: 0 5px;
+      &:after {
+        color: #5a5d5e;
+        content: "|";
+        padding: 0 5px;
+      }
   }
 }
