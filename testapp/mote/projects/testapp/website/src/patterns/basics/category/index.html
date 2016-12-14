@@ -5,16 +5,16 @@
 {% block codeblock %}
 <div class="sg-code-block">
     <h4 class="title">
-        Code Block Title
+        Categories
     </h4>
     <div class="description">
-        Code Block Description
+        Website category headers are on the category page and consist of minimum a title, but also an icon.
     </div>
     <div class="code-example">
         <pre>
             <code class="language-markup">
                 <xmp>
-
+{% render_element element %}
                 </xmp>
             </code>
         </pre>
@@ -22,5 +22,46 @@
     <!-- code-example -->
 </div>
 <!-- sg-code-block -->
-{% endblock %}
 
+<div class="sg-code-block">
+    <h4 class="title">
+        Categories with Subcategories
+    </h4>
+    <div class="description">
+        Website category headers are on the category page and consist of minimum a title, but also an icon.
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+{% render_element element.aspect.basics.category.subcategory %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+    <!-- code-example -->
+</div>
+<!-- sg-code-block -->
+
+<div class="sg-code-block">
+    <h4 class="title">
+        Categories with thumbnail image
+    </h4>
+    <div class="description">
+        Website category headers are on the category page and consist of minimum a title, but also an icon.
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+{% render_element element.aspect.basics.category.with-thumbnail %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+    <!-- code-example -->
+</div>
+<!-- sg-code-block -->
+
+
+{% endblock %}

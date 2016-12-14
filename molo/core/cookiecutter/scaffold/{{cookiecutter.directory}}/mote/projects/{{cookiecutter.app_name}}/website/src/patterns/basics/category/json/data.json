@@ -1,6 +1,6 @@
 {
     "Category": {
-        "text": "Call to action",
-        "modifiers": "dummy-class"
+        "text": "Category name",
+        "modifiers": "category"
     }
 }

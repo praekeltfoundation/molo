@@ -11,3 +11,16 @@ html, body  {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Roboto', sans-serif;
 }
+
+.iframe-variation-toggler {
+  border: 1px solid #e6e6e6;
+  width: 160px;
+  height: 30px;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+
+#iframe-color-swatches body  {
+  padding: 0 15px;
+}
