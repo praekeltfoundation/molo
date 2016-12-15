@@ -84,7 +84,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         mock_verify.return_value = (
             'test@example.com',
             {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True',
-             'is_admin': 'True'},
+             'is_admin': 'True', 'email': 'test@example.com'},
             None)
 
         response = self.client.get(
@@ -167,7 +167,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         mock_verify.return_value = (
             'test@example.com',
             {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True',
-             'is_admin': 'True'},
+             'is_admin': 'True', 'email': 'test@example.com'},
             None)
 
         # login a user
