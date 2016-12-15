@@ -14,6 +14,7 @@ class MoloCASBackend(CASBackend):
             and 'has_perm' in request.session['attributes']\
                 and request.session['attributes']['has_perm'] == 'True':
             if request.session['attributes']['is_admin'] == 'True':
+                user.email
                 user.is_staff = True
                 user.is_superuser = True
                 user.save()
