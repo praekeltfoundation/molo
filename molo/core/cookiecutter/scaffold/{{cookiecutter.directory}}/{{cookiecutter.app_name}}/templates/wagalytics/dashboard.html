@@ -1,0 +1,227 @@
+{% extends "wagtailadmin/base.html" %}
+{% load wagtailadmin_tags i18n staticfiles gravatar %}
+
+{% block extra_css %}
+    {% include "wagtailadmin/pages/_editor_css.html" %}
+    {{ block.super }}
+
+    <!-- Load the API library.-->
+    <script>
+        (function(w,d,s,g,js,fs){
+          g=w.gapi||(w.gapi={});g.analytics={q:[],ready:function(f){this.q.push(f);}};
+          js=d.createElement(s);fs=d.getElementsByTagName(s)[0];
+          js.src='https://apis.google.com/js/platform.js';
+          fs.parentNode.insertBefore(js,fs);js.onload=function(){g.load('analytics');};
+        }(window,document,'script'));
+    </script>
+
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard.css' %}"> -->
+    <style>
+        div[class^="table"]
+        {
+            border-radius: 5px;
+            padding:10px;
+            border:1px solid lightgray;
+            box-shadow: 2px 2px 5px #888888;
+        }
+    </style>
+
+{% endblock %}
+
+{% block titletag %}{% trans 'Analytics' %}{% endblock %}
+
+{% block content %}
+    {% trans "30 day analytics" as title_trans %}
+    {% include "wagtailadmin/shared/header.html" with title=title_trans %}
+
+    <div class="nice-padding">
+        <h2>Sessions</h2>
+        <div id="sessions-line-chart-container" class = "table" >Loading...</div>
+
+        <br/>
+        <h2>Popular content</h2>
+        <div id="popular-pages-table-container" class = "table">Loading...</div>
+
+        <br/>
+        <h2>Top Cite Referrers</h2>
+        <div id="top-referrers-table-container" class = "table">Loading...</div>
+
+        <br/>
+        <h2>Session OverView </h2>
+        <div id="total-users-table-container" class = "table">Loading...</div>
+
+        <br/>
+        <h2>New Users (30 Days)</h2>
+        <div id="users-table-container" class = "table">Loading...</div>
+
+        <br/>
+        <h2>Active Users</h2>
+        <div id="active-users-table-container" class = "table">Loading...</div>
+
+        <br/>
+        <h2>Top Locations</h2>
+        <div id="top-devices-table-container" class = "table">Loading...</div>
+
+        <br/>
+
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+
+    <script>
+
+    if (!window.google || !window.google.load)
+    {
+        var tag = document.createElement('script');
+        tag.type = 'text/javascript';
+        tag.src = 'https://www.google.com/jsapi';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(tag, s);
+    }
+
+    gapi.analytics.ready(function() {
+
+          $.get( "{% url 'wagalytics_token' %}", function(data) {
+                gapi.analytics.auth.authorize ( {
+                  'serverAuth': {
+                  'access_token': data
+                }
+            })
+          });
+
+          // WEBSITE CURRENT SESSIONS
+
+          var sessionsLineChart = new gapi.analytics.googleCharts.DataChart({
+            query: {
+              'ids': '{{ ga_view_id }}',
+              'start-date': '30daysAgo',
+              'end-date': 'today',
+              'metrics': 'ga:sessions',
+              'dimensions': 'ga:date'
+            },
+            chart: {
+              'container': 'sessions-line-chart-container',
+              'type': 'LINE',
+              'options': {
+                'width': '100%',
+                'height': '200px',
+              }
+            }
+          });
+          sessionsLineChart.execute();
+
+          // POPULAR CONTENT / MOST VISITED SITES
+
+          var popularPagesTable = new gapi.analytics.googleCharts.DataChart({
+            query: {
+              'ids': '{{ ga_view_id }}',
+              'start-date': '30daysAgo',
+              'end-date': 'today',
+              'metrics': 'ga:pageviews',
+              'dimensions': 'ga:hostname,ga:pagePath',
+              'sort': '-ga:pageviews',
+              'max-results': 25
+            },
+            chart: {
+              'container': 'popular-pages-table-container',
+              'type': 'TABLE',
+              'options': {
+                'width': '100%',
+                'page': 'enable',
+                'pageSize': 5
+              }
+            }
+          });
+          popularPagesTable.execute();
+
+           // PAGE REFERRERS
+
+          var topReferrersTable = new gapi.analytics.googleCharts.DataChart({
+            query: {
+              'ids': '{{ ga_view_id }}',
+              'start-date': '30daysAgo',
+              'end-date': 'today',
+              'metrics': 'ga:pageviews,ga:pageviewsPerSession',
+              'dimensions': 'ga:fullReferrer,ga:country',
+              'sort': '-ga:pageviews',
+              'max-results': 25
+            },
+            chart: {
+              'container': 'top-referrers-table-container',
+              'type': 'TABLE',
+              'options': {
+                'width': '100%',
+                'page': 'enable',
+                'pageSize': 5
+              }
+            }
+          });
+          topReferrersTable.execute();
+
+          // summary
+          // Sessions - Users - PageViews - Pages/Session  - Avg. Session Duration
+
+          var OverView = new gapi.analytics.googleCharts.DataChart({
+              query: {
+                'ids': '{{ ga_view_id }}',
+                'metrics': 'ga:sessions,ga:users,ga:pageviews,ga:pageviewsPerSession,ga:avgSessionDuration',
+                'start-date': '2014-01-01',
+                'end-date': 'yesterday',
+              },
+              chart: {
+                'container': 'total-users-table-container',
+                'type': 'TABLE',
+
+                'options': {
+                    'width': '100%',
+                    'page': 'enable',
+                    'pageSize': 5
+                }
+              }
+
+          });
+          OverView.execute();
+
+         // USER
+
+          var users = new gapi.analytics.googleCharts.DataChart({
+            query: {
+                'ids': '{{ ga_view_id }}',
+                'start-date': '30daysAgo',
+                'end-date': 'today',
+                'metrics': 'ga:newUsers',
+                'dimensions':'ga:deviceCategory,ga:country,ga:language',
+            },
+            chart: {
+                'container': 'users-table-container',
+                 'type': 'TABLE',
+            }
+          });
+          users.execute();
+
+          //ACTIVE USERS
+
+          var activeUsers = new gapi.analytics.googleCharts.DataChart({
+              query: {
+                  'ids': '{{ ga_view_id }}',
+                  'metrics':'ga:1DayUsers,ga:avgSessionDuration',
+                  'dimensions':'ga:date',
+                  'start-date':'yesterday',
+                  'end-date':'today',
+              },
+              chart: {
+                  'container':'active-users-table-container',
+                  'type':'TABLE',
+              },
+              pollingInterval: 5,
+          });
+          activeUsers.execute();
+
+    });  // Analytics API Ends
+
+    </script>
+
+{% endblock %}
