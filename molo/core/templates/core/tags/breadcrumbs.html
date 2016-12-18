@@ -1,4 +1,16 @@
+ 
 {% load wagtailcore_tags i18n %}
+
 {% if ancestors %}
-  {% include "patterns/basics/breadcrumbs.html" %}
+  <h4>
+    <span><a href="/">{% trans "Home" %}</a></span> &gt;
+    {% for ancestor in ancestors %}
+      {% if forloop.last %}
+        <span class="active">{{ ancestor }}</span>
+      {% else %}
+        <span><a href="{% pageurl ancestor %}">{{ ancestor }}</a></span> &gt;
+      {% endif %}
+    {% endfor %}
+  </h4>
 {% endif %}
+ 
