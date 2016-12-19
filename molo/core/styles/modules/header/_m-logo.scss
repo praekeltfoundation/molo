@@ -1,15 +1,19 @@
 .logo {
   margin: 0;
-  display: inline-block;
   vertical-align: middle;
   img {
+    vertical-align: middle;
     width: 100%;
     @media screen and (min-width: 240px) {
       width: auto;
     }
   }
 }
+.logo--left {
+  text-align: left;
+}
 
-.logo__anchor {
+.logo--center {
+  text-align: center;
   display: block;
 }
