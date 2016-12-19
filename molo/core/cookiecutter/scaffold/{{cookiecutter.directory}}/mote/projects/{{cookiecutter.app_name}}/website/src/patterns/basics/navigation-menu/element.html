@@ -2,10 +2,10 @@
 {% load mote_tags %}
 
 {% mask element.json.data.Navigation as "nav" %}
-<ul class="navigation-list">
+<ul class="nav-list">
   {% for item in nav.nav_list %}
-    <li class="navigation-list__item">
-      <a href="{{item.href}}" class="navigation-list__anchor">{{item.name}}</a>
+    <li class="nav-list__item">
+      <a href="{{item.href}}" class="nav-list__anchor">{{item.name}}</a>
     </li>
 {% endfor %}
 </ul>
