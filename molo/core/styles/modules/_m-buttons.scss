@@ -93,7 +93,8 @@
 /*
   Used for search
 */
-.call-to-action__item--with-icon {
+.call-to-action__item--with-icon,
+.call-to-action__item--search {
   color: rgba(0, 0, 0, 0.5);
   border: none;
   font-size: 14px;
@@ -107,11 +108,16 @@
     width: 21px;
     position: absolute;
     right: 10%;
-    //top: 25%;
     top: 0;
   }
 }
 
+.call-to-action__item--search {
+  @media screen and (min-width: 320px) {
+    right: 15%;
+    top: 21px;
+  }
+}
 
 [data-direction~="right"]  {
   &:after {

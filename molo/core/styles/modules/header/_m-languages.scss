@@ -6,13 +6,18 @@
 }
 
 .language-list__item {
-  display: block;
+  display: inline-block;
 }
 
 .language-list__anchor {
   color: #5a5d5e;
 }
-
+.language-list__anchor--uppercase {
+  text-transform: uppercase;
+}
+.language-list__anchor--capitalize {
+  text-transform: capitalize;
+}
 .language-list__anchor-active {
   text-decoration: underline;
 }

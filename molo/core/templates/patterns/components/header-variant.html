@@ -8,7 +8,11 @@
       {% block menu %}
         {% include "patterns/basics/menu-min.html" with class="left"%}
       {% endblock %}
-
     </div>
   </div>
+  {% if self.get_verbose_name|slugify  == "main" %}
+    {% block languages %}
+      {% include "patterns/basics/languages.html" with class="capitalize" alignment="left" %}
+    {% endblock  %}
+  {% endif %}
 {% endblock %}

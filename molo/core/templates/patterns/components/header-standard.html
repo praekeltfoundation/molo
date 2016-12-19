@@ -8,7 +8,9 @@
       {% block menu %}
         {% include "patterns/basics/menu.html" with class="left"%}
       {% endblock %}
-
     </div>
   </div>
+  {% block languages %}
+    {% include "patterns/basics/languages.html" with class="uppercase" alignment="left" %}
+  {% endblock  %}
 {% endblock %}
