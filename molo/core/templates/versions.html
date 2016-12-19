@@ -1,12 +1,6 @@
- 
+
 {% extends "base.html" %}
 {% load i18n static compress %}
-
-{% block extra_css %}
-  {% compress css %}
-    <link rel="stylesheet" type="text/x-scss" href="{% static 'css/_admin_css.scss' %}">
-  {% endcompress %}
-{% endblock %}
 
 {% block content %}
 <table class="versions" style="width:100%">
@@ -34,4 +28,3 @@
   {% endfor%}
 </table>
 {% endblock %}
- 
