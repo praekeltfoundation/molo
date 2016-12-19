@@ -26,9 +26,7 @@
     width: 21px;
     height: 21px;
     @media screen and (min-width: 320px) {
-      //position: absolute;
       text-indent: -99em;
-      top: -2px;
     }
   }
 }
@@ -36,7 +34,6 @@
 #menu > .menu-list__anchor {
   @media screen and (min-width: 320px) {
     background:  url('../images/icons/menu.svg') no-repeat 0 0 / auto 100%;
-    left: 10px;
   }
 }
 
@@ -44,7 +41,6 @@
   padding: 0;
   @media screen and (min-width: 320px) {
     background:  url('../images/icons/search.svg') no-repeat 0 0 / auto 100%;
-    left: 5px;
   }
 }
 
