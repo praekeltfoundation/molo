@@ -5,20 +5,27 @@
   position: relative;
   @media screen and (min-width:320px) {
     margin: 0;
-    padding: 0 0 0 30px;
+    padding: 0;
+  }
+}
+.menu-list--toggle {
+  @media screen and (min-width:320px) {
+    margin: 0;
+    padding: 0 0 0 25px;
   }
 }
 .menu-list__item  {
   display: inline-block;
   border: none;
-  padding: 5px 0;
-  font-size: 14px;
+  padding: 5px 5px 0 0;
+  font-size: 13px;
 }
 
 .menu-list__anchor {
   color: #07292F;
   text-transform: uppercase;
   font-weight: bold;
+  font-size: 13px;
 }
 #search,
 #profile_register,
@@ -26,10 +33,9 @@
   .menu-list__anchor {
     width: 21px;
     height: 21px;
-    @media screen and (min-width: 320px) {
-      position: absolute;
+    padding: 0 0 0 10px;
+    @media screen and (min-width: 320px) {;
       text-indent: -99em;
-      top: 20%;
     }
   }
 }
@@ -37,15 +43,12 @@
 #menu > .menu-list__anchor {
   @media screen and (min-width: 320px) {
     background:  url('../images/icons/menu.svg') no-repeat 0 0 / auto 100%;
-    left: 120px;
   }
 }
 
 #search > .menu-list__anchor {
-  padding: 0;
   @media screen and (min-width: 320px) {
     background:  url('../images/icons/search.svg') no-repeat 0 0 / auto 100%;
-    left: 75px;
   }
 }
 

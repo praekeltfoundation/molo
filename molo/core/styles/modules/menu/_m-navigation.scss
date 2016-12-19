@@ -1,6 +1,4 @@
-.navigation {
-
-}
+.navigation {}
 
 
 .nav-list {
@@ -33,24 +31,24 @@
   padding: 10px 0 0;
 }
 
-.submenu-list {
+.sub-nav-list {
   margin: 0;
-  padding: 0;
+  padding: 0 15px 0;
 }
-.submenu-list__item {
+.sub-nav-list__item {
   display: block;
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
-.submenu-list__anchor {
+.sub-nav-list__anchor {
   color: #000;
   display: block;
   font-size: 14px;
   padding: 10px 0 0;
   text-transform: uppercase;
 }
-.submenu-list__anchor-desc {
+.sub-nav-list__anchor-desc {
   color: #727172;
   display: block;
   padding: 10px 0;
@@ -81,10 +79,13 @@
   list-style-type: none;
   display: inline-block;
   color: #727172;
-  padding: 10px 0;
+  padding: 5px 5px 0 0;
 }
 .footer-nav-list__anchor {
-  color: #000;
+  color: #727172;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: underline;
 }
 .footer-nav-list__anchor-desc {
   display: block;
