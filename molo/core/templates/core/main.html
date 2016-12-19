@@ -1,14 +1,16 @@
- 
+
 {% extends "base.html" %}
 
 {% load static core_tags %}
 
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
-
+{{ self.get_verbose_name|slugify }}
 {% block content %}
+
+
+
     {% bannerpages %}
     {% topic_of_the_day %}
     {% latest_listing_homepage num_count=6 %}
     {% section_listing_homepage %}
 {% endblock %}
- 

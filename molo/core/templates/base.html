@@ -63,7 +63,7 @@
     <!-- End Global Google Tag Manager -->
   {% endif %}
   {% wagtailuserbar %}
-
+  
     {% get_current_language as LANGUAGE_CODE %}
     {% block header %}
       {% include "patterns/components/header-standard.html" %}
@@ -82,10 +82,12 @@
           {% endif %}
         {% endblock %}
 
-        {% block footer %}
-            {% social_media_footer %}
-          {% footer_page %}
-        {% endblock %}
+
+
+      {% block footer %}
+          {% social_media_footer %}
+        {% footer_page %}
+      {% endblock %}
 
     </body>
 </html>
