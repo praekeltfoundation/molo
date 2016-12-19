@@ -7,7 +7,7 @@
 <ul class="footer-nav-list">
   {% for section in sections %}
     <li class="footer-nav-list__item">
-      <a href="#" class="footer-nav-list__anchor">
+      <a href="{% pageurl section %}" class="footer-nav-list__anchor">
         {{section.title}}
       </a>
     </li>

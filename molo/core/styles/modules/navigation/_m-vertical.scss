@@ -1,0 +1,23 @@
+.nav-list--vertical {
+  margin: 0;
+  padding: 0;
+}
+.nav-list__item--vertical  {
+  border-bottom: 1px solid #B0B9BB;
+  padding: 10px 15px 15px;
+}
+.nav-list__anchor--vertical {
+  display: block;
+  &:after {
+    content: "❯";
+    display: inline-block;
+    float: right;
+  }
+}
+.nav-list__anchor-desc--vertical {
+  color: #727172;
+  display: block;
+  text-transform: initial;
+  font-weight: normal;
+  padding: 10px 0 0;
+}

@@ -21,7 +21,10 @@
 @import "menu/_m-menu-search-toggle";
 @import "menu/_m-menu-vertical-submenu";
 @import "menu/_m-menu";
-@import "menu/_m-navigation";
+
+@import "navigation/_m-nav";
+@import "navigation/_m-nav-hr";
+@import "navigation/_m-vertical";
 
 @import "breadcrumbs/_m-breadcrumbs-on-footer";
 @import "breadcrumbs/_m-breadcrumbs";

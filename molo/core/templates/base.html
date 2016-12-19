@@ -66,12 +66,12 @@
 
     {% get_current_language as LANGUAGE_CODE %}
     {% block header %}
-      {% include "patterns/components/header-standard.html" %}
+      {% include "patterns/components/header-center.html" %}
     {% endblock %}
 
         {% breadcrumbs %}
 
-        {% block content %}{% endblock %}
+    {% block content %}{% endblock %}
 
         {% block extra_js %}
         {% endblock %}
@@ -82,7 +82,9 @@
           {% endif %}
         {% endblock %}
 
-
+    {% block navigation %}
+      {% include "patterns/components/navigation.html" %}
+    {% endblock %}
 
       {% block footer %}
           {% social_media_footer %}
