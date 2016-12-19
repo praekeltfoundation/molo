@@ -1,4 +1,4 @@
- 
+
 {% extends "base.html" %}
 {% load wagtailcore_tags wagtailimages_tags i18n%}
 
@@ -10,7 +10,6 @@
   {% for page in search_results %}
     {% with parent_section=page.get_parent_section ancestor=page.get_parent_section.get_ancestors.last %}
       <a href="{% pageurl page %}">
-        <div class="nav">
           {% if ancestor.sectionpage.image %}
               <h6>{{ancestor.title}}</h6>
           {% else %}
@@ -30,7 +29,6 @@
           {% else %}
               <p>{{page.subtitle}}</p>
           {% endif %}
-        </div>
       </a>
     {% endwith %}
   {% endfor %}
@@ -48,15 +46,17 @@
   </div>
 
   {% else %}
-    <div>
-        <h3>{% trans "Search" %}</h3>
-        <p>{% trans "No search results for " %}{{search_query}}.</p>
-        <div class="nav">
-            <form action="{% url 'search' %}">
-              <input placeholder="{% trans "I am looking for" %}" name="q" type="search">
-              <input type="submit" value="{% trans "Search"%}">
-            </form>
-        </div>
+    <div class="search search--{{class}}">
+      <h3 class="heading heading--x-large">{% trans "Search" %}</h3>
+      <h6 class="heading heading--xx-small">{% trans "No search results for " %}{{search_query}}.</h6>
+
+      <form action="{% url 'search' %}" class="search__form">
+        <fieldset>
+          <input placeholder="{% trans "Looking for something?" %}" name="q" type="text" value="{{search_query}}">
+          <input type="submit" value="{% trans "Search"%}" class="call-to-action__item call-to-action__item--search">
+        </fieldset>
+      </form>
+
     </div>
   {% endif %}
 {% endblock %}
@@ -66,5 +66,3 @@
       {% include "search/search_block.html" %}
   {% endif %}
 {% endblock %}
-
- 
