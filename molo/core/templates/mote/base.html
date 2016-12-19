@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% load staticfiles mote_tags %}
+{% load staticfiles static compress mote_tags %}
 <html lang="">
 <head>
     <meta charset="utf-8">
@@ -8,9 +8,16 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="stylesheet" type="text/css" href="{% static "mote/css/fonts.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "mote/css/mote.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "mote/js/libs/prism/css/prism.css" %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    {% compress css %}
+      <link rel="stylesheet" type="text/x-scss" href="{% static 'css/mote.scss' %}">
+    {% endcompress %}
+
     <script src="{% static "mote/js/libs/jquery/js/jquery.js" %}"></script>
     <script src="{% static "mote/js/libs/sticky-kit/js/jquery.sticky-kit.js" %}"></script>
     <script src="{% static "mote/js/libs/prism/js/prism.js" %}"></script>

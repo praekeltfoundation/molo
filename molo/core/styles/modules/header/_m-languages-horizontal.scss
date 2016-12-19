@@ -1,0 +1,18 @@
+.language-list--horizontal {
+  list-style-type: none;
+  margin: 0;
+  padding: 5px 15px;
+}
+
+.language-list--horizontal {
+  display: inline-block;
+  .language-list__item {
+    display: inline-block;
+    color: #5a5d5e;
+      &:after {
+        color: #5a5d5e;
+        content: "|";
+        padding: 0 5px;
+      }
+  }
+}

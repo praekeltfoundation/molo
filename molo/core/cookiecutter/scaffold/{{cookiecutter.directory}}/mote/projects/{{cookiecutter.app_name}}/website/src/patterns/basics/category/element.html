@@ -1,0 +1,25 @@
+{% raw %}
+{% load mote_tags %}
+
+{% mask element.json.data.Category as "category" %}
+
+<div class="category">
+  <div class="category-article__list">
+    {% if category.thumbnail.src %}
+      <a href="#" class="category-article__link">
+        <img class="category-article__image" src="{{category.thumbnail.src}}" alt="{{category.thumbnail.alt}}"/>
+      </a>
+    {% endif %}
+    {% if category.subtext %}
+    <a href="#" class="category-article__link">
+      <h3 class="heading heading--large heading--article-subcat">
+      {{category.subtext}}
+      </h3>
+    </a>
+    {% endif %}
+    <a href="#" class="category-article__link">
+      <h1 class="heading headin--xx-large heading--article-cat">{{category.text}}</h1>
+    </a>
+  </div>
+</div>
+{% endraw %}

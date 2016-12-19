@@ -1,0 +1,15 @@
+[role="menu"] [role="menuitem"] a {
+  color: #000;
+}
+
+[role="menu"] [role="menuitem"] a + [role="menu"] [role="menuitem"]:after {
+  background-color: rgba(0, 0,0 ,0.8);
+}
+[role="menu"] [role="menuitem"] a:hover,
+[role="menu"] [role="menuitem"] a:focus,
+[role="menu"] [role="menuitem"] a:visited:hover,
+[role="menu"] [role="menuitem"] a:visited:focus,
+[role="menu"] [role="menuitem"] a:active,
+[role="menu"] [role="menuitem"] a.active {
+  color: rgba(0,0,0,.5);
+}

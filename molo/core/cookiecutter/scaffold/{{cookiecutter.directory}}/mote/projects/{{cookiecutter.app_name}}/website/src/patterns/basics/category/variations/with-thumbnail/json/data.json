@@ -1,0 +1,10 @@
+{
+    "Category": {
+        "text": "Call to action",
+        "modifiers": "category-thumb",
+        "thumbnail": {
+          "src":  "/static/images/article-thumbnail.png",
+          "alt": "Category name thumb"
+        }
+    }
+}
