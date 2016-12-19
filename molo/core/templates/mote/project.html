@@ -1,24 +1,22 @@
 {% extends "mote/base.html" %}
-
 {% load staticfiles %}
 {% block hero %}
-    <div class="background"></div>
-    <div class="foreground">
-       <h3>Molo Design System</h3>
-      <h1>Welcome to App</h1>
-    </div>
+  <div class="background"></div>
+  <div class="foreground">
+     <h3>Molo Design System</h3>
+    <h1>Molo Core Design Patterns</h1>
+  </div>
 {% endblock %}
 
 {% block menu-desc %}
-  <h5>Molo Core Apps:</h5>
+  <h5>Molo App:</h5>
 {% endblock %}
-
 {% block menu %}
   <ul role="menu" class="vertical tier-1" id="sidebar-nav">
     {% for aspect in project.aspects %}
-        <li role="menuitem">
-            <a href="{% url "mote:aspect" project=project.id aspect=aspect.id %}">{{ aspect.title }}</a>
-        </li>
+      <li role="menuitem">
+          <a href="{% url "mote:aspect" project=project.id aspect=aspect.id %}">{{ aspect.title }}</a>
+      </li>
     {% endfor %}
   </ul>
 {% endblock %}
