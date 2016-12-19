@@ -9,7 +9,13 @@
 .nav-list__anchor--vertical {
   display: block;
   &:after {
-    content: "❯";
+    @media only screen and (min-width: 320px) {
+      content: ">";
+    }
+    @media only screen and (min-width: 490px) {
+      content: "❯";
+      //content: "❯";
+    }
     display: inline-block;
     float: right;
   }

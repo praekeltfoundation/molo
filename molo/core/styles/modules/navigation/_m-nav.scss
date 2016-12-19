@@ -1,4 +1,5 @@
 .navigation {
+  padding: 10px 0;
   .heading {
     margin: 10px;
   }
@@ -27,50 +28,4 @@
   @media screen and (min-width: 320px) {
     text-decoration: none;
   }
-}
-
-.sub-nav-list {
-  margin: 0;
-  padding: 0 15px 0;
-}
-.sub-nav-list__item {
-  display: block;
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-.sub-nav-list__anchor {
-  color: #000;
-  display: block;
-  font-size: 14px;
-  padding: 10px 0 0;
-  text-transform: uppercase;
-}
-.sub-nav-list__anchor-desc {
-  color: #727172;
-  display: block;
-  padding: 10px 0;
-  text-transform: none;
-}
-
-.footer-nav-list {
-  padding: 0 15px;
-}
-.footer-nav-list__item {
-  list-style-type: none;
-  display: inline-block;
-  color: #727172;
-  padding: 5px 5px 0 0;
-}
-.footer-nav-list__anchor {
-  color: #727172;
-  font-size: 14px;
-  font-weight: bold;
-  text-decoration: underline;
-}
-.footer-nav-list__anchor-desc {
-  display: block;
-  text-transform: initial;
-  font-weight: normal;
-  padding: 10px 0 0;
 }
