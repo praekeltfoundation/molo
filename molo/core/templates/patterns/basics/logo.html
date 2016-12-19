@@ -2,7 +2,7 @@
 <div class="logo  logo--{{class}}">
   <a href="/" class="logo__anchor">
    {% if settings.core.SiteSettings.logo %}
-     {% image settings.core.SiteSettings.logo original %}
+     {% image settings.core.SiteSettings.logo height-30 %}
    {% else %}
      {% block logo %}
        <img src="{% static 'img/logo.png' %}" alt="{% trans "Logo" %}" />

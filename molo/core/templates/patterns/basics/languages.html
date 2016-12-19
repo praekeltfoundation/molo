@@ -1,14 +1,19 @@
-{% load i18n %}
-{% if languages|length > 1 %}
-<div class="languages">
-  <ul class="language-list language-list--{{class}}">
-    {% for language in languages %}
-    <li class="language-list__item language-list__item--{{class}}">
-      <a href="{% url 'locale_set' language.locale %}?next={{ request.path }}?{{ request.GET.urlencode }}" class="language-list__anchor">
-        {{ language.locale|language_name_local }}
-      </a>
-    </li>
-    {% endfor %}
-  </ul>
-</div>
-{% endif %}
+{% block languages %}
+
+  {% load i18n %}
+
+  {% if languages|length > 1 %}
+  <div class="languages">
+    <ul class="language-list language-list--{{class}} language-list--{{alignment}}">
+      {% for language in languages %}
+      <li class="language-list__item language-list__item--{{class}}">
+        <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" class="language-list__anchor {% if LANGUAGE_CODE == language.locale %} language-list__anchor-active {% endif %}">
+          {{language.locale|language_name_local}}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+{% endblock %}

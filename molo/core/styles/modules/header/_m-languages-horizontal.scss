@@ -1,18 +1,29 @@
 .language-list--horizontal {
   list-style-type: none;
   margin: 0;
-  padding: 5px 15px;
-}
-
-.language-list--horizontal {
-  display: inline-block;
+  padding: 10px 15px;
+  display: block;
+  border-bottom: 1px solid #DDDDDD;
   .language-list__item {
     display: inline-block;
     color: #5a5d5e;
+    font-size: 13px;
       &:after {
         color: #5a5d5e;
         content: "|";
-        padding: 0 5px;
+        padding: 0 3px;
       }
+  }
+}
+
+.language-list--left {
+  text-align: left;
+}
+.language-list--right {
+  text-align: right;
+  .language-list__item:last-child {
+    &:after {
+      display: none;
+    }
   }
 }
