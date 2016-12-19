@@ -1,16 +1,12 @@
 {% block header %}
   {% block languages %}
-    {% include "patterns/basics/languages.html" with class="horizontal" alignment="right" %}
+    {% include "patterns/basics/languages.html" with class="horizontal" alignment="left" %}
   {% endblock  %}
 
   <div class="header">
     <div class="header__menu">
       {% block logo %}
         {% include "patterns/basics/logo.html" with class="center"%}
-      {% endblock %}
-
-      {% block menu %}
-        {% include "patterns/basics/menu-toggle.html"%}
       {% endblock %}
     </div>
   </div>
