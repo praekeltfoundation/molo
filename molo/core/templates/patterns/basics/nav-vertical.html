@@ -1,0 +1,16 @@
+{% load wagtailcore_tags  core_tags i18n %}
+
+{% block section_menu %}
+
+{% load_sections as sections %}
+<ul class="nav-list nav-list--vertical">
+  {% for section in sections %}
+    <li class="nav-list__item">
+      <a href="" class="nav-list__anchor">
+        {{section.title}}
+        <span class="nav-list__anchor-desc">{{section.description}}</span>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}
