@@ -1,16 +1,16 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static %}
 {% if sections %}
   {% for section in sections %}
-
   <div class="category__list">
+    {% if section.image %}
+      <a href="{% pageurl section %}" class="category__image-link">
+        {% image section.image width-60 %}
+      </a>
+    {% endif %}
+
     <h1 class="heading heading--x-large category__title">
       <a href="{% pageurl section %}" class="category__link">{{section.title}}</a>
     </h1>
-    {% if section.description %}
-      <p class="category__description">
-        {{section.description}}
-      </p>
-    {% endif %}
   </div>
   {% endfor%}
 {% endif %}

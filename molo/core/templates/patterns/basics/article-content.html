@@ -2,7 +2,6 @@
 
 <article>
   {% for block in self.body %}
-
     {% if block.block_type == 'heading' %}
       <h3 class="heading heading--large">{{ block.value }}</h3>
 
@@ -27,7 +26,7 @@
       <a href="{% pageurl block.value %}" class="featured-page-list featured-page-list__anchor">
         {{block.value }}
       </a>
-      
+
     {% else %}
         {{ block }}
     {% endif %}
