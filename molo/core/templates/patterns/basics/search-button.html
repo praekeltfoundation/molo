@@ -1,0 +1,5 @@
+{% load i18n %}
+{% block search_button %}
+  <input placeholder="{% trans "Looking for something?" %}" name="q" type="text" value="{{search_query}}" id="search__input-standard">
+  <input type="submit" value="{% trans "Search"%}" class="call-to-action__item call-to-action__item--search">
+{% endblock %}

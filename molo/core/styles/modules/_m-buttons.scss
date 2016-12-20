@@ -84,17 +84,15 @@
     color: #017AF5;
   }
   &:hover {
-    //border-color: #686A6B;
+    border-color: #686A6B;
   }
-
 }
 
 
 /*
   Used for search
 */
-.call-to-action__item--with-icon,
-.call-to-action__item--search {
+.call-to-action__item--with-icon {
   color: rgba(0, 0, 0, 0.5);
   border: none;
   font-size: 14px;
@@ -102,20 +100,12 @@
   text-decoration: underline;
   text-transform: uppercase;
   @media screen and (min-width: 320px) {
-    background:  url('../images/icons/search.svg') no-repeat 0 0 / auto 100%;
     text-indent: -99em;
     height: 21px;
     width: 21px;
     position: absolute;
     right: 10%;
     top: 0;
-  }
-}
-
-.call-to-action__item--search {
-  @media screen and (min-width: 320px) {
-    right: 15%;
-    top: 21px;
   }
 }
 
