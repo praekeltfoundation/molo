@@ -1,5 +1,10 @@
+[role="menu"] {
+  padding: 0 0 0 10px;
+}
+
 [role="menu"] [role="menuitem"] a {
   color: #000;
+  text-transform: capitalize;
 }
 
 [role="menu"] [role="menuitem"] a + [role="menu"] [role="menuitem"]:after {
