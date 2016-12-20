@@ -186,7 +186,7 @@
           });
           OverView.execute();
 
-         // USER
+         // 30 DAY USERS
 
           var users = new gapi.analytics.googleCharts.DataChart({
             query: {
@@ -220,6 +220,54 @@
               pollingInterval: 5,
           });
           activeUsers.execute();
+
+          // ADD TOP LOCATIONS CHART DATA
+
+          var renderTopLocationsChart = new gapi.analytics.googleCharts.DataChart({
+              query:{
+                'ids':'{{ ga_view_id }}',
+                'start-date':'30daysAgo',
+                'end-date':'today',
+                'dimensions':'ga:country,ga:city',
+                'metrics':'ga:pageviews',
+                'sort':'-ga:pageviews',
+              },
+              chart:{
+                'container':'top-devices-table-container',
+                'type':'TABLE',
+              },
+            });
+           renderTopLocationsChart.execute();
+
+           // ADD TOP COUNTRIES PIE CHART
+
+           function renderTopCountriesChart(ids) {
+              query ({
+                'ids': ids,
+                'start-date':'30daysAgo',
+                'end-date':'today',
+                'dimensions': 'ga:country',
+                'metrics': 'ga:sessions',
+                'sort': '-ga:sessions',
+                'max-results': 10
+              })
+              .then(function(response) {
+
+                var data = [];
+                var colors = ['#4D5360','#949FB1','#D4CCC5','#E2EAE9','#F7464A'];
+
+                response.rows.forEach(function(row, i) {
+                  data.push({
+                    label: row[0],
+                    value: +row[1],
+                    color: colors[i]
+                  });
+                });
+
+                new Chart(makeCanvas('chart-4-container')).Doughnut(data);
+                generateLegend('legend-4-container', data);
+              });
+            };
 
     });  // Analytics API Ends
 
