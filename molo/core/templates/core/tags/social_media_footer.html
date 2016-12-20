@@ -1,13 +1,10 @@
- 
+
 {% load wagtailcore_tags wagtailimages_tags i18n %}
 
 {% if social_media %}
     {% for site in social_media %}
-        <a href="https://{{ site.value.link }}">
+        <a href="https://{{ site.value.link }}" class="social-media__anchor">
             {% image site.value.image width-50 %}
         </a>
     {% endfor %}
 {% endif %}
-
- 
-

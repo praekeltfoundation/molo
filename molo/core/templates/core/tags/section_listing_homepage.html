@@ -1,26 +1,27 @@
 
 {% load wagtailcore_tags wagtailimages_tags core_tags %}
 
+{% block homepage-section %}
+  {% include "patterns/components/homepage-section.html" %}
+{% endblock %}
 
-  {% block homepage-section %}
-    {% include "patterns/components/homepage-section.html" %}
-  {% endblock %}
-
-    {% if sections %}
-    {% for section in sections %}
-      <div class="articles nav {{section.get_effective_extra_style_hints}}">
-        {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
-        {% for article in featured_articles %}
-        <ul class="list-block">
-          <li>
-            {% if article.image %}
-            <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
-            {% endif %}
-            <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
-            <p>{{article.subtitle}}</p>
-          </li>
-        </ul>
-        {% endfor %}
-      </div>
-    {% endfor%}
-    {% endif %}
+{% if sections %}
+{% for section in sections %}
+    {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+    {% for article in featured_articles %}
+    <ul class="promoted-article-list promoted-article-list--sectionpage">
+      <li class="promoted-article-list__item">
+        {% if article.image %}
+        <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+          {% image article.image width-60 %}
+        </a>
+        {% endif %}
+        <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+          <h1 class="heading heading--xx-large">{{article.title}}</h1>
+        </a>
+        <p>{{article.subtitle}}</p>
+      </li>
+    </ul>
+    {% endfor %}
+{% endfor%}
+{% endif %}
