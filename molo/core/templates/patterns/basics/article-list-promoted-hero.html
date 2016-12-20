@@ -3,12 +3,16 @@
 
 {% block article %}
   <ul class="promoted-article-list promoted-article-list--{{type}}">
-    <li class="promoted-article-list__item">
+    <li class="promoted-article-list__item  {% if forloop.first %} promoted-article-list__item--hero{% endif %}">
 
       {% if article.image %}
       <a href="{% pageurl article %}" class="promoted-article-list__anchor">
       {% block image %}
+        {% if forloop.first %}
+          {% include "patterns/basics/article-image.html" with curve="semi-round" %}
+        {% else %}
           {% include "patterns/basics/article-thumbnail.html" with curve="none" %}
+        {% endif %}
       {% endblock %}
       </a>
       {% endif %}

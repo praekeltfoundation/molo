@@ -2,8 +2,8 @@
 {% load wagtailcore_tags wagtailimages_tags i18n %}
 
 {% if articles %}
-  <h1 class="heading heading--x-large">{% trans "Latest" %}</h1>
+  <h1 class="heading heading--xx-large">{% trans "Latest" %}</h1>
   {% for article in articles %}
-    {% include "patterns/basics/article-list-promoted.html" %}
+    {% include "patterns/basics/article-list-promoted-hero.html" %}
   {% endfor %}
 {% endif %}
