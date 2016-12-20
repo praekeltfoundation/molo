@@ -1,19 +1,24 @@
- 
-{% extends "base.html" %}
 
-{% load static core_tags %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags static core_tags %}
 
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
 
 {% block content %}
-    <div class="articles nav {{self.get_effective_extra_style_hints}}">
-      <h2 class="list-header">
-        {% if self.image %}
-          <a href="{% pageurl self %}">{% image self.image width-60 %}</a>
-        {% endif %}
-        {{self.title}}
-      </h2>
+
+  <div class="category__list">
+    {% if self.image %}
+      <a href="{% pageurl self %}" class="category__image-link">
+        {% image self.image width-60 %}
+      </a>
+    {% endif %}
+
+    <h1 class="heading heading--x-large category__title">
+      <a href="{% pageurl self %}" class="category__link">{{self.title}}</a>
+    </h1>
+  </div>
+
+
       {% load_child_sections_for_section self as sections %}
       {% for section in sections %}
         <h2 class="list-header">
@@ -49,20 +54,7 @@
       </ul>
       {% endfor %}
 
-      {% if articles %}
-      <div class="step-links l-indent l-indent--tall">
-        {% if articles_paginated.has_previous %}
-            <a href="?p={{ articles_paginated.previous_page_number }}">&larr;</a>
-        {% endif %}
-        <span class="current">
-            Page {{ articles_paginated.number }} of {{ articles_paginated.paginator.num_pages }}
-        </span>
-        {% if articles_paginated.has_next %}
-            <a href="?p={{ articles_paginated.next_page_number }}">&rarr;</a>
-        {% endif %}
-      </div>
-      {% endif %}
-      
-    </div>
+    {% block pagination %}
+      {% include "patterns/basics/pagination.html" %}
+    {% endblock %}
 {% endblock %}
- 
