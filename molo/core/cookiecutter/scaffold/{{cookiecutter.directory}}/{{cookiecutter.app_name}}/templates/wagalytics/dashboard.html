@@ -64,6 +64,16 @@
         <div id="top-devices-table-container" class = "table">Loading...</div>
 
         <br/>
+        <div class="Chartjs">
+            <h2>This Week vs Last Week (by sessions)</h2>
+            <figure class="Chartjs-figure" id="chart-1-container"></figure>
+            <ol class="Chartjs-legend" id="legend-1-container"></ol>
+        </div>
+        <div class="Chartjs">
+            <h2>This Year vs Last Year (by users)</h2>
+            <figure class="Chartjs-figure" id="chart-2-container"></figure>
+            <ol class="Chartjs-legend" id="legend-2-container"></ol>
+        </div>
 
     </div>
 
@@ -268,6 +278,143 @@
                 generateLegend('legend-4-container', data);
               });
             };
+
+            renderWeekOverWeekChart('{{ ga_view_id }}');
+            renderYearOverYearChart('{{ ga_view_id }}');
+
+           // WEEK OVER WEEK CHART
+
+           function renderWeekOverWeekChart(ids) {
+
+              // Adjust 'now' to experiment with different days, for testing only...
+
+              var now = moment(); // .subtract(3, 'day');
+
+              var thisWeek = query({
+                       'ids': ids,
+                       'dimensions': 'ga:date,ga:nthDay',
+                       'metrics': 'ga:sessions',
+                       'start-date': moment(now).subtract(1, 'day').day(0).
+                                    format('YYYY-MM-DD'),
+                       'end-date': moment(now).format('YYYY-MM-DD'),
+              });
+
+              var lastWeek = query ({
+                       'ids': ids,
+                       'dimensions': 'ga:date,ga:nthDay',
+                       'metrics': 'ga:sessions',
+                       'start-date': moment(now).subtract(1, 'day').day(0).
+                                    subtract(1, 'week').format('YYYY-MM-DD'),
+                       'end-date': moment(now).subtract(1, 'day').day(6).
+                                    subtract(1, 'week').format('YYYY-MM-DD'),
+              });
+
+              Promise.all([thisWeek, lastWeek]).then(function(results) {
+
+                  var data1 = results[0].rows.map(function(row) { return +row[2]; });
+                  var data2 = results[1].rows.map(function(row) { return +row[2]; });
+
+                  var labels = results[1].rows.map(function(row) { return +row[0]; });
+
+                  labels = labels.map(function(label) {
+                      return moment(label, 'YYYYMMDD').format('ddd');
+                  });
+
+                  var data = {
+                      labels : labels,
+                          datasets : [
+                              {
+                                label: 'Last Week',
+                                fillColor : 'rgba(220,220,220,0.5)',
+                                strokeColor : 'rgba(220,220,220,1)',
+                                pointColor : 'rgba(220,220,220,1)',
+                                pointStrokeColor : '#fff',
+                                data : data2
+                              },
+                              {
+                                label: 'This Week',
+                                fillColor : 'rgba(151,187,205,0.5)',
+                                strokeColor : 'rgba(151,187,205,1)',
+                                pointColor : 'rgba(151,187,205,1)',
+                                pointStrokeColor : '#fff',
+                                data : data1
+                              }
+                          ]
+                  };
+                  new Chart(makeCanvas('chart-1-container')).Line(data);
+                  generateLegend('legend-1-container', data.datasets);
+              });
+           } ; // end
+
+           // YEAR OVER YEAR CHART
+
+           function renderYearOverYearChart(ids) {
+
+               var now = moment(); // .subtract(3, 'day');
+
+               var thisYear =  query( {
+                      'ids': ids,
+                      'dimensions': 'ga:month,ga:nthMonth',
+                      'metrics': 'ga:users',
+                      'start-date': moment(now).date(1).month(0).format('YYYY-MM-DD'),
+                      'end-date': moment(now).format('YYYY-MM-DD')
+               });
+
+               var lastYear = query ({
+                       'ids': ids,
+                       'dimensions': 'ga:month,ga:nthMonth',
+                       'metrics': 'ga:users',
+                       'start-date': moment(now).subtract(1, 'year').date(1).month(0)
+                                    .format('YYYY-MM-DD'),
+                       'end-date': moment(now).date(1).month(0).subtract(1, 'day')
+                                   .format('YYYY-MM-DD')
+               });
+
+               Promise.all([thisYear, lastYear]).then(function(results) {
+
+                  if ( results[0].rows && results[1].rows )
+                  {
+                   var data1 = results[0].rows.map(function(row) { return +row[2]; });
+                   var data2 = results[1].rows.map(function(row) { return +row[2]; });
+                   var labels = ['Jan','Feb','Mar','Apr','May','Jun',
+                                 'Jul','Aug','Sep','Oct','Nov','Dec'];
+
+                   // Ensure the data arrays are at least as long as the labels array.
+                   // Chart.js bar charts don't (yet) accept sparse datasets.
+                   for (var i = 0, len = labels.length; i < len; i++) {
+                       if (data1[i] === undefined)
+                            data1[i] = null;
+                       if (data2[i] === undefined)
+                            data2[i] = null;
+                   }
+
+                   var data = {
+                       labels : labels,
+                       datasets : [
+                           {
+                               label: 'Last Year',
+                               fillColor : 'rgba(220,220,220,0.5)',
+                               strokeColor : 'rgba(220,220,220,1)',
+                               data : data2
+                           },
+                           {
+                               label: 'This Year',
+                               fillColor : 'rgba(151,187,205,0.5)',
+                               strokeColor : 'rgba(151,187,205,1)',
+                               data : data1
+                           }
+                       ]
+                   };
+
+                   new Chart(makeCanvas('chart-2-container')).Bar(data);
+                   generateLegend('legend-2-container', data.datasets);
+               }
+             })
+              .catch(function(err) {
+                   console.error(err.stack)
+                   });
+
+            }; // end
 
     });  // Analytics API Ends
 
