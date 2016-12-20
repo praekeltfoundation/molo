@@ -1,11 +1,8 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static %}
-{% if sections %}
-  {% for section in sections %}
-
+{% block category %}
   <div class="category__list category__list-{{type}}">
     <h1 class="heading heading--x-large category__title category__title-{{type}}">
       <a href="{% pageurl section %}" class="category__link category__link-{{type}}">{{section.title}}</a>
     </h1>
   </div>
-  {% endfor%}
-{% endif %}
+{% endblock %}

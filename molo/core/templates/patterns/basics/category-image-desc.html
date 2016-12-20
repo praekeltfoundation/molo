@@ -1,6 +1,5 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static %}
-{% if sections %}
-  {% for section in sections %}
+{% block category %}
   <div class="category__list">
     {% if section.image %}
       <a href="{% pageurl section %}" class="category__image-link">
@@ -17,5 +16,4 @@
       </p>
     {% endif %}
   </div>
-  {% endfor%}
-{% endif %}
+{% endblock %}

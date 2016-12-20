@@ -1,0 +1,9 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static %}
+  {% block homepage-section %}
+    {% include "patterns/basics/category.html" with type="none" %}
+
+    {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+    {% for article in featured_articles %}
+        {% include "patterns/basics/article-list-promoted.html" %}
+    {% endfor %}
+  {% endblock %}

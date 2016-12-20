@@ -1,6 +1,5 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static %}
-{% if sections %}
-  {% for section in sections %}
+{% block category %}
 
   <div class="category__list">
     <h1 class="heading heading--x-large category__title">
@@ -12,5 +11,4 @@
       </p>
     {% endif %}
   </div>
-  {% endfor%}
-{% endif %}
+{% endblock %}
