@@ -75,6 +75,13 @@
             <ol class="Chartjs-legend" id="legend-2-container"></ol>
         </div>
 
+        <br/>
+        <div class="Chartjs">
+            <h2>Top Languages (by sessions)</h2>
+            <figure class="Chartjs-figure" id="chart-3-container"></figure>
+            <ol class="Chartjs-legend" id="legend-3-container"></ol>
+        </div>
+
     </div>
 
 {% endblock %}
@@ -281,6 +288,7 @@
 
             renderWeekOverWeekChart('{{ ga_view_id }}');
             renderYearOverYearChart('{{ ga_view_id }}');
+            renderTopLanguagesChart('{{ ga_view_id }}');
 
            // WEEK OVER WEEK CHART
 
@@ -415,6 +423,36 @@
                    });
 
             }; // end
+
+            // ADD 'N' TOP LANGUAGES USED BY USERS TO ACCESS THE SITE
+
+            function renderTopLanguagesChart(ids) {
+              query ({
+                'ids': ids,
+                'start-date':'30daysAgo',
+                'end-date':'today',
+                'dimensions': 'ga:language',
+                'metrics': 'ga:sessions',
+                'sort': '-ga:sessions',
+                'max-results': 10
+              })
+              .then(function(response) {
+
+                var data = [];
+                var colors = ['#4D5360','#949FB1','#D4CCC5','#E2EAE9','#F7464A'];
+
+                response.rows.forEach(function(row, i) {
+                  data.push({
+                    label: row[0],
+                    value: +row[1],
+                    color: colors[i]
+                  });
+                });
+
+                new Chart(makeCanvas('chart-3-container')).Doughnut(data);
+                generateLegend('legend-3-container', data);
+              });
+            }; //end
 
     });  // Analytics API Ends
 
