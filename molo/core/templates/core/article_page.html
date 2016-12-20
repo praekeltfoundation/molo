@@ -6,16 +6,16 @@
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
 
 {% block content %}
-  <div class="articles nav {{self.get_parent_section.get_effective_extra_style_hints}}">
-    <h3 class="article-title">{{self.title}}</h3>
+    <h1 class="heading heading--xx-large">{{self.title}}</h1>
     <p>{{self.subtitle}}</p>
     {% if self.image %}
-    <div class="banner">{% image self.image width-240 %}</div>
+    <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+      {% image self.image width-240 %}
+    </a>
     {% endif %}
-    {% social_media_article %}
-  </div>
 
-  {% include "patterns/basics/article-list.html" %}
+  {% social_media_article %}
+  {% include "patterns/basics/article-list-promoted.html" %}
   {% include "patterns/basics/article-content.html" %}
 
   {% if settings.core.SiteSettings.enable_clickable_tags %}
