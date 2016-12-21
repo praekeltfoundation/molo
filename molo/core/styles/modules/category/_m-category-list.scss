@@ -36,3 +36,27 @@
     display: inline-block;
   }
 }
+
+
+.category__list-babcycenter {
+  background: green;
+  color: #fff;
+}
+.category__title-babcycenter,
+.category__link-babcycenter {
+  color: #fff;
+}
+.promoted-article-list--babcycenter {
+  h1,h2,h3 {
+    margin: 0;
+  }
+  .promoted-article-list__anchor {
+    padding: 0 0 0 15px;
+    display: inline-block;
+    vertical-align: top;
+  }
+  .promoted-article-list__desc {
+    display: inline-block;
+    vertical-align: bottom;
+  }
+}

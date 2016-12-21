@@ -17,3 +17,8 @@
     }
   }
 }
+
+@mixin float-clear($value) {
+  float: $value;
+  clear: $value;
+}

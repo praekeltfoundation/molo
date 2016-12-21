@@ -1,0 +1,33 @@
+.promoted-article-list-column {
+  overflow: auto;
+}
+.promoted-article-list__item-column {
+  width: auto;
+  @media screen and (min-width: 320px) {
+    width: 50%;
+  }
+}
+
+.promoted-article-list__item-column:nth-child(even) {
+  @media screen and (min-width: 320px) {
+    @include float-clear(right);
+  }
+
+}
+.promoted-article-list__item-column:nth-child(odd) {
+  @media screen and (min-width: 320px) {
+    @include float-clear(left);
+  }
+}
+
+.promoted-article-list__item-column:first-child {
+  width: 100%;
+  @media screen and (min-width: 320px) {
+    @include float-clear(none);
+  }
+}
+.promoted-article-list__item-column:nth-child(2) {
+  @media screen and (min-width: 320px) {
+    @include float-clear(none);
+  }
+}

@@ -3,7 +3,5 @@
 
 {% if articles %}
   <h1 class="heading heading--xx-large">{% trans "Latest" %}</h1>
-  {% for article in articles %}
-    {% include "patterns/basics/article-list-promoted-hero.html" %}
-  {% endfor %}
+  
 {% endif %}

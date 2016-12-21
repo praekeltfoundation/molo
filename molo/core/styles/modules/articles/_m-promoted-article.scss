@@ -14,7 +14,7 @@
   padding: 5px 0 10px;
 }
 .promoted-article-list__anchor {
-  color: #000;
+  color: gold;
   font-weight: bold;
   text-transform: capitalize;
   padding: 0 15px;
@@ -60,6 +60,10 @@
     height: 2px;
     margin-bottom: 8px;
   }
+}
+
+.promoted-article-list__desc {
+  padding: 0 15px;
 }
 
 .promoted-article-tag__link {
