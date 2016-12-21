@@ -101,7 +101,11 @@
 
         <br/>
         <h2>Top Locations</h2>
-        <div id="top-devices-table-container" class = "table">Loading...</div>
+        <div id="top-locations-table-container" class = "table">Loading...</div>
+
+        <br/>
+        <h2>Top Mobile Device Info (by pageview)</h2>
+        <div id="top-mobile-device-info-table-container" class = "table">Loading ...</div>
 
         <br/>
         <div class="Chartjs">
@@ -290,7 +294,7 @@
                 'sort':'-ga:pageviews',
               },
               chart:{
-                'container':'top-devices-table-container',
+                'container':'top-locations-table-container',
                 'type':'TABLE',
               },
             });
@@ -464,6 +468,22 @@
               });
             }; //end
 
+            var mobileDeviceInfoChart = new gapi.analytics.googleCharts.DataChart({
+               query: {
+                 'ids': '{{ ga_view_id }}',
+                 'start-date':'30daysAgo',
+                 'end-date':'today',
+                 'dimensions': 'ga:mobileDeviceInfo',
+                 'metrics': 'ga:sessions',
+                 'sort': '-ga:sessions',
+                 'max-results': 10
+               },
+               chart: {
+                 'container':'top-mobile-device-info-table-container',
+                 'type':'TABLE',
+               }
+             });
+             mobileDeviceInfoChart.execute();
 
           /* Extend the Embed APIs 'gapi.analytics.report.Data' component
            * to return a promise that is fulfilled with the value returned by the API.
