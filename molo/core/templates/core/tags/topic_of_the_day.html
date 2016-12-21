@@ -3,5 +3,7 @@
 
 {% if articles %}
   <h1 class="heading heading--xx-large">{% trans "Topic of the Day" %}</h1>
-  
+  {% block article %}
+    {% include "patterns/basics/article-list-general.html" %}
+  {% endblock %}
 {% endif %}
