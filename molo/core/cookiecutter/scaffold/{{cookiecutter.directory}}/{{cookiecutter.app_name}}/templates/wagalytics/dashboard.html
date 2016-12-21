@@ -296,36 +296,6 @@
             });
            renderTopLocationsChart.execute();
 
-           // ADD TOP COUNTRIES PIE CHART
-
-           function renderTopCountriesChart(ids) {
-              query ({
-                'ids': ids,
-                'start-date':'30daysAgo',
-                'end-date':'today',
-                'dimensions': 'ga:country',
-                'metrics': 'ga:sessions',
-                'sort': '-ga:sessions',
-                'max-results': 10
-              })
-              .then(function(response) {
-
-                var data = [];
-                var colors = ['#4D5360','#949FB1','#D4CCC5','#E2EAE9','#F7464A'];
-
-                response.rows.forEach(function(row, i) {
-                  data.push({
-                    label: row[0],
-                    value: +row[1],
-                    color: colors[i]
-                  });
-                });
-
-                new Chart(makeCanvas('chart-4-container')).Doughnut(data);
-                generateLegend('legend-4-container', data);
-              });
-            };
-
             renderWeekOverWeekChart('{{ ga_view_id }}');
             renderYearOverYearChart('{{ ga_view_id }}');
             renderTopLanguagesChart('{{ ga_view_id }}');
@@ -493,6 +463,7 @@
                 generateLegend('legend-3-container', data);
               });
             }; //end
+
 
           /* Extend the Embed APIs 'gapi.analytics.report.Data' component
            * to return a promise that is fulfilled with the value returned by the API.
