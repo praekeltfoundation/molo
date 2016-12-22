@@ -1,0 +1,32 @@
+
+.content__prk {
+  @media screen and (min-width: 650px) {
+    padding-right: 15%;
+  }
+}
+.content__heading-medium {
+  @media screen and (min-width: 650px) {
+    padding-right: 40%;
+  }
+}
+.content__heading-small {
+  @media screen and (min-width: 650px) {
+    padding-right: 30%;
+  }
+}
+.content__description {
+  color: #5A5D5E;
+  font-weight: 300;
+  font-size: 18px;
+}
+.content__princinples {
+  padding-top: 30px;
+}
+
+.iframe-variation-toggler {
+  border: 1px solid #e6e6e6;
+  width: 160px;
+  height: 30px;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}

@@ -20,3 +20,27 @@
     {% endfor %}
   </ul>
 {% endblock %}
+
+{% block content %}
+
+  <div class="content__prk">
+      <h3 class="content__heading-medium">Praekelt Foundation Molo Mobisites Design System</h3>
+      <div class="content__princinples">
+          <h2 class="content__heading-large">What is Accessibility?</h2>
+          <h5 class="content__description">The Molo Design System enables accessible development by providing a set of semantically correct components, each with appropriate ARIA markup so they can be identified correctly.<br/><br/>
+          This means properly identifying all form fields and buttons, providing text based alternatives for all images, videos, icons and SVGs, as well as building components that properly convey their identity.
+          </h5>
+
+          <h4 class="content__heading-small">Standards Compliant Markup:</h4>
+            <ul class="ordered-list">
+              <li class="ordered-list__item">The semantic markup in our components are based on W3C standards and industry best practices.</li>
+            </ul>
+
+          <h4 class="content__heading-small">Appropriate use of color:</h4>
+            <ul class="ordered-list">
+              <li class="ordered-list__item">We provide the basic combinations of text and their background colors for slow end feature phones and build our way up to smart-phones</li>
+            </ul>
+      </div>
+  </div>
+
+{% endblock %}

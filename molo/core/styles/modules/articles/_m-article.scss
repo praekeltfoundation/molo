@@ -32,6 +32,7 @@ article {
 }
 .article__description {
   padding: 0 15px;
+  margin: 0;
 }
 .article__image--link {
   text-align: center;
@@ -49,8 +50,6 @@ article {
     width: auto;
   }
 }
-
-
 .article-teaser__publish-date {
   color: #94989B;
   padding: 0 0 10px;
