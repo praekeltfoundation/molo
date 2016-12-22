@@ -1,9 +1,8 @@
- 
+
 {% load wagtailcore_tags wagtailimages_tags core_tags %}
 
 {% if sections %}
 {% for section in sections %}
-<<<<<<< Updated upstream
 <div class="articles nav {{section.get_effective_extra_style_hints}}">
   <h2 class="list-header">
     <a href="{% pageurl section %}">{{section.title}}</a>
@@ -21,13 +20,10 @@
   </ul>
   {% endfor %}
 </div>
-=======
 
   {% block homepage-section %}
     {% include "patterns/components/homepage-section_hero.html" %}
   {% endblock %}
 
->>>>>>> Stashed changes
 {% endfor%}
 {% endif %}
- 

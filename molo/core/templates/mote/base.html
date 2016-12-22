@@ -31,7 +31,7 @@
     <header role="banner">
         <div class="wrapper">
             <a href="{% url "mote:home" %}" class="logo">
-              <img src="{% static "mote/img/logo.png" %}" alt="" />
+              <img src="{% static "mote/img/logo.png" %}" alt="Logo" />
               Molo Design System <small>Beta</small>
             </a>
         </div>
@@ -75,8 +75,10 @@
         <section role="section" class="container">
           {% block content %}
             <div class="content__prk">
-              <h3 class="content__heading-medium">Praekelt Foundation Molo Mobisites Design System</h3>
-              <h5 class="content__description">Why we are doing this? Why is it important? What is the purpose of the document (or guide - or what are we calling this)? Also who is this for? Just Designers? And how will it help? And then formulate a guiding principle.</h5>
+              <h2 class="content__heading-large">Praekelt Molo <br/> Mobisite Design System</h2>
+              <h5 class="content__description">The design system will make it easy to build/scaffold custom Molo mobisites from our Python Django Molo Framework with a consistent look and feel using predefined Molo Core  patterns and features - without reverse engineering our styles.
+              The Design System and Molo Core serve as a single source of truth for our Frontend Templates stack, to help us prevent lose in translation for different mobisite applications.
+              </h5>
 
               <div class="content__princinples">
                 <h2 class="content__heading-large">Principles</h2>
