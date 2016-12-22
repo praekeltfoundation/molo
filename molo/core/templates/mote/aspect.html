@@ -25,3 +25,23 @@
   {% endfor %}
   </ul>
 {% endblock %}
+
+{% block content %}
+  <div class="content__prk">
+    <h2 class="content__heading-large">Markup and Style Guide</h2>
+    <h5 class="content__description">The Pattern library will be actively developed to enable developers to uniform applications while adhering to CSS best practices and conventions</h5>
+
+    <h4 class="content__heading-small">Why design a Pattern Library Markup?</h4>
+    <p>Design Systems entail that your prototype is built from functioning HTML, CSS and JavaScript code, which means QA iteration and vetting has taken place, this minimises bugs and time taken to do bug fixes as parties get familiar with the product</p>
+    <p>This increases FED and the rest of the engineering productivity</p>
+    <p>Streamline and automate the project project setup to maximum and enforce standards and minimised errors</p>
+
+    <h4 class="content__heading-small">In order to achieve this, we have chosen to use very specific naming techniques</h4>
+    <ul class="unordered-list">
+      <li class="unordered-list__item"><strong>BEM Naming</strong><br/>BEM is a known method of naming components — block, element, modifier. For those unfamiliar, let’s briefly look at how BEM works below.</li>
+      <li class="unordered-list__item"><strong>Block</strong><br/>A block represents the main component name. e.g. <span class="highlighter">call-to-action</span></li>
+      <li class="unordered-list__item"><strong>Element</strong><br/>An element represents a part of a component and is separated by two underscores. e.g. <span class="highlighter">call-to-action__green</span></li>
+      <li class="unordered-list__item"><strong>Modifier</strong><br/>A modifier is a component or element variation and is separated by two dashes. The variation can apply to the overall component or it can be applied to an element within the component. e.g. <span class="highlighter">call-to-action--main</span></li>
+    </ul>
+  </div>
+{% endblock %}
