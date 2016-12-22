@@ -82,144 +82,137 @@
                 <h2 class="content__heading-large">Principles</h2>
                 <h5 class="content__description">Molo design system is a code guide and documentation for our mobile-websites code patterns in-order to keep designs and code base inline for reuse and consistency across multiple devices.</h5>
 
-                <h4 class="content__heading-small">This site provides a range of resources for designers and developers, these includes:</h4>
-                <ul class="ordered-list">
-                  <li class="ordered-list__item">Responsive component HTML mark-up</li>
-                  <li class="ordered-list__item"><strong>Show Pattern Info:</strong> shows the component documentation, the Mustache code provided by Pattern Lab, HTML and CSS tabs
-                  Cross-browser compatible CSS</li>
-                  <li class="ordered-list__item">Range of color vraibles, hex values used across our Molo mobi-sites</li>
-                </ul>
+                  <h4 class="content__heading-small">This site provides a range of resources for designers and developers, these includes:</h4>
+                  <ul class="ordered-list">
+                    <li class="ordered-list__item">Responsive component HTML mark-up</li>
+                    <li class="ordered-list__item"><strong>Show Pattern Info:</strong> shows the component documentation, the Mustache code provided by Pattern Lab, HTML and CSS tabs
+                    Cross-browser compatible CSS</li>
+                    <li class="ordered-list__item">Range of color vraibles, hex values used across our Molo mobi-sites</li>
+                  </ul>
 
-                <h4 class="content__heading-small">How will we use Molo Design System - Pattern Library?</h4>
-                <ul class="ordered-list">
-                  <li class="ordered-list__item">We will set our team’s workflow</li>
-                  <li class="ordered-list__item">Establish common vocabulary between disciplines</li>
-                  <li class="ordered-list__item">Establish browser, device, performance, and accessibility testing</li>
-                  <li class="ordered-list__item">Encourage design and functionality familiarity withing the teams to speed up team production and QA</li>
-                  <li class="ordered-list__item">Using a combination of BEM & SMACSS Methodology</li>
-                </ul>
+                  <h4 class="content__heading-small">How will we use Molo Design System - Pattern Library?</h4>
+                  <ul class="ordered-list">
+                    <li class="ordered-list__item">We will set our team’s workflow</li>
+                    <li class="ordered-list__item">Establish common vocabulary between disciplines</li>
+                    <li class="ordered-list__item">Establish browser, device, performance, and accessibility testing</li>
+                    <li class="ordered-list__item">Encourage design and functionality familiarity withing the teams to speed up team production and QA</li>
+                    <li class="ordered-list__item">Using a combination of BEM & SMACSS Methodology</li>
+                  </ul>
 
                 <h2 class="content__heading-large">Designing for Feature Phones</h2>
                 <h5 class="content__description">Feature phones have limited capability compared to smartphones. This principle discusses how these limitations affect the services we provide, as well as guidelines on how to make the best of our services despite these limitations.</h5>
                 <p>Feature phones either won't understand or will incorrectly implement the fancy CSS and design, especially the low-end feature phones. The best approach is to send feature phone users a very simple design, using typography, vertical spacing, and a little colouring.</p>
 
 
-                <h4 class="content__heading-small">We shouldn’t design with widths bigger than ~320 pixels</h4>
+                  <h4 class="content__heading-small">We shouldn’t design with widths bigger than ~320 pixels</h4>
                   <ul class="ordered-list">
                     <li class="ordered-list__item">Feature phone screens start at about 128 x 160 and only go up to about 240 x 320.</li>
                   </ul>
 
                   <h4 class="content__heading-small">We should use a simple one column layout.</h4>
-                    <ul class="ordered-list">
-                      <li class="ordered-list__item">Feature phones have tiny screens that would make your columns too small, even if they understood the code to make the grid layout in the first place. Floating text and images often results in a broken layout.</li>
-                    </ul>
-
-
+                  <ul class="ordered-list">
+                    <li class="ordered-list__item">Feature phones have tiny screens that would make your columns too small, even if they understood the code to make the grid layout in the first place. Floating text and images often results in a broken layout.</li>
+                  </ul>
 
                   <h4 class="content__heading-small">We should use as few images as we can.</h4>
-                    <ul class="ordered-list">
-                      <li class="ordered-list__item">Each image we add costs the user time (to download the image) and money (for data). On top of that, some browsers have an image quota or a page size quota: when they reach it they either stop loading the page immediately, or reject the whole page and load nothing.</li>
-                      <li class="ordered-list__item">Images should be small, and displayed inline, or on a row of their own, for example, should be always above or below the texts. No fancy positioning or floating is possible. 72dpi resolution ideally.</li>
-                    </ul>
+                  <ul class="ordered-list">
+                    <li class="ordered-list__item">Each image we add costs the user time (to download the image) and money (for data). On top of that, some browsers have an image quota or a page size quota: when they reach it they either stop loading the page immediately, or reject the whole page and load nothing.</li>
+                    <li class="ordered-list__item">Images should be small, and displayed inline, or on a row of their own, for example, should be always above or below the texts. No fancy positioning or floating is possible. 72dpi resolution ideally.</li>
+                  </ul>
 
+                  <h4 class="content__heading-small">We shouldn’t use background colours and try to use less colour in the feature phone design.</h4>
+                  <ul class="ordered-list">
+                    <li class="ordered-list__item">Feature phone support for applying background colours is widely variable and can't be trusted. You might end up with text and background colours being the same, rendering the text invisible.</li>
+                    <li class="ordered-list__item">Low-end feature phones don’t show the colours and texts will appear black. Over-riding link colours in specific sections aren’t always supported on feature phones, and they often add underlines to all links.</li>
+                  </ul>
 
-
-                    <h4 class="content__heading-small">We shouldn’t use background colours and try to use less colour in the feature phone design.</h4>
-                      <ul class="ordered-list">
-                        <li class="ordered-list__item">Feature phone support for applying background colours is widely variable and can't be trusted. You might end up with text and background colours being the same, rendering the text invisible.</li>
-                        <li class="ordered-list__item">Low-end feature phones don’t show the colours and texts will appear black. Over-riding link colours in specific sections aren’t always supported on feature phones, and they often add underlines to all links.</li>
-                      </ul>
-
-
-
-                    <h4 class="content__heading-small">We shouldn’t make links as buttons</h4>
-                    <ul class="ordered-list">
+                  <h4 class="content__heading-small">We shouldn’t make links as buttons</h4>
+                  <ul class="ordered-list">
                     <li class="ordered-list__item">On low-end feature phones they won’t show the background colour and borders so it’s better to keep the link as a text link. Also, links should have a specific URL.</li>
                     <li class="ordered-list__item">For example, we shouldn’t have a back link that doesn’t have a specific URL because this requires some code that either won’t work on feature phones or even if it works, sometimes it directs the user to the wrong page.</li>
                     <li class="ordered-list__item">Hence it should be back to article or back to homepage so that we can give it a URL.</li>
-                    </ul>
+                  </ul>
 
 
-                    <h4 class="content__heading-small">Buttons should have short one word text.</h4>
-                    <ul class="ordered-list">
-                      <li class="ordered-list__item">The feature phone screens are small, and buttons will be smaller than the smartphone templates; if the text is long it will go under the buttons.</li>
-                    </ul>
+                  <h4 class="content__heading-small">Buttons should have short one word text.</h4>
+                  <ul class="ordered-list">
+                    <li class="ordered-list__item">The feature phone screens are small, and buttons will be smaller than the smartphone templates; if the text is long it will go under the buttons.</li>
+                  </ul>
 
-                    <h4 class="content__heading-small">Plus other points</h4>
-                      <ul class="ordered-list">
-                        <li class="ordered-list__item">Feature phone friendly font e.g. Arial</li>
-                        <li class="ordered-list__item">Left align everything - including buttons</li>
-                        <li class="ordered-list__item">Form fields with text above the field (not inline)</li>
-                        <li class="ordered-list__item">Use the word Menu instead of a hamburger icon</li>
-                      </ul>
-
-
+                  <h4 class="content__heading-small">Plus other points</h4>
+                  <ul class="ordered-list">
+                    <li class="ordered-list__item">Feature phone friendly font e.g. Arial</li>
+                    <li class="ordered-list__item">Left align everything - including buttons</li>
+                    <li class="ordered-list__item">Form fields with text above the field (not inline)</li>
+                    <li class="ordered-list__item">Use the word Menu instead of a hamburger icon</li>
+                  </ul>
 
 
                   <h2 class="content__heading-large">Devices</h2>
                   <h5 class="content__description">We intend to document the list of devices our users use based on Google Analytics statistics.</h5>
                   <h4 class="content__heading-small">UX for Phones consists of:</h4>
-                  <ul class="ordered-list">
-                    <li class="ordered-list__item">Feature phones</li>
-                    <li class="ordered-list__item">Slow-end phones</li>
-                    <li class="ordered-list__item">Smart phones</li>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">Feature phones</li>
+                    <li class="unordered-list__item">Slow-end phones</li>
+                    <li class="unordered-list__item">Smart phones</li>
                   </ul>
                   <table class="devices-list">
-                  <tbody><tr>
-                  <th>Device type</th>
-                  <th>Screen resolution</th>
-                  <th>Device example</th>
-                  <th>Browser type</th>
-                  </tr>
-                  <tr>
-                  <td> Feature phone</td>
-                  <td>128 x 128 pixels</td>
-                  <td>(e.g. Nokia 105)</td>
-                  <td></td>
-                  </tr>
-                  <tr>
-                  <td> Feature phone </td>
-                  <td>128x 160 pixels</td>
-                  <td>(e.g. Nokia 110)</td>
-                  <td></td>
-                  </tr>
-                  <tr>
-                  <td>Feature phone</td>
-                  <td>240 x 320 pixels</td>
-                  <td>(e.g. Nokia 5130 Xpress Music)</td>
-                  <td></td>
-                  </tr>
-                  <tr>
-                  <td>Feature phone</td>
-                  <td>360 x 640 pixels</td>
-                  <td>(e.g. Nokia 5800 Xpress Music)</td>
-                  <td></td>
-                  </tr>
-                  <tr>
-                  <td>Smartphone</td>
-                  <td>240 x 320 pixels</td>
-                  <td>(e.g Samsung Pocket)</td>
-                  <td></td>
-                  </tr>
-                  <tr>
-                  <td> Smartphone</td>
-                  <td>480 x 360 pixels</td>
-                  <td>(e.g. Blackberry 9720)</td>
-                  <td></td>
-                  </tr>
-                  <tr>
-                  <td>Smartphone</td>
-                  <td>720 x 1280 pixels</td>
-                  <td>(e.g. Samsung J3)</td>
-                  <td></td>
-                  </tr>
-                  <tr>
-                  <td>Smartphone</td>
-                  <td>1440 x 2560 pixels </td>
-                  <td>(e.g. Samsung S6)</td>
-                  <td></td>
-                  </tr>
-                  </tbody>
+                  <tbody>
+                    <tr>
+                      <th>Device type</th>
+                      <th>Screen resolution</th>
+                      <th>Device example</th>
+                      <th>Browser type</th>
+                    </tr>
+                    <tr>
+                      <td> Feature phone</td>
+                      <td>128 x 128 pixels</td>
+                      <td>(e.g. Nokia 105)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td> Feature phone </td>
+                      <td>128x 160 pixels</td>
+                      <td>(e.g. Nokia 110)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Feature phone</td>
+                      <td>240 x 320 pixels</td>
+                      <td>(e.g. Nokia 5130 Xpress Music)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Feature phone</td>
+                      <td>360 x 640 pixels</td>
+                      <td>(e.g. Nokia 5800 Xpress Music)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Smartphone</td>
+                      <td>240 x 320 pixels</td>
+                      <td>(e.g Samsung Pocket)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td> Smartphone</td>
+                      <td>480 x 360 pixels</td>
+                      <td>(e.g. Blackberry 9720)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Smartphone</td>
+                      <td>720 x 1280 pixels</td>
+                      <td>(e.g. Samsung J3)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Smartphone</td>
+                      <td>1440 x 2560 pixels </td>
+                      <td>(e.g. Samsung S6)</td>
+                      <td></td>
+                    </tr>
+                    </tbody>
                   </table>
               </div>
             </div>
