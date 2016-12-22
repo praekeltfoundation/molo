@@ -19,9 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 
+    <!-- Inline css Styling -->
     <style>
-        div[class^="table"]
-        {
+        div[class^="table"] {
             border-radius: 5px;
             padding:10px;
             border:1px solid lightgray;
@@ -146,6 +146,12 @@
 
     gapi.analytics.ready(function() {
 
+         /**
+          * @method prepare page to query Google analytics API
+          * Authorize the application to access the resource server for querying using the access_token
+          * @param {token} A  access token
+          * @return {Object} Returns an object with the chart data of specified type.
+          */
           $.get( "{% url 'wagalytics_token' %}", function(data) {
                 gapi.analytics.auth.authorize ( {
                   'serverAuth': {
@@ -154,8 +160,12 @@
             })
           });
 
-          // WEBSITE CURRENT SESSIONS
-
+          /**
+          * WEBSITE CURRENT SESSIONS
+          * Queries the google analytics API for 30 day sessions.
+          * @param {Query} A dictionary with the entries to be passed to the API to pull data from the account with specified GA_VIEW_ID
+          * @return {Object} Returns an object with the chart data of specified type.
+          */
           var sessionsLineChart = new gapi.analytics.googleCharts.DataChart({
             query: {
               'ids': '{{ ga_view_id }}',
@@ -175,8 +185,12 @@
           });
           sessionsLineChart.execute();
 
-          // POPULAR CONTENT / MOST VISITED SITES
-
+         /**
+          * POPULAR CONTENT / MOST VISITED SITES
+          * Queries the google analytics API for 30 day pageviews.
+          * @param {Query} A dictionary with the entries to be passed to the API to pull data from the account with specified GA_VIEW_ID
+          * @return {Object} Returns an object with the chart data of specified type.
+          */
           var popularPagesTable = new gapi.analytics.googleCharts.DataChart({
             query: {
               'ids': '{{ ga_view_id }}',
@@ -199,8 +213,12 @@
           });
           popularPagesTable.execute();
 
-           // PAGE REFERRERS
-
+         /**
+          * PAGE REFERRERS
+          * Queries the google analytics API for 30 day page referrers, how the users accessed the site and where they're accessing it from.
+          * @param {Query} A dictionary with the entries to be passed to the API to pull data from the account with specified GA_VIEW_ID
+          * @return {Object} Returns an object with the chart data of specified type.
+          */
           var topReferrersTable = new gapi.analytics.googleCharts.DataChart({
             query: {
               'ids': '{{ ga_view_id }}',
@@ -223,9 +241,12 @@
           });
           topReferrersTable.execute();
 
-          // session overview
-          // Sessions - Users - PageViews - Pages/Session  - Avg. Session Duration
-
+         /**
+          * SESSION OVERVIEW (Sessions - Users - PageViews - Pages/Session  - Avg. Session Duration)
+          * Queries the google analytics API for the number of total users from 'start-date' to 'end-date'.
+          * @param {Query} A dictionary with the entries to be passed to the API to pull data from the account with specified GA_VIEW_ID
+          * @return {Object} Returns an object with the chart data of specified type.
+          */
           var OverView = new gapi.analytics.googleCharts.DataChart({
               query: {
                 'ids': '{{ ga_view_id }}',
@@ -247,8 +268,12 @@
           });
           OverView.execute();
 
-         // 30 DAY USERS
-
+         /**
+          * 30 DAY NEW USERS
+          * Queries the google analytics API for 30 day new users.
+          * @param {Query} A dictionary with the entries to be passed to the API to pull data from the account with specified GA_VIEW_ID
+          * @return {Object} Returns an object with the chart data of specified type.
+          */
           var users = new gapi.analytics.googleCharts.DataChart({
             query: {
                 'ids': '{{ ga_view_id }}',
@@ -264,8 +289,12 @@
           });
           users.execute();
 
-          //ACTIVE USERS
-
+         /**
+          * ACTIVE USERS
+          * Queries the google analytics API for 1 day active users.
+          * @param {Query} A dictionary with the entries to be passed to the API to pull data from the account with specified GA_VIEW_ID
+          * @return {Object} Returns an object with the chart data of specified type.
+          */
           var activeUsers = new gapi.analytics.googleCharts.DataChart({
               query: {
                   'ids': '{{ ga_view_id }}',
@@ -282,8 +311,13 @@
           });
           activeUsers.execute();
 
-          // ADD TOP LOCATIONS CHART DATA
-
+         /**
+          * ADD TOP LOCATIONS CHART DATA
+          * Queries the google analytics API for 30 day top locations with highest pageviews.
+          * @param {query} A dictionary with the entries to be passed to the API
+          *                to pull data from the account with specified GA_VIEW_ID
+          * @return {Object} Returns an object with the chart data of specified type.
+          */
           var renderTopLocationsChart = new gapi.analytics.googleCharts.DataChart({
               query:{
                 'ids':'{{ ga_view_id }}',
@@ -304,8 +338,18 @@
             renderYearOverYearChart('{{ ga_view_id }}');
             renderTopLanguagesChart('{{ ga_view_id }}');
 
-           // WEEK OVER WEEK CHART
-
+          /**
+           * WEEK OVER WEEK CHART
+           * Queries the google analytics API to Draw the a chart.js line chart with data
+           * from the specified view that overlays session data for the
+           * current week over session data for the previous week.
+           * @param {query} []- A dictionary with the entries to be passed to the API
+           *                to pull data from the account with specified GA_VIEW_ID
+           * @param {ids} ids is the ga_view_id used by the API to access the account view
+           * @return {Promise} renders the result of the query on the specified chart-container.
+           *                   A promise evaluates all objects returned by the analytics API query,
+           *                   which which then pulls the data points, labels and plugs them into a chart container.
+           */
            function renderWeekOverWeekChart(ids) {
 
               // Adjust 'now' to experiment with different days, for testing only...
@@ -368,8 +412,18 @@
               });
            } ; // end
 
-           // YEAR OVER YEAR CHART
-
+           /**
+            *  YEAR OVER YEAR CHART
+            * Queries the google analytics API to Draw the a chart.js line chart with data
+            * from the specified view that overlays session data for the
+            * current Year over session data for the previous Year.
+            * @param {query} []- A dictionary with the entries to be passed to the API
+            *                to pull data from the account with specified GA_VIEW_ID
+            * @param {ids} ids is the ga_view_id used by the API to access the account view
+            * @return {Promise} renders the result of the query on the specified chart-container.
+            *                   A promise evaluates all objects returned by the analytics API query,
+            *                   which which then pulls the data points, labels and plugs them into a chart container.
+            */
            function renderYearOverYearChart(ids) {
 
                var now = moment(); // .subtract(3, 'day');
@@ -438,8 +492,13 @@
 
             }; // end
 
-            // ADD 'N' TOP LANGUAGES USED BY USERS TO ACCESS THE SITE
-
+            /**
+             * TOP LANGUAGES CHART
+             * Queries the google analytics API for top languages with highest sessions.
+             * @param {Query} A dictionary with the entries to be passed to the API to pull data from the account with specified GA_VIEW_ID
+             * @return {Promise} Returns a Promise which resolves with the object of the chart data if no errors occurered in API query,
+             *                   Otherwise returns a rejecting promise.
+             */
             function renderTopLanguagesChart(ids) {
               query ({
                 'ids': ids,
@@ -468,6 +527,13 @@
               });
             }; //end
 
+            /**
+             * ADD TOP MOBILE DEVICE INFO CHART DATA
+             * Queries the google analytics API for 30 day top mobile device info with highest pageviews.
+             * @param {query} A dictionary with the entries to be passed to the API
+             *                to pull data from the account with specified GA_VIEW_ID
+             * @return {Object} Returns an object with the chart data of specified type.
+             */
             var mobileDeviceInfoChart = new gapi.analytics.googleCharts.DataChart({
                query: {
                  'ids': '{{ ga_view_id }}',
@@ -485,7 +551,8 @@
              });
              mobileDeviceInfoChart.execute();
 
-          /* Extend the Embed APIs 'gapi.analytics.report.Data' component
+          /**
+           * Extend the Embed APIs 'gapi.analytics.report.Data' component
            * to return a promise that is fulfilled with the value returned by the API.
            * @param {Object} params The request parameters.
            * @return {Promise} A promise.
