@@ -6,55 +6,52 @@
 
 {% block content %}
 
-  <div class="category__list">
-    {% if self.image %}
-      <a href="{% pageurl self %}" class="category__image-link">
-        {% image self.image width-60 %}
-      </a>
-    {% endif %}
+    <div class="category__list">
+      {% if self.image %}
+        <a href="{% pageurl self %}" class="category__image-link">
+          {% image self.image width-60 %}
+        </a>
+      {% endif %}
+      <h1 class="heading heading--xx-large category__title">
+        <a href="{% pageurl self %}" class="category__link">{{self.title}}</a>
+      </h1>
+    </div>
 
-    <h1 class="heading heading--x-large category__title">
-      <a href="{% pageurl self %}" class="category__link">{{self.title}}</a>
-    </h1>
-  </div>
+    {% load_child_sections_for_section self as sections %}
+    {% for section in sections %}
+
+      <div class="category__list">
+        {% if section.image %}
+          <a href="{% pageurl section %}" class="category__image-link">
+            {% image section.image width-60 %}
+          </a>
+        {% endif %}
+        <h1 class="heading heading--xx-large category__title">
+          <a href="{% pageurl section %}" class="category__link">{{section.title}}</a>
+        </h1>
+        {% if section.description %}
+          <p class="category__description">
+            {{section.description}}
+          </p>
+        {% endif %}
+      </div>
+
+      {% load_descendant_articles_for_section section featured_in_section=True as articles %}
+      {% if articles %}
+        {% block subsection-page %}
+          {% include "patterns/components/subsection-page-list.html" %}
+        {% endblock %}
+      {% endif %}
+
+    {% endfor %}
 
 
-      {% load_child_sections_for_section self as sections %}
-      {% for section in sections %}
-        <h2 class="list-header">
-          {% if section.image %}
-            <a href="{% pageurl section %}">{% image section.image width-60 %}</a>
-          {% endif %}
-          <a href="{% pageurl section %}">{{section.title}}</a>
-          <ul class="list-block">
-            <li>
-              {% if section.description %}<p>{{section.description}}</p>{% endif %}
-              {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
-              {% if featured_articles %}
-              {% for article in featured_articles %}
-                <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
-                <p>{{article.subtitle}}</p>
-              {% endfor %}
-              {% endif %}
-            </li>
-          </ul>
-        </h2>
-      {% endfor %}
-
-      {% load_child_articles_for_section self as articles %}
-      {% for article in articles %}
-      <ul class="list-block">
-        <li>
-          {% if article.image %}
-          <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
-          {% endif %}
-          <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
-          <p>{{article.subtitle}}</p>
-        </li>
-      </ul>
-      {% endfor %}
+    {% load_child_articles_for_section self as articles %}
+    {% block section-page %}
+      {% include "patterns/components/section-page-list.html" %}
+    {% endblock %}
 
     {% block pagination %}
-      {% include "patterns/basics/pagination.html" %}
+      {% include "patterns/basics/pagination-pageof.html" %}
     {% endblock %}
 {% endblock %}

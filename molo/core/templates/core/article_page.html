@@ -9,14 +9,14 @@
     <h1 class="heading heading--xx-large">{{self.title}}</h1>
     <p>{{self.subtitle}}</p>
     {% if self.image %}
-    <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+    <a href="{% pageurl self %}" class="promoted-article-list__anchor">
       {% image self.image width-240 %}
     </a>
     {% endif %}
 
   {% social_media_article %}
-  {% include "patterns/component/article-body.html" %}
+  {% include "patterns/components/article-body.html" %}
   article-tag-block.html
-  {% include "patterns/component/article-tag-block.html" %}
+  {% include "patterns/components/article-tag-block.html" %}
 
 {% endblock %}
