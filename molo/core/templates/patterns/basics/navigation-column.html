@@ -1,0 +1,24 @@
+{% block navigation %}
+  {% load wagtailcore_tags  core_tags i18n %}
+
+  {% block section_menu %}
+  <div class="navigation">
+    {% load_sections as sections %}
+    <h4 class="heading heading--large">
+      <a href="/" class="navigation__anchor">
+        {% trans "Home" %}
+      </a>
+    </h4>
+    <ul class="nav-list nav-list--column">
+      {% for section in sections %}
+        <li class="nav-list__item nav-list__item--column">
+          <a href="{% pageurl section %}" class="nav-list__anchor nav-list__anchor--column">
+            {{section.title}}
+          </a>
+          <span class="nav-list__anchor-desc nav-list__anchor-desc--column">{{section.description}}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endblock %}
+{% endblock %}
