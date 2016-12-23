@@ -20,3 +20,33 @@
     {% endfor %}
   </ul>
 {% endblock %}
+
+{% block content %}
+
+  <div class="content__prk">
+
+      <h2 class="content__heading-large">Praekelt Molo <br/> Mobisite Design System</h2>
+      <h5 class="content__description">The design system will make it easy to build/scaffold custom Molo mobisites from our Python Django Molo Framework with a consistent look and feel using predefined Molo Core  patterns and features - without reverse engineering our styles.
+      The Design System and Molo Core serve as a single source of truth for our Frontend Templates stack, to help us prevent lose in translation for different mobisite applications.
+      </h5>
+      <div class="content__princinples">
+        <h2 class="content__heading-large">Accessibility</h2>
+        <h5 class="content__description">The Molo Design System enables accessible development by providing a set of semantically correct components, each with appropriate ARIA markup so they can be identified correctly.<br/><br/>
+        This means properly identifying all form fields and buttons, providing text based alternatives for all images, videos, icons and SVGs, as well as building components that properly convey their identity.
+        </h5>
+
+
+        <h2 class="content__heading-large">Workflow Diagram</h2>
+        <p>To really experience the full benefits of the design system we want to propose a new workflow that is not about designing pages but rather designing components.</p>
+        <h4 class="content__heading-small">When a new feature that is not part of the Design System is requested 2 things can happen:</h4>
+        <ul class="ordered-list">
+          <li class="ordered-list__item">If it’s a simple feature the service designer might be able to take the component library and build the feature</li>
+          <li class="ordered-list__item">If it’s more complicated the developer and designer might have to be pulled into the discussion earlier on in order to design the new feature</li>
+        </ul>
+        <p>BUT VERY IMPORTANT: Before a new feature is created it’s important to make sure that it’s not just a tweak to a current feature. In that case the feature can rather be altered to accommodate the adjustment and added to the Design System - remember to mark patterns that have been updated in the system so teammates can see.</p>
+
+        <img src="{% static "images/New-Workflow.png" %}" width="100%" alt="Workflow" />
+      </div>
+  </div>
+
+{% endblock %}
