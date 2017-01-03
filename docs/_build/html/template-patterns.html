@@ -1,106 +1,180 @@
+
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Template Patterns &mdash; Molo 3.17.0 documentation</title>
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="index" title="Index" href="genindex.html"/>
-  <link rel="search" title="Search" href="search.html"/>
-  <link rel="top" title="Molo 3.17.0 documentation" href="index.html"/>
-  <link rel="next" title="CHANGE LOG" href="release-notes.html"/>
-  <link rel="prev" title="Multiple Languages" href="multiple-languages.html"/>
+  
+  <title>Template Patterns &mdash; Molo 3.17.0
+ documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Molo 3.17.0
+ documentation" href="index.html"/>
+        <link rel="next" title="CHANGE LOG" href="release-notes.html"/>
+        <link rel="prev" title="Template Tags" href="template-tags.html"/> 
+
+  
   <script src="_static/js/modernizr.min.js"></script>
+
 </head>
+
 <body class="wy-body-for-nav" role="document">
+
   <div class="wy-grid-for-nav">
+
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-
         <div class="wy-side-nav-search">
-          <a href="index.html" class="icon icon-home"> Molo </a>
-          <div class="version">3.17.0</div>
-          <div role="search">
-            <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-              <input type="text" name="q" placeholder="Search docs" />
-              <input type="hidden" name="check_keywords" value="yes" />
-              <input type="hidden" name="area" value="default" />
-            </form>
-          </div>
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Molo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.17.0
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
         </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        <ul class="current">
-          <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-          <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
-          <li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a></li>
-          <li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
-          <li class="toctree-l1"><a class="reference internal" href="multiple-languages.html">Multiple Languages</a></li>
-          <li class="toctree-l1 current"><a class="current reference internal" href="#">Template Tags</a>
-            <ul>
-            <li class="toctree-l2">
-              <a class="reference internal" href="#using-template-tags-to-get-translations">Using template tags to get translations</a>
-            </li>
-            <li class="toctree-l2">
-              <a class="reference internal" href="#using-template-tags-to-render-content">Using template tags to render content</a>
-            </li>
-            </ul>
-          </li>
-          <li class="toctree-l1"><a class="reference internal" href="release-notes.html">CHANGE LOG</a></li>
-        </ul>
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiple-languages.html">Multiple Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="template-tags.html">Template Tags</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Template Patterns</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#praekelt-molo-mobisite-design-system">Praekelt Molo Mobisite Design System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#website-glossary">Website Glossary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">CHANGE LOG</a></li>
+</ul>
+
+            
+          
         </div>
       </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="index.html">Molo</a>
       </nav>
 
-    <div class="wy-nav-content">
-      <div class="rst-content">
-        <div role="navigation" aria-label="breadcrumbs navigation">
-          <ul class="wy-breadcrumbs">
-            <li><a href="index.html">Docs</a> &raquo;</li>
-            <li>Template Tags</li>
-              <li class="wy-breadcrumbs-aside">
-                <a href="_sources/template-tags.rst.txt" rel="nofollow"> View page source</a>
-              </li>
-          </ul>
-          <hr/>
-        </div>
-        <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-        <div itemprop="articleBody">
 
-        <div class="section" id="template-patterns">
-        <span id="id1"></span>
-        <h1>Template Patterns
-        <a class="headerlink" href="#template-patterns" title="Permalink to this headline">¶</a></h1>
-        <div class="section" id="using-template-tags-to-get-translations">
-        <h2>Using template tags to get translations
-          <a class="headerlink" href="#using-template-tags-to-get-translations" title="Permalink to this headline">¶</a>
-        </h2>
-<p>In order to get the translation for a page model, we need to have the locale which is found in the context of a template.
-This can be accessed from a template tag.</p>
-<p>The following template tag will return the translation for the page model. It gets the locale from the context and returns the translation for that locale:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">get_translation</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
-</pre></div>
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Template Patterns</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/template-patterns.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
 </div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="template-patterns">
+<span id="id1"></span><h1>Template Patterns<a class="headerlink" href="#template-patterns" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="praekelt-molo-mobisite-design-system">
+<h2>Praekelt Molo Mobisite Design System<a class="headerlink" href="#praekelt-molo-mobisite-design-system" title="Permalink to this headline">¶</a></h2>
+<p>The design system will make it easy to build/scaffold custom Molo mobisites from our Python
+Django Molo Framework with a consistent look and feel using predefined Molo Core patterns
+and features - without reverse engineering our styles. The Design System and Molo Core serve
+as a single source of truth for our Frontend Templates stack, to help us prevent lose in
+translation for different mobisite applications.</p>
 </div>
-<div class="section" id="using-template-tags-to-render-content">
-<h2>Using template tags to render content<a class="headerlink" href="#using-template-tags-to-render-content" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="website-glossary">
+<h2>Website Glossary<a class="headerlink" href="#website-glossary" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>The <code class="docutils literal"><span class="pre">load_sections</span></code> template tag returns all the sections for a specific page.</li>
-<li>The <code class="docutils literal"><span class="pre">section_listing_homepage</span></code> tag will return all the sections that are featured on the homepage.</li>
-<li>The <code class="docutils literal"><span class="pre">latest_listing_homepage</span></code> tag will return all the articles that have been promoted to feature on the homepage.</li>
-<li>The <code class="docutils literal"><span class="pre">bannerpages</span></code> tag will return all the bannerpages.</li>
-<li>The <code class="docutils literal"><span class="pre">footer_page</span></code> tag will return all the foooterpages.</li>
-<li>The <code class="docutils literal"><span class="pre">breadcrumbs</span></code> tag will return the current breadcrumbs.</li>
-<li>The <code class="docutils literal"><span class="pre">load_descendant_articles_for_section</span></code> tag will return all the articles that are children of a section or any of its child sections.</li>
-<li>The <code class="docutils literal"><span class="pre">load_child_articles_for_section</span></code> tag will return all the articled that are children of a section page.</li>
-<li>The <code class="docutils literal"><span class="pre">load_child_sections_for_section</span></code> tag will return all the sub-sections that are children of a section page.</li>
+<li>Bewise (old)</li>
+<li>Bewise (new)</li>
+</ul>
+<p>&#8211;</p>
+<ul class="simple">
+<li>Unicef IoGT (old)</li>
+<li>Unicef IoGT (new)</li>
+<li>Unicef Fact for Life</li>
+</ul>
+<p>&#8211;</p>
+<ul class="simple">
+<li>Babycenter</li>
+<li>Malaria No More</li>
+</ul>
+<p>&#8211;</p>
+<ul class="simple">
+<li>FreeBasics</li>
+<li>Tune</li>
 </ul>
 </div>
 </div>
@@ -109,16 +183,16 @@ This can be accessed from a template tag.</p>
            </div>
           </div>
           <footer>
-
+  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-
+      
         <a href="release-notes.html" class="btn btn-neutral float-right" title="CHANGE LOG" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-
-
-        <a href="multiple-languages.html" class="btn btn-neutral" title="Multiple Languages" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-
+      
+      
+        <a href="template-tags.html" class="btn btn-neutral" title="Template Tags" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
-
+  
 
   <hr/>
 
@@ -128,7 +202,7 @@ This can be accessed from a template tag.</p>
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -138,10 +212,10 @@ This can be accessed from a template tag.</p>
     </section>
 
   </div>
+  
 
 
-
-
+  
 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
@@ -157,21 +231,21 @@ This can be accessed from a template tag.</p>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
 
+  
 
-
-
-
+  
+  
     <script type="text/javascript" src="_static/js/theme.js"></script>
+  
 
-
-
-
+  
+  
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-
+   
 
 </body>
 </html>

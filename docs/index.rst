@@ -24,6 +24,7 @@ Contents
    features
    multiple-languages
    template-tags
+   template-patterns
    release-notes
 
 .. _`Django`: https://www.djangoproject.com/
