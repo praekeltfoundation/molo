@@ -18,3 +18,17 @@
 [role="menu"] [role="menuitem"] a.active {
   color: rgba(0,0,0,.5);
 }
+
+
+.extra-list__menu {
+  padding: 10px 0 10px 20px;
+  display: block;
+  list-style: none;
+  margin: 0;
+}
+
+.extra-list__menuitem a {
+  color: #5876a3;
+  text-decoration: none;
+  padding: 5px 0;
+}
