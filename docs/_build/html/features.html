@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Features &mdash; Molo 3.17.0
+ documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Molo 3.17.0
+ documentation" href="index.html"/>
+        <link rel="next" title="Multiple Languages" href="multiple-languages.html"/>
+        <link rel="prev" title="Plugins" href="plugins.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Molo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.17.0
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-features">Core Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#existing-plugins">Existing Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#molo-profiles">molo.profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#molo-commenting">molo.commenting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#molo-yourwords">molo.yourwords</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#molo-polls">molo.polls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#molo-usermetadata">molo.usermetadata</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multiple-languages.html">Multiple Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="template-tags.html">Template Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">CHANGE LOG</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Molo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Features</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/features.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="features">
+<span id="template-tags"></span><span id="plugins"></span><h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
+<p>Molo consists of a core structure onto which new feature plugins can be added. This core is the foundation that allows you to create a site in Wagtail.</p>
+<div class="section" id="core-features">
+<h2>Core Features<a class="headerlink" href="#core-features" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt>Banners</dt>
+<dd><ul class="first last">
+<li>Image banners on the home page that can be linked to any page on the site</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Sections (and subsections)</dt>
+<dd><ul class="first last">
+<li>Content sections that allows structuring of content on the site</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Articles</dt>
+<dd><ul class="first last">
+<li>The main content element of molo.</li>
+<li>It allows you to create rich articles containing multiple images, lists (bulleted/numbered) and links to other pages</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Footer pages</dt>
+<dd><ul class="first last">
+<li>Content pages mostly used for About, Terms and Contact information</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Search</dt>
+<dd><ul class="first last">
+<li>The ability to search for any content on the site</li>
+<li>The ability to show a highlighted term in the results</li>
+<li>Support for both Elastichsearch 1.x &amp; 2.x</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Search highlighting is only supported by the Elasticsearch backend.</p>
+<blockquote>
+<div><p>You can use Elasticsearch 1 with the following settings:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">WAGTAILSEARCH_BACKENDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;BACKEND&#39;</span><span class="p">:</span> <span class="s1">&#39;molo.core.wagtailsearch.backends.elasticsearch&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;INDEX&#39;</span><span class="p">:</span> <span class="s1">&#39;base&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Or Elasticsearch 2:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">WAGTAILSEARCH_BACKENDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;BACKEND&#39;</span><span class="p">:</span> <span class="s1">&#39;molo.core.wagtailsearch.backends.elasticsearch2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;INDEX&#39;</span><span class="p">:</span> <span class="s1">&#39;base&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The example below shows how to show the highlighted word in the search results page with the following rules:</p>
+<ol class="arabic simple">
+<li>Title field is always displayed: if the term appears in this field, it will be highlighted.</li>
+<li>Display highlighted term in subtitle or body. If the term appears in the title only, display the original content of the subtitle field.</li>
+</ol>
+<p>You need to update the <cite>search_results.html</cite> page with the following code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">search_results</span> <span class="o">%</span><span class="p">}</span>
+  <span class="p">{</span><span class="o">%</span> <span class="k">with</span> <span class="n">parent_section</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">get_parent_section</span> <span class="n">ancestor</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">get_parent_section</span><span class="o">.</span><span class="n">get_ancestors</span><span class="o">.</span><span class="n">last</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{% pageurl page %}&quot;</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;nav&quot;</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">ancestor</span><span class="o">.</span><span class="n">sectionpage</span><span class="o">.</span><span class="n">image</span> <span class="o">%</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="n">h6</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">ancestor</span><span class="o">.</span><span class="n">title</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h6</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="o">%</span> <span class="k">else</span> <span class="o">%</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="n">h6</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">parent_section</span><span class="o">.</span><span class="n">title</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h6</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+        <span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">title_highlight</span> <span class="o">%</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="n">h3</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">page</span><span class="o">.</span><span class="n">title_highlight</span><span class="o">|</span><span class="n">safe</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h3</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="o">%</span> <span class="k">else</span> <span class="o">%</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="n">h3</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">page</span><span class="o">.</span><span class="n">title</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">h3</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+        <span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">subtitle_highlight</span> <span class="ow">or</span> <span class="n">page</span><span class="o">.</span><span class="n">body_highlight</span> <span class="o">%</span><span class="p">}</span>
+            <span class="p">{</span><span class="o">%</span> <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">subtitle_highlight</span> <span class="o">%</span><span class="p">}</span>
+                <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">page</span><span class="o">.</span><span class="n">subtitle_highlight</span><span class="o">|</span><span class="n">safe</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+            <span class="p">{</span><span class="o">%</span> <span class="k">elif</span> <span class="n">page</span><span class="o">.</span><span class="n">body_highlight</span> <span class="o">%</span><span class="p">}</span>
+                <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">page</span><span class="o">.</span><span class="n">body_highlight</span><span class="o">|</span><span class="n">safe</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+            <span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+        <span class="p">{</span><span class="o">%</span> <span class="k">else</span> <span class="o">%</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">page</span><span class="o">.</span><span class="n">subtitle</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+      <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+  <span class="p">{</span><span class="o">%</span> <span class="n">endwith</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="last simple">
+<li><dl class="first docutils">
+<dt>Multiple Languages</dt>
+<dd><ul class="first last">
+<li>Molo allows you to offer you content in multiple languages using the TranslatablePageMixin</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="existing-plugins">
+<h2>Existing Plugins<a class="headerlink" href="#existing-plugins" title="Permalink to this headline">¶</a></h2>
+<p>The following plugins are available to extend the core features of Molo.
+Please see <span class="xref std std-ref">Installing plugins</span> for installation details.</p>
+<div class="section" id="molo-profiles">
+<span id="id1"></span><h3>molo.profiles<a class="headerlink" href="#molo-profiles" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">Github</span></code>: <a class="reference external" href="https://github.com/praekelt/molo.profiles">https://github.com/praekelt/molo.profiles</a></p>
+<p>Profiles provides user profiles which adds registration, login and user data functionality.</p>
+<p>This library does not provide a Django user model, it provides a profile model that can be attached to a user. Our experience is that custom User models in Django add all sorts of unpleasantries when using migrations.</p>
+<dl class="docutils">
+<dt>Main features:</dt>
+<dd><ul class="first last simple">
+<li>Loging/Registration</li>
+<li>User profile to store user data</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="molo-commenting">
+<span id="id2"></span><h3>molo.commenting<a class="headerlink" href="#molo-commenting" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">Github</span></code>: <a class="reference external" href="https://github.com/praekelt/molo.commenting">https://github.com/praekelt/molo.commenting</a></p>
+<p>Commenting builds on the <a class="reference internal" href="#molo-profiles"><span class="std std-ref">molo.profiles</span></a> plugin. It allows users to comment on articles and these comments to be moderated.</p>
+<p>It is built using Django&#8217;s <a class="reference external" href="http://django-contrib-comments.readthedocs.org">Comments Framework</a>.</p>
+<dl class="docutils">
+<dt>Main features:</dt>
+<dd><ul class="first last simple">
+<li>Commenting on article pages</li>
+<li>Moderation of comments using django-admin</li>
+<li><dl class="first docutils">
+<dt>Comment reporting by users to allow for community moderation</dt>
+<dd><ul class="first last">
+<li><cite>COMMENTS_FLAG_THRESHHOLD</cite> allows for comments to be automatically removed if they have been reported by multiple users</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="molo-yourwords">
+<h3>molo.yourwords<a class="headerlink" href="#molo-yourwords" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">Github</span></code>: <a class="reference external" href="https://github.com/praekelt/molo.yourwords">https://github.com/praekelt/molo.yourwords</a></p>
+<p>YourWords (User generated content) allows users to submit content that can be converted into an article by an admin.</p>
+<dl class="docutils">
+<dt>Main features:</dt>
+<dd><ul class="first last simple">
+<li>Setting up a Your Words competition</li>
+<li>Downloading competition entries as a CSV</li>
+<li>Ability to shortlist entries</li>
+<li>Converting winning entries to Articles</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="molo-polls">
+<h3>molo.polls<a class="headerlink" href="#molo-polls" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">Github</span></code>: <a class="reference external" href="https://github.com/praekelt/molo.polls">https://github.com/praekelt/molo.polls</a></p>
+<p>A poll is a short set of questions (or typically only one question) with predetermined answers that a user can choose from.</p>
+<dl class="docutils">
+<dt>Main features:</dt>
+<dd><ul class="first last simple">
+<li>Creating and publishing a Question to the home page, section page and article page</li>
+<li>Multiple Question types (Single choice, Multiple Choice, Free Text, Numeric)</li>
+<li>Exporting polls results as a CSV (currently in dev)</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="molo-usermetadata">
+<h3>molo.usermetadata<a class="headerlink" href="#molo-usermetadata" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">Github</span></code>: <a class="reference external" href="https://github.com/praekelt/molo.usermetadata">https://github.com/praekelt/molo.usermetadata</a></p>
+<p>User meta data allows one to create persona pages so that when a user visits a site for the first time, they are able to choose a persona, or choose to skip this. This does not require the user to log in.</p>
+<dl class="docutils">
+<dt>Main features:</dt>
+<dd><ul class="first last simple">
+<li>Creating and publishing persona pages to be displayed when the user visits the site for the first time</li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="multiple-languages.html" class="btn btn-neutral float-right" title="Multiple Languages" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plugins.html" class="btn btn-neutral" title="Plugins" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Praekelt Foundation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'3.17.0
+',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

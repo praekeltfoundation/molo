@@ -1,0 +1,989 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CHANGE LOG &mdash; Molo 3.17.0
+ documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Molo 3.17.0
+ documentation" href="index.html"/>
+        <link rel="prev" title="Template Tags" href="template-tags.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Molo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.17.0
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiple-languages.html">Multiple Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="template-tags.html">Template Tags</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CHANGE LOG</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#x">3.x</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#backwards-incompatible-changes">Backwards incompatible changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">3.17.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">3.16.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">3.16.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">3.16.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">3.15.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">3.14.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">3.14.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">3.13.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">3.12.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">3.12.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">3.12.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">3.12.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">3.11.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">3.11.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">3.11.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">3.10.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">3.9.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">3.9.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">3.9.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">3.8.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">3.8.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id22">3.8.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">3.7.5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">3.7.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">3.7.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">3.7.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id27">3.7.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id28">3.7.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id29">3.6.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id30">3.5.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id31">3.4.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id32">3.4.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id33">3.4.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id34">3.3.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id35">3.2.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id36">3.2.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id37">3.2.6</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id38">3.2.5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id39">3.2.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id40">3.2.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id41">3.2.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id42">3.2.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id43">3.2.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id44">3.1.11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id45">3.1.10</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id46">3.1.9</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id47">3.1.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id48">3.1.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id49">3.1.6</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id50">3.1.5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id51">3.1.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id52">3.1.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id53">3.1.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id54">3.1.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id55">3.1.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id56">3.0.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id57">3.0.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id58">3.0.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id59">3.0.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id60">2.x</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id61">2.6.17</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id62">2.6.16</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id63">2.6.15</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id64">2.6.14</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id65">2.6.13</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id66">2.6.12</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id67">2.6.11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id68">2.6.10</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id69">2.6.9</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id70">2.6.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id71">2.6.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id72">2.6.6</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id73">2.6.5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id74">2.6.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id75">2.6.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id76">2.6.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id77">2.6.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id78">2.6.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id79">2.5.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id80">2.5.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id81">2.4.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id82">2.3.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id83">2.3.6</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id84">2.3.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id85">2.3.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id86">2.3.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id87">2.3.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id88">2.2.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id89">2.2.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id90">2.1.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id91">2.1.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id92">2.1.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id93">2.0.5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id94">2.0.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id95">2.0.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id96">2.0.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id97">2.0.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id98">2.0.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Molo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>CHANGE LOG</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/release-notes.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="change-log">
+<span id="release-notes"></span><h1>CHANGE LOG<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="x">
+<h2>3.x<a class="headerlink" href="#x" title="Permalink to this headline">¶</a></h2>
+<p>Major revamp to the way we handle Multi Language on Molo and a bunch of new features</p>
+<p>Main features:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Revamped</span> <span class="n">Multi</span> <span class="n">Language</span> <span class="n">support</span>
+<span class="o">-</span> <span class="n">We</span> <span class="n">added</span> <span class="n">content</span> <span class="n">automated</span> <span class="n">content</span> <span class="n">rotation</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">way</span> <span class="n">to</span> <span class="n">schedule</span> <span class="n">when</span> <span class="n">content</span> <span class="n">should</span> <span class="n">be</span> <span class="n">cycled</span>
+<span class="o">-</span> <span class="n">We</span> <span class="n">now</span> <span class="n">offer</span> <span class="n">specifying</span> <span class="n">Google</span> <span class="n">Analytics</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">CMS</span> <span class="k">for</span> <span class="n">both</span> <span class="n">GA</span> <span class="ow">and</span> <span class="n">GTM</span> <span class="p">(</span><span class="n">this</span> <span class="n">uses</span> <span class="n">celery</span> <span class="k">for</span> <span class="n">GA</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Renamed</span> <span class="n">HomePage</span> <span class="n">module</span> <span class="n">to</span> <span class="n">BannerPage</span>
+<span class="o">-</span> <span class="n">Changed</span> <span class="n">content</span> <span class="n">structure</span> <span class="n">to</span> <span class="n">introduce</span> <span class="n">index</span> <span class="n">pages</span>
+<span class="o">-</span> <span class="n">Upgraded</span> <span class="n">wagtail</span> <span class="n">to</span> <span class="mf">1.4</span><span class="o">.</span><span class="mi">3</span>
+<span class="o">-</span> <span class="n">We</span><span class="s1">&#39;ve added the option to allow un-translated pages to be hidden</span>
+<span class="o">-</span> <span class="n">We</span> <span class="n">now</span> <span class="n">show</span> <span class="n">a</span> <span class="n">translated</span> <span class="n">page</span> <span class="n">on</span> <span class="n">the</span> <span class="n">front</span> <span class="n">end</span> <span class="n">when</span> <span class="n">it</span><span class="s1">&#39;s main language page is unpublished</span>
+<span class="o">-</span> <span class="n">Add</span> <span class="n">Topic</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Day</span> <span class="n">functionality</span>
+<span class="o">-</span> <span class="n">Add</span> <span class="n">Support</span> <span class="k">for</span> <span class="n">both</span> <span class="n">Elastichsearch</span> <span class="mf">1.</span><span class="n">x</span> <span class="o">&amp;</span> <span class="mf">2.</span><span class="n">x</span>
+<span class="o">-</span> <span class="n">Add</span> <span class="n">ability</span> <span class="n">to</span> <span class="n">show</span> <span class="n">a</span> <span class="n">highlighted</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">results</span>
+<span class="o">-</span> <span class="n">Implement</span> <span class="n">custom</span> <span class="n">error</span> <span class="n">page</span> <span class="k">for</span> <span class="n">CSRF</span> <span class="n">error</span>
+</pre></div>
+</div>
+<div class="section" id="backwards-incompatible-changes">
+<h3>Backwards incompatible changes<a class="headerlink" href="#backwards-incompatible-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Deprecated use of <code class="docutils literal"><span class="pre">LanguagePage</span></code>: use <code class="docutils literal"><span class="pre">SiteLanguage</span></code> for multi-language support</li>
+<li>Deprecated use of <code class="docutils literal"><span class="pre">Main</span></code> : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)</li>
+<li>Deprecated use of <code class="docutils literal"><span class="pre">Section.featured_articles</span></code>: use the template tag <code class="docutils literal"><span class="pre">{%</span> <span class="pre">load_descendant_articles_for_section</span> <span class="pre">section</span> <span class="pre">featured_in_section=True</span> <span class="pre">%}</span></code></li>
+<li>Deprecated use of <code class="docutils literal"><span class="pre">Section.featured_articles_in_homepage</span></code>: use the template tag <code class="docutils literal"><span class="pre">{%</span> <span class="pre">load_descendant_articles_for_section</span> <span class="pre">section</span> <span class="pre">featured_in_homepage=True</span> <span class="pre">%}</span></code></li>
+<li>Deprecated use of <code class="docutils literal"><span class="pre">Section.latest_articles_in_homepage</span></code>: use the template tag <code class="docutils literal"><span class="pre">{%</span> <span class="pre">load_descendant_articles_for_section</span> <span class="pre">section</span> <span class="pre">featured_in_latest=True</span> <span class="pre">%}</span></code></li>
+<li>Deprecated use of <code class="docutils literal"><span class="pre">Section.articles</span></code>: use the template tag <code class="docutils literal"><span class="pre">{%</span> <span class="pre">load_child_articles_for_section</span> <span class="pre">page</span> <span class="pre">%}</span></code></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h3>3.17.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add celery task for publishing pages</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3>3.16.2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>(bug) content rotation on homepage</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>3.16.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>(bug) only show published articles on front end</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h3>3.16.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add promote and demote dates to article promotion setting</li>
+<li>Remove boolean promotion options</li>
+<li>Data migration to set all articles with feature ticks to have a promotion start date</li>
+<li>Order articles by promotion date</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>3.15.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Enable the sharing of articles to Facebook and Twitter from the article page.</li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h3>3.14.1<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Change create to get_or_create in migration 47</li>
+</ul>
+</div>
+<div class="section" id="id7">
+<h3>3.14.0<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Redefine core permissions for groups</li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h3>3.13.0<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add clickable front-end tags to articles</li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h3>3.12.3<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add migrations for external link</li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h3>3.12.2<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Signal on page moving and Allow adding external link to banner page</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3>3.12.1<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>(bug) search URL was defined using the wrong regex (it broke Service Directory plugin)</li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h3>3.12.0<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Implement custom error page for CSRF error</li>
+</ul>
+</div>
+<div class="section" id="id13">
+<h3>3.11.2<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Remove automatic opening of comments when an article is promoted to Topic of the Day</li>
+</ul>
+</div>
+<div class="section" id="id14">
+<h3>3.11.1<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Exclude future-dated Topic of the Day articles from Latest articles list</li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>3.11.0<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add Support for both Elastichsearch 1.x &amp; 2.x</li>
+<li>Add ability to show a highlighted term in the results</li>
+</ul>
+<p>Note: Search highlighting is only supported by the Elasticsearch backend.</p>
+</div>
+<div class="section" id="id16">
+<h3>3.10.0<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add Topic of the Day functionality</li>
+</ul>
+</div>
+<div class="section" id="id17">
+<h3>3.9.2<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Set GOOGLE_ANALYTICS to None in settings</li>
+</ul>
+</div>
+<div class="section" id="id18">
+<h3>3.9.1<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fix the issue with switching between child languages</li>
+<li>Fix the issue with allowing articles to exist in multiple sections</li>
+</ul>
+</div>
+<div class="section" id="id19">
+<h3>3.9.0<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Update user permissions</li>
+</ul>
+</div>
+<div class="section" id="id20">
+<h3>3.8.3<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Ensure title is encoded properly for GA</li>
+</ul>
+</div>
+<div class="section" id="id21">
+<h3>3.8.2<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Ensure title is filled in for GA middleware</li>
+</ul>
+</div>
+<div class="section" id="id22">
+<h3>3.8.0<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add custom GA celery middleware</li>
+<li>Use celery for GA instead of gif pixel</li>
+</ul>
+</div>
+<div class="section" id="id23">
+<h3>3.7.5<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add middleware to ignore accept language header</li>
+</ul>
+</div>
+<div class="section" id="id24">
+<h3>3.7.4<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Return the language code for languages that are not supported</li>
+</ul>
+</div>
+<div class="section" id="id25">
+<h3>3.7.3<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Make sure Locales are not restricted to 2 char codes and we can use the country code</li>
+</ul>
+</div>
+<div class="section" id="id26">
+<h3>3.7.2<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Return the language code for languages that babel is not supporting</li>
+</ul>
+</div>
+<div class="section" id="id27">
+<h3>3.7.1<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Make sure unpublished translated pages are not appearing on front end</li>
+</ul>
+</div>
+<div class="section" id="id28">
+<h3>3.7.0<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Show the translated page on front end when it&#8217;s main language page is unpublished</li>
+</ul>
+</div>
+<div class="section" id="id29">
+<h3>3.6.0<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add the option that untranslated pages will not be visible to the front end user when they viewing a child language of the site</li>
+</ul>
+</div>
+<div class="section" id="id30">
+<h3>3.5.0<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add date and time options to content rotation</li>
+</ul>
+</div>
+<div class="section" id="id31">
+<h3>3.4.2<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed Migration Bug</li>
+</ul>
+</div>
+<div class="section" id="id32">
+<h3>3.4.1<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add GA urls to Molo Urls</li>
+<li>Pinned Flake8 to 2.6.2</li>
+</ul>
+</div>
+<div class="section" id="id33">
+<h3>3.4.0<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add local and global GA tracking codes</li>
+</ul>
+</div>
+<div class="section" id="id34">
+<h3>3.3.0<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add random content rotation for articles featured on homepage</li>
+</ul>
+</div>
+<div class="section" id="id35">
+<h3>3.2.8<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add global GA Tag model</li>
+</ul>
+</div>
+<div class="section" id="id36">
+<h3>3.2.7<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add get_translation template tag</li>
+</ul>
+</div>
+<div class="section" id="id37">
+<h3>3.2.6<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Delete the translated page when a page is deleted</li>
+</ul>
+</div>
+<div class="section" id="id38">
+<h3>3.2.5<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Return Marathon app &amp; version information in the health checks.</li>
+</ul>
+</div>
+<div class="section" id="id39">
+<h3>3.2.4<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Default count for sections set to 0</li>
+</ul>
+</div>
+<div class="section" id="id40">
+<h3>3.2.3<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add session key middleware for each user to use with GTM when javascript is disabled</li>
+</ul>
+</div>
+<div class="section" id="id41">
+<h3>3.2.2<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Handling import * error with noqa</li>
+</ul>
+</div>
+<div class="section" id="id42">
+<h3>3.2.1<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Delete translated page when a page is deleted</li>
+<li>Added extra lang info for languages that django doesn&#8217;t support</li>
+</ul>
+</div>
+<div class="section" id="id43">
+<h3>3.2.0<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added wagtail multimedia support</li>
+<li>Allow articles to exist in multiple sections</li>
+</ul>
+</div>
+<div class="section" id="id44">
+<h3>3.1.11<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed bugs with UC content importing, Arabic slugs and path issue</li>
+</ul>
+</div>
+<div class="section" id="id45">
+<h3>3.1.10<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed another small bug with UC content validation</li>
+</ul>
+</div>
+<div class="section" id="id46">
+<h3>3.1.9<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed a bug with UC content validation</li>
+</ul>
+</div>
+<div class="section" id="id47">
+<h3>3.1.8<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Limit import content to users belonging to <cite>Universal Core Importers</cite> group</li>
+</ul>
+</div>
+<div class="section" id="id48">
+<h3>3.1.7<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Content validation now happens in a celery task</li>
+</ul>
+</div>
+<div class="section" id="id49">
+<h3>3.1.6<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added pagination for articles in section</li>
+<li>Show the active language and display the local name</li>
+<li>Added load_sections template tag</li>
+</ul>
+</div>
+<div class="section" id="id50">
+<h3>3.1.5<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Importing validation errors to be shown in the UI for celery task</li>
+</ul>
+</div>
+<div class="section" id="id51">
+<h3>3.1.4<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Upgraded wagtail to 1.4.5</li>
+<li>Effective style hint to support multi-language</li>
+</ul>
+</div>
+<div class="section" id="id52">
+<h3>3.1.3<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Content import now happens in a celery task</li>
+</ul>
+</div>
+<div class="section" id="id53">
+<h3>3.1.2<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added templates for forgot password</li>
+</ul>
+</div>
+<div class="section" id="id54">
+<h3>3.1.1<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Pined django-cas-ng to 3.5.4</li>
+</ul>
+</div>
+<div class="section" id="id55">
+<h3>3.1.0<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Upgraded to Django 1.9 and Wagtail 1.4.4</li>
+</ul>
+</div>
+<div class="section" id="id56">
+<h3>3.0.3<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Improved performance of UC content import</li>
+</ul>
+</div>
+<div class="section" id="id57">
+<h3>3.0.2<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Changed molo.core version number in get_pypi_version test</li>
+</ul>
+</div>
+<div class="section" id="id58">
+<h3>3.0.1<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Changed molo.core version number in versions_comparison test</li>
+</ul>
+</div>
+<div class="section" id="id59">
+<h3>3.0.0<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added multi-language support</li>
+<li>Added content import from Universal Core content repos (using REACT)</li>
+<li>Renamed <code class="docutils literal"><span class="pre">HomePage</span></code> module to <code class="docutils literal"><span class="pre">BannerPage</span></code></li>
+<li>Updated language switcher url to include <code class="docutils literal"><span class="pre">?next={{request.path}}</span></code></li>
+<li><code class="docutils literal"><span class="pre">section_page.html</span></code> now uses new template tags (see below)</li>
+<li><code class="docutils literal"><span class="pre">section_listing_homepage.html</span></code> now uses new template tags (see below)</li>
+<li>Changed content structure to introduce index pages</li>
+<li>Added GA tag manager field to site settings</li>
+<li>Upgraded wagtail to 1.4.3</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id60">
+<h2>2.x<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h2>
+<p>This is the initial release of Molo (1.x was considered beta)</p>
+<p>Main features:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Scafolding</span> <span class="n">a</span> <span class="n">Wagtail</span> <span class="n">site</span> <span class="k">with</span> <span class="n">basic</span> <span class="n">models</span>
+<span class="o">-</span> <span class="n">Core</span> <span class="n">features</span> <span class="n">including</span> <span class="n">Banners</span><span class="p">,</span> <span class="n">Sections</span><span class="p">,</span> <span class="n">Articles</span><span class="p">,</span> <span class="n">Footer</span> <span class="n">Pages</span><span class="p">,</span> <span class="n">Search</span>
+<span class="o">-</span> <span class="n">Out</span> <span class="n">the</span> <span class="n">box</span> <span class="n">support</span> <span class="k">for</span> <span class="n">plugins</span> <span class="p">(</span><span class="n">molo</span><span class="o">.</span><span class="n">profiles</span><span class="p">,</span> <span class="n">molo</span><span class="o">.</span><span class="n">commenting</span><span class="p">,</span> <span class="n">molo</span><span class="o">.</span><span class="n">yourwords</span><span class="p">,</span> <span class="n">molo</span><span class="o">.</span><span class="n">polls</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Upgraded</span> <span class="n">Wagtail</span> <span class="n">to</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<div class="section" id="id61">
+<h3>2.6.17<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Moved tasks.py to core</li>
+</ul>
+</div>
+<div class="section" id="id62">
+<h3>2.6.16<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Moved content rotation from cookiecutter to core</li>
+</ul>
+</div>
+<div class="section" id="id63">
+<h3>2.6.15<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added automatic content rotation</li>
+</ul>
+</div>
+<div class="section" id="id64">
+<h3>2.6.14<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added plugins version comparison</li>
+<li>Added logo as wagtail setting</li>
+</ul>
+</div>
+<div class="section" id="id65">
+<h3>2.6.13<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Re-release of version 2.6.12 because we forgot to increment the version
+number.</li>
+</ul>
+</div>
+<div class="section" id="id66">
+<h3>2.6.12<a class="headerlink" href="#id66" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added metadata tag field</li>
+</ul>
+</div>
+<div class="section" id="id67">
+<h3>2.6.11<a class="headerlink" href="#id67" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added social media fields</li>
+</ul>
+</div>
+<div class="section" id="id68">
+<h3>2.6.10<a class="headerlink" href="#id68" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Ensure CAS only applies to admin views</li>
+</ul>
+</div>
+<div class="section" id="id69">
+<h3>2.6.9<a class="headerlink" href="#id69" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed the issue with CAS not being compatible with normal login</li>
+</ul>
+</div>
+<div class="section" id="id70">
+<h3>2.6.8<a class="headerlink" href="#id70" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Updated plugins instructions</li>
+<li>Updated the polls plugin in the documentation</li>
+</ul>
+</div>
+<div class="section" id="id71">
+<h3>2.6.7<a class="headerlink" href="#id71" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>core urls are not defined correctly</li>
+</ul>
+</div>
+<div class="section" id="id72">
+<h3>2.6.6<a class="headerlink" href="#id72" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Bug fixes</li>
+</ul>
+</div>
+<div class="section" id="id73">
+<h3>2.6.5<a class="headerlink" href="#id73" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Added search functionality</li>
+<li>Updated core templates</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id74">
+<h3>2.6.4<a class="headerlink" href="#id74" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Added support for Central Authentication Service (CAS)(CAS)</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id75">
+<h3>2.6.3<a class="headerlink" href="#id75" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Updated documentation</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id76">
+<h3>2.6.2<a class="headerlink" href="#id76" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Added missing files in the scaffold (pypi package) 2nd attempt</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id77">
+<h3>2.6.1<a class="headerlink" href="#id77" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Added missing files in the scaffold (pypi package)</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id78">
+<h3>2.6.0<a class="headerlink" href="#id78" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>updated documentation</li>
+<li>adding tags to ArticlePage model</li>
+<li>upgraded wagtail to v1.3.1</li>
+<li>better testing base for Molo</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id79">
+<h3>2.5.2<a class="headerlink" href="#id79" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Promoted articles &#8216;featured in latest&#8217; will be ordered by most recently updated in the latest section.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id80">
+<h3>2.5.1<a class="headerlink" href="#id80" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>pinned cookiecutter to version 1.0.0</li>
+</ul>
+</div>
+<div class="section" id="id81">
+<h3>2.4.2<a class="headerlink" href="#id81" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>ordering of articles within a section uses the Wagtail ordering</li>
+</ul>
+</div>
+<div class="section" id="id82">
+<h3>2.3.7<a class="headerlink" href="#id82" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>bump to official wagtail v1.0</li>
+<li>add health check</li>
+</ul>
+</div>
+<div class="section" id="id83">
+<h3>2.3.6<a class="headerlink" href="#id83" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>remove first_published_at from models (casuing migration issues)</li>
+</ul>
+</div>
+<div class="section" id="id84">
+<h3>2.3.3<a class="headerlink" href="#id84" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>added <cite>extra styling hints</cite> field to section page</li>
+</ul>
+</div>
+<div class="section" id="id85">
+<h3>2.3.2<a class="headerlink" href="#id85" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>allow articles to be featured on the homepage</li>
+</ul>
+</div>
+<div class="section" id="id86">
+<h3>2.3.1<a class="headerlink" href="#id86" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><cite>first published at</cite> is not a required field</li>
+</ul>
+</div>
+<div class="section" id="id87">
+<h3>2.3.0<a class="headerlink" href="#id87" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>add homepage models</li>
+<li>ensure articles ordered by published date</li>
+<li>allow articles to be featured</li>
+</ul>
+</div>
+<div class="section" id="id88">
+<h3>2.2.1<a class="headerlink" href="#id88" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add images to sections</li>
+<li>Add support for sub sections</li>
+</ul>
+</div>
+<div class="section" id="id89">
+<h3>2.2.0<a class="headerlink" href="#id89" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add multi language support</li>
+</ul>
+</div>
+<div class="section" id="id90">
+<h3>2.1.1<a class="headerlink" href="#id90" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>ensure libffi-dev in sideloader build file</li>
+</ul>
+</div>
+<div class="section" id="id91">
+<h3>2.1.0<a class="headerlink" href="#id91" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>ensure libffi-dev in sideloader build file</li>
+</ul>
+</div>
+<div class="section" id="id92">
+<h3>2.1.0<a class="headerlink" href="#id92" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add basic models</li>
+<li>Add basic templates</li>
+<li>upgraded to v1.0b2</li>
+</ul>
+</div>
+<div class="section" id="id93">
+<h3>2.0.5<a class="headerlink" href="#id93" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add sideloader scripts</li>
+</ul>
+</div>
+<div class="section" id="id94">
+<h3>2.0.4<a class="headerlink" href="#id94" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fix cookie cutter path</li>
+</ul>
+</div>
+<div class="section" id="id95">
+<h3>2.0.3<a class="headerlink" href="#id95" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>pypi fix - include cookie cutter json</li>
+</ul>
+</div>
+<div class="section" id="id96">
+<h3>2.0.2<a class="headerlink" href="#id96" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Use cookie cutter for a project template</li>
+</ul>
+</div>
+<div class="section" id="id97">
+<h3>2.0.1<a class="headerlink" href="#id97" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fix pypi package manifest</li>
+</ul>
+</div>
+<div class="section" id="id98">
+<h3>2.0.0<a class="headerlink" href="#id98" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Initial release</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="template-tags.html" class="btn btn-neutral" title="Template Tags" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Praekelt Foundation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'3.17.0
+',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

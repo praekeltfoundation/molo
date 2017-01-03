@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting Started &mdash; Molo 3.17.0
+ documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Molo 3.17.0
+ documentation" href="index.html"/>
+        <link rel="next" title="Plugins" href="plugins.html"/>
+        <link rel="prev" title="Installation" href="installation.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Molo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.17.0
+
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#scaffold-a-site-using-molo">Scaffold a site using Molo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scaffolding-a-site-in-an-existing-repository">Scaffolding a site in an existing repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#specifying-extra-requires">Specifying extra requires</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#automatically-adding-installed-apps">Automatically adding installed apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#molo-django-settings-files">Molo, Django &amp; settings files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unpacking-templates-from-packages">Unpacking Templates from Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing-tests">Writing tests</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-bundled-with-molo">What is bundled with Molo?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-the-molo-scaffolding-tool">Testing the Molo scaffolding tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiple-languages.html">Multiple Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="template-tags.html">Template Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">CHANGE LOG</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Molo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/getting-started.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="template-tags">
+<span id="getting-started"></span><span id="id1"></span><h1>Getting Started<a class="headerlink" href="#template-tags" title="Permalink to this headline">¶</a></h1>
+<p>Molo scaffolds a Django application for you with sensible defaults, packages
+and configuration to help you get going as soon as possible.</p>
+<div class="section" id="scaffold-a-site-using-molo">
+<h2>Scaffold a site using Molo<a class="headerlink" href="#scaffold-a-site-using-molo" title="Permalink to this headline">¶</a></h2>
+<p>The goal of Molo is to provide a solid base of proven, stable packages that
+help Praekelt Foundation and partners to deliver on project scope:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo scaffold myapp
+$ cd myapp/
+$ ./manage.py migrate
+$ ./manage.py createsuperuser
+$ ./manage.py runserver
+</pre></div>
+</div>
+<p>Open the sample site in your browser at <a class="reference external" href="http://localhost:8000/">http://localhost:8000/</a> and the CMS
+at <a class="reference external" href="http://localhost:8000/admin/">http://localhost:8000/admin/</a>.</p>
+</div>
+<div class="section" id="scaffolding-a-site-in-an-existing-repository">
+<h2>Scaffolding a site in an existing repository<a class="headerlink" href="#scaffolding-a-site-in-an-existing-repository" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s not always desirable to create a new directory for an application,
+especially when scaffolding an application for a repository that&#8217;s already
+been created. Specifically for that Molo allows a second argument for the
+directory.</p>
+<p>To scaffold an application called <code class="docutils literal"><span class="pre">myapp</span></code> in the current directory do:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo scaffold myapp .
+</pre></div>
+</div>
+</div>
+<div class="section" id="specifying-extra-requires">
+<h2>Specifying extra requires<a class="headerlink" href="#specifying-extra-requires" title="Permalink to this headline">¶</a></h2>
+<p>Molo in itself is not expected to be enough to deliver on a client request.
+During scaffolding use the <code class="docutils literal"><span class="pre">--require</span></code> commandline parameter to include
+more libraries that are required for installation:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo scaffold myapp --require=django-contrib-comments
+</pre></div>
+</div>
+<p>Adds the <cite>django-contrib-comments</cite> to the generated requirements file which
+is read by the generated package&#8217;s <code class="docutils literal"><span class="pre">setup.py</span></code> file.</p>
+<p>Multiple requires can be specified on the command line:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo scaffold myapp --require=django-contrib-comments \
+&gt;   --require=molo.profiles
+</pre></div>
+</div>
+</div>
+<div class="section" id="automatically-adding-installed-apps">
+<h2>Automatically adding installed apps<a class="headerlink" href="#automatically-adding-installed-apps" title="Permalink to this headline">¶</a></h2>
+<p>If you&#8217;re including a Django app chances are you&#8217;re going to want to
+add it to your <code class="docutils literal"><span class="pre">INSTALLED_APPS</span></code> settings as well as adding an entry
+to the generated <code class="docutils literal"><span class="pre">urls.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo scaffold myapp --include=django_comments ^comments/
+</pre></div>
+</div>
+<p>This results in the following <code class="docutils literal"><span class="pre">urls.py</span></code> entry:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="s1">r&#39;^comments/&#39;</span><span class="p">,</span>
+    <span class="n">include</span><span class="p">(</span><span class="s1">&#39;django_comments.urls&#39;</span><span class="p">,</span>
+            <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;django_comments&#39;</span><span class="p">,</span>
+            <span class="n">app_name</span><span class="o">=</span><span class="s1">&#39;django_comments&#39;</span><span class="p">)),</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">multiple includes can be specified on the command line, the format
+is <code class="docutils literal"><span class="pre">--include=&lt;app_name&gt;</span> <span class="pre">&lt;regex-for-urls&gt;</span></code></p>
+</div>
+<p>For convenience, here&#8217;s the full scaffold command for the current plugins:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo scaffold myapp \
+    --require=molo.profiles --include=molo.profiles ^profiles/ \
+    --require=django-contrib-comments --include=django_comments ^comments/ \
+    --require=molo.commenting --include=molo.commenting ^commenting/ \
+    --require=molo.yourwords --include=molo.yourwords ^yourwords/
+</pre></div>
+</div>
+<div class="section" id="molo-django-settings-files">
+<h3>Molo, Django &amp; settings files<a class="headerlink" href="#molo-django-settings-files" title="Permalink to this headline">¶</a></h3>
+<p>What you have now is a standard Django application set up for normal
+development like outlined in the Django documentation. The only main difference
+is that your settings are Python modules found in the
+<code class="docutils literal"><span class="pre">settings/dev.py</span></code> and <code class="docutils literal"><span class="pre">settings/production.py</span></code> files in your applications
+folder. Both of these inherit settings from <code class="docutils literal"><span class="pre">settings/base.py</span></code>.</p>
+<p>To create your own custom settings add a <code class="docutils literal"><span class="pre">local.py</span></code> file in the <code class="docutils literal"><span class="pre">settings</span></code>
+folder. The <code class="docutils literal"><span class="pre">settings/dev.py</span></code> will automatically include those settings
+for your local development environment.</p>
+</div>
+<div class="section" id="unpacking-templates-from-packages">
+<h3>Unpacking Templates from Packages<a class="headerlink" href="#unpacking-templates-from-packages" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes a package&#8217;s existing templates simply are not enough and need
+some amount of customization. Use the <code class="docutils literal"><span class="pre">unpack-templates</span></code> command in the
+scaffolded application to unpack a package&#8217;s templates in your application&#8217;s
+templates directory:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo scaffold testapp \
+&gt;   --require=molo.profiles \
+&gt;   --include=molo.profiles ^profiles/
+$ pip install -e testapp
+...
+</pre></div>
+</div>
+<p>You&#8217;ll see the default templates that <code class="docutils literal"><span class="pre">molo.core</span></code> ships with available in
+the <code class="docutils literal"><span class="pre">templates</span></code> directory:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ls testapp/testapp/templates
+404.html  500.html  base.html core
+</pre></div>
+</div>
+<p>Now we unpack the <code class="docutils literal"><span class="pre">profiles</span></code> templates directory from the <code class="docutils literal"><span class="pre">molo.profiles</span></code>
+package into the <code class="docutils literal"><span class="pre">testapp</span></code> package template directory:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo unpack-templates molo.profiles testapp
+$ ls testapp/testapp/templates
+404.html  500.html  base.html core profiles
+</pre></div>
+</div>
+<p>The format is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ molo unpack-templates &lt;source package&gt; &lt;target package&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="writing-tests">
+<h3>Writing tests<a class="headerlink" href="#writing-tests" title="Permalink to this headline">¶</a></h3>
+<p>Now develop your application and write tests for the features you add.
+Running your tests for Django works as you would expect:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ./manage.py test
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="what-is-bundled-with-molo">
+<h2>What is bundled with Molo?<a class="headerlink" href="#what-is-bundled-with-molo" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first"><a class="reference external" href="http://wagtail.io">Wagtail CMS</a></p>
+</li>
+<li><p class="first">Basic feature phone template set.</p>
+</li>
+<li><p class="first">Basic models for the following tree structure:</p>
+<ol class="arabic simple">
+<li>A site has a main language, and the option of one or more additional languages.</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>All content has to initially be created in the main language. Thereafter translations can be made for that content.</li>
+<li>Translations for content cannot exist for additional languages if it does not first exist for the main language.</li>
+<li>The first language added will be the main language, any other languages added after will be additional languages.</li>
+</ul>
+<img alt="_images/view_languages.png" src="_images/view_languages.png" />
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>Once a main language has been created, a main page will be created as well. A main page consists of index pages.</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>Index pages exist for each content type.</li>
+<li>All section pages are grouped into the &#8216;Sections&#8217; index page.</li>
+<li>All banners are grouped into the &#8216;Banners&#8217; index page.</li>
+</ul>
+<img alt="_images/indexes.png" src="_images/indexes.png" />
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Once a section is made, articles can then be added to that section.</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>Articles only exist as a child of a section page.</li>
+<li>Articles are composed from one or more blocks.</li>
+<li>Blocks can be headings, paragraphs, images, lists or links to other pages.</li>
+</ul>
+<img alt="_images/article_blocks.png" src="_images/article_blocks.png" />
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>Content such as sections or articles are displayed in their main language. Their translation in any additional language added is shown below the content. If one would like to edit the Spanish version of &#8216;Staying Healthy&#8217;, one would click on &#8216;SPANISH&#8217;, and then edit.</li>
+</ol>
+<blockquote>
+<div><img alt="_images/translation.png" src="_images/translation.png" />
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>A Settings tab that includes Site Settings. Site Settings is where the logo, google analytics and various other settings are set.</li>
+</ol>
+<blockquote>
+<div><img alt="_images/site_settings.png" src="_images/site_settings.png" />
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="testing-the-molo-scaffolding-tool">
+<h2>Testing the Molo scaffolding tool<a class="headerlink" href="#testing-the-molo-scaffolding-tool" title="Permalink to this headline">¶</a></h2>
+<p>If you&#8217;re interested in working on or contributing to the code that
+does the scaffolding then clone this repository from the GitHub repository at
+<a class="reference external" href="http://github.com/praekelt/molo">http://github.com/praekelt/molo</a>.</p>
+<p>Install the requirement development &amp; testing dependencies:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install -r requirements-dev.txt
+</pre></div>
+</div>
+<p>And then run the full test suite with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ py.test
+</pre></div>
+</div>
+<p>Pull requests are expected to follow Praekelt&#8217;s <a class="reference external" href="http://ways-of-working.rtfd.org">Ways Of Working</a>.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plugins.html" class="btn btn-neutral float-right" title="Plugins" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Praekelt Foundation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'3.17.0
+',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
