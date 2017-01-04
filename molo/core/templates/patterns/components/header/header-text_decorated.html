@@ -12,7 +12,7 @@
   </div>
   {% if self.get_verbose_name|slugify  == "main" %}
     {% block languages %}
-      {% include "patterns/basics/languages.html" with class="capitalize" alignment="left" %}
+      {% include "patterns/basics/languages/language-list-text_decorated.html" %}
     {% endblock  %}
   {% endif %}
 {% endblock %}

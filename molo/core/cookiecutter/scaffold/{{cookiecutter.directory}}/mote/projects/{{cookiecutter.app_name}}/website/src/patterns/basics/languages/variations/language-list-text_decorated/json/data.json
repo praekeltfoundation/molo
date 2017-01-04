@@ -1,6 +1,6 @@
 {
-    "Language_list_vertical": {
-      "text": "Language listed vertically",
+    "Language_list_text": {
+      "text": "Language Text decorated",
       "modifiers": "dummy-class",
       "languages":[
         {"language":"English"},

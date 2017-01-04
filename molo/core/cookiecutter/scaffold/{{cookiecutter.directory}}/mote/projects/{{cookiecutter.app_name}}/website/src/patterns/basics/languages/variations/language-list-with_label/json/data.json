@@ -1,6 +1,6 @@
 {
-    "Language_list_horizontal": {
-      "text": "Language listed across",
+    "Language_list_with_label": {
+      "text": "Language List with Label",
       "modifiers": "dummy-class",
       "languages":[
         {"language":"English"},
