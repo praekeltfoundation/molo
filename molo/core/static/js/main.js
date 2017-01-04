@@ -20,6 +20,10 @@
         var currentItem = $(this);
         $('.extra-list__menuitem a').removeClass('is-active');
         currentItem.addClass('is-active');
+
+        $('.content__prk .content').css({
+          'padding-top': '117px'
+        });
       });
   });
 

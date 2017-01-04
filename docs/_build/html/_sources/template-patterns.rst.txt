@@ -16,6 +16,8 @@ translation for different mobisite applications.
 Website Glossary
 ----------------
 
+These are the Molo sites:
+
 - Bewise (old)
 - Bewise (new)
 --
@@ -31,4 +33,8 @@ Website Glossary
 
 - FreeBasics
 - Tune
+
+Website Components 
+------------------
+
 
