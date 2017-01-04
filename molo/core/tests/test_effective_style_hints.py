@@ -1,10 +1,14 @@
 from django.test import TestCase
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.models import SiteLanguage
 
 
 class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.french = SiteLanguage.objects.create(locale='fr')
+        self.mk_main()
         self.new_section = self.mk_section(
             self.section_index,
             title="New Section",
@@ -24,15 +28,15 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             title="New Section 5", slug="new-section-5",
             extra_style_hints='secondary')
 
-    def extra_css_set_on_current_section(self):
+    def test_extra_css_set_on_current_section(self):
         self.assertEquals(
             self.new_section.get_effective_extra_style_hints(), 'primary')
 
-    def extra_css_not_set_to_use_inherited_value(self):
+    def test_extra_css_not_set_to_use_inherited_value(self):
         self.assertEquals(
             self.new_section2.get_effective_extra_style_hints(), 'primary')
 
-    def extra_css_not_set_on_either_so_should_be_blank(self):
+    def test_extra_css_not_set_on_either_so_should_be_blank(self):
         self.assertEquals(
             self.new_section3.get_effective_extra_style_hints(), '')
 
@@ -55,15 +59,15 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             '/sections/new-section-3/new-section-6-in-french/')
         self.assertContains(response, '<div class="articles nav ">')
 
-    def extra_css_not_set_on_child_so_should_use_parent_value(self):
+    def test_extra_css_not_set_on_child_so_should_use_parent_value(self):
         self.assertEquals(
             self.new_section4.get_effective_extra_style_hints(), 'primary')
 
-    def extra_css_is_set_on_child_so_should_use_child_value(self):
+    def test_extra_css_is_set_on_child_so_should_use_child_value(self):
         self.assertEquals(
             self.new_section5.get_effective_extra_style_hints(), 'secondary')
 
-    def translated_page_so_should_use_main_lang_page_value(self):
+    def test_translated_page_so_should_use_main_lang_page_value(self):
         self.client.get('/locale/fr/')
         self.mk_section_translation(
             self.new_section4, self.french,
@@ -82,7 +86,7 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             '/sections/new-section-3/new-section-7-in-french/')
         self.assertContains(response, '<div class="articles nav en-hint">')
 
-    def translated_page_so_should_use_translated_page_value(self):
+    def test_translated_page_so_should_use_translated_page_value(self):
         self.client.get('/locale/fr/')
         self.mk_section_translation(
             self.new_section5, self.french,
