@@ -19,6 +19,10 @@
   color: rgba(0,0,0,.5);
 }
 
+[role="menu"] [role="menuitem"] a:active,
+[role="menu"] [role="menuitem"] a.active  {
+    font-weight: bold;
+}
 
 .extra-list__menu {
   padding: 10px 0 10px 20px;

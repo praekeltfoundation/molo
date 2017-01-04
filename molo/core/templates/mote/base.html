@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title></title>
+    <title>Molo Design System</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
     {% compress css %}
-      <link rel="stylesheet" type="text/x-scss" href="{% static 'css/mote.scss' %}">
+      <link rel="stylesheet" type="text/x-scss" href="{% static "css/mote.scss" %}">
     {% endcompress %}
 
     <script src="{% static "mote/js/libs/jquery/js/jquery.js" %}"></script>
@@ -24,11 +24,12 @@
     <script src="{% static "mote/js/libs/hideseek/js/jquery.hideseek.js" %}"></script>
     <script src="{% static "mote/js/libs/lazysizes/js/lazysizes.js" %}"></script>
     <script src="{% static "mote/js/mote.js" %}"></script>
+    <script src="{% static "js/main.js" %}"></script>
 </head>
 
 <body data-library="{{ library }}">
     {% block header %}
-    <header role="banner">
+    <header role="banner" class="header">
         <div class="wrapper">
             <a href="{% url "mote:home" %}" class="logo">
               <img src="{% static "mote/img/logo.png" %}" alt="Logo" />
@@ -45,7 +46,7 @@
       </div>
     </section>
 
-    <main role="main">
+    <main role="main" class="main_wrapper">
       <div class="wrapper">
             <aside role="sidebar" class="sidebar">
                 {% if active_category %}
