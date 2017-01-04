@@ -31,8 +31,19 @@
   margin: 0;
 }
 
-.extra-list__menuitem a {
-  color: #5876a3;
-  text-decoration: none;
-  padding: 5px 0;
+.extra-list__menuitem {
+  a {
+    color: #000;
+    text-decoration: none;
+    padding: 5px 0;
+    &:hover,
+    &:focus {
+      color: rgba(0,0,0,.5);
+    }
+  }
+  .is-active {
+    color: rgba(0,0,0,.5);
+    text-decoration: underline;
+    font-weight: bold;
+  }
 }

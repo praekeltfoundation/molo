@@ -1,4 +1,6 @@
-
+.content {
+  padding-top: 117px;
+}
 .content__prk {
   @media screen and (min-width: 650px) {
     padding-right: 15%;
@@ -38,4 +40,17 @@
   height: 30px;
   margin-bottom: 10px;
   text-transform: capitalize;
+}
+
+
+.stickySidebar {
+  position: fixed;
+  top: 175px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  bottom: 0;
+  margin-bottom: 30px;
+}
+.noStickySidebar {
+  position: inherit;
 }

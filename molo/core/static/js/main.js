@@ -2,19 +2,24 @@
 (function() {
 
   $(document).ready(function(){
+    //Div Scroll Style
     var initialDivPostion = $('.main_wrapper').offset().top;
       $(window).scroll(function() {
         var currentScrollPosition = $(window).scrollTop();
     		if(currentScrollPosition > 445) {
-          $('.sidebar').css({
-            position: 'fixed',
-            top: '175px'
-          });
+          $('.sidebar').addClass('stickySidebar');
+          $('.sidebar').removeClass('noStickySidebar');
         } else {
-          $('.sidebar').css({
-            position: 'inherit'
-          });
+          $('.sidebar').addClass('noStickySidebar');
+          $('.sidebar').removeClass('stickySidebar');
         }
+      });
+
+      //Extra Menu - Active state
+      $('.extra-list__menuitem a').click(function() {
+        var currentItem = $(this);
+        $('.extra-list__menuitem a').removeClass('is-active');
+        currentItem.addClass('is-active');
       });
   });
 
