@@ -3,9 +3,9 @@
 
 {% mask element.json.data.Language_list_text as "language_text" %}
 <div class="languages">
-  <ul class="language-list">
+  <ul class="language-list language-list--text-decorated">
     {% for item in language_text.languages %}
-        <li class="language-list__item">{{ item.language }}</li>
+        <li class="language-list__item language-list__item--text-decorated">{{ item.language }}</li>
     {% endfor %}
   </ul>
 <div>

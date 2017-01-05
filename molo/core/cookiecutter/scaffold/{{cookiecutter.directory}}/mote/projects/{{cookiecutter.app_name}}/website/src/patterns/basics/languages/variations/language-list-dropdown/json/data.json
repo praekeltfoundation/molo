@@ -6,7 +6,12 @@
         {"language":"English"},
         {"language":"Kiswahili"},
         {"language":"Bahasa"},
-        {"language":"Arabic"}
+        {"language":"Arabic"},
+        {"language":"Kiswahili"},
+        {"language":"Espanol"},
+        {"language":"Portugues"},
+        {"language":"French"},
+        {"language":"Afrikaans"}
       ]
     }
 }

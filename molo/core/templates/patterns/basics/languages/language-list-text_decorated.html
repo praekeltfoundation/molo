@@ -7,7 +7,7 @@
     <ul class="language-list language-list--text-decorated">
       {% for language in languages %}
       <li class="language-list__item language-list__item--text-decorated">
-        <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" class="language-list__anchor language-list__anchor-text-decorated {% if LANGUAGE_CODE == language.locale %} language-list__anchor-active {% endif %}">
+        <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" class="language-list__anchor language-list__anchor-text-decorated {% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">
           {{language.locale|language_name_local}}
         </a>
       </li>
