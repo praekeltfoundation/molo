@@ -1,0 +1,12 @@
+{% raw %}
+{% load mote_tags %}
+
+{% mask element.json.data.Language_list_text as "language_text" %}
+<div class="languages">
+  <ul class="language-list">
+    {% for item in language_text.languages %}
+        <li class="language-list__item">{{ item.language }}</li>
+    {% endfor %}
+  </ul>
+<div>
+{% endraw %}
