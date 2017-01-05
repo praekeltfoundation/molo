@@ -1,4 +1,4 @@
- 
+
 {% load wagtailcore_tags wagtailimages_tags core_tags %}
 
 {% if sections %}
@@ -20,6 +20,10 @@
   </ul>
   {% endfor %}
 </div>
+
+  {% block homepage-section %}
+    {% include "patterns/components/homepage-section_hero.html" %}
+  {% endblock %}
+
 {% endfor%}
 {% endif %}
- 

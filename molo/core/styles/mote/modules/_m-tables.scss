@@ -1,0 +1,18 @@
+.devices-list {
+  width: 100%;
+  padding-top: 20px;
+  tr {
+    &:nth-child(odd) {}
+    &:nth-child(even) {
+      background: #f1f1f1;
+    }
+  }
+  th {
+    text-align: left;
+    padding: 10px;
+  }
+
+  td {
+    padding: 10px;
+  }
+}

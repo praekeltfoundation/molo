@@ -38,11 +38,10 @@ logs/*.log
 *.pid
 node_modules/
 /testapp/
-
+docs/_build/
 /static/
 /media/
 db.sqlite3
-docs/_build
 .cache
 .DS_Store
 /htmlcov/
