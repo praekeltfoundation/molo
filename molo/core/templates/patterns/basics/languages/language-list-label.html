@@ -4,8 +4,11 @@
 
   {% if languages|length > 1 %}
   <div class="languages">
-    <span class="language-list--label">{% trans "Language" %}</span>
+
     <ul class="language-list language-list--with-label">
+      <li class="language-list__item language-list__item--with-label">
+        <span class="language-list--label">{% trans "Language" %}</span>
+      </li>
       {% for language in languages %}
       <li class="language-list__item language-list__item--with-label">
         <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" class="language-list__anchor  language-list__anchor-with-label{% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">

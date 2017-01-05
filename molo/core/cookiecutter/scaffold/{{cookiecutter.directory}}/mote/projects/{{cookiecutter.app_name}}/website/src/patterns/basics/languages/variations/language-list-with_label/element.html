@@ -3,8 +3,10 @@
 
 {% mask element.json.data.Language_list_with_label as "language_label" %}
 <div class="languages">
-  <span class="language-list--label">{% trans "Language" %}</span>
   <ul class="language-list language-list--with-label">
+    <li class="language-list__item language-list__item--with-label">
+      <span class="language-list--label">Language</span>
+    </li>
     {% for item in language_label.languages %}
         <li class="language-list__item language-list__item--with-label">{{ item.language }}</li>
     {% endfor %}
