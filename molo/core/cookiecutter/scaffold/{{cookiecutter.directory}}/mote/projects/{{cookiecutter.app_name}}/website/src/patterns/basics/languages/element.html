@@ -3,9 +3,9 @@
 
 {% mask element.json.data.Language_list as "language_list" %}
 <div class="languages">
-  <ul class="language-list  language-list--horizontal">
+  <ul class="language-list language-list--standard">
     {% for item in language_list.languages %}
-      <li class="language-list__item">{{ item.language }}</li>
+      <li class="language-list__item language-list__item--standard">{{ item.language }}</li>
     {% endfor %}
   </ul>
 </div>
