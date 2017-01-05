@@ -1,10 +1,10 @@
 .heading--xx-large {
   @include heading-fontsize-scale($heading-xx-large);
 }
-.heading--xx-large {
+.heading--x-large {
   @include heading-fontsize-scale($heading-x-large);
 }
-.heading--xx-large {
+.heading--large {
   @include heading-fontsize-scale($heading-large);
 }
 

@@ -1,5 +1,6 @@
 {% load wagtailcore_tags i18n %}
   {% block breadcrumbs %}
+  {% if ancestors %}
     <div class="breadcrumbs">
       <ul class="breadcrumbs-list">
         <li class="breadcrumbs-list__item">
@@ -16,4 +17,5 @@
         {% endfor %}
       </ul>
     </div>
+  {% endif %}
   {% endblock %}

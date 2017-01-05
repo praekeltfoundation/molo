@@ -84,9 +84,8 @@
     color: #017AF5;
   }
   &:hover {
-    //border-color: #686A6B;
+    border-color: #686A6B;
   }
-
 }
 
 
@@ -101,17 +100,14 @@
   text-decoration: underline;
   text-transform: uppercase;
   @media screen and (min-width: 320px) {
-    background:  url('../images/icons/search.svg') no-repeat 0 0 / auto 100%;
     text-indent: -99em;
     height: 21px;
     width: 21px;
     position: absolute;
     right: 10%;
-    //top: 25%;
     top: 0;
   }
 }
-
 
 [data-direction~="right"]  {
   &:after {

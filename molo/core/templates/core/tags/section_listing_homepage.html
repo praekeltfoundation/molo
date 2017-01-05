@@ -1,8 +1,13 @@
 
 {% load wagtailcore_tags wagtailimages_tags core_tags %}
 
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
 {% if sections %}
 {% for section in sections %}
+
+  {% block homepage-section %}
+    {% include "patterns/components/homepage-section_thumbnail.html" %}
+
 <div class="articles nav {{section.get_effective_extra_style_hints}}">
   <h2 class="list-header">
     <a href="{% pageurl section %}">{{section.title}}</a>
