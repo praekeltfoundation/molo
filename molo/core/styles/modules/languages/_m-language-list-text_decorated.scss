@@ -1,6 +1,7 @@
 .language-list--text-decorated {}
 .language-list__item--text-decorated {
   font-size: 13px;
+  padding: 0 0 5px 0;
   &:hover {
     color: #00b8ae;
   }
@@ -19,6 +20,7 @@
 .language-list--text-decorated__title {
   display: none;
   font-size: 16px;
+  padding: 0 10px 0 0;
   &:after {
     content: ":";
   }
