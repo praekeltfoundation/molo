@@ -2,6 +2,9 @@
 {% block article %}
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
   {% if featured_articles %}
+  <h1 class="heading heading--x-large category__title category__title-{{type}}">
+    <a href="{% pageurl section %}" class="category__link category__link-{{type}}">{{section.title}}</a>
+  </h1>
   <ul class="promoted-article-list promoted-article-list--{{type}} promoted-article-list-column">
     {% for article in featured_articles %}
     <li class="promoted-article-list__item promoted-article-list__item-column {% if forloop.first %}promoted-article-list__item--hero{% endif %}">
@@ -27,4 +30,3 @@
   </ul>
   {% endif %}
 {% endblock %}
- 
