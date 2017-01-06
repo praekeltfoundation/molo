@@ -40,13 +40,15 @@
 
 @import "forms/_m-forms";
 
-@import "category/_m-category-list";
-@import "category/_m-category-linear";
+@import "section/_m-homepage-section";
+@import "section/_m-homepage-section-bg";
 
 @import "articles/_m-article-hero";
 @import "articles/_m-article-images";
 @import "articles/_m-article-meta";
 @import "articles/_m-article";
+@import "articles/_m-promoted-articles";
+@import "articles/_m-homepage-promoted-articles";
 
 @import "footer/_m-footer-alternate-menu";
 @import "footer/_m-footer-menu";

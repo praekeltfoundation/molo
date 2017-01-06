@@ -1,0 +1,16 @@
+@each $name, $color in $color_scheme {
+  .section-listing--#{$name} {
+    .section-listing__title { background: none; }
+    .section-listing__link { color: $color; }
+  }
+
+  .section-listing__theme-bg--#{$name} {
+    .section-listing__theme-bg-title { background: $color; }
+    .section-listing__theme-bg-link { color: #fff; }
+  }
+
+  .section-listing__theme-light_bg--#{$name} {
+    .section-listing__theme-light_bg-title { background: rgba($color,0.4); }
+    .section-listing__theme-light_bg-link { color: $color; }
+  }
+}
