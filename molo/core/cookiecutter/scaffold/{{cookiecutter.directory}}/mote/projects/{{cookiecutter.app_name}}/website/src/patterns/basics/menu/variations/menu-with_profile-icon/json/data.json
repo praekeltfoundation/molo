@@ -6,16 +6,11 @@
           {
             "href": "#",
             "name": "Sign up",
-            "id": "profiles"
+            "id": "profile_register"
           },
           {
             "href": "#",
             "name": "Menu",
-            "id": ""
-          },
-          {
-            "href": "#",
-            "name": "Search",
             "id": ""
           }
         ]
