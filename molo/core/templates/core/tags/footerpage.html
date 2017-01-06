@@ -1,15 +1,6 @@
 
-{% load wagtailcore_tags wagtailimages_tags core_tags %}
-
+{% block footer %}
 {% if footers %}
-  {% social_media_footer %}
-  <ul class="footer-list">
-    {% for page in footers %}
-      <li class="footer-list__item">
-        <a href="{% pageurl page %}">
-          {{page.title}}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
+  {% include "patterns/components/footer/footer.html" %}
 {% endif %}
+{% endblock %}
