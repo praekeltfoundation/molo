@@ -13,9 +13,9 @@
       <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor-column">
       {% block image %}
         {% if forloop.first %}
-          {% include "patterns/basics/article-image.html" with curve="semi-round" %}
+          {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
         {% else %}
-          {% include "patterns/basics/article-thumbnail.html" with curve="none" %}
+          {% include "patterns/basics/images/article-thumbnail.html" with curve="none" %}
         {% endif %}
       {% endblock %}
       </a>
