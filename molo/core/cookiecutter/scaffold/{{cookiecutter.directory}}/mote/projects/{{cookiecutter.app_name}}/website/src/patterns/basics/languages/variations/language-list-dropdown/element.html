@@ -11,9 +11,9 @@
     <input id="language-select" class="language-select__toggle-input" type="checkbox">
     <label class="language-select__change-label" for="language-select">{% trans "Change Language" %}</label>
     <div role="languages__bar" class="language-select">
-      <ul class="language-list language-list--dropdown">
+      <ul class="language-list language-list__item--dropdown">
         {% for item in language_list_dropdown.languages %}
-          <li class="language-list__item">
+          <li class="language-list__item language-list__item--dropdown">
             {{ item.language }}
           </li>
         {% endfor %}

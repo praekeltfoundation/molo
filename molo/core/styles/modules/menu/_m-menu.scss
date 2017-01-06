@@ -1,17 +1,10 @@
 .menu-list {
   margin: 0 auto;
-  display: inline-block;
   padding: 0 10px;
+  display: inline-block;
   position: relative;
   @media screen and (min-width:320px) {
-    margin: 0;
     padding: 0 0 0 15px;
-  }
-}
-.menu-list--toggle {
-  @media screen and (min-width:320px) {
-    margin: 0;
-    padding: 0 0 0 25px;
   }
 }
 .menu-list__item  {
@@ -22,38 +15,43 @@
 }
 
 .menu-list__anchor {
+  display: inline-block;
   color: #07292F;
   text-transform: uppercase;
   font-weight: bold;
   font-size: 13px;
 }
-#search,
-#profile_register,
-#menu  {
-  .menu-list__anchor {
-    width: 21px;
-    height: 21px;
-    padding: 0 0 0 10px;
-    @media screen and (min-width: 320px) {
-      text-indent: -99em;
-    }
-  }
+
+
+//Where does this belong
+/*.menu-list__item  {
+  border-bottom: 1px solid #B0B9BB;
+  //display: block;
+  padding: 10px 15px 15px 0;
+  position: relative;
+}
+.menu-list__anchor {
+  color: #07292F;
+  display: inline-block;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: underline;
+  font-size: 14px;
+}
+.menu-list__desc {
+  color: #727172;
+  display: block;
+  text-transform: initial;
+  font-weight: normal;
 }
 
-#menu > .menu-list__anchor {
+.nav-submenu-list__anchor {
+  display: block;
+  padding-left: 25px;
+  color: #727172;
+  font-size: 14px;
   @media screen and (min-width: 320px) {
-    background:  url('../images/icons/menu.svg') no-repeat 0 0 / auto 100%;
+    text-decoration: none;
   }
 }
-
-#search > .menu-list__anchor {
-  @media screen and (min-width: 320px) {
-    background:  url('../images/icons/search.svg') no-repeat 0 0 / auto 100%;
-  }
-}
-
-#profile_register > .menu-list__anchor {
-  @media screen and (min-width: 320px) {
-    background:  url('../images/icons/user.svg') no-repeat 0 0 / auto 100%;
-  }
-}
+*/

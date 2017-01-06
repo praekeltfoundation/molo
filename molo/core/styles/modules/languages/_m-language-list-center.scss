@@ -1,0 +1,23 @@
+.language-list--standard-center {
+  text-align: center;
+}
+.language-list__item--standard-center {
+  color: #5a5d5e;
+  display: inline-block;
+  font-size: 16px;
+  &:after {
+    color: #ddd;
+    content: "|";
+    padding: 0 3px;
+  }
+  &:last-child {
+    &:after {
+      content: " ";
+      display: none;
+    }
+  }
+}
+.language-list__anchor-standard-center {
+  color: #5a5d5e;
+  font-size: 16px;
+}
