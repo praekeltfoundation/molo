@@ -12,7 +12,8 @@
   }
   &:last-child {
     &:after {
-      content: "";
+      content: " ";
+      display: none;
     }
   }
 }
