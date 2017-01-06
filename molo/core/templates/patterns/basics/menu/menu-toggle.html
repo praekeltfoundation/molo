@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<ul class="menu-list menu-list--toggle menu-list--{{class}}">
+  <li id="profile_register" class="menu-list__item">
+    <a  href="#" class="menu-list__anchor">{% trans "Sign up" %}</a>
+  </li>
+  <li id="search" class="menu-list__item">
+    <label class="menu-list__anchor" for="search-toggle__button">{% trans "Search" %}</label>
+  </li>
+  <li id="menu" class="menu-list__item">
+    <a href="#section_menu" class="menu-list__anchor">{% trans "Menu" %}</a>
+  </li>
+</ul>
+<input id="search-toggle__button" type="checkbox" value="Search"/>
+{% include "search/search_block.html" with class="toggle" %}

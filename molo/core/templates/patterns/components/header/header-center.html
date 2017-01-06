@@ -1,17 +1,7 @@
-{% block header %}
-  {% block languages %}
-    {% include "patterns/basics/languages/language-list-center.html" %}
-  {% endblock  %}
-
-  <div class="header">
-    <div class="header__menu">
-      {% block logo %}
-        {% include "patterns/basics/logo.html" with class="center"%}
-      {% endblock %}
-    </div>
+{% include "patterns/basics/languages/language-list-center.html" %}
+<div class="header">
+  <div class="header__menu">
+      {% include "patterns/basics/logo.html" with class="center"%}
   </div>
-
-  {% block navigation %}
-    {% include "patterns/basics/navigation-horizontal.html" %}
-  {% endblock  %}
-{% endblock %}
+</div>
+{% include "patterns/basics/navigation-horizontal.html" %}

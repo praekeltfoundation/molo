@@ -1,10 +1,6 @@
-{% load wagtailimages_tags static i18n %}
-<a href="/" class="logo logo--{{class}}">
- {% if settings.core.SiteSettings.logo %}
-   {% image settings.core.SiteSettings.logo width-140 %}
- {% else %}
-   {% block logo %}
-     <img src="{% static 'img/logo.png' %}" alt="{% trans "Logo" %}" />
-   {% endblock %}
- {% endif %}
-</a>
+{% load wagtailimages_tags %}
+{% if settings.core.SiteSettings.logo %}
+  <a href="/" class="logo logo--{{class}}">
+     {% image settings.core.SiteSettings.logo width-140 %}
+  </a>
+{% endif %}

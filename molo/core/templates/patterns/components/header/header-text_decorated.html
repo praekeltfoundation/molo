@@ -1,18 +1,10 @@
-{% block header %}
-  <div class="header">
-    <div class="header__menu">
-      {% block logo %}
-        {% include "patterns/basics/logo.html" with class="left"%}
-      {% endblock %}
+<div class="header">
+  <div class="header__menu">
+    {% include "patterns/basics/logo.html" with class="left" %}
 
-      {% block menu %}
-        {% include "patterns/basics/menu-min.html" with class="left"%}
-      {% endblock %}
-    </div>
+    {% include "patterns/basics/menu/menu.html" with class="left" %}
   </div>
-  {% if self.get_verbose_name|slugify  == "main" %}
-    {% block languages %}
-      {% include "patterns/basics/languages/language-list-text_decorated.html" %}
-    {% endblock  %}
-  {% endif %}
-{% endblock %}
+</div>
+{% if self.get_verbose_name|slugify  == "main" %}
+    {% include "patterns/basics/languages/language-list-text_decorated.html" %}
+{% endif %}
