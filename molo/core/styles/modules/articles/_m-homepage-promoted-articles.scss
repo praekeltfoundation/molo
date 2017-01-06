@@ -4,6 +4,21 @@
   padding: 0;
 }
 
+
+//Section with BG variation
 .promoted-article-list--theme-bg {
-  padding: 0 15px;
+  padding: 10px 15px;
+}
+.promoted-article-list__heading {
+  display: inline;
+  padding-right: 5px;
+  &:after {
+    content: ":";
+    margin: 0 0 0 -5px;
+  }
+}
+.promoted-article-list__anchor--theme-bg,
+.promoted-article-list__desc--theme-bg {
+  display: inline;
+  padding: 0;
 }
