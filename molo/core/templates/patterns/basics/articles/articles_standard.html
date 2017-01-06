@@ -6,7 +6,7 @@
       {% if article.image %}
       <a href="{% pageurl article %}" class="promoted-article-list__anchor">
       {% block image %}
-          {% include "patterns/basics/article-thumbnail.html" with curve="none" %}
+          {% include "patterns/basics/articles/article-thumbnail.html" with curve="none" %}
       {% endblock %}
       </a>
       {% endif %}
