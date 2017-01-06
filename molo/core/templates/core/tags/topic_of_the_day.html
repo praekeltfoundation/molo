@@ -1,9 +1,7 @@
-
 {% load wagtailcore_tags wagtailimages_tags i18n %}
 
+{% block topic_of_the_day %}
 {% if articles %}
-  <h1 class="heading heading--xx-large">{% trans "Topic of the Day" %}</h1>
-  {% block topic-of-day-section %}
-    {% include "patterns/components/homepage-section_latest.html" %}
-  {% endblock %}
+  {% include "patterns/components/topic_of_the_day/topic-of-the-day.html" %}
 {% endif %}
+{% endblock %}

@@ -1,0 +1,6 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static %}
+
+{% block topic-of-day-section %}
+  <h1 class="heading heading--xx-large">{% trans "Topic of the Day" %}</h1>
+  {% include "patterns/basics/articles_standard.html" %}
+{% endblock %}

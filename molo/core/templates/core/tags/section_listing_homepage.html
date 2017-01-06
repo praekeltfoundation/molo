@@ -1,6 +1,7 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags %}
+
+{% block homepage-section %}
 {% for section in sections %}
-  {% block homepage-section %}
-    {% include "patterns/components/homepage-section-block/homepage-section.html" %}
-  {% endblock %}
+  {% include "patterns/components/homepage-section-block/homepage-section.html" %}
 {% endfor%}
+{% endblock %}

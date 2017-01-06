@@ -1,7 +1,5 @@
-{% load i18n %}
+{% block latest %}
 {% if articles %}
-  <h1 class="heading heading--xx-large">{% trans "Latest" %}</h1>
-  {% block latest %}
-    {% include "patterns/components/homepage-latest-block/latest.html" %}
-  {% endblock %}
+  {% include "patterns/components/homepage-latest-block/latest.html" %}
 {% endif %}
+{% endblock %}
