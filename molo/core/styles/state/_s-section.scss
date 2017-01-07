@@ -9,8 +9,8 @@
     .section-listing__theme-bg-link { color: #fff; }
   }
 
-  .section-listing__theme-light_bg--#{$name} {
-    .section-listing__theme-light_bg-title { background: rgba($color,0.4); }
-    .section-listing__theme-light_bg-link { color: $color; }
+  .subsection-listing__theme-bg--#{$name} {
+    .section-listing__theme-subsection_bg-title { background: rgba($color,0.4); }
+    .section-listing__theme-subsection_bg-link { color: $color; }
   }
 }
