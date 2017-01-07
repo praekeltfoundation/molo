@@ -13,4 +13,21 @@
     .section-listing__theme-subsection_bg-title { background: rgba($color,0.4); }
     .section-listing__theme-subsection_bg-link { color: $color; }
   }
+
+  .section-listing_theme-headings--#{$name} {
+    .section-listing__title-theme-headings {
+      border-top-color: $color;
+      border-bottom-color: $color;
+      background: rgba($color,0.4);
+    }
+    .section-listing__link-theme-headings,
+    .promoted-article-list__anchor--theme-headings {
+      color: $color;
+    }
+    .promoted-article-list__item--theme-headings {
+      border-top-color: $color;
+    }
+
+
+  }
 }
