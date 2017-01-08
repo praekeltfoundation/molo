@@ -27,7 +27,19 @@
     .promoted-article-list__item--theme-headings {
       border-top-color: $color;
     }
+  }
 
+  .section-listing__column--#{$name} {
+    .subsection-listing__column-title,
+    .subsection-listing__column-link {
+      color: $color;
+    }
+  }
 
+  .section-listing__column-icon--#{$name} {
+    .subsection-listing__column-icon-title,
+    .subsection-listing__column-icon-link {
+      color: $color;
+    }
   }
 }

@@ -1,0 +1,8 @@
+.subsection-listing__column-title {
+  padding: 10px 15px;
+}
+.subsection-listing__column-link {
+  &:hover {
+    text-decoration: none;
+  }
+}

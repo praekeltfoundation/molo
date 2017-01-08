@@ -1,5 +1,5 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
-{% block article %}
+
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
   {% if featured_articles %}
   <h1 class="heading heading--x-large category__title category__title-{{type}}">
@@ -29,4 +29,3 @@
     {% endfor %}
   </ul>
   {% endif %}
-{% endblock %}
