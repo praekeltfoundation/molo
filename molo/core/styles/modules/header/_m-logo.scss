@@ -3,6 +3,7 @@
   padding: 0 10px;
   vertical-align: middle;
   text-decoration: none;
+  display: inline-block;
   &:hover {
     text-decoration: none;
   }
@@ -17,7 +18,9 @@
 .logo--left {
   text-align: left;
 }
-
+.logo--right {
+  float: right;
+}
 .logo--center {
   text-align: center;
   display: block;
