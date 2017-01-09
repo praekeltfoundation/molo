@@ -3,7 +3,12 @@
 }
 
 .promoted-article-list__item-column {
-  margin: 0 0 10px;
+  margin: 0 0 15px;
+  .promoted-article-list__image {
+    @media screen and (min-width: 320px) {
+      padding: 0 15px;
+    }
+  }
 }
 
 
