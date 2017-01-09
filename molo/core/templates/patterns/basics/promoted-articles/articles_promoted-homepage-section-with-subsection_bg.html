@@ -3,20 +3,17 @@
 {% if featured_articles %}
   <div class="section-listing section-listing__theme-bg{{section.get_effective_extra_style_hints}} subsection-listing__theme-bg{{section.get_effective_extra_style_hints}}">
     <!-- Subsection Not pulling through -->
-    {% if section.get_parent_section %}
-      {% with sub_section=section.get_parent_section %}
-        <h1 class="heading heading--x-large subsection-listing__theme-bg-title">
-          <a href="{% pageurl self.get_parent_section %}" class="subsection-listing__theme-bg-link">
-            {{sub_section.title}
+    {% if section.get_parent %}
+      {% with sub_section=section.get_parent %}
+        <h1 class="heading heading--x-large section-listing__theme-subsection_bg-title">
+          <a href="{% pageurl self.get_parent %}" class="section-listing__theme-subsection_bg-link">
+            sss{{sub_section.title}
           </a>
         </h3>
       {% endwith %}
     {% endif %}
     <h1 class="heading heading--x-large section-listing__theme-bg-title">
       <a href="{% pageurl section %}" class="section-listing__theme-bg-link">{{section.title}}</a>
-    </h1>
-    <h1 class="heading heading--x-large section-listing__theme-subsection_bg-title">
-      <a href="{% pageurl section %}" class="section-listing__theme-subsection_bg-link">{{section.title}}</a>
     </h1>
 
 
