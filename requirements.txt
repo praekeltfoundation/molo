@@ -11,10 +11,10 @@ django-mptt==0.8.5
 requests
 elastic-git
 unicore.content
-wagtail==1.6.3
+wagtail==1.7
 responses
 babel
-wagtailmedia==0.1.1
+wagtailmedia==0.1.3
 django-extensions
 celery<4.0
 redis
