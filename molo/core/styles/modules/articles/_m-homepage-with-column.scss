@@ -10,6 +10,11 @@
     }
   }
 }
+.promoted-article-list__item--hero-column {
+  .promoted-article-list__image {
+    padding: 0;
+  }
+}
 
 
 .promoted-article-list__item-column:nth-child(even) {
