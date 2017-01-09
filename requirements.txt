@@ -11,7 +11,7 @@ django-mptt==0.8.5
 requests
 elastic-git
 unicore.content
-wagtail==1.5.3
+wagtail==1.6.3
 responses
 babel
 wagtailmedia==0.1.1
