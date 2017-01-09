@@ -1,0 +1,24 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static %}
+
+{% load_child_sections_for_section self as sections %}
+{% for section in sections %}
+  <div class="category__list">
+    {% if section.image %}
+      <a href="{% pageurl section %}" class="category__image-link">
+        {% image section.image width-60 %}
+      </a>
+    {% endif %}
+    <h3 class="heading category__title">
+      <a href="{% pageurl section %}" class="category__link">{{section.title}}</a>
+    </h3>
+    <p class="category__description">{{section.description}}</p>
+  </div>
+
+  {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
+  {% if featured_articles %}
+    {% for article in featured_articles %}
+      <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+      <p>{{article.subtitle}}</p>
+    {% endfor %}
+  {% endif %}
+{% endfor %}
