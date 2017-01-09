@@ -37,9 +37,17 @@
   }
 
   .section-listing__column-icon--#{$name} {
-    .subsection-listing__column-icon-title,
-    .subsection-listing__column-icon-link {
+    .section-listing__column-icon-title,
+    .section-listing__column-icon-link {
       color: $color;
     }
+    .section-listing__column-icon-title-hero {
+      background: $color;
+      .section-listing__column-icon-link {
+        color: #fff;
+      }
+    }
   }
+
+
 }

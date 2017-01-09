@@ -11,13 +11,11 @@
         <li class="promoted-article-list__item {% if forloop.first %}promoted-article-list__item--hero-column{% endif %} promoted-article-list__item-column ">
           {% if article.image %}
           <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor-column">
-          {% block image %}
             {% if forloop.first %}
               {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
             {% else %}
               {% include "patterns/basics/images/article-thumbnail.html" with curve="none" %}
             {% endif %}
-          {% endblock %}
           </a>
           {% endif %}
 

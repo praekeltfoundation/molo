@@ -4,7 +4,7 @@
   <div class="section-listing section-listing{{section.get_effective_extra_style_hints}}">
     <ul class="promoted-article-list promoted-article-list--{{type}}">
       {% for article in featured_articles %}
-        <li class="promoted-article-list__item">
+        <li class="promoted-article-list__item promoted-article-list__item-standard">
           {% if article.image %}
             <a href="{% pageurl article %}" class="promoted-article-list__anchor">
               {% include "patterns/basics/images/article-thumbnail.html" with curve="none" %}

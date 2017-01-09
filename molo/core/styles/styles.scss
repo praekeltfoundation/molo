@@ -6,4 +6,7 @@
 
 @import "layout/_layout";
 @import "modules/_modules";
-@import "state/_state";
+//Do This on File load - Base.html
+@media screen and (min-width: 320px) {
+  @import "state/_state";
+}

@@ -3,10 +3,8 @@
 }
 
 .promoted-article-list__item-column {
-  border: none;
   margin: 0 0 10px;
 }
-
 
 
 .promoted-article-list__item-column:nth-child(even) {
@@ -37,5 +35,4 @@
 
 .promoted-article-list__column-heading {
   padding: 0 15px;
-  word-wrap: break-word;
 }
