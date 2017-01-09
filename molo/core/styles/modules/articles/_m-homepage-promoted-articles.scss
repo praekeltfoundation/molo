@@ -19,6 +19,9 @@
 }
 .promoted-article-list__anchor--theme-bg,
 .promoted-article-list__desc--theme-bg {
-  display: inline;
+  display: block;
   padding: 0;
+  @media screen and (min-width: 320px) {
+    display: inline;
+  }
 }

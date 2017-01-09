@@ -7,6 +7,8 @@
   .section-listing__theme-bg--#{$name} {
     .section-listing__theme-bg-title { background: $color; }
     .section-listing__theme-bg-link { color: #fff; }
+    .section-listing__theme-more-link,
+    .subsection-list__theme-more-link { color: $color; }
   }
 
   .subsection-listing__theme-bg--#{$name} {
