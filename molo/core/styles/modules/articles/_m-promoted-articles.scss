@@ -20,6 +20,14 @@
     }
   }
 }
+.promoted-article-list__item--hero {
+  .promoted-article-list__image {
+    padding: 0;
+    @media screen and (min-width: 320px) {
+      float: none;
+    }
+  }
+}
 .promoted-article__title {
   padding: 0 15px 10px;
   color: #dc5a11;

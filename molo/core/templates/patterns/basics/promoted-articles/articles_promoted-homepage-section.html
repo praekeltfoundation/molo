@@ -8,10 +8,14 @@
     </h1>
     <ul class="promoted-article-list promoted-article-list--{{type}}">
       {% for article in featured_articles %}
-        <li class="promoted-article-list__item promoted-article-list__item-standard">
+        <li class="promoted-article-list__item promoted-article-list__item-standard {% if forloop.first %}promoted-article-list__item--hero{% endif %}">
           {% if article.image %}
             <a href="{% pageurl article %}" class="promoted-article-list__anchor">
-              {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+              {% if forloop.first %}
+                {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
+              {% else %}
+                {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+              {% endif %}
             </a>
           {% endif %}
           <a href="{% pageurl article %}" class="promoted-article-list__anchor">
