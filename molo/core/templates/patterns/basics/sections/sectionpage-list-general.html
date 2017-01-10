@@ -1,0 +1,51 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static i18n %}
+{% load_child_sections_for_section self as sections %}
+<div class="section-listing section-listing--general{{self.get_effective_extra_style_hints}}">
+<!-- Can have breadcrumbs -->
+ {% for section in sections %}
+    <ul class="promoted-article-list">
+      <li class="promoted-article-list__item promoted-article-list__item-general">
+      <!-- Remove Section Description-->
+     {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
+     {% if featured_articles %}
+       {% for article in featured_articles %}
+         {% if article.image %}
+           <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+             <!--Image curve border styles -->
+              {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="round" %}
+           </a>
+         {% endif %}
+         <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+           <h3 class="heading heading--large promoted-article__title-general">
+             {{article.title}}
+           </h3>
+         </a>
+         <p class="promoted-article-list__desc">{{article.subtitle}}</p>
+
+       {% endfor %}
+     {% endif %}
+    </li>
+ </ul>
+ {% endfor %}
+
+
+ {% load_child_articles_for_section self as articles %}
+  <ul class="promoted-article-list">
+  {% for article in articles %}
+  <li class="promoted-article-list__item promoted-article-list__item-general">
+    {% if article.image %}
+      <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+          {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="round" %}
+      </a>
+    {% endif %}
+    <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+      <h3 class="heading heading--large promoted-article__title-general">
+        {{article.title}}
+      </h3>
+    </a>
+    <p class="promoted-article-list__desc">{{article.subtitle}}</p>
+
+  </li>
+  {% endfor %}
+  </ul>
+</div>
