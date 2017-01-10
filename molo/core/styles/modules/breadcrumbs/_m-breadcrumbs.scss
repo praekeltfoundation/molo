@@ -2,13 +2,13 @@
 .breadcrumbs {
   font-family: 'Quicksand', sans-serif;
   border-buttom: 1px #e7e7e7 solid;
-  padding: 10px 15px 10px 15px;
+  padding: 10px 0;
   font-size: 14px;
   text-transform: uppercase;
 }
 .breadcrumbs-list {
   margin: 0;
-  padding: 0;
+  padding: 0 15px;
   list-style: none;
 }
 .breadcrumbs-list__item {
