@@ -13,11 +13,14 @@
        {% if featured_articles %}
          {% for article in featured_articles %}
             <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
-           <h3 class="heading heading--large promoted-article__title promoted-article__section-title">
+           <h3 class="heading heading--large promoted-article__section-title">
              {{article.title}}
            </h3>
           </a>
-          <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">{{article.subtitle}}</p>
+          <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">
+            {{article.subtitle}}
+          </p>
+          <p class="promoted-article-list__publish-date">{{self.first_published_at | date:"j F Y"}}</p>
          {% endfor %}
        {% endif %}
       </li>
@@ -35,11 +38,14 @@
   {% for article in articles %}
   <li class="promoted-article-list__item promoted-article-list__item--theme-bg">
         <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
-        <h3 class="heading heading--large promoted-article__title promoted-article__section-title">
+        <h3 class="heading heading--large promoted-article__section-title">
           {{article.title}}
         </h3>
       </a>
-      <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">{{article.subtitle}}</p>
+      <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">
+        {{article.subtitle}}
+      </p>
+      <p class="promoted-article-list__publish-date">{{self.first_published_at | date:"j F Y"}}</p>
   </li>
   {% endfor %}
   </ul>
