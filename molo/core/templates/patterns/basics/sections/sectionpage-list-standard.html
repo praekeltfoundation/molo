@@ -1,27 +1,46 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static %}
-
 {% load_child_sections_for_section self as sections %}
-{% for section in sections %}
-  <div class="section-listing section-listing{{section.get_effective_extra_style_hints}}">
-    <h1 class="heading heading--x-large section-listing__title">
-      <a href="{% pageurl section %}" class="section-listing__link">
-        {{section.title}}</a>
-    </h1>
-
-  
-
-    {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
-    <ul class="promoted-article-list">
-    {% if featured_articles %}
-      {% for article in featured_articles %}
-      <li class="promoted-article-list__item promoted-article-list__item-standard">
-        <a href="{% pageurl article %}" class="promoted-article-list__anchor">
-          <h3 class="heading heading--large promoted-article__title">{{article.title}}</h3>
-        </a>
-        <p class="promoted-article-list__desc">{{article.subtitle}}</p>
+<div class="section-listing section-listing__theme-bg{{self.get_effective_extra_style_hints}}">
+<!-- Can have breadcrumbs -->
+  <h1 class="heading heading--x-large section-listing__theme-bg-title">
+    <a href="{% pageurl self %}" class="section-listing__theme-bg-link">{{self.title}}</a>
+  </h1>
+ {% for section in sections %}
+    <ul class="promoted-article-list promoted-article-list--theme-bg">
+      <li class="promoted-article-list__item promoted-article-list__item--theme-bg">
+        <!-- Remove Section Description-->
+       {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
+       {% if featured_articles %}
+         {% for article in featured_articles %}
+            <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
+           <h3 class="heading heading--large promoted-article__title promoted-article__section-title">
+             {{article.title}}
+           </h3>
+          </a>
+          <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">{{article.subtitle}}</p>
+         {% endfor %}
+       {% endif %}
       </li>
-      {% endfor %}
-    {% endif %}
-    </ul>
-  </div>
-{% endfor %}
+   </ul>
+ {% endfor %}
+
+
+ {% load_child_articles_for_section self as articles %}
+ <!-- Load Subsection heading -->
+ <h1 class="heading heading--x-large section-listing__theme-bg-title">
+   <a href="{% pageurl self %}" class="section-listing__theme-bg-link">{{self.title}}</a>
+ </h1>
+
+ <ul class="promoted-article-list promoted-article-list--theme-bg">
+  {% for article in articles %}
+  <li class="promoted-article-list__item promoted-article-list__item--theme-bg">
+        <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
+        <h3 class="heading heading--large promoted-article__title promoted-article__section-title">
+          {{article.title}}
+        </h3>
+      </a>
+      <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">{{article.subtitle}}</p>
+  </li>
+  {% endfor %}
+  </ul>
+</div>
