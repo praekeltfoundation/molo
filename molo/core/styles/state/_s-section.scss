@@ -73,4 +73,11 @@
     }
   }
 
+  .related-article-list--#{$name} {
+    color: $color;
+    .call-to-action__item--text {
+      color: $color;
+    }
+  }
+
 }

@@ -1,3 +1,38 @@
+.heading--article-standard {
+  padding: 0 15px;
+  text-align: center;
+}
+.article-standard {
+  h1,h2,h3,h4,h5,h6 {
+    padding: 15px;
+    margin: 0 0 10px 0;
+  }
+  p {
+    margin: 10px 0;
+  }
+}
+.related-article-list {
+  padding: 0 15px;
+}
+.call-to-action__item--text-related-article {
+  text-decoration: none;
+  display: block;
+  &:before {
+    padding: 0 0 0 5px;
+    font-size: 10px;
+    vertical-align: middle;
+    display: inline-block;
+    margin: -3px 5px 0 0;
+    @media only screen and (min-width: 320px) {
+       content: "»";
+    }
+  }
+
+}
+
+
+
+//General Article
 article {
   h1,h2,h3,h4,h5,h6,p {
     padding: 0 15px;
