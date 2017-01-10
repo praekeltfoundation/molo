@@ -4,6 +4,14 @@
     .section-listing__link { color: $color; }
   }
 
+  .section-listing-standard-list--#{$name} {
+    background: $color;
+    .section-listing-standard-list__item,
+    .section-listing-standard-list__link {
+      color: #fff;
+    }
+  }
+
   .section-listing__theme-bg--#{$name} {
     .section-listing__theme-bg-title { background: $color; }
     .section-listing__theme-bg-link { color: #fff; }
