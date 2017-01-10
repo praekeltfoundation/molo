@@ -7,7 +7,7 @@
     </h1>
       <ul class="promoted-article-list promoted-article-list-column">
         {% for article in featured_articles %}
-        <li class="promoted-article-list__item {% if forloop.first %}promoted-article-list__item--hero-column{% endif %} promoted-article-list__item-column ">
+        <li class="promoted-article-list__item {% if forloop.first %}promoted-article-list__item--hero-column{% endif %} promoted-article-list__item-column">
           {% if article.image %}
           <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor-column">
             {% if forloop.first %}
