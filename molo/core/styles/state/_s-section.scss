@@ -1,4 +1,14 @@
 @each $name, $color in $color_scheme {
+  .heading--section-article--#{$name} {
+    background: $color;
+    .heading--section-article__link {
+      color: #fff;
+    }
+  }
+  .featured-page-list__heading--#{$name} {
+    background: $color;
+    color: #fff;
+  }
   .section-listing--#{$name} {
     .section-listing__title { background: none; }
     .section-listing__link { color: $color; }
@@ -62,6 +72,5 @@
       }
     }
   }
-
 
 }

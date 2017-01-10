@@ -50,9 +50,17 @@ article {
     width: auto;
   }
 }
-.article-teaser__publish-date {
+.article-teaser__publish-date,
+.article-page__publish-date {
   color: #94989B;
-  padding: 0 0 10px;
   display: block;
-  font-size: 15px;
+  font-size: 14px;
+}
+
+.article-teaser__publish-date {
+  padding: 0 0 10px;
+}
+
+.article-page__publish-date {
+  padding: 0 15px;
 }
