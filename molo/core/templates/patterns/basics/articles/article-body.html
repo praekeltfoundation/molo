@@ -1,10 +1,10 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags %}
 
-<h1 class="heading heading--xx-large">{{self.title}}</h1>
+<h1 class="heading heading--xx-large heading--article">{{self.title}}</h1>
 <p class="article__desc">{{self.subtitle}}</p>
 {% if self.image %}
   <a href="{% pageurl self %}" class="promoted-article-list__anchor">
-    {% image self.image width-240 %}
+    {% image self.image width-320 class="promoted-article-list__image"%}
   </a>
 {% endif %}
 <article>
