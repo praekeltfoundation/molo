@@ -32,10 +32,12 @@
 }
 
 .call-to-action__item--search-icon-bg {
-  background:  #000 url('../images/icons/search_white.svg') no-repeat 12px 10px / auto 60%;
-  right: 10%;
-  top: 10px;
-  height: 39px;
-  width: 45px;
   border-radius: 0;
+  @media screen and (min-width: 320px) {
+    background:  #000 url('../images/icons/search_white.svg') no-repeat 12px 10px / auto 60%;
+    right: 10%;
+    top: 10px;
+    height: 39px;
+    width: 45px;
+  }
 }

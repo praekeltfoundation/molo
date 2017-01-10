@@ -2,8 +2,11 @@
 fieldset {
   font-family: 'Quicksand', sans-serif;
   border: none;
-  padding: 10px 15px 0;
+  padding: 10px 0;
   margin: 0;
+  @media screen and (min-width: 320px) {
+    padding: 10px 15px 0;
+  }
 }
 
 label, .checkbox__legend {
@@ -75,9 +78,10 @@ textarea {
   font-size: 14px;
   margin: 10px 0;
   padding: 10px;
-  width: 90%;
+  width: 80%; //Smaller screen resolution
   @media screen and (min-width: 320px) {
     border-radius: 5px;
+    width: 90%;
   }
 }
 
