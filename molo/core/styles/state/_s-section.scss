@@ -9,6 +9,16 @@
     background: $color;
     color: #fff;
   }
+  .heading-section-article__bg-title--#{$name} {
+    background: rgba($color,0.4);
+    .heading-section-article__bg-link {
+      color: #fff;
+    }
+  }
+  .heading--article-bg--#{$name} {
+    background: $color;
+    color: #fff;
+  }
   .section-listing--#{$name} {
     .section-listing__title { background: none; }
     .section-listing__link { color: $color; }
