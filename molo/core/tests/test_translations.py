@@ -1,12 +1,16 @@
 import pytest
 
+from datetime import datetime
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from wagtail.wagtailcore.models import Site
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage, SectionPage, SiteSettings
+from molo.core.models import SiteLanguage, SectionPage, SiteSettings, \
+    ArticlePage
+from molo.core.tasks import promote_articles
 
 
 @pytest.mark.django_db
@@ -213,13 +217,16 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         en_page = self.mk_article(self.english_section,
                                   title='English article1',
-                                  featured_in_latest=True)
+                                  featured_in_latest_start_date=datetime.now())
+        promote_articles()
+        en_page = ArticlePage.objects.get(title=en_page.title)
         self.mk_article_translation(
             en_page, self.french, title=en_page.title + ' in french',)
 
         self.mk_article(self.english_section,
                         title='English article2',
-                        featured_in_latest=True)
+                        featured_in_latest_start_date=datetime.now())
+        promote_articles()
 
         # tests that in english section users will only see the articles
         # that have been translated
@@ -278,17 +285,19 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         en_page = self.mk_article(self.english_section,
                                   title='English article1',
-                                  featured_in_latest=True)
+                                  featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_article_translation(
             en_page, self.french, title=en_page.title + ' in french',)
 
         en_page2 = self.mk_article(
             self.english_section,
             title='English article2',
-            featured_in_latest=True)
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
+        en_page2 = ArticlePage.objects.get(title=en_page2.title)
         self.mk_article_translation(
             en_page2, self.french, title=en_page2.title + ' in french',)
-
         en_page2.unpublish()
 
         # tests that on home page users will only
@@ -364,7 +373,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         en_page = self.mk_article(
             en_section2,
             title='English article1',
-            featured_in_latest=True)
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
         self.mk_article_translation(
             en_page, self.spanish_mexico,
             title=en_page.title + ' in Mexican Spanish',)

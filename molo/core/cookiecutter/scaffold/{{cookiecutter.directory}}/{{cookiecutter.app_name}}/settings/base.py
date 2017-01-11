@@ -88,6 +88,7 @@ SITE_ID = 1
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'molo.core.middleware.ForceDefaultLanguageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -98,7 +99,6 @@ MIDDLEWARE_CLASSES = [
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
     'wagtailmodeladmin.middleware.ModelAdminMiddleware',
 
-    'molo.core.middleware.ForceDefaultLanguageMiddleware',
     'molo.core.middleware.AdminLocaleMiddleware',
     'molo.core.middleware.NoScriptGASessionMiddleware',
 
@@ -176,9 +176,21 @@ BROKER_URL = environ.get('BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = environ.get(
     'CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 CELERYBEAT_SCHEDULE = {
-    'rotate_content': {
+    'rotate_promote_content': {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
+    },
+    'demote_articles': {
+        'task': 'molo.core.tasks.demote_articles',
+        'schedule': crontab(minute="*"),
+    },
+    'promote_articles': {
+        'task': 'molo.core.tasks.promote_articles',
+        'schedule': crontab(minute="*"),
+    },
+    'publish_pages': {
+        'task': 'molo.core.tasks.publish_scheduled_pages',
+        'schedule': crontab(minute='*'),
     },
 }
 

@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
-from django.db.models.signals import pre_delete, post_delete
+from django.db.models.signals import pre_delete, post_delete, pre_save
 from django.dispatch import receiver
 
 from taggit.models import TaggedItemBase
@@ -24,7 +24,8 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 
-from molo.core.blocks import MarkDownBlock, MultimediaBlock
+from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
+    SocialMediaLinkBlock
 from molo.core import constants, forms
 from molo.core.utils import get_locale_code
 
@@ -105,6 +106,29 @@ class SiteSettings(BaseSetting):
         null=True, blank=True,
         help_text='The date rotation will end')
 
+    social_media_links_on_footer_page = StreamField([
+        ('social_media_site', SocialMediaLinkBlock()),
+    ], null=True, blank=True)
+    facebook_sharing = models.BooleanField(
+        default=False, verbose_name='Facebook',
+        help_text='Enable this field to allow for sharing to Facebook.')
+    facebook_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    twitter_sharing = models.BooleanField(
+        default=False, verbose_name='Twitter',
+        help_text='Enable this field to allow for sharing to Twitter.')
+    twitter_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     enable_clickable_tags = models.BooleanField(
         default=False, verbose_name='Display tags on Front-end')
 
@@ -145,7 +169,24 @@ class SiteSettings(BaseSetting):
                 ]),
                 StreamFieldPanel('time'),
             ],
-            heading="Content Rotation Settings",
+            heading="Content Rotation Settings", ),
+        MultiFieldPanel(
+            [
+                MultiFieldPanel(
+                    [
+                        StreamFieldPanel('social_media_links_on_footer_page'),
+                    ],
+                    heading="Social Media Footer Page", ),
+            ],
+            heading="Social Media Footer Page Links", ),
+        MultiFieldPanel(
+            [
+                FieldPanel('facebook_sharing'),
+                ImageChooserPanel('facebook_image'),
+                FieldPanel('twitter_sharing'),
+                ImageChooserPanel('twitter_image'),
+            ],
+            heading="Social Media Article Sharing Buttons",
         ),
         MultiFieldPanel(
             [
@@ -190,7 +231,6 @@ class LanguageRelation(models.Model):
 
 
 class TranslatablePageMixin(object):
-
     def get_translation_for(self, locale, is_live=True):
         language = SiteLanguage.objects.filter(locale=locale).first()
         if not language:
@@ -310,6 +350,7 @@ class Main(CommentedPageMixin, Page):
             languages__language__is_main_language=True).exclude(
                 feature_as_topic_of_the_day=True,
                 demote_date__gt=timezone.now()).order_by(
+                    '-featured_in_latest_start_date',
                     '-promote_date', '-latest_revision_created_at').specific()
 
     def topic_of_the_day(self):
@@ -344,6 +385,7 @@ class LanguagePage(CommentedPageMixin, Page):
     class Meta:
         verbose_name = _('Language')
 
+
 LanguagePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('code'),
@@ -354,7 +396,7 @@ LanguagePage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings",)
+        heading="Commenting Settings", )
 ]
 
 
@@ -403,6 +445,7 @@ class SectionIndexPage(CommentedPageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+
 SectionIndexPage.content_panels = [
     FieldPanel('title', classname='full title'),
     MultiFieldPanel(
@@ -411,7 +454,7 @@ SectionIndexPage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings",)
+        heading="Commenting Settings", )
 ]
 
 
@@ -540,6 +583,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     class Meta:
         verbose_name = _('Section')
 
+
 SectionPage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('description'),
@@ -550,7 +594,7 @@ SectionPage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings",)
+        heading="Commenting Settings", )
 ]
 
 SectionPage.settings_panels = [
@@ -571,7 +615,7 @@ SectionPage.settings_panels = [
             ]),
             StreamFieldPanel('time'),
         ],
-        heading="Content Rotation Settings",),
+        heading="Content Rotation Settings", ),
     MultiFieldPanel(
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
@@ -595,14 +639,22 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     featured_in_latest = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Latest module"))
+    featured_in_latest_start_date = models.DateTimeField(null=True, blank=True)
+    featured_in_latest_end_date = models.DateTimeField(null=True, blank=True)
     featured_in_section = models.BooleanField(
         default=False,
         help_text=_("Article to be featured in the Section module"))
+    featured_in_section_start_date = models.DateTimeField(
+        null=True, blank=True)
+    featured_in_section_end_date = models.DateTimeField(null=True, blank=True)
     featured_in_homepage = models.BooleanField(
         default=False,
         help_text=_(
             "Article to be featured in the Homepage "
             "within the Section module"))
+    featured_in_homepage_start_date = models.DateTimeField(
+        null=True, blank=True)
+    featured_in_homepage_end_date = models.DateTimeField(null=True, blank=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -663,10 +715,18 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     promote_date = models.DateTimeField(blank=True, null=True)
     demote_date = models.DateTimeField(blank=True, null=True)
 
-    featured_promote_panels = [
-        FieldPanel('featured_in_latest'),
-        FieldPanel('featured_in_section'),
-        FieldPanel('featured_in_homepage'),
+    featured_latest_promote_panels = [
+        FieldPanel('featured_in_latest_start_date'),
+        FieldPanel('featured_in_latest_end_date'),
+    ]
+    featured_section_promote_panels = [
+        FieldPanel('featured_in_section_start_date'),
+        FieldPanel('featured_in_section_end_date'),
+
+    ]
+    featured_homepage_promote_panels = [
+        FieldPanel('featured_in_homepage_start_date'),
+        FieldPanel('featured_in_homepage_end_date'),
     ]
 
     topic_of_the_day_panels = [
@@ -741,24 +801,46 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings",),
+        heading="Commenting Settings", ),
     MultiFieldPanel(
         [
             FieldPanel('social_media_title'),
             FieldPanel('social_media_description'),
             ImageChooserPanel('social_media_image'),
         ],
-        heading="Social Media",),
+        heading="Social Media", ),
     InlinePanel('related_sections', label="Related Sections"),
 ]
 
 ArticlePage.promote_panels = [
-    MultiFieldPanel(ArticlePage.featured_promote_panels, "Featuring"),
+    MultiFieldPanel(
+        ArticlePage.featured_latest_promote_panels, "Featuring in Latest"),
+    MultiFieldPanel(
+        ArticlePage.featured_section_promote_panels, "Featuring in Section"),
+    MultiFieldPanel(
+        ArticlePage.featured_homepage_promote_panels, "Featuring in Homepage"),
     MultiFieldPanel(ArticlePage.topic_of_the_day_panels, "Topic of the Day"),
     MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
+
+
+@receiver(
+    pre_save, sender=ArticlePage, dispatch_uid="demote_featured_articles")
+def demote_featured_articles(sender, instance, **kwargs):
+    if instance.featured_in_latest_end_date is None and \
+        instance.featured_in_latest_start_date is None and \
+            instance.featured_in_latest is True:
+        instance.featured_in_latest = False
+    if instance.featured_in_homepage_end_date is None and \
+        instance.featured_in_homepage_start_date is None and \
+            instance.featured_in_homepage is True:
+        instance.featured_in_homepage = False
+    if instance.featured_in_section_end_date is None and \
+        instance.featured_in_section_start_date is None and \
+            instance.featured_in_section is True:
+        instance.featured_in_section = False
 
 
 class ArticlePageRelatedSections(Orderable):
@@ -782,6 +864,7 @@ class FooterIndexPage(Page):
 class FooterPage(ArticlePage):
     parent_page_types = ['FooterIndexPage']
     subpage_types = []
+
 
 FooterPage.content_panels = ArticlePage.content_panels
 
