@@ -3,10 +3,6 @@
   text-align: center;
 }
 .article-standard {
-  h1,h2,h3,h4,h5,h6 {
-    padding: 15px;
-    margin: 0 0 10px 0;
-  }
   p {
     margin: 10px 0;
   }
@@ -40,10 +36,18 @@
 .article-back__anchor {
   font-weight: bold;
 }
+.article__image {
+  display: block;
+  margin: 0 auto;
+}
 
 
 //General Article
 article {
+  h1,h2,h3,h4,h5,h6 {
+    padding: 15px;
+    margin: 0 0 10px 0;
+  }
   h1,h2,h3,h4,h5,h6,p {
     padding: 0 15px;
   }

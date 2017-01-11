@@ -6,24 +6,26 @@
       {% for article in featured_articles %}
         <li class="promoted-article-list__item promoted-article-list__item--column-icon {% if forloop.first %}promoted-article-list__item--column-icon-hero{% endif %}">
             <div class="section-listing_column-content">
-            <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--column-icon">
-              {% if article.image %}
-                {% if forloop.first %}
-                  {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
-                {% else %}
-                  {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+              <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--column-icon">
+                {% if article.image %}
+                  {% if forloop.first %}
+                    {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
+                  {% else %}
+                    {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-              </a>
-              <div class="section-listing__column-icon-title {% if forloop.first %}section-listing__column-icon-title-hero{% endif %}">
-                <a href="{% pageurl section %}" class="section-listing__column-icon-link">{{section.title}}
                 </a>
-                {% if forloop.first %}
-                  {% image section.image width-30 class="section-listing__column-icon-image section-listing__column-icon-image-hero" %}
-                {% else %}
-                  {% image section.image width-30 class="section-listing__column-icon-image" %}
-                {% endif %}
-              </div>
+                <div class="section-listing__column-icon-title {% if forloop.first %}section-listing__column-icon-title-hero{% endif %}">
+                  <a href="{% pageurl section %}" class="section-listing__column-icon-link">{{section.title}}
+                  </a>
+                  {% if section.image %}
+                    {% if forloop.first %}
+                      {% image section.image width-30 class="section-listing__column-icon-image section-listing__column-icon-image-hero" %}
+                    {% else %}
+                      {% image section.image width-30 class="section-listing__column-icon-image" %}
+                    {% endif %}
+                  {% endif %}
+                </div>
             </div>
 
 

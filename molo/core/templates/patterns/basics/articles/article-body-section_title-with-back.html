@@ -8,8 +8,8 @@
   </span>
   <h1 class="heading heading--large heading--article">{{self.title}}</h1>
   {% if self.image %}
-    <a href="{% pageurl self %}" class="promoted-article-list__anchor">
-      {% image self.image width-280 class="promoted-article-list__image"%}
+    <a href="{% pageurl self %}" class="article__anchor">
+      {% image self.image width-280 class="article__image"%}
     </a>
   {% endif %}
 
