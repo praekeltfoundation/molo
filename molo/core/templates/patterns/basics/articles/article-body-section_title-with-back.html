@@ -3,6 +3,9 @@
   <h2 class="heading heading--large heading--section-article{{section.get_effective_extra_style_hints}}">
     <a href="{% pageurl section %}" class="heading--section-article__link">{{section.title}}</a>
   </h2>
+  <span class="article-back">
+    <a href="{% pageurl section %}" class="article-back__anchor article-back__anchor{{section.get_effective_extra_style_hints}}">Back</a>
+  </span>
   <h1 class="heading heading--large heading--article">{{self.title}}</h1>
   {% if self.image %}
     <a href="{% pageurl self %}" class="promoted-article-list__anchor">
@@ -57,7 +60,7 @@
     {% endfor %}
   {% endif %}
     <li class="featured-page-list__item featured-page-list__item-more">
-      <a href="{% pageurl section %}" class="featured-page-list__anchor">{% trans "More" %} &gt;</a>
+      <a href="{% pageurl section %}" class="featured-page-list__anchor">{% trans "More" %}</a>
     </li>
   </ul>
 {% endwith %}

@@ -28,12 +28,18 @@
     }
   }
 }
-
-
 .related-article-list-general {
   padding: 0 15px;
 }
 
+.article-back {
+  padding: 10px 15px;
+  display: block;
+  border-bottom: 1px solid  #e6e6e6;
+}
+.article-back__anchor {
+  font-weight: bold;
+}
 
 
 //General Article
