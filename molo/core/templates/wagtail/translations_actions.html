@@ -1,0 +1,17 @@
+ 
+{% if not page.main %}
+<style type="text/css">
+.listing .translation-translated {border-color: #43b1b0; background-color: #43b1b0; color: #fff }
+.listing .translation-translated-draft {background-color: #900;border-color: #900;}
+</style>
+<ul class="actions" style="visibility:visible">
+{% for t in translations %}
+  {% if t.translated %}
+  <li><a href="{% url 'wagtailadmin_pages:edit' t.translated.id %}" class="button button-small button-secondary translation-translated {% if not t.translated.live or t.translated.has_unpublished_changes %}translation-translated-draft{% endif %}" title="{{t.locale.title}}">{{t.locale.title}}</a></li>
+  {% else %}
+  <li><a href="{% url 'add_translation' page.id t.locale.code %}" class="button button-small button-secondary" title="{{t.locale.title}}">{{t.locale.title}}</a></li>
+  {% endif %}
+{% endfor %}
+</ul>
+{% endif %}
+ 

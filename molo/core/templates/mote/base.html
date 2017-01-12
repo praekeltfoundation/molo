@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+{% load staticfiles static compress mote_tags %}
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="{% static "mote/css/fonts.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "mote/css/mote.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "mote/js/libs/prism/css/prism.css" %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    {% compress css %}
+      <link rel="stylesheet" type="text/x-scss" href="{% static 'css/mote.scss' %}">
+    {% endcompress %}
+
+    <script src="{% static "mote/js/libs/jquery/js/jquery.js" %}"></script>
+    <script src="{% static "mote/js/libs/sticky-kit/js/jquery.sticky-kit.js" %}"></script>
+    <script src="{% static "mote/js/libs/prism/js/prism.js" %}"></script>
+    <script src="{% static "mote/js/libs/hideseek/js/jquery.hideseek.js" %}"></script>
+    <script src="{% static "mote/js/libs/lazysizes/js/lazysizes.js" %}"></script>
+    <script src="{% static "mote/js/mote.js" %}"></script>
+</head>
+
+<body data-library="{{ library }}">
+    {% block header %}
+    <header role="banner">
+        <div class="wrapper">
+            <a href="{% url "mote:home" %}" class="logo">
+              <img src="{% static "mote/img/logo.png" %}" alt="" />
+              Molo Design System <small>Beta</small>
+            </a>
+        </div>
+    </header>
+    {% endblock %}
+
+    <section class="hero {{ pattern.id }}">
+      <div class="wrapper">
+          {% block hero %}
+          {% endblock %}
+      </div>
+    </section>
+
+    <main role="main">
+      <div class="wrapper">
+            <aside role="sidebar" class="sidebar">
+                {% if active_category %}
+                  <form class="sidebar-search">
+                    <input type="search" placeholder="Search pattern library">
+                    <div class="search-results">
+                        <ul role="menu" class="search-list vertical">
+                          {% for dict in menu_items %}
+                              {% for category, items in dict.items %}
+                                  {% for item in items %}
+                                  <li role="menuitem">
+                                      <a href="{% url 'mote:project' category %}#mote_{{ item }}" class="">{{ category }} - {{ item }}</a>
+                                  </li>
+                                  {% endfor %}
+                              {% endfor %}
+                          {% endfor %}
+                        </ul>
+                    </div>
+                  </form>
+                {% endif %}
+                {% block menu-desc %}
+                {% endblock %}
+                {% block menu %}
+                {% endblock %}
+            </aside>
+
+        <section role="section" class="container">
+          {% block content %}
+          {% endblock %}
+        </section>
+      </div>
+    </main>
+
+</body>
+</html>

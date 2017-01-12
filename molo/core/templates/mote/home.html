@@ -1,0 +1,23 @@
+{% extends "mote/base.html" %}
+
+{% block hero %}
+    <div class="background"></div>
+    <div class="foreground">
+        <h3>Welcome to </h3>
+        <h1>Molo Design System</h1>
+    </div>
+{% endblock %}
+
+{% block menu-desc %}
+  <h5>Website Application: Molo Core</h5>
+{% endblock %}
+
+{% block menu %}
+  <ul role="menu" class="vertical tier-1" id="sidebar-nav">
+    {% for project in projects %}
+        <li role="menuitem">
+            <a href="{% url 'mote:project' project=project.id %}">{{ project.title }}</a>
+        </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

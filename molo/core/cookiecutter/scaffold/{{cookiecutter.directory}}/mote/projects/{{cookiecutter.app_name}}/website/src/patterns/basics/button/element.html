@@ -1,0 +1,18 @@
+{% raw %}
+{% load mote_tags %}
+
+{% mask element.json.data.Button as "button" %}
+
+{% if button.tag == "a" %}
+    <a class="call-to-action__item call-to-action__item--{{button.modifiers}}" data-direction="none" href="{{ button.href }}" {{ button.attrs }}>
+      {{ button.text }}
+    </a>
+{% elif button.tag == "input" %}
+    <input type="{{button.type}}" class="call-to-action__item call-to-action__item--{{ button.modifiers }}" value="{{ button.text }}" {{ button.attrs }} />
+
+{% else %}
+    <button class="call-to-action__item call-to-action__item--{{ button.modifiers }}" data-direction="left" {{ button.attrs }}>
+      {{ button.text }}
+    </button>
+{% endif %}
+{% endraw %}

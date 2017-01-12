@@ -1,0 +1,22 @@
+{% raw %}
+{% load mote_tags %}
+
+{% mask element.json.data.ArticleList as "article" %}
+<div class="featured-article">
+  {% for item in  article.headings %}
+      <h6 class="heading heading--xx-small featured-article-tag__label">
+        <a href="#" class="featured-article-tag__link">
+          {{item.label}}
+          <span class="featured-article-tag__name">{{item.name}}</span>
+        </a>
+      </h6>
+      <ul class="featured-article-list featured-article-list--more-in">
+        {% for list in  item.list%}
+          <li class="featured-article-list__item">
+            <a href="#" class="featured-article-list__anchor">{{list.text}}</a>
+          </li>
+        {% endfor %}
+      </ul>
+  {% endfor %}
+</div>
+{% endraw %}
