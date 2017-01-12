@@ -196,23 +196,40 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             eng_section2, self.french,
             title=eng_section2.title + ' in french')
 
+        article1 = self.mk_article(
+            eng_section2,
+            title='English article1 in section 2',
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now())
+        self.mk_article_translation(
+            article1, self.french, title=article1.title + ' in french',)
+
+        article2 = self.mk_article(
+            self.english_section,
+            title='English article2 in section 1',
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now())
+        self.mk_article_translation(
+            article2, self.french, title=article2.title + ' in french',)
+        promote_articles()
+
         # tests that in Home page users will only see the sections
         # that have been translated
         response = self.client.get('/')
         self.assertContains(
             response,
             '<a href="/sections/english-section/"'
-            ' class="category__link">English section</a>')
+            ' class="section-listing__column-icon-link">English section</a>')
         self.assertContains(
             response,
             '<a href="/sections/english-section2/"'
-            ' class="category__link">English section2</a>')
+            ' class="section-listing__column-icon-link">English section2</a>')
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
         self.assertContains(
             response,
             '<a href="/sections/english-section2-in-french/"'
-            ' class="category__link">'
+            ' class="section-listing__column-icon-link">'
             'English section2 in french</a>')
         self.assertNotContains(
             response,
@@ -236,65 +253,56 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         # that have been translated
         response = self.client.get('/locale/en/')
         response = self.client.get('/sections/english-section/')
+
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article1/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article1</h3></a>',
-            html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article__title">English article1</h3>')
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article2/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article2</h3></a>',
-            html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article__title">English article2</h3>')
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/sections/english-section/')
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article1-in-french/"'
-            ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'English article1 in french</h3></a>',
-            html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article__title">English article1 in french</h3>')
         self.assertNotContains(
             response,
-            '<a href="/sections/english-section/english-article2/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article2</h3></a>',
-            html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article__title">English article2</h3>')
 
         # tests that in latest block users will only see the articles
         # that have been translated
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article1-in-french/"'
-            ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'English article1 in french</h3></a>',
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article1 in french</h5>',
             html=True)
         self.assertNotContains(
             response,
-            '<a href="/sections/english-section/english-article2/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article2</h3></a>',
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article2</h5>',
             html=True)
 
         response = self.client.get('/locale/en/')
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article1/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article1</h3></a>',
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article1</h5>',
             html=True)
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article2/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article2</h3></a>',
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article2</h5>',
             html=True)
 
     def test_if_main_lang_page_unpublished_translated_page_still_shows(self):
@@ -305,9 +313,17 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             title=eng_section2.title + ' in french')
         eng_section2.unpublish()
 
-        en_page = self.mk_article(self.english_section,
-                                  title='English article1',
-                                  featured_in_latest_start_date=datetime.now())
+        self.mk_article(
+            eng_section2,
+            title='English article1 in section 2',
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now())
+
+        en_page = self.mk_article(
+            self.english_section,
+            title='English article1',
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now())
         promote_articles()
         self.mk_article_translation(
             en_page, self.french, title=en_page.title + ' in french',)
@@ -329,37 +345,32 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<a href="/sections/english-section/"'
-            ' class="category__link">English section</a>')
+            ' class="section-listing__column-icon-link">English section</a>')
         self.assertNotContains(
             response,
             '<a href="/sections/english-section2/"'
-            ' class="category__link">English section2</a>')
+            ' class="section-listing__column-icon-link">English section2</a>')
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article1/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article1</h3></a>',
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings"> English article1</h5>',
             html=True)
+
         self.assertNotContains(
             response,
-            '<a href="/sections/english-section/english-article2/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article2</h3></a>',
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings"> English article2</h5>',
             html=True)
 
         response = self.client.get('/sections/english-section/')
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article1/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article1</h3></a>',
-            html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article__title">English article1</h3>')
         self.assertNotContains(
             response,
-            '<a href="/sections/english-section/english-article2/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article2</h3></a>',
-            html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article__title">English article2</h3>')
 
         # tests that when switching to a child language
         # users will see all the published translated pages
@@ -367,46 +378,38 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
+
         self.assertContains(
             response,
-            '<h1 class="heading heading--xx-large category__title">'
             '<a href="/sections/english-section2-in-french/"'
-            ' class="category__link">English section2 in french</a></h1>',
-            html=True)
+            ' class="section-listing__column-icon-link">'
+            'English section2 in french</a>')
         self.assertContains(
             response,
-            '<h1 class="heading heading--xx-large category__title">'
             '<a href="/sections/english-section/"'
-            ' class="category__link">English section</a></h1>',
+            ' class="section-listing__column-icon-link">English section</a>')
+        self.assertContains(
+            response,
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article2 in french</h5>',
             html=True)
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article2-in-french/"'
-            ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'English article2 in french</h3></a>', html=True)
-        self.assertContains(
-            response,
-            '<a href="/sections/english-section/english-article1-in-french/"'
-            ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'English article1 in french</h3></a>', html=True)
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article1 in french</h5>',
+            html=True)
 
         response = self.client.get('/sections/english-section/')
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article1-in-french/"'
-            ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'English article1 in french</h3></a>',
-            html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article__title">English article1 in french</h3>')
         self.assertContains(
             response,
-            '<a href="/sections/english-section/english-article1-in-french/"'
-            ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'English article1 in french</h3></a>',
-            html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article__title">English article2 in french</h3>')
 
     def test_if_mexican_spanish_translated_pages_are_shown_on_front_end(self):
         en_section2 = self.mk_section(
@@ -418,48 +421,40 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         en_page = self.mk_article(
             en_section2,
             title='English article1',
-            featured_in_latest_start_date=datetime.now())
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now())
         promote_articles()
         self.mk_article_translation(
             en_page, self.spanish_mexico,
             title=en_page.title + ' in Mexican Spanish',)
 
         response = self.client.get('/')
-
         self.assertContains(
             response,
             '<a href="/sections/english-section2/"'
-            ' class="category__link">English section2</a>')
+            ' class="section-listing__column-icon-link">English section2</a>')
         self.assertNotContains(
             response,
-            '<a href="/sections/english-section2/" class="category__link">'
-            'English section2 in Mexican Spanish</a>')
+            'English section2 in Mexican Spanish')
 
         self.assertContains(
             response,
-            '<a href="/sections/english-section2/english-article1/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">English article1</h3></a>',
-            html=True)
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article1</h5>', html=True)
         self.assertNotContains(
             response,
-            '<a href="/sections/english-section2/'
-            'english-article1-in-mexican-spanish/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">'
-            'English article1 in Mexican Spanish</h3></a>', html=True)
+            'English article1 in Mexican Spanish')
 
         response = self.client.get('/locale/es-mx/')
         response = self.client.get('/')
         self.assertContains(
             response,
             '<a href="/sections/english-section2-in-mexican-spanish/"'
-            ' class="category__link">'
+            ' class="section-listing__column-icon-link">'
             'English section2 in Mexican Spanish</a>')
         self.assertContains(
             response,
-            '<a href="/sections/english-section2/'
-            'english-article1-in-mexican-spanish/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">'
-            'English article1 in Mexican Spanish</h3></a>', html=True)
+            '<h3 class="heading heading--large'
+            ' promoted-article-list__column-icon-heading">'
+            'English article1 in Mexican Spanish</h3>')

@@ -67,16 +67,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEquals(response.status_code, 200)
         self.assertContains(
             response,
-            '<span class="breadcrumbs-list__anchor'
-            ' breadcrumbs-list__anchor--is-active">Your mind</span>')
+            '<span class="breadcrumbs-list-with-bg__anchor is-active">'
+            'Your mind</span>')
 
         response = self.client.get(
             '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(
             response,
-            '<span class="breadcrumbs-list__anchor'
-            ' breadcrumbs-list__anchor--is-active">Test page 1</span>')
+            '<span class="breadcrumbs-list-with-bg__anchor is-active">'
+            'Test page 1</span>')
 
     def test_footer_pages(self):
         self.footer = FooterPage(
@@ -106,45 +106,55 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         self.yourmind.extra_style_hints = 'yellow'
         self.yourmind.save_revision().publish()
+        article = self.mk_article(
+            self.yourmind, title='article', slug='article')
+        article.featured_in_homepage_start_date = datetime.now()
+        article.save()
+        promote_articles()
 
         response = self.client.get('/')
         self.assertContains(response, 'Your mind')
         self.assertContains(
             response,
-            '<a href="/sections/your-mind/" '
-            'class="category__link">Your mind</a>')
-        self.assertContains(response, '<div class="articles nav yellow">')
-
-        # Child page should have extra style from section
-        response = self.client.get(
-            '/sections/your-mind/your-mind-subsection/test-page-1/')
-        self.assertContains(response, '<div class="articles nav yellow">')
+            '<a href="/sections/your-mind/"'
+            ' class="section-listing__column-icon-link">Your mind</a>')
+        self.assertContains(
+            response,
+            '<div class="section-listing'
+            ' section-listing__column-icon yellow">')
 
     def test_section_listing_in_french(self):
         self.yourmind.extra_style_hints = 'yellow'
         self.yourmind.save_revision().publish()
+        article = self.mk_article(
+            self.yourmind, title='article', slug='article')
+        article.featured_in_homepage_start_date = datetime.now()
+        article.save()
+        promote_articles()
 
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/sections/your-mind/" '
-            'class="category__link">Your mind</a>')
+            '<a href="/sections/your-mind/"'
+            ' class="section-listing__column-icon-link">Your mind</a>')
         self.assertNotContains(
             response,
-            '<a href="/sections/your-mind-in-french/" '
-            'class="category__link">Your mind in french</a>')
+            '<a href="/sections/your-mind-in-french/"'
+            ' class="section-listing__column-icon-link">'
+            'Your mind in french</a>')
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
 
         self.assertNotContains(
             response,
-            '<a href="/sections/your-mind/" '
-            'class="category__link">Your mind</a>')
+            '<a href="/sections/your-mind/"'
+            ' class="section-listing__column-icon-link">Your mind</a>')
         self.assertContains(
             response,
-            '<a href="/sections/your-mind-in-french/" '
-            'class="category__link">Your mind in french</a>')
+            '<a href="/sections/your-mind-in-french/"'
+            ' class="section-listing__column-icon-link">'
+            'Your mind in french</a>')
 
         # unpublished section should fallback to main language
         self.yourmind_fr.unpublish()
@@ -153,12 +163,13 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         self.assertContains(
             response,
-            '<a href="/sections/your-mind/" '
-            'class="category__link">Your mind</a>')
+            '<a href="/sections/your-mind/"'
+            ' class="section-listing__column-icon-link">Your mind</a>')
         self.assertNotContains(
             response,
-            '<a href="/sections/your-mind-in-french/" '
-            'class="category__link">Your mind in french</a>')
+            '<a href="/sections/your-mind-in-french/"'
+            ' class="section-listing__column-icon-link">'
+            'Your mind in french</a>')
 
     def test_switching_between_child_languages(self):
         self.yourmind_es = self.mk_section_translation(
@@ -166,12 +177,17 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.yourmind_ar = self.mk_section_translation(
             self.yourmind, self.arabic, title='Your mind in arabic')
         en_page = self.mk_article(self.yourmind)
+        article = self.mk_article(
+            self.yourmind, title='article', slug='article')
+        article.featured_in_homepage_start_date = datetime.now()
+        article.save()
+        promote_articles()
 
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/sections/your-mind/" '
-            'class="category__link">Your mind</a>')
+            '<a href="/sections/your-mind/"'
+            ' class="section-listing__column-icon-link">Your mind</a>')
 
         response = self.client.get('/sections/your-mind/%s/' % (en_page.slug))
         self.assertContains(
@@ -224,13 +240,19 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<a href="/sections/your-mind/your-mind-subsection/test-page-8/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">Test page 8</h3></a>', html=True)
+            ' class="promoted-article-list__anchor'
+            ' promoted-article-list__anchor--theme-headings">'
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'Test page 8</h5></a>', html=True)
         self.assertContains(
             response,
             '<a href="/sections/your-mind/your-mind-subsection/test-page-9/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">Test page 9</h3></a>', html=True)
+            ' class="promoted-article-list__anchor'
+            ' promoted-article-list__anchor--theme-headings">'
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'Test page 9</h5></a>', html=True)
         self.assertNotContains(
             response, 'Test page 9 in french')
         self.assertNotContains(
@@ -269,20 +291,27 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<a href="/sections/your-mind/your-mind-subsection/'
-            'test-page-8-in-french/" class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'Test page 8 in french</h3></a>', html=True)
+            'test-page-8-in-french/" class="promoted-article-list__anchor'
+            ' promoted-article-list__anchor--theme-headings"><h5'
+            ' class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'Test page 8 in french</h5></a>', html=True)
         self.assertContains(
             response,
             '<a href="/sections/your-mind/your-mind-subsection/'
-            'test-page-9-in-french/" class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'Test page 9 in french</h3></a>', html=True)
+            'test-page-9-in-french/" class="promoted-article-list__anchor'
+            ' promoted-article-list__anchor--theme-headings"><h5'
+            ' class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'Test page 9 in french</h5></a>', html=True)
         self.assertNotContains(
             response,
             '<a href="/sections/your-mind/your-mind-subsection/test-page-9/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">Test page 9</h3></a>', html=True)
+            ' class="promoted-article-list__anchor'
+            ' promoted-article-list__anchor--theme-headings">'
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'Test page 9</h5></a>', html=True)
 
         # unpublished article should fallback to main language
         en_latest[9].specific.translations.first().translated_page.unpublish()
@@ -291,14 +320,19 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(
             response,
             '<a href="/sections/your-mind/your-mind-subsection/'
-            'test-page-9-in-french/" class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large">'
-            'Test page 9 in french</h3></a>', html=True)
+            'test-page-9-in-french/" class="promoted-article-list__anchor'
+            ' promoted-article-list__anchor--theme-headings"><h5'
+            ' class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'Test page 9 in french</h5></a>', html=True)
         self.assertContains(
             response,
             '<a href="/sections/your-mind/your-mind-subsection/test-page-9/"'
-            ' class="promoted-article-list__anchor"><h3'
-            ' class="heading heading--large">Test page 9</h3></a>', html=True)
+            ' class="promoted-article-list__anchor'
+            ' promoted-article-list__anchor--theme-headings">'
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'Test page 9</h5></a>', html=True)
 
     def test_article_page(self):
         self.mk_articles(self.yourmind_sub, count=10)
@@ -307,7 +341,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
-            '<h1 class="heading heading--xx-large">Test page 1</h1>')
+            '<h1 class="heading heading--xx-large heading--article">'
+            'Test page 1</h1>')
         self.assertContains(
             response,
             '<p class="article__desc">Sample page description for 1</p>')
@@ -342,18 +377,18 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '/sections/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
-            '<li class="default-unordered-list__item">'
+            '<li class="unordered-list__item">'
             '<strong>Lorem ipsum</strong></li>')
         self.assertContains(
             response,
-            '<li class="default-unordered-list__item">'
+            '<li class="unordered-list__item">'
             'dolor <em>sit amet</em></li>')
         self.assertContains(
             response,
-            '<li class="default-ordered-list__item"><em>ad nec</em></li>')
+            '<li class="ordered-list__item"><em>ad nec</em></li>')
         self.assertContains(
             response,
-            '<li class="default-ordered-list__item">'
+            '<li class="ordered-list__item">'
             'aeque <em>saepe albucius</em></li>')
 
     def test_featured_homepage_listing(self):
@@ -363,8 +398,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<p class="promoted-article-list__desc">'
-            'Sample page description for 0</p>')
+            'promoted-article-list__desc'
+            ' promoted-article-list__desc--column-icon')
 
     def test_featured_homepage_listing_draft_articles(self):
         article = self.mk_article(
@@ -459,7 +494,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<p class="promoted-article-list__desc">'
+            '<p class="promoted-article-list__desc'
+            ' promoted-article-list__desc--column-icon">'
             'Sample page description for 0</p>')
         self.assertNotContains(
             response,
@@ -470,11 +506,13 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         self.assertNotContains(
             response,
-            '<p class="promoted-article-list__desc">'
+            '<p class="promoted-article-list__desc'
+            ' promoted-article-list__desc--column-icon">'
             'Sample page description for 0</p>')
         self.assertContains(
             response,
-            '<p class="promoted-article-list__desc">'
+            '<p class="promoted-article-list__desc'
+            ' promoted-article-list__desc--column-icon">'
             'Sample page description for 0 in french</p>')
 
         # unpublished article should fallback to main language
@@ -482,11 +520,13 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<p class="promoted-article-list__desc">'
+            '<p class="promoted-article-list__desc'
+            ' promoted-article-list__desc--column-icon">'
             'Sample page description for 0</p>')
         self.assertNotContains(
             response,
-            '<p class="promoted-article-list__desc">'
+            '<p class="promoted-article-list__desc'
+            ' promoted-article-list__desc--column-icon">'
             'Sample page description for 0 in french</p>')
 
     def test_page_moving(self):
@@ -501,8 +541,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/')
         self.assertContains(
-            response, '<a href="/sections/your-mind/" '
-                      'class="category__link">Your mind</a>')
+            response, 'Your mind')
         response = self.client.get('/sections/your-mind/%s/' % (en_page.slug))
         self.assertContains(
             response, ' <p>Sample page content for 0</p>')
