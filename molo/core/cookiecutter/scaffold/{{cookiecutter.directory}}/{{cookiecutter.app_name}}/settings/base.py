@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     'molo.core',
     '{{cookiecutter.app_name}}',
+    'mote',
     'google_analytics',
 
     'wagtail.wagtailcore',
