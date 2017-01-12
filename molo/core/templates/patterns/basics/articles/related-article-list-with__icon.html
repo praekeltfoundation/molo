@@ -2,7 +2,7 @@
 
 {% with section=self.get_parent_section %}
   <div class="related-articles related-articles{{section.get_effective_extra_style_hints}}">
-    <p class="related-article_title">Related Article:</p>
+    <p class="related-article__title">Related Article:</p>
     {% if self.body %}
       {% for block in self.body %}
         {% if block.block_type == 'page'  %}
