@@ -1,36 +1,11 @@
 {
     "ArticleList": {
       "text": "Article List",
-      "modifiers": "dummy-class",
-      "headings": [
-        {
-          "label":"More in:",
-          "name":"Tag Name",
-          "list": [
-            {"text":"Title case ideally less than 120 characters"},
-            {"text":"But there is no way to limit"},
-            {"text":"Another example of the an article title"}
-          ]
-        },
-        {
-          "label":"You Might Also Like",
-          "name":"...",
-          "list": [
-            {"text":"Title case ideally less than 120 characters"},
-            {"text":"But there is no way to limit"},
-            {"text":"Another example of the an article title"}
-          ]
-        },
-        {
-          "label":"Recommended for you",
-          "name":"",
-          "list": [
-            {"text":"Title case ideally less than 120 characters"},
-            {"text":"But there is no way to limit"},
-            {"text":"Another example of the an article title"}
-          ]
-        }
-      ],
-
+      "modifiers": "brown",
+      "list": [
+        {"text":"Title case ideally less than 120 characters"},
+        {"text":"But there is no way to limit"},
+        {"text":"Another example of the an article title"}
+      ]
     }
 }
