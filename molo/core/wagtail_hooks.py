@@ -70,7 +70,7 @@ def register_import_menu_item():
 
 class LanguageSummaryItem(SummaryItem):
     order = 500
-    template = 'admin/site_languages_summary.html'
+    template = 'wagtail/site_languages_summary.html'
 
     def get_context(self):
         languages = SiteLanguage.objects.all()
@@ -90,7 +90,7 @@ def add_languages_summary_item(request, items):
 
 class LanguageErrorMessage(SummaryItem):
     order = 100
-    template = 'admin/language_error_message.html'
+    template = 'wagtail/language_error_message.html'
 
 
 @hooks.register('construct_homepage_panels')

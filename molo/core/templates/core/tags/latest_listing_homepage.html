@@ -1,0 +1,9 @@
+
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+
+{% if articles %}
+  <h1 class="heading heading--xx-large">{% trans "Latest" %}</h1>
+  {% block latest-section %}
+    {% include "patterns/components/homepage-section_latest.html" %}
+  {% endblock %}
+{% endif %}

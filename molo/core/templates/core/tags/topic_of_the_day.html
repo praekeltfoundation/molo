@@ -1,0 +1,9 @@
+
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+
+{% if articles %}
+  <h1 class="heading heading--xx-large">{% trans "Topic of the Day" %}</h1>
+  {% block topic-of-day-section %}
+    {% include "patterns/components/homepage-section_latest.html" %}
+  {% endblock %}
+{% endif %}

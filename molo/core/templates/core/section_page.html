@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags static core_tags %}
+
+{% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
+
+{% block content %}
+
+    <div class="category__list">
+      {% if self.image %}
+        <a href="{% pageurl self %}" class="category__image-link">
+          {% image self.image width-60 %}
+        </a>
+      {% endif %}
+      <h1 class="heading heading--xx-large category__title">
+        <a href="{% pageurl self %}" class="category__link">{{self.title}}</a>
+      </h1>
+    </div>
+
+    {% load_child_sections_for_section self as sections %}
+    {% for section in sections %}
+
+      <div class="category__list">
+        {% if section.image %}
+          <a href="{% pageurl section %}" class="category__image-link">
+            {% image section.image width-60 %}
+          </a>
+        {% endif %}
+        <h1 class="heading heading--xx-large category__title">
+          <a href="{% pageurl section %}" class="category__link">{{section.title}}</a>
+        </h1>
+        {% if section.description %}
+          <p class="category__description">
+            {{section.description}}
+          </p>
+        {% endif %}
+      </div>
+
+      {% load_descendant_articles_for_section section featured_in_section=True as articles %}
+      {% if articles %}
+        {% block subsection-page %}
+          {% include "patterns/components/subsection-page-list.html" %}
+        {% endblock %}
+      {% endif %}
+
+    {% endfor %}
+
+
+    {% load_child_articles_for_section self as articles %}
+    {% block section-page %}
+      {% include "patterns/components/section-page-list.html" %}
+    {% endblock %}
+
+    {% block pagination %}
+      {% include "patterns/basics/pagination-pageof.html" %}
+    {% endblock %}
+{% endblock %}

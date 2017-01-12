@@ -1,0 +1,5 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static %}
+  {% block homepage-section %}
+    {% include "patterns/basics/category.html" with type="none" %}
+    {% include "patterns/basics/articles_promoted-hero.html" %}
+  {% endblock %}

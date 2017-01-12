@@ -22,3 +22,10 @@ celery<4.0
 redis
 six>=1.9
 django-google-analytics-app==2.1.2
+
+mote-prk
+beautifulsoup4==4.4.1
+ujson==1.35
+djangorestframework==3.3.2
+cached-property
+djangorestframework-jwt==1.8.0

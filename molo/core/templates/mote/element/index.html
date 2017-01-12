@@ -1,0 +1,180 @@
+{% load staticfiles %}
+<div class="sg-wrapper" id="element-{{ element.id }}">
+
+    {% comment %}
+      Find out what this does
+      <h2>button {% include "styleguide/link_out.html" with name=name %}</h2>
+    {% endcomment %}
+
+    <ul class="tags">
+        {% if 'refactor' in element.metadata.flags %}
+            <li class="tag-warning">
+                Needs Refactoring
+                {% if element.metadata.flags.refactor %}
+                    <div class="tooltip">
+                        {{ element.metadata.flags.refactor }}
+                    </div>
+                {% endif %}
+            </li>
+        {% endif %}
+
+        {% if 'ready' in element.metadata.flags %}
+            <li class="tag-success">
+                Production Ready
+                {% if element.metadata.flags.ready %}
+                    <div class="tooltip">
+                        {{ element.metadata.flags.ready }}
+                    </div>
+                {% endif %}
+            </li>
+        {% endif %}
+
+        {% if 'deprecated' in element.metadata.flags %}
+            <li class="tag-danger">
+                Deprecated
+                {% if element.metadata.flags.deprecated %}
+                    <div class="tooltip">
+                        {{ element.metadata.flags.deprecated }}
+                    </div>
+                {% endif %}
+            </li>
+        {% endif %}
+
+        {% if 'busy' in element.metadata.flags %}
+            <li class="tag-info">
+                Work in Progress
+                {% if element.metadata.flags.busy %}
+                    <div class="tooltip">
+                        {{ element.metadata.flags.busy }}
+                    </div>
+                {% endif %}
+            </li>
+        {% endif %}
+    </ul>
+
+    {% comment %}
+    <div class="iframe-refresh">
+        <?xml version="1.0" encoding="iso-8859-1"?>
+        <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            viewBox="0 0 487.23 487.23" style="enable-background:new 0 0 487.23 487.23;"
+             xml:space="preserve">
+            <g>
+                <g>
+                    <path d="M55.323,203.641c15.664,0,29.813-9.405,35.872-23.854c25.017-59.604,83.842-101.61,152.42-101.61
+                        c37.797,0,72.449,12.955,100.23,34.442l-21.775,3.371c-7.438,1.153-13.224,7.054-14.232,14.512
+                        c-1.01,7.454,3.008,14.686,9.867,17.768l119.746,53.872c5.249,2.357,11.33,1.904,16.168-1.205
+                        c4.83-3.114,7.764-8.458,7.796-14.208l0.621-131.943c0.042-7.506-4.851-14.144-12.024-16.332
+                        c-7.185-2.188-14.947,0.589-19.104,6.837l-16.505,24.805C370.398,26.778,310.1,0,243.615,0C142.806,0,56.133,61.562,19.167,149.06
+                        c-5.134,12.128-3.84,26.015,3.429,36.987C29.865,197.023,42.152,203.641,55.323,203.641z"/>
+                    <path d="M464.635,301.184c-7.27-10.977-19.558-17.594-32.728-17.594c-15.664,0-29.813,9.405-35.872,23.854
+                        c-25.018,59.604-83.843,101.61-152.42,101.61c-37.798,0-72.45-12.955-100.232-34.442l21.776-3.369
+                        c7.437-1.153,13.223-7.055,14.233-14.514c1.009-7.453-3.008-14.686-9.867-17.768L49.779,285.089
+                        c-5.25-2.356-11.33-1.905-16.169,1.205c-4.829,3.114-7.764,8.458-7.795,14.207l-0.622,131.943
+                        c-0.042,7.506,4.85,14.144,12.024,16.332c7.185,2.188,14.948-0.59,19.104-6.839l16.505-24.805
+                        c44.004,43.32,104.303,70.098,170.788,70.098c100.811,0,187.481-61.561,224.446-149.059
+                        C473.197,326.043,471.903,312.157,464.635,301.184z"/>
+                </g>
+            </g>
+        </svg>
+    </div>
+
+    <div class="iframe-opt">
+        <?xml version="1.0" encoding="iso-8859-1"?>
+        <!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+        	 viewBox="0 0 268.765 268.765" style="enable-background:new 0 0 268.765 268.765;" xml:space="preserve">
+            <g id="Settings">
+            	<g>
+            		<path style="fill-rule:evenodd;clip-rule:evenodd;" d="M267.92,119.461c-0.425-3.778-4.83-6.617-8.639-6.617
+            			c-12.315,0-23.243-7.231-27.826-18.414c-4.682-11.454-1.663-24.812,7.515-33.231c2.889-2.641,3.24-7.062,0.817-10.133
+            			c-6.303-8.004-13.467-15.234-21.289-21.5c-3.063-2.458-7.557-2.116-10.213,0.825c-8.01,8.871-22.398,12.168-33.516,7.529
+            			c-11.57-4.867-18.866-16.591-18.152-29.176c0.235-3.953-2.654-7.39-6.595-7.849c-10.038-1.161-20.164-1.197-30.232-0.08
+            			c-3.896,0.43-6.785,3.786-6.654,7.689c0.438,12.461-6.946,23.98-18.401,28.672c-10.985,4.487-25.272,1.218-33.266-7.574
+            			c-2.642-2.896-7.063-3.252-10.141-0.853c-8.054,6.319-15.379,13.555-21.74,21.493c-2.481,3.086-2.116,7.559,0.802,10.214
+            			c9.353,8.47,12.373,21.944,7.514,33.53c-4.639,11.046-16.109,18.165-29.24,18.165c-4.261-0.137-7.296,2.723-7.762,6.597
+            			c-1.182,10.096-1.196,20.383-0.058,30.561c0.422,3.794,4.961,6.608,8.812,6.608c11.702-0.299,22.937,6.946,27.65,18.415
+            			c4.698,11.454,1.678,24.804-7.514,33.23c-2.875,2.641-3.24,7.055-0.817,10.126c6.244,7.953,13.409,15.19,21.259,21.508
+            			c3.079,2.481,7.559,2.131,10.228-0.81c8.04-8.893,22.427-12.184,33.501-7.536c11.599,4.852,18.895,16.575,18.181,29.167
+            			c-0.233,3.955,2.67,7.398,6.595,7.85c5.135,0.599,10.301,0.898,15.481,0.898c4.917,0,9.835-0.27,14.752-0.817
+            			c3.897-0.43,6.784-3.786,6.653-7.696c-0.451-12.454,6.946-23.973,18.386-28.657c11.059-4.517,25.286-1.211,33.281,7.572
+            			c2.657,2.89,7.047,3.239,10.142,0.848c8.039-6.304,15.349-13.534,21.74-21.494c2.48-3.079,2.13-7.559-0.803-10.213
+            			c-9.353-8.47-12.388-21.946-7.529-33.524c4.568-10.899,15.612-18.217,27.491-18.217l1.662,0.043
+            			c3.853,0.313,7.398-2.655,7.865-6.588C269.044,139.917,269.058,129.639,267.92,119.461z M134.595,179.491
+            			c-24.718,0-44.824-20.106-44.824-44.824c0-24.717,20.106-44.824,44.824-44.824c24.717,0,44.823,20.107,44.823,44.824
+            			C179.418,159.385,159.312,179.491,134.595,179.491z"/>
+            	</g>
+            </g>
+        </svg>
+    </div>
+
+    <div class="iframe-opt-menu">
+        <ul>
+
+            {% for name, value in sass_breakpoints %}
+
+                <li data-size="{{ value }}">{{ name }}</li>
+
+            {% endfor %}
+        </ul>
+    </div>
+    {% endcomment %}
+
+    {% if element.variations %}
+        <label for="#iframe-{{ element.id }}-variation-toggler">Variations:</label>
+        <select class="iframe-variation-toggler" id="iframe-{{ element.id }}-variation-toggler" data-target="#iframe-{{ element.id }}">
+            <option value="{% url "mote:element-iframe" project=element.project.id aspect=element.aspect.id pattern=element.pattern.id element=element.id %}" selected>
+                {{ element.id }} base
+            </option>
+            {% for variation in element.variations %}
+                <option value="{% url "mote:variation-iframe" project=element.project.id aspect=element.aspect.id pattern=element.pattern.id element=element.id variation=variation.id %}">
+                    {{ variation.title }}
+                </option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
+    <div class="clear"></div>
+    <div class="iframe ui-widget-content">
+        <div class="iframe-status">
+            <b id="pixels">1000</b> px
+            <br/>
+            <b id="rems">48</b> em
+        </div>
+        <iframe class="lazyload" frameBorder="0" width="100%" height="100%" data-src="{% url "mote:element-iframe" project=element.project.id aspect=element.aspect.id pattern=element.pattern.id element=element.id %}"
+                id="iframe-{{ element.id }}">
+        </iframe>
+        <div class="handle">
+            <?xml version="1.0" encoding="iso-8859-1"?>
+            <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+            <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            	  viewBox="0 0 408 408" style="enable-background:new 0 0 408 408;" xml:space="preserve">
+            <g>
+            	<g id="more-vert">
+            		<path d="M204,102c28.05,0,51-22.95,51-51S232.05,0,204,0s-51,22.95-51,51S175.95,102,204,102z M204,153c-28.05,0-51,22.95-51,51
+            			s22.95,51,51,51s51-22.95,51-51S232.05,153,204,153z M204,306c-28.05,0-51,22.95-51,51s22.95,51,51,51s51-22.95,51-51
+            			S232.05,306,204,306z"/>
+            	</g>
+            </g>
+            </svg>
+
+        </div>
+    </div>
+
+    <div class="styleguide-pattern">
+            <h3>Usage <a class="sg-hidden-area-toggler off" href="#element-{{ element.id }}-examples"><span class="off-text">Show</span><span class="on-text">Hide</span></a></h3>
+
+            <div id="element-{{ element.id }}-examples" class="sg-hidden-area hide">
+              {% block codeblock %}
+              {% endblock %}
+
+            </div> <!-- sg-hidden-area -->
+
+    </div>
+</div>
+
+<!-- <script>
+   getState('element-{{ element.id }}');
+</script> -->
