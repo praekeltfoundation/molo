@@ -1,5 +1,4 @@
 {% load wagtailcore_tags wagtailimages_tags static core_tags %}
-{% block pagination %}
   {% if articles %}
     <div class="pagination">
       {% if articles_paginated.has_previous %}
@@ -13,4 +12,3 @@
       {% endif %}
     </div>
   {% endif %}
-{% endblock %}

@@ -1,8 +1,11 @@
 .logo {
   margin: 0;
-  padding: 0 10px;
   vertical-align: middle;
   text-decoration: none;
+  display: inline-block;
+  @media screen and (min-width: 320px) {
+    padding: 0 10px;
+  }
   &:hover {
     text-decoration: none;
   }
@@ -17,7 +20,9 @@
 .logo--left {
   text-align: left;
 }
-
+.logo--right {
+  float: right;
+}
 .logo--center {
   text-align: center;
   display: block;

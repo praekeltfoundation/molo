@@ -1,6 +1,6 @@
 .menu-list {
   margin: 0 auto;
-  padding: 0 10px;
+  padding: 0 5px;
   display: inline-block;
   position: relative;
   @media screen and (min-width:320px) {
@@ -21,37 +21,3 @@
   font-weight: bold;
   font-size: 13px;
 }
-
-
-//Where does this belong
-/*.menu-list__item  {
-  border-bottom: 1px solid #B0B9BB;
-  //display: block;
-  padding: 10px 15px 15px 0;
-  position: relative;
-}
-.menu-list__anchor {
-  color: #07292F;
-  display: inline-block;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-decoration: underline;
-  font-size: 14px;
-}
-.menu-list__desc {
-  color: #727172;
-  display: block;
-  text-transform: initial;
-  font-weight: normal;
-}
-
-.nav-submenu-list__anchor {
-  display: block;
-  padding-left: 25px;
-  color: #727172;
-  font-size: 14px;
-  @media screen and (min-width: 320px) {
-    text-decoration: none;
-  }
-}
-*/
