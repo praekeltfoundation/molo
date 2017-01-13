@@ -1,11 +1,13 @@
-.footer-breadcrumbs {
+.breadcrumbs--footer {
   font-family: 'Quicksand', sans-serif;
   font-size: 14px;
   text-transform: capitalize;;
 }
 
 .footer-breadcrumbs-list {
-  padding: 0;
+  margin: 0;
+  padding: 0 15px;
+  list-style: none;
 }
 .footer-breadcrumbs-list__item {
   display: inline-block;

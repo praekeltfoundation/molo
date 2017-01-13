@@ -7,26 +7,6 @@
     margin: 10px 0;
   }
 }
-.related-article-list {
-  padding: 0 15px;
-}
-.call-to-action__item--text-related-article {
-  text-decoration: none;
-  display: block;
-  &:before {
-    padding: 0 0 0 5px;
-    font-size: 10px;
-    vertical-align: middle;
-    display: inline-block;
-    margin: -3px 5px 0 0;
-    @media only screen and (min-width: 320px) {
-       content: "»";
-    }
-  }
-}
-.related-article-list-general {
-  padding: 0 15px;
-}
 
 .article-back {
   padding: 10px 15px;
