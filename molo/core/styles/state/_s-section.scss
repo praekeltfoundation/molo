@@ -1,4 +1,15 @@
 @each $name, $color in $color_scheme {
+
+  //Section Headings
+
+  .section-listing__title-theme-general--#{$name} {
+    color: $color;
+    .section-listing__link-theme-general {
+      color: $color;
+    }
+  }
+
+  //General
   .article-back__anchor--#{$name} {
     color: $color;
   }
