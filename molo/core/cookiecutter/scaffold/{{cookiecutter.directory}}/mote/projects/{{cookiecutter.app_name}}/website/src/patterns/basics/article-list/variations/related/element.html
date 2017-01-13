@@ -3,7 +3,7 @@
 
 {% mask element.json.data.ArticleList as "article" %}
 <!-- featured-page-list -->
-  <div class="related-articles related-articles--mote related-articles--{{article.modifiers}}">
+  <div class="related-articles related-articles--no-list related-articles--{{article.modifiers}}">
     <p class="related-article__title">Recommended Articles:</p>
     {% for list in  article.list%}
       <a href="/" class="call-to-action__item--text">

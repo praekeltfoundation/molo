@@ -1,7 +1,7 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 
 {% with section=self.get_parent_section %}
-  <div class="related-articles">
+  <div class="related-articles related-articles--no-list">
     {% if self.body %}
       {% for block in self.body %}
         {% if block.block_type == 'page'  %}

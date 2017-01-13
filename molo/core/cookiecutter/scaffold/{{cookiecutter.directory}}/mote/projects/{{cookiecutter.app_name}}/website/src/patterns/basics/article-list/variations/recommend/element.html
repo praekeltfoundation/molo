@@ -2,7 +2,7 @@
 {% load mote_tags i18n %}
 
 {% mask element.json.data.ArticleList as "article" %}
-  <div class="related-articles related-articles--mote related-articles--{{article.modifiers}}">
+  <div class="related-articles related-articles--{{article.modifiers}}">
     <h4 class="heading heading--large related-article__title-heading related-article__title-heading{{article.modifiers}}">
       More Information:
     </h4>
