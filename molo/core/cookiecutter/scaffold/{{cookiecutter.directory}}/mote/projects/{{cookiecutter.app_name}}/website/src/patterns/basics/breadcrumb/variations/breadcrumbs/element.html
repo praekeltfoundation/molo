@@ -3,10 +3,10 @@
 
 {% mask element.json.data.Breadcrumb as "breadcrumb" %}
 <div class="breadcrumbs">
-  <ul class="breadcrumbs-list">
+  <ul class="breadcrumbs-list-with-bg">
   {% for item in breadcrumb.breadcrumb_links %}
-    <li class="breadcrumbs-list__item">
-      <a href="{{ item.src }}" class="breadcrumbs-list__anchor is-active">
+    <li class="breadcrumbs-list-with-bg__item">
+      <a href="{{ item.src }}" class="breadcrumbs-list-with-bg__anchor is-active">
         {{ item.title }}
       </a>
     </li>

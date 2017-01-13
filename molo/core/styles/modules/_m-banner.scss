@@ -1,8 +1,15 @@
 
-.banner__item-link {
-  display: block;
-}
 .banner__item {
   max-width: 640px;
   width: 100%;
+}
+
+.banner__item-link {
+  display: block;
+  img {
+      display: block;
+      margin: 0 auto;
+      width: 100%;
+      height: auto;
+  }
 }

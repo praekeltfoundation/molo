@@ -8,7 +8,7 @@
       color: #fff;
     }
   }
-  .featured-page-list__heading--#{$name} {
+  .related-article__title-heading--#{$name} {
     background: $color;
     color: #fff;
   }
@@ -83,6 +83,12 @@
       .section-listing__column-icon-link {
         color: #fff;
       }
+    }
+  }
+
+  .related-article--#{$name} {
+    .related-article-list__anchor-more {
+      color: $color;
     }
   }
 

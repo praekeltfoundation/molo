@@ -1,6 +1,6 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 {% get_translation self.get_parent_section as section %}
-  <h2 class="heading heading--large heading--section-article{{section.get_effective_extra_style_hints}}">
+  <h2 class="heading heading--large heading--section-article heading--section-article{{section.get_effective_extra_style_hints}}">
     <a href="{% pageurl section %}" class="heading--section-article__link">{{section.title}}</a>
   </h2>
   <h1 class="heading heading--large heading--article">{{self.title}}</h1>
@@ -41,23 +41,4 @@
   {% endfor %}
   <p class="article-page__publish-date">{{self.first_published_at | date:"j F Y"}}</p>
 </article>
-{% with section=self.get_parent_section %}
-  <h3 class="heading heading--large featured-page-list__heading featured-page-list__heading{{ section.get_effective_extra_style_hints }}">
-    {% trans "More Information" %}
-  </h3>
-  <ul class="featured-page-list featured-page-list{{ section.get_effective_extra_style_hints }}">
-  {% if self.body %}
-    {% for block in self.body %}
-      {% if block.block_type == 'page'  %}
-        <li class="featured-page-list__item">
-            <a href="{% pageurl block.value %}" class="featured-page-list__anchor">
-              {{ block.value }}</a>
-        </li>
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-    <li class="featured-page-list__item featured-page-list__item-more">
-      <a href="{% pageurl section %}" class="featured-page-list__anchor">{% trans "More" %} &gt;</a>
-    </li>
-  </ul>
-{% endwith %}
+  {% include "patterns/basics/articles/related-article-list-with_title-bg.html" %}
