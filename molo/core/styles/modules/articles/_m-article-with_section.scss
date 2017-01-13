@@ -1,12 +1,17 @@
 
-.heading--section-article {}
+.heading--section-article,
 .heading--section-article--brown {
   padding: 5px 15px;
+  display: block;
 }
 
+.heading--section-article-inline {
+  display: inline-block;
+  padding: 5px 0 0 0;
+}
 
 //Related article list
-.related-articles {
+.related-articles--mote {
   padding: 0 15px;
 }
 .related-article-list {

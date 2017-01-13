@@ -10,7 +10,9 @@
 .section-article__icon-image {
   padding: 0 10px 0 0;
 }
-.heading--section-article,
+.heading--section-article {
+    color: #000;
+}
 .heading-section-article__link {
   display: inline-block;
   color: #000;

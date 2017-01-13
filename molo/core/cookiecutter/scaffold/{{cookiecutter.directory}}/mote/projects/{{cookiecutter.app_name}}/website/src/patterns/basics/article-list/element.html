@@ -2,7 +2,7 @@
 {% load mote_tags i18n %}
 
 {% mask element.json.data.ArticleList as "article" %}
-  <div class="related-articles">
+  <div class="related-articles related-articles--mote">
       {% for list in  article.list%}
         <a href="/" class="call-to-action__item--text">
           {{list.text}}

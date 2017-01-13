@@ -1,6 +1,6 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 {% get_translation self.get_parent_section as section %}
-  <h2 class="heading heading--large heading--section-article{{section.get_effective_extra_style_hints}}">
+  <h2 class="heading heading--large heading--section-article heading--section-article{{section.get_effective_extra_style_hints}}">
     <a href="{% pageurl section %}" class="heading--section-article__link">{{section.title}}</a>
   </h2>
   <h1 class="heading heading--large heading--article">{{self.title}}</h1>
