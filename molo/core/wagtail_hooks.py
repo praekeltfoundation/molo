@@ -6,8 +6,8 @@ from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from wagtailmodeladmin.options import (
-    ModelAdmin, wagtailmodeladmin_register)
+from wagtail.contrib.modeladmin.options import (
+    ModelAdmin, modeladmin_register)
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
@@ -27,7 +27,7 @@ class LanguageModelAdmin(ModelAdmin):
     ordering = ('-is_main_language', 'locale')
     menu_order = 100
 
-wagtailmodeladmin_register(LanguageModelAdmin)
+modeladmin_register(LanguageModelAdmin)
 
 
 @hooks.register('register_admin_urls')
