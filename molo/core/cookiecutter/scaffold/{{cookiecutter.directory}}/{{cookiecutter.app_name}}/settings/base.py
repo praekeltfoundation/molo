@@ -70,9 +70,9 @@ INSTALLED_APPS = [
     'wagtail.wagtailsearch',
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
-    'wagtailmodeladmin',
     'wagtailmedia',
     'wagtail.contrib.settings',
+    'wagtail.contrib.modeladmin',
 
     'mptt',
     'djcelery',
@@ -97,7 +97,6 @@ MIDDLEWARE_CLASSES = [
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
-    'wagtailmodeladmin.middleware.ModelAdminMiddleware',
 
     'molo.core.middleware.AdminLocaleMiddleware',
     'molo.core.middleware.NoScriptGASessionMiddleware',

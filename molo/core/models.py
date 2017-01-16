@@ -470,9 +470,9 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     )
 
     subpage_types = ['core.ArticlePage', 'core.SectionPage']
-    search_fields = Page.search_fields + (
+    search_fields = Page.search_fields + [
         index.SearchField('description'),
-    )
+    ]
     extra_style_hints = models.TextField(
         default='',
         null=True, blank=True,
@@ -693,13 +693,13 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
             'This is not visible to the user.'))
 
     subpage_types = []
-    search_fields = Page.search_fields + (
+    search_fields = Page.search_fields + [
         index.SearchField('subtitle'),
         index.SearchField('body'),
         index.RelatedFields('tags', [
             index.SearchField('name', partial_match=True, boost=2),
         ]),
-    )
+    ]
 
     commenting_state = models.CharField(
         max_length=1,
