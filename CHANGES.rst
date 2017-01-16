@@ -1,6 +1,29 @@
 CHANGE LOG
 ==========
 
+4.x
+---
+
+Main Features::
+
+- Upgraded to Wagtail 1.8
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Deprecatad use of ``wagtailmodeladmin``: ``wagtailmodeladmin`` package has been replaced by ``wagtail.contrib.modeladmin``
+- ``wagtailmodeladmin_register`` function is replaced by ``modeladmin_register``
+- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
+- ``search_fields`` now uses a list instead of a tuple
+
+
+4.0.0
+~~~~~~
+
+- upgraded wagtial to 1.8
+- removed external dependency on wagtailmodeladmin to use internal wagtailadmin feature
+- added bulk-delete permission feature for the Moderator group
+- added edit permission for Main page to moderator and editor groups
+
 3.x
 ---
 
