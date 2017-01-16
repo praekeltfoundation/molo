@@ -61,7 +61,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/')
         self.assertEquals(response.status_code, 200)
-        self.assertNotContains(response, 'Home')
+        self.assertNotContains(
+            response,
+            '<a href="/"  class="breadcrumbs-list-with-bg__anchor">Home</a>')
 
         response = self.client.get('/sections/your-mind/')
         self.assertEquals(response.status_code, 200)
