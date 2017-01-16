@@ -1,13 +1,12 @@
 .breadcrumbs--footer {
   font-family: 'Quicksand', sans-serif;
   font-size: 14px;
-  text-transform: capitalize;;
 }
 
 .footer-breadcrumbs-list {
-  margin: 0;
-  padding: 0 15px;
   list-style: none;
+  padding: 0 15px;
+  margin: 0;
 }
 .footer-breadcrumbs-list__item {
   display: inline-block;
@@ -24,6 +23,7 @@
 }
 .footer-breadcrumbs-list__anchor {
   color: #017AF5;
+  text-transform: capitalize;
   @media screen and (min-width: 320px) {
     text-decoration: none;
   }

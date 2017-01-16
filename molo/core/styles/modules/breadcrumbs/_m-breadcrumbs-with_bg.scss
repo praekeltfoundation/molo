@@ -1,7 +1,7 @@
 .breadcrumbs-list-with-bg {
-  padding: 10px 15px;
-  text-transform: uppercase;
+  padding: 0 15px;
   font-weight: bold;
+  margin: 0;
 }
 
 .breadcrumbs-list-with-bg__item {
@@ -29,4 +29,5 @@
   color: #000;
   padding-right: 10px;
   text-decoration: underline;
+  text-transform: uppercase;
 }

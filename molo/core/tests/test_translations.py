@@ -253,26 +253,33 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         # that have been translated
         response = self.client.get('/locale/en/')
         response = self.client.get('/sections/english-section/')
-
         self.assertContains(
             response,
-            '<h3 class="heading heading--large'
-            ' promoted-article__title">English article1</h3>')
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article1'
+            '</h5>', html=True)
         self.assertContains(
             response,
-            '<h3 class="heading heading--large'
-            ' promoted-article__title">English article2</h3>')
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article2'
+            '</h5>', html=True)
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/sections/english-section/')
         self.assertContains(
             response,
-            '<h3 class="heading heading--large'
-            ' promoted-article__title">English article1 in french</h3>')
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article1 in french'
+            '</h5>', html=True)
         self.assertNotContains(
             response,
-            '<h3 class="heading heading--large'
-            ' promoted-article__title">English article2</h3>')
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article2'
+            '</h5>', html=True)
 
         # tests that in latest block users will only see the articles
         # that have been translated
@@ -365,12 +372,14 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections/english-section/')
         self.assertContains(
             response,
-            '<h3 class="heading heading--large'
-            ' promoted-article__title">English article1</h3>')
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article1 </h5>', html=True)
         self.assertNotContains(
             response,
-            '<h3 class="heading heading--large'
-            ' promoted-article__title">English article2</h3>')
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article2 </h5>', html=True)
 
         # tests that when switching to a child language
         # users will see all the published translated pages
@@ -404,12 +413,14 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections/english-section/')
         self.assertContains(
             response,
-            '<h3 class="heading heading--large'
-            ' promoted-article__title">English article1 in french</h3>')
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article1 in french</h5>', html=True)
         self.assertContains(
             response,
-            '<h3 class="heading heading--large'
-            ' promoted-article__title">English article2 in french</h3>')
+            '<h5 class="heading heading--x-small'
+            ' promoted-article__title--theme-headings">'
+            'English article2 in french</h5>', html=True)
 
     def test_if_mexican_spanish_translated_pages_are_shown_on_front_end(self):
         en_section2 = self.mk_section(

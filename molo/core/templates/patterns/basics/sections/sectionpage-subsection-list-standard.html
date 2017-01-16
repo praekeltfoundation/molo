@@ -1,7 +1,7 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static i18n %}
 
 {% for section in sections %}
-  <h1 class="heading heading--x-large section-listing__title-theme-standard">
+  <h1 class="heading heading--x-large section-listing__title-theme-standard section-listing__title-theme-standard{{self.get_effective_extra_style_hints}}">
     <a href="{% pageurl section %}" class="section-listing__link-theme-standard">{{section.title}}</a>
   </h1>
  <ul class="promoted-article-list">

@@ -1,8 +1,8 @@
 {
     "Category": {
-        "text": "Call to action",
-        "modifiers": "category-thumb",
-        "thumbnail": {
+        "text": "Weather forecast",
+        "modifiers": "--green",
+        "icon_image": {
           "src":  "/static/images/article-thumbnail.png",
           "alt": "Category name thumb"
         }
