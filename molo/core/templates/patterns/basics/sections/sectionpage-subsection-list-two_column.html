@@ -2,10 +2,10 @@
 
 {% for section in sections %}
 <div class="section-listing__column-icon-title">
-{% image section.image width-30 class="section-listing__column-icon-image" %}
-<h1 class="heading heading--x-large section-listing__title">
-  <a href="{% pageurl section %}" class="section-listing__column-icon-link">{{section.title}}</a>
-</h1>
+  {% image section.image width-30 class="section-listing__column-icon-image" %}
+  <h1 class="heading heading--x-large section-listing__title">
+    <a href="{% pageurl section %}" class="section-listing__column-icon-link">{{section.title}}</a>
+  </h1>
 </div>
 
 <ul class="promoted-article-list promoted-article-list-column">
