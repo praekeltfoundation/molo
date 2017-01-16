@@ -5,11 +5,6 @@
   <div class="navigation">
     {% load_sections as sections %}
     <ul class="nav-list nav-list--horizontal nav-list--horizontal-{{class}}">
-      <li class="nav-list__item nav-list__item--horizontal">
-        <a href="" class="nav-list__anchor nav-list__anchor--horizontal">
-          {{section.title}}
-        </a>
-      </li>
       {% for section in sections %}
         <li class="nav-list__item nav-list__item--horizontal">
           <a href="{% pageurl section %}" class="nav-list__anchor nav-list__anchor--horizontal">

@@ -1,0 +1,28 @@
+{
+    "Navigation": {
+        "text": "Welcome to Molo design pattern",
+        "modifiers": "",
+        "nav_list": [
+          {
+            "href": "#",
+            "name": "Yourwords",
+            "desc":"Lorem ipsum dolor sit amet, consectetur adipiscing elit,"
+          },
+          {
+            "href": "#",
+            "name": "Know your body",
+            "desc":"Lorem ipsum dolor sit amet, consectetur adipiscing elit,"
+          },
+          {
+            "href": "#",
+            "name": "Your Rights",
+            "desc":"Lorem ipsum dolor sit amet, consectetur adipiscing elit,"
+          },
+          {
+            "href": "#",
+            "name": "Health Issues",
+            "desc":"Lorem ipsum dolor sit amet, consectetur adipiscing elit,"
+          }
+        ]
+    }
+}
