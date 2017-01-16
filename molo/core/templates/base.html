@@ -70,12 +70,18 @@
     {% endblock %}
 
     {% block navigation %}
-      {% include "patterns/components/navigation/navigation-center.html" %}
+      {% include "patterns/components/navigation/navigation-column.html" %}
     {% endblock %}
 
     {% block footer %}
       {% footer_page %}
     {% endblock %}
+
+    {% block copyright %}
+      {% include "patterns/components/copyright/copyright-pipe.html" %}
+    {% endblock %}
+
+
 
   </body>
 </html>
