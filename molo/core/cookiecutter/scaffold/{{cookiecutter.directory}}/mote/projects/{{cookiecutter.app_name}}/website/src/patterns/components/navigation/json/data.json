@@ -19,26 +19,6 @@
             "href": "#",
             "name": "Health Issues"
           }
-        ],
-        "nav_list_with_subnav": [
-          {
-            "href": "#",
-            "name": "Yourwords",
-            "sub_nav": [
-              {
-                "href": "#",
-                "name": "Hot Topics"
-              },
-              {
-                "href": "#",
-                "name": "Your body"
-              }
-            ]
-          },
-          {
-            "href": "#",
-            "name": "Sex"
-          }
         ]
     }
 }

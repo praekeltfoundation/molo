@@ -1,5 +1,7 @@
 {
     "Button": {
-        "text": "Call to action"
+      "tag": "a",
+      "text": "Call to action",
+      "modifiers": "text"
     }
 }

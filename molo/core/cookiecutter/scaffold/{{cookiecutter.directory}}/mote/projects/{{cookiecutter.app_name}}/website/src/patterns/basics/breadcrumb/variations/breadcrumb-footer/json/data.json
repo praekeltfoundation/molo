@@ -1,7 +1,6 @@
 {
     "Breadcrumb": {
         "text": "Breadcrumbs",
-        "modifiers": "dummy-class",
         "breadcrumb_links": [
           {
             "title":"Home",
