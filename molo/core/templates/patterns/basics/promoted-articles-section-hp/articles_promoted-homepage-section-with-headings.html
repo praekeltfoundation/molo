@@ -10,7 +10,9 @@
     {% for article in featured_articles %}
       <li class="promoted-article-list__item promoted-article-list__item--theme-headings">
         <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-headings">
-          <h5 class="heading heading--x-small promoted-article__title--theme-headings">{{article.title}}</h5>
+          <h5 class="heading heading--x-small promoted-article__title--theme-headings">
+            {{article.title}}
+          </h5>
         </a>
       </li>
     {% endfor %}
