@@ -1,7 +1,7 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
 {% if featured_articles %}
-<div class="section-listing section-listing__column{{section.get_effective_extra_style_hints}}">
+<div class="section-listing section-listing__column section-listing__column{{section.get_effective_extra_style_hints}}">
   <h1 class="heading heading--x-large subsection-listing__column-title">
     <a href="{% pageurl section %}" class="subsection-listing__column-link">{{section.title}}</a>
   </h1>
