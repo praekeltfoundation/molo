@@ -1,0 +1,27 @@
+{
+    "SectionArticleList": {
+      "text": "Article List",
+      "modifiers": "--green",
+      "section": {
+        "heading":"General Section",
+        "description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+      },
+      "articles": [
+        {
+          "img_src":"/static/images/article-thumbnail.png",
+          "title":"Article Title One",
+          "subtitle": "Title case ideally less than 120 characters"
+        },
+        {
+          "img_src":"/static/images/article-thumbnail.png",
+          "title":"Article Title Two",
+          "subtitle": "Title case ideally less than 120 characters"
+        },
+        {
+          "title":"Article Title Three",
+          "subtitle": "Title case ideally less than 120 characters"
+        }
+      ]
+
+    }
+}
