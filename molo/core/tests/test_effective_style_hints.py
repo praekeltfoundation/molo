@@ -49,8 +49,8 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             '/sections/new-section-3-in-french/')
         self.assertContains(
             response,
-            'section-listing section-listing_theme-headings'
-            ' section-listing_theme-headings')
+            '<div class="section-listing section-listing--standard'
+            ' section-listing--standard">')
 
         new_section6 = self.mk_section(
             self.new_section3,
@@ -62,8 +62,8 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             '/sections/new-section-3/new-section-6-in-french/')
         self.assertContains(
             response,
-            'section-listing section-listing_theme-headings'
-            ' section-listing_theme-headings')
+            '<div class="section-listing section-listing--standard'
+            ' section-listing--standard">')
 
     def test_extra_css_not_set_on_child_so_should_use_parent_value(self):
         self.assertEquals(
@@ -81,10 +81,11 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections/new-section/new-section-2/new-section-4-in-french/')
+        print response
         self.assertContains(
             response,
-            'section-listing section-listing_theme-headings'
-            ' section-listing_theme-headingsprimary">')
+            '<div class="section-listing section-listing--standard'
+            ' section-listing--standardprimary">')
 
         new_section7 = self.mk_section(
             self.new_section3, title="New Section 7",
@@ -95,8 +96,8 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             '/sections/new-section-3/new-section-7-in-french/')
         self.assertContains(
             response,
-            'section-listing section-listing_theme-headings'
-            ' section-listing_theme-headings-en-hint">')
+            '<div class="section-listing section-listing--standard'
+            ' section-listing--standard-en-hint">')
 
     def test_translated_page_so_should_use_translated_page_value(self):
         self.client.get('/locale/fr/')
@@ -108,5 +109,5 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             '/sections/new-section/new-section-5-in-french/')
         self.assertContains(
             response,
-            'section-listing section-listing_theme-headings'
-            ' section-listing_theme-headings-french-hint">')
+            '<div class="section-listing section-listing--standard'
+            ' section-listing--standard-french-hint">')
