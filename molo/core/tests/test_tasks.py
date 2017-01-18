@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from django.utils import timezone
 
 from json import dumps
 import pytest
@@ -199,8 +198,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
             days=1)
-        time1 = str(timezone.now().time())[:8]
-        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         site_settings.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         site_settings.monday_rotation = True
@@ -238,6 +237,57 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         # checks to see the the old last article is not still last
         self.assertNotEquals(
             last_article_old, self.main.latest_articles()[8].pk)
+
+    def test_latest_rotation_on_draft_articles(self):
+        site = Site.objects.get(is_default_site=True)
+        settings = SettingsProxy(site)
+        site_settings = settings['core']['SiteSettings']
+
+        site_settings.content_rotation_start_date = datetime.now()
+        site_settings.content_rotation_end_date = datetime.now() + timedelta(
+            days=1)
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
+        site_settings.time = dumps([{
+            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+        site_settings.monday_rotation = True
+        site_settings.save()
+
+        article = self.mk_article(
+            self.yourmind, title='article', slug='article')
+        article.featured_in_latest_start_date = datetime.now()
+        article.save()
+        article2 = self.mk_article(
+            self.yourmind, title='article2', slug='article2')
+        article2.featured_in_latest_start_date = datetime.now()
+        article2.save()
+
+        article3 = self.mk_article(
+            self.yourmind, title='article3', slug='article3')
+        article3.save()
+
+        promote_articles()
+
+        article.refresh_from_db()
+        article2.refresh_from_db()
+        article3.refresh_from_db()
+        self.assertTrue(article.live)
+        self.assertTrue(article2.live)
+        self.assertTrue(article3.live)
+
+        article.unpublish()
+        article.refresh_from_db()
+        self.assertTrue(article.featured_in_latest)
+        self.assertTrue(article2.featured_in_latest)
+        self.assertFalse(article3.featured_in_latest)
+
+        rotate_content(0)
+        article.refresh_from_db()
+        article2.refresh_from_db()
+        article3.refresh_from_db()
+        self.assertFalse(article.live)
+        self.assertTrue(article2.live)
+        self.assertTrue(article3.live)
 
     def test_latest_rotation_no_valid_days(self):
         """This test that if the date range and times are set for
@@ -366,8 +416,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind_sub.content_rotation_start_date = datetime.now()
         self.yourmind_sub.content_rotation_end_date = datetime.now() + \
             timedelta(days=1)
-        time1 = str(timezone.now().time())[:8]
-        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         self.yourmind_sub.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         self.yourmind_sub.monday_rotation = True
@@ -421,8 +471,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind_sub.content_rotation_start_date = datetime.now()
         self.yourmind_sub.content_rotation_end_date = datetime.now() + \
             timedelta(days=1)
-        time1 = str(timezone.now().time())[:8]
-        time2 = str((timezone.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
         self.yourmind_sub.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
         self.yourmind_sub.monday_rotation = True
