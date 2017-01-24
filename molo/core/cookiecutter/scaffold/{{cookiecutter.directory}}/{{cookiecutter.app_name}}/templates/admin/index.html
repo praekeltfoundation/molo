@@ -1,0 +1,13 @@
+{% raw %}
+{% extends "admin/index.html" %}
+{% block content %}
+<a href="/django-admin/upload_media/">Upload Media</a>
+<br />
+<a href="/django-admin/download_media/">Download Media</a>
+{{ block.super }}
+{% endblock %}
+
+{% block sidebar %}
+{{ block.super }}
+{% endblock %}
+{% endraw %}
