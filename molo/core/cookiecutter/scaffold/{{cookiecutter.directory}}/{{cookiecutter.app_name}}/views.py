@@ -5,11 +5,13 @@ import StringIO
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
+from django.contrib.auth.decorators import user_passes_test
 
 from testapp.forms import MediaForm
 from testapp.utils import replace_media_file
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def upload_file(request):
     '''Upload a Zip File Containing a single file containing media.'''
     if request.method == 'POST':
@@ -22,6 +24,7 @@ def upload_file(request):
     return render(request, 'admin/upload_media.html', {'form': form})
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def download_file(request):
     '''Create and download a zip file containing the media file.'''
     if request.method == "GET":
