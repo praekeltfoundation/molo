@@ -38,11 +38,6 @@ def handle_uploaded_file(file):
     # delete the zip file
     os.remove(zip_file_reference)
 
-def zipdir(path, ziph):
-    # ziph is zipfile handle
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            ziph.write(os.path.join(root, file))
 
 def upload_file(request):
     '''Upload a Zip File Containing a single file containing media.'''
