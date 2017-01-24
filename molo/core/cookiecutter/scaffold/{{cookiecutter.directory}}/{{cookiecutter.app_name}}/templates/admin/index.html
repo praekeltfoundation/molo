@@ -1,9 +1,9 @@
 {% raw %}
 {% extends "admin/index.html" %}
 {% block content %}
-<a href="/django-admin/upload_media/">Upload Media</a>
+<a href="{% url 'molo_upload_media' %}">Upload Media</a>
 <br />
-<a href="/django-admin/download_media/">Download Media</a>
+<a href="{% url 'molo_download_media' %}">Download Media</a>
 {{ block.super }}
 {% endblock %}
 

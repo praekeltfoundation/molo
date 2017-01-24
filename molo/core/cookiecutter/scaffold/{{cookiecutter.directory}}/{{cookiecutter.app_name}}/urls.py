@@ -24,7 +24,8 @@ else:
 
 urlpatterns += patterns(
     '',
-    url(r'^django-admin/upload_media/', views.upload_file),
+    url(r'^django-admin/upload_media/', views.upload_file, name='molo_upload_media'),
+    url(r'^django-admin/download_media/', views.download_file, name='molo_download_media'),
     url(r'^django-admin/', include(admin.site.urls)),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
