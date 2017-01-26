@@ -5,10 +5,10 @@
   <h4 class="heading heading--small related-articles__up-next">{% trans "Next up in [category]:" %}</h4>
   <div class="related-articles-up-next">
       <a href="#" class="article__anchor">
-        <img src="{{hero.image.src}}" alt="{{hero.image.alt}}" width="320" class="article__image">
+        <img src="{{article.hero.image.src}}" alt="{{article.hero.image.alt}}" width="320" class="article__image">
       </a>
-    <h1 class="heading heading--xx-large related-articles-up-next__title">{{hero.title}}</h1>
-    <p class="related-articles-up-next__desc">{{hero.subtitle}}</p>
+    <h1 class="heading heading--xx-large related-articles-up-next__title">{{article.hero.title}}</h1>
+    <p class="related-articles-up-next__desc">{{article.hero.subtitle}}</p>
   </div>
 
   <h4 class="heading heading--small related-articles__recommended">{% trans "Recommended:" %}</h4>
@@ -20,7 +20,7 @@
           <img src="{{list.image.src}}" alt="{{list.image.alt}}" width="320" class="article__image">
         </a>
         <h3 class="heading heading--large related-articles-recommended__title">{{list.text}}</h3>
-        <p class="related-articles-recommended__desc"> {{list.text}}}</p>
+        <p class="related-articles-recommended__desc"> {{list.text}}</p>
       </li>
     {% endfor %}
     </ul>
