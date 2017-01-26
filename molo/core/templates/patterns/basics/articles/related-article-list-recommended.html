@@ -1,14 +1,23 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 
 {% with section=self.get_parent_section %}
-    <h6>Recommended:</h6>
-    {% if self.body %}
-      {% for block in self.body %}
-        {% if block.block_type == 'page'  %}
-          <a href="{% pageurl block.value %}">
-            {{block.value }}
+  <h4 class="heading heading--small related-articles__recommended">{% trans "Recommended:" %}</h4>
+  <div class="related-articles-recommended">
+  {% load_descendant_articles_for_section section featured_in_homepage=True count=4 as featured_articles %}
+  {% if featured_articles %}
+    <ul class="related-articles-recommended-list">
+    {% for article in featured_articles %}
+      <li class="related-articles-recommended-list__item">
+        {% if article.image %}
+          <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+            {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
           </a>
         {% endif %}
-      {% endfor %}
-    {% endif %}
+        <h3 class="heading heading--large related-articles-recommended__title">{{article.title}}</h3>
+        <p class="related-articles-recommended__desc">{{article.subtitle}}</p>
+      </li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </div>
 {% endwith %}

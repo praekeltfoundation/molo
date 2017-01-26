@@ -1,15 +1,14 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 
 {% with section=self.get_parent_section %}
-  <h6>Next up in [category]:</h6>
-    {% if self.body %}
-      {% for block in self.body %}
-        {% if block.block_type == 'page'  %}
-          <a href="{% pageurl block.value %}">
-            {{block.value }}
-          </a>
-        {% endif %}
-      {% endfor %}
+  <h4 class="heading heading--small related-articles__up-next">{% trans "Next up in [category]:" %}</h4>
+  <div class="related-articles-up-next">
+    {% if self.image %}
+      <a href="{% pageurl self %}" class="article__anchor">
+        {% image self.image width-320 class="article__image"%}
+      </a>
     {% endif %}
+    <h1 class="heading heading--xx-large related-articles-up-next__title">{{self.title}}</h1>
+    <p class="related-articles-up-next__desc">{{self.subtitle}}</p>
   </div>
 {% endwith %}
