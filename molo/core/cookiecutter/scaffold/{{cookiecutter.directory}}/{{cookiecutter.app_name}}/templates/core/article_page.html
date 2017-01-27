@@ -42,6 +42,36 @@
         <a href="{% url 'tags_list' tag %}">{{tag}}</a>
     {% endfor%}
 {% endif %}
+
+{% if self.get_parent_section.enable_recommended_section %}
+  <h3>Recomended Articles</h3>
+    {% if self.show_recommended_article_images %}
+      {% for reference in self.recommended_articles.all %}
+        {% with reference.recommended_article.specific as article %}
+          <ul class="list-block">
+            <li>
+              {% if article.image %}
+              <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+              {% endif %}
+              <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+              <p>{{article.subtitle}}</p>
+            </li>
+          </ul>
+        {% endwith %}
+      {% endfor %}
+    {% else %}
+      {% for reference in self.recommended_articles.all %}
+        {% with reference.recommended_article.specific as article %}
+          <ul class="list-block">
+            <li>
+              <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+              <p>{{article.subtitle}}</p>
+            </li>
+          </ul>
+        {% endwith %}
+      {% endfor %}
+    {% endif %}
+{% endif %}
 </div>
 {% endblock %}
 {% endraw %}
