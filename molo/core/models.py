@@ -511,16 +511,21 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         null=True, blank=True,
         help_text='The date rotation will end')
 
-    enable_next_section = models.BooleanField(default=False,
-        verbose_name='Activate up next section underneath articles',
-        help_text="Activate up next section underneath articles in this \
-        section will apear with the heading and subheading of that article. \
-        The text will say 'next' in order to make the user feel like it's \
-        fresh content.")
-    enable_recommended_section = models.BooleanField(default=False,
-        verbose_name='Activate recommended section underneath articles',
-        help_text="Underneath the area for 'next articles 4 recommended \
-        articles will appear, with the image + heading + subheading")
+    enable_next_section = (
+        models.BooleanField(
+            default=False,
+            verbose_name='Activate up next section underneath articles',
+            help_text=("Activate up next section underneath articles in this "
+                       "section will apear with the heading and subheading of"
+                       " that article. The text will say 'next' in order to "
+                       "make the user feel like it's fresh content.")))
+    enable_recommended_section = (
+        models.BooleanField(
+            default=False,
+            verbose_name='Activate recommended section underneath articles',
+            help_text=("Underneath the area for 'next articles' recommended "
+                       "articles will appear, with the image + heading + "
+                       "subheading")))
 
     def articles(self):
         main_language_page = self.get_main_language_page()
@@ -810,7 +815,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
         else:
             return None
 
-
     class Meta:
         verbose_name = _('Article')
 
@@ -881,6 +885,7 @@ class ArticlePageRecommendedSections(Orderable):
         help_text=_('Recommended articles for this article')
     )
     panels = [PageChooserPanel('recommended_article', 'core.ArticlePage')]
+
 
 class ArticlePageRelatedSections(Orderable):
     page = ParentalKey(ArticlePage, related_name='related_sections')
