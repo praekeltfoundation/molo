@@ -802,9 +802,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     def tags_list(self):
         return self.tags.names()
 
-    def show_recommended_article_images(self):
-        return (len(self.recommended_articles.all()) <= 4)
-
     def get_next_article(self):
         all_section_articles = self.get_parent_section().articles()
         index = all_section_articles.index(self) + 1
