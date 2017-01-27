@@ -43,8 +43,23 @@
     {% endfor%}
 {% endif %}
 
+{% if self.get_parent_section.enable_next_section and self.get_next_article %}
+  <h3>Next Up in {{ self.get_parent_section.title }}</h3>
+  {% with self.get_next_article as article %}
+    <ul class="list-block">
+      <li>
+        {% if article.image %}
+        <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+        {% endif %}
+        <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+        <p>{{article.subtitle}}</p>
+      </li>
+    </ul>
+  {% endwith %}
+{% endif %}
+
 {% if self.get_parent_section.enable_recommended_section %}
-  <h3>Recomended Articles</h3>
+  <h3>Recomended</h3>
     {% if self.show_recommended_article_images %}
       {% for reference in self.recommended_articles.all %}
         {% with reference.recommended_article.specific as article %}
