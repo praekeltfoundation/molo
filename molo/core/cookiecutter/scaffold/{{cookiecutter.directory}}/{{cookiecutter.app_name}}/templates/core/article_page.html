@@ -1,0 +1,79 @@
+{% raw %}
+{% extends "base.html" %}
+
+{% load static core_tags %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
+
+{% block content %}
+<div class="articles nav {{self.get_parent_section.get_effective_extra_style_hints}}">
+  <h3 class="article-title">{{self.title}}</h3>
+  <p>{{self.subtitle}}</p>
+  {% if self.image %}
+  <div class="banner">{% image self.image width-240 %}</div>
+  {% endif %}
+  {% social_media_article %}
+<article>
+    {% for block in self.body %}
+      {% if block.block_type == 'heading' %}
+          <h1>{{ block.value }}</h1>
+      {% elif block.block_type == 'image' %}
+        {% image block.value width-240 %}
+      {% elif block.block_type == 'numbered_list' %}
+        <ol>
+        {% for item in block.value %}
+          <li>{{ item|handle_markdown }}</li>
+        {% endfor %}
+        </ol>
+      {% elif block.block_type == 'list' %}
+        <ul>
+        {% for item in block.value %}
+          <li>{{ item|handle_markdown }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+          {{ block }}
+      {% endif %}
+    {% endfor %}
+</article>
+{% if settings.core.SiteSettings.enable_clickable_tags %}
+    {% for tag in self.tags_list %}
+        <a href="{% url 'tags_list' tag %}">{{tag}}</a>
+    {% endfor%}
+{% endif %}
+
+{% if self.get_parent_section.enable_next_section and self.get_next_article %}
+  <h3>Next Up in {{ self.get_parent_section.title }}</h3>
+  {% with self.get_next_article as article %}
+    <ul class="list-block">
+      <li>
+        {% if article.image %}
+        <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+        {% endif %}
+        <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+        <p>{{article.subtitle}}</p>
+      </li>
+    </ul>
+  {% endwith %}
+{% endif %}
+
+{% if self.get_parent_section.enable_recommended_section %}
+  <h3>Recommended</h3>
+    {% for reference in self.recommended_articles.all %}
+      {% with reference.recommended_article.specific as article %}
+        <ul class="list-block">
+          <li>
+            {% if article.image %}
+            <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+            {% endif %}
+            <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+            <p>{{article.subtitle}}</p>
+          </li>
+        </ul>
+      {% endwith %}
+    {% endfor %}
+{% endif %}
+</div>
+{% endblock %}
+{% endraw %}

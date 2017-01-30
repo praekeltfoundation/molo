@@ -6,5 +6,37 @@
 
   {% include "patterns/components/articles/article-content-section-with_recommend-related-articles.html" %}
   {% include "patterns/components/articles/article-tag-block.html" %}
+  {% if self.get_parent_section.enable_next_section and self.get_next_article %}
+    <h3>Next Up in {{ self.get_parent_section.title }}</h3>
+    {% with self.get_next_article as article %}
+      <ul class="list-block">
+        <li>
+          {% if article.image %}
+          <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+          {% endif %}
+          <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+          <p>{{article.subtitle}}</p>
+        </li>
+      </ul>
+    {% endwith %}
+  {% endif %}
 
+
+
+  {% if self.get_parent_section.enable_recommended_section %}
+    <h3>Recommended</h3>
+      {% for reference in self.recommended_articles.all %}
+        {% with reference.recommended_article.specific as article %}
+          <ul class="list-block">
+            <li>
+              {% if article.image %}
+              <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+              {% endif %}
+              <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+              <p>{{article.subtitle}}</p>
+            </li>
+          </ul>
+        {% endwith %}
+      {% endfor %}
+  {% endif %}
 {% endblock %}
