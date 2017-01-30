@@ -1,23 +1,30 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 
+<!--
+
+  Should I choose and publish the same article over ad over?
+-->
 {% with section=self.get_parent_section %}
-  <h4 class="heading heading--small related-articles__recommended">{% trans "Recommended:" %}</h4>
-  <div class="related-articles-recommended">
-  {% load_descendant_articles_for_section section featured_in_homepage=True count=4 as featured_articles %}
-  {% if featured_articles %}
-    <ul class="related-articles-recommended-list">
-    {% for article in featured_articles %}
-      <li class="related-articles-recommended-list__item">
-        {% if article.image %}
-          <a href="{% pageurl article %}" class="promoted-article-list__anchor">
-            {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
-          </a>
-        {% endif %}
-        <h3 class="heading heading--large related-articles-recommended__title">{{article.title}}</h3>
-        <p class="related-articles-recommended__desc">{{article.subtitle}}</p>
-      </li>
-    {% endfor %}
-    </ul>
+  {% if self.get_parent_section.enable_recommended_section %}
+    <h4 class="heading heading--small related-articles__recommended">{% trans "Recommended:" %}</h4>
+      <div class="related-articles-recommended">
+      <ul class="related-articles-recommended-list">
+        {% for reference in self.recommended_articles.all %}
+          {% with reference.recommended_article.specific as article %}
+              <li class="related-articles-recommended-list__item">
+                {% if article.image %}
+                <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+                  {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+                </a>
+                {% endif %}
+                <h3 class="heading heading--large related-articles-recommended__title">
+                  <a href="{% pageurl article %}">{{article.title}}</a>
+                </h3>
+                <p class="related-articles-recommended__desc">{{article.subtitle}}</p>
+              </li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+      </div>
   {% endif %}
-  </div>
 {% endwith %}

@@ -1,14 +1,26 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 
+<!--
+
+  The article image is not getting pulled through?
+-->
 {% with section=self.get_parent_section %}
-  <h4 class="heading heading--small related-articles__up-next">{% trans "Next up in [category]:" %}</h4>
+{% if self.get_parent_section.enable_next_section and self.get_next_article %}
+  <h4 class="heading heading--small related-articles__up-next">
+    {% trans "Next up in" %} {{ self.get_parent_section.title }}
+  </h4>
   <div class="related-articles-up-next">
-    {% if self.image %}
-      <a href="{% pageurl self %}" class="article__anchor">
-        {% image self.image width-320 class="article__image"%}
-      </a>
-    {% endif %}
-    <h1 class="heading heading--xx-large related-articles-up-next__title">{{self.title}}</h1>
-    <p class="related-articles-up-next__desc">{{self.subtitle}}</p>
+    {% with self.get_next_article as article %}
+      {% if article.image %}
+        <a href="{% pageurl article %}" class="article__anchor">
+          {% image self.image width-320 class="article__image"%}
+        </a>
+      {% endif %}
+      <h1 class="heading heading--xx-large related-articles-up-next__title">
+        <a href="{% pageurl article %}">{{article.title}}</a>
+      </h1>
+      <p class="related-articles-up-next__desc">{{article.subtitle}}</p>
+    {% endwith %}
   </div>
+{% endif %}
 {% endwith %}
