@@ -3,6 +3,8 @@
 <!--
 
   Should I choose and publish the same article over ad over?
+  When recommended is turned on; but no recommended articles have been switched on
+  Exception Value: 'str' object has no attribute 'relative_url'
 -->
 {% with section=self.get_parent_section %}
   {% if self.get_parent_section.enable_recommended_section %}
