@@ -516,7 +516,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
             default=False,
             verbose_name='Activate up next section underneath articles',
             help_text=("Activate up next section underneath articles in this "
-                       "section will apear with the heading and subheading of"
+                       "section will appear with the heading and subheading of"
                        " that article. The text will say 'next' in order to "
                        "make the user feel like it's fresh content.")))
     enable_recommended_section = (
