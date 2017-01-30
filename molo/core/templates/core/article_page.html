@@ -6,6 +6,7 @@
 
   {% include "patterns/components/articles/article-content-section-with_recommend-related-articles.html" %}
   {% include "patterns/components/articles/article-tag-block.html" %}
+  
   {% if self.get_parent_section.enable_next_section and self.get_next_article %}
     <h3>Next Up in {{ self.get_parent_section.title }}</h3>
     {% with self.get_next_article as article %}
