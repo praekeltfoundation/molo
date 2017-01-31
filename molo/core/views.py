@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.translation import (
     LANGUAGE_SESSION_KEY,
@@ -19,7 +19,7 @@ from django.utils.translation import ugettext as _
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
-from molo.core.utils import generate_slug, get_locale_code, replace_media_file
+from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import PageTranslation, SiteLanguage, ArticlePage
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm
@@ -176,8 +176,15 @@ def upload_file(request):
     if request.method == 'POST':
         form = MediaForm(request.POST, request.FILES)
         if form.is_valid():
-            replace_media_file(request.FILES['zip_file'])
-            return HttpResponseRedirect('/django-admin/')
+            context_dict = {}
+            try:
+                context_dict['copied_files'] = update_media_file(
+                    request.FILES['zip_file'])
+            except Exception as e:
+                context_dict['error_message'] = e.message
+            return render(request,
+                          'admin/transfer_media_message.html',
+                          context_dict)
     else:
         form = MediaForm()
     return render(request, 'admin/upload_media.html', {'form': form})
@@ -187,21 +194,28 @@ def upload_file(request):
 def download_file(request):
     '''Create and download a zip file containing the media file.'''
     if request.method == "GET":
-        zipfile_name = 'media_%s.zip' % settings.SITE_NAME
-        in_memory_file = StringIO.StringIO()
+        if path.exists(settings.MEDIA_ROOT):
+            zipfile_name = 'media_%s.zip' % settings.SITE_NAME
+            in_memory_file = StringIO.StringIO()
 
-        media_zipfile = zipfile.ZipFile(in_memory_file, 'w',
-                                        zipfile.ZIP_DEFLATED)
+            media_zipfile = zipfile.ZipFile(in_memory_file, 'w',
+                                            zipfile.ZIP_DEFLATED)
 
-        directory_name = path.split(settings.MEDIA_ROOT)[-1]
-        for root, dirs, files in walk(directory_name):
-            for file in files:
-                media_zipfile.write(path.join(root, file))
+            directory_name = path.split(settings.MEDIA_ROOT)[-1]
+            for root, dirs, files in walk(directory_name):
+                for file in files:
+                    media_zipfile.write(path.join(root, file))
 
-        media_zipfile.close()
+            media_zipfile.close()
 
-        resp = HttpResponse(in_memory_file.getvalue(),
-                            content_type="application/x-zip-compressed")
-        resp['Content-Disposition'] = 'attachment; filename=%s' % zipfile_name
+            resp = HttpResponse(in_memory_file.getvalue(),
+                                content_type="application/x-zip-compressed")
+            resp['Content-Disposition'] = (
+                'attachment; filename=%s' % zipfile_name)
 
-        return resp
+            return resp
+        else:
+            return render(request,
+                          'admin/transfer_media_message.html',
+                          {'error_message':
+                           'media file does not exist'})

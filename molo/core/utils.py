@@ -2,6 +2,7 @@ import os
 import shutil
 import zipfile
 import re
+import distutils.dir_util
 
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
@@ -58,19 +59,42 @@ def generate_slug(text, tail_number=0):
         return slug
 
 
-def replace_media_file(file):
-    '''Replace the Current Media Folder.'''
+def update_media_file(file):
+    '''
+    Update the Current Media Folder.
+
+    Returns list of files copied accross or
+    raises an exception.
+    '''
     media_parent_directory = os.path.dirname(settings.MEDIA_ROOT)
-    zip_file_reference = os.path.join(media_parent_directory, 'new_media.zip')
+    temp_dir_path = os.path.join(media_parent_directory, 'temp_copy_dir')
+    zip_file_reference = os.path.join(temp_dir_path, 'new_media.zip')
+    # assumes the zip file contains a directory called media
+    temp_media_file = os.path.join(temp_dir_path, 'media')
 
-    if os.path.isdir(settings.MEDIA_ROOT):
-        shutil.rmtree(settings.MEDIA_ROOT)
+    try:
+        if os.path.exists(temp_dir_path):
+            shutil.rmtree(temp_dir_path)
+        os.makedirs(temp_dir_path)
 
-    with open(zip_file_reference, 'wb+') as destination:
-        for chunk in file.chunks():
-            destination.write(chunk)
+        with open(zip_file_reference, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
 
-    with zipfile.ZipFile(zip_file_reference, 'r') as z:
-        z.extractall(media_parent_directory)
+        with zipfile.ZipFile(zip_file_reference, 'r') as z:
+            z.extractall(temp_dir_path)
 
-    os.remove(zip_file_reference)
+        if os.path.exists(temp_media_file):
+            return distutils.dir_util.copy_tree(
+                temp_media_file,
+                settings.MEDIA_ROOT)
+        else:
+            raise Exception("Error: There is no directory called "
+                            "'media' in the root of the zipped file")
+    except Exception as e:
+        raise e
+    finally:
+        if os.path.exists(temp_dir_path):
+            shutil.rmtree(temp_dir_path)
+        if os.path.exists(zip_file_reference):
+            os.remove(zip_file_reference)
