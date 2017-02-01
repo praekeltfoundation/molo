@@ -2,6 +2,7 @@ import os
 import shutil
 import zipfile
 import re
+import tempfile
 import distutils.dir_util
 
 from django.conf import settings
@@ -63,26 +64,20 @@ def update_media_file(file):
     '''
     Update the Current Media Folder.
 
-    Returns list of files copied accross or
+    Returns list of files copied across or
     raises an exception.
     '''
     media_parent_directory = os.path.dirname(settings.MEDIA_ROOT)
-    temp_dir_path = os.path.join(media_parent_directory, 'temp_copy_dir')
-    zip_file_reference = os.path.join(temp_dir_path, 'new_media.zip')
+    temp_directory = tempfile.mkdtemp()
+    temp_file = tempfile.TemporaryFile()
     # assumes the zip file contains a directory called media
-    temp_media_file = os.path.join(temp_dir_path, 'media')
-
+    temp_media_file = os.path.join(temp_directory, 'media')
     try:
-        if os.path.exists(temp_dir_path):
-            shutil.rmtree(temp_dir_path)
-        os.makedirs(temp_dir_path)
+        for chunk in file.chunks():
+            temp_file.write(chunk)
 
-        with open(zip_file_reference, 'wb+') as destination:
-            for chunk in file.chunks():
-                destination.write(chunk)
-
-        with zipfile.ZipFile(zip_file_reference, 'r') as z:
-            z.extractall(temp_dir_path)
+        with zipfile.ZipFile(temp_file, 'r') as z:
+            z.extractall(temp_directory)
 
         if os.path.exists(temp_media_file):
             return distutils.dir_util.copy_tree(
@@ -94,7 +89,6 @@ def update_media_file(file):
     except Exception as e:
         raise e
     finally:
-        if os.path.exists(temp_dir_path):
-            shutil.rmtree(temp_dir_path)
-        if os.path.exists(zip_file_reference):
-            os.remove(zip_file_reference)
+        temp_file.close()
+        if os.path.exists(temp_directory):
+            shutil.rmtree(temp_directory)
