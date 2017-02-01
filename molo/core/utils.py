@@ -67,7 +67,6 @@ def update_media_file(file):
     Returns list of files copied across or
     raises an exception.
     '''
-    media_parent_directory = os.path.dirname(settings.MEDIA_ROOT)
     temp_directory = tempfile.mkdtemp()
     temp_file = tempfile.TemporaryFile()
     # assumes the zip file contains a directory called media
