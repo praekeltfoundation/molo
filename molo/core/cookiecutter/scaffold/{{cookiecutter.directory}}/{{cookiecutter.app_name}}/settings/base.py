@@ -43,6 +43,7 @@ BASE_URL = 'http://example.com'
 # Application definition
 
 INSTALLED_APPS = [
+    '{{cookiecutter.app_name}}',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,7 +57,6 @@ INSTALLED_APPS = [
     'modelcluster',
 
     'molo.core',
-    '{{cookiecutter.app_name}}',
     'google_analytics',
 
     'wagtail.wagtailcore',

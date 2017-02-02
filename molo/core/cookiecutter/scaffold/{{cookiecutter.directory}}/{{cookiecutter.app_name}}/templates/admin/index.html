@@ -1,0 +1,13 @@
+{% raw %}
+{% extends "admin/index.html" %}
+{% block content %}
+<a href="{% url 'molo_upload_media' %}">Upload Media</a>
+<br />
+<a href="{% url 'molo_download_media' %}">Download Media</a>
+{{ block.super }}
+{% endblock %}
+
+{% block sidebar %}
+{{ block.super }}
+{% endblock %}
+{% endraw %}
