@@ -60,7 +60,7 @@ def generate_slug(text, tail_number=0):
         return slug
 
 
-def update_media_file(file):
+def update_media_file(upload_file):
     '''
     Update the Current Media Folder.
 
@@ -72,7 +72,7 @@ def update_media_file(file):
     # assumes the zip file contains a directory called media
     temp_media_file = os.path.join(temp_directory, 'media')
     try:
-        for chunk in file.chunks():
+        for chunk in upload_file.chunks():
             temp_file.write(chunk)
 
         with zipfile.ZipFile(temp_file, 'r') as z:
