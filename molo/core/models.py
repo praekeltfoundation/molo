@@ -636,12 +636,12 @@ SectionPage.settings_panels = [
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
         "Meta"),
-    # MultiFieldPanel(
-    #     [
-    #         FieldPanel('enable_next_section'),
-    #         FieldPanel('enable_recommended_section')
-    #     ],
-    #     heading="Recommended Settings", )
+    MultiFieldPanel(
+        [
+            FieldPanel('enable_next_section'),
+            FieldPanel('enable_recommended_section')
+        ],
+        heading="Recommended Settings", )
 ]
 
 
@@ -839,7 +839,7 @@ ArticlePage.content_panels = [
             ImageChooserPanel('social_media_image'),
         ],
         heading="Social Media", ),
-    # InlinePanel('recommended_articles', label="Recommended articles"),
+    InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
 
