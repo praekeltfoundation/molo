@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 from .views import search, TagsListView
+from django.views.generic.base import TemplateView
 
 
 urlpatterns = patterns(
@@ -11,7 +12,9 @@ urlpatterns = patterns(
         'molo.core.views.locale_set',
         name='locale_set'
     ),
-
+    url(r'^robots\.txt$', TemplateView.as_view(
+        template_name='robots.txt', content_type='text/plain')),
+    url(r'^sitemap\.xml$', 'wagtail.contrib.wagtailsitemaps.views.sitemap'),
     url(
         r'^health/$',
         'molo.core.views.health',
