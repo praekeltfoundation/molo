@@ -7,6 +7,7 @@ CHANGE LOG
 Main Features::
 
 - Upgraded to Wagtail 1.8
+- Added upload/download functionality for zipped media files
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -15,6 +16,9 @@ Backwards incompatible changes
 - ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
 - ``search_fields`` now uses a list instead of a tuple
 
+4.0.1
+~~~~~~
+- Added upload/download functionality for zipped media files
 
 4.0.0
 ~~~~~~
