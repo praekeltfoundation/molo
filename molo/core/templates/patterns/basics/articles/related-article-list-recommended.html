@@ -10,34 +10,38 @@
   {% if self.get_parent_section.enable_recommended_section %}
     <h4 class="heading heading--small related-articles__recommended">{% trans "Recommended:" %}</h4>
       <div class="related-articles-recommended">
-      <ul class="related-articles-recommended-list">
+        <ul class="related-articles-recommended-list">
         {% for reference in self.recommended_articles.all %}
           {% with reference.recommended_article.specific as article %}
-              <li class="related-articles-recommended-list__item">
-                {% if forloop.counter0 == 0 %}
+              <li class="related-articles-recommended-list__item
+              {% if forloop.counter0 == 0 %} related-articles-recommended-list__item--hero
+                {% elif forloop.counter0 == 1 %}
+                  related-articles-recommended-list__item--grid
+                {% elif forloop.counter0 == 2 %}
+                  related-articles-recommended-list__item--grid
+               {% endif %}">
                   {% if article.image %}
-                  <a href="{% pageurl article %}" class="promoted-article-list__anchor">
-                    {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
-                  </a>
+                    {% if forloop.counter0 == 0 %}
+                      <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+                        {% include "patterns/basics/images/article-image.html" with curve="none" %}
+                      </a>
+                    {% elif forloop.counter0 == 1 %}
+                      <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+                        {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+                      </a>
+                    {% elif forloop.counter0 == 2 %}
+                    <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+                      {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+                    </a>
+                     {% endif %}
                   {% endif %}
-                  <h3 class="heading heading--large related-articles-recommended__title">
-                    <a href="{% pageurl article %}">{{article.title}}</a>
-                  </h3>
-                  <p class="related-articles-recommended__desc">{{article.subtitle}}</p>
-                {% if forloop.counter0 == 1 %}
-                <!-- left of column
-                      thumbnail
-                      title
-                      subtitle-->
-                {% if forloop.counter0 == 2 %}
-                <!-- right article for column
-                      thumbnail
-                      title
-                      subtitle-->
-                {% else %}
-                <!-- Just title and subtitile -->
-                {% endif %}
-              </li>
+                  <div class="related-articles-recommended-list__content {% if forloop.first %} related-articles-recommended-list__content--hero {% endif %}">
+                    <h3 class="heading heading--large related-articles-recommended__title">
+                      <a href="{% pageurl article %}">{{article.title}}</a>
+                    </h3>
+                    <p class="related-articles-recommended__desc">{{article.subtitle}}</p>
+                  </div>
+                </li>
           {% endwith %}
         {% endfor %}
       </ul>

@@ -22,22 +22,39 @@
 }
 .related-articles-recommended-list {
   list-style: none;
-  padding: 0 15px;
+  padding: 0;
   margin: 0;
 }
 .related-articles-recommended-list__item {
   margin: 0 0 20px;
+  padding: 0;
   overflow: auto;
+  clear: both;
 }
-.related-articles-recommended-list__item:nth-child(even) {
+.related-articles-recommended-list__content {
+    padding: 0 15px;
+}
+.related-articles-recommended-list__item--hero {
+  @include float-clear(none);
+  padding: 0;
+  width: 100%;
+}
+.related-articles-recommended-list__item--grid {
+  .related-articles-recommended-list__content {
+    padding: 0;
+  }
+}
+.related-articles-recommended-list__item--grid:nth-child(even) {
   @media screen and (min-width: 320px) {
     width: 45%;
     @include float-clear(right);
+    padding: 0 10px 0 0;
   }
 }
-.related-articles-recommended-list__item:nth-child(odd) {
+.related-articles-recommended-list__item--grid:nth-child(odd) {
   @media screen and (min-width: 320px) {
     width: 46%;
     @include float-clear(left);
+    padding: 0 0 0 10px;
   }
 }
