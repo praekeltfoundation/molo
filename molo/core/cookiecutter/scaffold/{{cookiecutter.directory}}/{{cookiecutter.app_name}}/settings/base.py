@@ -43,6 +43,7 @@ BASE_URL = 'http://example.com'
 # Application definition
 
 INSTALLED_APPS = [
+    '{{cookiecutter.app_name}}',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,7 +57,6 @@ INSTALLED_APPS = [
     'modelcluster',
 
     'molo.core',
-    '{{cookiecutter.app_name}}',
     'google_analytics',
 
     'wagtail.wagtailcore',
@@ -175,7 +175,7 @@ BROKER_URL = environ.get('BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = environ.get(
     'CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 CELERYBEAT_SCHEDULE = {
-    'rotate_promote_content': {
+    'rotate_content': {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },
