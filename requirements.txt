@@ -8,7 +8,7 @@ certifi
 dj-database-url
 django-cas-ng==3.5.4
 django-mptt==0.8.5
-requests
+requests==2.13.0
 elastic-git
 unicore.content
 wagtail==1.8
