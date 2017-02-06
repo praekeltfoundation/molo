@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'modelcluster',
 
     'molo.core',
-    '{{cookiecutter.app_name}}',
     'mote',
     'google_analytics',
 
