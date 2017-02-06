@@ -13,7 +13,7 @@
     {% with self.get_next_article as article %}
       {% if article.image %}
         <a href="{% pageurl article %}" class="article__anchor">
-          {% image self.image width-320 class="article__image"%}
+          {% image article.image width-320 class="article__image"%}
         </a>
       {% endif %}
       <h1 class="heading heading--xx-large related-articles-up-next__title">
