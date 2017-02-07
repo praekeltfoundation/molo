@@ -32,7 +32,10 @@
         <li><a href="{% url 'wagtailadmin_pages:copy' page.id %}" class="button button-small button-secondary">{% trans 'Copy' %}</a></li>
     {% endif %}
     {% if page_perms.can_delete and 'delete' not in hide_actions|default:'' %}
-        <li><a href="{% url 'wagtailadmin_pages:delete' page.id %}" class="button button-small button-secondary">{% trans 'Delete' %}</a></li>
+        {% should_hide_delete_button page as delete_hidden %}
+        {% if not delete_hidden %}
+            <li><a href="{% url 'wagtailadmin_pages:delete' page.id %}" class="button button-small button-secondary">{% trans 'Delete' %}</a></li>
+        {% endif %}
     {% endif %}
     {% if page_perms.can_unpublish and 'unpublish' not in hide_actions|default:'' %}
         <li><a href="{% url 'wagtailadmin_pages:unpublish' page.id %}" class="button button-small button-secondary">{% trans 'Unpublish' %}</a></li>
