@@ -14,7 +14,8 @@ from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteLanguage, FooterPage,
-                              SiteSettings, ArticlePage)
+                              SiteSettings, ArticlePage,
+                              ArticlePageRecommendedSections)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -1019,3 +1020,93 @@ class TestArticleTags(MoloTestCaseMixin, TestCase):
             list(response.context["object_list"]),
             [first_article, second_article]
         )
+
+
+class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+    def test_article_recommended_section(self):
+        section_a = self.mk_section(self.section_index, title='Section A')
+
+        section_a.enable_recommended_section = True
+        section_a.save()
+
+        article_a = self.mk_article(section_a, title='Article A')
+        article_a.save_revision().publish()
+        article_b = self.mk_article(section_a, title='Article B')
+        article_b.save_revision().publish()
+
+        recommended_article = ArticlePageRecommendedSections(
+            page=article_a,
+            recommended_article=article_b)
+        recommended_article.save()
+
+        self.assertTrue(
+            article_a.get_parent_section()
+            .enable_recommended_section)
+
+        self.assertEquals(
+            article_b,
+            article_a.recommended_articles.first()
+            .recommended_article.specific)
+
+        response = self.client.get('/sections/section-a/article-a/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Recommended')
+
+        section_a.enable_recommended_section = False
+        section_a.save()
+
+        response = self.client.get('/sections/section-a/article-a/')
+        self.assertNotContains(response, 'Recommended')
+
+
+class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+    def test_article_next_section(self):
+        section_a = self.mk_section(self.section_index, title='Section A')
+
+        section_a.enable_next_section = True
+        section_a.save()
+
+        article_a = self.mk_article(section_a, title='Article A')
+        article_a.save_revision().publish()
+        article_b = self.mk_article(section_a, title='Article B')
+        article_b.save_revision().publish()
+        article_c = self.mk_article(section_a, title='Article C')
+        article_c.save_revision().publish()
+
+        self.assertTrue(article_b.get_parent_section().enable_next_section)
+
+        self.assertEquals(article_c.get_next_article(), article_b)
+        self.assertEquals(article_b.get_next_article(), article_a)
+        self.assertEquals(article_a.get_next_article(), None)
+
+        response = self.client.get('/sections/section-a/article-c/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next Up in ' + section_a.title)
+        self.assertContains(response, article_b.title)
+
+        response = self.client.get('/sections/section-a/article-b/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next Up in ' + section_a.title)
+        self.assertContains(response, article_a.title)
+
+        response = self.client.get('/sections/section-a/article-a/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'Next Up in ' + section_a.title)
+
+        section_a.enable_next_section = False
+        section_a.save()
+
+        response = self.client.get('/sections/section-a/article-c/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'Next Up in ' + section_a.title)
+        self.assertNotContains(response, article_b.title)

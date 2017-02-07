@@ -181,7 +181,7 @@ BROKER_URL = environ.get('BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = environ.get(
     'CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 CELERYBEAT_SCHEDULE = {
-    'rotate_promote_content': {
+    'rotate_content': {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },

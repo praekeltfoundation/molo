@@ -511,6 +511,22 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         null=True, blank=True,
         help_text='The date rotation will end')
 
+    enable_next_section = (
+        models.BooleanField(
+            default=False,
+            verbose_name='Activate up next section underneath articles',
+            help_text=("Activate up next section underneath articles in this "
+                       "section will appear with the heading and subheading of"
+                       " that article. The text will say 'next' in order to "
+                       "make the user feel like it's fresh content.")))
+    enable_recommended_section = (
+        models.BooleanField(
+            default=False,
+            verbose_name='Activate recommended section underneath articles',
+            help_text=("Underneath the area for 'next articles' recommended "
+                       "articles will appear, with the image + heading + "
+                       "subheading")))
+
     def articles(self):
         main_language_page = self.get_main_language_page()
         return list(chain(
@@ -619,7 +635,13 @@ SectionPage.settings_panels = [
     MultiFieldPanel(
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
-        "Meta")
+        "Meta"),
+    # MultiFieldPanel(
+    #     [
+    #         FieldPanel('enable_next_section'),
+    #         FieldPanel('enable_recommended_section')
+    #     ],
+    #     heading="Recommended Settings", )
 ]
 
 
@@ -785,6 +807,14 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     def tags_list(self):
         return self.tags.names()
 
+    def get_next_article(self):
+        all_section_articles = self.get_parent_section().articles()
+        index = all_section_articles.index(self) - 1
+        if index > -1:
+            return all_section_articles[index]
+        else:
+            return None
+
     class Meta:
         verbose_name = _('Article')
 
@@ -809,6 +839,7 @@ ArticlePage.content_panels = [
             ImageChooserPanel('social_media_image'),
         ],
         heading="Social Media", ),
+    # InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
 
@@ -841,6 +872,19 @@ def demote_featured_articles(sender, instance, **kwargs):
         instance.featured_in_section_start_date is None and \
             instance.featured_in_section is True:
         instance.featured_in_section = False
+
+
+class ArticlePageRecommendedSections(Orderable):
+    page = ParentalKey(ArticlePage, related_name='recommended_articles')
+    recommended_article = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Recommended articles for this article')
+    )
+    panels = [PageChooserPanel('recommended_article', 'core.ArticlePage')]
 
 
 class ArticlePageRelatedSections(Orderable):
