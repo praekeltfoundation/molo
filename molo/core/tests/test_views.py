@@ -1032,3 +1032,22 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'Next Up in ' + section_a.title)
         self.assertNotContains(response, article_b.title)
+
+class TestDjangoAdmin(TestCase):
+
+    def test_upload_download_links(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        response = self.client.get(reverse('admin:index'))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(
+            response,
+            '<a href="/django-admin/upload_media/">Upload Media</a>'
+        )
+        self.assertContains(
+            response,
+            '<a href="/django-admin/download_media/">Download Media</a>'
+        )
