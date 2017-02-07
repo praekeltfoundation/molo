@@ -810,10 +810,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     def get_next_article(self):
         all_section_articles = self.get_parent_section().articles()
         index = all_section_articles.index(self) - 1
-        if index > -1:
-            return all_section_articles[index]
-        else:
-            return None
+        return all_section_articles[index]
 
     class Meta:
         verbose_name = _('Article')

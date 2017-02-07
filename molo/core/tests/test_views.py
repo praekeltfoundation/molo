@@ -1009,26 +1009,26 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
         self.assertEquals(article_c.get_next_article(), article_b)
         self.assertEquals(article_b.get_next_article(), article_a)
-        self.assertEquals(article_a.get_next_article(), None)
+        self.assertEquals(article_a.get_next_article(), article_c)
 
         response = self.client.get('/sections/section-a/article-c/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'Next Up in ' + section_a.title)
+        self.assertContains(response, 'Next up in ' + section_a.title)
         self.assertContains(response, article_b.title)
 
         response = self.client.get('/sections/section-a/article-b/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'Next Up in ' + section_a.title)
+        self.assertContains(response, 'Next up in ' + section_a.title)
         self.assertContains(response, article_a.title)
 
         response = self.client.get('/sections/section-a/article-a/')
         self.assertEquals(response.status_code, 200)
-        self.assertNotContains(response, 'Next Up in ' + section_a.title)
+        self.assertContains(response, 'Next up in ' + section_a.title)
 
         section_a.enable_next_section = False
         section_a.save()
 
         response = self.client.get('/sections/section-a/article-c/')
         self.assertEquals(response.status_code, 200)
-        self.assertNotContains(response, 'Next Up in ' + section_a.title)
+        self.assertNotContains(response, 'Next up in ' + section_a.title)
         self.assertNotContains(response, article_b.title)
