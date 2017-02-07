@@ -44,7 +44,7 @@
 {% endif %}
 
 {% if self.get_parent_section.enable_next_section and self.get_next_article %}
-  <h3>Next Up in {{ self.get_parent_section.title }}</h3>
+  <h3>Next up in {{ self.get_parent_section.title }}</h3>
   {% with self.get_next_article as article %}
     <ul class="list-block">
       <li>
