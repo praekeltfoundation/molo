@@ -183,11 +183,11 @@ def upload_file(request):
             except Exception as e:
                 context_dict['error_message'] = e.message
             return render(request,
-                          'admin/transfer_media_message.html',
+                          'django_admin/transfer_media_message.html',
                           context_dict)
     else:
         form = MediaForm()
-    return render(request, 'admin/upload_media.html', {'form': form})
+    return render(request, 'django_admin/upload_media.html', {'form': form})
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -216,6 +216,6 @@ def download_file(request):
             return resp
         else:
             return render(request,
-                          'admin/transfer_media_message.html',
+                          'django_admin/transfer_media_message.html',
                           {'error_message':
                            'media file does not exist'})

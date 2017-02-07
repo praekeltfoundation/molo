@@ -11,6 +11,10 @@ from wagtail.wagtailcore import urls as wagtail_urls
 
 from molo.core.views import upload_file, download_file
 
+# Path to a custom template that will be used by the admin site main index view.
+admin.site.index_template = 'django_admin/index.html'
+admin.autodiscover()
+
 # implement CAS URLs in a production setting
 if settings.ENABLE_SSO:
     urlpatterns = patterns(

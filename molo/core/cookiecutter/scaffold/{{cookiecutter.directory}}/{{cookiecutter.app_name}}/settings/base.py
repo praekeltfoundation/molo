@@ -44,6 +44,7 @@ BASE_URL = 'http://example.com'
 
 INSTALLED_APPS = [
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -56,7 +57,6 @@ INSTALLED_APPS = [
 
     'molo.core',
     '{{cookiecutter.app_name}}',
-    'django.contrib.admin',  # below app for django-admin template override
     'google_analytics',
 
     'wagtail.wagtailcore',
