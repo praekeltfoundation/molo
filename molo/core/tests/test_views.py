@@ -1033,6 +1033,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, 'Next Up in ' + section_a.title)
         self.assertNotContains(response, article_b.title)
 
+
 class TestDjangoAdmin(TestCase):
 
     def test_upload_download_links(self):

@@ -56,7 +56,7 @@ INSTALLED_APPS = [
 
     'molo.core',
     '{{cookiecutter.app_name}}',
-    'django.contrib.admin', # below app for django-admin template override
+    'django.contrib.admin',  # below app for django-admin template override
     'google_analytics',
 
     'wagtail.wagtailcore',
