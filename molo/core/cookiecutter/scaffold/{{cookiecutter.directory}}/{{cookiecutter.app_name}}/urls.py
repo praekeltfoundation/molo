@@ -45,12 +45,12 @@ urlpatterns += patterns(
 {% endfor %}
     url(r'', include('molo.core.urls')),
     url('^', include('django.contrib.auth.urls')),
-)
-
-urlpatterns += i18n_patterns(
-
     url(r'', include(wagtail_urls)),
 )
+
+# urlpatterns += i18n_patterns(
+
+# )
 
 if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns

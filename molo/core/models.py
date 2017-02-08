@@ -276,6 +276,16 @@ class TranslatablePageMixin(object):
             for p in self.translations.all():
                 p.translated_page.move(target, pos='last-child')
 
+    def get_sitemap_urls(self):
+        language_rel = self.languages.all().first()
+        return [
+            {
+                'location': '/%s%s' % (
+                    language_rel.language.locale, self.url),
+                'lastmod': self.latest_revision_created_at
+            }
+        ]
+
     def serve(self, request):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
@@ -286,9 +296,9 @@ class TranslatablePageMixin(object):
         if main_lang.locale == locale_code:
             translation = parent
 
-        if translation and language_rel.language.locale != locale_code:
-            return redirect(
-                '%s?%s' % (translation.url, request.GET.urlencode()))
+        # if translation and language_rel.language.locale != locale_code:
+        #     return redirect(
+        #         '%s?%s' % (translation.url, request.GET.urlencode()))
 
         return super(TranslatablePageMixin, self).serve(request)
 
