@@ -16,6 +16,10 @@ Backwards incompatible changes
 - ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
 - ``search_fields`` now uses a list instead of a tuple
 
+4.0.2
+~~~~~~
+- Fixed template overrides for django-admin templates
+
 4.0.1
 ~~~~~~
 - Added upload/download functionality for zipped media files
