@@ -807,11 +807,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     def tags_list(self):
         return self.tags.names()
 
-    def get_next_article(self):
-        all_section_articles = self.get_parent_section().articles()
-        index = all_section_articles.index(self) - 1
-        return all_section_articles[index]
-
     class Meta:
         verbose_name = _('Article')
 
