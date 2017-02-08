@@ -1,4 +1,4 @@
-{% raw %}
+
 {% extends "base.html" %}
 
 {% load static core_tags %}
@@ -43,37 +43,39 @@
     {% endfor%}
 {% endif %}
 
-{% if self.get_parent_section.enable_next_section and self.get_next_article %}
-  <h3>Next up in {{ self.get_parent_section.title }}</h3>
-  {% with self.get_next_article as article %}
+{% get_translation self.get_parent_section as section %}
+{% get_next_article self as next_article %}
+{% if next_article and self.get_parent_section.enable_next_section %}
+  <h3>{% trans "Next up in" %} {{ section.title }}</h3>
     <ul class="list-block">
       <li>
-        {% if article.image %}
-        <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+        {% if next_article.image %}
+        <a href="{% pageurl next_article %}">{% image next_article.image width-60 %}</a>
         {% endif %}
-        <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
-        <p>{{article.subtitle}}</p>
+        <h3><a href="{% pageurl next_article %}">{{next_article.title}}</a></h3>
+        <p>{{next_article.subtitle}}</p>
       </li>
     </ul>
-  {% endwith %}
 {% endif %}
 
 {% if self.get_parent_section.enable_recommended_section %}
-  <h3>Recommended</h3>
+{% if self.recommended_articles.all %}
+  <h3>{% trans "Recommended" %}</h3>
     {% for reference in self.recommended_articles.all %}
       {% with reference.recommended_article.specific as article %}
+      {% get_translation article as recommend_article %}
         <ul class="list-block">
           <li>
-            {% if article.image %}
-            <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+            {% if recommend_article.image %}
+            <a href="{% pageurl recommend_article %}">{% image recommend_article.image width-60 %}</a>
             {% endif %}
-            <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
-            <p>{{article.subtitle}}</p>
+            <h3><a href="{% pageurl recommend_article %}">{{recommend_article.title}}</a></h3>
+            <p>{{recommend_article.subtitle}}</p>
           </li>
         </ul>
       {% endwith %}
     {% endfor %}
 {% endif %}
+{% endif %}
 </div>
 {% endblock %}
-{% endraw %}
