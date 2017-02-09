@@ -307,7 +307,8 @@ class TranslatablePageMixin(RoutablePageMixin):
             return redirect(
                 '%s?%s' % (translation.url, request.GET.urlencode()))
 
-        return super(TranslatablePageMixin, self).serve(request, *args, **kwargs)
+        return super(TranslatablePageMixin, self).serve(
+            request, *args, **kwargs)
 
 
 class BannerIndexPage(Page):
