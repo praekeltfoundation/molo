@@ -1,7 +1,7 @@
-
+{% raw %}
 {% extends "base.html" %}
 
-{% load static core_tags %}
+{% load i18n static core_tags %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
@@ -79,3 +79,4 @@
 {% endif %}
 </div>
 {% endblock %}
+{% endraw %}
