@@ -1,5 +1,4 @@
 {% raw %}
-
 {% extends "base.html" %}
 
 {% load static core_tags i18n %}
@@ -59,14 +58,11 @@
     </ul>
 {% endif %}
 
-{% get_recommended_articles self as recommended_articles %}
 
 {% if self.get_parent_section.enable_recommended_section %}
-
+{% get_recommended_articles self as recommended_articles %}
   <h3>{% trans "Recommended" %}</h3>
-    {% for reference in recommended_articles %}
-      {% with reference.recommended_article.specific as recommend_article %}
-      {% get_translation recommend_article as article %}
+    {% for article in recommended_articles %}
         <ul class="list-block">
           <li>
             {% if article.image %}
@@ -76,12 +72,9 @@
             <p>{{article.subtitle}}</p>
           </li>
         </ul>
-      {% endwith %}
     {% endfor %}
 {% endif %}
 
 </div>
 {% endblock %}
-
-
 {% endraw %}
