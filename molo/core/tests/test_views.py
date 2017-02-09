@@ -991,44 +991,153 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.mk_main()
         self.english = SiteLanguage.objects.create(locale='en')
+        self.french = SiteLanguage.objects.create(locale='fr')
 
-    def test_article_next_section(self):
-        section_a = self.mk_section(self.section_index, title='Section A')
+        self.section_a = self.mk_section(self.section_index, title='Section A')
 
-        section_a.enable_next_section = True
-        section_a.save()
+        self.section_a.enable_next_section = True
+        self.section_a.save()
 
-        article_a = self.mk_article(section_a, title='Article A')
-        article_a.save_revision().publish()
-        article_b = self.mk_article(section_a, title='Article B')
-        article_b.save_revision().publish()
-        article_c = self.mk_article(section_a, title='Article C')
-        article_c.save_revision().publish()
+        self.article_a = self.mk_article(self.section_a, title='Article A')
+        self.article_a.save_revision().publish()
+        self.article_b = self.mk_article(self.section_a, title='Article B')
+        self.article_b.save_revision().publish()
+        self.article_c = self.mk_article(self.section_a, title='Article C')
+        self.article_c.save_revision().publish()
 
-        self.assertTrue(article_b.get_parent_section().enable_next_section)
+        self.mk_article_translation(
+            self.article_a,
+            self.french,
+            title=self.article_a.title + ' in french',)
+        self.mk_article_translation(
+            self.article_b, self.french,
+            title=self.article_b.title + ' in french',)
+        self.mk_article_translation(
+            self.article_c, self.french,
+            title=self.article_c.title + ' in french',)
 
-        self.assertEquals(article_c.get_next_article(), article_b)
-        self.assertEquals(article_b.get_next_article(), article_a)
-        self.assertEquals(article_a.get_next_article(), article_c)
+    def test_next_article_main_language(self):
+        # assumes articles loop
+        self.assertTrue(
+            self.article_b.get_parent_section().enable_next_section)
 
         response = self.client.get('/sections/section-a/article-c/')
+        print response
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'Next up in ' + section_a.title)
-        self.assertContains(response, article_b.title)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_b.title)
 
         response = self.client.get('/sections/section-a/article-b/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'Next up in ' + section_a.title)
-        self.assertContains(response, article_a.title)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_a.title)
 
         response = self.client.get('/sections/section-a/article-a/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'Next up in ' + section_a.title)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_c.title)
 
-        section_a.enable_next_section = False
-        section_a.save()
+        self.section_a.enable_next_section = False
+        self.section_a.save()
 
         response = self.client.get('/sections/section-a/article-c/')
         self.assertEquals(response.status_code, 200)
-        self.assertNotContains(response, 'Next up in ' + section_a.title)
-        self.assertNotContains(response, article_b.title)
+        self.assertNotContains(response, 'Next up in ' + self.section_a.title)
+        self.assertNotContains(response, self.article_b.title)
+
+    def test_next_article_not_main_language(self):
+        # assumes articles loop
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-c-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_b.title + ' in french')
+
+        response = self.client.get('/sections/section-a/article-b-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_a.title + ' in french')
+
+        response = self.client.get('/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_c.title + ' in french')
+
+    def test_next_article_show_untranslated_pages(self):
+        response = self.client.get('/sections/section-a/article-c/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_b.title)
+
+        ArticlePage.objects.get(title=self.article_b.title + ' in french').delete()
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-c-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_b.title)
+
+    def test_next_article_show_only_translated_pages(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.show_only_translated_pages=True
+        setting.save()
+
+        response = self.client.get('/sections/section-a/article-c/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_b.title)
+
+        ArticlePage.objects.get(title=self.article_b.title + ' in french').delete()
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-c-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_a.title + ' in french')
+
+    def test_next_article_with_related_section(self):
+        self.section_b = self.mk_section(self.section_index, title='Section B')
+        self.section_b.enable_next_section = True
+        self.section_b.save()
+
+        self.article_1 = self.mk_article(self.section_b, title='Article 1')
+        self.article_1.save_revision().publish()
+        self.article_2 = self.mk_article(self.section_b, title='Article 2')
+        self.article_2.related_sections.create(page=self.article_2,
+                                          section=self.section_a)
+        self.article_2.save_revision().publish()
+
+        response = self.client.get('/sections/section-b/article-2/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_1.title)
+        self.assertContains(response, 'Next up in ' + self.section_b.title)
+
+    def test_next_article_not_displayed_for_single_article(self):
+        self.section_b = self.mk_section(self.section_index, title='Section B')
+
+        self.article_1 = self.mk_article(self.section_b, title='Article 1')
+        self.article_1.save_revision().publish()
+
+        response = self.client.get('/sections/section-b/article-1/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'Next up in')
+
+    def test_next_article_not_displayd_single_article_only_translated(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.show_only_translated_pages=True
+        setting.save()
+
+        self.section_b = self.mk_section(self.section_index, title='Section B')
+
+        self.article_1 = self.mk_article(self.section_b, title='Article 1')
+        self.article_1.save_revision().publish()
+
+        response = self.client.get('/sections/section-b/article-1/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'Next up in')
+
+    # show_only_translated_pages
+    # article exists in parent language and not in translated
+    #       (and current) article
+    # ?? articles with related sections included in next ??
+
