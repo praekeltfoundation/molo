@@ -1046,6 +1046,31 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, self.article_b.title + 'in french')
         self.assertContains(response, self.article_c.title + ' in french')
 
+    def test_article_recommended_custom_recommended_per_language(self):
+        self.article_a_fr = ArticlePage.objects.get(
+            title=self.article_a.title + ' in french')
+        self.article_c_fr = ArticlePage.objects.get(
+            title=self.article_c.title + ' in french')
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get(
+            '/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_b.title + ' in french')
+        self.assertContains(response, self.article_c_fr.title)
+
+        self.recommended_article_3 = ArticlePageRecommendedSections(
+            page=self.article_a_fr,
+            recommended_article=self.article_c_fr)
+        self.recommended_article_3.save()
+
+        response = self.client.get(
+            '/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, self.article_b.title + ' in french')
+        self.assertContains(response, self.article_c_fr.title)
+
 
 class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
