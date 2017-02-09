@@ -1,7 +1,8 @@
 {% raw %}
+
 {% extends "base.html" %}
 
-{% load i18n static core_tags %}
+{% load static core_tags i18n %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
 {% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
@@ -58,25 +59,29 @@
     </ul>
 {% endif %}
 
+{% get_recommended_articles self as recommended_articles %}
+
 {% if self.get_parent_section.enable_recommended_section %}
-{% if self.recommended_articles.all %}
+
   <h3>{% trans "Recommended" %}</h3>
-    {% for reference in self.recommended_articles.all %}
-      {% with reference.recommended_article.specific as article %}
-      {% get_translation article as recommend_article %}
+    {% for reference in recommended_articles %}
+      {% with reference.recommended_article.specific as recommend_article %}
+      {% get_translation recommend_article as article %}
         <ul class="list-block">
           <li>
-            {% if recommend_article.image %}
-            <a href="{% pageurl recommend_article %}">{% image recommend_article.image width-60 %}</a>
+            {% if article.image %}
+            <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
             {% endif %}
-            <h3><a href="{% pageurl recommend_article %}">{{recommend_article.title}}</a></h3>
-            <p>{{recommend_article.subtitle}}</p>
+            <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+            <p>{{article.subtitle}}</p>
           </li>
         </ul>
       {% endwith %}
     {% endfor %}
 {% endif %}
-{% endif %}
+
 </div>
 {% endblock %}
+
+
 {% endraw %}
