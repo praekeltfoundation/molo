@@ -3,6 +3,7 @@
 {% load wagtailadmin_tags %}
 {% load gravatar %}
 {% load i18n %}
+{% load core_tags %}
 {% block titletag %}{% blocktrans with title=page.get_admin_display_title page_type=content_type.model_class.get_verbose_name %}Editing {{ page_type }}: {{ title }}{% endblocktrans %}{% endblock %}
 {% block bodyclass %}page-editor {% if page.live %}page-is-live{% endif %} model-{{ content_type.model }} {% if page.locked %}page-locked{% endif %}{% endblock %}
 
@@ -48,7 +49,10 @@
                                     <li><a href="{% url 'wagtailadmin_pages:unpublish' page.id %}">{% trans 'Unpublish' %}</a></li>
                                 {% endif %}
                                 {% if not is_revision and page_perms.can_delete %}
-                                    <li><a href="{% url 'wagtailadmin_pages:delete' page.id %}" class="shortcut">{% trans 'Delete' %}</a></li>
+                                    {% should_hide_delete_button page as delete_hidden %}
+                                    {% if not delete_hidden %}
+                                        <li><a href="{% url 'wagtailadmin_pages:delete' page.id %}" class="shortcut">{% trans 'Delete' %}</a></li>
+                                    {% endif %}
                                 {% endif %}
                                 {% if page_perms.can_publish %}
                                     <li>

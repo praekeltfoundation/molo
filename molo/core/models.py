@@ -335,7 +335,7 @@ BannerPage.content_panels = [
 ]
 
 
-class Main(CommentedPageMixin, Page):
+class Main(CommentedPageMixin, Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = []
 
