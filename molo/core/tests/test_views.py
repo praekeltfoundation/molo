@@ -1016,11 +1016,13 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
         self.assertContains(response, self.article_c.title + ' in french')
 
     def test_article_recommended_section_untranslated(self):
-        ArticlePage.objects.get(title=self.article_b.title + ' in french').delete()
+        ArticlePage.objects.get(
+            title=self.article_b.title + ' in french').delete()
 
         self.client.get('/locale/fr/')
 
-        response = self.client.get('/sections/section-a/article-a-in-french/')
+        response = self.client.get(
+            '/sections/section-a/article-a-in-french/')
         self.assertEquals(response.status_code, 200)
         # print (response)
         self.assertContains(response, self.article_b.title)
@@ -1029,18 +1031,21 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
     def test_article_recommended_section_only_translated(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
-        setting.show_only_translated_pages=True
+        setting.show_only_translated_pages = True
         setting.save()
 
-        ArticlePage.objects.get(title=self.article_b.title + ' in french').delete()
+        ArticlePage.objects.get(
+            title=self.article_b.title + ' in french').delete()
 
         self.client.get('/locale/fr/')
 
-        response = self.client.get('/sections/section-a/article-a-in-french/')
+        response = self.client.get(
+            '/sections/section-a/article-a-in-french/')
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, self.article_b.title)
         self.assertNotContains(response, self.article_b.title + 'in french')
         self.assertContains(response, self.article_c.title + ' in french')
+
 
 class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
@@ -1123,7 +1128,8 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Next up in ' + self.section_a.title)
         self.assertContains(response, self.article_b.title)
 
-        ArticlePage.objects.get(title=self.article_b.title + ' in french').delete()
+        ArticlePage.objects.get(
+            title=self.article_b.title + ' in french').delete()
 
         self.client.get('/locale/fr/')
 
@@ -1134,7 +1140,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def test_next_article_show_only_translated_pages(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
-        setting.show_only_translated_pages=True
+        setting.show_only_translated_pages = True
         setting.save()
 
         response = self.client.get('/sections/section-a/article-c/')
@@ -1142,7 +1148,8 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Next up in ' + self.section_a.title)
         self.assertContains(response, self.article_b.title)
 
-        ArticlePage.objects.get(title=self.article_b.title + ' in french').delete()
+        ArticlePage.objects.get(
+            title=self.article_b.title + ' in french').delete()
 
         self.client.get('/locale/fr/')
 
@@ -1159,7 +1166,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.article_1.save_revision().publish()
         self.article_2 = self.mk_article(self.section_b, title='Article 2')
         self.article_2.related_sections.create(page=self.article_2,
-                                          section=self.section_a)
+                                               section=self.section_a)
         self.article_2.save_revision().publish()
 
         response = self.client.get('/sections/section-b/article-2/')
@@ -1180,7 +1187,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def test_next_article_not_displayd_single_article_only_translated(self):
         default_site = Site.objects.get(is_default_site=True)
         setting = SiteSettings.objects.create(site=default_site)
-        setting.show_only_translated_pages=True
+        setting.show_only_translated_pages = True
         setting.save()
 
         self.section_b = self.mk_section(self.section_index, title='Section B')
@@ -1191,9 +1198,3 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections/section-b/article-1/')
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'Next up in')
-
-    # show_only_translated_pages
-    # article exists in parent language and not in translated
-    #       (and current) article
-    # ?? articles with related sections included in next ??
-
