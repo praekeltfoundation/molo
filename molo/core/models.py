@@ -198,7 +198,8 @@ class SiteSettings(BaseSetting):
 
 
 class PreventDeleteMixin(object):
-    hide_delete_button = True
+    # hide_delete_button = True
+    pass
 
 
 class CommentedPageMixin(object):

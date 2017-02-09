@@ -21,3 +21,4 @@ redis
 six>=1.9
 django-google-analytics-app==2.1.4
 setuptools==18.5
+beautifulsoup4

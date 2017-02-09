@@ -15,7 +15,10 @@ from django.utils import timezone
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteLanguage, FooterPage,
                               SiteSettings, ArticlePage,
-                              ArticlePageRecommendedSections)
+                              ArticlePageRecommendedSections,
+                              Main, BannerIndexPage,
+                              SectionIndexPage,
+                              FooterIndexPage)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -23,6 +26,7 @@ from molo.core.templatetags.core_tags import \
 
 from mock import patch, Mock
 from six import b
+from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -1032,3 +1036,34 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'Next Up in ' + section_a.title)
         self.assertNotContains(response, article_b.title)
+
+
+class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+    def test_delete_button_removed_for_index_page(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        index_titles = [
+            BannerIndexPage.objects.first().title,
+            SectionIndexPage.objects.first().title,
+            FooterIndexPage.objects.first().title,
+        ]
+
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/'
+                        .format(str(main_page.pk)))
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # Get all the rows in the body of the table
+        index_page_rows = soup.find_all('tbody')[0].find_all('tr')
+
+        for row in index_page_rows:
+            if row.h2.a.string in index_titles:
+                self.assertTrue(row.find('a', string='Edit'))
+                self.assertFalse(row.find('a', string='Delete'))
