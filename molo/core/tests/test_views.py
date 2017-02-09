@@ -1068,3 +1068,26 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
             if row.h2.a.string in index_titles:
                 self.assertTrue(row.find('a', string='Edit'))
                 self.assertFalse(row.find('a', string='Delete'))
+
+    def test_delete_button_removed_from_dropdown_menu_main(self):
+        # Remove 'Delete' from drop-down menu
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/'
+                                   .format(str(main_page.pk)))
+        delete_link = ('<a href="/admin/pages/{0}/delete/" '
+                       'title="Delete this page" class="u-link '
+                       'is-live ">Delete</a>'.format(str(main_page.pk)))
+        self.assertNotContains(response, delete_link, html=True)
+
+    def test_delete_button_removed_from_dropdown_menu_section(self):
+        # exhibits behaviour that delete will be removed on dropdown
+        # menu for all Pages, not just specified Pages
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+        section_page = self.mk_section(self.section_index, title='Section A')
+        response = self.client.get('/admin/pages/{0}/'
+                                   .format(str(section_page.pk)))
+        delete_link = ('<a href="/admin/pages/{0}/delete/" '
+                       'title="Delete this page" class="u-link '
+                       'is-live ">Delete</a>'.format(str(section_page.pk)))
+        self.assertNotContains(response, delete_link, html=True)
