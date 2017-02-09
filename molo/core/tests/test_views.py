@@ -1047,6 +1047,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
+
     def test_delete_button_removed_for_index_pages_in_main(self):
 
         index_titles = [
@@ -1057,7 +1058,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
 
         main_page = Main.objects.first()
         response = self.client.get('/admin/pages/{0}/'
-                        .format(str(main_page.pk)))
+                                   .format(str(main_page.pk)))
 
         soup = BeautifulSoup(response.content, 'html.parser')
         # Get all the rows in the body of the table
