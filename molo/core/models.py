@@ -289,7 +289,7 @@ class TranslatablePageMixin(RoutablePageMixin):
             }
         ]
 
-    def serve(self, request):
+    def serve(self, request, *args, **kwargs):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
         translation = parent.specific.get_translation_for(locale_code)
@@ -307,7 +307,7 @@ class TranslatablePageMixin(RoutablePageMixin):
             return redirect(
                 '%s?%s' % (translation.url, request.GET.urlencode()))
 
-        return super(TranslatablePageMixin, self).serve(request)
+        return super(TranslatablePageMixin, self).serve(request, *args, **kwargs)
 
 
 class BannerIndexPage(Page):
