@@ -1089,3 +1089,24 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
                        'title="Delete this page" class="u-link '
                        'is-live ">Delete</a>'.format(str(section_page.pk)))
         self.assertNotContains(response, delete_link, html=True)
+
+    def test_delete_button_removed_in_edit_menu(self):
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/edit/'
+                                   .format(str(main_page.pk)))
+
+        delete_button = ('<li><a href="/admin/pages/{0}/delete/" '
+                         'class="shortcut">Delete</a></li>'
+                         .format(str(main_page.pk)))
+        self.assertNotContains(response, delete_button, html=True)
+
+    def test_delete_button_not_removed_in_edit_menu_sections(self):
+        section_page = self.mk_section(self.section_index, title='Section A')
+        response = self.client.get('/admin/pages/{0}/edit/'
+                                   .format(str(section_page.pk)))
+
+        delete_button = ('<li><a href="/admin/pages/{0}/delete/" '
+                         'class="shortcut">Delete</a></li>'
+                         .format(str(section_page.pk)))
+
+        self.assertContains(response, delete_button, html=True)
