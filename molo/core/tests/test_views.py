@@ -1082,8 +1082,6 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
     def test_delete_button_removed_from_dropdown_menu_section(self):
         # exhibits behaviour that delete will be removed on dropdown
         # menu for all Pages, not just specified Pages
-        self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
         section_page = self.mk_section(self.section_index, title='Section A')
         response = self.client.get('/admin/pages/{0}/'
                                    .format(str(section_page.pk)))
