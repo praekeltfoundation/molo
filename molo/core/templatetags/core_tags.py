@@ -351,7 +351,4 @@ def social_media_article(context):
 
 @register.simple_tag(takes_context=True)
 def should_hide_delete_button(context, page):
-    if hasattr(page, 'hide_delete_button'):
-        return page.specific.hide_delete_button()
-    else:
-        return False
+    return hasattr(page.specific, 'hide_delete_button')

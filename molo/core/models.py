@@ -198,8 +198,7 @@ class SiteSettings(BaseSetting):
 
 
 class PreventDeleteMixin(object):
-    def hide_delete_button(self):
-        return type(self.get_ancestors().last().specific).__name__ == "Main"
+    hide_delete_button = True
 
 
 class CommentedPageMixin(object):
