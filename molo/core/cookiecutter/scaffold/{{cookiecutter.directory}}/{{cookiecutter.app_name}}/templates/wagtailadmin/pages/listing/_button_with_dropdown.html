@@ -7,11 +7,13 @@
     <div class="t-dark">
         <ul role="menu" class="c-dropdown__menu  u-toggle  u-arrow u-arrow--tl u-background">
         {% for button in buttons %}
+            {% if button.label.lower() != 'delete' %}
             <li class="c-dropdown__item ">
                 <a href="{{ button.url }}" title="{{ button.attrs.title }}" class="u-link is-live {{ button.classes|join:' ' }}">
                     {{ button.label }}
                 </a>
             </li>
+            {% endif %}
         {% endfor %}
     </div>
 </div>
