@@ -949,42 +949,98 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.mk_main()
         self.english = SiteLanguage.objects.create(locale='en')
+        self.french = SiteLanguage.objects.create(locale='fr')
 
-    def test_article_recommended_section(self):
-        section_a = self.mk_section(self.section_index, title='Section A')
+        self.section_a = self.mk_section(self.section_index, title='Section A')
 
-        section_a.enable_recommended_section = True
-        section_a.save()
+        self.section_a.enable_recommended_section = True
+        self.section_a.save()
 
-        article_a = self.mk_article(section_a, title='Article A')
-        article_a.save_revision().publish()
-        article_b = self.mk_article(section_a, title='Article B')
-        article_b.save_revision().publish()
+        self.article_a = self.mk_article(self.section_a, title='Article A')
+        self.article_a.save_revision().publish()
+        self.article_b = self.mk_article(self.section_a, title='Article B')
+        self.article_b.save_revision().publish()
+        self.article_c = self.mk_article(self.section_a, title='Article C')
+        self.article_c.save_revision().publish()
 
-        recommended_article = ArticlePageRecommendedSections(
-            page=article_a,
-            recommended_article=article_b)
-        recommended_article.save()
+        self.mk_article_translation(
+            self.article_a,
+            self.french,
+            title=self.article_a.title + ' in french',)
+        self.mk_article_translation(
+            self.article_b, self.french,
+            title=self.article_b.title + ' in french',)
+        self.mk_article_translation(
+            self.article_c, self.french,
+            title=self.article_c.title + ' in french',)
+
+        self.recommended_article_1 = ArticlePageRecommendedSections(
+            page=self.article_a,
+            recommended_article=self.article_b)
+        self.recommended_article_1.save()
+
+        self.recommended_article_2 = ArticlePageRecommendedSections(
+            page=self.article_a,
+            recommended_article=self.article_c)
+        self.recommended_article_2.save()
+
+    def test_article_recommended_section_enabled_disabled(self):
 
         self.assertTrue(
-            article_a.get_parent_section()
+            self.article_a.get_parent_section()
             .enable_recommended_section)
 
         self.assertEquals(
-            article_b,
-            article_a.recommended_articles.first()
+            self.article_b,
+            self.article_a.recommended_articles.first()
             .recommended_article.specific)
 
         response = self.client.get('/sections/section-a/article-a/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, 'Recommended')
+        self.assertContains(response, self.article_b.title)
 
-        section_a.enable_recommended_section = False
-        section_a.save()
+        self.section_a.enable_recommended_section = False
+        self.section_a.save()
 
         response = self.client.get('/sections/section-a/article-a/')
         self.assertNotContains(response, 'Recommended')
 
+    def test_article_recommended_section_multi_language(self):
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        # print (response)
+        self.assertContains(response, self.article_b.title + ' in french')
+        self.assertContains(response, self.article_c.title + ' in french')
+
+    def test_article_recommended_section_untranslated(self):
+        ArticlePage.objects.get(title=self.article_b.title + ' in french').delete()
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        # print (response)
+        self.assertContains(response, self.article_b.title)
+        self.assertContains(response, self.article_c.title + ' in french')
+
+    def test_article_recommended_section_only_translated(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.show_only_translated_pages=True
+        setting.save()
+
+        ArticlePage.objects.get(title=self.article_b.title + ' in french').delete()
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, self.article_b.title)
+        self.assertNotContains(response, self.article_b.title + 'in french')
+        self.assertContains(response, self.article_c.title + ' in french')
 
 class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
