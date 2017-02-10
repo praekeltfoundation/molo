@@ -347,3 +347,35 @@ def social_media_article(context):
         'request': context['request'],
         'locale_code': locale,
     }
+
+
+@register.assignment_tag(takes_context=True)
+def get_next_article(context, article):
+    locale_code = context.get('locale_code')
+    section = article.get_parent_section()
+    articles = load_child_articles_for_section(context, section, count=None)
+    if len(articles) > 1:
+        next_article = articles[articles.index(article) - 1]
+    else:
+        return None
+
+    if next_article.get_translation_for(locale_code):
+        return next_article.get_translation_for(locale_code)
+    else:
+        return next_article
+
+
+@register.assignment_tag(takes_context=True)
+def get_recommended_articles(context, article):
+    locale_code = context.get('locale_code')
+
+    if article.recommended_articles.all():
+        recommended_articles = article.recommended_articles.all()
+    else:
+        a = article.get_main_language_page()
+        recommended_articles = a.specific.recommended_articles.all()
+
+    articles = ArticlePage.objects.filter(
+        pk__in=recommended_articles.values_list(
+            'recommended_article__pk', flat=True))
+    return get_pages(context, articles, locale_code)

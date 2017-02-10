@@ -1,9 +1,12 @@
 CHANGE LOG
 ==========
 
+4.2.0
+~~~~~
+- added multi-language next and recommended article feature
+
 4.1.0
 ~~~~~~
-
 - Add sitemap - include translations
 
 4.x
@@ -13,6 +16,7 @@ Main Features::
 
 - Upgraded to Wagtail 1.8
 - Added upload/download functionality for zipped media files
+- Next and Recommended articles in articles
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
