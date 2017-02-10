@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.3.0
+~~~~~
+- Removed the ability to delete index pages using the admin UI
+
 4.2.0
 ~~~~~
 - added multi-language next and recommended article feature

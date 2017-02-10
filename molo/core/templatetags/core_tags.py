@@ -379,3 +379,8 @@ def get_recommended_articles(context, article):
         pk__in=recommended_articles.values_list(
             'recommended_article__pk', flat=True))
     return get_pages(context, articles, locale_code)
+
+
+@register.simple_tag(takes_context=True)
+def should_hide_delete_button(context, page):
+    return hasattr(page.specific, 'hide_delete_button')

@@ -198,6 +198,10 @@ class SiteSettings(BaseSetting):
     ]
 
 
+class PreventDeleteMixin(object):
+    hide_delete_button = True
+
+
 class CommentedPageMixin(object):
     def get_effective_commenting_settings(self):
         # return commenting settings for the homepage
@@ -311,7 +315,7 @@ class TranslatablePageMixin(RoutablePageMixin):
             request, *args, **kwargs)
 
 
-class BannerIndexPage(Page):
+class BannerIndexPage(Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
 
@@ -349,7 +353,7 @@ BannerPage.content_panels = [
 ]
 
 
-class Main(CommentedPageMixin, Page):
+class Main(CommentedPageMixin, Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = []
 
@@ -450,7 +454,7 @@ class SiteLanguage(models.Model):
         verbose_name = _('Language')
 
 
-class SectionIndexPage(CommentedPageMixin, Page):
+class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['SectionPage']
 
@@ -910,7 +914,7 @@ class ArticlePageRelatedSections(Orderable):
     panels = [PageChooserPanel('section', 'core.SectionPage')]
 
 
-class FooterIndexPage(Page):
+class FooterIndexPage(Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['FooterPage']
 

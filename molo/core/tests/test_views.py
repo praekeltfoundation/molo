@@ -15,7 +15,10 @@ from django.utils import timezone
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteLanguage, FooterPage,
                               SiteSettings, ArticlePage,
-                              ArticlePageRecommendedSections)
+                              ArticlePageRecommendedSections,
+                              Main, BannerIndexPage,
+                              SectionIndexPage,
+                              FooterIndexPage)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -23,6 +26,7 @@ from molo.core.templatetags.core_tags import \
 
 from mock import patch, Mock
 from six import b
+from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -1268,3 +1272,83 @@ class TestDjangoAdmin(TestCase):
             response,
             '<a href="/django-admin/download_media/">Download Media</a>'
         )
+
+
+class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+        self.login()
+
+    def test_delete_button_removed_for_index_pages_in_main(self):
+
+        index_titles = [
+            BannerIndexPage.objects.first().title,
+            SectionIndexPage.objects.first().title,
+            FooterIndexPage.objects.first().title,
+        ]
+
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/'
+                                   .format(str(main_page.pk)))
+        self.assertEquals(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # Get all the rows in the body of the table
+        index_page_rows = soup.find_all('tbody')[0].find_all('tr')
+
+        for row in index_page_rows:
+            if row.h2.a.string in index_titles:
+                self.assertTrue(row.find('a', string='Edit'))
+                self.assertFalse(row.find('a', string='Delete'))
+
+    def test_delete_button_removed_from_dropdown_menu_main(self):
+        # Remove 'Delete' from drop-down menu
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/'
+                                   .format(str(main_page.pk)))
+        delete_link = ('<a href="/admin/pages/{0}/delete/" '
+                       'title="Delete this page" class="u-link '
+                       'is-live ">Delete</a>'.format(str(main_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, delete_link, html=True)
+
+    def test_delete_button_removed_from_dropdown_menu_section(self):
+        # exhibits behaviour that delete will be removed on dropdown
+        # menu for all Pages, not just specified Pages
+        section_page = self.mk_section(self.section_index, title='Section A')
+        response = self.client.get('/admin/pages/{0}/'
+                                   .format(str(section_page.pk)))
+        delete_link = ('<a href="/admin/pages/{0}/delete/" '
+                       'title="Delete this page" class="u-link '
+                       'is-live ">Delete</a>'.format(str(section_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, delete_link, html=True)
+
+    def test_delete_button_removed_in_edit_menu(self):
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/edit/'
+                                   .format(str(main_page.pk)))
+
+        delete_button = ('<li><a href="/admin/pages/{0}/delete/" '
+                         'class="shortcut">Delete</a></li>'
+                         .format(str(main_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, delete_button, html=True)
+
+    def test_delete_button_not_removed_in_edit_menu_for_sections(self):
+        section_page = self.mk_section(self.section_index, title='Section A')
+        response = self.client.get('/admin/pages/{0}/edit/'
+                                   .format(str(section_page.pk)))
+
+        delete_button = ('<li><a href="/admin/pages/{0}/delete/" '
+                         'class="shortcut">Delete</a></li>'
+                         .format(str(section_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, delete_button, html=True)
