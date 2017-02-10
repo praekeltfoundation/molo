@@ -1064,6 +1064,10 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         self.mk_main()
         self.english = SiteLanguage.objects.create(locale='en')
 
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
     def test_delete_button_removed_for_index_pages_in_main(self):
 
         index_titles = [
