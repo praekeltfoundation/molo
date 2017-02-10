@@ -1,5 +1,5 @@
 {% raw %}
-{% extends "wagtailadmin/base.html" %}
+{% extends "wagtailadmin/pages/edit.html" %}
 {% load wagtailadmin_tags %}
 {% load gravatar %}
 {% load i18n %}
@@ -108,27 +108,8 @@
 
 {% block extra_css %}
     {{ block.super }}
-    {% include "wagtailadmin/pages/_editor_css.html" %}
 {% endblock %}
 {% block extra_js %}
     {{ block.super }}
-    {% include "wagtailadmin/pages/_editor_js.html" %}
-
-    <script>
-        $(function() {
-            /* Make user confirm before leaving the editor if there are unsaved changes */
-            {% trans "This page has unsaved changes." as confirmation_message %}
-            enableDirtyFormCheck(
-                '#page-edit-form',
-                {
-                    confirmationMessage: '{{ confirmation_message|escapejs }}',
-
-                    {% if has_unsaved_changes %}
-                        alwaysDirty: true,
-                    {% endif %}
-                }
-            );
-        });
-    </script>
 {% endblock %}
 {% endraw %}
