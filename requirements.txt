@@ -19,5 +19,5 @@ django-extensions
 celery<4.0
 redis
 six>=1.9
-django-google-analytics-app==2.1.2
+django-google-analytics-app==2.1.4
 setuptools==18.5
