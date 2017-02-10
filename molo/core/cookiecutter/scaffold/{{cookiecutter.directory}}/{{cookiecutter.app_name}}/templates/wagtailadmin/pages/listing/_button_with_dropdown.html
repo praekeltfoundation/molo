@@ -1,0 +1,28 @@
+{% raw %}
+<div {{ self.attrs }} class="c-dropdown  {% if is_parent %}t-inverted{% else %}t-default{% endif %}" data-dropdown>
+    <a href="javascript:void(0)" title="{{ title }}" class="c-dropdown__button  u-btn-current">
+        {{ label }}
+        <div data-dropdown-toggle class="o-icon  c-dropdown__toggle  [ icon icon-arrow-down ]"></div>
+    </a>
+    <div class="t-dark">
+        <ul role="menu" class="c-dropdown__menu  u-toggle  u-arrow u-arrow--tl u-background">
+        {% for button in buttons %}
+            % comment %}
+            BEGIN CUSTOM TEMPLATE LOGIC
+            This removes the Delete button from all
+            Page drop-down menus in the wagtailadmin
+            {% endcomment %}
+            {% if button.label.lower != 'delete' %}
+            {# END CUSTOM TEMPLATE LOGIC #}
+            <li class="c-dropdown__item ">
+                <a href="{{ button.url }}" title="{{ button.attrs.title }}" class="u-link is-live {{ button.classes|join:' ' }}">
+                    {{ button.label }}
+                </a>
+            </li>
+            {# BEGIN CUSTOM TEMPLATE LOGIC #}
+            {% endif %}
+            {# END CUSTOM TEMPLATE LOGIC #}
+        {% endfor %}
+    </div>
+</div>
+{% endraw %}
