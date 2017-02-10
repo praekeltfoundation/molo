@@ -1075,6 +1075,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         main_page = Main.objects.first()
         response = self.client.get('/admin/pages/{0}/'
                                    .format(str(main_page.pk)))
+        self.assertEquals(response.status_code, 200)
 
         soup = BeautifulSoup(response.content, 'html.parser')
         # Get all the rows in the body of the table
@@ -1093,6 +1094,8 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         delete_link = ('<a href="/admin/pages/{0}/delete/" '
                        'title="Delete this page" class="u-link '
                        'is-live ">Delete</a>'.format(str(main_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, delete_link, html=True)
 
     def test_delete_button_removed_from_dropdown_menu_section(self):
@@ -1104,6 +1107,8 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         delete_link = ('<a href="/admin/pages/{0}/delete/" '
                        'title="Delete this page" class="u-link '
                        'is-live ">Delete</a>'.format(str(section_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, delete_link, html=True)
 
     def test_delete_button_removed_in_edit_menu(self):
@@ -1114,9 +1119,11 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         delete_button = ('<li><a href="/admin/pages/{0}/delete/" '
                          'class="shortcut">Delete</a></li>'
                          .format(str(main_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, delete_button, html=True)
 
-    def test_delete_button_not_removed_in_edit_menu_sections(self):
+    def test_delete_button_not_removed_in_edit_menu_for_sections(self):
         section_page = self.mk_section(self.section_index, title='Section A')
         response = self.client.get('/admin/pages/{0}/edit/'
                                    .format(str(section_page.pk)))
@@ -1125,4 +1132,5 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
                          'class="shortcut">Delete</a></li>'
                          .format(str(section_page.pk)))
 
+        self.assertEquals(response.status_code, 200)
         self.assertContains(response, delete_button, html=True)
