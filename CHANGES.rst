@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.3.1
+~~~~~
+- Fixed template error
+
 4.3.0
 ~~~~~
 - Removed the ability to delete index pages using the admin UI
