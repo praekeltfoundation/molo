@@ -23,6 +23,7 @@ from wagtail.wagtailadmin.edit_handlers import (
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin, route
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
     SocialMediaLinkBlock
@@ -234,7 +235,7 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
-class TranslatablePageMixin(object):
+class TranslatablePageMixin(RoutablePageMixin):
     def get_translation_for(self, locale, is_live=True):
         language = SiteLanguage.objects.filter(locale=locale).first()
         if not language:
@@ -280,7 +281,19 @@ class TranslatablePageMixin(object):
             for p in self.translations.all():
                 p.translated_page.move(target, pos='last-child')
 
-    def serve(self, request):
+    @route(r'^noredirect/$')
+    def noredirect(self, request):
+        return Page.serve(self, request)
+
+    def get_sitemap_urls(self):
+        return [
+            {
+                'location': self.full_url + 'noredirect/',
+                'lastmod': self.latest_revision_created_at
+            }
+        ]
+
+    def serve(self, request, *args, **kwargs):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
         translation = parent.specific.get_translation_for(locale_code)
@@ -290,11 +303,16 @@ class TranslatablePageMixin(object):
         if main_lang.locale == locale_code:
             translation = parent
 
-        if translation and language_rel.language.locale != locale_code:
+        path_components = [
+            component for component in request.path.split('/') if component]
+
+        if path_components and path_components[-1] != 'noredirect' and \
+                translation and language_rel.language.locale != locale_code:
             return redirect(
                 '%s?%s' % (translation.url, request.GET.urlencode()))
 
-        return super(TranslatablePageMixin, self).serve(request)
+        return super(TranslatablePageMixin, self).serve(
+            request, *args, **kwargs)
 
 
 class BannerIndexPage(Page, PreventDeleteMixin):
@@ -640,12 +658,12 @@ SectionPage.settings_panels = [
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
         "Meta"),
-    # MultiFieldPanel(
-    #     [
-    #         FieldPanel('enable_next_section'),
-    #         FieldPanel('enable_recommended_section')
-    #     ],
-    #     heading="Recommended Settings", )
+    MultiFieldPanel(
+        [
+            FieldPanel('enable_next_section'),
+            FieldPanel('enable_recommended_section')
+        ],
+        heading="Recommended Settings", )
 ]
 
 
@@ -811,14 +829,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     def tags_list(self):
         return self.tags.names()
 
-    def get_next_article(self):
-        all_section_articles = self.get_parent_section().articles()
-        index = all_section_articles.index(self) - 1
-        if index > -1:
-            return all_section_articles[index]
-        else:
-            return None
-
     class Meta:
         verbose_name = _('Article')
 
@@ -843,7 +853,7 @@ ArticlePage.content_panels = [
             ImageChooserPanel('social_media_image'),
         ],
         heading="Social Media", ),
-    # InlinePanel('recommended_articles', label="Recommended articles"),
+    InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
 
