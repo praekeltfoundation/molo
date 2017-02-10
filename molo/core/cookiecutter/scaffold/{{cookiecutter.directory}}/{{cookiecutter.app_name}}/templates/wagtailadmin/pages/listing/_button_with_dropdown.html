@@ -7,13 +7,17 @@
     <div class="t-dark">
         <ul role="menu" class="c-dropdown__menu  u-toggle  u-arrow u-arrow--tl u-background">
         {% for button in buttons %}
+            {# BEGIN CUSTOM TEMPLATE LOGIC #}
             {% if button.label.lower != 'delete' %}
+            {# END CUSTOM TEMPLATE LOGIC #}
             <li class="c-dropdown__item ">
                 <a href="{{ button.url }}" title="{{ button.attrs.title }}" class="u-link is-live {{ button.classes|join:' ' }}">
                     {{ button.label }}
                 </a>
             </li>
+            {# BEGIN CUSTOM TEMPLATE LOGIC #}
             {% endif %}
+            {# END CUSTOM TEMPLATE LOGIC #}
         {% endfor %}
     </div>
 </div>
