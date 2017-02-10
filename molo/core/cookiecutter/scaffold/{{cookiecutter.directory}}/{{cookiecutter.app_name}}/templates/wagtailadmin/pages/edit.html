@@ -4,8 +4,8 @@
 {% load gravatar %}
 {% load i18n %}
 {% load core_tags %}
-{% block titletag %}{{super}}{% endblock %}
-{% block bodyclass %}{{super}}{% endblock %}
+{% block titletag %}{{ block.super }}{% endblock %}
+{% block bodyclass %}{{ block.super }}{% endblock %}
 
 {% block content %}
     {% page_permissions page as page_perms %}
