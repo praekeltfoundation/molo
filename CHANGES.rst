@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+4.1.0
+~~~~~~
+
+- Add sitemap - include translations
+
 4.x
 ---
 
