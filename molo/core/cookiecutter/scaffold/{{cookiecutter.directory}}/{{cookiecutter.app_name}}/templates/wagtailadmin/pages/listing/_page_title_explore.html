@@ -32,7 +32,11 @@
         <li><a href="{% url 'wagtailadmin_pages:copy' page.id %}" class="button button-small button-secondary">{% trans 'Copy' %}</a></li>
     {% endif %}
     {% if page_perms.can_delete and 'delete' not in hide_actions|default:'' %}
-        {# BEGIN CUSTOM TEMPLATE LOGIC #}
+        {% comment %}
+        BEGIN CUSTOM TEMPLATE LOGIC
+        Do not add delete button if Page should not be deleted
+        This applies to all Pages that inherit from PreventDeleteMixin
+        {% endcomment %}
         {% should_hide_delete_button page as delete_hidden %}
         {% if not delete_hidden %}
         {# END CUSTOM TEMPLATE LOGIC #}

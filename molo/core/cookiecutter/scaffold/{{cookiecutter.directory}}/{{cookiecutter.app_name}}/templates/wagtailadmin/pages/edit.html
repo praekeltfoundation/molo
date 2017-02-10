@@ -4,8 +4,8 @@
 {% load gravatar %}
 {% load i18n %}
 {% load core_tags %}
-{% block titletag %}{% blocktrans with title=page.get_admin_display_title page_type=content_type.model_class.get_verbose_name %}Editing {{ page_type }}: {{ title }}{% endblocktrans %}{% endblock %}
-{% block bodyclass %}page-editor {% if page.live %}page-is-live{% endif %} model-{{ content_type.model }} {% if page.locked %}page-locked{% endif %}{% endblock %}
+{% block titletag %}{{super}}{% endblock %}
+{% block bodyclass %}{{super}}{% endblock %}
 
 {% block content %}
     {% page_permissions page as page_perms %}
@@ -49,7 +49,11 @@
                                     <li><a href="{% url 'wagtailadmin_pages:unpublish' page.id %}">{% trans 'Unpublish' %}</a></li>
                                 {% endif %}
                                 {% if not is_revision and page_perms.can_delete %}
-                                    {# BEGIN CUSTOM TEMPLATE LOGIC #}
+                                    {% comment %}
+                                    BEGIN CUSTOM TEMPLATE LOGIC
+                                    Do not add delete button if Page should not be deleted
+                                    This applies to all Pages that inherit from PreventDeleteMixin
+                                    {% endcomment %}
                                     {% should_hide_delete_button page as delete_hidden %}
                                     {% if not delete_hidden %}
                                     {# END CUSTOM TEMPLATE LOGIC #}
