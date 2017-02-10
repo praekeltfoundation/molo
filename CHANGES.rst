@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+4.1.0
+~~~~~~
+
+- Add sitemap - include translations
+
 4.x
 ---
 
@@ -15,6 +20,10 @@ Backwards incompatible changes
 - ``wagtailmodeladmin_register`` function is replaced by ``modeladmin_register``
 - ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
 - ``search_fields`` now uses a list instead of a tuple
+
+4.0.2
+~~~~~~
+- Fixed template overrides for django-admin templates
 
 4.0.1
 ~~~~~~

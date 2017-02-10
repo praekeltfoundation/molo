@@ -43,9 +43,8 @@ BASE_URL = 'http://example.com'
 # Application definition
 
 INSTALLED_APPS = [
-    '{{cookiecutter.app_name}}',
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -57,6 +56,7 @@ INSTALLED_APPS = [
     'modelcluster',
 
     'molo.core',
+    '{{cookiecutter.app_name}}',
     'google_analytics',
 
     'wagtail.wagtailcore',
@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
     'wagtailmedia',
+    'wagtail.contrib.wagtailsitemaps',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
 

@@ -558,6 +558,21 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections/your-mind/test-page-0/')
         self.assertEquals(response.status_code, 200)
 
+    def test_sitemap_translaton_redirects(self):
+        self.yourmind_fr = self.mk_section_translation(
+            self.yourmind, self.french, title='Your mind in french')
+        response = self.client.get('/sections/your-mind/noredirect/')
+        self.assertEquals(response.status_code, 200)
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/noredirect/')
+        self.assertEquals(response.status_code, 200)
+
+        response = self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/your-mind-in-french/noredirect/')
+        self.assertContains(response, 'Your mind subsection in french</a>')
+
     def test_subsection_is_translated(self):
         en_page = self.mk_article(self.yourmind_sub)
         self.mk_article_translation(
@@ -1233,3 +1248,23 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections/section-b/article-1/')
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, 'Next up in')
+
+
+class TestDjangoAdmin(TestCase):
+
+    def test_upload_download_links(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        response = self.client.get(reverse('admin:index'))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(
+            response,
+            '<a href="/django-admin/upload_media/">Upload Media</a>'
+        )
+        self.assertContains(
+            response,
+            '<a href="/django-admin/download_media/">Download Media</a>'
+        )
