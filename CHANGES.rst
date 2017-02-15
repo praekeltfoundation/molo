@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.3.2
+~~~~~
+- Added missing classes in custom admin template
+
 4.3.1
 ~~~~~
 - Fixed template error
