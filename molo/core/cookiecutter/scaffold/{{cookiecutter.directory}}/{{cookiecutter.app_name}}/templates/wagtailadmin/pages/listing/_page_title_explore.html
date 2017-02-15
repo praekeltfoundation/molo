@@ -40,7 +40,7 @@
         {% should_hide_delete_button page as delete_hidden %}
         {% if not delete_hidden %}
         {# END CUSTOM TEMPLATE LOGIC #}
-            <li><a href="{% url 'wagtailadmin_pages:delete' page.id %}" class="shortcut">{% trans 'Delete' %}</a></li>
+            <li><a href="{% url 'wagtailadmin_pages:delete' page.id %}" class="button button-small button-secondary">{% trans 'Delete' %}</a></li>
         {# BEGIN CUSTOM TEMPLATE LOGIC #}
         {% endif %}
         {# END CUSTOM TEMPLATE LOGIC #}
