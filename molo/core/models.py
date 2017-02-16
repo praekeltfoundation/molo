@@ -636,12 +636,12 @@ SectionPage.settings_panels = [
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
         "Meta"),
-    # MultiFieldPanel(
-    #     [
-    #         FieldPanel('enable_next_section'),
-    #         FieldPanel('enable_recommended_section')
-    #     ],
-    #     heading="Recommended Settings", )
+    MultiFieldPanel(
+        [
+            FieldPanel('enable_next_section'),
+            FieldPanel('enable_recommended_section')
+        ],
+        heading="Recommended Settings", )
 ]
 
 
@@ -810,10 +810,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     def get_next_article(self):
         all_section_articles = self.get_parent_section().articles()
         index = all_section_articles.index(self) - 1
-        if index > -1:
-            return all_section_articles[index]
-        else:
-            return None
+        return all_section_articles[index]
 
     class Meta:
         verbose_name = _('Article')
@@ -839,7 +836,7 @@ ArticlePage.content_panels = [
             ImageChooserPanel('social_media_image'),
         ],
         heading="Social Media", ),
-    # InlinePanel('recommended_articles', label="Recommended articles"),
+    InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
 

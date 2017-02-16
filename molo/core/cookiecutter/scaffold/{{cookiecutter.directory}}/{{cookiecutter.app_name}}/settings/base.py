@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     'molo.core',
     '{{cookiecutter.app_name}}',
+    'django.contrib.admin',
     'mote',
     'google_analytics',
 
