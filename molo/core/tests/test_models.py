@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 from molo.core.models import (
-    ArticlePage, SiteLanguage, PageTranslation, SectionPage, Main)
+    ArticlePage, PageTranslation, SectionPage, Main,
+    SiteLanguageRelation, Languages)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
@@ -25,9 +26,22 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
+        main = Main.objects.all().first()
         self.factory = RequestFactory()
-        self.english = SiteLanguage.objects.create(locale='en')
-        self.french = SiteLanguage.objects.create(locale='fr')
+        self.language_setting = Languages.objects.create(
+            site_id=main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+        # LanguageRelation.objects.create(
+        #     page=main, language=self.english)
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='fr',
+            is_active=True)
+        # LanguageRelation.objects.create(
+        #     page=self, language=self.french)
 
         # Create an image for running tests on
         self.image = Image.objects.create(
@@ -82,13 +96,14 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_number_of_child_sections(self):
         new_section = self.mk_section(self.section_index)
         self.mk_sections(new_section, count=12)
-        response = self.client.get('/sections/test-section-0/')
+        response = self.client.get('/')
+        response = self.client.get('/sections-main-1/test-section-0/')
         self.assertContains(response, 'Test Section 11')
 
     def test_number_of_child_articles_in_section(self):
         new_section = self.mk_section(self.section_index)
         self.mk_articles(new_section, count=12)
-        request = self.factory.get('/sections/test-section-0/')
+        request = self.factory.get('/sections-main-1/test-section-0/')
         request.site = self.site
         articles = load_child_articles_for_section(
             {'request': request, 'locale_code': 'en'}, new_section, count=None)
@@ -278,27 +293,36 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(
                 social_media_image=self.image).count(), 1)
 
-        response = self.client.get('/sections/your-mind/new-article/')
+        response = self.client.get('/sections-main-1/your-mind/new-article/')
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, 'content= "media title"')
 
     def test_site_languages(self):
-        self.english = SiteLanguage.objects.create(
+        main = Main.objects.all().first()
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
             locale='en',
-        )
-        self.french = SiteLanguage.objects.create(
+            is_active=True)
+
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
             locale='fr',
-        )
-        self.spanish = SiteLanguage.objects.create(
-            locale='sp', is_active=False
-        )
+            is_active=True)
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='sp',
+            is_active=False)
+
         response = self.client.get('/')
         self.assertContains(response, 'English')
         self.assertContains(response, 'français')
         self.assertNotContains(response, 'español')
 
     def test_signal_on_page_delete_removes_translations(self):
-        spanish = SiteLanguage.objects.create(locale='es')
+        spanish = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='es',
+            is_active=True)
 
         section = self.mk_section(
             self.section_index, title="Section", slug="section")
@@ -367,9 +391,13 @@ class TestModels(TestCase, MoloTestCaseMixin):
         section = self.mk_section(self.section_index)
         section2 = self.mk_section(self.section_index)
         translated_section = self.mk_section_translation(section, self.french)
-        qs = get_translation({'locale_code': 'fr'}, section)
+        request = self.factory.get('/')
+        request.site = self.site
+        qs = get_translation({
+            'locale_code': 'fr', 'request': request}, section)
         self.assertEquals(translated_section.id, qs.id)
-        qs = get_translation({'locale_code': 'fr'}, section2)
+        qs = get_translation({
+            'locale_code': 'fr', 'request': request}, section2)
         self.assertEquals(section2.id, qs.id)
 
     def test_topic_of_the_day(self):
@@ -477,6 +505,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             promote_date=promote_date,
             demote_date=demote_date
         )
+        self.yourmind.add_child(instance=article_1)
         self.assertTrue(article_1.is_current_topic_of_the_day())
 
         promote_date = timezone.now() + timedelta(days=2)
@@ -486,6 +515,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             promote_date=promote_date,
             demote_date=demote_date
         )
+        self.yourmind.add_child(instance=article_2)
         self.assertFalse(article_2.is_current_topic_of_the_day())
 
     # exclude future-scheduled topic of the day articles from the
@@ -506,8 +536,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             featured_in_latest=True,
             feature_as_topic_of_the_day=True
         )
+        self.yourmind.add_child(instance=future_article)
         future_article.save()
-        self.assertQuerysetEqual(Main().latest_articles(), [])
+        main = Main.objects.all().first()
+        self.assertQuerysetEqual(main.latest_articles(), [])
 
         promote_date = timezone.now() + timedelta(days=-2)
         demote_date = timezone.now() + timedelta(days=-1)
@@ -520,7 +552,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
             featured_in_latest_start_date=promote_date,
             feature_as_topic_of_the_day=True
         )
+        self.yourmind.add_child(instance=present_article)
         present_article.save()
         promote_articles()
         self.assertQuerysetEqual(
-            Main().latest_articles(), [repr(present_article), ])
+            main.latest_articles(), [repr(present_article), ])

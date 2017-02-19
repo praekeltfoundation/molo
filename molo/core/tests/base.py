@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from wagtail.wagtailcore.models import Site, Page, Collection
+from wagtail.wagtailcore.models import Page, Collection
 
 from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
                               SectionIndexPage, FooterIndexPage,
@@ -54,21 +54,14 @@ class MoloTestCaseMixin(object):
             url_path='/home/',
         )
         self.main.save_revision().publish()
+        self.main.save()
 
         # Create index pages
-        self.section_index = SectionIndexPage(title='Sections',
-                                              slug='sections')
-        self.main.add_child(instance=self.section_index)
-        self.section_index.save_revision().publish()
+        self.section_index = SectionIndexPage.objects.all().first()
 
-        self.footer_index = FooterIndexPage(title='Footer pages',
-                                            slug='footer-pages')
-        self.main.add_child(instance=self.footer_index)
-        self.footer_index.save_revision().publish()
+        self.footer_index = FooterIndexPage.objects.all().first()
 
-        self.banner_index = BannerIndexPage(title='Banners', slug='banners')
-        self.main.add_child(instance=self.banner_index)
-        self.banner_index.save_revision().publish()
+        self.banner_index = BannerIndexPage.objects.all().first()
 
         # Create root collection
         Collection.objects.create(
@@ -79,13 +72,11 @@ class MoloTestCaseMixin(object):
         )
 
         # Create a site with the new homepage set as the root
-        Site.objects.all().delete()
-        self.site = Site.objects.create(
-            hostname='localhost', root_page=self.main, is_default_site=True)
+        # Site.objects.all().delete()
+        self.site = self.main.get_site()
 
     def mk_sections(self, parent, count=2, **kwargs):
         sections = []
-
         for i in range(count):
             data = {}
             data.update({

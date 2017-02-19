@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage
+from molo.core.models import SiteLanguageRelation, Main, Languages
 
 
 @pytest.mark.django_db
@@ -13,6 +13,13 @@ class TestImportFromGit(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
+        main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
         self.user = self.login()
         self.group = Group(name="Universal Core Importers")
         self.group.save()
@@ -28,9 +35,6 @@ class TestImportFromGit(TestCase, MoloTestCaseMixin):
             response, 'Import content')
 
     def test_wagtail_has_no_import_menu_item_with_lang_page(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
         response = self.client.get('/admin/')
         self.assertNotContains(
             response, 'Import content')
@@ -42,9 +46,6 @@ class TestImportFromGit(TestCase, MoloTestCaseMixin):
             response, 'Import content')
 
     def test_wagtail_has_import_menu_item_lang_page(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
         self.user.groups.add(self.group)
         response = self.client.get('/admin/')
         self.assertContains(

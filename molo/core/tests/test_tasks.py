@@ -4,7 +4,8 @@ from json import dumps
 import pytest
 from django.test import TestCase
 
-from molo.core.models import SiteLanguage, FooterPage, ArticlePage, Main
+from molo.core.models import FooterPage, ArticlePage, Main, \
+    SiteLanguageRelation, Languages
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.tasks import rotate_content, demote_articles, promote_articles
 from molo.core.templatetags.core_tags import \
@@ -18,11 +19,17 @@ from wagtail.contrib.settings.context_processors import SettingsProxy
 class TestTasks(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
-        # Creates Main language
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
         self.mk_main()
+        main = Main.objects.all().first()
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='en',
+            is_active=True)
+
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='fr',
+            is_active=True)
 
         self.yourmind = self.mk_section(
             self.section_index, title='Your mind')

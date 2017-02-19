@@ -4,7 +4,8 @@ from django.test.client import Client
 
 from wagtail.wagtailsearch.backends import get_search_backend
 
-from molo.core.models import ArticlePage, SiteLanguage
+from molo.core.models import SiteLanguageRelation, \
+    Main, Languages
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -13,14 +14,17 @@ class TestSearch(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.client = Client()
         # Creates Main language
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
-        # Creates translation Language
-        self.french = SiteLanguage.objects.create(
-            locale='fr',
-        )
         self.mk_main()
+        main = Main.objects.all().first()
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='en',
+            is_active=True)
+
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='fr',
+            is_active=True)
 
         # Creates a section under the index page
         self.english_section = self.mk_section(
@@ -30,23 +34,18 @@ class TestSearch(TestCase, MoloTestCaseMixin):
         self.backend = get_search_backend('default')
         self.backend.reset_index()
 
-        for a in range(0, 20):
-            ArticlePage.objects.create(
-                title='article %s' % (a,), depth=a,
-                subtitle='article %s subtitle' % (a,),
-                slug='article-%s' % (a,), path=[a])
-
+        self.mk_articles(self.english_section, count=20)
         self.backend.refresh_index()
 
         response = self.client.get(reverse('search'), {
-            'q': 'article'
+            'q': 'Test'
         })
         self.assertContains(response, 'Page 1 of 2')
         self.assertContains(response, '&rarr;')
         self.assertNotContains(response, '&larr;')
 
         response = self.client.get(reverse('search'), {
-            'q': 'article',
+            'q': 'Test',
             'p': '2',
         })
         self.assertContains(response, 'Page 2 of 2')
@@ -54,13 +53,13 @@ class TestSearch(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '&larr;')
 
         response = self.client.get(reverse('search'), {
-            'q': 'article',
+            'q': 'Test',
             'p': 'foo',
         })
         self.assertContains(response, 'Page 1 of 2')
 
         response = self.client.get(reverse('search'), {
-            'q': 'article',
+            'q': 'Test',
             'p': '4',
         })
         self.assertContains(response, 'Page 2 of 2')
