@@ -33,9 +33,12 @@ def search(request, results_per_page=10):
     locale = get_locale_code(get_language_from_request(request))
 
     if search_query:
-        results = ArticlePage.objects.filter(
+        main = request.site.root_page
+
+        results = ArticlePage.objects.descendant_of(main).filter(
             languages__language__locale=locale
         ).values_list('pk', flat=True)
+
         # Elasticsearch backend doesn't support filtering
         # on related fields, at the moment.
         # So we need to filter ArticlePage entries using DB,
@@ -93,7 +96,8 @@ def add_translation(request, page_id, locale):
         return redirect(reverse('wagtailadmin_home'))
 
     # redirect to edit page if translation already exists for this locale
-    translated_page = page.get_translation_for(locale, is_live=None)
+    translated_page = page.get_translation_for(
+        locale, request.site, is_live=None)
     if translated_page:
         return redirect(
             reverse('wagtailadmin_pages:edit', args=[translated_page.id]))
@@ -163,4 +167,6 @@ class TagsListView(ListView):
 
     def get_queryset(self, **kwargs):
         tag = self.kwargs["tag_name"]
-        return ArticlePage.objects.filter(tags__name__in=[tag])
+        main = self.request.site.root_page
+        return ArticlePage.objects.descendant_of(main).filter(
+            tags__name__in=[tag])
