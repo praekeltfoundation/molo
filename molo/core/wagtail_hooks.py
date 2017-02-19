@@ -1,33 +1,17 @@
 from django.conf.urls import url
 
-from molo.core.models import SiteLanguage
+from molo.core.models import Languages
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from wagtail.contrib.modeladmin.options import (
-    ModelAdmin, modeladmin_register)
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
 
 from . import views
-
-
-class LanguageModelAdmin(ModelAdmin):
-    model = SiteLanguage
-    menu_label = 'Language'
-    menu_icon = 'doc-full-inverse'
-    list_display = ('locale', 'is_main_language', 'is_active')
-    search_fields = ('title',)
-    list_per_page = 20
-    add_to_settings_menu = True
-    ordering = ('-is_main_language', 'locale')
-    menu_order = 100
-
-modeladmin_register(LanguageModelAdmin)
 
 
 @hooks.register('register_admin_urls')
@@ -51,7 +35,8 @@ def register_admin_urls():
 
 @hooks.register('construct_explorer_page_queryset')
 def show_main_language_only(parent_page, pages, request):
-    main_language = SiteLanguage.objects.filter(is_main_language=True).first()
+    main_language = Languages.for_site(request.site).languages.filter(
+        is_main_language=True).first()
 
     if main_language and not parent_page.depth == 2:
         return pages.filter(languages__language__id=main_language.id)
@@ -73,7 +58,7 @@ class LanguageSummaryItem(SummaryItem):
     template = 'admin/site_languages_summary.html'
 
     def get_context(self):
-        languages = SiteLanguage.objects.all()
+        languages = Languages.for_site(self.request.site).languages.all()
         return {
             'summaries': [{
                 'language': l.get_locale_display(),
@@ -95,13 +80,13 @@ class LanguageErrorMessage(SummaryItem):
 
 @hooks.register('construct_homepage_panels')
 def add_language_error_message_panel(request, panels):
-    if not SiteLanguage.objects.all().exists():
+    if not Languages.for_site(request.site).languages.all().exists():
         panels[:] = [LanguageErrorMessage(request)]
 
 
 @hooks.register('construct_main_menu')
 def hide_menu_items_if_no_language(request, menu_items):
-    if not SiteLanguage.objects.all().exists():
+    if not Languages.for_site(request.site).languages.all().exists():
         menu_items[:] = [
             item for item in menu_items if (
                 item.name == 'settings' or item.name == 'import-content')]
