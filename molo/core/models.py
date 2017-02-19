@@ -1,3 +1,7 @@
+from django.forms.utils import pretty_name
+from django.utils.html import format_html
+from wagtail.wagtailadmin.edit_handlers import EditHandler
+
 from itertools import chain
 
 from django.utils import timezone
@@ -6,15 +10,17 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
-from django.db.models.signals import pre_delete, post_delete, pre_save
+from django.db.models.signals import (
+    pre_delete, post_delete, pre_save, post_save)
 from django.dispatch import receiver
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
+from modelcluster.models import ClusterableModel
 
 from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.wagtailcore.models import Page, Orderable
+from wagtail.wagtailcore.models import Page, Orderable, Site
 from wagtail.wagtailcore.fields import StreamField
 from wagtail.wagtailsearch import index
 from wagtail.wagtailadmin.edit_handlers import (
@@ -27,7 +33,42 @@ from wagtail.wagtailimages.blocks import ImageChooserBlock
 from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
     SocialMediaLinkBlock
 from molo.core import constants, forms
-from molo.core.utils import get_locale_code
+from molo.core.utils import get_locale_code, generate_slug
+
+
+class BaseReadOnlyPanel(EditHandler):
+    def render(self):
+        value = getattr(self.instance, self.attr)
+        if callable(value):
+            value = value()
+        return format_html('<div style="padding-top: 1.2em;">{}</div>', value)
+
+    def render_as_object(self):
+        return format_html(
+            '<fieldset><legend>{}</legend>'
+            '<ul class="fields"><li><div class="field">{}</div></li></ul>'
+            '</fieldset>',
+            self.heading, self.render())
+
+    def render_as_field(self):
+        return format_html(
+            '<div class="field">'
+            '<label>{}{}</label>'
+            '<div class="field-content">{}</div>'
+            '</div>',
+            self.heading, _(':'), self.render())
+
+
+class ReadOnlyPanel:
+    def __init__(self, attr, heading=None, classname=''):
+        self.attr = attr
+        self.heading = pretty_name(self.attr) if heading is None else heading
+        self.classname = classname
+
+    def bind_to_model(self, model):
+        return type(str(_('ReadOnlyPanel')), (BaseReadOnlyPanel,),
+                    {'attr': self.attr, 'heading': self.heading,
+                     'classname': self.classname})
 
 
 @register_setting
@@ -207,6 +248,7 @@ class CommentedPageMixin(object):
                 'close_time': self.commenting_close_time
             }
         # use the commenting settings for the parent page
+
         parent_page = Page.objects.all().ancestor_of(self).last()
         if parent_page:
             parent = parent_page.specific
@@ -231,8 +273,10 @@ class LanguageRelation(models.Model):
 
 
 class TranslatablePageMixin(object):
-    def get_translation_for(self, locale, is_live=True):
-        language = SiteLanguage.objects.filter(locale=locale).first()
+    def get_translation_for(self, locale, site, is_live=True):
+        language_setting = Languages.for_site(site)
+        language = language_setting.languages.filter(
+            locale=locale).first()
         if not language:
             return None
 
@@ -258,14 +302,19 @@ class TranslatablePageMixin(object):
             return self.specific.source_page.page
         return self
 
+    def get_site(self):
+        return self.get_ancestors().filter(
+            depth=2).first().sites_rooted_here.all().first() or None
+
     def save(self, *args, **kwargs):
         response = super(TranslatablePageMixin, self).save(*args, **kwargs)
-
-        if (SiteLanguage.objects.filter(is_main_language=True).exists() and
+        languages = Languages.for_site(self.get_site()).languages
+        if (languages.filter(
+                is_main_language=True).exists() and
                 not self.languages.exists()):
             LanguageRelation.objects.create(
                 page=self,
-                language=SiteLanguage.objects.filter(
+                language=languages.filter(
                     is_main_language=True).first())
         return response
 
@@ -279,10 +328,12 @@ class TranslatablePageMixin(object):
     def serve(self, request):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
-        translation = parent.specific.get_translation_for(locale_code)
+        translation = parent.specific.get_translation_for(
+            locale_code, request.site)
         language_rel = self.languages.all().first()
 
-        main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
+        main_lang = Languages.for_site(request.site).languages.filter(
+            is_main_language=True).first()
         if main_lang.locale == locale_code:
             translation = parent
 
@@ -296,6 +347,12 @@ class TranslatablePageMixin(object):
 class BannerIndexPage(Page):
     parent_page_types = []
     subpage_types = ['BannerPage']
+
+    def copy(self, *args, **kwargs):
+        site = kwargs['to'].get_site()
+        main = site.root_page
+        BannerIndexPage.objects.child_of(main).delete()
+        super(BannerIndexPage, self).copy(*args, **kwargs)
 
 
 class BannerPage(TranslatablePageMixin, Page):
@@ -332,20 +389,19 @@ BannerPage.content_panels = [
 
 
 class Main(CommentedPageMixin, Page):
-    parent_page_types = []
-    subpage_types = []
 
     def bannerpages(self):
-        return BannerPage.objects.filter(
+        return BannerPage.objects.child_of(self).filter(
             languages__language__is_main_language=True).specific()
 
     def sections(self):
-        index_page = SectionIndexPage.objects.live().all().first()
+        index_page = SectionIndexPage.objects.child_of(
+            self).live().first()
         return SectionPage.objects.child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 
     def latest_articles(self):
-        return ArticlePage.objects.filter(
+        return ArticlePage.objects.descendant_of(self).filter(
             featured_in_latest=True,
             languages__language__is_main_language=True).exclude(
                 feature_as_topic_of_the_day=True,
@@ -354,7 +410,7 @@ class Main(CommentedPageMixin, Page):
                     '-promote_date', '-latest_revision_created_at').specific()
 
     def topic_of_the_day(self):
-        return ArticlePage.objects.filter(
+        return ArticlePage.objects.descendant_of(self).filter(
             feature_as_topic_of_the_day=True,
             languages__language__is_main_language=True,
             promote_date__lte=timezone.now(),
@@ -362,8 +418,38 @@ class Main(CommentedPageMixin, Page):
             '-promote_date').specific()
 
     def footers(self):
-        return FooterPage.objects.filter(
+        return FooterPage.objects.descendant_of(self).filter(
             languages__language__is_main_language=True).specific()
+
+    def save(self, *args, **kwargs):
+        super(Main, self).save(*args, **kwargs)
+        if not self.get_descendants().exists():
+            banner_index = BannerIndexPage(
+                title='Banners', slug=('banners-%s' % (
+                    generate_slug(self.title), )))
+            self.add_child(instance=banner_index)
+            banner_index.save_revision().publish()
+            section_index = SectionIndexPage(
+                title='Sections', slug=('sections-%s' % (
+                    generate_slug(self.title), )))
+            self.add_child(instance=section_index)
+            section_index.save_revision().publish()
+            footer_index = FooterIndexPage(
+                title='Footers', slug=('footers-%s' % (
+                    generate_slug(self.title), )))
+            self.add_child(instance=footer_index)
+            footer_index.save_revision().publish()
+
+
+@receiver(
+    post_save, sender=Main, dispatch_uid="create_site")
+def create_site(sender, instance, **kwargs):
+    # create site
+    if not instance.sites_rooted_here.exists():
+        site = Site(
+            hostname=generate_slug(instance.title) + '.localhost',
+            port=80, root_page=instance, is_default_site=True)
+        site.save()
 
 
 class LanguagePage(CommentedPageMixin, Page):
@@ -400,6 +486,14 @@ LanguagePage.content_panels = [
 ]
 
 
+@register_setting
+class Languages(BaseSetting, ClusterableModel):
+
+    panels = [
+        InlinePanel('languages', label="Site Languages"),
+    ]
+
+
 class SiteLanguage(models.Model):
     locale = models.CharField(
         verbose_name=_('language name'),
@@ -419,7 +513,8 @@ class SiteLanguage(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        if SiteLanguage.objects.filter(is_main_language=True).exists():
+        if Languages.for_site(self.language_setting.site).languages.filter(
+                is_main_language=True).exists():
             return super(SiteLanguage, self).save(*args, **kwargs)
 
         self.is_main_language = True
@@ -430,6 +525,16 @@ class SiteLanguage(models.Model):
 
     class Meta:
         verbose_name = _('Language')
+
+    panels = [
+        FieldPanel('locale'),
+        FieldPanel('is_active'),
+        ReadOnlyPanel('is_main_language')
+    ]
+
+
+class SiteLanguageRelation(Orderable, SiteLanguage):
+    language_setting = ParentalKey(Languages, related_name='languages')
 
 
 class SectionIndexPage(CommentedPageMixin, Page):
@@ -445,6 +550,11 @@ class SectionIndexPage(CommentedPageMixin, Page):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+    def copy(self, *args, **kwargs):
+        site = kwargs['to'].get_site()
+        main = site.root_page
+        SectionIndexPage.objects.child_of(main).delete()
+        super(SectionIndexPage, self).copy(*args, **kwargs)
 
 SectionIndexPage.content_panels = [
     FieldPanel('title', classname='full title'),
@@ -526,6 +636,11 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         return SectionPage.objects.child_of(main_language_page).filter(
             languages__language__is_main_language=True)
 
+    def get_site(self):
+        main = self.get_ancestors().filter(
+            depth=2).first()
+        return main.sites_rooted_here.all().first()
+
     def get_effective_extra_style_hints(self):
         if self.extra_style_hints:
             return self.extra_style_hints
@@ -533,9 +648,11 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         # The extra css is inherited from the parent SectionPage.
         # This will either return the current value or a value
         # from its parents.
-        main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
+        main_lang = Languages.for_site(self.get_site()).languages.filter(
+            is_main_language=True).first()
         language_rel = self.languages.all().first()
-        if language_rel and main_lang == language_rel.language:
+
+        if language_rel and main_lang.pk == language_rel.language.pk:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
             if parent_section:
                 return parent_section.get_effective_extra_style_hints()
@@ -548,7 +665,8 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         if self.image:
             return self.image
 
-        main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
+        main_lang = Languages.for_site(self.get_site()).languages.filter(
+            is_main_language=True).first()
         language_rel = self.languages.all().first()
         if language_rel and main_lang == language_rel.language:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
@@ -741,6 +859,38 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
 
     base_form_class = forms.ArticlePageForm
 
+    def copy(self, *args, **kwargs):
+        current_site = self.get_site()
+        destination_site = kwargs['to'].get_site()
+
+        if not (current_site is destination_site):
+            for language in self.languages.all():
+                if not destination_site.languages.languages.filter(
+                        locale=language.language.locale).exists():
+                    new_lang = SiteLanguageRelation.objects.create(
+                        language_setting=Languages.for_site(destination_site),
+                        locale=language.language.locale,
+                        is_active=False)
+                    LanguageRelation.objects.create(
+                        page=self, language=new_lang)
+        super(ArticlePage, self).copy(*args, **kwargs)
+
+    def move(self, *args, **kwargs):
+        current_site = self.get_site()
+        destination_site = args[0].get_site()
+
+        if not (current_site is destination_site):
+            for language in self.languages.all():
+                if not destination_site.languages.languages.filter(
+                        locale=language.language.locale).exists():
+                    new_lang = SiteLanguageRelation.objects.create(
+                        language_setting=Languages.for_site(destination_site),
+                        locale=language.language.locale,
+                        is_active=False)
+                    LanguageRelation.objects.create(
+                        page=self, language=new_lang)
+        super(ArticlePage, self).move(*args, **kwargs)
+
     def get_absolute_url(self):  # pragma: no cover
         return self.url
 
@@ -859,6 +1009,12 @@ class ArticlePageRelatedSections(Orderable):
 class FooterIndexPage(Page):
     parent_page_types = []
     subpage_types = ['FooterPage']
+
+    def copy(self, *args, **kwargs):
+        site = kwargs['to'].get_site()
+        main = site.root_page
+        FooterIndexPage.objects.child_of(main).delete()
+        super(FooterIndexPage, self).copy(*args, **kwargs)
 
 
 class FooterPage(ArticlePage):
