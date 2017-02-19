@@ -135,3 +135,14 @@ class MoloGoogleAnalyticsMiddleware(object):
                 site_settings.global_ga_tracking_code, request, response)
 
         return response
+
+
+class MultiSiteRedirectToHomepage(object):
+
+    def process_request(self, request):
+        print request.site
+        print request.get_host()
+
+        # if request.path and
+        # url = request.site.root_url + ':8000' + request.path_info
+        # return redirect(url)
