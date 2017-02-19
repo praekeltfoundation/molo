@@ -10,10 +10,9 @@ from django.core import management
 
 from molo.core.content_import import api
 from molo.core.models import (
-    ArticlePage, Main, SectionIndexPage, SiteLanguage, SectionPage)
+    ArticlePage, Main, SectionIndexPage, SectionPage, Languages)
 
 from wagtail.contrib.settings.context_processors import SettingsProxy
-from wagtail.wagtailcore.models import Site
 from django.utils import timezone
 
 IMPORT_EMAIL_TEMPLATE = "core/content_import/import_email.html"
@@ -25,20 +24,21 @@ def rotate_content(day=None):
     """ this method gets the parameters that are needed for rotate_latest
     and rotate_featured_in_homepage methods, and calls them both"""
     # getting the content rotation settings from site settings
-    main_lang = SiteLanguage.objects.filter(is_main_language=True).first()
-    main = Main.objects.all().first()
-    index = SectionIndexPage.objects.live().first()
-    site = Site.objects.get(is_default_site=True)
-    settings = SettingsProxy(site)
-    site_settings = settings['core']['SiteSettings']
-    if day is None:
-        day = datetime.today().weekday()
-    # creates a days of the week list
 
-    # calls the two rotate methods with the necessary params
-    if main and index:
-        rotate_latest(main_lang, index, main, site_settings, day)
-        rotate_featured_in_homepage(main_lang, day)
+    for main in Main.objects.all():
+        site = main.sites_rooted_here.all().first()
+        main_lang = Languages.for_site(site).languages.filter(
+            is_main_language=True).first()
+        index = SectionIndexPage.objects.live().child_of(main).first()
+        settings2 = SettingsProxy(site)
+        site_settings = settings2['core']['SiteSettings']
+        if day is None:
+            day = datetime.today().weekday()
+
+        # calls the two rotate methods with the necessary params
+        if main and index:
+            rotate_latest(main_lang, index, main, site_settings, day)
+            rotate_featured_in_homepage(main_lang, day, main)
 
 
 @task(ignore_result=True)
@@ -136,9 +136,9 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                             demote_last_featured_article()
 
 
-def rotate_featured_in_homepage(main_lang, day):
+def rotate_featured_in_homepage(main_lang, day, main):
     def demote_last_featured_article():
-            article = ArticlePage.objects.live().filter(
+            article = ArticlePage.objects.descendant_of(main).live().filter(
                 featured_in_homepage=True,
                 languages__language__id=main_lang.id
             ).order_by(
@@ -147,7 +147,7 @@ def rotate_featured_in_homepage(main_lang, day):
             article.featured_in_homepage_end_date = None
             article.save_revision().publish()
 
-    for section in SectionPage.objects.all():
+    for section in SectionPage.objects.descendant_of(main):
         days = get_days_section(section)
         # checks if current date is within the rotation date range
         if section.content_rotation_start_date and \
