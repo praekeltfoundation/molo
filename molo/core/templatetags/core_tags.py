@@ -1,19 +1,21 @@
 from itertools import chain
-
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import template
 from django.utils.safestring import mark_safe
 from markdown import markdown
 
-from molo.core.models import (Page, SiteLanguage, ArticlePage, SectionPage,
-                              SiteSettings)
+
+from molo.core.models import (Page, ArticlePage, SectionPage,
+                              SiteSettings, Languages)
+
 
 register = template.Library()
 
 
 def get_pages(context, qs, locale):
-    language = SiteLanguage.objects.filter(locale=locale).first()
     request = context['request']
+    language = Languages.for_site(request.site).languages.filter(
+        locale=locale).first()
     site_settings = SiteSettings.for_site(request.site)
     if site_settings.show_only_translated_pages:
         if language and language.is_main_language:
@@ -21,7 +23,7 @@ def get_pages(context, qs, locale):
         else:
             pages = []
             for a in qs:
-                translation = a.get_translation_for(locale)
+                translation = a.get_translation_for(locale, request.site)
                 if translation:
                     pages.append(translation)
             return pages
@@ -31,7 +33,7 @@ def get_pages(context, qs, locale):
         else:
             pages = []
             for a in qs:
-                translation = a.get_translation_for(locale)
+                translation = a.get_translation_for(locale, request.site)
                 if translation:
                     pages.append(translation)
                 elif a.live:
@@ -55,8 +57,8 @@ def load_sections(context):
 @register.assignment_tag(takes_context=True)
 def get_translation(context, page):
     locale_code = context.get('locale_code')
-    if page.get_translation_for(locale_code):
-        return page.get_translation_for(locale_code)
+    if page.get_translation_for(locale_code, context['request'].site):
+        return page.get_translation_for(locale_code, context['request'].site)
     else:
         return page
 
@@ -167,7 +169,8 @@ def breadcrumbs(context):
     for p in ancestors:
         if hasattr(p, 'get_translation_for'):
             translated_ancestors.append(
-                p.get_translation_for(locale_code) or p)
+                p.get_translation_for(
+                    locale_code, context['request'].site) or p)
         else:
             translated_ancestors.append(p)
 
@@ -185,13 +188,14 @@ def render_translations(context, page):
 
     languages = [
         (l.locale, str(l))
-        for l in SiteLanguage.objects.filter(is_main_language=False)]
-
+        for l in Languages.for_site(context['request'].site).languages.filter(
+            is_main_language=False)]
     return {
         'translations': [{
             'locale': {'title': title, 'code': code},
             'translated':
-                page.specific.get_translation_for(code, is_live=None)
+                page.specific.get_translation_for(
+                    code, context['request'].site, is_live=None)
             if hasattr(page.specific, 'get_translation_for') else None}
             for code, title in languages],
         'page': page
