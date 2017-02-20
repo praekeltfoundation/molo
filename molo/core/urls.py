@@ -11,7 +11,6 @@ urlpatterns = patterns(
         'molo.core.views.locale_set',
         name='locale_set'
     ),
-
     url(
         r'^health/$',
         'molo.core.views.health',
