@@ -23,6 +23,7 @@ from wagtail.wagtailadmin.edit_handlers import (
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.contrib.wagtailroutablepage.models import RoutablePageMixin, route
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
     SocialMediaLinkBlock
@@ -197,6 +198,10 @@ class SiteSettings(BaseSetting):
     ]
 
 
+class PreventDeleteMixin(object):
+    hide_delete_button = True
+
+
 class CommentedPageMixin(object):
     def get_effective_commenting_settings(self):
         # return commenting settings for the homepage
@@ -230,7 +235,7 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
-class TranslatablePageMixin(object):
+class TranslatablePageMixin(RoutablePageMixin):
     def get_translation_for(self, locale, is_live=True):
         language = SiteLanguage.objects.filter(locale=locale).first()
         if not language:
@@ -276,7 +281,19 @@ class TranslatablePageMixin(object):
             for p in self.translations.all():
                 p.translated_page.move(target, pos='last-child')
 
-    def serve(self, request):
+    @route(r'^noredirect/$')
+    def noredirect(self, request):
+        return Page.serve(self, request)
+
+    def get_sitemap_urls(self):
+        return [
+            {
+                'location': self.full_url + 'noredirect/',
+                'lastmod': self.latest_revision_created_at
+            }
+        ]
+
+    def serve(self, request, *args, **kwargs):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
         translation = parent.specific.get_translation_for(locale_code)
@@ -286,14 +303,19 @@ class TranslatablePageMixin(object):
         if main_lang.locale == locale_code:
             translation = parent
 
-        if translation and language_rel.language.locale != locale_code:
+        path_components = [
+            component for component in request.path.split('/') if component]
+
+        if path_components and path_components[-1] != 'noredirect' and \
+                translation and language_rel.language.locale != locale_code:
             return redirect(
                 '%s?%s' % (translation.url, request.GET.urlencode()))
 
-        return super(TranslatablePageMixin, self).serve(request)
+        return super(TranslatablePageMixin, self).serve(
+            request, *args, **kwargs)
 
 
-class BannerIndexPage(Page):
+class BannerIndexPage(Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
 
@@ -331,7 +353,7 @@ BannerPage.content_panels = [
 ]
 
 
-class Main(CommentedPageMixin, Page):
+class Main(CommentedPageMixin, Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = []
 
@@ -432,7 +454,7 @@ class SiteLanguage(models.Model):
         verbose_name = _('Language')
 
 
-class SectionIndexPage(CommentedPageMixin, Page):
+class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['SectionPage']
 
@@ -470,9 +492,9 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     )
 
     subpage_types = ['core.ArticlePage', 'core.SectionPage']
-    search_fields = Page.search_fields + (
+    search_fields = Page.search_fields + [
         index.SearchField('description'),
-    )
+    ]
     extra_style_hints = models.TextField(
         default='',
         null=True, blank=True,
@@ -510,6 +532,22 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
     content_rotation_end_date = models.DateTimeField(
         null=True, blank=True,
         help_text='The date rotation will end')
+
+    enable_next_section = (
+        models.BooleanField(
+            default=False,
+            verbose_name='Activate up next section underneath articles',
+            help_text=("Activate up next section underneath articles in this "
+                       "section will appear with the heading and subheading of"
+                       " that article. The text will say 'next' in order to "
+                       "make the user feel like it's fresh content.")))
+    enable_recommended_section = (
+        models.BooleanField(
+            default=False,
+            verbose_name='Activate recommended section underneath articles',
+            help_text=("Underneath the area for 'next articles' recommended "
+                       "articles will appear, with the image + heading + "
+                       "subheading")))
 
     def articles(self):
         main_language_page = self.get_main_language_page()
@@ -619,7 +657,13 @@ SectionPage.settings_panels = [
     MultiFieldPanel(
         [FieldRowPanel(
             [FieldPanel('extra_style_hints')], classname="label-above")],
-        "Meta")
+        "Meta"),
+    MultiFieldPanel(
+        [
+            FieldPanel('enable_next_section'),
+            FieldPanel('enable_recommended_section')
+        ],
+        heading="Recommended Settings", )
 ]
 
 
@@ -693,13 +737,13 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
             'This is not visible to the user.'))
 
     subpage_types = []
-    search_fields = Page.search_fields + (
+    search_fields = Page.search_fields + [
         index.SearchField('subtitle'),
         index.SearchField('body'),
         index.RelatedFields('tags', [
             index.SearchField('name', partial_match=True, boost=2),
         ]),
-    )
+    ]
 
     commenting_state = models.CharField(
         max_length=1,
@@ -809,6 +853,7 @@ ArticlePage.content_panels = [
             ImageChooserPanel('social_media_image'),
         ],
         heading="Social Media", ),
+    InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
 
@@ -843,6 +888,19 @@ def demote_featured_articles(sender, instance, **kwargs):
         instance.featured_in_section = False
 
 
+class ArticlePageRecommendedSections(Orderable):
+    page = ParentalKey(ArticlePage, related_name='recommended_articles')
+    recommended_article = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Recommended articles for this article')
+    )
+    panels = [PageChooserPanel('recommended_article', 'core.ArticlePage')]
+
+
 class ArticlePageRelatedSections(Orderable):
     page = ParentalKey(ArticlePage, related_name='related_sections')
     section = models.ForeignKey(
@@ -856,7 +914,7 @@ class ArticlePageRelatedSections(Orderable):
     panels = [PageChooserPanel('section', 'core.SectionPage')]
 
 
-class FooterIndexPage(Page):
+class FooterIndexPage(Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['FooterPage']
 

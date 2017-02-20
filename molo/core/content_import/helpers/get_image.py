@@ -4,7 +4,7 @@ from urlparse import urljoin
 
 from django.core.files.base import ContentFile
 from django.core.files.images import ImageFile
-from wagtail.wagtailimages.models import get_image_model
+from wagtail.wagtailimages import get_image_model
 
 Image = get_image_model()
 
