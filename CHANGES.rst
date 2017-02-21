@@ -1,12 +1,34 @@
 CHANGE LOG
 ==========
 
+4.3.2
+~~~~~
+- Added missing classes in custom admin template
+
+4.3.1
+~~~~~
+- Fixed template error
+
+4.3.0
+~~~~~
+- Removed the ability to delete index pages using the admin UI
+
+4.2.0
+~~~~~
+- added multi-language next and recommended article feature
+
+4.1.0
+~~~~~~
+- Add sitemap - include translations
+
 4.x
 ---
 
 Main Features::
 
 - Upgraded to Wagtail 1.8
+- Added upload/download functionality for zipped media files
+- Next and Recommended articles in articles
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -15,6 +37,13 @@ Backwards incompatible changes
 - ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
 - ``search_fields`` now uses a list instead of a tuple
 
+4.0.2
+~~~~~~
+- Fixed template overrides for django-admin templates
+
+4.0.1
+~~~~~~
+- Added upload/download functionality for zipped media files
 
 4.0.0
 ~~~~~~

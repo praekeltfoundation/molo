@@ -13,9 +13,12 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import (FooterPage, Languages,
-                              SiteSettings, ArticlePage, SiteLanguageRelation,
-                              Main)
+from molo.core.models import (SiteLanguage, FooterPage,
+                              SiteSettings, ArticlePage,
+                              ArticlePageRecommendedSections,
+                              Main, BannerIndexPage,
+                              SectionIndexPage,
+                              FooterIndexPage, Languages, SiteLanguageRelation)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -23,6 +26,7 @@ from molo.core.templatetags.core_tags import \
 
 from mock import patch, Mock
 from six import b
+from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -676,6 +680,21 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
         self.assertEquals(response.status_code, 200)
 
+    def test_sitemap_translaton_redirects(self):
+        self.yourmind_fr = self.mk_section_translation(
+            self.yourmind, self.french, title='Your mind in french')
+        response = self.client.get('/sections/your-mind/noredirect/')
+        self.assertEquals(response.status_code, 200)
+
+        response = self.client.get(
+            '/sections/your-mind/your-mind-subsection/noredirect/')
+        self.assertEquals(response.status_code, 200)
+
+        response = self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/your-mind-in-french/noredirect/')
+        self.assertContains(response, 'Your mind subsection in french</a>')
+
     def test_subsection_is_translated(self):
         en_page = self.mk_article(self.yourmind_sub)
         self.mk_article_translation(
@@ -1076,3 +1095,394 @@ class TestArticleTags(MoloTestCaseMixin, TestCase):
             list(response.context["object_list"]),
             [first_article, second_article]
         )
+
+
+class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.french = SiteLanguage.objects.create(locale='fr')
+
+        self.section_a = self.mk_section(self.section_index, title='Section A')
+
+        self.section_a.enable_recommended_section = True
+        self.section_a.save()
+
+        self.article_a = self.mk_article(self.section_a, title='Article A')
+        self.article_a.save_revision().publish()
+        self.article_b = self.mk_article(self.section_a, title='Article B')
+        self.article_b.save_revision().publish()
+        self.article_c = self.mk_article(self.section_a, title='Article C')
+        self.article_c.save_revision().publish()
+        self.article_d = self.mk_article(self.section_a, title='Article D')
+        self.article_d.save_revision().publish()
+
+        self.mk_article_translation(
+            self.article_a,
+            self.french,
+            title=self.article_a.title + ' in french',)
+        self.mk_article_translation(
+            self.article_b, self.french,
+            title=self.article_b.title + ' in french',)
+        self.mk_article_translation(
+            self.article_c, self.french,
+            title=self.article_c.title + ' in french',)
+
+        self.mk_article_translation(
+            self.article_d, self.french,
+            title=self.article_d.title + ' in french',)
+
+        self.recommended_article_1 = ArticlePageRecommendedSections(
+            page=self.article_a,
+            recommended_article=self.article_b)
+        self.recommended_article_1.save()
+
+        self.recommended_article_2 = ArticlePageRecommendedSections(
+            page=self.article_a,
+            recommended_article=self.article_c)
+        self.recommended_article_2.save()
+
+    def test_article_recommended_section_enabled_disabled(self):
+
+        self.assertTrue(
+            self.article_a.get_parent_section()
+            .enable_recommended_section)
+
+        self.assertEquals(
+            self.article_b,
+            self.article_a.recommended_articles.first()
+            .recommended_article.specific)
+
+        response = self.client.get('/sections/section-a/article-a/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Recommended')
+        self.assertContains(response, self.article_b.title)
+
+        self.section_a.enable_recommended_section = False
+        self.section_a.save()
+
+        response = self.client.get('/sections/section-a/article-a/')
+        self.assertNotContains(response, 'Recommended')
+        self.assertNotContains(response, self.article_b.title)
+
+    def test_article_recommended_section_multi_language(self):
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_b.title + ' in french')
+        self.assertContains(response, self.article_c.title + ' in french')
+
+    def test_article_recommended_section_untranslated(self):
+        ArticlePage.objects.get(
+            title=self.article_b.title + ' in french').delete()
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get(
+            '/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_b.title)
+        self.assertContains(response, self.article_c.title + ' in french')
+
+    def test_article_recommended_section_only_translated(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.show_only_translated_pages = True
+        setting.save()
+
+        ArticlePage.objects.get(
+            title=self.article_b.title + ' in french').delete()
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get(
+            '/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, self.article_b.title)
+        self.assertNotContains(response, self.article_b.title + 'in french')
+        self.assertContains(response, self.article_c.title + ' in french')
+
+    def test_article_recommended_custom_recommended_per_language(self):
+        self.article_a_fr = ArticlePage.objects.get(
+            title=self.article_a.title + ' in french')
+        self.article_c_fr = ArticlePage.objects.get(
+            title=self.article_c.title + ' in french')
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get(
+            '/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_b.title + ' in french')
+        self.assertContains(response, self.article_c_fr.title)
+
+        self.recommended_article_3 = ArticlePageRecommendedSections(
+            page=self.article_a_fr,
+            recommended_article=self.article_c_fr)
+        self.recommended_article_3.save()
+
+        self.recommended_article_4 = ArticlePageRecommendedSections(
+            page=self.article_a_fr,
+            recommended_article=self.article_d)
+        self.recommended_article_4.save()
+
+        response = self.client.get(
+            '/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, self.article_b.title + ' in french')
+        self.assertContains(response, self.article_d.title + ' in french')
+        self.assertContains(response, self.article_c_fr.title)
+
+
+class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.french = SiteLanguage.objects.create(locale='fr')
+
+        self.section_a = self.mk_section(self.section_index, title='Section A')
+
+        self.section_a.enable_next_section = True
+        self.section_a.save()
+
+        self.article_a = self.mk_article(self.section_a, title='Article A')
+        self.article_a.save_revision().publish()
+        self.article_b = self.mk_article(self.section_a, title='Article B')
+        self.article_b.save_revision().publish()
+        self.article_c = self.mk_article(self.section_a, title='Article C')
+        self.article_c.save_revision().publish()
+
+        self.mk_article_translation(
+            self.article_a,
+            self.french,
+            title=self.article_a.title + ' in french',)
+        self.mk_article_translation(
+            self.article_b, self.french,
+            title=self.article_b.title + ' in french',)
+        self.mk_article_translation(
+            self.article_c, self.french,
+            title=self.article_c.title + ' in french',)
+
+    def test_next_article_main_language(self):
+        # assumes articles loop
+        self.assertTrue(
+            self.article_b.get_parent_section().enable_next_section)
+
+        response = self.client.get('/sections/section-a/article-c/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_b.title)
+
+        response = self.client.get('/sections/section-a/article-b/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_a.title)
+
+        response = self.client.get('/sections/section-a/article-a/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_c.title)
+
+        self.section_a.enable_next_section = False
+        self.section_a.save()
+
+        response = self.client.get('/sections/section-a/article-c/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'Next up in ' + self.section_a.title)
+        self.assertNotContains(response, self.article_b.title)
+
+    def test_next_article_not_main_language(self):
+        # assumes articles loop
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-c-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_b.title + ' in french')
+
+        response = self.client.get('/sections/section-a/article-b-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_a.title + ' in french')
+
+        response = self.client.get('/sections/section-a/article-a-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_c.title + ' in french')
+
+    def test_next_article_show_untranslated_pages(self):
+        response = self.client.get('/sections/section-a/article-c/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_b.title)
+
+        ArticlePage.objects.get(
+            title=self.article_b.title + ' in french').delete()
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-c-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_b.title)
+
+    def test_next_article_show_only_translated_pages(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.show_only_translated_pages = True
+        setting.save()
+
+        response = self.client.get('/sections/section-a/article-c/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Next up in ' + self.section_a.title)
+        self.assertContains(response, self.article_b.title)
+
+        ArticlePage.objects.get(
+            title=self.article_b.title + ' in french').delete()
+
+        self.client.get('/locale/fr/')
+
+        response = self.client.get('/sections/section-a/article-c-in-french/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_a.title + ' in french')
+
+    def test_next_article_with_related_section(self):
+        self.section_b = self.mk_section(self.section_index, title='Section B')
+        self.section_b.enable_next_section = True
+        self.section_b.save()
+
+        self.article_1 = self.mk_article(self.section_b, title='Article 1')
+        self.article_1.save_revision().publish()
+        self.article_2 = self.mk_article(self.section_b, title='Article 2')
+        self.article_2.related_sections.create(page=self.article_2,
+                                               section=self.section_a)
+        self.article_2.save_revision().publish()
+
+        response = self.client.get('/sections/section-b/article-2/')
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.article_1.title)
+        self.assertContains(response, 'Next up in ' + self.section_b.title)
+
+    def test_next_article_not_displayed_for_single_article(self):
+        self.section_b = self.mk_section(self.section_index, title='Section B')
+
+        self.article_1 = self.mk_article(self.section_b, title='Article 1')
+        self.article_1.save_revision().publish()
+
+        response = self.client.get('/sections/section-b/article-1/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'Next up in')
+
+    def test_next_article_not_displayd_single_article_only_translated(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.show_only_translated_pages = True
+        setting.save()
+
+        self.section_b = self.mk_section(self.section_index, title='Section B')
+
+        self.article_1 = self.mk_article(self.section_b, title='Article 1')
+        self.article_1.save_revision().publish()
+
+        response = self.client.get('/sections/section-b/article-1/')
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, 'Next up in')
+
+
+class TestDjangoAdmin(TestCase):
+
+    def test_upload_download_links(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+        response = self.client.get(reverse('admin:index'))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(
+            response,
+            '<a href="/django-admin/upload_media/">Upload Media</a>'
+        )
+        self.assertContains(
+            response,
+            '<a href="/django-admin/download_media/">Download Media</a>'
+        )
+
+
+class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+
+        self.login()
+
+    def test_delete_button_removed_for_index_pages_in_main(self):
+
+        index_titles = [
+            BannerIndexPage.objects.first().title,
+            SectionIndexPage.objects.first().title,
+            FooterIndexPage.objects.first().title,
+        ]
+
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/'
+                                   .format(str(main_page.pk)))
+        self.assertEquals(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # Get all the rows in the body of the table
+        index_page_rows = soup.find_all('tbody')[0].find_all('tr')
+
+        for row in index_page_rows:
+            if row.h2.a.string in index_titles:
+                self.assertTrue(row.find('a', string='Edit'))
+                self.assertFalse(row.find('a', string='Delete'))
+
+    def test_delete_button_removed_from_dropdown_menu_main(self):
+        # Remove 'Delete' from drop-down menu
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/'
+                                   .format(str(main_page.pk)))
+        delete_link = ('<a href="/admin/pages/{0}/delete/" '
+                       'title="Delete this page" class="u-link '
+                       'is-live ">Delete</a>'.format(str(main_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, delete_link, html=True)
+
+    def test_delete_button_removed_from_dropdown_menu_section(self):
+        # exhibits behaviour that delete will be removed on dropdown
+        # menu for all Pages, not just specified Pages
+        section_page = self.mk_section(self.section_index, title='Section A')
+        response = self.client.get('/admin/pages/{0}/'
+                                   .format(str(section_page.pk)))
+        delete_link = ('<a href="/admin/pages/{0}/delete/" '
+                       'title="Delete this page" class="u-link '
+                       'is-live ">Delete</a>'.format(str(section_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, delete_link, html=True)
+
+    def test_delete_button_removed_in_edit_menu(self):
+        main_page = Main.objects.first()
+        response = self.client.get('/admin/pages/{0}/edit/'
+                                   .format(str(main_page.pk)))
+
+        delete_button = ('<li><a href="/admin/pages/{0}/delete/" '
+                         'class="shortcut">Delete</a></li>'
+                         .format(str(main_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertNotContains(response, delete_button, html=True)
+
+    def test_delete_button_not_removed_in_edit_menu_for_sections(self):
+        section_page = self.mk_section(self.section_index, title='Section A')
+        response = self.client.get('/admin/pages/{0}/edit/'
+                                   .format(str(section_page.pk)))
+
+        delete_button = ('<li><a href="/admin/pages/{0}/delete/" '
+                         'class="shortcut">Delete</a></li>'
+                         .format(str(section_page.pk)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, delete_button, html=True)
