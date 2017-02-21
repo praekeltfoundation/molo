@@ -411,9 +411,7 @@ BannerPage.content_panels = [
 ]
 
 
-class Main(CommentedPageMixin, Page, PreventDeleteMixin):
-    parent_page_types = []
-    subpage_types = []
+class Main(CommentedPageMixin, Page):
 
     def bannerpages(self):
         return BannerPage.objects.child_of(self).filter(
