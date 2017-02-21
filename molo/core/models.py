@@ -444,11 +444,12 @@ class Main(CommentedPageMixin, Page):
 @receiver(
     post_save, sender=Main, dispatch_uid="create_site")
 def create_site(sender, instance, **kwargs):
+    default_site = not(Site.objects.all().exists())
     # create site
     if not instance.sites_rooted_here.exists():
         site = Site(
             hostname=generate_slug(instance.title) + '.localhost',
-            port=80, root_page=instance, is_default_site=True)
+            port=8000, root_page=instance, is_default_site=default_site)
         site.save()
 
 
@@ -668,7 +669,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         main_lang = Languages.for_site(self.get_site()).languages.filter(
             is_main_language=True).first()
         language_rel = self.languages.all().first()
-        if language_rel and main_lang == language_rel.language:
+        if language_rel and main_lang.pk == language_rel.language.pk:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
             if parent_section:
                 return parent_section.get_effective_image()

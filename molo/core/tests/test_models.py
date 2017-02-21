@@ -26,10 +26,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
-        main = Main.objects.all().first()
+        self.main = Main.objects.all().first()
         self.factory = RequestFactory()
         self.language_setting = Languages.objects.create(
-            site_id=main.get_site().pk)
+            site_id=self.main.get_site().pk)
         self.english = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting,
             locale='en',
@@ -53,6 +53,31 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
+
+        self.mk_main2()
+        self.main2 = Main.objects.all().last()
+        self.language_setting2 = Languages.objects.create(
+            site_id=self.main2.get_site().pk)
+        self.english2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='en',
+            is_active=True)
+
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='es',
+            is_active=True)
+
+        # Create an image for running tests on
+        self.image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+
+        self.yourmind2 = self.mk_section(
+            self.section_index2, title='Your mind')
+        self.yourmind_sub2 = self.mk_section(
+            self.yourmind2, title='Your mind subsection')
 
     def test_article_order(self):
         now = datetime.now()
@@ -353,38 +378,52 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.mk_article_translation(p8, self.french)
         sub_sec = self.mk_section(self.yourmind_sub, title='Sub sec')
 
-        self.assertEqual(ArticlePage.objects.all().count(), 16)
-        self.assertEqual(SectionPage.objects.all().count(), 11)
+        self.assertEqual(ArticlePage.objects.descendant_of(
+            self.main).count(), 16)
+        self.assertEqual(SectionPage.objects.descendant_of(
+            self.main).count(), 11)
         self.assertEqual(PageTranslation.objects.all().count(), 12)
 
         section.delete()
-        self.assertEqual(ArticlePage.objects.all().count(), 6)
-        self.assertEqual(SectionPage.objects.all().count(), 5)
+        self.assertEqual(ArticlePage.objects.descendant_of(
+            self.main).count(), 6)
+        self.assertEqual(SectionPage.objects.descendant_of(
+            self.main).count(), 5)
         self.assertEqual(PageTranslation.objects.all().count(), 5)
 
         p7.delete()
-        self.assertEqual(ArticlePage.objects.all().count(), 3)
-        self.assertEqual(SectionPage.objects.all().count(), 5)
+        self.assertEqual(ArticlePage.objects.descendant_of(
+            self.main).count(), 3)
+        self.assertEqual(SectionPage.objects.descendant_of(
+            self.main).count(), 5)
         self.assertEqual(PageTranslation.objects.all().count(), 3)
 
         p9.delete()
-        self.assertEqual(ArticlePage.objects.all().count(), 2)
-        self.assertEqual(SectionPage.objects.all().count(), 5)
+        self.assertEqual(ArticlePage.objects.descendant_of(
+            self.main).count(), 2)
+        self.assertEqual(SectionPage.objects.descendant_of(
+            self.main).count(), 5)
         self.assertEqual(PageTranslation.objects.all().count(), 3)
 
         sub_sec.delete()
-        self.assertEqual(ArticlePage.objects.all().count(), 2)
-        self.assertEqual(SectionPage.objects.all().count(), 4)
+        self.assertEqual(ArticlePage.objects.descendant_of(
+            self.main).count(), 2)
+        self.assertEqual(SectionPage.objects.descendant_of(
+            self.main).count(), 4)
         self.assertEqual(PageTranslation.objects.all().count(), 3)
 
         self.yourmind_sub.delete()
-        self.assertEqual(ArticlePage.objects.all().count(), 0)
-        self.assertEqual(SectionPage.objects.all().count(), 2)
+        self.assertEqual(ArticlePage.objects.descendant_of(
+            self.main).count(), 0)
+        self.assertEqual(SectionPage.objects.descendant_of(
+            self.main).count(), 2)
         self.assertEqual(PageTranslation.objects.all().count(), 1)
 
         self.yourmind.delete()
-        self.assertEqual(ArticlePage.objects.all().count(), 0)
-        self.assertEqual(SectionPage.objects.all().count(), 0)
+        self.assertEqual(ArticlePage.objects.descendant_of(
+            self.main).count(), 0)
+        self.assertEqual(SectionPage.objects.descendant_of(
+            self.main).count(), 0)
         self.assertEqual(PageTranslation.objects.all().count(), 0)
 
     def test_get_translation_template_tag(self):

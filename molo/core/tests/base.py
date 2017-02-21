@@ -22,7 +22,7 @@ class MoloTestCaseMixin(object):
 
         return user
 
-    def mk_main(self):
+    def mk_main(self, title='Main', slug='main'):
         # Create page content type
         page_content_type, created = ContentType.objects.get_or_create(
             model='page',
@@ -45,8 +45,8 @@ class MoloTestCaseMixin(object):
 
         # Create a new homepage
         self.main = Main.objects.create(
-            title="Main",
-            slug='main',
+            title=title,
+            slug=slug,
             content_type=main_content_type,
             path='00010001',
             depth=2,
@@ -57,11 +57,12 @@ class MoloTestCaseMixin(object):
         self.main.save()
 
         # Create index pages
-        self.section_index = SectionIndexPage.objects.all().first()
+        self.section_index = SectionIndexPage.objects.child_of(
+            self.main).first()
 
-        self.footer_index = FooterIndexPage.objects.all().first()
+        self.footer_index = FooterIndexPage.objects.child_of(self.main).first()
 
-        self.banner_index = BannerIndexPage.objects.all().first()
+        self.banner_index = BannerIndexPage.objects.child_of(self.main).first()
 
         # Create root collection
         Collection.objects.create(
@@ -74,6 +75,62 @@ class MoloTestCaseMixin(object):
         # Create a site with the new homepage set as the root
         # Site.objects.all().delete()
         self.site = self.main.get_site()
+
+    def mk_main2(self, title='main2', slug='main2'):
+        # Create page content type
+        page_content_type, created = ContentType.objects.get_or_create(
+            model='page',
+            app_label='wagtailcore'
+        )
+
+        # Create root page
+        self.root, _ = Page.objects.get_or_create(
+            title="Root",
+            slug='root',
+            content_type=page_content_type,
+            path='0001',
+            depth=1,
+            numchild=1,
+            url_path='/',
+        )
+
+        main_content_type, created = ContentType.objects.get_or_create(
+            model='main', app_label='core')
+
+        # Create a new homepage
+        self.main2 = Main.objects.create(
+            title=title,
+            slug=slug,
+            content_type=main_content_type,
+            path='00010002',
+            depth=2,
+            numchild=0,
+            url_path='/main2/',
+        )
+        self.main2.save_revision().publish()
+        self.main2.save()
+
+        # Create index pages
+        self.section_index2 = SectionIndexPage.objects.child_of(
+            self.main2).first()
+
+        self.footer_index2 = FooterIndexPage.objects.child_of(
+            self.main2).first()
+
+        self.banner_index2 = BannerIndexPage.objects.child_of(
+            self.main2).first()
+
+        # Create root collection
+        Collection.objects.get_or_create(
+            name="Root",
+            path='0001',
+            depth=1,
+            numchild=0,
+        )
+
+        # Create a site with the new homepage set as the root
+        # Site.objects.all().delete()
+        self.site2 = self.main2.get_site()
 
     def mk_sections(self, parent, count=2, **kwargs):
         sections = []

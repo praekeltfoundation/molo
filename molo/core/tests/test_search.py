@@ -30,6 +30,25 @@ class TestSearch(TestCase, MoloTestCaseMixin):
         self.english_section = self.mk_section(
             self.section_index, title='English section')
 
+        self.mk_main2()
+        self.main2 = Main.objects.all().last()
+        self.language_setting2 = Languages.objects.create(
+            site_id=self.main2.get_site().pk)
+        self.english2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='en',
+            is_active=True)
+
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='es',
+            is_active=True)
+
+        self.yourmind2 = self.mk_section(
+            self.section_index2, title='Your mind2')
+        self.yourmind_sub2 = self.mk_section(
+            self.yourmind2, title='Your mind subsection2')
+
     def test_search(self):
         self.backend = get_search_backend('default')
         self.backend.reset_index()
@@ -63,6 +82,37 @@ class TestSearch(TestCase, MoloTestCaseMixin):
             'p': '4',
         })
         self.assertContains(response, 'Page 2 of 2')
+
+        response = self.client.get(reverse('search'), {
+            'q': 'magic'
+        })
+        self.assertContains(response, 'No search results for magic')
+
+        response = self.client.get(reverse('search'))
+        self.assertContains(response, 'No search results for None')
+
+    def test_search_works_with_multisite(self):
+        self.backend = get_search_backend('default')
+        self.backend.reset_index()
+
+        self.mk_article(
+            self.english_section, title="Site 1 article")
+        self.mk_article(
+            self.yourmind2, title="Site 2 article")
+        self.backend.refresh_index()
+
+        response = self.client.get(reverse('search'), {
+            'q': 'article'
+        })
+        self.assertContains(response, 'Site 1 article')
+        self.assertNotContains(response, 'Site 2 article')
+
+        client = Client(HTTP_HOST=self.site2.hostname)
+        response = client.get(reverse('search'), {
+            'q': 'article'
+        })
+        self.assertNotContains(response, 'Site 1 article')
+        self.assertContains(response, 'Site 2 article')
 
         response = self.client.get(reverse('search'), {
             'q': 'magic'

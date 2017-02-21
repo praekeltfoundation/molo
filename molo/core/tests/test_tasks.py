@@ -40,6 +40,27 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind_sub3 = self.mk_section(
             self.yourmind, title='Your mind subsection3')
 
+        self.mk_main2()
+        self.main2 = Main.objects.all().last()
+        self.english2 = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(self.main2.get_site()),
+            locale='en',
+            is_active=True)
+
+        self.french2 = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(self.main2.get_site()),
+            locale='fr',
+            is_active=True)
+
+        self.yourmind2 = self.mk_section(
+            self.section_index2, title='Your mind2')
+        self.yourmind_sub11 = self.mk_section(
+            self.yourmind2, title='Your mind subsection11')
+        self.yourmind_sub22 = self.mk_section(
+            self.yourmind2, title='Your mind subsection22')
+        self.yourmind_sub33 = self.mk_section(
+            self.yourmind2, title='Your mind subsection33')
+
     def test_order_by_promote_date_latest(self):
         article = self.mk_article(
             self.yourmind, title='article', slug='article')
@@ -244,6 +265,62 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         # checks to see the the old last article is not still last
         self.assertNotEquals(
             last_article_old, self.main.latest_articles()[8].pk)
+
+    def test_latest_rotation_on_multisite(self):
+        """This test that if the date range, weekdays and times are set for
+        content rotation, that the content rotates accordingly"""
+        # sets the site settings
+        site = self.main2.get_site()
+        settings = SettingsProxy(site)
+        site_settings = settings['core']['SiteSettings']
+
+        site_settings.content_rotation_start_date = datetime.now()
+        site_settings.content_rotation_end_date = datetime.now() + timedelta(
+            days=1)
+        time1 = str(datetime.now().time())[:8]
+        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
+        site_settings.time = dumps([{
+            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+        site_settings.monday_rotation = True
+        site_settings.save()
+
+        # creates articles and pages, some set to feature in latest, others not
+        for i in range(5):
+            self.footer = FooterPage(
+                title='Footer Page %s', slug='footer-page-%s' % (i, ))
+            self.footer_index.add_child(instance=self.footer)
+
+        self.assertEquals(FooterPage.objects.live().count(), 5)
+        self.assertEquals(self.main.latest_articles().count(), 0)
+
+        self.mk_articles(
+            self.yourmind_sub22, count=10,
+            featured_in_latest_start_date=datetime.now())
+        promote_articles()
+        self.mk_articles(self.yourmind_sub22,
+                         count=10, featured_in_latest=False)
+        self.assertEquals(self.main2.latest_articles().count(), 10)
+        # gets the first and last articles of the list before it rotates
+        first_article_old = self.main2.latest_articles()[0].pk
+        last_article_old = self.main2.latest_articles()[9].pk
+
+        rotate_content(day=0)
+
+        # checks to see that the number of latest articles has not increased
+        self.assertEquals(self.main2.latest_articles().count(), 10)
+        # checks to see the the old first articles is not still the first one
+        self.assertNotEquals(
+            first_article_old, self.main2.latest_articles()[0].pk)
+        # checks to see the old first article has moved up 2 places
+        self.assertEquals(
+            first_article_old, self.main2.latest_articles()[2].pk)
+        # checks to see the the old last article is not still last
+        self.assertNotEquals(
+            last_article_old, self.main2.latest_articles()[8].pk)
+
+        featured_from_main1 = self.main2.latest_articles().descendant_of(
+            self.main).count()
+        self.assertEquals(featured_from_main1, 0)
 
     def test_latest_rotation_on_draft_articles(self):
         site = Site.objects.get(is_default_site=True)

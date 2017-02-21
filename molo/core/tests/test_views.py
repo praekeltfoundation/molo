@@ -7,7 +7,7 @@ from datetime import timedelta, datetime
 from urlparse import parse_qs
 
 from django.core.files.base import ContentFile
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, Client
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils import timezone
@@ -72,6 +72,31 @@ class TestPages(TestCase, MoloTestCaseMixin):
             file=get_test_image_file(),
         )
 
+        self.mk_main2()
+        self.main2 = Main.objects.all().last()
+        self.language_setting2 = Languages.objects.create(
+            site_id=self.main2.get_site().pk)
+        self.english2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='en',
+            is_active=True)
+
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='es',
+            is_active=True)
+
+        # Create an image for running tests on
+        self.image2 = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+
+        self.yourmind2 = self.mk_section(
+            self.section_index2, title='Your mind2')
+        self.yourmind_sub2 = self.mk_section(
+            self.yourmind2, title='Your mind subsection2')
+
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)
 
@@ -129,6 +154,66 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             '/sections-main-1/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(response, '<div class="articles nav yellow">')
+
+    def test_correct_languages_on_homepage(self):
+        response = self.client.get('/')
+
+        self.assertContains(
+            response,
+            '<a href="/locale/en/?next=/?"  class="active" >English</a>')
+        self.assertContains(
+            response, '<a href="/locale/fr/')
+        self.assertContains(
+            response, '<a href="/locale/es/')
+        self.assertContains(
+            response, '<a href="/locale/ar/')
+
+        client = Client(HTTP_HOST=self.site2.hostname)
+        response = client.get(self.site2.root_url)
+        self.assertContains(
+            response,
+            '<a href="/locale/en/?next=/?"  class="active" >English</a>')
+        self.assertContains(
+            response, '<a href="/locale/es/')
+        self.assertNotContains(
+            response, '<a href="/locale/ar/')
+
+    def test_section_listing_multiple_sites(self):
+        self.mk_articles(self.yourmind_sub, count=10)
+
+        self.yourmind.extra_style_hints = 'yellow'
+        self.yourmind.save_revision().publish()
+
+        self.mk_articles(self.yourmind_sub2, count=10)
+
+        self.yourmind2.extra_style_hints = 'purple'
+        self.yourmind2.save_revision().publish()
+        response = self.client.get('/')
+        self.assertContains(response, 'Your mind')
+        self.assertContains(
+            response,
+            '<a href="/sections-main-1/your-mind/">Your mind</a>')
+        self.assertContains(response, '<div class="articles nav yellow">')
+
+        # Child page should have extra style from section
+        response = self.client.get(
+            '/sections-main-1/your-mind/your-mind-subsection/test-page-1/', )
+        self.assertContains(response, '<div class="articles nav yellow">')
+
+        # test second site section listing
+        client = Client(HTTP_HOST=self.site2.hostname)
+        response = client.get(self.site2.root_url)
+        self.assertContains(response, 'Your mind2')
+        self.assertContains(
+            response,
+            '<a href="/sections-main2-1/your-mind2/">Your mind2</a>')
+        self.assertContains(response, '<div class="articles nav purple">')
+
+        # Child page should have extra style from section
+        response = client.get(
+            '/sections-main2-1/your-mind2/your-mind-subsection2/'
+            'test-page-0-1/')
+        self.assertContains(response, '<div class="articles nav purple">')
 
     def test_section_listing_in_french(self):
         self.yourmind.extra_style_hints = 'yellow'
@@ -556,24 +641,31 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/locale/fr/')
 
         response = self.client.get('/sections-main-1/your-mind/')
-        self.assertRedirects(response, '/sections-main-1/your-mind-in-fr'
-                                       'ench/?')
+        self.assertRedirects(
+            response,
+            'http://main-1.localhost:8000/sections'
+            '-main-1/your-mind-in-french/?')
 
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
-        self.assertRedirects(response,
-                             '/sections-main-1/your-mind/test-page-0-in-'
-                             'french/?')
+        self.assertRedirects(
+            response,
+            'http://main-1.localhost:8000/sections-main-1/your-mind/'
+            'test-page-0-in-french/?')
 
         # redirect from translation to main language should also work
         response = self.client.get('/locale/en/')
 
         response = self.client.get('/sections-main-1/your-mind-in-french/')
-        self.assertRedirects(response, '/sections-main-1/your-mind/?')
+        self.assertRedirects(
+            response,
+            'http://main-1.localhost:8000/sections-main-1/your-mind/?')
 
         response = self.client.get('/sections-main-1/your-mind/'
                                    'test-page-0-in-french/')
-        self.assertRedirects(response, '/sections-main-1/your-mind/test-pag'
-                                       'e-0/?')
+        self.assertRedirects(
+            response,
+            'http://main-1.localhost:8000/sections-main-1/your-mind/test-pag'
+            'e-0/?')
 
         # unpublished translation will not result in a redirect
         self.yourmind_fr.unpublish()
