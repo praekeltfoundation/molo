@@ -80,6 +80,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.yourmind_sub2 = self.mk_section(
             self.yourmind2, title='Your mind subsection')
 
+    def test_sections_method_of_main_gives_children_of_main_only(self):
+        sections = self.main.sections()
+        self.assertFalse(sections.child_of(self.main2).exists())
+
     def test_copy_method_of_section_index_wont_duplicate_index_pages(self):
         self.assertEquals(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
