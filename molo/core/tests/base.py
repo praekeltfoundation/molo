@@ -75,6 +75,7 @@ class MoloTestCaseMixin(object):
         self.site = self.main.get_site()
 
     def mk_main2(self, title='main2', slug='main2', path=00010002):
+        self.mk_root()
         main_content_type, created = ContentType.objects.get_or_create(
             model='main', app_label='core')
 

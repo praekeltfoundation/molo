@@ -220,8 +220,7 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         content rotation, that the content rotates accordingly"""
         # sets the site settings
         site = Site.objects.get(is_default_site=True)
-        settings = SettingsProxy(site)
-        site_settings = settings['core']['SiteSettings']
+        site_settings = SiteSettings.for_site(site)
 
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
@@ -324,8 +323,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
 
     def test_latest_rotation_on_draft_articles(self):
         site = Site.objects.get(is_default_site=True)
-        settings = SettingsProxy(site)
-        site_settings = settings['core']['SiteSettings']
+        site_settings = SiteSettings.for_site(site)
+
 
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
@@ -413,8 +412,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         """This test that if the date range and weekdays are set for
         content rotation, that the content doesn't rotates with no times set"""
         site = Site.objects.get(is_default_site=True)
-        settings = SettingsProxy(site)
-        site_settings = settings['core']['SiteSettings']
+        site_settings = SiteSettings.for_site(site)
+
         site_settings.monday_rotation = True
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
