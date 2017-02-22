@@ -38,6 +38,7 @@ class MoloTestCaseMixin(object):
         )
 
     def mk_main(self, title='Main', slug='main'):
+        self.mk_root()
         main_content_type, created = ContentType.objects.get_or_create(
             model='main', app_label='core')
 
