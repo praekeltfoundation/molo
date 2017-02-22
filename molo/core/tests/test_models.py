@@ -80,6 +80,21 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.yourmind_sub2 = self.mk_section(
             self.yourmind2, title='Your mind subsection')
 
+    def test_copy_method_of_article_page_copies_over_languages(self):
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        article = self.mk_articles(self.yourmind, 1)[0]
+        fr_article = self.mk_article_translation(article, self.french)
+        fr_article.copy(to=self.yourmind2)
+        self.assertTrue(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(
+                    locale='fr').first().is_active)
+
     def test_sections_method_of_main_gives_children_of_main_only(self):
         sections = self.main.sections()
         self.assertFalse(sections.child_of(self.main2).exists())
