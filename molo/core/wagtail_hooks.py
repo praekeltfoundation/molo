@@ -38,9 +38,8 @@ def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
 
-    if main_language and not parent_page.depth == 2:
-        return pages.filter(languages__language__id=main_language.id)
-
+    if main_language and parent_page.depth > 2:
+        return pages.filter(languages__language__locale=main_language.locale)
     return pages
 
 

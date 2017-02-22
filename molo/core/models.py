@@ -29,7 +29,7 @@ from wagtail.wagtailadmin.edit_handlers import (
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.contrib.wagtailroutablepage.models import route
+from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
     SocialMediaLinkBlock
@@ -277,7 +277,7 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
-class TranslatablePageMixin(object):
+class TranslatablePageMixin(RoutablePageMixin):
     def get_translation_for(self, locale, site, is_live=True):
         language_setting = Languages.for_site(site)
         language = language_setting.languages.filter(
@@ -333,6 +333,7 @@ class TranslatablePageMixin(object):
 
     @route(r'^noredirect/$')
     def noredirect(self, request):
+
         return Page.serve(self, request)
 
     def get_sitemap_urls(self):
@@ -357,7 +358,6 @@ class TranslatablePageMixin(object):
 
         path_components = [
             component for component in request.path.split('/') if component]
-
         if path_components and path_components[-1] != 'noredirect' and \
                 translation and language_rel.language.locale != locale_code:
             return redirect(
@@ -412,6 +412,7 @@ BannerPage.content_panels = [
 
 
 class Main(CommentedPageMixin, Page):
+    subpage_types = []
 
     def bannerpages(self):
         return BannerPage.objects.child_of(self).filter(
@@ -468,11 +469,17 @@ class Main(CommentedPageMixin, Page):
     post_save, sender=Main, dispatch_uid="create_site")
 def create_site(sender, instance, **kwargs):
     default_site = not(Site.objects.all().exists())
+
+    if not hasattr(settings, 'DEFAULT_SITE_PORT'):
+        port = 80
+    else:
+        port = settings.DEFAULT_SITE_PORT
     # create site
     if not instance.sites_rooted_here.exists():
         site = Site(
             hostname=generate_slug(instance.title) + '.localhost',
-            port=8000, root_page=instance, is_default_site=default_site)
+            port=port, root_page=instance,
+            is_default_site=default_site)
         site.save()
 
 
@@ -798,6 +805,8 @@ class ArticlePageMetaDataTag(TaggedItemBase):
 
 
 class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
+    parent_page_types = ['core.SectionPage']
+
     subtitle = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     featured_in_latest = models.BooleanField(

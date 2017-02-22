@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.translation import (
     LANGUAGE_SESSION_KEY,
@@ -20,7 +20,7 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
-from molo.core.models import PageTranslation, SiteLanguage, ArticlePage
+from molo.core.models import PageTranslation, ArticlePage, Languages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm
 from django.views.generic import ListView
@@ -107,7 +107,10 @@ def add_translation(request, page_id, locale):
             reverse('wagtailadmin_pages:edit', args=[translated_page.id]))
 
     # create translation and redirect to edit page
-    language = get_object_or_404(SiteLanguage, locale=locale)
+    language = Languages.for_site(request.site).languages.filter(
+        locale=locale).first()
+    if not language:
+        raise Http404
     new_title = str(language) + " translation of %s" % page.title
     new_slug = generate_slug(new_title)
     translation = page.__class__(

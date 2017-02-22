@@ -363,8 +363,9 @@ def get_next_article(context, article):
     else:
         return None
 
-    if next_article.get_translation_for(locale_code):
-        return next_article.get_translation_for(locale_code)
+    if next_article.get_translation_for(locale_code, context['request'].site):
+        return next_article.get_translation_for(
+            locale_code, context['request'].site)
     else:
         return next_article
 

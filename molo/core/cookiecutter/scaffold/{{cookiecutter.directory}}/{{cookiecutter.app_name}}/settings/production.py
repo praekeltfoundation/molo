@@ -6,6 +6,7 @@ from .base import *  # noqa
 DEBUG = False
 TEMPLATE_DEBUG = False
 
+DEFAULT_SITE_PORT = 80
 
 # Compress static files offline
 # http://django-compressor.readthedocs.org/en/latest/settings/#django.conf.settings.COMPRESS_OFFLINE
