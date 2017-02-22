@@ -5,7 +5,7 @@ import pytest
 from django.test import TestCase
 
 from molo.core.models import FooterPage, ArticlePage, Main, \
-    SiteLanguageRelation, Languages
+    SiteLanguageRelation, Languages, SiteSettings
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.tasks import rotate_content, demote_articles, promote_articles
 from molo.core.templatetags.core_tags import \
@@ -324,7 +324,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
     def test_latest_rotation_on_draft_articles(self):
         site = Site.objects.get(is_default_site=True)
         site_settings = SiteSettings.for_site(site)
-
 
         site_settings.content_rotation_start_date = datetime.now()
         site_settings.content_rotation_end_date = datetime.now() + timedelta(
