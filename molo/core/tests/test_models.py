@@ -11,7 +11,8 @@ from django.core.exceptions import ValidationError
 
 from molo.core.models import (
     ArticlePage, PageTranslation, SectionPage, Main,
-    SiteLanguageRelation, Languages)
+    SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
+    BannerIndexPage)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
@@ -78,6 +79,27 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index2, title='Your mind')
         self.yourmind_sub2 = self.mk_section(
             self.yourmind2, title='Your mind subsection')
+
+    def test_copy_method_of_section_index_wont_duplicate_index_pages(self):
+        self.assertEquals(
+            SectionIndexPage.objects.child_of(self.main2).count(), 1)
+        self.section_index.copy(to=self.main2)
+        self.assertEquals(
+            SectionIndexPage.objects.child_of(self.main2).count(), 1)
+
+    def test_copy_method_of_footer_index_wont_duplicate_index_pages(self):
+        self.assertEquals(
+            FooterIndexPage.objects.child_of(self.main2).count(), 1)
+        self.section_index.copy(to=self.main2)
+        self.assertEquals(
+            FooterIndexPage.objects.child_of(self.main2).count(), 1)
+
+    def test_copy_method_of_banner_index_wont_duplicate_index_pages(self):
+        self.assertEquals(
+            BannerIndexPage.objects.child_of(self.main2).count(), 1)
+        self.section_index.copy(to=self.main2)
+        self.assertEquals(
+            BannerIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_article_order(self):
         now = datetime.now()
