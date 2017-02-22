@@ -22,15 +22,12 @@ class MoloTestCaseMixin(object):
 
         return user
 
-    def mk_main(self, title='Main', slug='main'):
-        # Create page content type
+    def mk_root(self):
         page_content_type, created = ContentType.objects.get_or_create(
             model='page',
             app_label='wagtailcore'
         )
-
-        # Create root page
-        self.root = Page.objects.create(
+        self.root, _ = Page.objects.get_or_create(
             title="Root",
             slug='root',
             content_type=page_content_type,
@@ -40,6 +37,7 @@ class MoloTestCaseMixin(object):
             url_path='/',
         )
 
+    def mk_main(self, title='Main', slug='main'):
         main_content_type, created = ContentType.objects.get_or_create(
             model='main', app_label='core')
 
@@ -77,23 +75,6 @@ class MoloTestCaseMixin(object):
         self.site = self.main.get_site()
 
     def mk_main2(self, title='main2', slug='main2', path=00010002):
-        # Create page content type
-        page_content_type, created = ContentType.objects.get_or_create(
-            model='page',
-            app_label='wagtailcore'
-        )
-
-        # Create root page
-        self.root, _ = Page.objects.get_or_create(
-            title="Root",
-            slug='root',
-            content_type=page_content_type,
-            path='0001',
-            depth=1,
-            numchild=1,
-            url_path='/',
-        )
-
         main_content_type, created = ContentType.objects.get_or_create(
             model='main', app_label='core')
 

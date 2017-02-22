@@ -10,9 +10,8 @@ from django.core import management
 
 from molo.core.content_import import api
 from molo.core.models import (
-    ArticlePage, Main, SectionIndexPage, SectionPage, Languages)
+    ArticlePage, Main, SectionIndexPage, SectionPage, Languages, SiteSettings)
 
-from wagtail.contrib.settings.context_processors import SettingsProxy
 from django.utils import timezone
 
 IMPORT_EMAIL_TEMPLATE = "core/content_import/import_email.html"
@@ -30,8 +29,7 @@ def rotate_content(day=None):
         main_lang = Languages.for_site(site).languages.filter(
             is_main_language=True).first()
         index = SectionIndexPage.objects.live().child_of(main).first()
-        settings2 = SettingsProxy(site)
-        site_settings = settings2['core']['SiteSettings']
+        site_settings = SiteSettings.for_site(site)
         if day is None:
             day = datetime.today().weekday()
 
