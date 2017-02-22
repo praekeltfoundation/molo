@@ -85,6 +85,7 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
+DEFAULT_SITE_PORT = 8000
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',

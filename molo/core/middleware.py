@@ -17,6 +17,10 @@ from google_analytics.utils import build_ga_params, set_cookie
 from google_analytics.tasks import send_ga_tracking
 
 from molo.core.models import SiteSettings
+from wagtail.wagtailcore.models import Site, Page
+from django.core.urlresolvers import resolve
+from django.shortcuts import redirect
+from molo.core.models import Languages
 
 
 class MoloCASMiddleware(CASMiddleware):
@@ -135,3 +139,17 @@ class MoloGoogleAnalyticsMiddleware(object):
                 site_settings.global_ga_tracking_code, request, response)
 
         return response
+
+
+class MultiSiteRedirectToHomepage(object):
+
+    def process_request(self, request):
+        if request.path.startswith('/admin/pages/'):
+            current_site = Site.find_for_request(request)
+            func, args, kwargs = resolve(request.path)
+            if args:
+                p_site = Page.objects.get(pk=args[-1]).get_site()
+                if not current_site == p_site:
+                    return redirect('%s%s' % (p_site.root_url, request.path))
+            if not Languages.for_site(request.site).languages.all().exists():
+                return redirect('%s/admin/' % request.site.root_url)
