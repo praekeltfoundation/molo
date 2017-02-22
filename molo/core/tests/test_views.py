@@ -28,7 +28,7 @@ from mock import patch, Mock
 from six import b
 from bs4 import BeautifulSoup
 
-from wagtail.wagtailcore.models import Site
+from wagtail.wagtailcore.models import Site, Page
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 from wagtailmedia.models import Media
 
@@ -99,6 +99,19 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.section_index2, title='Your mind2')
         self.yourmind_sub2 = self.mk_section(
             self.yourmind2, title='Your mind subsection2')
+
+    def test_site_redirect_if_no_languages(self):
+        user = User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.mk_main2(title='main3', slug='main3', path=00010003)
+        main3_pk = Page.objects.get(title='main3').pk
+        main3 = Main.objects.all().last()
+        client = Client(HTTP_HOST=main3.get_site().hostname)
+        client.login(user=user)
+        response = client.get('/admin/pages/%s/' % main3_pk)
+        self.assertEqual(
+            response['Location'],
+            '/admin/login/?next=%2Fadmin%2Fpages%2F16%2F')
 
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)

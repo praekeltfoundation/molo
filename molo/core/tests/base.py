@@ -76,7 +76,7 @@ class MoloTestCaseMixin(object):
         # Site.objects.all().delete()
         self.site = self.main.get_site()
 
-    def mk_main2(self, title='main2', slug='main2'):
+    def mk_main2(self, title='main2', slug='main2', path=00010002):
         # Create page content type
         page_content_type, created = ContentType.objects.get_or_create(
             model='page',
@@ -102,7 +102,7 @@ class MoloTestCaseMixin(object):
             title=title,
             slug=slug,
             content_type=main_content_type,
-            path='00010002',
+            path=path,
             depth=2,
             numchild=0,
             url_path='/main2/',
