@@ -1,3 +1,5 @@
+import random
+
 from datetime import datetime
 
 from celery import task
@@ -45,6 +47,14 @@ def rotate_content(day=None):
 def publish_scheduled_pages():
     management.call_command(
         'publish_scheduled_pages', verbosity=0, interactive=False)
+
+
+@task(ignore_result=True)
+def clearsessions():
+    # Expired sessions will only be cleared roughly once an hour - randomly
+    if random.randint(0, 59) == 0:
+        management.call_command(
+            'clearsessions', verbosity=0, interactive=False)
 
 
 @task(ignore_result=True)
