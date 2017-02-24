@@ -1,4 +1,10 @@
+import os
+import shutil
+import zipfile
 import re
+import tempfile
+import distutils.dir_util
+
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
 
@@ -52,3 +58,36 @@ def generate_slug(text, tail_number=0):
     else:
         # No collisions
         return slug
+
+
+def update_media_file(upload_file):
+    '''
+    Update the Current Media Folder.
+
+    Returns list of files copied across or
+    raises an exception.
+    '''
+    temp_directory = tempfile.mkdtemp()
+    temp_file = tempfile.TemporaryFile()
+    # assumes the zip file contains a directory called media
+    temp_media_file = os.path.join(temp_directory, 'media')
+    try:
+        for chunk in upload_file.chunks():
+            temp_file.write(chunk)
+
+        with zipfile.ZipFile(temp_file, 'r') as z:
+            z.extractall(temp_directory)
+
+        if os.path.exists(temp_media_file):
+            return distutils.dir_util.copy_tree(
+                temp_media_file,
+                settings.MEDIA_ROOT)
+        else:
+            raise Exception("Error: There is no directory called "
+                            "'media' in the root of the zipped file")
+    except Exception as e:
+        raise e
+    finally:
+        temp_file.close()
+        if os.path.exists(temp_directory):
+            shutil.rmtree(temp_directory)

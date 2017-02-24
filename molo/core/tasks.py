@@ -1,3 +1,5 @@
+import random
+
 from datetime import datetime
 
 from celery import task
@@ -45,6 +47,14 @@ def rotate_content(day=None):
 def publish_scheduled_pages():
     management.call_command(
         'publish_scheduled_pages', verbosity=0, interactive=False)
+
+
+@task(ignore_result=True)
+def clearsessions():
+    # Expired sessions will only be cleared roughly once an hour - randomly
+    if random.randint(0, 59) == 0:
+        management.call_command(
+            'clearsessions', verbosity=0, interactive=False)
 
 
 @task(ignore_result=True)
@@ -104,7 +114,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
 
     def demote_last_featured_article():
         # set the last featured_in_latest article to false
-        article = main.latest_articles().last()
+        article = main.latest_articles().live().last()
         article.featured_in_latest_start_date = None
         article.featured_in_latest_end_date = None
         article.save_revision().publish()
@@ -120,7 +130,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
             if days[day]:
                 for time in site_settings.time:
                     time = strptime(str(time), '%H:%M:%S')
-                    if time.tm_hour == timezone.now().hour:
+                    if time.tm_hour == datetime.now().hour:
                         # get a random article
                         random_article = ArticlePage.objects.live().filter(
                             featured_in_latest=False,
@@ -130,7 +140,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                         # set random article to feature in latest
                         if random_article:
                             random_article.featured_in_latest_start_date = \
-                                timezone.now()
+                                datetime.now()
                             random_article.save_revision().publish()
                             promote_articles()
                             demote_last_featured_article()
@@ -159,7 +169,7 @@ def rotate_featured_in_homepage(main_lang, day):
                 if days[day]:
                     for time in section.time:
                         time = strptime(str(time), '%H:%M:%S')
-                        if time.tm_hour == timezone.now().hour:
+                        if time.tm_hour == datetime.now().hour:
                             random_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
                                 languages__language__id=main_lang.id
@@ -169,7 +179,7 @@ def rotate_featured_in_homepage(main_lang, day):
                             if random_article:
                                 random_article. \
                                     featured_in_homepage_start_date = \
-                                    timezone.now()
+                                    datetime.now()
                                 random_article.save_revision().publish()
                                 promote_articles()
                                 demote_last_featured_article()
