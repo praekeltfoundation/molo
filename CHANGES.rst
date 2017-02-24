@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.3.3
+~~~~~
+- Add django clearsessions to celery tasks
+
 4.3.2
 ~~~~~
 - Added missing classes in custom admin template
