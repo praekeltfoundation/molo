@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 
 def convert_languages_to_site_language_relation(apps, schema_editor):
-    from molo.core.models import SiteLanguage, SiteLanguageRelation, Main
+    from molo.core.models import SiteLanguage, SiteLanguageRelation, Main, Languages
     main = Main.objects.all().first()
     if main:
         site = main.get_site()
@@ -13,10 +13,13 @@ def convert_languages_to_site_language_relation(apps, schema_editor):
             language_setting, _ = Languages.objects.get_or_create(
                 site_id=site.pk)
             for language in SiteLanguage.objects.all():
-                SiteLanguageRelation.objects.create(
-                    language_setting=language_setting,
+                site_language_rel = SiteLanguageRelation(
+                    sitelanguage_ptr=language,
+                    language_setting = language_setting,
                     locale=language.locale,
-                    is_active=language.is_active)
+                    is_active=language.is_active,
+                    is_main_language=language.is_main_language)
+                site_language_rel.save()
 
 class Migration(migrations.Migration):
 
