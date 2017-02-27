@@ -104,7 +104,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
 
     def demote_last_featured_article():
         # set the last featured_in_latest article to false
-        article = main.latest_articles().last()
+        article = main.latest_articles().live().last()
         article.featured_in_latest_start_date = None
         article.featured_in_latest_end_date = None
         article.save_revision().publish()

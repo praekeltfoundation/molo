@@ -12,7 +12,7 @@ class MarkDownBlock(blocks.TextBlock):
     class Meta:
         icon = 'code'
 
-    def render_basic(self, value):
+    def render_basic(self, value, context=None):
         md = markdown(
             value,
             [
@@ -27,7 +27,7 @@ class MultimediaBlock(AbstractMediaChooserBlock):
     class Meta:
         icon = 'media'
 
-    def render_basic(self, value):
+    def render_basic(self, value, context=None):
         if not value:
             return ''
 
