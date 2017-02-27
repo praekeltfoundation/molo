@@ -702,7 +702,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
 
         if not main_lang or not language_rel:
             return ''
-        
+
         if language_rel and main_lang.pk == language_rel.language.pk:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
             if parent_section:
