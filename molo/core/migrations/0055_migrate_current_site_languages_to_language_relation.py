@@ -10,7 +10,7 @@ def convert_languages_to_site_language_relation(apps, schema_editor):
     if main:
         site = main.get_site()
         if site:
-            language_setting = Languages.objects.create(
+            language_setting, _ = Languages.objects.get_or_create(
                 site_id=site.pk)
             for language in SiteLanguage.objects.all():
                 SiteLanguageRelation.objects.create(
