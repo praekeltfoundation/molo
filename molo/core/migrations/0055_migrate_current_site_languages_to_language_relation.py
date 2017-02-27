@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 
 def convert_languages_to_site_language_relation(apps, schema_editor):
-    from molo.core.models import SiteLanguage, SiteLanguageRelation Main
+    from molo.core.models import SiteLanguage, SiteLanguageRelation, Main
     main = Main.objects.all().first()
     if main:
         site = main.get_site()
