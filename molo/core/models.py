@@ -697,7 +697,11 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         # from its parents.
         main_lang = Languages.for_site(self.get_site()).languages.filter(
             is_main_language=True).first()
+
         language_rel = self.languages.all().first()
+
+        if not main_lang or not language_rel:
+            return ''
 
         if language_rel and main_lang.pk == language_rel.language.pk:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
