@@ -115,6 +115,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
     def demote_last_featured_article():
         # set the last featured_in_latest article to false
         article = main.latest_articles().live().last()
+        article.featured_in_latest = False
         article.featured_in_latest_start_date = None
         article.featured_in_latest_end_date = None
         article.save_revision().publish()
@@ -135,8 +136,8 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                         random_article = ArticlePage.objects.live().filter(
                             featured_in_latest=False,
                             languages__language__id=main_lang.id
-                        ).descendant_of(index).order_by('?').first()
-
+                        ).descendant_of(index).order_by('?').exact_type(
+                            ArticlePage).first()
                         # set random article to feature in latest
                         if random_article:
                             random_article.featured_in_latest_start_date = \
@@ -147,12 +148,13 @@ def rotate_latest(main_lang, index, main, site_settings, day):
 
 
 def rotate_featured_in_homepage(main_lang, day):
-    def demote_last_featured_article():
+    def demote_last_featured_article_in_homepage():
             article = ArticlePage.objects.live().filter(
                 featured_in_homepage=True,
                 languages__language__id=main_lang.id
             ).order_by(
                 '-featured_in_homepage_start_date').last()
+            article.featured_in_homepage = False
             article.featured_in_homepage_start_date = None
             article.featured_in_homepage_end_date = None
             article.save_revision().publish()
@@ -173,7 +175,8 @@ def rotate_featured_in_homepage(main_lang, day):
                             random_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
                                 languages__language__id=main_lang.id
-                            ).child_of(section).order_by('?').first()
+                            ).child_of(section).order_by('?').exact_type(
+                                ArticlePage).first()
 
                             # promotes an article and bumps last one off list
                             if random_article:
@@ -182,7 +185,7 @@ def rotate_featured_in_homepage(main_lang, day):
                                     datetime.now()
                                 random_article.save_revision().publish()
                                 promote_articles()
-                                demote_last_featured_article()
+                                demote_last_featured_article_in_homepage()
 
 
 def send_import_email(to_email, context):
