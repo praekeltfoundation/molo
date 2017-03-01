@@ -115,10 +115,12 @@ def rotate_latest(main_lang, index, main, site_settings, day):
     def demote_last_featured_article():
         # set the last featured_in_latest article to false
         article = main.latest_articles().live().last()
-        article.featured_in_latest = False
-        article.featured_in_latest_start_date = None
-        article.featured_in_latest_end_date = None
-        article.save_revision().publish()
+        if main.latest_articles().live().count() >= 2:
+            article = main.latest_articles().live().last()
+            article.featured_in_latest = False
+            article.featured_in_latest_start_date = None
+            article.featured_in_latest_end_date = None
+            article.save_revision().publish()
 
     days = get_days_site_settings(site_settings)
     # checks if the current date is within the content rotation range
@@ -149,15 +151,17 @@ def rotate_latest(main_lang, index, main, site_settings, day):
 
 def rotate_featured_in_homepage(main_lang, day):
     def demote_last_featured_article_in_homepage():
-            article = ArticlePage.objects.live().filter(
+            articles = ArticlePage.objects.live().filter(
                 featured_in_homepage=True,
                 languages__language__id=main_lang.id
             ).order_by(
-                '-featured_in_homepage_start_date').last()
-            article.featured_in_homepage = False
-            article.featured_in_homepage_start_date = None
-            article.featured_in_homepage_end_date = None
-            article.save_revision().publish()
+                '-featured_in_homepage_start_date')
+            if articles.count() >= 2:
+                article = articles.last()
+                article.featured_in_homepage = False
+                article.featured_in_homepage_start_date = None
+                article.featured_in_homepage_end_date = None
+                article.save_revision().publish()
 
     for section in SectionPage.objects.all():
         days = get_days_section(section)
