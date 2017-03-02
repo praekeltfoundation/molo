@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.1
+~~~~~
+- Updated template overrides to fix missing Page admin buttons
+
 4.4.0
 ~~~~~
 - Add django clear sessions as a task in order to clear the sessions randomly
