@@ -331,6 +331,39 @@ class TranslatablePageMixin(RoutablePageMixin):
             for p in self.translations.all():
                 p.translated_page.move(target, pos='last-child')
 
+    def copy(self, *args, **kwargs):
+        current_site = self.get_site()
+        destination_site = kwargs['to'].get_site()
+
+        if not (current_site is destination_site):
+            for language in self.languages.all():
+                if not destination_site.languages.languages.filter(
+                        locale=language.language.locale).exists():
+                    new_lang = SiteLanguageRelation.objects.create(
+                        language_setting=Languages.for_site(destination_site),
+                        locale=language.language.locale,
+                        is_active=False)
+                else:
+                    new_lang = destination_site.languages.languages.filter(
+                        locale=language.language.locale).first()
+                page_copy = super(TranslatablePageMixin, self).copy(
+                    *args, **kwargs)
+                new_l_rel = LanguageRelation.objects.get(page=page_copy)
+                new_l_rel.language = new_lang
+                new_l_rel.save()
+                old_parent = self.get_main_language_page()
+
+                if old_parent:
+                    new_translation_parent = \
+                        page_copy.get_parent().get_children().filter(
+                            slug=old_parent.slug).first()
+                    PageTranslation.objects.create(
+                        page=new_translation_parent,
+                        translated_page=page_copy)
+                return page_copy
+        else:
+            return super(TranslatablePageMixin, self).copy(*args, **kwargs)
+
     @route(r'^noredirect/$')
     def noredirect(self, request):
 
@@ -917,22 +950,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
     ]
 
     base_form_class = forms.ArticlePageForm
-
-    def copy(self, *args, **kwargs):
-        current_site = self.get_site()
-        destination_site = kwargs['to'].get_site()
-
-        if not (current_site is destination_site):
-            for language in self.languages.all():
-                if not destination_site.languages.languages.filter(
-                        locale=language.language.locale).exists():
-                    new_lang = SiteLanguageRelation.objects.create(
-                        language_setting=Languages.for_site(destination_site),
-                        locale=language.language.locale,
-                        is_active=False)
-                    LanguageRelation.objects.create(
-                        page=self, language=new_lang)
-        super(ArticlePage, self).copy(*args, **kwargs)
 
     def move(self, *args, **kwargs):
         current_site = self.get_site()

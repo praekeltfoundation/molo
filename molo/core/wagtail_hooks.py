@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
-from molo.core.models import Languages
+from molo.core.models import SiteLanguageRelation, LanguageRelation, \
+    PageTranslation, Languages
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
@@ -37,10 +38,43 @@ def register_admin_urls():
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
-
     if main_language and parent_page.depth > 2:
         return pages.filter(languages__language__locale=main_language.locale)
     return pages
+
+
+@hooks.register('after_copy_page')
+def copy_translation_pages(request, page, new_page):
+    current_site = page.get_site()
+    destination_site = new_page.get_site()
+    if not (current_site is destination_site):
+        for language in page.languages.all():
+            if not destination_site.languages.languages.filter(
+                    locale=language.language.locale).exists():
+                SiteLanguageRelation.objects.create(
+                    language_setting=Languages.for_site(destination_site),
+                    locale=language.language.locale,
+                    is_active=False)
+    languages = Languages.for_site(destination_site).languages
+    if (languages.filter(
+            is_main_language=True).exists() and
+            not new_page.languages.exists()):
+        LanguageRelation.objects.create(
+            page=new_page,
+            language=languages.filter(
+                is_main_language=True).first())
+
+    for translation in page.translations.all():
+        new_translation = translation.translated_page.copy(
+            to=new_page.get_parent())
+        new_l_rel = LanguageRelation.objects.get(page=new_translation)
+        new_l_rel.language = languages.filter(
+            locale=translation.translated_page.languages.all().first(
+            ).language.locale).first()
+        new_l_rel.save()
+        PageTranslation.objects.create(
+            page=new_page,
+            translated_page=new_translation)
 
 
 @hooks.register('register_admin_menu_item')
