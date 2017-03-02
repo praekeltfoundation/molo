@@ -43,8 +43,8 @@ BASE_URL = 'http://example.com'
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -70,9 +70,10 @@ INSTALLED_APPS = [
     'wagtail.wagtailsearch',
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
-    'wagtailmodeladmin',
     'wagtailmedia',
+    'wagtail.contrib.wagtailsitemaps',
     'wagtail.contrib.settings',
+    'wagtail.contrib.modeladmin',
 
     'mptt',
     'djcelery',
@@ -97,7 +98,6 @@ MIDDLEWARE_CLASSES = [
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
-    'wagtailmodeladmin.middleware.ModelAdminMiddleware',
 
     'molo.core.middleware.AdminLocaleMiddleware',
     'molo.core.middleware.NoScriptGASessionMiddleware',
@@ -176,7 +176,7 @@ BROKER_URL = environ.get('BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = environ.get(
     'CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 CELERYBEAT_SCHEDULE = {
-    'rotate_promote_content': {
+    'rotate_content': {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },
@@ -190,6 +190,10 @@ CELERYBEAT_SCHEDULE = {
     },
     'publish_pages': {
         'task': 'molo.core.tasks.publish_scheduled_pages',
+        'schedule': crontab(minute='*'),
+    },
+    'clearsessions': {
+        'task': 'molo.core.tasks.clearsessions',
         'schedule': crontab(minute='*'),
     },
 }
