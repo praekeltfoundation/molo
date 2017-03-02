@@ -149,7 +149,7 @@ class MultiSiteRedirectToHomepage(object):
             func, args, kwargs = resolve(request.path)
             if args:
                 p_site = Page.objects.get(pk=args[-1]).get_site()
-                if not current_site == p_site:
+                if p_site and not current_site == p_site:
                     return redirect('%s%s' % (p_site.root_url, request.path))
             if not Languages.for_site(request.site).languages.all().exists():
                 return redirect('%s/admin/' % request.site.root_url)
