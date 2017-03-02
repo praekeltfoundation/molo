@@ -156,7 +156,7 @@ def page_listing_buttons(page, page_perms, is_parent=False):
 def new_page_listing_buttons(page, page_perms, is_parent=False):
     """
     This inherits the buttons from wagtail's page_listing_more_buttons
-    github.com/wagtail/wagtail/blob/stable/1.8.x/wagtail/wagtailadmin/wagtail_hooks.py#L94
+    https://github.com/wagtail/wagtail/blob/stable/1.8.x/wagtail/wagtailadmin/wagtail_hooks.py#L94
     (i.e. the buttons that are put in the original drop down menu)
     This is done to avoid breakages should their hooks change in the future
 
@@ -172,6 +172,6 @@ def new_page_listing_buttons(page, page_perms, is_parent=False):
             yield b
     else:
         for b in original_buttons:
-            if hasattr(b, '__dict__'):
-                if b.attrs['title'].lower() != 'delete this page':
+            if (hasattr(b, 'attrs') and
+                    b.attrs.get('title').lower() != 'delete this page'):
                     yield b
