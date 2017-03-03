@@ -47,7 +47,7 @@ def copy_translation_pages(request, page, new_page):
     current_site = page.get_site()
     destination_site = new_page.get_site()
     if current_site is not destination_site:
-        page.specific.copy_languages(current_site, destination_site)
+        page.specific.copy_language(current_site, destination_site)
     languages = Languages.for_site(destination_site).languages
     if (languages.filter(is_main_language=True).exists() and
             not new_page.languages.exists()):
@@ -57,14 +57,13 @@ def copy_translation_pages(request, page, new_page):
                 is_main_language=True).first())
 
     for translation in page.translations.all():
-        translation.translated_page.specific.copy_languages(
+        new_lang = translation.translated_page.specific.copy_language(
             current_site, destination_site)
         new_translation = translation.translated_page.copy(
             to=new_page.get_parent())
-        new_l_rel = LanguageRelation.objects.get(page=new_translation)
-        new_l_rel.language = languages.filter(
-            locale=translation.translated_page.languages.all().first(
-            ).language.locale).first()
+        new_l_rel, _ = LanguageRelation.objects.get_or_create(
+            page=new_translation)
+        new_l_rel.language = new_lang
         new_l_rel.save()
         PageTranslation.objects.create(
             page=new_page,

@@ -331,8 +331,9 @@ class TranslatablePageMixin(RoutablePageMixin):
             for p in self.translations.all():
                 p.translated_page.move(target, pos='last-child')
 
-    def copy_languages(self, current_site, destination_site):
-        for language in self.languages.all():
+    def copy_language(self, current_site, destination_site):
+        language = self.languages.all().first()
+        if language:
             if not destination_site.languages.languages.filter(
                     locale=language.language.locale).exists():
                 new_lang = SiteLanguageRelation.objects.create(
@@ -342,19 +343,22 @@ class TranslatablePageMixin(RoutablePageMixin):
             else:
                 new_lang = destination_site.languages.languages.filter(
                     locale=language.language.locale).first()
-        return new_lang
+            return new_lang
 
     def copy(self, *args, **kwargs):
         current_site = self.get_site()
         destination_site = kwargs['to'].get_site()
         if current_site is not destination_site:
-            new_lang = self.copy_languages(current_site, destination_site)
+            new_lang = self.copy_language(current_site, destination_site)
             page_copy = super(TranslatablePageMixin, self).copy(
                 *args, **kwargs)
-            new_l_rel, _ = LanguageRelation.objects.get_or_create(
-                page=page_copy)
-            new_l_rel.language = new_lang
-            new_l_rel.save()
+
+            if new_lang:
+                new_l_rel, _ = LanguageRelation.objects.get_or_create(
+                    page=page_copy)
+                new_l_rel.language = new_lang
+                new_l_rel.save()
+
             old_parent = self.get_main_language_page()
 
             if old_parent:
