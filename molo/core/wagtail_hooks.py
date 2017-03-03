@@ -1,7 +1,6 @@
 from django.conf.urls import url
 
-from molo.core.models import SiteLanguageRelation, LanguageRelation, \
-    PageTranslation, Languages
+from molo.core.models import LanguageRelation, PageTranslation, Languages
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
@@ -48,13 +47,7 @@ def copy_translation_pages(request, page, new_page):
     current_site = page.get_site()
     destination_site = new_page.get_site()
     if not (current_site is destination_site):
-        for language in page.languages.all():
-            if not destination_site.languages.languages.filter(
-                    locale=language.language.locale).exists():
-                SiteLanguageRelation.objects.create(
-                    language_setting=Languages.for_site(destination_site),
-                    locale=language.language.locale,
-                    is_active=False)
+        page.specific.copy_languages(current_site, destination_site)
     languages = Languages.for_site(destination_site).languages
     if (languages.filter(
             is_main_language=True).exists() and
@@ -65,13 +58,7 @@ def copy_translation_pages(request, page, new_page):
                 is_main_language=True).first())
 
     for translation in page.translations.all():
-        for language in translation.translated_page.languages.all():
-            if not destination_site.languages.languages.filter(
-                    locale=language.language.locale).exists():
-                SiteLanguageRelation.objects.create(
-                    language_setting=Languages.for_site(destination_site),
-                    locale=language.language.locale,
-                    is_active=False)
+        page.specific.copy_languages(current_site, destination_site)
         new_translation = translation.translated_page.copy(
             to=new_page.get_parent())
         new_l_rel = LanguageRelation.objects.get(page=new_translation)
