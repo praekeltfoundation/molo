@@ -58,7 +58,7 @@ def copy_translation_pages(request, page, new_page):
                 is_main_language=True).first())
 
     for translation in page.translations.all():
-        page.specific.copy_languages(current_site, destination_site)
+        translation.translated_page.specific.copy_languages(current_site, destination_site)
         new_translation = translation.translated_page.copy(
             to=new_page.get_parent())
         new_l_rel = LanguageRelation.objects.get(page=new_translation)
