@@ -351,7 +351,8 @@ class TranslatablePageMixin(RoutablePageMixin):
             new_lang = self.copy_languages(current_site, destination_site)
             page_copy = super(TranslatablePageMixin, self).copy(
                 *args, **kwargs)
-            new_l_rel = LanguageRelation.objects.get_or_create(page=page_copy)
+            new_l_rel, _ = LanguageRelation.objects.get_or_create(
+                page=page_copy)
             new_l_rel.language = new_lang
             new_l_rel.save()
             old_parent = self.get_main_language_page()
