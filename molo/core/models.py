@@ -334,7 +334,6 @@ class TranslatablePageMixin(RoutablePageMixin):
     def copy(self, *args, **kwargs):
         current_site = self.get_site()
         destination_site = kwargs['to'].get_site()
-
         if not (current_site is destination_site):
             for language in self.languages.all():
                 if not destination_site.languages.languages.filter(

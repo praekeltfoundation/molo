@@ -19,6 +19,7 @@ from molo.core.templatetags.core_tags import (
     get_translation)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.tasks import promote_articles
+from molo.core.wagtail_hooks import copy_translation_pages
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 
@@ -86,7 +87,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
                 self.main2.get_site()).languages.filter(locale='fr').exists())
         article = self.mk_articles(self.yourmind, 1)[0]
         self.mk_article_translation(article, self.french)
-        article.copy(to=self.section_index2)
+        article2 = article.copy(to=self.yourmind2)
+        copy_translation_pages('', article, article2)
         self.assertTrue(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(locale='fr').exists())
