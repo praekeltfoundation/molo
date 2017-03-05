@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from molo.core.models import Languages
+from molo.core.models import LanguageRelation, PageTranslation, Languages
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
@@ -37,10 +37,37 @@ def register_admin_urls():
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
-
     if main_language and parent_page.depth > 2:
         return pages.filter(languages__language__locale=main_language.locale)
     return pages
+
+
+@hooks.register('after_copy_page')
+def copy_translation_pages(request, page, new_page):
+    current_site = page.get_site()
+    destination_site = new_page.get_site()
+    if current_site is not destination_site:
+        page.specific.copy_language(current_site, destination_site)
+    languages = Languages.for_site(destination_site).languages
+    if (languages.filter(is_main_language=True).exists() and
+            not new_page.languages.exists()):
+        LanguageRelation.objects.create(
+            page=new_page,
+            language=languages.filter(
+                is_main_language=True).first())
+
+    for translation in page.translations.all():
+        new_lang = translation.translated_page.specific.copy_language(
+            current_site, destination_site)
+        new_translation = translation.translated_page.copy(
+            to=new_page.get_parent())
+        new_l_rel, _ = LanguageRelation.objects.get_or_create(
+            page=new_translation)
+        new_l_rel.language = new_lang
+        new_l_rel.save()
+        PageTranslation.objects.create(
+            page=new_page,
+            translated_page=new_translation)
 
 
 @hooks.register('register_admin_menu_item')

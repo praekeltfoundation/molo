@@ -113,6 +113,39 @@ class TestPages(TestCase, MoloTestCaseMixin):
             response['Location'],
             '/admin/login/?next=%2Fadmin%2Fpages%2F16%2F')
 
+    def test_copy_method_of_section_page_copies_translations_subpages(self):
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        article = self.mk_articles(self.yourmind, 1)[0]
+        self.mk_article_translation(article, self.french)
+        self.mk_section_translation(self.yourmind, self.french)
+        self.user = self.login()
+        self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.yourmind.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.section_index2.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertTrue(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(
+                    locale='fr').first().is_active)
+        new_section = Page.objects.get(slug='blank')
+        self.assertEquals(new_section.get_site(), self.main2.get_site())
+        self.assertEquals(
+            new_section.get_children().count(),
+            self.yourmind.get_children().count())
+        self.assertEquals(
+            new_section.translations.all().count(),
+            self.yourmind.translations.all().count())
+
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)
 
