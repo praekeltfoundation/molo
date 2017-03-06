@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.2
+~~~~~
+- Allows content rotation to pick from descendant articles not only child articles
+
 4.4.1
 ~~~~~
 - Updated template overrides to fix missing Page admin buttons
