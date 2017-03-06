@@ -6,12 +6,15 @@ from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from wagtailmodeladmin.options import (
-    ModelAdmin, wagtailmodeladmin_register)
+from wagtail.contrib.modeladmin.options import (
+    ModelAdmin, modeladmin_register)
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
+from wagtail.wagtailadmin.widgets import ButtonWithDropdownFromHook
+
+from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
 from . import views
 
@@ -27,7 +30,7 @@ class LanguageModelAdmin(ModelAdmin):
     ordering = ('-is_main_language', 'locale')
     menu_order = 100
 
-wagtailmodeladmin_register(LanguageModelAdmin)
+modeladmin_register(LanguageModelAdmin)
 
 
 @hooks.register('register_admin_urls')
@@ -122,3 +125,53 @@ def show_explorer_only_to_users_have_access(request, menu_items):
             'Comment Moderator', 'Expert', 'Wagtail Login Only']).exists():
         menu_items[:] = [
             item for item in menu_items if item.name != 'explorer']
+
+
+@hooks.register('register_page_listing_buttons')
+def page_custom_listing_buttons(page, page_perms, is_parent=False):
+    yield ButtonWithDropdownFromHook(
+        'More',
+        hook_name='my_button_dropdown_hook',
+        page=page,
+        page_perms=page_perms,
+        is_parent=is_parent,
+        priority=50
+    )
+
+
+@hooks.register('register_page_listing_more_buttons')
+def page_listing_buttons(page, page_perms, is_parent=False):
+    """
+    This removes the standard wagtail dropdown menu.
+
+    This supresses the original 'More' dropdown menu because it breaks
+    the expected behaviour of the yeild functionality used to add
+    additional buttons in wagtail_hooks.
+    """
+    if page_perms.can_move():
+        return None
+
+
+@hooks.register('my_button_dropdown_hook')
+def new_page_listing_buttons(page, page_perms, is_parent=False):
+    """
+    This inherits the buttons from wagtail's page_listing_more_buttons
+    https://github.com/wagtail/wagtail/blob/stable/1.8.x/wagtail/wagtailadmin/wagtail_hooks.py#L94
+    (i.e. the buttons that are put in the original drop down menu)
+    This is done to avoid breakages should their hooks change in the future
+
+
+    It iterates through the buttons and prevents the delete button
+    from being added if the Page should not be deleteable from the admin UI
+    """
+    original_buttons = list(page_listing_more_buttons(page,
+                                                      page_perms,
+                                                      is_parent))
+    if not hasattr(page.specific, 'hide_delete_button'):
+        for b in original_buttons:
+            yield b
+    else:
+        for b in original_buttons:
+            if (hasattr(b, 'attrs') and
+                    b.attrs.get('title').lower() != 'delete this page'):
+                    yield b
