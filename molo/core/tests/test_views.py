@@ -113,6 +113,23 @@ class TestPages(TestCase, MoloTestCaseMixin):
             response['Location'],
             '/admin/login/?next=%2Fadmin%2Fpages%2F16%2F')
 
+    def test_able_to_copy_main(self):
+        # testing that copying a main page does not give an error
+        self.user = self.login()
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        main3 = Main.objects.get(slug='blank')
+        self.assertEquals(
+            main3.get_children().count(), self.main.get_children().count())
+
     def test_copy_method_of_section_page_copies_translations_subpages(self):
         self.assertFalse(
             Languages.for_site(

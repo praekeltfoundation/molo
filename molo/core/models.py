@@ -334,7 +334,8 @@ class TranslatablePageMixin(RoutablePageMixin):
     def copy_language(self, current_site, destination_site):
         language = self.languages.all().first()
         if language:
-            if not destination_site.languages.languages.filter(
+            if not hasattr(destination_site, 'languages') or \
+                not destination_site.languages.languages.filter(
                     locale=language.language.locale).exists():
                 new_lang = SiteLanguageRelation.objects.create(
                     language_setting=Languages.for_site(destination_site),

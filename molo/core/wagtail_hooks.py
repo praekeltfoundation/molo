@@ -46,7 +46,7 @@ def show_main_language_only(parent_page, pages, request):
 def copy_translation_pages(request, page, new_page):
     current_site = page.get_site()
     destination_site = new_page.get_site()
-    if current_site is not destination_site:
+    if current_site is not destination_site and (page.depth > 2):
         page.specific.copy_language(current_site, destination_site)
     languages = Languages.for_site(destination_site).languages
     if (languages.filter(is_main_language=True).exists() and
