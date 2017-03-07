@@ -8,7 +8,7 @@ from urlparse import parse_qs
 
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
@@ -1339,3 +1339,30 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, delete_button, html=True)
+
+
+class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.superuser = User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+
+        self.expert_group, _created = Group.objects.get_or_create(
+            name='Expert')
+
+    def can_see_explorer(self, client):
+        response = client.get('/admin/')
+        self.assertEquals(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertTrue(soup.find('a', string='Explorer'))
+
+    def test_explorer_access(self):
+        self.client.login(username='testuser', password='password')
+
+        self.can_see_explorer(self.client)
+
+        self.superuser.groups.set([self.expert_group])
+
+        self.can_see_explorer(self.client)
