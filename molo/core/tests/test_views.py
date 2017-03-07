@@ -8,7 +8,8 @@ from urlparse import parse_qs
 
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
@@ -1352,13 +1353,36 @@ class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
         self.expert_group, _created = Group.objects.get_or_create(
             name='Expert')
 
+        # Create wagtail group with wagtail admin permissions
+        self.wagtail_login_only_group, _created = Group.objects.get_or_create(
+            name='Wagtail Login Only')
+
+        wagtailadmin_content_type, created = ContentType.objects.get_or_create(
+            app_label='wagtailadmin',
+            model='admin'
+        )
+
+        # Create admin permission
+        admin_permission, created = Permission.objects.get_or_create(
+            content_type=wagtailadmin_content_type,
+            codename='access_admin',
+            name='Can access Wagtail admin'
+        )
+
+        # add the wagtail login permissions to group
+        access_admin = Permission.objects.get(codename='access_admin')
+        self.wagtail_login_only_group.permissions.add(access_admin)
+
+        self.admin_user = User.objects.create_user(
+            username='username', password='password', email='login@email.com')
+
     def can_see_explorer(self, client):
         response = client.get('/admin/')
         self.assertEquals(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertTrue(soup.find('a', string='Explorer'))
 
-    def test_explorer_access(self):
+    def test_superuser_explorer_access(self):
         self.client.login(username='testuser', password='password')
 
         self.can_see_explorer(self.client)
@@ -1366,3 +1390,16 @@ class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
         self.superuser.groups.set([self.expert_group])
 
         self.can_see_explorer(self.client)
+
+    def test_wagtail_login_only_user_cannot_see_explorer(self):
+        self.admin_user.groups.set([self.wagtail_login_only_group])
+
+        self.client.login(
+            username=self.admin_user.username,
+            password='password')
+
+        response = self.client.get('/admin/')
+
+        self.assertEquals(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertFalse(soup.find('a', string='Explorer'))
