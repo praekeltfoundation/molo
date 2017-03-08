@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'modelcluster',
 
     'molo.core',
+    'molo.profiles',
     '{{cookiecutter.app_name}}',
     'google_analytics',
 
@@ -104,6 +105,11 @@ MIDDLEWARE_CLASSES = [
     'molo.core.middleware.NoScriptGASessionMiddleware',
 
     'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'molo.core.backends.MoloModelBackend'
+    'django.contrib.auth.backends.ModelBackend'
 ]
 
 TEMPLATES = [
