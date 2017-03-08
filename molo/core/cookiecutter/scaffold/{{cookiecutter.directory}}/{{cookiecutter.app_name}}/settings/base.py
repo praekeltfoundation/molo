@@ -108,7 +108,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'molo.core.backends.MoloModelBackend'
+    'molo.core.backends.MoloModelBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
 
