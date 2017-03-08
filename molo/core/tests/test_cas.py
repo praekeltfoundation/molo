@@ -74,7 +74,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     def test_login_redirect(self):
         response = self.client.get('/admin/', follow=True)
-        print response, 'Codie!!!!'
         self.assertEquals(
             response.request.get('QUERY_STRING'),
             'service=http%3A%2F%2Ftestserver'
