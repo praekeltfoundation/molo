@@ -106,6 +106,11 @@ MIDDLEWARE_CLASSES = [
     'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'molo.core.backends.MoloModelBackend'
+    'django.contrib.auth.backends.ModelBackend'
+]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
