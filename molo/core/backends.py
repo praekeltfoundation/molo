@@ -13,7 +13,6 @@ class MoloModelBackend(ModelBackend):
 
     def authenticate(
             self, request, username=None, password=None, *args, **kwargs):
-        print 'in authenticate'
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
         try:
