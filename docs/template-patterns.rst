@@ -18,21 +18,24 @@ Website Glossary
 
 These are the Molo sites:
 
-- Bewise (old)
-- Bewise (new)
+- TuneMe
+
 --
 
-- Unicef IoGT (old)
-- Unicef IoGT (new)
-- Unicef Fact for Life
---
+- GEM (Girl Effect Mobile)
 
-- Babycenter
-- Malaria No More
 --
 
 - FreeBasics
-- Tune
+
+--
+
+- Babycenter
+
+--
+
+- IoGT (Internet of Good Things)
+
 
 Website Components 
 ------------------
