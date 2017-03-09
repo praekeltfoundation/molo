@@ -1,11 +1,11 @@
 {% raw %}
-{% extends "wagtailadmin/pages/edit.html" %}
+{% extends "wagtailadmin/base.html" %}
 {% load wagtailadmin_tags %}
 {% load gravatar %}
 {% load i18n %}
 {% load core_tags %}
-{% block titletag %}{{ block.super }}{% endblock %}
-{% block bodyclass %}{{ block.super }}{% endblock %}
+{% block titletag %}{% blocktrans with title=page.title page_type=content_type.model_class.get_verbose_name %}Editing {{ page_type }}: {{ title }}{% endblocktrans %}{% endblock %}
+{% block bodyclass %}page-editor model-{{ content_type.model }}{% endblock %}
 
 {% block content %}
     {% page_permissions page as page_perms %}
@@ -115,9 +115,9 @@
 {% endblock %}
 
 {% block extra_css %}
-    {{ block.super }}
+  {% include "wagtailadmin/pages/_editor_css.html" %}
 {% endblock %}
 {% block extra_js %}
-    {{ block.super }}
+  {% include "wagtailadmin/pages/_editor_js.html" %}
 {% endblock %}
 {% endraw %}

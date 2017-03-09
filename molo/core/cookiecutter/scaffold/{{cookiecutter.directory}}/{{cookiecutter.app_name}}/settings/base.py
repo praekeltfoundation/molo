@@ -151,6 +151,8 @@ GOOGLE_ANALYTICS_IGNORE_PATH = [
     # when using nginx, we handle statics and media
     # but including them here just incase
     '/media/', '/static/',
+    # metrics URL used by promethius monitoring system
+    '/metrics/',
 ]
 
 # Database
@@ -197,6 +199,10 @@ CELERYBEAT_SCHEDULE = {
     },
     'publish_pages': {
         'task': 'molo.core.tasks.publish_scheduled_pages',
+        'schedule': crontab(minute='*'),
+    },
+    'clearsessions': {
+        'task': 'molo.core.tasks.clearsessions',
         'schedule': crontab(minute='*'),
     },
 }

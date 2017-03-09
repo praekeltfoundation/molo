@@ -1,6 +1,24 @@
 CHANGE LOG
 ==========
 
+4.4.2
+~~~~~
+- Allows content rotation to pick from descendant articles not only child articles
+
+4.4.1
+~~~~~
+- Updated template overrides to fix missing Page admin buttons
+
+4.4.0
+~~~~~
+- Content rotation enhancement:
+  - Only promote pages that are exact type of ArticlePage
+  - Only demote an article if there is more than two promoted articles
+
+4.3.3
+~~~~~
+- Add django clearsessions to celery tasks
+
 4.3.2
 ~~~~~
 - Added missing classes in custom admin template
