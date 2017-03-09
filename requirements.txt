@@ -21,4 +21,4 @@ redis
 six>=1.9
 django-google-analytics-app==2.1.4
 setuptools==18.5
--e git+https://github.com/praekelt/molo.profilesgit@95be799c76145728f63898fa3a06de7d4f90af33#egg=molo.profiles
+molo.profiles
