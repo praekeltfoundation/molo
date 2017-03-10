@@ -132,6 +132,10 @@ def hide_import_content_if_not_uc_user(request, menu_items):
 
 @hooks.register('construct_main_menu')
 def show_explorer_only_to_users_have_access(request, menu_items):
+    if (request.user.is_superuser or
+        User.objects.filter(pk=request.user.pk, groups__name__in=[
+            'Moderator', 'Editor']).exists()):
+        return menu_items
     if User.objects.filter(pk=request.user.pk, groups__name__in=[
             'Comment Moderator', 'Expert', 'Wagtail Login Only']).exists():
         menu_items[:] = [

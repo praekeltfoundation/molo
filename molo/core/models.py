@@ -13,6 +13,7 @@ from django.shortcuts import redirect
 from django.db.models.signals import (
     pre_delete, post_delete, pre_save, post_save)
 from django.dispatch import receiver
+from django.template.response import TemplateResponse
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
@@ -377,6 +378,12 @@ class TranslatablePageMixin(RoutablePageMixin):
     def noredirect(self, request):
 
         return Page.serve(self, request)
+
+    @route(r'^$')
+    def main(self, request):
+        return TemplateResponse(
+            request, self.get_template(request),
+            self.get_context(request))
 
     def get_sitemap_urls(self):
         return [
