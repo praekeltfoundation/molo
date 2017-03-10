@@ -178,7 +178,7 @@ def rotate_featured_in_homepage(main_lang, day):
                             random_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
                                 languages__language__id=main_lang.id
-                            ).child_of(section).order_by('?').exact_type(
+                            ).descendant_of(section).order_by('?').exact_type(
                                 ArticlePage).first()
 
                             # promotes an article and bumps last one off list

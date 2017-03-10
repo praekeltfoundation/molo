@@ -1,13 +1,21 @@
 CHANGE LOG
 ==========
 
+4.4.3
+~~~~~
+- Excluded metrics URL from Google Analytics
+- Fixed access to Explorer bug for superuser's with non-superuser roles
+
+4.4.2
+~~~~~
+- Allows content rotation to pick from descendant articles not only child articles
+
 4.4.1
 ~~~~~
 - Updated template overrides to fix missing Page admin buttons
 
 4.4.0
 ~~~~~
-- Add django clear sessions as a task in order to clear the sessions randomly
 - Content rotation enhancement:
   - Only promote pages that are exact type of ArticlePage
   - Only demote an article if there is more than two promoted articles

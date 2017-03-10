@@ -413,21 +413,21 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             get_featured_articles(self.yourmind_sub).count(), 10)
         first_article_old = get_featured_articles(self.yourmind_sub)[0].pk
         last_article_old = get_featured_articles(self.yourmind_sub)[9].pk
-        self.yourmind_sub.content_rotation_start_date = datetime.now()
-        self.yourmind_sub.content_rotation_end_date = datetime.now() + \
+        self.yourmind.content_rotation_start_date = datetime.now()
+        self.yourmind.content_rotation_end_date = datetime.now() + \
             timedelta(days=1)
         time1 = str(datetime.now().time())[:8]
         time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
-        self.yourmind_sub.time = dumps([{
+        self.yourmind.time = dumps([{
             'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
-        self.yourmind_sub.monday_rotation = True
-        self.yourmind_sub.tuesday_rotation = True
-        self.yourmind_sub.wednesday_rotation = True
-        self.yourmind_sub.thursday_rotation = True
-        self.yourmind_sub.friday_rotation = True
-        self.yourmind_sub.saturday_rotation = True
-        self.yourmind_sub.sunday_rotation = True
-        self.yourmind_sub.save_revision().publish()
+        self.yourmind.monday_rotation = True
+        self.yourmind.tuesday_rotation = True
+        self.yourmind.wednesday_rotation = True
+        self.yourmind.thursday_rotation = True
+        self.yourmind.friday_rotation = True
+        self.yourmind.saturday_rotation = True
+        self.yourmind.sunday_rotation = True
+        self.yourmind.save_revision().publish()
         rotate_content()
         self.assertEquals(
             get_featured_articles(self.yourmind_sub).count(), 10)
