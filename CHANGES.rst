@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+4.4.3
+~~~~~
+- Excluded metrics URL from Google Analytics
+- Fixed access to Explorer bug for superuser's with non-superuser roles
+
 4.4.2
 ~~~~~
 - Allows content rotation to pick from descendant articles not only child articles
