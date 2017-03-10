@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.4
+~~~~~
+- Fixed bug for previewing pages
+
 4.4.3
 ~~~~~
 - Excluded metrics URL from Google Analytics
