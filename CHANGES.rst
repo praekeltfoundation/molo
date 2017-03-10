@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.0.1-beta.1
+~~~~~
+- Added profiles urls
+
 5.0.0-beta.1
 ~~~~~
 - Added multi-site cms functionality (Merged CMS)
