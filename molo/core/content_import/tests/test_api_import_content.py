@@ -9,7 +9,7 @@ from unicore.content.models import Category, Page, Localisation
 
 from molo.core.models import (
     SiteLanguage, SectionPage, ArticlePage, FooterPage,
-    SectionIndexPage, FooterIndexPage)
+    SectionIndexPage, FooterIndexPage, Main, Languages, SiteLanguageRelation)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.errors import InvalidParametersError
@@ -23,7 +23,7 @@ class TestImportContent(
         ModelBaseTest, MoloTestCaseMixin, ElasticGitTestMixin):
 
     def setUp(self):
-        self.mk_main()
+        self.main = self.mk_main()
 
     def test_no_main_language(self):
         def run():
@@ -72,8 +72,17 @@ class TestImportContent(
         }])
 
     def test_import_sections_for_primary_language(self):
-        SiteLanguage.objects.create(locale='en')
-        SiteLanguage.objects.create(locale='es')
+        main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='es',
+            is_active=True)
         repo1 = Repo(self.create_workspace(), 'repo1', 'Repo 1')
         ws1 = repo1.workspace
         self.add_languages(ws1, 'eng_GB', 'spa_ES')

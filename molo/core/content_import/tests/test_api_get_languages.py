@@ -2,7 +2,7 @@ import pytest
 
 from elasticgit.tests.base import ModelBaseTest
 
-from molo.core.models import SiteLanguage
+from molo.core.models import SiteLanguageRelation, Main, Languages
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.api import Repo
@@ -16,13 +16,19 @@ class TestGetLanguages(
         ModelBaseTest, MoloTestCaseMixin, ElasticGitTestMixin):
 
     def setUp(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
-        self.spanish = SiteLanguage.objects.create(
-            locale='es',
-        )
         self.mk_main()
+        main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=main.get_site().pk)
+
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='es',
+            is_active=True)
 
         self.ws1 = self.create_workspace('1')
         self.ws2 = self.create_workspace('2')
