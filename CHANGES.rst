@@ -1,8 +1,28 @@
 CHANGE LOG
 ==========
+
+5.0.1-beta.1
+~~~~~
+- Added profiles urls
+
+5.0.0-beta.1
+~~~~~
+- Added multi-site cms functionality (Merged CMS)
+- Added authentication backend for linking users to sites
+- Added middleware for site redirect
+
 4.4.5
 ~~~~~
 - consolidate minute tasks into 1 call
+
+4.4.4
+~~~~~
+- Fixed bug for previewing pages
+
+4.4.3
+~~~~~
+- Excluded metrics URL from Google Analytics
+- Fixed access to Explorer bug for superuser's with non-superuser roles
 
 4.4.2
 ~~~~~
