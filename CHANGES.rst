@@ -1,5 +1,12 @@
 CHANGE LOG
 ==========
+4.4.5
+~~~~~
+- consolidate minute tasks into 1 call
+
+4.4.2
+~~~~~
+- Allows content rotation to pick from descendant articles not only child articles
 
 4.4.1
 ~~~~~
@@ -7,10 +14,9 @@ CHANGE LOG
 
 4.4.0
 ~~~~~
-- Add django clear sessions as a task in order to clear the sessions randomly
 - Content rotation enhancement:
-  - Only promote pages that are exact type of ArticlePage
-  - Only demote an article if there is more than two promoted articles
+- Only promote pages that are exact type of ArticlePage
+- Only demote an article if there is more than two promoted articles
 
 4.3.3
 ~~~~~
