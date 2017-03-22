@@ -1,5 +1,8 @@
 CHANGE LOG
 ==========
+4.4.5
+~~~~~
+- consolidate minute tasks into 1 call
 
 4.4.2
 ~~~~~
