@@ -12,7 +12,7 @@
 <article class="article-standard">
   {% for block in self.body %}
     {% if block.block_type == 'heading' %}
-      <h3 class="heading heading--large">{{ block.value }}</h3>
+    <h3 class="heading heading--large">{{ block.value }}</h3>
 
     {% elif block.block_type == 'image' %}
       {% image block.value width-320 %}
