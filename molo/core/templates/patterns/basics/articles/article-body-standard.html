@@ -24,9 +24,7 @@
       {% endfor %}
     </ul>
     {% else %}
-      {% if not block.block_type == 'page'%}
-        {{ block }}
-      {% endif %}
+      {{ block }}
     {% endif %}
   {% endfor %}
 </article>

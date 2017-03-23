@@ -1,10 +1,7 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
 {% if featured_articles %}
-<!-- Pick One class - theme
- section-listing__theme-bg{{section.get_effective_extra_style_hints}}
- subsection-listing__theme-bg{{section.get_effective_extra_style_hints}}
--->
+
 <div class="section-listing section-listing__theme-bg subsection-listing__theme-bg{{section.get_effective_extra_style_hints}}">
   <h1 class="heading heading--x-large section-listing__theme-bg-title">
     <a href="{% pageurl section %}" class="section-listing__theme-bg-link">{{section.title}}</a>

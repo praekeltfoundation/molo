@@ -1,6 +1,59 @@
 CHANGE LOG
 ==========
 
+5.0.0-beta.1
+~~~~~
+- Added multi-site cms functionality (Merged CMS)
+- Added authentication backend for linking users to sites
+- Added middleware for site redirect
+
+4.4.4
+~~~~~
+- Fixed bug for previewing pages
+
+4.4.3
+~~~~~
+- Excluded metrics URL from Google Analytics
+- Fixed access to Explorer bug for superuser's with non-superuser roles
+
+4.4.2
+~~~~~
+- Allows content rotation to pick from descendant articles not only child articles
+
+4.4.1
+~~~~~
+- Updated template overrides to fix missing Page admin buttons
+
+4.4.0
+~~~~~
+- Content rotation enhancement:
+  - Only promote pages that are exact type of ArticlePage
+  - Only demote an article if there is more than two promoted articles
+
+4.3.3
+~~~~~
+- Add django clearsessions to celery tasks
+
+4.3.2
+~~~~~
+- Added missing classes in custom admin template
+
+4.3.1
+~~~~~
+- Fixed template error
+
+4.3.0
+~~~~~
+- Removed the ability to delete index pages using the admin UI
+
+4.2.0
+~~~~~
+- added multi-language next and recommended article feature
+
+4.1.0
+~~~~~~
+- Add sitemap - include translations
+
 4.x
 ---
 
@@ -8,6 +61,7 @@ Main Features::
 
 - Upgraded to Wagtail 1.8
 - Added upload/download functionality for zipped media files
+- Next and Recommended articles in articles
 
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -15,6 +69,10 @@ Backwards incompatible changes
 - ``wagtailmodeladmin_register`` function is replaced by ``modeladmin_register``
 - ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
 - ``search_fields`` now uses a list instead of a tuple
+
+4.0.2
+~~~~~~
+- Fixed template overrides for django-admin templates
 
 4.0.1
 ~~~~~~

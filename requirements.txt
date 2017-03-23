@@ -11,7 +11,7 @@ django-mptt==0.8.5
 requests
 elastic-git
 unicore.content
-wagtail==1.8
+wagtail==1.9
 responses
 babel
 wagtailmedia==0.1.3
@@ -27,3 +27,4 @@ djangorestframework==3.3.2
 cached-property
 djangorestframework-jwt==1.8.0
 setuptools==18.5
+molo.profiles==4.0.0b1

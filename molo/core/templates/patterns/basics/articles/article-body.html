@@ -6,7 +6,7 @@
   </a>
 {% endif %}
 
-<!--NOTE: Breadcrumbs sit below the Article image -->
+
 <h1 class="heading heading--xx-large heading--article">{{self.title}}</h1>
 <p class="article__desc">{{self.subtitle}}</p>
 <article class="article-standard">
@@ -31,9 +31,7 @@
       {% endfor %}
     </ul>
     {% else %}
-      {% if not block.block_type == 'page'%}
-        {{ block }}
-      {% endif %}
+      {{ block }}
     {% endif %}
   {% endfor %}
 </article>

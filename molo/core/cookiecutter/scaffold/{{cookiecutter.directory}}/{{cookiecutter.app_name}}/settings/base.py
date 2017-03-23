@@ -43,8 +43,8 @@ BASE_URL = 'http://example.com'
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -56,8 +56,8 @@ INSTALLED_APPS = [
     'modelcluster',
 
     'molo.core',
+    'molo.profiles',
     '{{cookiecutter.app_name}}',
-    'django.contrib.admin',
     'mote',
     'google_analytics',
 
@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
     'wagtailmedia',
+    'wagtail.contrib.wagtailsitemaps',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
 
@@ -86,6 +87,7 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
+DEFAULT_SITE_PORT = 8000
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -104,6 +106,11 @@ MIDDLEWARE_CLASSES = [
     'molo.core.middleware.NoScriptGASessionMiddleware',
 
     'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'molo.core.backends.MoloModelBackend',
+    'django.contrib.auth.backends.ModelBackend'
 ]
 
 TEMPLATES = [
@@ -150,6 +157,8 @@ GOOGLE_ANALYTICS_IGNORE_PATH = [
     # when using nginx, we handle statics and media
     # but including them here just incase
     '/media/', '/static/',
+    # metrics URL used by promethius monitoring system
+    '/metrics/',
 ]
 
 # Database
@@ -196,6 +205,10 @@ CELERYBEAT_SCHEDULE = {
     },
     'publish_pages': {
         'task': 'molo.core.tasks.publish_scheduled_pages',
+        'schedule': crontab(minute='*'),
+    },
+    'clearsessions': {
+        'task': 'molo.core.tasks.clearsessions',
         'schedule': crontab(minute='*'),
     },
 }

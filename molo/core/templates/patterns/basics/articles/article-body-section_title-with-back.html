@@ -37,9 +37,7 @@
       {% endfor %}
     </ul>
     {% else %}
-      {% if not block.block_type == 'page'%}
-        {{ block }}
-      {% endif %}
+      {{ block }}
     {% endif %}
   {% endfor %}
   <p class="article-page__publish-date">{{self.first_published_at | date:"j F Y"}}</p>

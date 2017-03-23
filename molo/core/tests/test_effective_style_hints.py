@@ -1,14 +1,22 @@
 from django.test import TestCase
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage
+from molo.core.models import SiteLanguageRelation, Languages, Main
 
 
 class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
-        self.english = SiteLanguage.objects.create(locale='en')
-        self.french = SiteLanguage.objects.create(locale='fr')
         self.mk_main()
+        main = Main.objects.all().first()
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='en',
+            is_active=True)
+
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='fr',
+            is_active=True)
         self.new_section = self.mk_section(
             self.section_index,
             title="New Section",
@@ -46,7 +54,7 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             title=self.new_section3.title + ' in french')
 
         response = self.client.get(
-            '/sections/new-section-3-in-french/')
+            '/sections-main-1/new-section-3-in-french/')
         self.assertContains(
             response,
             '<div class="section-listing section-listing--standard'
@@ -59,7 +67,7 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(
             new_section6, self.french, title=new_section6.title + ' in french')
         response = self.client.get(
-            '/sections/new-section-3/new-section-6-in-french/')
+            '/sections-main-1/new-section-3/new-section-6-in-french/')
         self.assertContains(
             response,
             '<div class="section-listing section-listing--standard'
@@ -80,8 +88,8 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             title=self.new_section4.title + ' in french')
 
         response = self.client.get(
-            '/sections/new-section/new-section-2/new-section-4-in-french/')
-        print response
+            '/sections-main-1/new-section/new-section-2/'
+            'new-section-4-in-french/')
         self.assertContains(
             response,
             '<div class="section-listing section-listing--standard'
@@ -93,7 +101,7 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(
             new_section7, self.french, title=new_section7.title + ' in french')
         response = self.client.get(
-            '/sections/new-section-3/new-section-7-in-french/')
+            '/sections-main-1/new-section-3/new-section-7-in-french/')
         self.assertContains(
             response,
             '<div class="section-listing section-listing--standard'
@@ -106,7 +114,7 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             title=self.new_section5.title + ' in french',
             extra_style_hints='-french-hint')
         response = self.client.get(
-            '/sections/new-section/new-section-5-in-french/')
+            '/sections-main-1/new-section/new-section-5-in-french/')
         self.assertContains(
             response,
             '<div class="section-listing section-listing--standard'

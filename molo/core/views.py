@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.translation import (
     LANGUAGE_SESSION_KEY,
@@ -20,7 +20,7 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
-from molo.core.models import PageTranslation, SiteLanguage, ArticlePage
+from molo.core.models import PageTranslation, ArticlePage, Languages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm
 from django.views.generic import ListView
@@ -37,9 +37,12 @@ def search(request, results_per_page=10):
     locale = get_locale_code(get_language_from_request(request))
 
     if search_query:
-        results = ArticlePage.objects.filter(
+        main = request.site.root_page
+
+        results = ArticlePage.objects.descendant_of(main).filter(
             languages__language__locale=locale
         ).values_list('pk', flat=True)
+
         # Elasticsearch backend doesn't support filtering
         # on related fields, at the moment.
         # So we need to filter ArticlePage entries using DB,
@@ -97,13 +100,17 @@ def add_translation(request, page_id, locale):
         return redirect(reverse('wagtailadmin_home'))
 
     # redirect to edit page if translation already exists for this locale
-    translated_page = page.get_translation_for(locale, is_live=None)
+    translated_page = page.get_translation_for(
+        locale, request.site, is_live=None)
     if translated_page:
         return redirect(
             reverse('wagtailadmin_pages:edit', args=[translated_page.id]))
 
     # create translation and redirect to edit page
-    language = get_object_or_404(SiteLanguage, locale=locale)
+    language = Languages.for_site(request.site).languages.filter(
+        locale=locale).first()
+    if not language:
+        raise Http404
     new_title = str(language) + " translation of %s" % page.title
     new_slug = generate_slug(new_title)
     translation = page.__class__(
@@ -167,7 +174,9 @@ class TagsListView(ListView):
 
     def get_queryset(self, **kwargs):
         tag = self.kwargs["tag_name"]
-        return ArticlePage.objects.filter(tags__name__in=[tag])
+        main = self.request.site.root_page
+        return ArticlePage.objects.descendant_of(main).filter(
+            tags__name__in=[tag])
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -183,11 +192,11 @@ def upload_file(request):
             except Exception as e:
                 context_dict['error_message'] = e.message
             return render(request,
-                          'admin/transfer_media_message.html',
+                          'django_admin/transfer_media_message.html',
                           context_dict)
     else:
         form = MediaForm()
-    return render(request, 'admin/upload_media.html', {'form': form})
+    return render(request, 'django_admin/upload_media.html', {'form': form})
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -216,6 +225,6 @@ def download_file(request):
             return resp
         else:
             return render(request,
-                          'admin/transfer_media_message.html',
+                          'django_admin/transfer_media_message.html',
                           {'error_message':
                            'media file does not exist'})
