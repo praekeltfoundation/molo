@@ -59,19 +59,18 @@ def clearsessions():
 
 @task(ignore_result=True)
 def demote_articles():
-    now = datetime.now()
     ArticlePage.objects.live().filter(
-        featured_in_latest_end_date__lte=now).update(
+        featured_in_latest_end_date__lte=datetime.now()).update(
             featured_in_latest=False,
             featured_in_latest_start_date=None,
             featured_in_latest_end_date=None)
     ArticlePage.objects.live().filter(
-        featured_in_section_end_date__lte=now).update(
+        featured_in_section_end_date__lte=datetime.now()).update(
             featured_in_section=False,
             featured_in_section_start_date=None,
             featured_in_section_end_date=None)
     ArticlePage.objects.live().filter(
-        featured_in_homepage_end_date__lte=now).update(
+        featured_in_homepage_end_date__lte=datetime.now()).update(
             featured_in_homepage=False,
             featured_in_homepage_start_date=None,
             featured_in_homepage_end_date=None)
@@ -79,15 +78,14 @@ def demote_articles():
 
 @task(ignore_result=True)
 def promote_articles():
-    now = datetime.now()
     ArticlePage.objects.live().filter(
-        featured_in_latest_start_date__lte=now).update(
+        featured_in_latest_start_date__lte=datetime.now()).update(
         featured_in_latest=True)
     ArticlePage.objects.live().filter(
-        featured_in_section_start_date__lte=now).update(
+        featured_in_section_start_date__lte=datetime.now()).update(
         featured_in_section=True)
     ArticlePage.objects.live().filter(
-        featured_in_homepage_start_date__lte=now).update(
+        featured_in_homepage_start_date__lte=datetime.now()).update(
         featured_in_homepage=True)
 
 
