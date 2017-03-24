@@ -233,3 +233,16 @@ def validate_content(data, locales, username, email, host):
         'errors': result['errors'],
         'warnings': result['warnings']
     })
+
+
+@task(ignore_result=True)
+def molo_consolidated_minute_task():
+    """
+    Purpose: To reduce the number of db connections, we run all
+    tasks in 1 call
+    """
+
+    demote_articles()
+    promote_articles()
+    publish_scheduled_pages()
+    clearsessions()
