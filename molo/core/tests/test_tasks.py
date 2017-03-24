@@ -397,12 +397,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         def get_featured_articles(section):
             return section.featured_in_homepage_articles()
 
-        non_rotating_articles = self.mk_articles(
-            self.yourmind, count=3, featured_in_homepage=False)
-        rotate_content()
-        for article in non_rotating_articles:
-            self.assertFalse(article.featured_in_latest)
-        self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
         self.mk_articles(
             self.yourmind_sub, count=10,
             featured_in_homepage_start_date=datetime.now())
@@ -429,6 +423,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind.sunday_rotation = True
         self.yourmind.save_revision().publish()
         rotate_content()
+        self.assertEquals(
+            ArticlePage.objects.count(), 20)
         self.assertEquals(
             get_featured_articles(self.yourmind_sub).count(), 10)
         self.assertNotEquals(
