@@ -1,5 +1,9 @@
 CHANGE LOG
 ==========
+4.4.7
+~~~~~
+- Fixed random test failures in content rotation test
+
 4.4.6
 ~~~~~
 - consolidate minute tasks into 1 call
