@@ -397,15 +397,10 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         def get_featured_articles(section):
             return section.featured_in_homepage_articles()
 
-        non_rotating_articles = self.mk_articles(
-            self.yourmind, count=3, featured_in_homepage=False)
-        rotate_content()
-        for article in non_rotating_articles:
-            self.assertFalse(article.featured_in_latest)
-        self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
+        now = datetime.now()
         self.mk_articles(
             self.yourmind_sub, count=10,
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_homepage_start_date=now)
         promote_articles()
         self.mk_articles(
             self.yourmind_sub, count=10, featured_in_homepage=False)
@@ -413,13 +408,13 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             get_featured_articles(self.yourmind_sub).count(), 10)
         first_article_old = get_featured_articles(self.yourmind_sub)[0].pk
         last_article_old = get_featured_articles(self.yourmind_sub)[9].pk
-        self.yourmind.content_rotation_start_date = datetime.now()
-        self.yourmind.content_rotation_end_date = datetime.now() + \
+        now = datetime.now()
+        self.yourmind.content_rotation_start_date = now
+        self.yourmind.content_rotation_end_date = now + \
             timedelta(days=1)
-        time1 = str(datetime.now().time())[:8]
-        time2 = str((datetime.now() + timedelta(minutes=1)).time())[:8]
+        time1 = str(now.time())[:8]
         self.yourmind.time = dumps([{
-            'type': 'time', 'value': time1}, {'type': 'time', 'value': time2}])
+            'type': 'time', 'value': time1}])
         self.yourmind.monday_rotation = True
         self.yourmind.tuesday_rotation = True
         self.yourmind.wednesday_rotation = True
@@ -429,14 +424,16 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind.sunday_rotation = True
         self.yourmind.save_revision().publish()
         rotate_content()
+
+        featured_articles = get_featured_articles(self.yourmind_sub)
         self.assertEquals(
-            get_featured_articles(self.yourmind_sub).count(), 10)
+            featured_articles.count(), 10)
         self.assertNotEquals(
-            first_article_old, get_featured_articles(self.yourmind_sub)[0].pk)
+            first_article_old, featured_articles[0].pk)
         self.assertEquals(
-            first_article_old, get_featured_articles(self.yourmind_sub)[2].pk)
+            first_article_old, featured_articles[1].pk)
         self.assertNotEquals(
-            last_article_old, get_featured_articles(self.yourmind_sub)[9].pk)
+            last_article_old, featured_articles[9].pk)
 
     def test_homepage_rotation_subcategories(self):
 
