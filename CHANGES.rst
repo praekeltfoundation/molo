@@ -1,5 +1,11 @@
 CHANGE LOG
 ==========
+
+4.4.8
+~~~~~
+- Pulled in changes from previous versions that were accidentally excluded
+- Consolidated celery tasks in base settings file
+
 4.4.7
 ~~~~~
 - Fixed random test failures in content rotation test
@@ -7,6 +13,15 @@ CHANGE LOG
 4.4.6
 ~~~~~
 - consolidate minute tasks into 1 call
+
+4.4.4
+~~~~~
+- Fixed bug for previewing pages
+
+4.4.3
+~~~~~
+- Excluded metrics URL from Google Analytics
+- Fixed access to Explorer bug for superuser's with non-superuser roles
 
 4.4.2
 ~~~~~
