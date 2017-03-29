@@ -1,5 +1,11 @@
 CHANGE LOG
 ==========
+
+4.4.8
+~~~~~
+- Pulled in changes from previous versions that were accidentally excluded
+- Consolidated celery tasks in base settings file
+
 4.4.7
 ~~~~~
 - Fixed random test failures in content rotation test
