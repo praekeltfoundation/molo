@@ -1,7 +1,7 @@
 CHANGE LOG
 ==========
 
-5.0.3-beta.1
+5.0.4-beta.1
 ~~~~~
 - Fix of previous release
 
