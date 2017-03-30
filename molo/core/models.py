@@ -327,7 +327,7 @@ class TranslatablePageMixinNotRoutable(object):
         return response
 
     def move(self, target, pos=None):
-        super(TranslatablePageMixin, self).move(target, pos)
+        super(TranslatablePageMixinNotRoutable, self).move(target, pos)
 
         if hasattr(self, 'translations'):
             for p in self.translations.all():
@@ -353,7 +353,7 @@ class TranslatablePageMixinNotRoutable(object):
         destination_site = kwargs['to'].get_site()
         if current_site is not destination_site:
             new_lang = self.copy_language(current_site, destination_site)
-            page_copy = super(TranslatablePageMixin, self).copy(
+            page_copy = super(TranslatablePageMixinNotRoutable, self).copy(
                 *args, **kwargs)
 
             if new_lang:
