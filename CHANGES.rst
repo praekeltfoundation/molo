@@ -1,7 +1,11 @@
 CHANGE LOG
 ==========
 
-5.0.1-beta.1
+5.0.3-beta.1
+~~~~~
+- Fix of previous release
+
+5.0.2-beta.1
 ~~~~~
 - Added index creation signals
 - Added non routable mixin for Surveys
@@ -16,7 +20,16 @@ CHANGE LOG
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
 
-4.4.5
+4.4.8
+~~~~~
+- Pulled in changes from previous versions that were accidentally excluded
+- Consolidated celery tasks in base settings file
+
+4.4.7
+~~~~~
+- Fixed random test failures in content rotation test
+
+4.4.6
 ~~~~~
 - consolidate minute tasks into 1 call
 
