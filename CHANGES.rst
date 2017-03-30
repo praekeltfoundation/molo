@@ -1,7 +1,11 @@
 CHANGE LOG
 ==========
 
-5.0.1-beta.1
+5.0.3-beta.1
+~~~~~
+- Fix of previous release
+
+5.0.2-beta.1
 ~~~~~
 - Added index creation signals
 - Added non routable mixin for Surveys
