@@ -12,7 +12,7 @@ from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
 from django.db.models.signals import (
     pre_delete, post_delete, pre_save, post_save)
-from django.dispatch import receiver
+from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
 
 from taggit.models import TaggedItemBase
@@ -278,7 +278,7 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
-class TranslatablePageMixin(RoutablePageMixin):
+class TranslatablePageMixinNotRoutable(object):
     def get_translation_for(self, locale, site, is_live=True):
         language_setting = Languages.for_site(site)
         language = language_setting.languages.filter(
@@ -314,7 +314,8 @@ class TranslatablePageMixin(RoutablePageMixin):
             depth=2).first().sites_rooted_here.all().first() or None
 
     def save(self, *args, **kwargs):
-        response = super(TranslatablePageMixin, self).save(*args, **kwargs)
+        response = super(
+            TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
         languages = Languages.for_site(self.get_site()).languages
         if (languages.filter(
                 is_main_language=True).exists() and
@@ -362,7 +363,6 @@ class TranslatablePageMixin(RoutablePageMixin):
                 new_l_rel.save()
 
             old_parent = self.get_main_language_page()
-
             if old_parent:
                 new_translation_parent = \
                     page_copy.get_parent().get_children().filter(
@@ -372,11 +372,11 @@ class TranslatablePageMixin(RoutablePageMixin):
                     translated_page=page_copy)
             return page_copy
         else:
-            return super(TranslatablePageMixin, self).copy(*args, **kwargs)
+            return super(TranslatablePageMixinNotRoutable, self).copy(
+                *args, **kwargs)
 
     @route(r'^noredirect/$')
     def noredirect(self, request):
-
         return Page.serve(self, request)
 
     @route(r'^$')
@@ -412,8 +412,13 @@ class TranslatablePageMixin(RoutablePageMixin):
             return redirect(
                 '%s?%s' % (translation.url, request.GET.urlencode()))
 
-        return super(TranslatablePageMixin, self).serve(
+        return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)
+
+
+class TranslatablePageMixin(
+        TranslatablePageMixinNotRoutable, RoutablePageMixin):
+    pass
 
 
 class BannerIndexPage(Page, PreventDeleteMixin):
@@ -458,6 +463,9 @@ BannerPage.content_panels = [
     PageChooserPanel('banner_link_page'),
     FieldPanel('external_link')
 ]
+
+# Signal for allowing plugins to create indexes
+index_pages_after_copy = Signal(providing_args=["instance"])
 
 
 class Main(CommentedPageMixin, Page):
@@ -512,6 +520,7 @@ class Main(CommentedPageMixin, Page):
                     generate_slug(self.title), )))
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
+            index_pages_after_copy.send(sender=self.__class__, instance=self)
 
 
 @receiver(
