@@ -190,20 +190,8 @@ CELERYBEAT_SCHEDULE = {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },
-    'demote_articles': {
-        'task': 'molo.core.tasks.demote_articles',
-        'schedule': crontab(minute="*"),
-    },
-    'promote_articles': {
-        'task': 'molo.core.tasks.promote_articles',
-        'schedule': crontab(minute="*"),
-    },
-    'publish_pages': {
-        'task': 'molo.core.tasks.publish_scheduled_pages',
-        'schedule': crontab(minute='*'),
-    },
-    'clearsessions': {
-        'task': 'molo.core.tasks.clearsessions',
+    'molo_consolidated_minute_task': {
+        'task': 'molo.core.tasks.molo_consolidated_minute_task',
         'schedule': crontab(minute='*'),
     },
 }

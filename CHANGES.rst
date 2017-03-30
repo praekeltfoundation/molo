@@ -1,12 +1,5 @@
 CHANGE LOG
 ==========
-4.4.7
-~~~~~
-- Fixed random test failures in content rotation test
-
-4.4.6
-~~~~~
-- consolidate minute tasks into 1 call
 
 5.0.1-beta.1
 ~~~~~
@@ -17,6 +10,19 @@ CHANGE LOG
 - Added multi-site cms functionality (Merged CMS)
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
+
+4.4.8
+~~~~~
+- Pulled in changes from previous versions that were accidentally excluded
+- Consolidated celery tasks in base settings file
+
+4.4.7
+~~~~~
+- Fixed random test failures in content rotation test
+
+4.4.6
+~~~~~
+- consolidate minute tasks into 1 call
 
 4.4.4
 ~~~~~
