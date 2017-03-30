@@ -3,6 +3,11 @@ CHANGE LOG
 
 5.0.1-beta.1
 ~~~~~
+- Added index creation signals
+- Added non routable mixin for Surveys
+
+5.0.1-beta.1
+~~~~~
 - Added profiles urls
 
 5.0.0-beta.1
