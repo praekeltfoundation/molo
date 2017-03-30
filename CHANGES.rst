@@ -16,6 +16,10 @@ CHANGE LOG
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
 
+4.4.5
+~~~~~
+- consolidate minute tasks into 1 call
+
 4.4.4
 ~~~~~
 - Fixed bug for previewing pages
@@ -36,8 +40,8 @@ CHANGE LOG
 4.4.0
 ~~~~~
 - Content rotation enhancement:
-  - Only promote pages that are exact type of ArticlePage
-  - Only demote an article if there is more than two promoted articles
+- Only promote pages that are exact type of ArticlePage
+- Only demote an article if there is more than two promoted articles
 
 4.3.3
 ~~~~~
