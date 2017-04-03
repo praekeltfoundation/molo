@@ -21,10 +21,6 @@ redis
 six>=1.9
 django-google-analytics-app==2.1.4
 mote-prk
-beautifulsoup4
-ujson==1.35
-djangorestframework==3.3.2
 cached-property
-djangorestframework-jwt==1.8.0
 setuptools==18.5
 molo.profiles==4.0.0b1
