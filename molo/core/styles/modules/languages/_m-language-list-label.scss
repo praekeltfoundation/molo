@@ -1,0 +1,33 @@
+.language-list--with-label__title {
+  font-size: 16px;
+  padding: 0 10px 0 0;
+  &:after {
+    content: ":";
+  }
+}
+.language-list--with-label {}
+.language-list__item--with-label {
+  font-size: 13px;
+  display: inline-block;
+  padding: 3px;
+  margin: 0;
+  &:first-child {
+    &:hover {
+      background: none;
+      color: #000;
+    }
+  }
+  &:hover {
+    background: gray;
+    color: #fff;
+    border-radius: 3px;
+  }
+}
+.language-list__anchor-with-label {
+  font-size: 13px;
+  &:hover {
+    background: gray;
+    color: #fff;
+    border-radius: 3px;
+  }
+}

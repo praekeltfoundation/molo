@@ -1,0 +1,20 @@
+
+.section-listing__title-theme-headings {
+  border-top-style: dotted;
+  border-top-width: 1px;
+}
+.section-listing__title-theme-headings,
+.promoted-article__title--theme-headings  {
+  padding: 5px 15px;
+}
+
+.section-listing__title-theme-general,
+.section-listing__title-theme-standard {
+  padding: 0 10px;
+}
+
+.section-listing__link-theme-headings,
+.section-listing__title-theme-headings,
+.section-listing__link-theme-standard {
+  color: #000;
+}

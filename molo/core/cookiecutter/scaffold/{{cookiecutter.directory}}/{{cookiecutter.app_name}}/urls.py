@@ -47,6 +47,7 @@ urlpatterns += patterns(
                 namespace='{{app_name}}',
                 app_name='{{app_name}}')),
 {% endfor %}
+    url(r"^mote/", include("mote.urls", namespace="mote")),
     url(r'', include('molo.core.urls')),
     url(r'^profiles/', include(
         'molo.profiles.urls',

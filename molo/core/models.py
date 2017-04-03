@@ -645,6 +645,7 @@ class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
         SectionIndexPage.objects.child_of(main).delete()
         super(SectionIndexPage, self).copy(*args, **kwargs)
 
+
 SectionIndexPage.content_panels = [
     FieldPanel('title', classname='full title'),
     MultiFieldPanel(

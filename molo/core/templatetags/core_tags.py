@@ -181,7 +181,7 @@ def breadcrumbs(context):
 
 
 @register.inclusion_tag(
-    'core/admin/translations_actions.html', takes_context=True)
+    'wagtail/translations_actions.html', takes_context=True)
 def render_translations(context, page):
     if not hasattr(page.specific, 'get_translation_for'):
         return {}

@@ -16,8 +16,8 @@ from molo.core.models import (
 
 from django.utils import timezone
 
-IMPORT_EMAIL_TEMPLATE = "core/content_import/import_email.html"
-VALIDATE_EMAIL_TEMPLATE = "core/content_import/validate_email.html"
+IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"
+VALIDATE_EMAIL_TEMPLATE = "content_import/validate_email.html"
 
 
 @task(ignore_result=True)

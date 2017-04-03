@@ -1,0 +1,46 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Ordered List
+    </h4>
+    <div class="description">
+        This is used to define an ordered list and list items of content inside a page article
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+{% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+    <!-- code-example -->
+</div>
+<!-- sg-code-block -->
+
+<div class="sg-code-block">
+    <h4 class="title">
+      Unordered List
+    </h4>
+    <div class="description">
+        This is used to define an unordered list and list items of content inside a page article
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+{% render_element element.aspect.basics.list.unordered-list %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+    <!-- code-example -->
+</div>
+<!-- sg-code-block -->
+{% endblock %}
+{% endraw %}

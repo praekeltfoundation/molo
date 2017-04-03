@@ -1,0 +1,12 @@
+{% load i18n %}
+{% block search %}
+  <div class="search search--{{class}}">
+   <form action="{% url 'search' %}" class="search__form" id="search-form">
+     <fieldset>
+       {% block search_button %}
+          {% include "patterns/basics/search/search-button-icon-bg.html" with radius="none" %}
+       {% endblock %}
+     </fieldset>
+   </form>
+  </div>
+{% endblock %}

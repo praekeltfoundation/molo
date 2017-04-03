@@ -1,0 +1,48 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% get_translation self.get_parent_section as section %}
+
+  <div class="section-article__heading">
+    {% if section.image %}
+    <a href="{% pageurl section %}" class="heading-section-article__link">
+      {% image section.image width-30 class="section-article__icon-image" %}
+    </a>
+    {% endif %}
+    <h2 class="heading heading--large heading--section-article">
+      <a href="{% pageurl section %}" class="heading-section-article__link">{{section.title}}</a>
+    </h2>
+  </div>
+
+  {% if self.image %}
+    <a href="{% pageurl self %}" class="article__bg-anchor">
+      {% image self.image width-320 class="article__bg-image"%}
+    </a>
+  {% endif %}
+<h1 class="heading heading--xx-large heading--article">{{self.title}}</h1>
+<p class="article__desc">{{self.subtitle}}</p>
+<article>
+  {% for block in self.body %}
+    {% if block.block_type == 'heading' %}
+      <h3 class="heading heading--large">{{ block.value }}</h3>
+
+    {% elif block.block_type == 'image' %}
+      {% image block.value width-320 %}
+
+    {% elif block.block_type == 'numbered_list' %}
+      <ol class="ordered-list">
+      {% for item in block.value %}
+        <li class="ordered-list__item">{{ item|handle_markdown }}</li>
+      {% endfor %}
+      </ol>
+
+    {% elif block.block_type == 'list' %}
+      <ul class="unordered-list">
+      {% for item in block.value %}
+        <li class="unordered-list__item">{{ item|handle_markdown }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      {{ block }}
+    {% endif %}
+  {% endfor %}
+</article>
+{% include "patterns/basics/articles/related-article-list-with__icon.html" %}

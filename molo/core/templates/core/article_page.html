@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags static core_tags %}
+
+{% block content %}
+  {% social_media_article %}
+
+  {% include "patterns/components/articles/article-content-section-with_recommend-related-articles.html" %}
+
+  {% include "patterns/components/articles/article-tag-block.html" %}
+
+
+
+
+
+{% endblock %}

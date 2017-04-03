@@ -1,0 +1,11 @@
+{% raw %}
+{% load mote_tags %}
+
+{% mask element.json.data.List as "list" %}
+<ul class="unordered-list">
+  <li class="unordered-list__item">{{ list.text }}</li>
+  <li class="unordered-list__item">{{ list.text }}</li>
+  <li class="unordered-list__item">{{ list.text }}</li>
+  <li class="unordered-list__item">{{ list.text }}</li>
+</ul>
+{% endraw %}

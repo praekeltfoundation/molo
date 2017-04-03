@@ -1,0 +1,23 @@
+.menu-list {
+  margin: 0 auto;
+  padding: 0 5px;
+  display: inline-block;
+  position: relative;
+  @media screen and (min-width:320px) {
+    padding: 0 0 0 15px;
+  }
+}
+.menu-list__item  {
+  display: inline-block;
+  border: none;
+  padding: 5px 5px 0 0;
+  font-size: 13px;
+}
+
+.menu-list__anchor {
+  display: inline-block;
+  color: #07292F;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 13px;
+}

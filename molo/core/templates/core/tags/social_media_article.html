@@ -1,0 +1,13 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+
+{% if facebook %}
+  <a href="http://www.facebook.com/sharer.php?u=http{% if request.is_secure %}s{%endif %}://{{ request.get_host }}{{ request.path }}" target="_blank">
+    {% image facebook width-50 %}
+  </a>
+{% endif %}
+
+{% if twitter %}
+  <a href="https://twitter.com/share?url=http{% if request.is_secure %}s{%endif %}://{{ request.get_host }}{{ request.path }}" target="_blank">
+    {% image twitter width-50 %}
+  </a>
+{% endif %}

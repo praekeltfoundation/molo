@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'molo.core',
     'molo.profiles',
     '{{cookiecutter.app_name}}',
+    'mote',
     'google_analytics',
 
     'wagtail.wagtailcore',
@@ -117,7 +118,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -127,6 +128,11 @@ TEMPLATES = [
                 'molo.core.context_processors.locale',
                 'wagtail.contrib.settings.context_processors.settings',
             ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "mote.loaders.app_directories.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ]
         },
     },
 ]
