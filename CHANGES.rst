@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.9
+~~~~~
+- Added Non routable page mixin
+
 4.4.8
 ~~~~~
 - Pulled in changes from previous versions that were accidentally excluded
