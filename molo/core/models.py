@@ -266,7 +266,7 @@ class TranslatablePageMixinNotRoutable(object):
 
     def save(self, *args, **kwargs):
         response = super(
-               TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
+            TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
 
         if (SiteLanguage.objects.filter(is_main_language=True).exists() and
                 not self.languages.exists()):
