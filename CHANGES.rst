@@ -20,6 +20,10 @@ CHANGE LOG
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
 
+4.4.9
+~~~~~
+- Added Non routable page mixin
+
 4.4.8
 ~~~~~
 - Pulled in changes from previous versions that were accidentally excluded
