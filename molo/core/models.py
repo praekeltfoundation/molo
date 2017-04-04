@@ -236,7 +236,7 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
-class TranslatablePageMixin(RoutablePageMixin):
+class TranslatablePageMixinNotRoutable(object):
     def get_translation_for(self, locale, is_live=True):
         language = SiteLanguage.objects.filter(locale=locale).first()
         if not language:
@@ -265,7 +265,7 @@ class TranslatablePageMixin(RoutablePageMixin):
         return self
 
     def save(self, *args, **kwargs):
-        response = super(TranslatablePageMixin, self).save(*args, **kwargs)
+        response = super(TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
 
         if (SiteLanguage.objects.filter(is_main_language=True).exists() and
                 not self.languages.exists()):
@@ -276,7 +276,7 @@ class TranslatablePageMixin(RoutablePageMixin):
         return response
 
     def move(self, target, pos=None):
-        super(TranslatablePageMixin, self).move(target, pos)
+        super(TranslatablePageMixinNotRoutable, self).move(target, pos)
 
         if hasattr(self, 'translations'):
             for p in self.translations.all():
@@ -318,8 +318,12 @@ class TranslatablePageMixin(RoutablePageMixin):
             return redirect(
                 '%s?%s' % (translation.url, request.GET.urlencode()))
 
-        return super(TranslatablePageMixin, self).serve(
+        return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)
+
+
+class TranslatablePageMixin(TranslatablePageMixinNotRoutable, RoutablePageMixin):
+    pass
 
 
 class BannerIndexPage(Page, PreventDeleteMixin):
