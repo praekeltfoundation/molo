@@ -2,7 +2,7 @@ import pytest
 
 from elasticgit.tests.base import ModelBaseTest
 
-from molo.core.models import SiteLanguage
+from molo.core.models import SiteLanguageRelation, Main, Languages
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.errors import InvalidParametersError
@@ -16,6 +16,9 @@ class TestValidateContent(
 
     def setUp(self):
         self.mk_main()
+        main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=main.get_site().pk)
 
     def test_no_main_language(self):
         def run():
@@ -64,7 +67,13 @@ class TestValidateContent(
         }])
 
     def test_wagtail_language_validation(self):
-        self.english = SiteLanguage.objects.create(locale='en')
+        main = Main.objects.all().first()
+        language_setting = Languages.objects.get(
+            site_id=main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=language_setting,
+            locale='en',
+            is_active=True)
 
         ws1 = self.create_workspace(prefix='1')
         repo1 = Repo(ws1, 'repo1', 'Repo 1')
@@ -90,7 +99,13 @@ class TestValidateContent(
         })
 
     def test_strays(self):
-        self.english = SiteLanguage.objects.create(locale='en')
+        main = Main.objects.all().first()
+        language_setting = Languages.objects.get(
+            site_id=main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=language_setting,
+            locale='en',
+            is_active=True)
 
         ws1 = self.create_workspace(prefix='1')
         repo1 = Repo(ws1, 'repo1', 'Repo 1')

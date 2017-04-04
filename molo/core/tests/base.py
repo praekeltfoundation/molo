@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from wagtail.wagtailcore.models import Site, Page, Collection
+from wagtail.wagtailcore.models import Page, Collection
 
 from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
                               SectionIndexPage, FooterIndexPage,
@@ -22,15 +22,12 @@ class MoloTestCaseMixin(object):
 
         return user
 
-    def mk_main(self):
-        # Create page content type
+    def mk_root(self):
         page_content_type, created = ContentType.objects.get_or_create(
             model='page',
             app_label='wagtailcore'
         )
-
-        # Create root page
-        self.root = Page.objects.create(
+        self.root, _ = Page.objects.get_or_create(
             title="Root",
             slug='root',
             content_type=page_content_type,
@@ -40,13 +37,15 @@ class MoloTestCaseMixin(object):
             url_path='/',
         )
 
+    def mk_main(self, title='Main', slug='main'):
+        self.mk_root()
         main_content_type, created = ContentType.objects.get_or_create(
             model='main', app_label='core')
 
         # Create a new homepage
         self.main = Main.objects.create(
-            title="Main",
-            slug='main',
+            title=title,
+            slug=slug,
             content_type=main_content_type,
             path='00010001',
             depth=2,
@@ -54,21 +53,15 @@ class MoloTestCaseMixin(object):
             url_path='/home/',
         )
         self.main.save_revision().publish()
+        self.main.save()
 
         # Create index pages
-        self.section_index = SectionIndexPage(title='Sections',
-                                              slug='sections')
-        self.main.add_child(instance=self.section_index)
-        self.section_index.save_revision().publish()
+        self.section_index = SectionIndexPage.objects.child_of(
+            self.main).first()
 
-        self.footer_index = FooterIndexPage(title='Footer pages',
-                                            slug='footer-pages')
-        self.main.add_child(instance=self.footer_index)
-        self.footer_index.save_revision().publish()
+        self.footer_index = FooterIndexPage.objects.child_of(self.main).first()
 
-        self.banner_index = BannerIndexPage(title='Banners', slug='banners')
-        self.main.add_child(instance=self.banner_index)
-        self.banner_index.save_revision().publish()
+        self.banner_index = BannerIndexPage.objects.child_of(self.main).first()
 
         # Create root collection
         Collection.objects.create(
@@ -79,13 +72,51 @@ class MoloTestCaseMixin(object):
         )
 
         # Create a site with the new homepage set as the root
-        Site.objects.all().delete()
-        self.site = Site.objects.create(
-            hostname='localhost', root_page=self.main, is_default_site=True)
+        # Site.objects.all().delete()
+        self.site = self.main.get_site()
+
+    def mk_main2(self, title='main2', slug='main2', path=00010002):
+        self.mk_root()
+        main_content_type, created = ContentType.objects.get_or_create(
+            model='main', app_label='core')
+
+        # Create a new homepage
+        self.main2 = Main.objects.create(
+            title=title,
+            slug=slug,
+            content_type=main_content_type,
+            path=path,
+            depth=2,
+            numchild=0,
+            url_path='/main2/',
+        )
+        self.main2.save_revision().publish()
+        self.main2.save()
+
+        # Create index pages
+        self.section_index2 = SectionIndexPage.objects.child_of(
+            self.main2).first()
+
+        self.footer_index2 = FooterIndexPage.objects.child_of(
+            self.main2).first()
+
+        self.banner_index2 = BannerIndexPage.objects.child_of(
+            self.main2).first()
+
+        # Create root collection
+        Collection.objects.get_or_create(
+            name="Root",
+            path='0001',
+            depth=1,
+            numchild=0,
+        )
+
+        # Create a site with the new homepage set as the root
+        # Site.objects.all().delete()
+        self.site2 = self.main2.get_site()
 
     def mk_sections(self, parent, count=2, **kwargs):
         sections = []
-
         for i in range(count):
             data = {}
             data.update({

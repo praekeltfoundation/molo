@@ -1,7 +1,7 @@
 from django.test import TestCase
 from molo.core import utils
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage
+from molo.core.models import SiteLanguageRelation, Languages, Main
 from molo.core.utils import generate_slug
 
 
@@ -16,10 +16,14 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         self.assertEquals(utils.get_locale_code('en'), 'en')
 
     def test_slugify(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
         self.mk_main()
+        main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
 
         self.mk_section(self.main, title='Your mind')
         self.assertEquals(generate_slug('Your mind'), 'your-mind-1')

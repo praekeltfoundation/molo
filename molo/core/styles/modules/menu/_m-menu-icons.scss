@@ -1,0 +1,28 @@
+
+#search,
+#profile_register,
+#menu  {
+  .menu-list__anchor {
+    width: 21px;
+    height: 21px;
+    padding: 0 0 0 10px;
+    @media screen and (min-width: 320px) {
+      text-indent: -99em;
+    }
+  }
+}
+#menu > .menu-list__anchor {
+  @media screen and (min-width: 320px) {
+    background:  url('../images/icons/menu.svg') no-repeat 0 0 / auto 100%;
+  }
+}
+#search > .menu-list__anchor {
+  @media screen and (min-width: 320px) {
+    background:  url('../images/icons/search.svg') no-repeat 0 0 / auto 100%;
+  }
+}
+#profile_register > .menu-list__anchor {
+  @media screen and (min-width: 320px) {
+    background:  url('../images/icons/user.svg') no-repeat 0 0 / auto 100%;
+  }
+}

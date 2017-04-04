@@ -1,0 +1,17 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+
+{% if self.get_parent_section.enable_recommended_section %}
+{% get_recommended_articles self as recommended_articles %}
+  <h3>{% trans "Recommended" %}</h3>
+    {% for article in recommended_articles %}
+        <ul class="list-block">
+          <li>
+            {% if article.image %}
+            <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
+            {% endif %}
+            <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
+            <p>{{article.subtitle}}</p>
+          </li>
+        </ul>
+    {% endfor %}
+{% endif %}

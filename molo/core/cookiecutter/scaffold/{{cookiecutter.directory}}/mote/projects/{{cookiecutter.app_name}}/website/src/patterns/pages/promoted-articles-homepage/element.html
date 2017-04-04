@@ -1,0 +1,11 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Heading as "heading" %}
+
+<h1 class="heading heading--xx-large">{{ heading.text }}</h1>
+<h2 class="heading heading--x-large">{{ heading.text }}</h2>
+<h3 class="heading heading--large">{{ heading.text }}</h3>
+<h4 class="heading heading--small">{{ heading.text }}</h4>
+<h5 class="heading heading--x-small">{{ heading.text }}</h5>
+<h6 class="heading heading--xx-small">{{ heading.text }}</h6>
+{% endraw %}

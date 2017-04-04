@@ -1,0 +1,11 @@
+.language-select__change-label-footer {
+  width: 94%;
+  text-align: right;
+}
+.language-select__change-icon {
+  vertical-align: middle;
+  padding: 0 130px 0 0;
+  @media screen and (min-with: 320px) {
+    padding: 0 130px 0 0;
+  }
+}

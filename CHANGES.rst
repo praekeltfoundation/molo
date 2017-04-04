@@ -1,6 +1,57 @@
 CHANGE LOG
 ==========
 
+5.1.0-beta.1
+~~~~~
+- Move templates out from cookiecutter
+- Implement pattern library components to templates
+- Add Mote to cookiecutter
+
+5.0.4-beta.1
+~~~~~
+- Fix of previous release
+
+5.0.2-beta.1
+~~~~~
+- Added index creation signals
+- Added non routable mixin for Surveys
+
+5.0.1-beta.1
+~~~~~
+- Added profiles urls
+
+5.0.0-beta.1
+~~~~~
+- Added multi-site cms functionality (Merged CMS)
+- Added authentication backend for linking users to sites
+- Added middleware for site redirect
+
+4.4.9
+~~~~~
+- Added Non routable page mixin
+
+4.4.8
+~~~~~
+- Pulled in changes from previous versions that were accidentally excluded
+- Consolidated celery tasks in base settings file
+
+4.4.7
+~~~~~
+- Fixed random test failures in content rotation test
+
+4.4.6
+~~~~~
+- consolidate minute tasks into 1 call
+
+4.4.4
+~~~~~
+- Fixed bug for previewing pages
+
+4.4.3
+~~~~~
+- Excluded metrics URL from Google Analytics
+- Fixed access to Explorer bug for superuser's with non-superuser roles
+
 4.4.2
 ~~~~~
 - Allows content rotation to pick from descendant articles not only child articles
@@ -11,10 +62,13 @@ CHANGE LOG
 
 4.4.0
 ~~~~~
-- Add django clear sessions as a task in order to clear the sessions randomly
 - Content rotation enhancement:
   - Only promote pages that are exact type of ArticlePage
   - Only demote an article if there is more than two promoted articles
+
+4.3.3
+~~~~~
+- Add django clearsessions to celery tasks
 
 4.3.2
 ~~~~~

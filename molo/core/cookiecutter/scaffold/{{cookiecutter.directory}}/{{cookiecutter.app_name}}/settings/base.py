@@ -56,7 +56,9 @@ INSTALLED_APPS = [
     'modelcluster',
 
     'molo.core',
+    'molo.profiles',
     '{{cookiecutter.app_name}}',
+    'mote',
     'google_analytics',
 
     'wagtail.wagtailcore',
@@ -85,6 +87,7 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
+DEFAULT_SITE_PORT = 8000
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -103,13 +106,19 @@ MIDDLEWARE_CLASSES = [
     'molo.core.middleware.NoScriptGASessionMiddleware',
 
     'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
+    'molo.core.middleware.MultiSiteRedirectToHomepage',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'molo.core.backends.MoloModelBackend',
+    'django.contrib.auth.backends.ModelBackend'
 ]
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -119,6 +128,11 @@ TEMPLATES = [
                 'molo.core.context_processors.locale',
                 'wagtail.contrib.settings.context_processors.settings',
             ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "mote.loaders.app_directories.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ]
         },
     },
 ]
@@ -144,6 +158,8 @@ GOOGLE_ANALYTICS_IGNORE_PATH = [
     # when using nginx, we handle statics and media
     # but including them here just incase
     '/media/', '/static/',
+    # metrics URL used by promethius monitoring system
+    '/metrics/',
 ]
 
 # Database
@@ -180,20 +196,8 @@ CELERYBEAT_SCHEDULE = {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },
-    'demote_articles': {
-        'task': 'molo.core.tasks.demote_articles',
-        'schedule': crontab(minute="*"),
-    },
-    'promote_articles': {
-        'task': 'molo.core.tasks.promote_articles',
-        'schedule': crontab(minute="*"),
-    },
-    'publish_pages': {
-        'task': 'molo.core.tasks.publish_scheduled_pages',
-        'schedule': crontab(minute='*'),
-    },
-    'clearsessions': {
-        'task': 'molo.core.tasks.clearsessions',
+    'molo_consolidated_minute_task': {
+        'task': 'molo.core.tasks.molo_consolidated_minute_task',
         'schedule': crontab(minute='*'),
     },
 }

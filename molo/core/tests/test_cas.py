@@ -23,6 +23,10 @@ urlpatterns += patterns(
         name='auth_logout'),
     url('^', include('django.contrib.auth.urls')),
     url(r'^admin/', include(wagtailadmin_urls)),
+    url(r'^profiles/',
+        include('molo.profiles.urls',
+                namespace='molo.profiles',
+                app_name='molo.profiles')),
     url(r'', include(wagtail_urls)),
 )
 
@@ -70,7 +74,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     def test_login_redirect(self):
         response = self.client.get('/admin/', follow=True)
-
         self.assertEquals(
             response.request.get('QUERY_STRING'),
             'service=http%3A%2F%2Ftestserver'

@@ -1,0 +1,107 @@
+{% raw %}
+{% load mote_tags %}
+
+{% mask element.json.data.FormInputs as "inputs" %}
+
+{% for field in inputs.standard_inputs %}
+  <fieldset>
+    <label>
+      {{field.label}}
+      <input type="{{field.type}}"  name="{{field.value}}" placeholder="{{field.value}}" required="{{field.validate}}" maxlength="{{field.maxlength}}"/>
+    </label>
+  </fieldset>
+{% endfor %}
+
+<h3 class="heading heading--large">With input helper</h3>
+{% for field in inputs.standard_inputs %}
+  <fieldset>
+    <label>
+      {{field.label}}
+      <span class="hint-text">{{field.hint}}</span>
+      <input type="{{field.type}}"  name="{{field.value}}" placeholder="{{field.value}}" required="{{field.validate}}" maxlength="{{field.maxlength}}"/>
+    </label>
+  </fieldset>
+{% endfor %}
+
+<fieldset>
+  <label>
+    Write message
+    <textarea name="multiline-message" rows="5" wrap="hard"></textarea>
+  </label>
+</fieldset>
+
+<fieldset>
+  <label>
+    {{inputs.dob_select_fields.label}}
+  </label>
+  <div class="select-group">
+    <span class="sub_label">
+      {{inputs.dob_select_fields.dob_year.sub_label}}
+    </span>
+    <select id="{{inputs.dob_select_fields.dob_year.id}}">
+      {% for item in inputs.dob_select_fields.dob_year.list %}
+        <option>
+          {{item.value}}
+        </option>
+      {% endfor  %}
+    </select>
+  </div>
+
+  <div class="select-group">
+    <span class="sub_label">
+      {{inputs.dob_select_fields.dob_month.sub_label}}
+    </span>
+    <select id="{{inputs.dob_select_fields.dob_month.id}}">
+      {% for item in inputs.dob_select_fields.dob_month.list %}
+        <option>
+          {{item.value}}
+        </option>
+      {% endfor  %}
+    </select>
+  </div>
+
+  <div class="select-group">
+    <span class="sub_label">
+      {{inputs.dob_select_fields.dob_day.sub_label}}
+    </span>
+    <select id="{{inputs.dob_select_fields.dob_day.id}}">
+      {% for item in inputs.dob_select_fields.dob_day.list %}
+        <option>
+          {{item.value}}
+        </option>
+      {% endfor  %}
+    </select>
+  </div>
+</fieldset>
+
+<fieldset>
+  <label>
+    {{inputs.select_field.label}}
+  </label>
+  <select>
+    {% for item in inputs.select_field.list %}
+      <option>{{item.value}}</option>
+    {% endfor  %}
+  </select>
+</fieldset>
+
+<fieldset>
+  <legend class="checkbox__legend">{{inputs.checkbox_field.label}}</legend>
+  {% for checkboxes in inputs.checkbox_field.choices_list %}
+    <label  class="checkbox__label">
+      <input type="checkbox" name="choices" value="{{checkboxes.choice}}" />
+      {{checkboxes.label}}
+    </label>
+  {% endfor %}
+</fieldset>
+
+<fieldset>
+  <legend class="checkbox__legend">{{inputs.checkbox_field.label}}</legend>
+  {% for checkboxes in inputs.checkbox_field.choices_list %}
+    <label  class="checkbox__label">
+      <input type="radio" name="choices" value="{{checkboxes.value}}" />
+      {{checkboxes.label}}
+    </label>
+  {% endfor %}
+</fieldset>
+{% endraw %}

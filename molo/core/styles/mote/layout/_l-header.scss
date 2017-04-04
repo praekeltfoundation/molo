@@ -1,0 +1,42 @@
+body > header {
+  background-color: #242526;
+  .logo {
+    color: #fff;
+    text-decoration: none;
+    img {
+      margin: 0 0 15px;
+    }
+    small {
+      color: #A6ACAF;
+      padding: 0 0 0 15px;
+    }
+  }
+}
+
+header {
+  height: 117px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 999999999999;
+}
+
+.hero {
+  background-color: #fff;
+  padding: 50px 0 35px;
+  border-bottom: 1px solid #D7DBDD;
+  margin: 115px 0 0;
+  //height: 450px;
+  height: auto;
+  h1 {
+    color: #000;
+  }
+
+  *,p {
+    color:#5A5D5E;
+  }
+}
+
+main {
+margin-top: 35px;
+}

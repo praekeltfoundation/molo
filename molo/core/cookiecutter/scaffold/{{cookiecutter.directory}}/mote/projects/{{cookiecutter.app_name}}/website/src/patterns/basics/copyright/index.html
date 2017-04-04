@@ -1,0 +1,46 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+        Copyright Copy
+    </h4>
+    <div class="description">
+      The copyright component are place at the very bottom of all pages on the website. with the website current year and privacy information
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+{% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+    <!-- code-example -->
+</div>
+<!-- sg-code-block -->
+
+<div class="sg-code-block">
+    <h4 class="title">
+        Copyright Copy
+    </h4>
+    <div class="description">
+      The copyright component are place at the very bottom of all pages on the website. with the website current year and privacy information
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+{% render_element element.aspect.basics.copyright.copyright-pipe %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+    <!-- code-example -->
+</div>
+<!-- sg-code-block -->
+{% endblock %}
+{% endraw %}

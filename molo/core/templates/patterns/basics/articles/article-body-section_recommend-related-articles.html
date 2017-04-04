@@ -1,0 +1,38 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+
+{% if self.image %}
+  <a href="{% pageurl self %}" class="article__anchor">
+    {% image self.image width-320 class="article__image"%}
+  </a>
+{% endif %}
+
+<h1 class="heading heading--xx-large heading--article">{{self.title}}</h1>
+<p class="article__desc">{{self.subtitle}}</p>
+<article class="article-standard">
+  {% for block in self.body %}
+    {% if block.block_type == 'heading' %}
+      <h3 class="heading heading--large">{{ block.value }}</h3>
+
+    {% elif block.block_type == 'image' %}
+      {% image block.value width-320 %}
+
+    {% elif block.block_type == 'numbered_list' %}
+      <ol class="ordered-list">
+      {% for item in block.value %}
+        <li class="ordered-list__item">{{ item|handle_markdown }}</li>
+      {% endfor %}
+      </ol>
+
+    {% elif block.block_type == 'list' %}
+      <ul class="unordered-list">
+      {% for item in block.value %}
+        <li class="unordered-list__item">{{ item|handle_markdown }}</li>
+      {% endfor %}
+      </ul>
+    {% else %}
+        {{ block }}
+    {% endif %}
+  {% endfor %}
+</article>
+{% include "patterns/basics/articles/related-article-list-next_up_in_cat.html" %}
+{% include "patterns/basics/articles/related-article-list-recommended.html" %}

@@ -8,8 +8,8 @@ from django.db.models.base import ValidationError
 from unicore.content.models import Category, Page
 
 from molo.core.models import (
-    SiteLanguage, PageTranslation, SectionPage, ArticlePage, FooterPage,
-    SectionIndexPage, FooterIndexPage)
+    PageTranslation, SectionPage, ArticlePage, FooterPage,
+    SectionIndexPage, FooterIndexPage, SiteLanguageRelation, Languages, Main)
 from molo.core.content_import.helpers.get_image import get_image_file
 from molo.core.content_import.helpers.locales import filter_locales_in_repo
 from molo.core.content_import.utils import hash
@@ -58,14 +58,21 @@ def get_or_create_stray_index(repo, lang, should_nest):
 
 
 def create_language(repo, locale, is_main):
+    main = Main.objects.all().first()
+    language_setting, _ = Languages.objects.get_or_create(
+        site_id=main.get_site().pk)
     try:
-        language, _ = SiteLanguage.objects.get_or_create(
+        language, _ = SiteLanguageRelation.objects.get_or_create(
+            language_setting=language_setting,
             locale=Locale.parse(locale).language,
-            is_main_language=is_main)
+            is_main_language=is_main,
+            is_active=True)
     except UnknownLocaleError:
-        language, _ = SiteLanguage.objects.get_or_create(
+        language, _ = SiteLanguageRelation.objects.get_or_create(
+            language_setting=language_setting,
             locale=locale.replace('_', '-'),
-            is_main_language=False)
+            is_main_language=False,
+            is_active=True)
 
     return {
         'locale': locale,
