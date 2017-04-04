@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+5.1.0-beta.1
+~~~~~
+- Move templates out from cookiecutter
+- Implement pattern library components to templates
+- Add Mote to cookiecutter
+
 5.0.4-beta.1
 ~~~~~
 - Fix of previous release
