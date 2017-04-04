@@ -265,7 +265,8 @@ class TranslatablePageMixinNotRoutable(object):
         return self
 
     def save(self, *args, **kwargs):
-        response = super(TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
+        response = super(
+               TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
 
         if (SiteLanguage.objects.filter(is_main_language=True).exists() and
                 not self.languages.exists()):
@@ -322,7 +323,8 @@ class TranslatablePageMixinNotRoutable(object):
             request, *args, **kwargs)
 
 
-class TranslatablePageMixin(TranslatablePageMixinNotRoutable, RoutablePageMixin):
+class TranslatablePageMixin(
+        TranslatablePageMixinNotRoutable, RoutablePageMixin):
     pass
 
 
