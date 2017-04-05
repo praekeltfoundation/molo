@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.1.1-beta.1
+~~~~~
+- Unpinning profiles version
+
 5.1.0-beta.1
 ~~~~~
 - Move templates out from cookiecutter
