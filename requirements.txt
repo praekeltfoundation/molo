@@ -23,4 +23,4 @@ django-google-analytics-app==2.1.4
 mote-prk
 cached-property
 setuptools==18.5
-molo.profiles==4.0.1b2
+molo.profiles
