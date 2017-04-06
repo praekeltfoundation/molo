@@ -380,7 +380,7 @@ def get_recommended_articles(context, article):
         a = article.get_main_language_page()
         recommended_article_relations = a.specific.recommended_articles.all()
 
-    articles = [ra.recommended_article
+    articles = [ra.recommended_article.specific
                 for ra in recommended_article_relations
                 if ra.recommended_article.live]
     return get_pages(context, articles, locale_code)
