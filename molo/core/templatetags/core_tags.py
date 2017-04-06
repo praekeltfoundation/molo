@@ -15,12 +15,12 @@ def get_pages(context, qs, locale):
     language = SiteLanguage.objects.filter(locale=locale).first()
     request = context['request']
     site_settings = SiteSettings.for_site(request.site)
-    if type(qs) is not list:
-        qs = list(qs.live())
 
     if site_settings.show_only_translated_pages:
         if language and language.is_main_language:
-            return qs
+            if type(qs) is list:
+                return qs
+            return [a for a in qs.live()]
         else:
             pages = []
             for a in qs:
@@ -30,7 +30,9 @@ def get_pages(context, qs, locale):
             return pages
     else:
         if language and language.is_main_language:
-            return qs
+            if type(qs) is list:
+                return qs
+            return [a for a in qs.live()]
         else:
             pages = []
             for a in qs:
