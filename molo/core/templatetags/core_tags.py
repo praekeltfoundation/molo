@@ -15,9 +15,13 @@ def get_pages(context, qs, locale):
     language = SiteLanguage.objects.filter(locale=locale).first()
     request = context['request']
     site_settings = SiteSettings.for_site(request.site)
+    if type(qs) is not list:
+        print("booooop")
+        qs = list(qs.live())
+
     if site_settings.show_only_translated_pages:
         if language and language.is_main_language:
-            return [a for a in qs.live()]
+            return qs
         else:
             pages = []
             for a in qs:
@@ -27,7 +31,7 @@ def get_pages(context, qs, locale):
             return pages
     else:
         if language and language.is_main_language:
-            return [a for a in qs.live()]
+            return qs
         else:
             pages = []
             for a in qs:
@@ -370,14 +374,14 @@ def get_recommended_articles(context, article):
     locale_code = context.get('locale_code')
 
     if article.recommended_articles.all():
-        recommended_articles = article.recommended_articles.all()
+        recommended_article_relations = article.recommended_articles.all()
     else:
         a = article.get_main_language_page()
-        recommended_articles = a.specific.recommended_articles.all()
+        recommended_article_relations = a.specific.recommended_articles.all()
 
-    articles = ArticlePage.objects.filter(
-        pk__in=recommended_articles.values_list(
-            'recommended_article__pk', flat=True))
+    articles = [ra.recommended_article
+                for ra in recommended_article_relations
+                if ra.recommended_article.live]
     return get_pages(context, articles, locale_code)
 
 
