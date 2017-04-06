@@ -3,6 +3,7 @@ from itertools import chain
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import template
 from django.utils.safestring import mark_safe
+from django.db.models import Case, When
 from markdown import markdown
 
 from molo.core.models import (Page, SiteLanguage, ArticlePage, SectionPage,
@@ -15,11 +16,8 @@ def get_pages(context, qs, locale):
     language = SiteLanguage.objects.filter(locale=locale).first()
     request = context['request']
     site_settings = SiteSettings.for_site(request.site)
-
     if site_settings.show_only_translated_pages:
         if language and language.is_main_language:
-            if type(qs) is list:
-                return qs
             return [a for a in qs.live()]
         else:
             pages = []
@@ -30,8 +28,6 @@ def get_pages(context, qs, locale):
             return pages
     else:
         if language and language.is_main_language:
-            if type(qs) is list:
-                return qs
             return [a for a in qs.live()]
         else:
             pages = []
@@ -375,14 +371,19 @@ def get_recommended_articles(context, article):
     locale_code = context.get('locale_code')
 
     if article.recommended_articles.all():
-        recommended_article_relations = article.recommended_articles.all()
+        recommended_articles = article.recommended_articles.all()
     else:
         a = article.get_main_language_page()
-        recommended_article_relations = a.specific.recommended_articles.all()
+        recommended_articles = a.specific.recommended_articles.all()
 
-    articles = [ra.recommended_article.specific
-                for ra in recommended_article_relations
-                if ra.recommended_article.live]
+    # http://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order/37648265#37648265 # noqa
+    # the following allows us to order the results of the querystring
+    pk_list = recommended_articles.values_list(
+        'recommended_article__pk', flat=True)
+    preserved = Case(
+        *[When(pk=pk, then=pos) for pos, pk in enumerate(pk_list)])
+    articles = ArticlePage.objects.filter(pk__in=pk_list).order_by(preserved)
+
     return get_pages(context, articles, locale_code)
 
 
