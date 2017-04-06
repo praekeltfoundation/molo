@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.10
+~~~~~
+- Fixed recommended article ordering in templatetag logic
+
 4.4.9
 ~~~~~
 - Added Non routable page mixin
