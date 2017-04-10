@@ -55,9 +55,9 @@ INSTALLED_APPS = [
     'taggit',
     'modelcluster',
 
+    '{{cookiecutter.app_name}}',
     'molo.core',
     'molo.profiles',
-    '{{cookiecutter.app_name}}',
     'mote',
     'google_analytics',
 
