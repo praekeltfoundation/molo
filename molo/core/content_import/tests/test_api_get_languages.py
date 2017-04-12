@@ -58,6 +58,7 @@ class TestGetLanguages(
         for l in langs:
             lang = eg_models.Localisation({'locale': l})
             self.ws1.save(lang, 'Added %s' % l)
+            self.create_categories(self.ws1, locale='eng_GB', count=2)
 
         res = api.get_languages([self.repo1])
 
