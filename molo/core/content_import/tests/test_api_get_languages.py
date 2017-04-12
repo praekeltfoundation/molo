@@ -51,6 +51,19 @@ class TestGetLanguages(
             'warnings': []
         })
 
+    def test_get_locale_more_than_10(self):
+        langs = [
+            'eng_GB', 'spa_ES', 'spa_MX', 'por_PT', 'por_BR', 'hin_IN',
+            'ind_ID', 'swa_TZ', 'swa_KE', 'afr_ZA', 'ara_AE', 'tha_TH']
+        for l in langs:
+            lang = eg_models.Localisation({'locale': l})
+            lang.save()
+            self.ws1.save(lang, 'Added %' % l)
+
+        res = api.get_languages([self.repo1])
+
+        self.assertEquals(len(res['locales']), 12)
+
     def test_get_locale_multirepo(self):
         lang1 = eg_models.Localisation({'locale': 'eng_GB'})
         lang2 = eg_models.Localisation({'locale': 'spa_ES'})
