@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.11
+~~~~~~
+- Fixed content import to return all data and not just default 10
+
 4.4.10
 ~~~~~
 - Fixed recommended article ordering in templatetag logic
