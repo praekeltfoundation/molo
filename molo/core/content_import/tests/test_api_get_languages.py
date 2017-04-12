@@ -57,7 +57,6 @@ class TestGetLanguages(
             'ind_ID', 'swa_TZ', 'swa_KE', 'afr_ZA', 'ara_AE', 'tha_TH']
         for l in langs:
             lang = eg_models.Localisation({'locale': l})
-            lang.save()
             self.ws1.save(lang, 'Added %' % l)
 
         res = api.get_languages([self.repo1])
