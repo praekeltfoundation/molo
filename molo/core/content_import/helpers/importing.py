@@ -32,7 +32,7 @@ def get_models(repo, cls, **kw):
     qs = qs.filter(**kw)
 
     # S() only returns 10 results if you don't ask for more
-    return qs.order_by('position')[:10000]
+    return qs.order_by('position').everything()
 
 
 def get_sections_index():
@@ -252,7 +252,7 @@ def import_page_content(repo, p, lang, stray_index):
 
 
 def update_pages_with_linked_page_field(repo, locale):
-    for p in repo.workspace.S(Page).filter(language=locale)[:10000]:
+    for p in repo.workspace.S(Page).filter(language=locale).everything():
         if p.linked_pages:
             for lp in p.linked_pages:
                 try:
