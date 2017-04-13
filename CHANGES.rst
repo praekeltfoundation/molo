@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.12
+~~~~~~
+- Remove promotion settings from footer pages
+
 4.4.11
 ~~~~~~
 - Fixed content import to return all data and not just default 10
