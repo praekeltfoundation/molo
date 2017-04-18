@@ -554,6 +554,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         rotate_content()
         self.assertEquals(
             ArticlePage.objects.live().filter(
-                featured_in_homepage=True).count(), 10)
+                featured_in_homepage=True).count(), 11)
         self.assertTrue(ArticlePage.objects.live().filter(
             featured_in_homepage=True).child_of(self.yourmind_sub).exists())
