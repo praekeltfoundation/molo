@@ -188,7 +188,8 @@ def rotate_featured_in_homepage(main_lang, day):
                                     datetime.now()
                                 random_article.save_revision().publish()
                                 promote_articles()
-                                demote_last_featured_article_in_homepage(section)
+                                demote_last_featured_article_in_homepage(
+                                    section)
 
 
 def send_import_email(to_email, context):
