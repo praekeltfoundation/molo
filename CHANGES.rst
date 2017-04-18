@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.13
+~~~~~~
+- Insure content demotion happens for each section individually
+
 4.4.12
 ~~~~~~
 - Remove promotion settings from footer pages
