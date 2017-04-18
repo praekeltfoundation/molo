@@ -1139,6 +1139,11 @@ class FooterPage(ArticlePage):
 
 
 FooterPage.content_panels = ArticlePage.content_panels
+FooterPage.promote_panels = [
+    MultiFieldPanel(
+        Page.promote_panels,
+        "Common page configuration", "collapsible collapsed")]
+
 
 pages_to_delete = []
 

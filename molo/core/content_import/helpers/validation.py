@@ -62,7 +62,7 @@ class ContentImportValidation(object):
     def validate_translated_content_has_source(self, locale, main):
         if locale != main:
             categories = self.ws.S(Category).filter(
-                language=locale).order_by('position')[:10000]
+                language=locale).order_by('position').everything()
             for c in categories:
                 if not c.source:
                     self.errors.append({
@@ -73,7 +73,7 @@ class ContentImportValidation(object):
                             'lang': get_locale_english_name(locale)
                         }})
 
-            pages = self.ws.S(Page).filter(language=locale)[:10000]
+            pages = self.ws.S(Page).filter(language=locale).everything()
             for p in pages:
                 if not p.source:
                     self.errors.append({
@@ -87,7 +87,7 @@ class ContentImportValidation(object):
     def validate_translated_content_source_exists(self, locale, main):
         if locale != main:
             categories = self.ws.S(Category).filter(
-                language=locale).order_by('position')[:10000]
+                language=locale).order_by('position').everything()
             for c in categories:
                 if c.source and not self.validate_source_exists(
                         Category, c.source, main):
@@ -99,7 +99,7 @@ class ContentImportValidation(object):
                             'lang': get_locale_english_name(locale)
                         }})
 
-            pages = self.ws.S(Page).filter(language=locale)[:10000]
+            pages = self.ws.S(Page).filter(language=locale).everything()
             for p in pages:
                 if p.source and not self.validate_source_exists(
                         Page, p.source, main):
@@ -112,7 +112,7 @@ class ContentImportValidation(object):
                         }})
 
     def validate_page_primary_category_exists(self, locale):
-        pages = self.ws.S(Page).filter(language=locale)[:10000]
+        pages = self.ws.S(Page).filter(language=locale).everything()
         for p in pages:
             if p.primary_category and not self.validate_category_exists(
                     p.primary_category, locale):

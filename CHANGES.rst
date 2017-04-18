@@ -26,6 +26,22 @@ CHANGE LOG
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
 
+4.4.13
+~~~~~~
+- Insure content demotion happens for each section individually
+
+4.4.12
+~~~~~~
+- Remove promotion settings from footer pages
+
+4.4.11
+~~~~~~
+- Fixed content import to return all data and not just default 10
+
+4.4.10
+~~~~~
+- Fixed recommended article ordering in templatetag logic
+
 4.4.9
 ~~~~~
 - Added Non routable page mixin
