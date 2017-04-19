@@ -1,0 +1,7 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% if article.image %}
+<a href="{% pageurl article %}" class="article-teaser__thumbnail-link">
+  {% image article.image width-96 as base_article_teaser_thumbnail %}
+  <img src="{{ section_image.url }}" class="article-teaser__thumbnail" />
+</a>
+{% endif %}

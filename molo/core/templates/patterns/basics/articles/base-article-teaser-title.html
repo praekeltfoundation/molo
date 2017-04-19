@@ -1,0 +1,5 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+<h3 class="article-teaser__title"><a href="{% pageurl article %}">{{ article.title }}</a></h3>
+{% if article.subtitle %}
+  <p class="article-teaser__subtitle">{{ article.subtitle }}</p>
+{% endif %}
