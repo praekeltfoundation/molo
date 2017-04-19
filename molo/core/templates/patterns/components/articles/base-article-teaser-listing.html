@@ -1,9 +1,14 @@
 {% load core_tags %}
-
+<div class="article-teaser">
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
 {% if featured_articles %}
+  <ul class="teaser-stacklist">
     {% for article in featured_articles %}
+    <li class="teaser-stacklist__item">
       {% include "patterns/basics/article-teaser/base-article-teaser-thumbnail.html" %}
       {% include "patterns/basics/article-teaser/base-article-teaser-title.html" %}
+    </li>
     {% endfor %}
+  </ul>
 {% endif %}
+</div>

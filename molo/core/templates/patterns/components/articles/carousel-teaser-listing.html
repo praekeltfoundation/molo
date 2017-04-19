@@ -1,0 +1,14 @@
+{% load core_tags %}
+<div class="carousel-teaser">
+{% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+{% if featured_articles %}
+  <ul class="carousel-teaser-list">
+    {% for article in featured_articles %}
+    <li class="carousel-teaser-list__item">
+      {% include "patterns/basics/article-teaser/carousel-teaser-image.html" %}
+      {% include "patterns/basics/article-teaser/carousel-teaser-title.html" %}
+    </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+</div>
