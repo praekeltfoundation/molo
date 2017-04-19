@@ -1,4 +1,4 @@
-{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% load wagtailcore_tags wagtailimages_tags %}
 {% if article.image %}
 <a href="{% pageurl article %}" class="article-teaser__thumbnail-link">
   {% image article.image width-96 as base_article_teaser_thumbnail %}

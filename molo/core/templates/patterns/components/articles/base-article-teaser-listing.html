@@ -1,0 +1,9 @@
+{% load core_tags %}
+
+{% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+{% if featured_articles %}
+    {% for article in featured_articles %}
+      {% include "patterns/basics/article-teaser/base-article-teaser-thumbnail.html" %}
+      {% include "patterns/basics/article-teaser/base-article-teaser-title.html" %}
+    {% endfor %}
+{% endif %}
