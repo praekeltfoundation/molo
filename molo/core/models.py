@@ -997,6 +997,8 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
         return self.url
 
     def get_parent_section(self):
+        print self
+        print self.languages
         return SectionPage.objects.all().ancestor_of(self).last()
 
     def allow_commenting(self):
