@@ -1,0 +1,9 @@
+{
+    "BaseTeaserThumbnail": {
+        "modifiers": "",
+        "img": {
+          "src": "/static/images/carousel.png",
+          "alt": "Base Teaser Thumbnail"
+        }
+    }
+}
