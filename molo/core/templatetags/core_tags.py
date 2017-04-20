@@ -299,30 +299,61 @@ def load_child_articles_for_section(context, section, count=5):
 
 
 @register.simple_tag(takes_context=True)
-def load_tags_for_homepage(context):
+def load_tags_for_homepage(
+        context, latest_articles_count=12, section_count=1, tag_count=4,
+        sec_articles_count=4):
     def get_positional_tag_articles(request, tag, exclude_list):
 
         try:
             pks = []
-            for article_tag in ArticlePageTags.objects.filter(tag=tag).exclude(
-                    pk__in=exclude_pks):
+            for article_tag in ArticlePageTags.objects.filter(tag=tag):
                 pks.append(article_tag.page.pk)
         except Exception:
             pks = []
         return get_pages(
             context, ArticlePage.objects.descendant_of(
-                request.site.root_page).filter(pk__in=pks), locale)
+                request.site.root_page).filter(pk__in=pks).exclude(
+                    pk__in=exclude_pks), locale)
 
     request = context['request']
     locale = context.get('locale_code')
 
     exclude_pks = []
-    data = []
+    data = {}
+    tags_list = []
+    sections_list = []
+
+    # Latest Articles
+    latest_articles = request.site.root_page.specific.latest_articles(
+    )[:latest_articles_count]
+    exclude_pks += [p.pk for p in latest_articles]
+    data.update({
+        'latest_articles': get_pages(
+            context, latest_articles, locale)})
+
+    # Featured Section
+    sections = request.site.root_page.specific.sections()
+    for section in sections[:section_count]:
+        sec_articles = ArticlePage.objects.descendant_of(section).filter(
+            languages__language__is_main_language=True,
+            featured_in_homepage=True).order_by(
+                '-featured_in_homepage_start_date').exclude(
+                pk__in=exclude_pks)
+        exclude_pks += [p.pk for p in sec_articles]
+        sections_list.append((
+            section,
+            get_pages(context, sec_articles, locale)[:sec_articles_count]))
+    data.update({'sections': sections_list})
+
+    # Featured Tags
     for tag in Tag.objects.descendant_of(request.site.root_page).filter(
             feature_in_homepage=True).live():
-        tag_articles = get_positional_tag_articles(tag, exclude_pks)
-        exclude_pks += tag_articles.values_list('pk', flat=True)
-        data.append((tag, tag_articles))
+        tag_articles = get_positional_tag_articles(
+            request, tag, exclude_pks)[:tag_count]
+        exclude_pks += [p.pk for p in tag_articles]
+        tags_list.append((tag, tag_articles))
+
+    data.update({'tags_list': tags_list})
 
     return data
 
