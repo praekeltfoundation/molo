@@ -1,0 +1,32 @@
+/**
+Take Note:
+Separate smart styles to states folder
+*/
+.article-teaser {
+  overflow: auto;
+}
+.teaser-stacklist {
+  display: block;
+}
+.teaser-stacklist__item {
+  list-style-type: none;
+}
+
+.article-teaser__thumbnail {
+  float: left;
+}
+.article-teaser__thumbnail-link {
+  cursor: pointer;
+  outline: none;
+}
+
+
+.article-teaser__title {
+  text-align: right;
+}
+.article-teaser__title-link {
+  color: gray;
+}
+.article-teaser__subtitle {
+  text-align: right;
+}
