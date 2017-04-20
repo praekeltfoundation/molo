@@ -2,8 +2,8 @@
 {% load mote_tags %}
 {% mask element.json.data.BaseArticleTeaser as "teaser" %}
 
-<h3 class="article-teaser__title"><a href="#">{{ article.title }}</a></h3>
-{% if article.subtitle %}
-  <p class="article-teaser__subtitle">{{ article.subtitle }}</p>
+<h3 class="article-teaser__title"><a href="#">{{ teaser.title }}</a></h3>
+{% if teaser.subtitle %}
+  <p class="article-teaser__subtitle">{{ teaser.subtitle }}</p>
 {% endif %}
 {% endraw %}

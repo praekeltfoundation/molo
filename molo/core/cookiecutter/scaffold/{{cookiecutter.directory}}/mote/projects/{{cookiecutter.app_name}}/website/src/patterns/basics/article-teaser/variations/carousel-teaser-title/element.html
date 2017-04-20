@@ -2,8 +2,8 @@
 {% load mote_tags %}
 {% mask element.json.data.CarouselArticleTeaser as "carousel" %}
 
-<h3 class="carousel-teaser__title"><a href="{% pageurl article %}">{{ carousel.title }}</a></h3>
-{% if article.subtitle %}
+<h3 class="carousel-teaser__title"><a href="#">{{ carousel.title }}</a></h3>
+{% if carousel.subtitle %}
   <p class="carousel-teaser__subtitle">{{ carousel.subtitle }}</p>
 {% endif %}
 {% endraw %}

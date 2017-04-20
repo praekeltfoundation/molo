@@ -3,7 +3,7 @@
 {% mask element.json.data.BaseTeaserThumbnail.img as "thumbnail" %}
 
 {% if thumbnail %}
-<a href="{% pageurl article %}" class="article-teaser__thumbnail-link">
+<a href="#" class="article-teaser__thumbnail-link">
   <img alt="{{ thumbnail.alt }}" src="{{ thumbnail.src }}" class="article-teaser__thumbnail" />
 </a>
 {% endif %}
