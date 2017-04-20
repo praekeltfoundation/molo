@@ -5,14 +5,16 @@
     {% bannerpages %}
     {% if settings.core.SiteSettings.enable_tag_navigation%}
       {% tag_menu_homepage %}
+      {% load_tags_for_homepage as tags_list %}
     {% endif %}
     {% topic_of_the_day %}
     {% if settings.core.SiteSettings.enable_tag_navigation%}
-      {% load_tags_for_homepage 0 %}
+      {% include "patterns/components/tag_block_one.html" with tag=tags_list.0.0 tag_articles=tags_list.0.1 %}
     {% endif %}
     {% latest_listing_homepage num_count=6 %}
     {% if settings.core.SiteSettings.enable_tag_navigation%}
-      {% load_tags_for_homepage 1 %}
+      {% if settings.core.SiteSettings.enable_tag_navigation%}
+      {% include "patterns/components/tag_block_one.html" with tag=tags_list.1.0 tag_articles=tags_list.1.1 %}
     {% endif %}
     {% section_listing_homepage %}
 {% endblock %}

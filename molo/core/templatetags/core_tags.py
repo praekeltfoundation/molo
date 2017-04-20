@@ -298,24 +298,33 @@ def load_child_articles_for_section(context, section, count=5):
     return articles
 
 
-@register.assignment_tag(takes_context=True)
-def load_tags_for_homepage(context, position):
+@register.simple_tag(takes_context=True)
+def load_tags_for_homepage(context):
+    def get_positional_tag_articles(request, tag, exclude_list):
+
+        try:
+            pks = []
+            for article_tag in ArticlePageTags.objects.filter(tag=tag).exclude(
+                    pk__in=exclude_pks):
+                pks.append(article_tag.page.pk)
+        except Exception:
+            pks = []
+        return get_pages(
+            context, ArticlePage.objects.descendant_of(
+                request.site.root_page).filter(pk__in=pks), locale)
+
     request = context['request']
     locale = context.get('locale_code')
 
-    tag = None
-    try:
-        tag = Tag.objects.descendant_of(request.site.root_page).filter(
-            feature_in_homepage=True).live()[position]
-        pks = []
-        for article_tag in ArticlePageTags.objects.filter(tag=tag).all():
-            pks.append(article_tag.page.pk)
-    except Exception:
-        pks = []
+    exclude_pks = []
+    data = []
+    for tag in Tag.objects.descendant_of(request.site.root_page).filter(
+            feature_in_homepage=True).live():
+        tag_articles = get_positional_tag_articles(tag, exclude_pks)
+        exclude_pks += tag_articles.values_list('pk', flat=True)
+        data.append((tag, tag_articles))
 
-    return get_pages(
-        context, ArticlePage.objects.descendant_of(
-            request.site.root_page).filter(pk__in=pks), locale), tag
+    return data
 
 
 @register.assignment_tag(takes_context=True)
