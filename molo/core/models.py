@@ -174,6 +174,11 @@ class SiteSettings(BaseSetting):
     )
     enable_clickable_tags = models.BooleanField(
         default=False, verbose_name='Display tags on Front-end')
+    enable_tag_navigation = models.BooleanField(
+        default=False,
+        help_text='Enable tag navigation. When this is true, the clickable '
+                  'tag functionality will be overriden'
+    )
 
     panels = [
         ImageChooserPanel('logo'),
@@ -234,6 +239,7 @@ class SiteSettings(BaseSetting):
         MultiFieldPanel(
             [
                 FieldPanel('enable_clickable_tags'),
+                FieldPanel('enable_tag_navigation'),
             ],
             heading="Article Tag Settings"
         )
@@ -421,6 +427,31 @@ class TranslatablePageMixin(
     pass
 
 
+class TagIndexPage(Page, PreventDeleteMixin):
+    parent_page_types = []
+    subpage_types = ['Tag']
+
+    def copy(self, *args, **kwargs):
+        site = kwargs['to'].get_site()
+        main = site.root_page
+        TagIndexPage.objects.child_of(main).delete()
+        super(TagIndexPage, self).copy(*args, **kwargs)
+
+
+class Tag(TranslatablePageMixin, Page):
+    parent_page_types = ['core.TagIndexPage']
+    subpage_types = []
+
+    feature_in_homepage = models.BooleanField(default=False)
+
+Tag.promote_panels = [
+    FieldPanel('feature_in_homepage'),
+    MultiFieldPanel(
+        Page.promote_panels,
+        "Common page configuration", "collapsible collapsed")
+]
+
+
 class BannerIndexPage(Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
@@ -520,6 +551,11 @@ class Main(CommentedPageMixin, Page):
                     generate_slug(self.title), )))
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
+            tag_index = TagIndexPage(
+                title='Tags', slug=('tags-%s' % (
+                    generate_slug(self.title), )))
+            self.add_child(instance=tag_index)
+            tag_index.save_revision().publish()
             index_pages_after_copy.send(sender=self.__class__, instance=self)
 
 
@@ -1061,6 +1097,7 @@ ArticlePage.content_panels = [
             ImageChooserPanel('social_media_image'),
         ],
         heading="Social Media", ),
+    InlinePanel('nav_tags', label="Tags for Navigation"),
     InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
@@ -1094,6 +1131,19 @@ def demote_featured_articles(sender, instance, **kwargs):
         instance.featured_in_section_start_date is None and \
             instance.featured_in_section is True:
         instance.featured_in_section = False
+
+
+class ArticlePageTags(Orderable):
+    page = ParentalKey(ArticlePage, related_name='nav_tags')
+    tag = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Tags for tag navigation')
+    )
+    panels = [PageChooserPanel('tag', 'core.Tag')]
 
 
 class ArticlePageRecommendedSections(Orderable):
