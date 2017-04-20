@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{% static "mote/css/fonts.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "mote/css/mote.css" %}"/>
     {% compress css %}
-      <link rel="stylesheet" type="text/css" href="{% static 'css/dev/mote.css' %}">
+      <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/{{ ENV }}/mote.css">
     {% endcompress %}
     <link rel="stylesheet" type="text/css" href="{% static "mote/js/libs/prism/css/prism.css" %}"/>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">

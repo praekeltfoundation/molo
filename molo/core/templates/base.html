@@ -29,7 +29,7 @@
     <meta property="og:image:url" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {% compress css %}
-      <link rel="stylesheet" type="text/css" href="{% static 'css/dev/styles.css' %}">
+      <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/{{ ENV }}/styles.css">
     {% endcompress %}
     <script type="text/javascript">
       // cut the mustard
