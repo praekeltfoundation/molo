@@ -19,7 +19,8 @@ from molo.core.models import (FooterPage,
                               ArticlePageRecommendedSections,
                               Main, BannerIndexPage,
                               SectionIndexPage,
-                              FooterIndexPage, Languages, SiteLanguageRelation)
+                              FooterIndexPage, Languages, SiteLanguageRelation,
+                              ArticlePageTags)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -112,7 +113,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = client.get('/admin/pages/%s/' % main3_pk)
         self.assertEqual(
             response['Location'],
-            '/admin/login/?next=%2Fadmin%2Fpages%2F16%2F')
+            '/admin/login/?next=%2Fadmin%2Fpages%2F18%2F')
 
     def test_able_to_copy_main(self):
         # testing that copying a main page does not give an error
@@ -1191,11 +1192,190 @@ class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):
             response, '/sections-main-1/section-a/article-a-in-french/')
 
 
-class TestArticleTags(MoloTestCaseMixin, TestCase):
+class TestTags(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.mk_main()
+        main = Main.objects.all().first()
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='en',
+            is_active=True)
+
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='fr',
+            is_active=True)
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='es',
+            is_active=True)
+        self.arabic = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='ar',
+            is_active=True)
+
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+        self.yourmind_sub = self.mk_section(
+            self.yourmind, title='Your mind subsection')
+
+        self.yourmind_fr = self.mk_section_translation(
+            self.yourmind, self.french, title='Your mind in french')
+        self.yourmind_sub_fr = self.mk_section_translation(
+            self.yourmind_sub, self.french,
+            title='Your mind subsection in french')
+
+        # Create an image for running tests on
+        self.image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+
+        self.mk_main2()
+        self.main2 = Main.objects.all().last()
+        self.language_setting2 = Languages.objects.create(
+            site_id=self.main2.get_site().pk)
+        self.english2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='en',
+            is_active=True)
+
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='es',
+            is_active=True)
+
+        # Create an image for running tests on
+        self.image2 = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+
+        self.yourmind2 = self.mk_section(
+            self.section_index2, title='Your mind2')
+        self.yourmind_sub2 = self.mk_section(
+            self.yourmind2, title='Your mind subsection2')
+
+        self.site_settings = SiteSettings.for_site(main.get_site())
+        self.site_settings2 = SiteSettings.for_site(self.main2.get_site())
+        self.site_settings.enable_clickable_tags = True
+        self.site_settings.enable_tag_navigation = True
+        self.site_settings.save()
+
+    def test_tag_cloud_homepage(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        response = self.client.get('/')
+        self.assertContains(response, tag.title)
+
+    def test_tag_cloud_homepage_translation(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        self.mk_tag_translation(
+            tag,
+            self.french,
+            title=tag.title + ' in french',)
+
+        self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        self.assertContains(response, tag.title + ' in french')
+
+    def test_tag_navigation_setting_overrides_other_tags(self):
+        article = self.mk_article(self.yourmind, title='article')
+        article.tags.add("old tag")
+        article.save_revision().publish()
+
+        tag = self.mk_tag(parent=self.tag_index)
+        ArticlePageTags.objects.create(page=article, tag=tag)
+
+        response = self.client.get(article.url)
+        self.assertNotContains(response, 'old tag')
+        self.assertContains(response, tag.title)
+
+    def test_articles_within_tag(self):
+        article1 = self.mk_article(self.yourmind, title='article 1')
+        article2 = self.mk_article(self.yourmind, title='article 2')
+        article3 = self.mk_article(self.yourmind, title='article 3')
+
+        tag = self.mk_tag(parent=self.tag_index)
+        ArticlePageTags.objects.create(page=article1, tag=tag)
+        ArticlePageTags.objects.create(page=article2, tag=tag)
+        ArticlePageTags.objects.create(page=article3, tag=tag)
+
+        response = self.client.get('/tags/' + tag.slug + '/')
+        self.assertContains(
+            response,
+            '<a href="/sections-main-1/your-mind/article'
+            '-1/">article 1</a><br>')
+        self.assertContains(
+            response,
+            '<a href="/sections-main-1/your-mind/article'
+            '-2/">article 2</a><br>')
+        self.assertContains(
+            response,
+            '<a href="/sections-main-1/your-mind/a'
+            'rticle-3/">article 3</a><br>')
+
+    def test_promoted_tags(self):
+        articles = self.mk_articles(self.yourmind, count=5)
+        tag = self.mk_tag(parent=self.tag_index)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '([&lt;ArticlePage: Test page 0&gt;, &lt;ArticlePage:'
+            ' Test page 1&gt;, &lt;ArticlePage: Test page 2&gt;, &lt;Artic'
+            'lePage: Test page 3&gt;, &lt;ArticlePage: Test page 4&gt;], '
+            '&lt;Tag: Test Tag&gt;)')
+        self.assertNotContains(response, 'Test Page 5')
+
+        tag = self.mk_tag(parent=self.tag_index, title='Not Promoted Tag 1')
+        tag = self.mk_tag(parent=self.tag_index, title='Not Promoted Tag 2')
+
+        articles = self.mk_articles(self.yourmind, count=5)
+        tag = self.mk_tag(parent=self.tag_index, title='Test Tag 2')
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '([&lt;ArticlePage: Test page 0&gt;, &lt;ArticlePage:'
+            ' Test page 1&gt;, &lt;ArticlePage: Test page 2&gt;, &lt;Artic'
+            'lePage: Test page 3&gt;, &lt;ArticlePage: Test page 4&gt;], '
+            '&lt;Tag: Test Tag 2&gt;)')
+        self.assertNotContains(response, 'Test Page 5')
+
+    def test_tag_navigation_shows_correct_tag_for_locale(self):
+        article = self.mk_article(self.yourmind, title='article')
+
+        tag = self.mk_tag(parent=self.tag_index)
+        ArticlePageTags.objects.create(page=article, tag=tag)
+
+        # make the translation for the article and the tag
+        self.mk_article_translation(
+            article,
+            self.french,
+            title=article.title + ' in french',)
+        self.mk_tag_translation(
+            tag,
+            self.french,
+            title=tag.title + ' in french',)
+
+        self.client.get('/locale/fr/')
+        response = self.client.get(
+            '/sections-main-1/your-mind/article-in-french/')
+        self.assertContains(response, 'Test Tag in french')
 
     def test_articles_with_the_same_tag(self):
+        self.site_settings.enable_tag_navigation = False
+        self.site_settings.save()
         # create two articles with the same tag and check that they can
         # be retrieved
         new_section = self.mk_section(
