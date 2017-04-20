@@ -90,7 +90,7 @@ def parse_repo_locales(repo):
     locales = []
     warnings = []
 
-    for l in sorted_uniq_locales(repo.workspace.S(Localisation).all()):
+    for l in sorted_uniq_locales(repo.workspace.S(Localisation).everything()):
         try:
             locales.append({
                 'locale': l.locale,

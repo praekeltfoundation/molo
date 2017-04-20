@@ -1,0 +1,23 @@
+ 
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/molo.css">
+{% endblock %}
+
+{% block titletag %}{% trans "Import content" %}{% endblock %}
+
+{% block content %}
+    {% trans "Import content from a Universal Core site" as title_str %}
+    {% include "wagtailadmin/shared/header.html" with title=title_str icon="download"%}
+
+    <div class="nice-padding">
+        <div id='mountpoint'></div>
+    </div>
+
+    <!-- needs to be below #mountpoint -->
+    <script src="/static/js/commons.js"></script>
+    <script src="/static/js/git-import.js"></script>
+{% endblock %}
+ 

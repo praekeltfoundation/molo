@@ -1,0 +1,8 @@
+.header {
+  overflow: auto;
+  padding: 0 0 10px;
+  @media screen and (min-width: 320px)  {
+    font-family: 'Quicksand', sans-serif;
+    padding: 10px 5px;
+  }
+}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block content %}
+  {% block section %}
+    {% load_child_sections_for_section self as sections %}
+    {% include "patterns/components/sectionpage/sectionpage-standard.html" %}
+  {% endblock %}
+{% endblock %}

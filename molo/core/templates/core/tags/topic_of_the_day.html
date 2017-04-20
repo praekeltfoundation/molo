@@ -1,0 +1,7 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+
+{% block topic_of_the_day %}
+{% if articles %}
+  {% include "patterns/components/homepage-topic_of_day/hp-topic-of-the-day.html" %}
+{% endif %}
+{% endblock %}

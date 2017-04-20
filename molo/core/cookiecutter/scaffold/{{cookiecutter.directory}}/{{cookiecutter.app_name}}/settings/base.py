@@ -55,9 +55,10 @@ INSTALLED_APPS = [
     'taggit',
     'modelcluster',
 
+    '{{cookiecutter.app_name}}',
     'molo.core',
     'molo.profiles',
-    '{{cookiecutter.app_name}}',
+    'mote',
     'google_analytics',
 
     'wagtail.wagtailcore',
@@ -105,6 +106,7 @@ MIDDLEWARE_CLASSES = [
     'molo.core.middleware.NoScriptGASessionMiddleware',
 
     'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
+    'molo.core.middleware.MultiSiteRedirectToHomepage',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -115,8 +117,10 @@ AUTHENTICATION_BACKENDS = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            join(PROJECT_ROOT, '{{cookiecutter.app_name}}', 'templates'),
+        ],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -126,6 +130,11 @@ TEMPLATES = [
                 'molo.core.context_processors.locale',
                 'wagtail.contrib.settings.context_processors.settings',
             ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "mote.loaders.app_directories.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ]
         },
     },
 ]
@@ -189,20 +198,8 @@ CELERYBEAT_SCHEDULE = {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },
-    'demote_articles': {
-        'task': 'molo.core.tasks.demote_articles',
-        'schedule': crontab(minute="*"),
-    },
-    'promote_articles': {
-        'task': 'molo.core.tasks.promote_articles',
-        'schedule': crontab(minute="*"),
-    },
-    'publish_pages': {
-        'task': 'molo.core.tasks.publish_scheduled_pages',
-        'schedule': crontab(minute='*'),
-    },
-    'clearsessions': {
-        'task': 'molo.core.tasks.clearsessions',
+    'molo_consolidated_minute_task': {
+        'task': 'molo.core.tasks.molo_consolidated_minute_task',
         'schedule': crontab(minute='*'),
     },
 }

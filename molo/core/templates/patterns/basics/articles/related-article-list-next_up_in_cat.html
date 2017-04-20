@@ -1,0 +1,16 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+
+{% get_translation self.get_parent_section as section %}
+{% get_next_article self as next_article %}
+{% if next_article and self.get_parent_section.enable_next_section %}
+  <h3>{% trans "Next up in" %} {{ section.title }}</h3>
+    <ul class="list-block">
+      <li>
+        {% if next_article.image %}
+        <a href="{% pageurl next_article %}">{% image next_article.image width-60 %}</a>
+        {% endif %}
+        <h3><a href="{% pageurl next_article %}">{{next_article.title}}</a></h3>
+        <p>{{next_article.subtitle}}</p>
+      </li>
+    </ul>
+{% endif %}

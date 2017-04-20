@@ -1,0 +1,24 @@
+@mixin no-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+
+@mixin heading-fontsize-scale($headingFontSizeMap) {
+  @each $screen-breakpoint, $font-size in $headingFontSizeMap {
+    @if $screen-breakpoint == null {
+      font-size: $font-size;
+    }
+    @else {
+      @media screen and (min-width: $screen-breakpoint) {
+        font-size: $font-size;
+      }
+    }
+  }
+}
+
+@mixin float-clear($value) {
+  float: $value;
+  clear: $value;
+}

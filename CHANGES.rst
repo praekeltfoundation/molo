@@ -1,6 +1,25 @@
 CHANGE LOG
 ==========
 
+5.2.0-beta.1
+~~~~~
+- Pin molo.profiles to latest version
+
+5.1.0-beta.1
+~~~~~
+- Move templates out from cookiecutter
+- Implement pattern library components to templates
+- Add Mote to cookiecutter
+
+5.0.4-beta.1
+~~~~~
+- Fix of previous release
+
+5.0.2-beta.1
+~~~~~
+- Added index creation signals
+- Added non routable mixin for Surveys
+
 5.0.1-beta.1
 ~~~~~
 - Added profiles urls
@@ -10,6 +29,39 @@ CHANGE LOG
 - Added multi-site cms functionality (Merged CMS)
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
+
+4.4.13
+~~~~~~
+- Insure content demotion happens for each section individually
+
+4.4.12
+~~~~~~
+- Remove promotion settings from footer pages
+
+4.4.11
+~~~~~~
+- Fixed content import to return all data and not just default 10
+
+4.4.10
+~~~~~
+- Fixed recommended article ordering in templatetag logic
+
+4.4.9
+~~~~~
+- Added Non routable page mixin
+
+4.4.8
+~~~~~
+- Pulled in changes from previous versions that were accidentally excluded
+- Consolidated celery tasks in base settings file
+
+4.4.7
+~~~~~
+- Fixed random test failures in content rotation test
+
+4.4.6
+~~~~~
+- consolidate minute tasks into 1 call
 
 4.4.5
 ~~~~~

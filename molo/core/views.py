@@ -131,7 +131,7 @@ def add_translation(request, page_id, locale):
 
 
 def import_from_git(request):
-    return render(request, 'admin/import_from_git.html')
+    return render(request, 'wagtail/import_from_git.html')
 
 
 def versions(request):
@@ -158,15 +158,18 @@ def versions(request):
             plugins_info.append((plugin[1], pypi_version, "-",
                                  ""))
 
-    return render(request, 'admin/versions.html', {
+    return render(request, 'versions.html', {
         'plugins_info': plugins_info,
     })
 
 
 def get_pypi_version(plugin_name):
     url = "https://pypi.python.org/pypi/%s/json"
-    content = requests.get(url % plugin_name).json()
-    return content.get('info').get('version')
+    try:
+        content = requests.get(url % plugin_name).json()
+        return content.get('info').get('version')
+    except:
+        return 'request failed'
 
 
 class TagsListView(ListView):

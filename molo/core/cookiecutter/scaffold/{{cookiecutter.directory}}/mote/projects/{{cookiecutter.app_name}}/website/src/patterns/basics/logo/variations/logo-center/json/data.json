@@ -1,0 +1,9 @@
+{
+    "Logo": {
+        "modifiers": "center",
+        "img": {
+          "src": "/static/images/logo_prk.png",
+          "alt": "Logo"
+        }
+    }
+}

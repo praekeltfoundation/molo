@@ -1,0 +1,7 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+
+{% block homepage_section %}
+{% for section in sections %}
+  {% include "patterns/components/homepage-section/hp-subsection-bg.html" %}
+{% endfor%}
+{% endblock %}

@@ -31,6 +31,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             locale='fr',
             is_active=True)
 
+        self.mylife = self.mk_section(
+            self.section_index, title='My life')
         self.yourmind = self.mk_section(
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
@@ -479,12 +481,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         def get_featured_articles(section):
             return section.featured_in_homepage_articles()
 
-        non_rotating_articles = self.mk_articles(
-            self.yourmind, count=3, featured_in_homepage=False)
-        rotate_content()
-        for article in non_rotating_articles:
-            self.assertFalse(article.featured_in_latest)
-        self.assertEquals(get_featured_articles(self.yourmind).count(), 0)
         self.mk_articles(
             self.yourmind_sub, count=10,
             featured_in_homepage_start_date=datetime.now())
@@ -512,6 +508,8 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         self.yourmind.save_revision().publish()
         rotate_content()
         self.assertEquals(
+            ArticlePage.objects.count(), 20)
+        self.assertEquals(
             get_featured_articles(self.yourmind_sub).count(), 10)
         self.assertNotEquals(
             first_article_old, get_featured_articles(self.yourmind_sub)[0].pk)
@@ -519,6 +517,76 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             first_article_old, get_featured_articles(self.yourmind_sub)[2].pk)
         self.assertNotEquals(
             last_article_old, get_featured_articles(self.yourmind_sub)[9].pk)
+
+    def test_homepage_content_demotions(self):
+
+        def get_featured_articles(section):
+            return ArticlePage.objects.live().filter(
+                featured_in_homepage=True,).descendant_of(section)
+
+        self.mk_articles(
+            self.yourmind_sub, count=2,
+            featured_in_homepage_start_date=datetime(2017, 1, 1, 1))
+        self.mk_articles(
+            self.yourmind_sub, count=1,
+            featured_in_homepage_start_date=datetime(2017, 1, 2, 1))
+        self.mk_articles(
+            self.yourmind_sub, count=4, featured_in_homepage=False)
+        promote_articles()
+
+        self.mk_articles(
+            self.mylife, count=2,
+            featured_in_homepage_start_date=datetime(2017, 1, 3, 1))
+        self.mk_articles(
+            self.mylife, count=1,
+            featured_in_homepage_start_date=datetime(2017, 1, 4, 1))
+        self.mk_articles(
+            self.mylife, count=4, featured_in_homepage=False)
+        promote_articles()
+
+        self.assertEquals(
+            get_featured_articles(self.yourmind).count(), 3)
+        self.assertEquals(
+            get_featured_articles(self.mylife).count(), 3)
+
+        self.yourmind.content_rotation_start_date = datetime.now()
+        self.yourmind.content_rotation_end_date = datetime.now() + \
+            timedelta(days=1)
+        self.mylife.content_rotation_start_date = datetime.now()
+        self.mylife.content_rotation_end_date = datetime.now() + \
+            timedelta(days=1)
+
+        time1 = str(datetime.now().time())[:8]
+        self.yourmind.time = dumps([{
+            'type': 'time', 'value': time1}])
+        self.yourmind.monday_rotation = True
+        self.yourmind.tuesday_rotation = True
+        self.yourmind.wednesday_rotation = True
+        self.yourmind.thursday_rotation = True
+        self.yourmind.friday_rotation = True
+        self.yourmind.saturday_rotation = True
+        self.yourmind.sunday_rotation = True
+        self.yourmind.save_revision().publish()
+
+        self.mylife.time = dumps([{
+            'type': 'time', 'value': time1}, ])
+        self.mylife.monday_rotation = True
+        self.mylife.tuesday_rotation = True
+        self.mylife.wednesday_rotation = True
+        self.mylife.thursday_rotation = True
+        self.mylife.friday_rotation = True
+        self.mylife.saturday_rotation = True
+        self.mylife.sunday_rotation = True
+        self.mylife.save_revision().publish()
+
+        rotate_content()
+
+        self.assertEquals(
+            ArticlePage.objects.count(), 14)
+        self.assertEquals(
+            get_featured_articles(self.yourmind).count(), 3)
+        self.assertEquals(
+            get_featured_articles(self.mylife).count(), 3)
 
     def test_homepage_rotation_subcategories(self):
 
@@ -568,6 +636,6 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         rotate_content()
         self.assertEquals(
             ArticlePage.objects.live().filter(
-                featured_in_homepage=True).count(), 10)
+                featured_in_homepage=True).count(), 11)
         self.assertTrue(ArticlePage.objects.live().filter(
             featured_in_homepage=True).child_of(self.yourmind_sub).exists())

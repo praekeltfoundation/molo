@@ -2,6 +2,7 @@ from itertools import chain
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import template
 from django.utils.safestring import mark_safe
+from django.db.models import Case, When
 from markdown import markdown
 
 
@@ -181,7 +182,7 @@ def breadcrumbs(context):
 
 
 @register.inclusion_tag(
-    'core/admin/translations_actions.html', takes_context=True)
+    'wagtail/translations_actions.html', takes_context=True)
 def render_translations(context, page):
     if not hasattr(page.specific, 'get_translation_for'):
         return {}
@@ -380,9 +381,14 @@ def get_recommended_articles(context, article):
         a = article.get_main_language_page()
         recommended_articles = a.specific.recommended_articles.all()
 
-    articles = ArticlePage.objects.filter(
-        pk__in=recommended_articles.values_list(
-            'recommended_article__pk', flat=True))
+    # http://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order/37648265#37648265 # noqa
+    # the following allows us to order the results of the querystring
+    pk_list = recommended_articles.values_list(
+        'recommended_article__pk', flat=True)
+    preserved = Case(
+        *[When(pk=pk, then=pos) for pos, pk in enumerate(pk_list)])
+    articles = ArticlePage.objects.filter(pk__in=pk_list).order_by(preserved)
+
     return get_pages(context, articles, locale_code)
 
 

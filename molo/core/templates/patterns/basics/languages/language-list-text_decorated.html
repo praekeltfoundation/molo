@@ -1,0 +1,22 @@
+{% block languages %}
+
+  {% load i18n %}
+
+  {% if languages|length > 1 %}
+  <div class="languages">
+    <ul class="language-list language-list--text-decorated language-list--text-decorated-{{position}}">
+      <li class="language-list__item language-list--text-decorated language-list--text-decorated-{{position}}">
+        <span class="language-list--text-decorated__title language-list--text-decorated__title--{{position}}">{% trans "Language" %}</span>
+      </li>
+      {% for language in languages %}
+      <li class="language-list__item language-list__item--text-decorated language-list__item--text-decorated-{{position}}">
+        <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" class="language-list__anchor language-list__anchor-text-decorated language-list__anchor-text-decorated-{{position}} {% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">
+          {{language.locale|language_name_local}}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+{% endblock %}

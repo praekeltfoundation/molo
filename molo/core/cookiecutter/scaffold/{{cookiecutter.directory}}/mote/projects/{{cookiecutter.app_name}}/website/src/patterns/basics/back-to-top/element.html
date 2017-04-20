@@ -1,0 +1,8 @@
+{% raw %}
+{% load mote_tags %}
+
+{% mask element.json.data.Back_to_top as "back_to_top" %}
+<div class="back-to-top">
+  <a href="#" class="call-to-action__item-text call-to-action__item-text--{{back_to_top.modifiers}}">{{ back_to_top.text }}</a>
+</div>
+{% endraw %}

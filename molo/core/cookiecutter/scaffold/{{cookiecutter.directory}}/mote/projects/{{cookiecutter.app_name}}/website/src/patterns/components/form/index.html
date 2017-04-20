@@ -1,0 +1,26 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+        Form Inputs
+    </h4>
+    <div class="description">
+        These input types create a text field: text, date, datetime, datetime-local, email, month, number, password, search, tel, time, url, and week.
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+{% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+    <!-- code-example -->
+</div>
+<!-- sg-code-block -->
+{% endblock %}
+{% endraw %}

@@ -1,0 +1,38 @@
+.search {
+  clear: both;
+  h1,h2,h3,h4,h5,h6, p {
+    padding: 0 5px;
+    @media screen and (min-width: 320px) {
+        padding: 0 15px;
+    }
+  }
+
+}
+.search__form {
+  position: relative;
+  padding: 0 5px;
+  @media screen and (min-width: 320px) {
+    padding: 0 15px;
+  }
+  input[type="text"]:focus {
+    background-color: #E5E7E9;
+    outline: 1px solid #CEE5FE;
+    box-shadow: 0 0 0 1px #CEE5FE;
+  }
+}
+
+
+#search-toggle__button  {
+  visibility: hidden;
+  position: absolute;
+}
+.search--toggle {
+  display: none;
+  padding: 15px 0 0 0;
+}
+#search-toggle__button:not(checked) ~ .search {
+    display: none;
+}
+#search-toggle__button:checked ~ .search {
+    display: block;
+}

@@ -1,0 +1,13 @@
+{% load wagtailcore_tags core_tags %}
+
+{% if settings.core.SiteSettings.enable_clickable_tags %}
+  <div class="tags">
+    <ul class="tags-list">
+      {% for tag in self.tags_list %}
+        <li class="tags-list__item">
+          <a href="{% url 'tags_list' tag %}}" class="tag__item-anchor">{{tag}}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}

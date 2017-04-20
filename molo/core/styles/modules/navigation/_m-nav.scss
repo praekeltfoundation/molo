@@ -1,0 +1,31 @@
+.navigation {
+  padding: 10px 0;
+  .heading {
+    margin: 10px;
+  }
+}
+.navigation__anchor {
+  color: #000;
+}
+
+.nav-list {
+  margin: 0;
+  padding: 0 15px;
+}
+.nav-list__item  {
+  display: block;
+  padding: 5px 15px 5px;
+  position: relative;
+  list-style-type: none;
+}
+.nav-list__anchor {
+  color: #07292F;
+  display: inline-block;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: underline;
+  font-size: 14px;
+  @media screen and (min-width: 320px) {
+    text-decoration: none;
+  }
+}
