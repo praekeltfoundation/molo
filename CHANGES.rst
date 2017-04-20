@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.2.0-beta.1
+~~~~~
+- Pin molo.profiles to latest version
+
 5.1.0-beta.1
 ~~~~~
 - Move templates out from cookiecutter
