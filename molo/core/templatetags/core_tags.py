@@ -5,10 +5,8 @@ from django.utils.safestring import mark_safe
 from django.db.models import Case, When
 from markdown import markdown
 
-
 from molo.core.models import (Page, ArticlePage, SectionPage,
-                              SiteSettings, Languages)
-
+                              SiteSettings, Languages, Tag, ArticlePageTags)
 
 register = template.Library()
 
@@ -43,6 +41,20 @@ def get_pages(context, qs, locale):
 
 
 @register.assignment_tag(takes_context=True)
+def load_tags(context):
+    request = context['request']
+    locale = context.get('locale_code')
+
+    if request.site:
+        qs = Tag.objects.descendant_of(request.site.root_page).filter(
+            languages__language__is_main_language=True).live()
+    else:
+        qs = []
+
+    return get_pages(context, qs, locale)
+
+
+@register.assignment_tag(takes_context=True)
 def load_sections(context):
     request = context['request']
     locale = context.get('locale_code')
@@ -73,6 +85,20 @@ def section_listing_homepage(context):
 
     return {
         'sections': load_sections(context),
+        'request': context['request'],
+        'locale_code': locale_code,
+    }
+
+
+@register.inclusion_tag(
+    'core/tags/tag_menu_homepage.html',
+    takes_context=True
+)
+def tag_menu_homepage(context):
+    locale_code = context.get('locale_code')
+
+    return {
+        'tags': load_tags(context),
         'request': context['request'],
         'locale_code': locale_code,
     }
@@ -270,6 +296,42 @@ def load_child_articles_for_section(context, section, count=5):
 
     context.update({'articles_paginated': articles})
     return articles
+
+
+@register.assignment_tag(takes_context=True)
+def load_tags_for_homepage(context, position):
+    request = context['request']
+    locale = context.get('locale_code')
+
+    tag = None
+    try:
+        tag = Tag.objects.descendant_of(request.site.root_page).filter(
+            feature_in_homepage=True).live()[position]
+        pks = []
+        for article_tag in ArticlePageTags.objects.filter(tag=tag).all():
+            pks.append(article_tag.page.pk)
+    except Exception:
+        pks = []
+
+    return get_pages(
+        context, ArticlePage.objects.descendant_of(
+            request.site.root_page).filter(pk__in=pks), locale), tag
+
+
+@register.assignment_tag(takes_context=True)
+def load_tags_for_article(context, article):
+    locale = context.get('locale_code')
+    request = context['request']
+    tags = []
+    for article_tag in article.get_main_language_page(
+    ).specific.nav_tags.all():
+        tags.append(article_tag.tag.pk)
+    if request.site:
+        qs = Tag.objects.descendant_of(
+            request.site.root_page).live().filter(pk__in=tags)
+    else:
+        qs = []
+    return get_pages(context, qs, locale)
 
 
 @register.assignment_tag(takes_context=True)
