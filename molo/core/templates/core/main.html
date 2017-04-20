@@ -3,7 +3,16 @@
 
 {% block content %}
     {% bannerpages %}
+    {% if settings.core.SiteSettings.enable_tag_navigation%}
+      {% tag_menu_homepage %}
+    {% endif %}
     {% topic_of_the_day %}
+    {% if settings.core.SiteSettings.enable_tag_navigation%}
+      {% load_tags_for_homepage 0 %}
+    {% endif %}
     {% latest_listing_homepage num_count=6 %}
+    {% if settings.core.SiteSettings.enable_tag_navigation%}
+      {% load_tags_for_homepage 1 %}
+    {% endif %}
     {% section_listing_homepage %}
 {% endblock %}
