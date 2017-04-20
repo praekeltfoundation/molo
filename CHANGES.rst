@@ -1,5 +1,8 @@
 CHANGE LOG
 ==========
+5.0.1
+~~~~~
+- Version bump for molo profiles to resolve pin dependencies
 
 5.0.0
 ~~~~~
