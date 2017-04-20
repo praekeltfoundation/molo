@@ -1,5 +1,9 @@
 CHANGE LOG
 ==========
+5.0.2
+~~~~~
+- Fix test for admin url redirect
+
 5.0.1
 ~~~~~
 - Version bump for molo profiles to resolve pin dependencies
