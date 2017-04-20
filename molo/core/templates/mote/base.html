@@ -8,16 +8,13 @@
     <title>Molo Design System</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link rel="stylesheet" type="text/css" href="{% static "mote/css/fonts.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "mote/css/mote.css" %}"/>
+    {% compress css %}
+      <link rel="stylesheet" type="text/css" href="{% static 'css/dev/mote.css' %}">
+    {% endcompress %}
     <link rel="stylesheet" type="text/css" href="{% static "mote/js/libs/prism/css/prism.css" %}"/>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-
-    {% compress css %}
-      <link rel="stylesheet" type="text/x-scss" href="{% static "css/mote.scss" %}">
-    {% endcompress %}
-
     <script src="{% static "mote/js/libs/jquery/js/jquery.js" %}"></script>
     <script src="{% static "mote/js/libs/sticky-kit/js/jquery.sticky-kit.js" %}"></script>
     <script src="{% static "mote/js/libs/prism/js/prism.js" %}"></script>
@@ -26,7 +23,6 @@
     <script src="{% static "mote/js/mote.js" %}"></script>
     <script src="{% static "js/main.js" %}"></script>
 </head>
-
 <body data-library="{{ library }}">
     {% block header %}
     <header role="banner" class="header">
@@ -38,14 +34,12 @@
         </div>
     </header>
     {% endblock %}
-
     <section class="hero {{ pattern.id }}">
       <div class="wrapper">
           {% block hero %}
           {% endblock %}
       </div>
     </section>
-
     <main role="main" class="main_wrapper">
       <div class="wrapper">
             <aside role="sidebar" class="sidebar">
@@ -63,7 +57,6 @@
                                   {% endfor %}
                               {% endfor %}
                           {% endfor %}
-
                         </ul>
                     </div>
                   </form>
@@ -77,26 +70,18 @@
                   <li class="extra-list__menuitem">
                     <a href="#devices">Devices</a>
                   </li>
-
-
                   <li class="extra-list__menuitem">
                     <a href="#principles">Principles</a>
                   </li>
-
-
                   <li class="extra-list__menuitem">
                     <a href="#feature_phones">Designing for Feature Phones</a>
                   </li>
-
-
                   <li class="extra-list__menuitem">
                     <a href="#accessibility">Accessibility</a>
                   </li>
-
                   <li class="extra-list__menuitem">
                     <a href="#workflow">Proposed Workflow</a>
                   </li>
-
                   <li class="extra-list__menuitem">
                     <a href="#markup_styleguide">Markup and Styleguide Approach</a>
                   </li>

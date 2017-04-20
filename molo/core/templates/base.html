@@ -28,11 +28,9 @@
     <meta property="og:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
     <meta property="og:image:url" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     {% compress css %}
-        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/style.scss' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'css/dev/styles.css' %}">
     {% endcompress %}
-
     <script type="text/javascript">
       // cut the mustard
       if('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
@@ -40,7 +38,6 @@
       }
     </script>
   </head>
-
   <body class="{% block body_class %}{% endblock %}">
     {% block google_analytics %}
       {% include "patterns/components/ga_tag_manager.html" %}

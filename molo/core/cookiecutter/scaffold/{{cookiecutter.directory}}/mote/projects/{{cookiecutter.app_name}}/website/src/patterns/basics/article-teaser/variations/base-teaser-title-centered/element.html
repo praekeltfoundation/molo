@@ -1,6 +1,6 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.GridArticleTeaser as "teaser" %}
+{% mask element.json.data.GridBaseTeaser as "teaser" %}
 
 <h3 class="article-teaser__title article-teaser__title--{{teaser.modifiers}} "><a href="#">{{ teaser.title }}</a></h3>
 {% if teaser.subtitle %}

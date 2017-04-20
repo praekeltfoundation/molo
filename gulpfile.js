@@ -10,7 +10,8 @@ var gulp              =   require('gulp'),
     sourcemaps        =   require('gulp-sourcemaps'),
     livereload        =   require('gulp-livereload'),
     sassPaths = [
-        'molo/core/styles/styles.scss'
+        'molo/core/styles/core-style/styles.scss',
+        'molo/core/styles/mote/mote.scss'
     ],
     sassDest = {
          prd: 'molo/core/static/css/prd',
