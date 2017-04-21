@@ -22,12 +22,10 @@ Separate smart styles to states folder
 .carousel-teaser__thumbnail-link {}
 
 
-.carousel-teaser__title {
+.carousel-teaser__title,
+.carousel-teaser__subtitle {
   text-align: center;
 }
 .carousel-teaser__title-link {
   color: gray;
-}
-.carousel-teaser__subtitle {
-  text-align: center;
 }

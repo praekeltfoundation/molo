@@ -23,12 +23,10 @@ Separate smart styles to states folder
 }
 
 
-.base-teaser__title {
+.base-teaser__title,
+.base-teaser__subtitle {
   text-align: right;
 }
 .base-teaser__title-link {
   color: gray;
-}
-.base-teaser__subtitle {
-  text-align: right;
 }
