@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     'molo.profiles',
     'mote',
     'google_analytics',
+    'molo.commenting',
+    'django_comments',
 
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
