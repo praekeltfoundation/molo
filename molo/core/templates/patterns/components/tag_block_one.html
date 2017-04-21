@@ -2,6 +2,7 @@
 
 {% block load_tags_for_homepage %}
 
+{% if tag %}
 <div class="navigation">
   <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
     {{tag.title}}
@@ -12,8 +13,15 @@
         <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
           {{article.title}}
         </a>
+        {% load_tags_for_article article as tags %}
+        {% for tag in tags %}
+          <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
+            {{tag.title}}
+          </a>
+        {% endfor %}
       </li>
     {% endfor %}
   </ul>
 </div>
+{% endif %}
 {% endblock %}

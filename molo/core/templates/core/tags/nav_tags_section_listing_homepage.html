@@ -23,6 +23,14 @@
       <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">{{ article.subtitle }}</p>
     </li>
     {% endif %}
+    {% load_tags_for_article article as tags %}
+    {% if tags %}
+      {% for tag in tags %}
+        <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
+          {{tag.title}}
+        </a>
+      {% endfor %}
+    {% endif %}
   {% endfor %}
   </ul>
 {% include "patterns/basics/promoted-articles-section-hp/articles_promoted-homepage-child-subsection-with-bg.html" %}

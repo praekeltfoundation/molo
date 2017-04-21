@@ -6,6 +6,16 @@
       <h5 class="heading heading--x-small promoted-article__title--theme-headings">
       {{article.title}}</h5>
     </a>
+    {% if settings.core.SiteSettings.enable_tag_navigation %}
+    {% load_tags_for_article article as tags %}
+    {% if tags %}
+    {% for tag in tags %}
+      <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
+        {{tag.title}}
+      </a>
+    {% endfor %}
+    {% endif %}
+    {% endif %}
   </li>
   {% endfor %}
 </ul>

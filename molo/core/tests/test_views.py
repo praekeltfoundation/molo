@@ -1262,6 +1262,27 @@ class TestTags(MoloTestCaseMixin, TestCase):
         self.site_settings.enable_tag_navigation = True
         self.site_settings.save()
 
+    def test_article_not_repeated_when_tag_navigation_enabled(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.yourmind,
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now(), count=30)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        promote_articles()
+
+        response = self.client.get('/')
+        data = response.context['tag_nav_data']
+        self.assertFalse(
+            any(i in data['tags_list'] for i in data['latest_articles']))
+        self.assertFalse(
+            any(i in data['sections'] for i in data['latest_articles']))
+        self.assertFalse(any(i in data['sections'] for i in data['tags_list']))
+
     def test_tag_cloud_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
         response = self.client.get('/')
@@ -1324,12 +1345,11 @@ class TestTags(MoloTestCaseMixin, TestCase):
         tag.save_revision().publish()
 
         response = self.client.get('/')
-        self.assertContains(
-            response,
-            '([&lt;ArticlePage: Test page 0&gt;, &lt;ArticlePage:'
-            ' Test page 1&gt;, &lt;ArticlePage: Test page 2&gt;, &lt;Artic'
-            'lePage: Test page 3&gt;, &lt;ArticlePage: Test page 4&gt;], '
-            '&lt;Tag: Test Tag&gt;)')
+        self.assertEquals(
+            str(response.context['tag_nav_data']['tags_list']),
+            '[(<Tag: Test Tag>, [<ArticlePage: Test page 0>, <ArticlePage'
+            ': Test page 1>, <ArticlePage: Test page 2>, <ArticleP'
+            'age: Test page 3>])]')
         self.assertNotContains(response, 'Test Page 5')
 
         tag = self.mk_tag(parent=self.tag_index, title='Not Promoted Tag 1')
@@ -1344,12 +1364,13 @@ class TestTags(MoloTestCaseMixin, TestCase):
         tag.save_revision().publish()
 
         response = self.client.get('/')
-        self.assertContains(
-            response,
-            '([&lt;ArticlePage: Test page 0&gt;, &lt;ArticlePage:'
-            ' Test page 1&gt;, &lt;ArticlePage: Test page 2&gt;, &lt;Artic'
-            'lePage: Test page 3&gt;, &lt;ArticlePage: Test page 4&gt;], '
-            '&lt;Tag: Test Tag 2&gt;)')
+        self.assertEquals(
+            str(response.context['tag_nav_data']['tags_list']),
+            '[(<Tag: Test Tag>, [<ArticlePage: Test page 0>, <ArticlePage: '
+            'Test page 1>, <ArticlePage: Test page 2>, <ArticlePage: Test p'
+            'age 3>]), (<Tag: Test Tag 2>, [<ArticlePage: Test page 0>, <Ar'
+            'ticlePage: Test page 1>, <ArticlePage: Test page 2>, <Articl'
+            'ePage: Test page 3>])]')
         self.assertNotContains(response, 'Test Page 5')
 
     def test_tag_navigation_shows_correct_tag_for_locale(self):

@@ -329,7 +329,8 @@ def load_tags_for_homepage(
     exclude_pks += [p.pk for p in latest_articles]
     data.update({
         'latest_articles': get_pages(
-            context, latest_articles, locale)})
+            context, ArticlePage.objects.filter(
+                pk__in=[p.pk for p in latest_articles]), locale)})
 
     # Featured Section
     sections = request.site.root_page.specific.sections()
@@ -339,7 +340,7 @@ def load_tags_for_homepage(
             featured_in_homepage=True).order_by(
                 '-featured_in_homepage_start_date').exclude(
                 pk__in=exclude_pks)
-        exclude_pks += [p.pk for p in sec_articles]
+        exclude_pks += [p.pk for p in sec_articles[:sec_articles_count]]
         sections_list.append((
             section,
             get_pages(context, sec_articles, locale)[:sec_articles_count]))
@@ -354,7 +355,6 @@ def load_tags_for_homepage(
         tags_list.append((tag, tag_articles))
 
     data.update({'tags_list': tags_list})
-
     return data
 
 
@@ -365,12 +365,13 @@ def load_tags_for_article(context, article):
     tags = []
     for article_tag in article.get_main_language_page(
     ).specific.nav_tags.all():
-        tags.append(article_tag.tag.pk)
-    if request.site:
+        if article_tag.tag:
+            tags.append(article_tag.tag.pk)
+    if tags and request.site:
         qs = Tag.objects.descendant_of(
             request.site.root_page).live().filter(pk__in=tags)
     else:
-        qs = []
+        return []
     return get_pages(context, qs, locale)
 
 
