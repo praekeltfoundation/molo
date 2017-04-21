@@ -639,11 +639,28 @@ class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    def copy(self, *args, **kwargs):
+    def celery_copy(self, *args, **kwargs):
         site = kwargs['to'].get_site()
         main = site.root_page
         SectionIndexPage.objects.child_of(main).delete()
-        super(SectionIndexPage, self).copy(*args, **kwargs)
+        return super(SectionIndexPage, self).copy(*args, **kwargs)
+
+    def copy(self, *args, **kwargs):
+        from molo.core.tasks import copy_sections_index
+
+        via_celery = kwargs.get('via_celery')
+
+        if via_celery:
+            del kwargs['via_celery']
+            return self.celery_copy(*args, **kwargs)
+
+        user_pk = kwargs['user'].pk
+        to_pk = kwargs['to'].pk
+        copy_revisions = kwargs.get('copy_revisions')
+        recursive = kwargs.get('recursive')
+        keep_live = kwargs.get('keep_live')
+        copy_sections_index.delay(
+            self.pk, user_pk, to_pk, copy_revisions, recursive, keep_live)
 
 
 SectionIndexPage.content_panels = [
