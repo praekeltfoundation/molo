@@ -16,11 +16,17 @@ body {
 
 a {
   text-decoration: none;
+  cursor: pointer;
+  outline: none;
   &:hover {
     text-decoration: underline;
   }
 }
 
 h1,h2,h3,h4,h5,h6,p {
+  margin: 0;
+}
+
+ul,li,ol {
   margin: 0;
 }

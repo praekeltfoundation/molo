@@ -1,14 +1,13 @@
 {% load core_tags %}
-
 <div class="article-teaser">
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
 {% if featured_articles %}
   <ul class="teaser-stacklist">
     {% for article in featured_articles %}
     <li class="teaser-stacklist__item">
-      {% include "patterns/basics/articles-teaser/base-teaser-thumbnail.html" %}
-      {% include "patterns/basics/articles-teaser/base-teaser-title.html" %}
-      {% include "patterns/basics/comment-counter/base-teaser-comment-counter.html" %}
+      {% include "patterns/basics/articles-teaser/teaser-thumbnail.html" with layouttype="base" %}
+      {% include "patterns/basics/articles-teaser/teaser-title.html" with layouttype="base" %}
+      {% include "patterns/basics/comment-counter/sides-aligned-comment-counter.html" %}
     </li>
     {% endfor %}
   </ul>

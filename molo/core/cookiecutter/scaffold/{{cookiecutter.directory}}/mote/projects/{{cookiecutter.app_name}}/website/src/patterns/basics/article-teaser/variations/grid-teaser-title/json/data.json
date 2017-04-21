@@ -2,6 +2,6 @@
     "GridBaseTeaser": {
       "title": "Grid Base teaser title with two Lines",
       "subtitle": "Grid Base teaser subtitle with two lines",
-      "modifiers": "center-aligned"
+      "modifiers": "grid"
     }
 }

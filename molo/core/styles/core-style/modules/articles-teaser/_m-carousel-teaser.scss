@@ -7,9 +7,11 @@ Separate smart styles to states folder
 }
 .carousel-teaser-list {
   display: inline-block;
+  padding: 0 15px 10px;
 }
 .carousel-teaser-list__item {
   list-style-type: none;
+  padding: 0 0 10px;
 }
 
 .carousel-teaser__thumbnail {
@@ -17,10 +19,7 @@ Separate smart styles to states folder
   text-align: center;
   display: block;
 }
-.carousel-teaser__thumbnail-link {
-  cursor: pointer;
-  outline: none;
-}
+.carousel-teaser__thumbnail-link {}
 
 
 .carousel-teaser__title {

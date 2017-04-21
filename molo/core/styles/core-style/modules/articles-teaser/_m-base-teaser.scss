@@ -7,26 +7,28 @@ Separate smart styles to states folder
 }
 .teaser-stacklist {
   display: block;
+  padding: 0 15px 10px;
 }
 .teaser-stacklist__item {
   list-style-type: none;
+  padding: 0 0 10px;
 }
 
-.article-teaser__thumbnail {
+.base-teaser__thumbnail {
   float: left;
 }
-.article-teaser__thumbnail-link {
+.base-teaser__thumbnail-link {
   cursor: pointer;
   outline: none;
 }
 
 
-.article-teaser__title {
+.base-teaser__title {
   text-align: right;
 }
-.article-teaser__title-link {
+.base-teaser__title-link {
   color: gray;
 }
-.article-teaser__subtitle {
+.base-teaser__subtitle {
   text-align: right;
 }
