@@ -668,7 +668,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
+    parent_page_types = ['core.SectionIndexPage', 'core.SectionPage']
     subpage_types = ['core.ArticlePage', 'core.SectionPage']
     search_fields = Page.search_fields + [
         index.SearchField('description'),
@@ -1139,6 +1139,11 @@ class FooterPage(ArticlePage):
 
 
 FooterPage.content_panels = ArticlePage.content_panels
+FooterPage.promote_panels = [
+    MultiFieldPanel(
+        Page.promote_panels,
+        "Common page configuration", "collapsible collapsed")]
+
 
 pages_to_delete = []
 

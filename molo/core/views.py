@@ -165,8 +165,11 @@ def versions(request):
 
 def get_pypi_version(plugin_name):
     url = "https://pypi.python.org/pypi/%s/json"
-    content = requests.get(url % plugin_name).json()
-    return content.get('info').get('version')
+    try:
+        content = requests.get(url % plugin_name).json()
+        return content.get('info').get('version')
+    except:
+        return 'request failed'
 
 
 class TagsListView(ListView):

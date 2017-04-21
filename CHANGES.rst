@@ -1,34 +1,47 @@
 CHANGE LOG
 ==========
 
-5.1.1-beta.1
+5.0.3
 ~~~~~
-- Unpinning profiles version
+- Add parent_page_types to SectionPage
 
-5.1.0-beta.1
+5.0.2
 ~~~~~
+- Fix test for admin url redirect
+
+5.0.1
+~~~~~
+- Version bump for molo profiles to resolve pin dependencies
+
+5.0.0
+~~~~~
+- Pin molo.profiles to latest version
 - Move templates out from cookiecutter
 - Implement pattern library components to templates
 - Add Mote to cookiecutter
-
-5.0.4-beta.1
-~~~~~
 - Fix of previous release
-
-5.0.2-beta.1
-~~~~~
 - Added index creation signals
 - Added non routable mixin for Surveys
-
-5.0.1-beta.1
-~~~~~
 - Added profiles urls
-
-5.0.0-beta.1
-~~~~~
 - Added multi-site cms functionality (Merged CMS)
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
+
+4.4.13
+~~~~~~
+- Insure content demotion happens for each section individually
+
+4.4.12
+~~~~~~
+- Remove promotion settings from footer pages
+
+4.4.11
+~~~~~~
+- Fixed content import to return all data and not just default 10
+
+4.4.10
+~~~~~
+- Fixed recommended article ordering in templatetag logic
 
 4.4.9
 ~~~~~

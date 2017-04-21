@@ -147,11 +147,11 @@ def rotate_latest(main_lang, index, main, site_settings, day):
 
 
 def rotate_featured_in_homepage(main_lang, day, main):
-    def demote_last_featured_article_in_homepage():
-            articles = ArticlePage.objects.descendant_of(main).live().filter(
+    def demote_last_featured_article_in_homepage(section):
+            articles = ArticlePage.objects.live().filter(
                 featured_in_homepage=True,
                 languages__language__id=main_lang.id
-            ).order_by(
+            ).descendant_of(section).order_by(
                 '-featured_in_homepage_start_date')
             if articles.count() >= 2:
                 article = articles.last()
@@ -186,7 +186,8 @@ def rotate_featured_in_homepage(main_lang, day, main):
                                     datetime.now()
                                 random_article.save_revision().publish()
                                 promote_articles()
-                                demote_last_featured_article_in_homepage()
+                                demote_last_featured_article_in_homepage(
+                                    section)
 
 
 def send_import_email(to_email, context):

@@ -55,9 +55,9 @@ INSTALLED_APPS = [
     'taggit',
     'modelcluster',
 
+    '{{cookiecutter.app_name}}',
     'molo.core',
     'molo.profiles',
-    '{{cookiecutter.app_name}}',
     'mote',
     'google_analytics',
 
@@ -117,7 +117,9 @@ AUTHENTICATION_BACKENDS = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            join(PROJECT_ROOT, '{{cookiecutter.app_name}}', 'templates'),
+        ],
         'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
