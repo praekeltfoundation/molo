@@ -1,5 +1,10 @@
 CHANGE LOG
 ==========
+
+5.0.3
+~~~~~
+- Add parent_page_types to SectionPage
+
 5.0.2
 ~~~~~
 - Fix test for admin url redirect
