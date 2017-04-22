@@ -654,7 +654,8 @@ class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
             del kwargs['via_celery']
             return self.celery_copy(*args, **kwargs)
 
-        user_pk = kwargs['user'].pk
+        user = kwargs.get('user')
+        user_pk = user.pk if user else None
         to_pk = kwargs['to'].pk
         copy_revisions = kwargs.get('copy_revisions')
         recursive = kwargs.get('recursive')

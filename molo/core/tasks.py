@@ -264,7 +264,7 @@ def molo_consolidated_minute_task():
 def copy_sections_index(
         section_pk, user_pk, to_pk, copy_revisions, recursive, keep_live):
     section_index = SectionIndexPage.objects.get(pk=section_pk)
-    user = User.objects.get(pk=user_pk)
+    user = User.objects.get(pk=user_pk) if user_pk else None
     to = Page.objects.get(pk=to_pk).specific
     section_index.copy(
         user=user,
@@ -275,7 +275,7 @@ def copy_sections_index(
         via_celery=True)
 
     send_copy_email(user.email, {
-        'name': user.get_full_name() or user.username,
+        'name': (user.get_full_name() or user.username) if user else None,
         'source': section_index.get_parent().title,
         'to': to.title
     })
