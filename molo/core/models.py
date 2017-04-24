@@ -704,7 +704,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
+    parent_page_types = ['core.SectionIndexPage', 'core.SectionPage']
     subpage_types = ['core.ArticlePage', 'core.SectionPage']
     search_fields = Page.search_fields + [
         index.SearchField('description'),

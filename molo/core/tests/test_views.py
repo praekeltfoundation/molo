@@ -2,6 +2,7 @@ from os import environ
 import json
 import pytest
 import responses
+import urllib
 
 from datetime import timedelta, datetime
 from urlparse import parse_qs
@@ -111,9 +112,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
         client = Client(HTTP_HOST=main3.get_site().hostname)
         client.login(user=user)
         response = client.get('/admin/pages/%s/' % main3_pk)
+        admin_url = '/admin/pages/%s/' % main3_pk
         self.assertEqual(
             response['Location'],
-            '/admin/login/?next=%2Fadmin%2Fpages%2F18%2F')
+            '/admin/login/?next=' + urllib.quote(admin_url, safe=''))
 
     def test_able_to_copy_main(self):
         # testing that copying a main page does not give an error
