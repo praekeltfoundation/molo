@@ -177,6 +177,66 @@ class TestPages(TestCase, MoloTestCaseMixin):
             new_section.translations.all().count(),
             self.yourmind.translations.all().count())
 
+    def test_copy_main_with_celery_disabled(self):
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        article = self.mk_articles(self.yourmind, 1)[0]
+        self.mk_article_translation(article, self.french)
+        self.mk_section_translation(self.yourmind, self.french)
+        self.user = self.login()
+
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 11)
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'new-main',
+                'new_slug': 'new-main',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        new_main = Page.objects.get(slug='new-main')
+        self.assertEquals(Page.objects.descendant_of(new_main).count(), 11)
+
+        self.assertEqual(len(mail.outbox), 1)
+        [email] = mail.outbox
+        self.assertEqual(email.subject, 'Molo Content Copy')
+
+    def test_copy_main_with_celery_enabled(self):
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        article = self.mk_articles(self.yourmind, 1)[0]
+        self.mk_article_translation(article, self.french)
+        self.mk_section_translation(self.yourmind, self.french)
+        self.user = self.login()
+
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 11)
+
+        # Prevent copy on index page from getting executed immediately
+        with self.settings(CELERY_ALWAYS_EAGER=False):
+            response = self.client.post(reverse(
+                'wagtailadmin_pages:copy',
+                args=(self.main.id,)),
+                data={
+                    'new_title': 'new-main-celery',
+                    'new_slug': 'new-main-celery',
+                    'new_parent_page': self.root.id,
+                    'copy_subpages': 'true',
+                    'publish_copies': 'true'})
+            self.assertEquals(response.status_code, 302)
+
+        new_main_celery = Page.objects.get(slug='new-main-celery')
+        # few pages created since we're not letting celery run
+        self.assertEquals(
+            Page.objects.descendant_of(new_main_celery).count(), 4)
+
+        # no email sent since copy is not complete
+        self.assertEqual(len(mail.outbox), 0)
+
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)
 
