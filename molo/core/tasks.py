@@ -211,7 +211,8 @@ def send_validate_email(to_email, context):
 
 def send_copy_email(to_email, context):
     from_email = settings.FROM_EMAIL
-    subject = settings.CONTENT_COPY_SUBJECT
+    subject = settings.CONTENT_COPY_SUBJECT \
+        if hasattr(settings, 'CONTENT_COPY_SUBJECT') else 'Molo Content Copy'
     body = render_to_string(COPY_EMAIL_TEMPLATE, context)
     email_message = EmailMessage(subject, body, from_email, [to_email])
     email_message.send()
