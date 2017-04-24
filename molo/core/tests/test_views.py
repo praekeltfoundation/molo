@@ -177,7 +177,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
             new_section.translations.all().count(),
             self.yourmind.translations.all().count())
 
+    @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_copy_main_with_celery_disabled(self):
+        '''
+        Ensure copy task completes by setting celery to execute immediately
+        '''
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(locale='fr').exists())
@@ -205,7 +209,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         [email] = mail.outbox
         self.assertEqual(email.subject, 'Molo Content Copy')
 
+    @override_settings(CELERY_ALWAYS_EAGER=False)
     def test_copy_main_with_celery_enabled(self):
+        '''
+        Prevent copy on index page from getting executed immediately
+        by forcing celery to queue the task, but not execute them
+        '''
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(locale='fr').exists())
@@ -216,18 +225,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         self.assertEquals(Page.objects.descendant_of(self.main).count(), 11)
 
-        # Prevent copy on index page from getting executed immediately
-        with self.settings(CELERY_ALWAYS_EAGER=False):
-            response = self.client.post(reverse(
-                'wagtailadmin_pages:copy',
-                args=(self.main.id,)),
-                data={
-                    'new_title': 'new-main-celery',
-                    'new_slug': 'new-main-celery',
-                    'new_parent_page': self.root.id,
-                    'copy_subpages': 'true',
-                    'publish_copies': 'true'})
-            self.assertEquals(response.status_code, 302)
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'new-main-celery',
+                'new_slug': 'new-main-celery',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
 
         new_main_celery = Page.objects.get(slug='new-main-celery')
         # few pages created since we're not letting celery run
