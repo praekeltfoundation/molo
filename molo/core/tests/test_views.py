@@ -20,8 +20,7 @@ from molo.core.models import (FooterPage,
                               ArticlePageRecommendedSections,
                               Main, BannerIndexPage,
                               SectionIndexPage,
-                              FooterIndexPage, Languages, SiteLanguageRelation,
-                              ArticlePageTags)
+                              FooterIndexPage, Languages, SiteLanguageRelation)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
