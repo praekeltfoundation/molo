@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.0.4
+~~~~~
+- Use celery for copying section index contents
+
 5.0.3
 ~~~~~
 - Add parent_page_types to SectionPage
