@@ -299,17 +299,13 @@ def load_child_articles_for_section(context, section, count=5):
 
 
 @register.simple_tag(takes_context=True)
-def load_tags_for_homepage(
+def get_tag_articles(
         context, latest_articles_count=12, section_count=1, tag_count=4,
         sec_articles_count=4):
     def get_positional_tag_articles(request, tag, exclude_list):
 
-        try:
-            pks = []
-            for article_tag in ArticlePageTags.objects.filter(tag=tag):
-                pks.append(article_tag.page.pk)
-        except Exception:
-            pks = []
+        pks = [article_tag.page.pk for article_tag in
+               ArticlePageTags.objects.filter(tag=tag)]
         return get_pages(
             context, ArticlePage.objects.descendant_of(
                 request.site.root_page).filter(pk__in=pks).exclude(
@@ -362,11 +358,10 @@ def load_tags_for_homepage(
 def load_tags_for_article(context, article):
     locale = context.get('locale_code')
     request = context['request']
-    tags = []
-    for article_tag in article.get_main_language_page(
-    ).specific.nav_tags.all():
-        if article_tag.tag:
-            tags.append(article_tag.tag.pk)
+    tags = [
+        article_tag.tag.pk for article_tag in
+        article.get_main_language_page().specific.nav_tags.all()
+        if article_tag.tag]
     if tags and request.site:
         qs = Tag.objects.descendant_of(
             request.site.root_page).live().filter(pk__in=tags)

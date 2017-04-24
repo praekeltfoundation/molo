@@ -124,11 +124,10 @@ class MoloTestCaseMixin(object):
         data = {}
         data.update({
             'title': 'Test Tag',
+            'slug': generate_slug(data['Test Tag'])
         })
         data.update(kwargs)
-        data.update({
-            'slug': generate_slug(data['title'])
-        })
+
         tag = Tag(**data)
         parent.add_child(instance=tag)
         tag.save_revision().publish()
