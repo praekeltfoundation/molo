@@ -7,11 +7,12 @@ import urllib
 from datetime import timedelta, datetime
 from urlparse import parse_qs
 
-from django.core.files.base import ContentFile
-from django.test import TestCase, override_settings, Client
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core import mail
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
+from django.test import TestCase, override_settings, Client
 from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
@@ -133,6 +134,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             main3.get_children().count(), self.main.get_children().count())
 
+        self.assertEqual(len(mail.outbox), 1)
+        [email] = mail.outbox
+        self.assertEqual(email.subject, 'Molo Content Copy')
+        self.assertEqual(email.from_email, 'support@moloproject.org')
+        self.assertEqual(email.to, ['superuser@email.com'])
+        self.assertTrue('superuser' in email.body)
+        self.assertTrue(
+            'The content copy from Main to blank is complete.'
+            in email.body)
+
     def test_copy_method_of_section_page_copies_translations_subpages(self):
         self.assertFalse(
             Languages.for_site(
@@ -165,6 +176,73 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             new_section.translations.all().count(),
             self.yourmind.translations.all().count())
+
+    @override_settings(CELERY_ALWAYS_EAGER=True)
+    def test_copy_main_with_celery_disabled(self):
+        '''
+        Ensure copy task completes by setting celery to execute immediately
+        '''
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        article = self.mk_articles(self.yourmind, 1)[0]
+        self.mk_article_translation(article, self.french)
+        self.mk_section_translation(self.yourmind, self.french)
+        self.user = self.login()
+
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 11)
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'new-main',
+                'new_slug': 'new-main',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        new_main = Page.objects.get(slug='new-main')
+        self.assertEquals(Page.objects.descendant_of(new_main).count(), 11)
+
+        self.assertEqual(len(mail.outbox), 1)
+        [email] = mail.outbox
+        self.assertEqual(email.subject, 'Molo Content Copy')
+
+    @override_settings(CELERY_ALWAYS_EAGER=False)
+    def test_copy_main_with_celery_enabled(self):
+        '''
+        Prevent copy on index page from getting executed immediately
+        by forcing celery to queue the task, but not execute them
+        '''
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        article = self.mk_articles(self.yourmind, 1)[0]
+        self.mk_article_translation(article, self.french)
+        self.mk_section_translation(self.yourmind, self.french)
+        self.user = self.login()
+
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 11)
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'new-main-celery',
+                'new_slug': 'new-main-celery',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+
+        new_main_celery = Page.objects.get(slug='new-main-celery')
+        # few pages created since we're not letting celery run
+        self.assertEquals(
+            Page.objects.descendant_of(new_main_celery).count(), 4)
+
+        # no email sent since copy is not complete
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)
