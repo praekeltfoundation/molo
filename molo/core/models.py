@@ -660,8 +660,16 @@ class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
         copy_revisions = kwargs.get('copy_revisions')
         recursive = kwargs.get('recursive')
         keep_live = kwargs.get('keep_live')
-        copy_sections_index.delay(
-            self.pk, user_pk, to_pk, copy_revisions, recursive, keep_live)
+
+        # workaround for celery tasks
+        # https://github.com/celery/django-celery/issues/201
+        if hasattr(settings, 'CELERY_ALWAYS_EAGER') and \
+                settings.CELERY_ALWAYS_EAGER and settings.DEBUG:
+            copy_sections_index(
+                self.pk, user_pk, to_pk, copy_revisions, recursive, keep_live)
+        else:
+            copy_sections_index.delay(
+                self.pk, user_pk, to_pk, copy_revisions, recursive, keep_live)
 
 
 SectionIndexPage.content_panels = [

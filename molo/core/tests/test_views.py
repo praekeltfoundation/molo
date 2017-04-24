@@ -7,11 +7,12 @@ import urllib
 from datetime import timedelta, datetime
 from urlparse import parse_qs
 
-from django.core.files.base import ContentFile
-from django.test import TestCase, override_settings, Client
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core import mail
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
+from django.test import TestCase, override_settings, Client
 from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
@@ -132,6 +133,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
         main3 = Main.objects.get(slug='blank')
         self.assertEquals(
             main3.get_children().count(), self.main.get_children().count())
+
+        self.assertEqual(len(mail.outbox), 1)
+        [email] = mail.outbox
+        self.assertEqual(email.subject, 'Molo Content Copy')
+        self.assertEqual(email.from_email, 'support@moloproject.org')
+        self.assertEqual(email.to, ['superuser@email.com'])
+        self.assertTrue('superuser' in email.body)
+        self.assertTrue(
+            'The content copy from Main to blank is complete.'
+            in email.body)
 
     def test_copy_method_of_section_page_copies_translations_subpages(self):
         self.assertFalse(
