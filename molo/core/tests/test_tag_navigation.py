@@ -7,6 +7,7 @@ from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteSettings, Main, Languages,
                               SiteLanguageRelation, ArticlePageTags)
 from molo.core.tasks import promote_articles
+from itertools import chain
 
 
 class TestTags(MoloTestCaseMixin, TestCase):
@@ -82,12 +83,22 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         response = self.client.get('/')
         data = response.context['tag_nav_data']
-        self.assertFalse(
-            any(i in data['tags_list'] for i in data['latest_articles']))
+        hoempage_articles = []
         for section, section_list in data['sections']:
-            self.assertFalse(
-                any(i in section_list for i in data['latest_articles']))
-        self.assertFalse(any(i in data['sections'] for i in data['tags_list']))
+            homepage_articles = list(chain(hoempage_articles, section_list))
+        for tag, tag_list in data['tags_list']:
+            homepage_articles = list(chain(homepage_articles, tag_list))
+        homepage_articles = list(chain(
+            homepage_articles, data['latest_articles']))
+
+        def unique(g):
+            s = set()
+            for x in g:
+                if x.pk in s:
+                    return False
+                s.add(x.pk)
+            return True
+        self.assertTrue(unique(homepage_articles))
 
     def test_tag_cloud_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)

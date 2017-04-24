@@ -124,7 +124,7 @@ class MoloTestCaseMixin(object):
         data = {}
         data.update({
             'title': 'Test Tag',
-            'slug': generate_slug(data['Test Tag'])
+            'slug': generate_slug('Test Tag')
         })
         data.update(kwargs)
 
