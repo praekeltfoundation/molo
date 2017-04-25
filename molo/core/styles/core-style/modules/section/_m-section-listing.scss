@@ -1,0 +1,26 @@
+.section-listing__title-theme-headings {
+  border-top-style: dotted;
+  border-top-width: 1px;
+}
+.section-listing__title-theme-headings,
+.promoted-article__title--theme-headings  {
+  padding: 5px 15px;
+}
+.section-listing__title-theme-general,
+.section-listing__title-theme-standard {
+  padding: 0 10px;
+}
+.section-listing__link-theme-headings,
+.section-listing__title-theme-headings,
+.section-listing__link-theme-standard {
+  color: #000;
+}
+
+.section-listing-latest__title {
+  padding: 10px 15px;
+}
+.section-listing__theme-bg-title,
+.subsection-listing__theme-bg-title,
+.section-listing__theme-subsection_bg-title {
+  padding: 5px 15px;
+}

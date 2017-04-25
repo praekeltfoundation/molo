@@ -1,17 +1,45 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
-
 {% if self.get_parent_section.enable_recommended_section %}
 {% get_recommended_articles self as recommended_articles %}
-  <h3>{% trans "Recommended" %}</h3>
-    {% for article in recommended_articles %}
-        <ul class="list-block">
-          <li>
-            {% if article.image %}
-            <a href="{% pageurl article %}">{% image article.image width-60 %}</a>
-            {% endif %}
-            <h3><a href="{% pageurl article %}">{{article.title}}</a></h3>
-            <p>{{article.subtitle}}</p>
-          </li>
-        </ul>
-    {% endfor %}
+{% if recommended_articles %}
+  <h3 class="heading heading--small related-articles__recommended">{% trans "Recommended" %}</h3>
+  <div class="related-articles-recommended">
+    <ul class="related-articles-recommended-list">
+      {% for article in recommended_articles %}
+      <li class="related-articles-recommended-list__item
+      {% if forloop.counter0 == 0 %} related-articles-recommended-list__item--hero
+        {% elif forloop.counter0 == 1 %}
+          related-articles-recommended-list__item--grid
+        {% elif forloop.counter0 == 2 %}
+          related-articles-recommended-list__item--grid
+       {% endif %}">
+        {% if article.image %}
+          {% if forloop.counter0 == 0 %}
+            <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+              {% image article.image width-320 class="article__image" %}
+            </a>
+          {% elif forloop.counter0 == 1 %}
+            <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor-grid">
+            {% image article.image width-200 height-200 class="article__image article__image-thumbnail" %}
+            </a>
+          {% elif forloop.counter0 == 2 %}
+          <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor-grid">
+            {% image article.image width-200 height-200 class="article__image article__image-thumbnail" %}
+          </a>
+           {% endif %}
+        {% endif %}
+
+        <div class="related-articles-recommended-list__content {% if forloop.first %} related-articles-recommended-list__content--hero {% endif %}">
+          <h3 class="heading heading--large related-articles-recommended__title">
+            <a href="{% pageurl article %}">{{article.title}}</a>
+          </h3>
+          {% if article.subtitle %}
+            <p class="related-articles-recommended__desc">{{article.subtitle}}</p>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
 {% endif %}
