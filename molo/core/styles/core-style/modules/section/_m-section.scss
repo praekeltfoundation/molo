@@ -1,0 +1,42 @@
+
+.section-listing__title {
+  padding: 10px 15px;
+  @include heading-fontsize-scale($heading-xx-large);
+}
+.section-listing__link {
+  color: #dc5a11;
+}
+.section-listing--mote {
+  padding: 10px 0;
+}
+
+
+//Old styles
+.category__subcategory {
+  margin: 0;
+  color: #017AF5;
+  text-transform: capitalize;
+  padding: 5px 0;
+}
+.category__link {
+  color: #252627;
+  vertical-align: middle;
+  display: inline-block;
+}
+.category__description {
+  color: #5B5E5F;
+  margin-top: 0;
+  padding: 0 15px;
+}
+.category__image-link {
+  vertical-align: middle;
+  padding: 0 0 0 15px;
+  @media screen and (min-width: 320px) {
+    border-radius: 100%;
+    width: 20%;
+  }
+  img {
+    vertical-align: middle;
+    display: inline-block;
+  }
+}

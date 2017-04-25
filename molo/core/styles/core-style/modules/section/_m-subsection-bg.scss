@@ -1,0 +1,22 @@
+.section-listing__theme-more-link,
+.subsection-list__theme-more-link {
+  display: block;
+  padding: 10px 15px;
+  font-weight: bold;
+  &:after {
+    padding: 0 0 0 10px;
+    @media screen and (min-width: 320px) {
+      content: ">";
+    }
+    @media screen and (min-width: 490px) {
+      content: "❯";
+    }
+  }
+  &:hover {
+    text-decoration: none;
+    opacity: 0.5;
+  }
+}
+.subsection-list__theme-more-link {
+  border-bottom: 1px solid #e6e6e6;
+}

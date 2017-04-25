@@ -1,0 +1,29 @@
+.article__image,
+.article-list__image {
+  width: 100%;
+  height: auto;
+  /*@media screen and (min-width: 740px) {
+    width: auto;
+  }*/
+}
+.article__image--thumbnail {
+  width: 100%;
+  @media screen and (min-width: 180px) {
+    width: auto;
+  }
+}
+.article__image--link {
+  display: block;
+}
+[data-image-type~="default"] {
+  border-radius: 0;
+}
+[data-image-type~="rectangle"] {
+  border-radius: 10px;
+}
+[data-image-type~="round"]  {
+  border-radius: 50%;
+}
+[data-image-type~="square"]  {
+  border-radius: 15px;
+}
