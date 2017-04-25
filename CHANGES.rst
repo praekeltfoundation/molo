@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+5.1.0
+~~~~~
+- Add basics and components for Springster
+- Add tag navigation
+- Add better error handling for copying section index contents
+
 5.0.4
 ~~~~~
 - Use celery for copying section index contents
