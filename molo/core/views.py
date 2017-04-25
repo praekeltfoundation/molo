@@ -20,7 +20,10 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
-from molo.core.models import PageTranslation, ArticlePage, Languages
+from molo.core.models import (
+    PageTranslation, ArticlePage, Languages, SiteSettings, Tag,
+    ArticlePageTags)
+from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm
 from django.views.generic import ListView
@@ -177,9 +180,25 @@ class TagsListView(ListView):
 
     def get_queryset(self, **kwargs):
         tag = self.kwargs["tag_name"]
+        count = self.request.GET.get("count")
         main = self.request.site.root_page
+        site_settings = SiteSettings.for_site(self.request.site)
+        context = {'request': self.request}
+        locale = self.request.LANGUAGE_CODE
+
+        if site_settings.enable_tag_navigation:
+            tag = Tag.objects.get(slug=tag)
+            articles = []
+            for article_tag in ArticlePageTags.objects.filter(
+                    tag=tag.get_main_language_page()).all():
+                articles.append(article_tag.page.pk)
+            articles = ArticlePage.objects.filter(
+                pk__in=articles).order_by(
+                    'latest_revision_created_at')
+            return get_pages(context, articles, locale)[:count]
         return ArticlePage.objects.descendant_of(main).filter(
-            tags__name__in=[tag])
+            tags__name__in=[tag]).order_by(
+                'latest_revision_created_at')
 
 
 @user_passes_test(lambda u: u.is_superuser)
