@@ -143,7 +143,7 @@ class MoloTestCaseMixin(object):
             })
             data.update(kwargs)
             data.update({
-                'slug': generate_slug(data['title'])
+                'slug': generate_slug(data['title']),
             })
             section = SectionPage(**data)
             parent.add_child(instance=section)
