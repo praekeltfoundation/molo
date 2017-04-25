@@ -434,14 +434,13 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             '<h3 class="heading'
             ' promoted-article-list__heading">'
             'English article1 in french</h3>', html=True)
-        
         self.assertContains(
             response,
             '<a href="/sections-main-1/english-section2/'
             'english-article1-in-section-2/" '
             'class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-bg">'
-            '<h3 class="heading '
+            '<h3 class="heading'
             ' promoted-article-list__heading">'
             'English article1 in section 2</h3></a>',
             html=True)
