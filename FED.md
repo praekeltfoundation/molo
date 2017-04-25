@@ -1,6 +1,7 @@
 FED
 TestApp setup
-
+MOLO CORE TEMPLATES - USES DEFAULT PATTERNS
+  DO NOT CHANGE THOSE DUE TO TESTS 
 
 $ virtualenv ve
 $ source ve/bin/activate

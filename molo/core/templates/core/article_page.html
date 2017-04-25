@@ -2,7 +2,6 @@
 {% load wagtailcore_tags wagtailimages_tags static core_tags %}
 {% block content %}
   {% social_media_article %}
-  {% include "patterns/components/articles/article-page_bg.html" %}
+  {% include "patterns/components/articles/article-page_with_recommend-related.html" %}
   {% include "patterns/components/articles/article-tag-block.html" %}
-  {% include "comments/comment_block.html" %}
 {% endblock %}

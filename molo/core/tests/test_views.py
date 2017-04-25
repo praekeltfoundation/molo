@@ -481,12 +481,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Latest')
         self.assertContains(
             response,
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 8</h5>', html=True)
         self.assertContains(
             response,
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9</h5>', html=True)
         self.assertNotContains(
@@ -529,7 +529,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
             'test-page-8-in-french/" class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings"><h5'
-            ' class="heading heading--x-small'
+            ' class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 8 in french</h5></a>', html=True)
         self.assertContains(
@@ -537,7 +537,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
             'test-page-9-in-french/" class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings"><h5'
-            ' class="heading heading--x-small'
+            ' class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9 in french</h5></a>', html=True)
         self.assertNotContains(
@@ -545,7 +545,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections/your-mind/your-mind-subsection/test-page-9/"'
             ' class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings">'
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9</h5></a>', html=True)
 
@@ -558,7 +558,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
             'test-page-9-in-french/" class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings"><h5'
-            ' class="heading heading--x-small'
+            ' class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9 in french</h5></a>', html=True)
         self.assertContains(
@@ -566,7 +566,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
             'test-page-9/" class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings">'
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9</h5></a>', html=True)
 
@@ -577,7 +577,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '/sections-main-1/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
-            '<h1 class="heading heading--xx-large heading--article">'
+            '<h1 class="heading heading--article">'
             'Test page 1</h1>')
         self.assertContains(
             response,
