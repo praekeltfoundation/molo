@@ -52,17 +52,7 @@ urlpatterns += patterns(
     url(r'^profiles/', include(
         'molo.profiles.urls',
         namespace='molo.profiles', app_name='molo.profiles')),
-    url(r'^commenting/', include('molo.commenting.urls',
-        namespace='molo.commenting',
-        app_name='molo.commenting')),
-
-    url(r'', include('django_comments.urls')),
-
-    url(r'^commenting/comment_done/',
-        TemplateView.as_view(
-            template_name="comments/comment_done.html"
-        ),
-        name='comment_done'),
+ 
     url('^', include('django.contrib.auth.urls')),
     url(r'', include(wagtail_urls)),
 )
