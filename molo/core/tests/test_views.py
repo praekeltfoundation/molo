@@ -2,15 +2,17 @@ from os import environ
 import json
 import pytest
 import responses
+import urllib
 
 from datetime import timedelta, datetime
 from urlparse import parse_qs
 
-from django.core.files.base import ContentFile
-from django.test import TestCase, override_settings, Client
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core import mail
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
+from django.test import TestCase, override_settings, Client
 from django.utils import timezone
 
 from molo.core.tests.base import MoloTestCaseMixin
@@ -110,9 +112,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
         client = Client(HTTP_HOST=main3.get_site().hostname)
         client.login(user=user)
         response = client.get('/admin/pages/%s/' % main3_pk)
+        admin_url = '/admin/pages/%s/' % main3_pk
         self.assertEqual(
             response['Location'],
-            '/admin/login/?next=%2Fadmin%2Fpages%2F16%2F')
+            '/admin/login/?next=' + urllib.quote(admin_url, safe=''))
 
     def test_able_to_copy_main(self):
         # testing that copying a main page does not give an error
@@ -130,6 +133,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
         main3 = Main.objects.get(slug='blank')
         self.assertEquals(
             main3.get_children().count(), self.main.get_children().count())
+
+        self.assertEqual(len(mail.outbox), 1)
+        [email] = mail.outbox
+        self.assertEqual(email.subject, 'Molo Content Copy')
+        self.assertEqual(email.from_email, 'support@moloproject.org')
+        self.assertEqual(email.to, ['superuser@email.com'])
+        self.assertTrue('superuser' in email.body)
+        self.assertTrue(
+            'The content copy from Main to blank is complete.'
+            in email.body)
 
     def test_copy_method_of_section_page_copies_translations_subpages(self):
         self.assertFalse(
@@ -163,6 +176,73 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             new_section.translations.all().count(),
             self.yourmind.translations.all().count())
+
+    @override_settings(CELERY_ALWAYS_EAGER=True)
+    def test_copy_main_with_celery_disabled(self):
+        '''
+        Ensure copy task completes by setting celery to execute immediately
+        '''
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        article = self.mk_articles(self.yourmind, 1)[0]
+        self.mk_article_translation(article, self.french)
+        self.mk_section_translation(self.yourmind, self.french)
+        self.user = self.login()
+
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 12)
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'new-main',
+                'new_slug': 'new-main',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        new_main = Page.objects.get(slug='new-main')
+        self.assertEquals(Page.objects.descendant_of(new_main).count(), 12)
+
+        self.assertEqual(len(mail.outbox), 1)
+        [email] = mail.outbox
+        self.assertEqual(email.subject, 'Molo Content Copy')
+
+    @override_settings(CELERY_ALWAYS_EAGER=False)
+    def test_copy_main_with_celery_enabled(self):
+        '''
+        Prevent copy on index page from getting executed immediately
+        by forcing celery to queue the task, but not execute them
+        '''
+        self.assertFalse(
+            Languages.for_site(
+                self.main2.get_site()).languages.filter(locale='fr').exists())
+        article = self.mk_articles(self.yourmind, 1)[0]
+        self.mk_article_translation(article, self.french)
+        self.mk_section_translation(self.yourmind, self.french)
+        self.user = self.login()
+
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 12)
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'new-main-celery',
+                'new_slug': 'new-main-celery',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+
+        new_main_celery = Page.objects.get(slug='new-main-celery')
+        # few pages created since we're not letting celery run
+        self.assertEquals(
+            Page.objects.descendant_of(new_main_celery).count(), 5)
+
+        # no email sent since copy is not complete
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_breadcrumbs(self):
         self.mk_articles(self.yourmind_sub, count=10)
@@ -1189,37 +1269,6 @@ class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):
             response, '/sections-main-1/section-b/article-b-in-french/')
         self.assertContains(
             response, '/sections-main-1/section-a/article-a-in-french/')
-
-
-class TestArticleTags(MoloTestCaseMixin, TestCase):
-    def setUp(self):
-        self.mk_main()
-
-    def test_articles_with_the_same_tag(self):
-        # create two articles with the same tag and check that they can
-        # be retrieved
-        new_section = self.mk_section(
-            self.section_index, title="New Section", slug="new-section")
-        first_article = self.mk_article(new_section, title="First article", )
-        second_article = self.mk_article(new_section, title="Second article", )
-
-        # add common tag to both articles
-        first_article.tags.add("common")
-        first_article.save_revision().publish()
-        second_article.tags.add("common")
-        second_article.save_revision().publish()
-
-        # create another article that doesn't have the tag, and check that
-        # it will be excluded from the return list
-        self.mk_article(new_section, title="Third article", )
-
-        response = self.client.get(
-            reverse("tags_list", kwargs={"tag_name": "common"})
-        )
-        self.assertEqual(
-            list(response.context["object_list"]),
-            [first_article, second_article]
-        )
 
 
 class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):

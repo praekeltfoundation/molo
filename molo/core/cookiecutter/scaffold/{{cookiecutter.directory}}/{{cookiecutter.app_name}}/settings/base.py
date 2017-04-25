@@ -120,7 +120,9 @@ AUTHENTICATION_BACKENDS = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            join(PROJECT_ROOT, '{{cookiecutter.app_name}}', 'templates'),
+        ],
         'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
@@ -348,6 +350,8 @@ ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
 FROM_EMAIL = environ.get('FROM_EMAIL', "support@moloproject.org")
 CONTENT_IMPORT_SUBJECT = environ.get(
     'CONTENT_IMPORT_SUBJECT', 'Molo Content Import')
+CONTENT_COPY_SUBJECT = environ.get(
+    'CONTENT_COPY_SUBJECT', 'Molo Content Copy')
 
 # SMTP Settings
 EMAIL_HOST = environ.get('EMAIL_HOST', 'localhost')

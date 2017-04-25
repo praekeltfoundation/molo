@@ -1,27 +1,32 @@
 CHANGE LOG
 ==========
 
-5.1.0-beta.1
+5.0.4
 ~~~~~
+- Use celery for copying section index contents
+
+5.0.3
+~~~~~
+- Add parent_page_types to SectionPage
+
+5.0.2
+~~~~~
+- Fix test for admin url redirect
+
+5.0.1
+~~~~~
+- Version bump for molo profiles to resolve pin dependencies
+
+5.0.0
+~~~~~
+- Pin molo.profiles to latest version
 - Move templates out from cookiecutter
 - Implement pattern library components to templates
 - Add Mote to cookiecutter
-
-5.0.4-beta.1
-~~~~~
 - Fix of previous release
-
-5.0.2-beta.1
-~~~~~
 - Added index creation signals
 - Added non routable mixin for Surveys
-
-5.0.1-beta.1
-~~~~~
 - Added profiles urls
-
-5.0.0-beta.1
-~~~~~
 - Added multi-site cms functionality (Merged CMS)
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
