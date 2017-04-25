@@ -2,7 +2,7 @@
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
 {% if featured_articles %}
 <div class="section-listing section-listing section-listing{{section.get_effective_extra_style_hints}}">
-  <h1 class="heading heading--x-large section-listing__title">
+  <h1 class="heading section-listing__title">
     <a href="{% pageurl section %}" class="section-listing__link">{{section.title}}</a>
   </h1>
   <ul class="promoted-article-list">
@@ -18,7 +18,7 @@
           </a>
         {% endif %}
         <a href="{% pageurl article %}" class="promoted-article-list__anchor">
-          <h3 class="heading heading--large promoted-article__title">
+          <h3 class="heading promoted-article__title">
             {{article.title}}
           </h3>
         </a>

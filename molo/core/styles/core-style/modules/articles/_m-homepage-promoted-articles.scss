@@ -13,6 +13,7 @@
 .promoted-article-list__heading {
   display: inline;
   padding-right: 5px;
+  @include heading-fontsize-scale($heading-large);
   &:after {
     content: ":";
     margin: 0 0 0 -5px;

@@ -1,7 +1,7 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 {% with section=self.get_parent_section %}
 <div class="related-articles related-articles{{ section.get_effective_extra_style_hints }}">
-  <h4 class="heading heading--large related-article__title-heading related-article__title-heading{{ section.get_effective_extra_style_hints }}">
+  <h4 class="heading related-article__title-heading related-article__title-heading{{ section.get_effective_extra_style_hints }}">
     {% trans "More Information" %}
   </h4>
   <ul class="related-article-list related-article-list{{ section.get_effective_extra_style_hints }}">

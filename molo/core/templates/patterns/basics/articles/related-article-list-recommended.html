@@ -2,7 +2,7 @@
 {% if self.get_parent_section.enable_recommended_section %}
 {% get_recommended_articles self as recommended_articles %}
 {% if recommended_articles %}
-  <h3 class="heading heading--small related-articles__recommended">{% trans "Recommended" %}</h3>
+  <h3 class="heading related-articles__recommended">{% trans "Recommended" %}</h3>
   <div class="related-articles-recommended">
     <ul class="related-articles-recommended-list">
       {% for article in recommended_articles %}
@@ -30,7 +30,7 @@
         {% endif %}
 
         <div class="related-articles-recommended-list__content {% if forloop.first %} related-articles-recommended-list__content--hero {% endif %}">
-          <h3 class="heading heading--large related-articles-recommended__title">
+          <h3 class="heading related-articles-recommended__title">
             <a href="{% pageurl article %}">{{article.title}}</a>
           </h3>
           {% if article.subtitle %}
