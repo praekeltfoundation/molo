@@ -2,6 +2,7 @@
 .related-articles__recommended {
   padding: 10px 15px;
   text-transform: uppercase;
+  @include heading-fontsize-scale($heading-large);
 }
 //UP NEXT - LIST
 .related-articles-up-next {
@@ -9,6 +10,7 @@
 }
 .related-articles-up-next__title {
   padding: 10px 15px;
+  @include heading-fontsize-scale($heading-large);
 }
 .related-articles-up-next__desc {
   padding: 0 15px;
@@ -16,6 +18,7 @@
 //RECOMMENDED - LIST
 .related-articles-recommended__title {
   word-wrap: break-word;
+  @include heading-fontsize-scale($heading-large);
 }
 .related-articles-recommended-list {
   list-style: none;

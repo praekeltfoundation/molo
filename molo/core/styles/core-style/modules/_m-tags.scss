@@ -50,11 +50,6 @@
     word-break: break-word;
   }
 }
-.tags-list__item--tags__title {
-  background: transparent;
-  padding: 0;
-}
-
 
 .article-tag {
   background: transparent;
@@ -68,6 +63,11 @@
 .article-tag__item {
   display: inline-block;
 }
-.article-tag__item--tags__title:after {
+.article-tag__title {
+  font-size: $font-small;
+  background: transparent;
+  padding: 0;
+}
+.article-tag__title:after {
   content: ":";
 }

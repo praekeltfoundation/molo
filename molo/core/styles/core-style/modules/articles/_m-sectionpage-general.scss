@@ -12,4 +12,5 @@
 .promoted-article__title-general {
   font-size: 18px;
   color: #000;
+  @include heading-fontsize-scale($heading-large);
 }

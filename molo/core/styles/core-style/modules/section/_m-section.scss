@@ -1,6 +1,7 @@
 
 .section-listing__title {
   padding: 10px 15px;
+  @include heading-fontsize-scale($heading-xx-large);
 }
 .section-listing__link {
   color: #dc5a11;

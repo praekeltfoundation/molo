@@ -55,6 +55,7 @@
 .related-article__title-heading {
   padding: 5px 15px;
   margin: 10px 0;
+  @include heading-fontsize-scale($heading-large);
 }
 .call-to-action__item--text-related-article {
   text-decoration: none;
