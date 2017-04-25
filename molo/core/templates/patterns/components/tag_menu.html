@@ -1,0 +1,24 @@
+{% load wagtailcore_tags core_tags i18n %}
+
+{% block tag_menu_homepage %}
+
+<div class="navigation">
+  {% load_tags as tags %}
+  <h4 class="heading heading--large">
+    <a href="/" class="navigation__anchor">
+      {% trans "Home" %}
+    </a>
+  </h4>
+  <ul class="nav-list nav-list--column">
+    {% for tag in tags %}
+      {% if tag %}
+      <li class="nav-list__item nav-list__item--column">
+        <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
+          {{tag.title}}
+        </a>
+      </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

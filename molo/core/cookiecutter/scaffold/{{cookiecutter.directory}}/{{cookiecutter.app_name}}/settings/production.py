@@ -4,6 +4,7 @@ from .base import *  # noqa
 # Disable debug mode
 
 DEBUG = False
+ENV = 'prd'
 TEMPLATE_DEBUG = False
 
 DEFAULT_SITE_PORT = 80
@@ -61,6 +62,11 @@ CAS_SERVER_URL = ''
 CAS_ADMIN_PREFIX = '/admin/'
 LOGIN_URL = '/accounts/login/'
 CAS_VERSION = '3'
+
+COMPRESS_OFFLINE_CONTEXT = {  # noqa
+    'STATIC_URL': STATIC_URL,  # noqa
+    'ENV': ENV,  # noqa
+}  # noqa
 
 try:
     from .local import *  # noqa

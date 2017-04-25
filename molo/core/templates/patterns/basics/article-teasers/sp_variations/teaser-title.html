@@ -1,0 +1,8 @@
+{% load wagtailcore_tags %}
+<h3 class="{{layouttype}}-teaser__title">
+  <a href="{% pageurl article %}" class="{{layouttype}}-teaser__title-link">
+  {{ article.title }}</a>
+</h3>
+{% if article.subtitle %}
+  <p class="{{layouttype}}-teaser__subtitle">{{ article.subtitle }}</p>
+{% endif %}

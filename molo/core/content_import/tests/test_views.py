@@ -17,6 +17,7 @@ class ContentImportAPITestCase(
 
     def setUp(self):
         self.client = APIClient()
+        self.main = self.mk_main()
 
     @mock.patch('molo.core.content_import.views.api')
     def test_get_repo_summaries(self, api):
