@@ -239,7 +239,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_main_celery = Page.objects.get(slug='new-main-celery')
         # few pages created since we're not letting celery run
         self.assertEquals(
-            Page.objects.descendant_of(new_main_celery).count(), 4)
+            Page.objects.descendant_of(new_main_celery).count(), 5)
 
         # no email sent since copy is not complete
         self.assertEqual(len(mail.outbox), 0)
