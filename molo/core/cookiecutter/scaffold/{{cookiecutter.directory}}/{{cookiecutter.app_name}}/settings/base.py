@@ -346,6 +346,8 @@ CONTENT_IMPORT_SUBJECT = environ.get(
     'CONTENT_IMPORT_SUBJECT', 'Molo Content Import')
 CONTENT_COPY_SUBJECT = environ.get(
     'CONTENT_COPY_SUBJECT', 'Molo Content Copy')
+CONTENT_COPY_FAILED_SUBJECT = environ.get(
+    'CONTENT_COPY_FAILED_SUBJECT', 'Molo Content Copy Failed')
 
 # SMTP Settings
 EMAIL_HOST = environ.get('EMAIL_HOST', 'localhost')

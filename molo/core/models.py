@@ -373,9 +373,10 @@ class TranslatablePageMixinNotRoutable(object):
                 new_translation_parent = \
                     page_copy.get_parent().get_children().filter(
                         slug=old_parent.slug).first()
-                PageTranslation.objects.create(
-                    page=new_translation_parent,
-                    translated_page=page_copy)
+                if new_translation_parent:
+                    PageTranslation.objects.create(
+                        page=new_translation_parent,
+                        translated_page=page_copy)
             return page_copy
         else:
             return super(TranslatablePageMixinNotRoutable, self).copy(
