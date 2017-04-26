@@ -1,8 +1,8 @@
 .call-to-action {
   font-family: 'Quicksand', sans-serif;
   padding: 10px 0;
+  position: relative;
 }
-
 .call-to-action__item {
   font-size: 14px;
   padding: 10px 5px 0 0;
@@ -11,23 +11,19 @@
   border: none;
   color: #000;
   display: block;
-
   font-weight: 700;
   text-align: left;
   text-decoration: underline;
   text-transform: uppercase;
-
   @media screen and (min-width: 320px) {
     background: #000;
     color: #fff;
-
     border-radius: 3px;
     padding: 10px;
     text-align: center;
     font-weight: normal;
     text-decoration: none;
   }
-
   [data-direction~="right"]:before,
   [data-direction~="left"]:after {
     color: #fff;
@@ -136,7 +132,6 @@
     }
   }
 }
-
 [data-state~="disabled"] {
   font-weight: bold;
   background-color: #D7DBDD;

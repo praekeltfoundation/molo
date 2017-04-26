@@ -1,0 +1,20 @@
+.call-to-action__item-text {
+  color: #7300FF;
+  display: block;
+  font-weight: 600;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: underline;
+  text-transform: uppercase;
+}
+
+.call-to-action__item-button--rightarrow {
+  &:after {
+    content: url("/static/images/icons/next@2x.png");
+    display: block;
+    background-size:auto;
+    position: absolute;
+    top: 30%;
+    right: 15%;
+  }
+}

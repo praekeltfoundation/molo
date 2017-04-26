@@ -8,6 +8,7 @@ Separate smart styles to states folder
 .teaser-stacklist {
   display: block;
   padding: 0 15px 10px;
+  overflow: auto;
 }
 .teaser-stacklist__item {
   list-style-type: none;

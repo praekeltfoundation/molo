@@ -1,4 +1,7 @@
 {% load core_tags %}
+<!--
+  NOTE: This loads all articles on all sections
+ -->
 <div class="article-teaser">
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
 {% if featured_articles %}
@@ -7,7 +10,6 @@
     <li class="teaser-stacklist__item">
       {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="base" %}
       {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="base" %}
-      {% include "patterns/basics/comment-counter/sides-aligned-comment-counter.html" %}
     </li>
     {% endfor %}
   </ul>

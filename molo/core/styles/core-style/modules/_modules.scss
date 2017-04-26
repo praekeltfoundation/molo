@@ -1,7 +1,6 @@
 
 @import "_m-typography";
 @import "_m-featured-latest-articles";
-@import "_m-buttons";
 @import "_m-back-to-top";
 @import "_m-banner";
 @import "_m-colors";
@@ -10,7 +9,11 @@
 @import "_m-search";
 @import "_m-pattern-panel";
 @import "_m-list";
-@import "_m-search-button";
+
+
+@import "buttons/_m-buttons";
+@import "buttons/_m-search-buttons";
+@import "buttons/_m-springster-buttons";
 
 
 @import "header/_m-header";

@@ -8,6 +8,7 @@ Separate smart styles to states folder
 .carousel-teaser-list {
   display: inline-block;
   padding: 0 15px 10px;
+  overflow: auto;
 }
 .carousel-teaser-list__item {
   list-style-type: none;
