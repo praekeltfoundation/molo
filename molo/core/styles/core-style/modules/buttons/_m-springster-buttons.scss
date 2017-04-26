@@ -8,13 +8,24 @@
   text-transform: uppercase;
 }
 
-.call-to-action__item-button--rightarrow {
+.call-to-action__item-button--rightarrow,
+.call-to-action__item-button--leftarrow {
   &:after {
-    content: url("/static/images/icons/next@2x.png");
     display: block;
     background-size:auto;
     position: absolute;
-    top: 30%;
-    right: 15%;
+    top: 35%;
+  }
+}
+.call-to-action__item-button--rightarrow {
+  &:after {
+    content: url("/static/images/icons/next.svg");
+    right: 20%;
+  }
+}
+.call-to-action__item-button--leftarrow {
+  &:after {
+    content: url("/static/images/icons/back.svg");
+    left: 20%;
   }
 }
