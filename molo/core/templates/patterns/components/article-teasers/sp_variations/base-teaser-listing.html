@@ -9,7 +9,9 @@
     {% for article in featured_articles %}
     <li class="teaser-stacklist__item">
       {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="base" %}
-      {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="base" %}
+      <div class="teaser-stacklist__item--content">
+        {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="base" %}
+      </div>
     </li>
     {% endfor %}
   </ul>
