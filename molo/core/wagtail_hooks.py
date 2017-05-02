@@ -50,7 +50,7 @@ def copy_translation_pages(request, page, new_page):
 
     # Only copy translations for TranslatablePageMixin
     if not hasattr(page.specific, 'copy_language'):
-        return
+        return 'Not translatable page'
 
     current_site = page.get_site()
     destination_site = new_page.get_site()
