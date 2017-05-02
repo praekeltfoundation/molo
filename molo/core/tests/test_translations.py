@@ -218,6 +218,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         # tests that in Home page users will only see the sections
         # that have been translated
         response = self.client.get('/')
+        print response
         self.assertContains(
             response,
             '<a href="/sections-main-1/english-section/"'
@@ -259,14 +260,14 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             response,
             '<a href="/sections-main-1/english-section/english-article1-3/" '
             'class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large promoted-article__title">'
+            '<h3 class="heading promoted-article__title">'
             'English article1'
             '</h3></a>', html=True)
         self.assertContains(
             response,
             '<a href="/sections-main-1/english-section/english-article2-2/" '
             'class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large promoted-article__title">'
+            '<h3 class="heading promoted-article__title">'
             'English article2'
             '</h3></a>', html=True)
 
@@ -277,14 +278,14 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/english-section/'
             'english-article1-in-french/" '
             'class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large promoted-article__title">'
+            '<h3 class="heading promoted-article__title">'
             'English article1 in french'
             '</h3></a>', html=True)
         self.assertNotContains(
             response,
             '<a href="/sections-main-1/english-section/english-article2-2/" '
             'class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large promoted-article__title">'
+            '<h3 class="heading promoted-article__title">'
             'English article2'
             '</h3></a>', html=True)
 
@@ -297,7 +298,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'english-article1-in-french/" '
             'class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings">'
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'English article1 in french'
             '</h5></a>', html=True)
@@ -307,7 +308,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'english-article1-3/" '
             'class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings">'
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'English article1'
             '</h5></a>', html=True)
@@ -319,16 +320,16 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/english-section/english-article1-3/"'
             ' class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings">'
-            '<h5 class="heading heading--x-small '
-            'promoted-article__title--theme-headings">English article1</h5>'
+            '<h5 class="heading'
+            ' promoted-article__title--theme-headings">English article1</h5>'
             '</a>', html=True)
         self.assertContains(
             response,
             '<a href="/sections-main-1/english-section/english-article2-2/"'
             ' class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings">'
-            '<h5 class="heading heading--x-small '
-            'promoted-article__title--theme-headings">English article2</h5>'
+            '<h5 class="heading'
+            ' promoted-article__title--theme-headings">English article2</h5>'
             '</a>', html=True)
 
     def test_if_main_lang_page_unpublished_translated_page_still_shows(self):
@@ -380,7 +381,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/english-section/english-article1-3/"'
             ' class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-bg">'
-            '<h3 class="heading heading--large '
+            '<h3 class="heading '
             'promoted-article-list__heading">'
             ' English article1</h3></a>',
             html=True)
@@ -390,8 +391,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/english-section/english-article2-3/"'
             ' class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-bg">'
-            '<h3 class="heading heading--large '
-            'promoted-article-list__heading">'
+            '<h3 class="heading'
+            ' promoted-article-list__heading">'
             ' English article2</h3></a>',
             html=True)
 
@@ -400,13 +401,13 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             response,
             '<a href="/sections-main-1/english-section/english-article1-3/"'
             ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large promoted-article__title">'
+            '<h3 class="heading promoted-article__title">'
             'English article1</h3></a>', html=True)
         self.assertNotContains(
             response,
             '<a href="/sections-main-1/english-section/english-article2/"'
             ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large promoted-article__title">'
+            '<h3 class="heading promoted-article__title">'
             'English article2</h3></a>', html=True)
 
         # tests that when switching to a child language
@@ -430,7 +431,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'english-article1-in-french/"'
             ' class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-bg">'
-            '<h3 class="heading heading--large'
+            '<h3 class="heading'
             ' promoted-article-list__heading">'
             'English article1 in french</h3>', html=True)
         self.assertContains(
@@ -439,7 +440,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'english-article1-in-section-2/" '
             'class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-bg">'
-            '<h3 class="heading heading--large'
+            '<h3 class="heading'
             ' promoted-article-list__heading">'
             'English article1 in section 2</h3></a>',
             html=True)
@@ -450,7 +451,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/english-section/'
             'english-article1-in-french/"'
             ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large'
+            '<h3 class="heading'
             ' promoted-article__title">English article1 in french</h3></a>',
             html=True)
         self.assertContains(
@@ -458,7 +459,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/english-section/'
             'english-article2-in-french/"'
             ' class="promoted-article-list__anchor">'
-            '<h3 class="heading heading--large'
+            '<h3 class="heading'
             ' promoted-article__title">English article2 in french</h3></a>',
             html=True)
 
@@ -493,8 +494,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/english-section2/english-article1/" '
             'class="promoted-article-list__anchor '
             'promoted-article-list__anchor--theme-bg">'
-            '<h3 class="heading heading--large '
-            'promoted-article-list__heading">'
+            '<h3 class="heading'
+            ' promoted-article-list__heading">'
             'English article1</h3></a>', html=True)
         self.assertNotContains(
             response,
@@ -513,6 +514,6 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'english-article1-in-mexican-spanish/"'
             ' class="promoted-article-list__anchor '
             'promoted-article-list__anchor--theme-bg">'
-            '<h3 class="heading heading--large'
+            '<h3 class="heading'
             ' promoted-article-list__heading">'
             'English article1 in Mexican Spanish</h3></a>', html=True)

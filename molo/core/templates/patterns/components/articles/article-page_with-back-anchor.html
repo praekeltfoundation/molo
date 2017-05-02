@@ -1,0 +1,5 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% get_translation self.get_parent_section as section %}
+  {% include "patterns/basics/headings/article-page_variations/section-heading_with-back-anchor.html" %}
+  {% include "patterns/basics/headings/article-page_variations/article-heading.html" %}
+  {% include "patterns/basics/articles/article-page_variations/article-body_with-date.html" %}

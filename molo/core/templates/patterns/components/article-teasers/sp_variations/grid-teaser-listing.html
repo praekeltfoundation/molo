@@ -1,0 +1,12 @@
+{% load core_tags %}
+<div class="grid-teaser">
+  <ul class="grid-teaser-list">
+  {% for article in articles %}
+    <li class="grid-teaser-list__item">
+      {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="grid" %}
+      {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="grid" %}
+      {% include "patterns/basics/comment-counter/centered-comment-counter.html" %}
+    </li>
+  {% endfor %}
+  </ul>
+</div>

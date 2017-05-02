@@ -14,6 +14,7 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings, Client
 from django.utils import timezone
+from django.http import HttpRequest
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (FooterPage,
@@ -26,6 +27,7 @@ from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
     load_descendant_articles_for_section
+from molo.core.wagtail_hooks import copy_translation_pages
 
 from mock import patch, Mock
 from six import b
@@ -117,6 +119,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
             response['Location'],
             '/admin/login/?next=' + urllib.quote(admin_url, safe=''))
 
+    def test_copy_langauges_for_translatable_pages_only(self):
+        request = HttpRequest()
+        response = copy_translation_pages(
+            request, self.section_index, self.section_index2)
+        self.assertEquals(response, 'Not translatable page')
+
     def test_able_to_copy_main(self):
         # testing that copying a main page does not give an error
         self.user = self.login()
@@ -190,7 +198,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEquals(Page.objects.descendant_of(self.main).count(), 11)
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 12)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -203,7 +211,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'publish_copies': 'true'})
         self.assertEquals(response.status_code, 302)
         new_main = Page.objects.get(slug='new-main')
-        self.assertEquals(Page.objects.descendant_of(new_main).count(), 11)
+        self.assertEquals(Page.objects.descendant_of(new_main).count(), 12)
 
         self.assertEqual(len(mail.outbox), 1)
         [email] = mail.outbox
@@ -223,7 +231,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEquals(Page.objects.descendant_of(self.main).count(), 11)
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 12)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -239,7 +247,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_main_celery = Page.objects.get(slug='new-main-celery')
         # few pages created since we're not letting celery run
         self.assertEquals(
-            Page.objects.descendant_of(new_main_celery).count(), 4)
+            Page.objects.descendant_of(new_main_celery).count(), 5)
 
         # no email sent since copy is not complete
         self.assertEqual(len(mail.outbox), 0)
@@ -481,12 +489,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Latest')
         self.assertContains(
             response,
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 8</h5>', html=True)
         self.assertContains(
             response,
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9</h5>', html=True)
         self.assertNotContains(
@@ -529,7 +537,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
             'test-page-8-in-french/" class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings"><h5'
-            ' class="heading heading--x-small'
+            ' class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 8 in french</h5></a>', html=True)
         self.assertContains(
@@ -537,7 +545,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
             'test-page-9-in-french/" class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings"><h5'
-            ' class="heading heading--x-small'
+            ' class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9 in french</h5></a>', html=True)
         self.assertNotContains(
@@ -545,7 +553,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections/your-mind/your-mind-subsection/test-page-9/"'
             ' class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings">'
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9</h5></a>', html=True)
 
@@ -558,7 +566,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
             'test-page-9-in-french/" class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings"><h5'
-            ' class="heading heading--x-small'
+            ' class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9 in french</h5></a>', html=True)
         self.assertContains(
@@ -566,7 +574,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
             'test-page-9/" class="promoted-article-list__anchor'
             ' promoted-article-list__anchor--theme-headings">'
-            '<h5 class="heading heading--x-small'
+            '<h5 class="heading'
             ' promoted-article__title--theme-headings">'
             'Test page 9</h5></a>', html=True)
 
@@ -577,7 +585,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '/sections-main-1/your-mind/your-mind-subsection/test-page-1/')
         self.assertContains(
             response,
-            '<h1 class="heading heading--xx-large heading--article">'
+            '<h1 class="heading heading--article">'
             'Test page 1</h1>')
         self.assertContains(
             response,
@@ -1269,37 +1277,6 @@ class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):
             response, '/sections-main-1/section-b/article-b-in-french/')
         self.assertContains(
             response, '/sections-main-1/section-a/article-a-in-french/')
-
-
-class TestArticleTags(MoloTestCaseMixin, TestCase):
-    def setUp(self):
-        self.mk_main()
-
-    def test_articles_with_the_same_tag(self):
-        # create two articles with the same tag and check that they can
-        # be retrieved
-        new_section = self.mk_section(
-            self.section_index, title="New Section", slug="new-section")
-        first_article = self.mk_article(new_section, title="First article", )
-        second_article = self.mk_article(new_section, title="Second article", )
-
-        # add common tag to both articles
-        first_article.tags.add("common")
-        first_article.save_revision().publish()
-        second_article.tags.add("common")
-        second_article.save_revision().publish()
-
-        # create another article that doesn't have the tag, and check that
-        # it will be excluded from the return list
-        self.mk_article(new_section, title="Third article", )
-
-        response = self.client.get(
-            reverse("tags_list", kwargs={"tag_name": "common"})
-        )
-        self.assertEqual(
-            list(response.context["object_list"]),
-            [first_article, second_article]
-        )
 
 
 class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):

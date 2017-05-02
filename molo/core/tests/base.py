@@ -7,7 +7,7 @@ from wagtail.wagtailcore.models import Page, Collection
 
 from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
                               SectionIndexPage, FooterIndexPage,
-                              BannerIndexPage)
+                              BannerIndexPage, TagIndexPage, Tag)
 from molo.core.utils import generate_slug
 
 
@@ -63,6 +63,8 @@ class MoloTestCaseMixin(object):
 
         self.banner_index = BannerIndexPage.objects.child_of(self.main).first()
 
+        self.tag_index = TagIndexPage.objects.child_of(self.main).first()
+
         # Create root collection
         Collection.objects.create(
             name="Root",
@@ -103,6 +105,9 @@ class MoloTestCaseMixin(object):
         self.banner_index2 = BannerIndexPage.objects.child_of(
             self.main2).first()
 
+        self.tag_index2 = TagIndexPage.objects.child_of(
+            self.main2).first()
+
         # Create root collection
         Collection.objects.get_or_create(
             name="Root",
@@ -115,6 +120,20 @@ class MoloTestCaseMixin(object):
         # Site.objects.all().delete()
         self.site2 = self.main2.get_site()
 
+    def mk_tag(self, parent, **kwargs):
+        data = {}
+        data.update({
+            'title': 'Test Tag',
+        })
+        data.update(kwargs)
+        data.update({
+            'slug': generate_slug(data['title'])
+        })
+        tag = Tag(**data)
+        parent.add_child(instance=tag)
+        tag.save_revision().publish()
+        return tag
+
     def mk_sections(self, parent, count=2, **kwargs):
         sections = []
         for i in range(count):
@@ -124,7 +143,7 @@ class MoloTestCaseMixin(object):
             })
             data.update(kwargs)
             data.update({
-                'slug': generate_slug(data['title'])
+                'slug': generate_slug(data['title']),
             })
             section = SectionPage(**data)
             parent.add_child(instance=section)
@@ -175,4 +194,8 @@ class MoloTestCaseMixin(object):
 
     def mk_article_translation(self, source, language, **kwargs):
         instance = self.mk_article(source.get_parent(), **kwargs)
+        return self.mk_translation(source, language, instance)
+
+    def mk_tag_translation(self, source, language, **kwargs):
+        instance = self.mk_tag(source.get_parent(), **kwargs)
         return self.mk_translation(source, language, instance)
