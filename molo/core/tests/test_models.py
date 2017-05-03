@@ -191,7 +191,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
         en_section3.image = self.image2
         self.assertEquals(
             en_section3.get_effective_image(), self.image2)
-        # check if translatted section doesn't have image it will inherited from the parent
+        # if translated section doesn't have
+        # an image it will inherited from the parent
         fr_section3 = self.mk_section_translation(en_section3, self.french)
         self.assertEquals(
             fr_section3.get_effective_image(), en_section3.image)
