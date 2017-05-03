@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+5.1.1
+~~~~~
+- Bug fix: Call correct template for tag navigation
+- Bug fix: Only call translation hook for translatable pages
+
 5.1.0
 ~~~~~
 - Add basics and components for Springster
