@@ -1,8 +1,8 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 {% if featured_articles %}
 <div class="grid-teaser-wrapper">
-  <h1>
-    <a href="{% pageurl section %}" class="section-listing__theme-bg-link">
+  <h1 class="grid-teaser__heading">
+    <a href="{% pageurl section %}" class="grid-teaser__heading-link">
       {{section.title}}
     </a>
   </h1>

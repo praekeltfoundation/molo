@@ -1,8 +1,9 @@
 {% load wagtailcore_tags core_tags i18n %}
-<div class="grid-teaser-wrapper">
   {% if tag %}
-  <h1>{{ tag }}</h1>
   <div class="grid-teaser">
+    <h1 class="grid-teaser__heading">
+      <a href="{% pageurl tag %}" class="grid-teaser__heading-link">{{ tag }}</a>
+    </h1>
     {% if articles %}
       <ul class="grid-teaser-list">
       {% for article in tag_articles %}
@@ -16,4 +17,3 @@
     {% endif %}
   </div>
   {% endif %}
-</div>
