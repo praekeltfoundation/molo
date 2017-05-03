@@ -85,7 +85,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
         data = response.context['tag_nav_data']
         hoempage_articles = []
         for section, section_list in data['sections']:
-            homepage_articles = list(chain(hoempage_articles, section_list))
+            homepage_articles = list(chain(homepage_articles, section_list))
         for tag, tag_list in data['tags_list']:
             homepage_articles = list(chain(homepage_articles, tag_list))
         homepage_articles = list(chain(
