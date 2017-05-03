@@ -206,10 +206,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index,
             title="New Section 4", slug="new-section-4",)
         self.assertEquals(
-            en_section4.get_effective_image(), None)
+            en_section4.get_effective_image(), '')
         fr_section4 = self.mk_section_translation(en_section4, self.french)
         self.assertEquals(
-            fr_section4.get_effective_image(), None)
+            fr_section4.get_effective_image(), '')
 
     def test_get_effective_image_for_articles(self):
         section = self.mk_section(
@@ -219,9 +219,9 @@ class TestModels(TestCase, MoloTestCaseMixin):
         fr_article1 = self.mk_article_translation(en_article1, self.french)
 
         self.assertEquals(
-            en_article1.get_effective_image(), None)
+            en_article1.get_effective_image(), '')
         self.assertEquals(
-            fr_article1.get_effective_image(), None)
+            fr_article1.get_effective_image(), '')
 
         en_article1.image = self.image
         self.assertEquals(

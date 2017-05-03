@@ -846,7 +846,7 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
             if parent_section:
                 return parent_section.get_effective_image()
-            return None
+            return ''
         else:
             page = self.get_main_language_page()
             return page.specific.get_effective_image()
@@ -1066,7 +1066,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
         page = self.get_main_language_page()
         if page.image:
             return page.get_effective_image()
-        return None
+        return ''
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
