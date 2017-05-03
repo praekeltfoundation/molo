@@ -14,6 +14,7 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings, Client
 from django.utils import timezone
+from django.http import HttpRequest
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (FooterPage,
@@ -26,6 +27,7 @@ from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
     load_descendant_articles_for_section
+from molo.core.wagtail_hooks import copy_translation_pages
 
 from mock import patch, Mock
 from six import b
@@ -116,6 +118,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEqual(
             response['Location'],
             '/admin/login/?next=' + urllib.quote(admin_url, safe=''))
+
+    def test_copy_langauges_for_translatable_pages_only(self):
+        request = HttpRequest()
+        response = copy_translation_pages(
+            request, self.section_index, self.section_index2)
+        self.assertEquals(response, 'Not translatable page')
 
     def test_able_to_copy_main(self):
         # testing that copying a main page does not give an error
