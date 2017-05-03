@@ -1,5 +1,25 @@
 CHANGE LOG
 ==========
+
+5.1.1
+~~~~~
+- Bug fix: Call correct template for tag navigation
+- Bug fix: Only call translation hook for translatable pages
+
+5.1.0
+~~~~~
+- Add basics and components for Springster
+- Add tag navigation
+- Add better error handling for copying section index contents
+
+5.0.4
+~~~~~
+- Use celery for copying section index contents
+
+5.0.3
+~~~~~
+- Add parent_page_types to SectionPage
+
 5.0.2
 ~~~~~
 - Fix test for admin url redirect

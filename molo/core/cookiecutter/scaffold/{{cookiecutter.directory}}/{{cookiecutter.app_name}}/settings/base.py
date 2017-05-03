@@ -30,6 +30,7 @@ SECRET_KEY = "{{cookiecutter.secret_key}}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ENV = 'dev'
 
 ALLOWED_HOSTS = ['*']
 
@@ -128,12 +129,14 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'molo.core.context_processors.locale',
+                'molo.core.processors.compress_settings',
                 'wagtail.contrib.settings.context_processors.settings',
             ],
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
                 "mote.loaders.app_directories.Loader",
                 "django.template.loaders.app_directories.Loader",
+
             ]
         },
     },
@@ -289,6 +292,7 @@ LOCALE_PATHS = [
 
 STATIC_ROOT = join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
+COMPRESS_ENABLED = True
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -344,6 +348,10 @@ ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
 FROM_EMAIL = environ.get('FROM_EMAIL', "support@moloproject.org")
 CONTENT_IMPORT_SUBJECT = environ.get(
     'CONTENT_IMPORT_SUBJECT', 'Molo Content Import')
+CONTENT_COPY_SUBJECT = environ.get(
+    'CONTENT_COPY_SUBJECT', 'Molo Content Copy')
+CONTENT_COPY_FAILED_SUBJECT = environ.get(
+    'CONTENT_COPY_FAILED_SUBJECT', 'Molo Content Copy Failed')
 
 # SMTP Settings
 EMAIL_HOST = environ.get('EMAIL_HOST', 'localhost')

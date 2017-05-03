@@ -1,4 +1,5 @@
 import random
+import logging
 
 from datetime import datetime
 
@@ -9,15 +10,19 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.core import management
+from django.contrib.auth.models import User
 
 from molo.core.content_import import api
 from molo.core.models import (
     ArticlePage, Main, SectionIndexPage, SectionPage, Languages, SiteSettings)
-
 from django.utils import timezone
+
+from wagtail.wagtailcore.models import Page
 
 IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"
 VALIDATE_EMAIL_TEMPLATE = "content_import/validate_email.html"
+COPY_EMAIL_TEMPLATE = "core/copy_email.html"
+COPY_FAILED_EMAIL_TEMPLATE = "core/copy_failed_email.html"
 
 
 @task(ignore_result=True)
@@ -206,6 +211,25 @@ def send_validate_email(to_email, context):
     email_message.send()
 
 
+def send_copy_email(to_email, context):
+    from_email = settings.FROM_EMAIL
+    subject = settings.CONTENT_COPY_SUBJECT \
+        if hasattr(settings, 'CONTENT_COPY_SUBJECT') else 'Molo Content Copy'
+    body = render_to_string(COPY_EMAIL_TEMPLATE, context)
+    email_message = EmailMessage(subject, body, from_email, [to_email])
+    email_message.send()
+
+
+def send_copy_failed_email(to_email, context):
+    from_email = settings.FROM_EMAIL
+    subject = settings.CONTENT_COPY_FAILED_SUBJECT \
+        if hasattr(settings, 'CONTENT_COPY_FAILED_SUBJECT') \
+        else 'Molo Content Copy Failed'
+    body = render_to_string(COPY_FAILED_EMAIL_TEMPLATE, context)
+    email_message = EmailMessage(subject, body, from_email, [to_email])
+    email_message.send()
+
+
 @task(ignore_result=True)
 def import_content(data, locales, username, email, host):
     repos = api.get_repos(data)
@@ -247,3 +271,32 @@ def molo_consolidated_minute_task():
     promote_articles()
     publish_scheduled_pages()
     clearsessions()
+
+
+@task(ignore_result=True)
+def copy_sections_index(
+        section_pk, user_pk, to_pk, copy_revisions, recursive, keep_live):
+    section_index = SectionIndexPage.objects.get(pk=section_pk)
+    user = User.objects.get(pk=user_pk) if user_pk else None
+    to = Page.objects.get(pk=to_pk).specific
+    try:
+        section_index.copy(
+            user=user,
+            to=to,
+            copy_revisions=copy_revisions,
+            recursive=recursive,
+            keep_live=keep_live,
+            via_celery=True)
+
+        send_copy_email(user.email, {
+            'name': (user.get_full_name() or user.username) if user else None,
+            'source': section_index.get_parent().title,
+            'to': to.title
+        })
+    except Exception, e:
+        logging.error(e, exc_info=True)
+        send_copy_failed_email(user.email, {
+            'name': (user.get_full_name() or user.username) if user else None,
+            'source': section_index.get_parent().title,
+            'to': to.title
+        })

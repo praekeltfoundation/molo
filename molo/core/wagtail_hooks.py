@@ -47,6 +47,11 @@ def show_main_language_only(parent_page, pages, request):
 
 @hooks.register('after_copy_page')
 def copy_translation_pages(request, page, new_page):
+
+    # Only copy translations for TranslatablePageMixin
+    if not hasattr(page.specific, 'copy_language'):
+        return 'Not translatable page'
+
     current_site = page.get_site()
     destination_site = new_page.get_site()
     if current_site is not destination_site and (page.depth > 2):
