@@ -677,9 +677,7 @@ class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def celery_copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
-        main = site.root_page
-        SectionIndexPage.objects.child_of(main).delete()
+        SectionIndexPage.objects.child_of(kwargs['to']).delete()
         return super(SectionIndexPage, self).copy(*args, **kwargs)
 
     def copy(self, *args, **kwargs):
