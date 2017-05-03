@@ -1,23 +1,18 @@
-{% load core_tags %}
-<!--
-  NOTE: Homepage Load Section Articles on Homepage: POSITION IS DETERMINED
--->
-{% load_descendant_articles_for_section section featured_in_homepage=True as articles %}
+{% load wagtailcore_tags core_tags i18n %}
+{% if tag %}
 <div class="grid-teaser">
   {% if articles %}
     <ul class="grid-teaser-list">
-    {% for article in articles %}
+    {% for article in tag_articles %}
       <li class="grid-teaser-list__item">
         {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="grid" %}
         {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="grid" %}
       </li>
     {% endfor %}
     </ul>
-    <!-- What Conditions should this be displyed?
-    If theres more than 1 article? and a max no of articles?
-    -->
     {% include "patterns/basics/buttons/sp_variations/text-dir-arrow_button.html" with direction="right" %}
     {% include "patterns/basics/buttons/sp_variations/text-dir-arrow_button.html" with direction="right" %}
     {% include "patterns/basics/buttons/sp_variations/text-back_button.html" with direction="left" %}
   {% endif %}
+{% endif %}
 </div>
