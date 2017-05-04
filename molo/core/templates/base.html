@@ -36,16 +36,18 @@
       if('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
         loadJS( "{% static 'js/main.js' %}" );
       }
+
+    {% get_current_language as LANGUAGE_CODE %}
     </script>
   </head>
-  <body class="{% block body_class %}{% endblock %}">
+  <body class="{% block body_class %}{% endblock %}" {% if LANGUAGE_CODE|language_bidi == True %}dir="rtl"{% endif %}>
     {% block google_analytics %}
       {% include "patterns/components/ga_tag_manager.html" %}
     {% endblock %}
 
     {% wagtailuserbar %}
 
-    {% get_current_language as LANGUAGE_CODE %}
+
     {% block header %}
       {% include "patterns/components/header/header-search_icon.html" %}
     {% endblock %}

@@ -1,0 +1,36 @@
+.call-to-action--wide-back {
+  padding: 0;
+  background: #F1E5FF;
+}
+
+
+.call-to-action__item-text {
+  color: #7300FF;
+  display: block;
+  font-weight: 600;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: underline;
+  text-transform: uppercase;
+}
+.call-to-action__item-button--right,
+.call-to-action__item-button--left {
+  &:after {
+    display: block;
+    background-size:auto;
+    position: absolute;
+    top: 35%;
+  }
+}
+.call-to-action__item-button--right {
+  &:after {
+    content: url("/static/images/icons/next.svg");
+    right: 20%;
+  }
+}
+.call-to-action__item-button--left {
+  &:after {
+    content: url("/static/images/icons/back.svg");
+    left: 20%;
+  }
+}

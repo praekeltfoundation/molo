@@ -445,6 +445,7 @@ class Tag(TranslatablePageMixin, Page):
 
     feature_in_homepage = models.BooleanField(default=False)
 
+
 Tag.promote_panels = [
     FieldPanel('feature_in_homepage'),
     MultiFieldPanel(
@@ -504,12 +505,12 @@ class Main(CommentedPageMixin, Page):
     subpage_types = []
 
     def bannerpages(self):
-        return BannerPage.objects.child_of(self).filter(
+        index_page = BannerIndexPage.objects.child_of(self).live().first()
+        return BannerPage.objects.child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 
     def sections(self):
-        index_page = SectionIndexPage.objects.child_of(
-            self).live().first()
+        index_page = SectionIndexPage.objects.child_of(self).live().first()
         return SectionPage.objects.child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 
@@ -677,9 +678,7 @@ class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
     def celery_copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
-        main = site.root_page
-        SectionIndexPage.objects.child_of(main).delete()
+        SectionIndexPage.objects.child_of(kwargs['to']).delete()
         return super(SectionIndexPage, self).copy(*args, **kwargs)
 
     def copy(self, *args, **kwargs):
@@ -1058,6 +1057,14 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
 
     def get_absolute_url(self):  # pragma: no cover
         return self.url
+
+    def get_effective_image(self):
+        if self.image:
+            return self.image
+        page = self.get_main_language_page()
+        if page.image:
+            return page.get_effective_image()
+        return ''
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
