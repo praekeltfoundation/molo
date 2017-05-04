@@ -504,12 +504,12 @@ class Main(CommentedPageMixin, Page):
     subpage_types = []
 
     def bannerpages(self):
-        return BannerPage.objects.child_of(self).filter(
+        index_page = BannerIndexPage.objects.child_of(self).live().first()
+        return BannerPage.objects.child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 
     def sections(self):
-        index_page = SectionIndexPage.objects.child_of(
-            self).live().first()
+        index_page = SectionIndexPage.objects.child_of(self).live().first()
         return SectionPage.objects.child_of(index_page).filter(
             languages__language__is_main_language=True).specific()
 

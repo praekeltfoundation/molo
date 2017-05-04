@@ -141,16 +141,13 @@ class TestTags(MoloTestCaseMixin, TestCase):
         response = self.client.get('/tags/' + tag.slug + '/')
         self.assertContains(
             response,
-            '<a href="/sections-main-1/your-mind/article'
-            '-1/">article 1</a><br>')
+            '<a href="/sections-main-1/your-mind/article-1/"')
         self.assertContains(
             response,
-            '<a href="/sections-main-1/your-mind/article'
-            '-2/">article 2</a><br>')
+            '<a href="/sections-main-1/your-mind/article-2/"')
         self.assertContains(
             response,
-            '<a href="/sections-main-1/your-mind/a'
-            'rticle-3/">article 3</a><br>')
+            '<a href="/sections-main-1/your-mind/article-3/"')
 
     def test_promoted_tags(self):
         articles = self.mk_articles(self.yourmind, count=5)
