@@ -5,8 +5,9 @@ from django.utils.safestring import mark_safe
 from django.db.models import Case, When
 from markdown import markdown
 
-from molo.core.models import (Page, ArticlePage, SectionPage,
-                              SiteSettings, Languages, Tag, ArticlePageTags)
+from molo.core.models import (
+    Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
+    ArticlePageTags, SectionIndexPage)
 
 register = template.Library()
 
@@ -74,6 +75,14 @@ def get_translation(context, page):
         return page.get_translation_for(locale_code, context['request'].site)
     else:
         return page
+
+
+@register.assignment_tag(takes_context=True)
+def get_parent(context, page):
+    parent = page.get_parent()
+    if not parent.specific_class == SectionIndexPage:
+        return get_translation(context, parent)
+    return None
 
 
 @register.inclusion_tag(
