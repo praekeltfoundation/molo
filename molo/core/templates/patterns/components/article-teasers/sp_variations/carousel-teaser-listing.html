@@ -1,14 +1,20 @@
-{% load core_tags %}
-{% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
-<div class="carousel-teaser">
-  {% if featured_articles %}
+{% load wagtailcore_tags core_tags i18n %}
+{% block load_tags_for_homepage %}
+{% if tag %}
+  <div class="carousel-teaser">
+  {% if tag_articles %}
+    <h1 class="carousel-teaser__heading">
+      <a href="{% pageurl tag %}" class="carousel-teaser__heading-link">{{tag.title}}</a></h1>
     <ul class="carousel-teaser-list">
-      {% for article in featured_articles %}
+      {% for article in tag_articles %}
       <li class="carousel-teaser-list__item">
         {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-image.html" %}
         {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-title.html" %}
       </li>
       {% endfor %}
     </ul>
+    {% include "patterns/basics/buttons/sp_variations/text-tag-dir-arrow_button.html" with direction="right" %}
   {% endif %}
-</div>
+  </div>
+{% endif %}
+{% endblock %}

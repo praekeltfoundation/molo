@@ -1,7 +1,4 @@
 {% load core_tags %}
-<!--
-  NOTE: This loads all articles on all sections
- -->
 <div class="article-teaser">
 {% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
 {% if featured_articles %}

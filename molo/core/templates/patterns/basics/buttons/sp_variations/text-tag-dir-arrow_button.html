@@ -1,0 +1,6 @@
+{% load wagtailcore_tags i18n %}
+<div class="call-to-action">
+  <a href="{% pageurl tag %}" class="call-to-action__item-text call-to-action__item-button--{{direction}}">
+    {% trans "Read All" %} {{ tag }}
+  </a>
+</div>

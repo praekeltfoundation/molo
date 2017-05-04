@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from molo.core.models import (
     ArticlePage, PageTranslation, SectionPage, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
-    BannerIndexPage, TagIndexPage)
+    BannerIndexPage, TagIndexPage, BannerPage)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
@@ -147,6 +147,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.section_index.copy(to=self.main2)
         self.assertEquals(
             BannerIndexPage.objects.child_of(self.main2).count(), 1)
+
+    def test_main_returns_bannerpages(self):
+        banner = BannerPage(title='test banner')
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+        self.assertEqual(self.main.bannerpages().count(), 1)
 
     def test_article_order(self):
         now = datetime.now()
