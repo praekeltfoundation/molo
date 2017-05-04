@@ -10,14 +10,7 @@
       <li class="carousel-teaser-list__item">
         {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-image.html" %}
         {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-title.html" %}
-        {% load_tags_for_article article as tags %}
-        <ul class="teaser-stacklist-tags">
-          {% for tag in tags %}
-          <li class="teaser-stacklist-tags__item">
-            <a href="{% pageurl tag %}" class="teaser-stacklist-tags__anchor">{{ tag.title }}</a>
-          </li>
-          {% endfor %}
-        </ul>
+        {% include "patterns/basics/article-tags/article-tag_teaser.html" %}
       </li>
     {% endfor %}
   </ul>

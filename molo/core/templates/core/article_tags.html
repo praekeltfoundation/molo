@@ -4,23 +4,11 @@
   <div class="article-teaser">
   <h1 class="article-teaser__heading">{{ tag }}</h1>
     <ul class="teaser-stacklist">
-    {% for each_article in object_list %}
+    {% for article in object_list %}
     <li class="teaser-stacklist__item">
-      {% if each_article.image %}
-      <a href="{% pageurl each_article %}" class="base-teaser__thumbnail-link">
-        {% image each_article.image fill-96x96 as teaser_thumbnail %}
-        <img src="{{ teaser_thumbnail.url }}" class="base-teaser__thumbnail" />
-      </a>
-      {% endif %}
+      {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="base" %}
       <div class="teaser-stacklist__item--content">
-        <h3 class="base-teaser__title">
-          <a href="{% pageurl each_article %}" class="base-teaser__title-link">
-          {{ each_article.title }}</a>
-        </h3>
-        {% if each_article.subtitle %}
-          <p class="base-teaser__subtitle">{{ each_article.subtitle }}</p>
-        {% endif %}
-
+        {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="base" %}
       </div>
     </li>
     {% endfor %}

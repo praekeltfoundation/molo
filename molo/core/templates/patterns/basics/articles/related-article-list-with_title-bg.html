@@ -9,8 +9,8 @@
     {% for block in self.body %}
       {% if block.block_type == 'page'  %}
         <li class="related-article-list__item">
-            <a href="{% pageurl block.value %}" class="call-to-action__item--text">
-              {{ block.value }}</a>
+          <a href="{% pageurl block.value %}" class="call-to-action__item--text">
+            {{ block.value }}</a>
         </li>
       {% endif %}
     {% endfor %}
