@@ -1,6 +1,14 @@
 CHANGE LOG
 ==========
 
+5.2.0
+~~~~~
+- Add gef_effective_image for ArticlePage (returns the image of article's main language page if article has no image, else returns article's image)
+- Add get_parent template tag (returns the parent of a page)
+- Bug fix: Filter tags via descendant of main
+- Bug fix: Use 'to' id directly for copying in celery
+
+
 5.1.1
 ~~~~~
 - Bug fix: Call correct template for tag navigation
