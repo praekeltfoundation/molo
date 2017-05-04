@@ -1,6 +1,8 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n el_pagination_tags %}
-<ul id="articles-more" class="promoted-article-list promoted-article-list--theme-headings">
-  {% paginate articles %}
+<ul class="promoted-article-list promoted-article-list--theme-headings">
+  {% get_tag_articles latest_articles_count=12 tag_count=4 as tag_nav_data %}
+
+  {% paginate tag_nav_data.latest_articles as articles%}
   {% for article in articles %}
   <li class="promoted-article-list__item promoted-article-list__item--theme-headings promoted-article-list__item--theme-headings{{article.get_parent_section.get_effective_extra_style_hints}}">
     <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-headings">
@@ -19,12 +21,7 @@
     {% endif %}
   </li>
   {% endfor %}
-  <a id="more-link" href="/home-index/?page=2">More...</a>
+
+  {% show_pages %}
+
 </ul>
-
-
-{% block js %}
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script src="{{ STATIC_URL }}el-pagination/js/el-pagination.js"></script>
-    <script>$('#articles-more').append($('<div/>').load('/home-index/?page=1'));</script>
-{% endblock %}
