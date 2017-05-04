@@ -187,7 +187,7 @@ class TagsListView(ListView):
         locale = self.request.LANGUAGE_CODE
 
         if site_settings.enable_tag_navigation:
-            tag = Tag.objects.get(slug=tag)
+            tag = Tag.objects.filter(slug=tag).descendant_of(main).first()
             articles = []
             for article_tag in ArticlePageTags.objects.filter(
                     tag=tag.get_main_language_page()).all():
