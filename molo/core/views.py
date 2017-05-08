@@ -195,10 +195,10 @@ class TagsListView(ListView):
             articles = ArticlePage.objects.filter(
                 pk__in=articles).order_by(
                     'latest_revision_created_at')
-            return get_pages(context, articles, locale)[:count]
-        return ArticlePage.objects.descendant_of(main).filter(
+            return [tag, get_pages(context, articles, locale)[:count]]
+        return [tag, ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
-                'latest_revision_created_at')
+                'latest_revision_created_at')]
 
 
 @user_passes_test(lambda u: u.is_superuser)
