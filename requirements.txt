@@ -27,4 +27,4 @@ djangorestframework==3.3.2
 cached-property
 setuptools==18.5
 molo.profiles<6.0.0,>=5.0.0
-django-el-pagination
+django-el-pagination==3.1.0
