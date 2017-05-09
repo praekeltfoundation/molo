@@ -195,10 +195,17 @@ class TagsListView(ListView):
             articles = ArticlePage.objects.filter(
                 pk__in=articles).order_by(
                     'latest_revision_created_at')
-            return [tag, get_pages(context, articles, locale)[:count]]
-        return [tag, ArticlePage.objects.descendant_of(main).filter(
+            return get_pages(context, articles, locale)[:count]
+        return ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
-                'latest_revision_created_at')]
+                'latest_revision_created_at')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(TagsListView, self).get_context_data(*args, **kwargs)
+        tag = self.kwargs['tag_name']
+        context.update({'tag': Tag.objects.filter(
+            slug=tag).descendant_of(self.request.site.root_page).first()})
+        return context
 
 
 @user_passes_test(lambda u: u.is_superuser)

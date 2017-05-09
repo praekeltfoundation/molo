@@ -307,7 +307,7 @@ def load_child_articles_for_section(context, section, count=5):
     return articles
 
 
-def get_positional_tag_articles(
+def get_articles_for_tags_with_translations(
         request, tag, exclude_list, locale, context, exclude_pks):
 
     pks = [article_tag.page.pk for article_tag in
@@ -341,10 +341,9 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
         if section_tag.tag]
     if tags and request.site:
         qs = Tag.objects.descendant_of(
-            request.site.root_page).filter(
-                feature_in_section=True).live().filter(pk__in=tags)
+            request.site.root_page).live().filter(pk__in=tags)
         for tag in qs:
-            tag_articles = get_positional_tag_articles(
+            tag_articles = get_articles_for_tags_with_translations(
                 request, tag, exclude_pks, locale, context,
                 exclude_pks)[:tag_article_count]
             exclude_pks += [p.pk for p in tag_articles]
@@ -397,7 +396,7 @@ def get_tag_articles(
     tag_qs = Tag.objects.descendant_of(request.site.root_page).filter(
         feature_in_homepage=True).live()
     for tag in tag_qs:
-        tag_articles = get_positional_tag_articles(
+        tag_articles = get_articles_for_tags_with_translations(
             request, tag, exclude_pks, locale,
             context, exclude_pks)[:tag_count]
         exclude_pks += [p.pk for p in tag_articles]

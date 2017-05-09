@@ -2,9 +2,9 @@
 {% load wagtailcore_tags wagtailimages_tags static core_tags i18n %}
 {% block content %}
   <div class="article-teaser">
-  <h1 class="article-teaser__heading">{{ object_list.0.title }}</h1>
+  <h1 class="article-teaser__heading">{{ tag.title }}</h1>
     <ul class="teaser-stacklist">
-    {% for each_article in object_list.1 %}
+    {% for each_article in object_list %}
     <li class="teaser-stacklist__item">
       {% if each_article.image %}
       <a href="{% pageurl each_article %}" class="base-teaser__thumbnail-link">

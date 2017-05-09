@@ -444,12 +444,10 @@ class Tag(TranslatablePageMixin, Page):
     subpage_types = []
 
     feature_in_homepage = models.BooleanField(default=False)
-    feature_in_section = models.BooleanField(default=False)
 
 
 Tag.promote_panels = [
     FieldPanel('feature_in_homepage'),
-    FieldPanel('feature_in_section'),
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")
