@@ -189,7 +189,7 @@ class TagsListView(ListView):
         locale = self.request.LANGUAGE_CODE
 
         if site_settings.enable_tag_navigation:
-            tag = Tag.objects.get(slug=tag)
+            tag = Tag.objects.filter(slug=tag).descendant_of(main).first()
             articles = []
             for article_tag in ArticlePageTags.objects.filter(
                     tag=tag.get_main_language_page()).all():
@@ -202,6 +202,13 @@ class TagsListView(ListView):
         return ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
                 'latest_revision_created_at')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(TagsListView, self).get_context_data(*args, **kwargs)
+        tag = self.kwargs['tag_name']
+        context.update({'tag': Tag.objects.filter(
+            slug=tag).descendant_of(self.request.site.root_page).first()})
+        return context
 
 
 @user_passes_test(lambda u: u.is_superuser)

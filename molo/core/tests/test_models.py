@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from molo.core.models import (
     ArticlePage, PageTranslation, SectionPage, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
-    BannerIndexPage, TagIndexPage)
+    BannerIndexPage, TagIndexPage, BannerPage)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
@@ -73,6 +73,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # Create an image for running tests on
         self.image = Image.objects.create(
             title="Test image",
+            file=get_test_image_file(),
+        )
+        self.image2 = Image.objects.create(
+            title="Test image 2",
             file=get_test_image_file(),
         )
 
@@ -144,6 +148,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             BannerIndexPage.objects.child_of(self.main2).count(), 1)
 
+    def test_main_returns_bannerpages(self):
+        banner = BannerPage(title='test banner')
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+        self.assertEqual(self.main.bannerpages().count(), 1)
+
     def test_article_order(self):
         now = datetime.now()
         article1 = self.mk_article(
@@ -163,25 +173,74 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             self.yourmind_sub.articles()[0].title, article1.title)
 
-    def test_image(self):
-        new_section = self.mk_section(
+    def test_get_effective_image_for_sections(self):
+        en_section = self.mk_section(
             self.section_index,
             title="New Section", slug="new-section",
             image=self.image)
         self.assertEquals(
-            new_section.get_effective_image(), self.image)
+            en_section.get_effective_image(), self.image)
 
         # image not set to use inherited value
-        new_section2 = self.mk_section(
-            new_section, title="New Section 2", slug="new-section-2")
+        en_section2 = self.mk_section(
+            en_section, title="New Section 2", slug="new-section-2")
         self.assertEquals(
-            new_section2.get_effective_image(), new_section.image)
+            en_section2.get_effective_image(), en_section.image)
 
         # image not set to use inherited value
-        new_section3 = self.mk_section(
-            new_section2, title="New Section 3", slug="new-section-3")
+        en_section3 = self.mk_section(
+            en_section2, title="New Section 3", slug="new-section-3")
         self.assertEquals(
-            new_section3.get_effective_image(), new_section.image)
+            en_section3.get_effective_image(), en_section.image)
+
+        # set the image
+        en_section3.image = self.image2
+        self.assertEquals(
+            en_section3.get_effective_image(), self.image2)
+        # if translated section doesn't have
+        # an image it will inherited from the parent
+        fr_section3 = self.mk_section_translation(en_section3, self.french)
+        self.assertEquals(
+            fr_section3.get_effective_image(), en_section3.image)
+
+        fr_section2 = self.mk_section_translation(en_section2, self.french)
+        self.assertEquals(
+            fr_section2.get_effective_image(), en_section.image)
+
+        # check if the section doesn't have image it will return None
+        en_section4 = self.mk_section(
+            self.section_index,
+            title="New Section 4", slug="new-section-4",)
+        self.assertEquals(
+            en_section4.get_effective_image(), '')
+        fr_section4 = self.mk_section_translation(en_section4, self.french)
+        self.assertEquals(
+            fr_section4.get_effective_image(), '')
+
+    def test_get_effective_image_for_articles(self):
+        section = self.mk_section(
+            self.section_index, title="Section", slug="section")
+
+        en_article1, en_article2 = self.mk_articles(section, 2)
+        fr_article1 = self.mk_article_translation(en_article1, self.french)
+
+        self.assertEquals(
+            en_article1.get_effective_image(), '')
+        self.assertEquals(
+            fr_article1.get_effective_image(), '')
+
+        en_article1.image = self.image
+        self.assertEquals(
+            en_article1.get_effective_image(), self.image)
+
+        # if image not set it should inherite from the main language article
+        self.assertEquals(
+            fr_article1.get_effective_image(), en_article1.image)
+
+        # if the translated article has an image it should return its image
+        fr_article1.image = self.image2
+        self.assertEquals(
+            fr_article1.get_effective_image(), self.image2)
 
     def test_number_of_child_sections(self):
         new_section = self.mk_section(self.section_index)
