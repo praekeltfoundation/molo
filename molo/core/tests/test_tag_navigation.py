@@ -79,22 +79,6 @@ class TestTags(MoloTestCaseMixin, TestCase):
             s.add(x.pk)
         return True
 
-    def test_tag_promotion(self):
-        tag = self.mk_tag(parent=self.tag_index)
-        tag.feature_in_section = False
-        tag.save_revision().publish()
-        articles = self.mk_articles(parent=self.yourmind, count=30)
-        other_articles = self.mk_articles(parent=self.yourbody, count=10)
-        for article in articles:
-            ArticlePageTags.objects.create(page=article, tag=tag)
-        for article in other_articles:
-            ArticlePageTags.objects.create(page=article, tag=tag)
-        SectionPageTags.objects.create(page=self.yourmind, tag=tag)
-        SectionPageTags.objects.create(page=self.yourbody, tag=tag)
-
-        response = self.client.get(self.yourmind.url)
-        self.assertNotContains(response, tag.title)
-
     def test_article_not_repeated_in_section_for_tag_navigation_enabled(self):
         tag = self.mk_tag(parent=self.tag_index)
         tag.feature_in_section = True
@@ -273,6 +257,6 @@ class TestTags(MoloTestCaseMixin, TestCase):
             reverse("tags_list", kwargs={"tag_name": "common"})
         )
         self.assertEqual(
-            list(response.context["object_list"][1]),
+            list(response.context["object_list"]),
             [first_article, second_article]
         )
