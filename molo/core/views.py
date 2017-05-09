@@ -263,12 +263,14 @@ def download_file(request):
 
 
 @page_template(
-    'patterns/basics/article-teasers/latest-promoted_variations/latest-art'
-    'icles_for-paging.html')
+    'patterns/basics/article-teasers/latest-promoted_variations/'
+    'latest-articles_for-paging.html')
 def home_index(
         request,
-        template='patterns/components/article-teasers/latest-promoted_variations/article_for_paging.html',
-        extra_context=None):
+        extra_context=None,
+        template=(
+            'patterns/components/article-teasers/latest-promoted_variations/'
+            'article_for_paging.html')):
     return render(request, template, {})
 
 

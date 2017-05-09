@@ -3,7 +3,6 @@
 
 {% block content %}
     {% bannerpages %}
-
-    {% get_tag_articles latest_articles_count=12 tag_count=4 as tag_nav_data %}
-    {% include "patterns/components/article-teasers/latest-promoted_variations/article_for_paging.html" with articles=tag_nav_data.latest_articles%}
+    {% get_tag_articles tag_count=4 as tag_nav_data %}
+    {% include "patterns/components/article-teasers/latest-promoted_variations/article_for_feature.html" with articles=tag_nav_data.latest_articles%}
 {% endblock %}

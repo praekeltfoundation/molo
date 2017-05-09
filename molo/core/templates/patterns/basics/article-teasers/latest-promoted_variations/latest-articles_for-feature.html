@@ -20,19 +20,4 @@
     {% endif %}
   </li>
   {% endfor %}
-  {% get_pages %}
-  {% if pages.next %}
-  <a class="more-link" data-next="{% url 'home_index' %}?page={{pages.next.number}}" href="{% url 'home_more' %}?page={{pages.next.number}}">More...</a>
-  {% endif %}
-
-  {% block js %}
-      <script src="http://code.jquery.com/jquery-latest.js"></script>
-      <script>
-      $('#articles-more, .article-teasers-container').on('click', '.more-link:visible', function(event){
-        event.preventDefault();
-        var more_url = $(this).attr('data-next');
-        $("#articles-more").append($('<span/>').load(more_url));
-        $(this).hide();
-      });
-      </script>
-  {% endblock %}
+  {% show_pages %}

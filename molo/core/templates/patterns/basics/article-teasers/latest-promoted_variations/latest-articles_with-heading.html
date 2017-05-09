@@ -1,6 +1,6 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n el_pagination_tags %}
-<ul id="articles-more" class="promoted-article-list promoted-article-list--theme-headings">
-  {% paginate articles %}
+<ul class="article-teasers-container promoted-article-list promoted-article-list--theme-headings">
+  {% paginate 12 articles %}
   {% for article in articles %}
   <li class="promoted-article-list__item promoted-article-list__item--theme-headings promoted-article-list__item--theme-headings{{article.get_parent_section.get_effective_extra_style_hints}}">
     <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-headings">
@@ -19,12 +19,20 @@
     {% endif %}
   </li>
   {% endfor %}
-  <a id="more-link" href="/home-index/?page=2">More...</a>
+  {% get_pages %}
+  {% if pages.next %}
+  <a class="more-link" data-next="{% url 'home_index' %}?page={{pages.next.number}}" href="{% url 'home_more' %}?page={{pages.next.number}}">More...</a>
+  {% endif %}
 </ul>
-
 
 {% block js %}
     <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script src="{{ STATIC_URL }}el-pagination/js/el-pagination.js"></script>
-    <script>$('#articles-more').append($('<div/>').load('/home-index/?page=1'));</script>
+    <script>
+    $('#articles-more, .article-teasers-container').on('click', '.more-link:visible', function(event){
+      event.preventDefault();
+      var more_url = $(this).attr('data-next');
+      $("#articles-more").append($('<span/>').load(more_url));
+      $(this).hide();
+    });
+    </script>
 {% endblock %}
