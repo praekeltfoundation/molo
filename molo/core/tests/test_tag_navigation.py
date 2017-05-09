@@ -5,7 +5,8 @@ from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteSettings, Main, Languages,
-                              SiteLanguageRelation, ArticlePageTags)
+                              SiteLanguageRelation, ArticlePageTags,
+                              SectionPageTags)
 from molo.core.tasks import promote_articles
 from itertools import chain
 
@@ -34,6 +35,8 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         self.yourmind = self.mk_section(
             self.section_index, title='Your mind')
+        self.yourbody = self.mk_section(
+            self.section_index, title='Your body')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
 
@@ -68,7 +71,36 @@ class TestTags(MoloTestCaseMixin, TestCase):
         self.site_settings.enable_tag_navigation = True
         self.site_settings.save()
 
-    def test_article_not_repeated_when_tag_navigation_enabled(self):
+    def unique(self, g):
+        s = set()
+        for x in g:
+            if x.pk in s:
+                return False
+            s.add(x.pk)
+        return True
+
+    def test_article_not_repeated_in_section_for_tag_navigation_enabled(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_section = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(parent=self.yourmind, count=30)
+        other_articles = self.mk_articles(parent=self.yourbody, count=10)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+        for article in other_articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+        SectionPageTags.objects.create(page=self.yourmind, tag=tag)
+        SectionPageTags.objects.create(page=self.yourbody, tag=tag)
+
+        response = self.client.get(self.yourmind.url)
+        tag_articles = response.context['tags'][0][1]
+        section_articles = response.context['articles']
+        all_section_articles = list(chain(section_articles, tag_articles))
+        self.assertTrue(self.unique(all_section_articles))
+        self.assertContains(response, tag.title)
+        self.assertEquals(len(tag_articles), 4)
+
+    def test_article_not_repeated_when_tag_navigation_enabled_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
         tag.feature_in_homepage = True
         tag.save_revision().publish()
@@ -91,14 +123,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
         homepage_articles = list(chain(
             homepage_articles, data['latest_articles']))
 
-        def unique(g):
-            s = set()
-            for x in g:
-                if x.pk in s:
-                    return False
-                s.add(x.pk)
-            return True
-        self.assertTrue(unique(homepage_articles))
+        self.assertTrue(self.unique(homepage_articles))
 
     def test_tag_cloud_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
