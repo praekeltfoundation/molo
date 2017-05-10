@@ -80,6 +80,7 @@ INSTALLED_APPS = [
 
     'mptt',
     'djcelery',
+    'el_pagination',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}
     'raven.contrib.django.raven_compat',

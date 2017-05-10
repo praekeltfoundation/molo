@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load static core_tags el_pagination_tags %}
+
+{% block content %}
+    {% bannerpages %}
+    {% get_tag_articles tag_count=4 as tag_nav_data %}
+    {% include "patterns/components/article-teasers/latest-promoted_variations/article_for_feature.html" with articles=tag_nav_data.latest_articles%}
+{% endblock %}

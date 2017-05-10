@@ -358,8 +358,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
 
 @register.simple_tag(takes_context=True)
 def get_tag_articles(
-        context, latest_articles_count=12, section_count=1, tag_count=4,
-        sec_articles_count=4):
+        context, section_count=1, tag_count=4, sec_articles_count=4):
 
     request = context['request']
     locale = context.get('locale_code')
@@ -368,15 +367,6 @@ def get_tag_articles(
     data = {}
     tags_list = []
     sections_list = []
-
-    # Latest Articles
-    latest_articles = request.site.root_page.specific.latest_articles(
-    )[:latest_articles_count]
-    exclude_pks += [p.pk for p in latest_articles]
-    data.update({
-        'latest_articles': get_pages(
-            context, ArticlePage.objects.filter(
-                pk__in=[p.pk for p in latest_articles]), locale)})
 
     # Featured Section
     sections = request.site.root_page.specific.sections()
@@ -403,8 +393,15 @@ def get_tag_articles(
         tags_list.append((
             get_pages(context, tag_qs.filter(pk=tag.pk), locale)[0],
             tag_articles))
-
     data.update({'tags_list': tags_list})
+
+    # Latest Articles
+    data.update({
+        'latest_articles': get_pages(
+            context, ArticlePage.objects.descendant_of(
+                request.site.root_page).exclude(pk__in=exclude_pks).order_by(
+                    '-featured_in_latest'), locale)})
+
     return data
 
 
