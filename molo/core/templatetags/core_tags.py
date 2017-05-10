@@ -307,18 +307,58 @@ def load_child_articles_for_section(context, section, count=5):
     return articles
 
 
+def get_articles_for_tags_with_translations(
+        request, tag, exclude_list, locale, context, exclude_pks):
+
+    pks = [article_tag.page.pk for article_tag in
+           ArticlePageTags.objects.filter(tag=tag)]
+    return get_pages(
+        context, ArticlePage.objects.descendant_of(
+            request.site.root_page).filter(pk__in=pks).exclude(
+                pk__in=exclude_pks), locale)
+
+
+@register.assignment_tag(takes_context=True)
+def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
+    request = context['request']
+    locale = context.get('locale_code')
+    # Featured Tags
+    exclude_pks = []
+    tags_list = []
+    main_language_page = section.get_main_language_page()
+    child_articles = ArticlePage.objects.descendant_of(
+        main_language_page).filter(languages__language__is_main_language=True)
+    for article in child_articles:
+        exclude_pks.append(article.pk)
+    related_articles = ArticlePage.objects.filter(
+        related_sections__section__slug=main_language_page.slug)
+    for article in related_articles:
+        exclude_pks.append(article.pk)
+
+    tags = [
+        section_tag.tag.pk for section_tag in
+        section.get_main_language_page().specific.section_tags.all()
+        if section_tag.tag]
+    if tags and request.site:
+        qs = Tag.objects.descendant_of(
+            request.site.root_page).live().filter(pk__in=tags)
+        for tag in qs:
+            tag_articles = get_articles_for_tags_with_translations(
+                request, tag, exclude_pks, locale, context,
+                exclude_pks)[:tag_article_count]
+            exclude_pks += [p.pk for p in tag_articles]
+            tags_list.append((
+                get_pages(context, qs.filter(pk=tag.pk), locale)[0],
+                tag_articles))
+    else:
+        return []
+
+    return tags_list
+
+
 @register.simple_tag(takes_context=True)
 def get_tag_articles(
-        context, latest_articles_count=12, section_count=1, tag_count=4,
-        sec_articles_count=4):
-    def get_positional_tag_articles(request, tag, exclude_list):
-
-        pks = [article_tag.page.pk for article_tag in
-               ArticlePageTags.objects.filter(tag=tag)]
-        return get_pages(
-            context, ArticlePage.objects.descendant_of(
-                request.site.root_page).filter(pk__in=pks).exclude(
-                    pk__in=exclude_pks), locale)
+        context, section_count=1, tag_count=4, sec_articles_count=4):
 
     request = context['request']
     locale = context.get('locale_code')
@@ -327,15 +367,6 @@ def get_tag_articles(
     data = {}
     tags_list = []
     sections_list = []
-
-    # Latest Articles
-    latest_articles = request.site.root_page.specific.latest_articles(
-    )[:latest_articles_count]
-    exclude_pks += [p.pk for p in latest_articles]
-    data.update({
-        'latest_articles': get_pages(
-            context, ArticlePage.objects.filter(
-                pk__in=[p.pk for p in latest_articles]), locale)})
 
     # Featured Section
     sections = request.site.root_page.specific.sections()
@@ -352,14 +383,25 @@ def get_tag_articles(
     data.update({'sections': sections_list})
 
     # Featured Tags
-    for tag in Tag.objects.descendant_of(request.site.root_page).filter(
-            feature_in_homepage=True).live():
-        tag_articles = get_positional_tag_articles(
-            request, tag, exclude_pks)[:tag_count]
+    tag_qs = Tag.objects.descendant_of(request.site.root_page).filter(
+        feature_in_homepage=True).live()
+    for tag in tag_qs:
+        tag_articles = get_articles_for_tags_with_translations(
+            request, tag, exclude_pks, locale,
+            context, exclude_pks)[:tag_count]
         exclude_pks += [p.pk for p in tag_articles]
-        tags_list.append((tag, tag_articles))
-
+        tags_list.append((
+            get_pages(context, tag_qs.filter(pk=tag.pk), locale)[0],
+            tag_articles))
     data.update({'tags_list': tags_list})
+
+    # Latest Articles
+    data.update({
+        'latest_articles': get_pages(
+            context, ArticlePage.objects.descendant_of(
+                request.site.root_page).exclude(pk__in=exclude_pks).order_by(
+                    '-featured_in_latest'), locale)})
+
     return data
 
 

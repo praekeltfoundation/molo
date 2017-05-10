@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+5.2.1
+~~~~~
+- Added Tags to SectionPage
+- Added Load More functionality for ArticlePages on the homepage
+
+
 5.2.0
 ~~~~~
 - Add gef_effective_image for ArticlePage (returns the image of article's main language page if article has no image, else returns article's image)

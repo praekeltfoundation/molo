@@ -28,6 +28,8 @@ from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm
 from django.views.generic import ListView
 
+from el_pagination.decorators import page_template
+
 
 def csrf_failure(request, reason=""):
     freebasics_url = settings.FREE_BASICS_URL_FOR_CSRF_MESSAGE
@@ -195,10 +197,18 @@ class TagsListView(ListView):
             articles = ArticlePage.objects.filter(
                 pk__in=articles).order_by(
                     'latest_revision_created_at')
-            return get_pages(context, articles, locale)[:count]
+            # count = articles.count() if articles.count() < count else count
+            return get_pages(context, articles[:count], locale)
         return ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
                 'latest_revision_created_at')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(TagsListView, self).get_context_data(*args, **kwargs)
+        tag = self.kwargs['tag_name']
+        context.update({'tag': Tag.objects.filter(
+            slug=tag).descendant_of(self.request.site.root_page).first()})
+        return context
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -250,3 +260,23 @@ def download_file(request):
                           'django_admin/transfer_media_message.html',
                           {'error_message':
                            'media file does not exist'})
+
+
+@page_template(
+    'patterns/basics/article-teasers/latest-promoted_variations/'
+    'latest-articles_for-paging.html')
+def home_index(
+        request,
+        extra_context=None,
+        template=(
+            'patterns/components/article-teasers/latest-promoted_variations/'
+            'article_for_paging.html')):
+    return render(request, template, {})
+
+
+@page_template(
+    'patterns/basics/article-teasers/latest-promoted_variations/late'
+    'st-articles_for-feature.html')
+def home_more(
+        request, template='core/main-feature-more.html', extra_context=None):
+    return render(request, template, {})

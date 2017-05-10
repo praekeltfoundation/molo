@@ -16,6 +16,16 @@ urlpatterns = patterns(
         'molo.core.views.health',
         name='health'
     ),
+    url(
+        r'^home-index/$',
+        'molo.core.views.home_index',
+        name='home_index'
+    ),
+    url(
+        r'^home-more/$',
+        'molo.core.views.home_more',
+        name='home_more'
+    ),
 
     url(r'^import/', include(
         'molo.core.content_import.urls', namespace='content_import')),

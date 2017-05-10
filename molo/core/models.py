@@ -884,7 +884,8 @@ SectionPage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings", )
+        heading="Commenting Settings", ),
+    InlinePanel('section_tags', label="Tags for Navigation"),
 ]
 
 SectionPage.settings_panels = [
@@ -1165,6 +1166,19 @@ def demote_featured_articles(sender, instance, **kwargs):
         instance.featured_in_section_start_date is None and \
             instance.featured_in_section is True:
         instance.featured_in_section = False
+
+
+class SectionPageTags(Orderable):
+    page = ParentalKey(SectionPage, related_name='section_tags')
+    tag = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Tags for tag navigation')
+    )
+    panels = [PageChooserPanel('tag', 'core.Tag')]
 
 
 class ArticlePageTags(Orderable):
