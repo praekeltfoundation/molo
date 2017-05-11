@@ -399,8 +399,9 @@ def get_tag_articles(
     data.update({
         'latest_articles': get_pages(
             context, ArticlePage.objects.descendant_of(
-                request.site.root_page).exclude(pk__in=exclude_pks).order_by(
-                    '-featured_in_latest'), locale)})
+                request.site.root_page).filter(
+                languages__language__is_main_language=True).exclude(
+                pk__in=exclude_pks).order_by('-featured_in_latest'), locale)})
 
     return data
 
