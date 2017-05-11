@@ -71,6 +71,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'en',
             'request': request}, position=0)['bannerpages'][0].title,
             'test banner')
+        self.assertEquals(bannerpages({
+            'locale_code': 'en',
+            'request': request}, position=1)['bannerpages'][0].title,
+            'test banner 2')
 
     def test_bannerpages_with_position_out_of_range(self):
         banner = BannerPage(title='test banner')
