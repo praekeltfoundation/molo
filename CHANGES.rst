@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+5.2.2
+~~~~~
+- Added Positional Banner Pages functionality
+- Bug Fix: Return Main language pages for latest articles
+
 5.2.1
 ~~~~~
 - Added Tags to SectionPage

@@ -152,7 +152,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         banner = BannerPage(title='test banner')
         self.banner_index.add_child(instance=banner)
         banner.save_revision().publish()
-        self.assertEqual(self.main.bannerpages().count(), 1)
+        banner = BannerPage(title='test banner 2')
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+        self.assertEqual(self.main.bannerpages().count(), 2)
 
     def test_article_order(self):
         now = datetime.now()
