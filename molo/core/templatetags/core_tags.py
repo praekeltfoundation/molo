@@ -181,7 +181,6 @@ def bannerpages(context, position=None):
     }
 
 
-
 @register.inclusion_tag('core/tags/footerpage.html', takes_context=True)
 def footer_page(context):
     request = context['request']
