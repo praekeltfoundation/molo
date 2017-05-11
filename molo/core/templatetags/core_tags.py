@@ -156,7 +156,7 @@ def topic_of_the_day(context):
 
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
-def bannerpages(context):
+def bannerpages(context, position=None):
     request = context['request']
     locale = context.get('locale_code')
 
@@ -165,11 +165,21 @@ def bannerpages(context):
     else:
         pages = []
 
+    if position >= 0:
+        banners = get_pages(context, pages, locale)
+        if position > (len(banners) - 1):
+            return None
+        return {
+            'bannerpages': [get_pages(context, pages, locale)[position]],
+            'request': context['request'],
+            'locale_code': locale,
+        }
     return {
         'bannerpages': get_pages(context, pages, locale),
         'request': context['request'],
         'locale_code': locale,
     }
+
 
 
 @register.inclusion_tag('core/tags/footerpage.html', takes_context=True)
