@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteSettings, Main, Languages,
                               SiteLanguageRelation, ArticlePageTags,
-                              SectionPageTags)
+                              SectionPageTags, FooterPage)
 from molo.core.tasks import promote_articles
 from itertools import chain
 
@@ -78,6 +78,31 @@ class TestTags(MoloTestCaseMixin, TestCase):
                 return False
             s.add(x.pk)
         return True
+
+    def test_tag_nav_data_does_not_pull_in_footer_pages(self):
+        self.mk_articles(parent=self.yourmind, count=2)
+        footer = FooterPage(title='Test Footer Page')
+        self.footer_index.add_child(instance=footer)
+        footer.save_revision().publish()
+        footer2 = FooterPage(title='Test Footer Page 2')
+        self.footer_index.add_child(instance=footer2)
+        footer2.save_revision().publish()
+        footer3 = FooterPage(title='Test Footer Page 3')
+        self.footer_index.add_child(instance=footer3)
+        footer3.save_revision().publish()
+        footer_pks = [footer.pk, footer2.pk, footer3.pk]
+
+        response = self.client.get('/')
+        data = response.context['tag_nav_data']
+        hoempage_articles = []
+        for section, section_list in data['sections']:
+            homepage_articles = list(chain(hoempage_articles, section_list))
+        for tag, tag_list in data['tags_list']:
+            homepage_articles = list(chain(homepage_articles, tag_list))
+        homepage_articles = list(chain(
+            homepage_articles, data['latest_articles']))
+        for article in homepage_articles:
+            self.assertFalse(article.pk in footer_pks)
 
     def test_article_not_repeated_in_section_for_tag_navigation_enabled(self):
         tag = self.mk_tag(parent=self.tag_index)
