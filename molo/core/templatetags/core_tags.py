@@ -386,11 +386,11 @@ def get_tag_articles(
                 '-featured_in_homepage_start_date').exclude(
                 pk__in=exclude_pks)
         exclude_pks += [p.pk for p in sec_articles[:sec_articles_count]]
+        section = SectionPage.objects.filter(pk=section.pk)
         sections_list.append((
-            section,
+            get_pages(context, section, locale)[0],
             get_pages(context, sec_articles, locale)[:sec_articles_count]))
     data.update({'sections': sections_list})
-
     # Featured Tags
     tag_qs = Tag.objects.descendant_of(request.site.root_page).filter(
         feature_in_homepage=True).live()
@@ -409,8 +409,9 @@ def get_tag_articles(
         'latest_articles': get_pages(
             context, ArticlePage.objects.descendant_of(
                 request.site.root_page).filter(
-                languages__language__is_main_language=True).exclude(
-                pk__in=exclude_pks).order_by('-featured_in_latest'), locale)})
+                languages__language__is_main_language=True).exact_type(
+                    ArticlePage).exclude(pk__in=exclude_pks).order_by(
+                        '-featured_in_latest'), locale)})
 
     return data
 
