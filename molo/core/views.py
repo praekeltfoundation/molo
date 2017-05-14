@@ -195,7 +195,7 @@ class TagsListView(ListView):
                     tag=tag.get_main_language_page()).all():
                 articles.append(article_tag.page.pk)
             articles = ArticlePage.objects.filter(
-                pk__in=articles).order_by(
+                pk__in=articles).descendant_of(main).order_by(
                     'latest_revision_created_at')
             # count = articles.count() if articles.count() < count else count
             return get_pages(context, articles[:count], locale)

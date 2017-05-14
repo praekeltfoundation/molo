@@ -100,6 +100,34 @@ class TestTags(MoloTestCaseMixin, TestCase):
         self.assertContains(response, tag.title)
         self.assertEquals(len(tag_articles), 4)
 
+    def test_article_only_site_specific_artcles_show_under_tag(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.yourmind,
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now(), count=5)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        promote_articles()
+        self.user = self.login()
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        response = self.client.get('/tags/' + tag.slug + '/')
+        self.assertEquals(len(response.context['object_list']), 5)
+        for article in response.context['object_list']:
+            self.assertEquals(article.get_site().pk, self.main.get_site().pk)
+
     def test_article_not_repeated_when_tag_navigation_enabled_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
         tag.feature_in_homepage = True
