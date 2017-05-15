@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
-from molo.core.models import LanguageRelation, PageTranslation, Languages, ArticlePage, Tag, ArticlePageTags
+from molo.core.models import LanguageRelation, PageTranslation, Languages, \
+    ArticlePage, Tag, ArticlePageTags
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
