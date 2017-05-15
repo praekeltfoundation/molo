@@ -46,7 +46,7 @@ def search(request, results_per_page=10):
 
         results = ArticlePage.objects.descendant_of(main).filter(
             languages__language__locale=locale
-        ).values_list('pk', flat=True)
+        ).exact_type(ArticlePage).values_list('pk', flat=True)
 
         # Elasticsearch backend doesn't support filtering
         # on related fields, at the moment.

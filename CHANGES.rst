@@ -1,7 +1,12 @@
 CHANGE LOG
 ==========
 
-5.2.2
+5.2.4
+~~~~~
+- Bug Fix: Only show articles in search results
+- Bug Fix: Only index tag list if list not empty
+
+5.2.3
 ~~~~~
 - Bug Fix: Show translation for Section Page on Home Page
 - Bug Fix: Only show articles relevant to site under a tag
