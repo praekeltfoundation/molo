@@ -3,6 +3,12 @@ CHANGE LOG
 
 5.2.2
 ~~~~~
+- Bug Fix: Show translation for Section Page on Home Page
+- Bug Fix: Only show articles relevant to site under a tag
+- Bug Fix: Ensure new article tag relations are made when copying sites
+
+5.2.2
+~~~~~
 - Added Positional Banner Pages functionality
 - Bug Fix: Return Main language pages for latest articles
 

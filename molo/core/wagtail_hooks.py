@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
-from molo.core.models import LanguageRelation, PageTranslation, Languages
+from molo.core.models import LanguageRelation, PageTranslation, Languages, \
+    ArticlePage, Tag, ArticlePageTags
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
@@ -43,6 +44,18 @@ def show_main_language_only(parent_page, pages, request):
     if main_language and parent_page.depth > 2:
         return pages.filter(languages__language__locale=main_language.locale)
     return pages
+
+
+@hooks.register('after_copy_page')
+def add_new_tag_article_relations(request, page, new_page):
+    if new_page.depth <= 2:
+        for article in ArticlePage.objects.descendant_of(new_page):
+            tag_relations = ArticlePageTags.objects.filter(page=article)
+            for relation in tag_relations:
+                new_tag = Tag.objects.descendant_of(
+                    new_page).filter(slug=relation.tag.slug).first()
+                relation.tag = new_tag
+                relation.save()
 
 
 @hooks.register('after_copy_page')
