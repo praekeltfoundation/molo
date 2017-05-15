@@ -81,7 +81,7 @@ def get_translation(context, page):
 def get_parent(context, page):
     parent = page.get_parent()
     if not parent.specific_class == SectionIndexPage:
-        return get_translation(context, parent)
+        return get_translation(context, parent.specific)
     return None
 
 
