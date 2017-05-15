@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteSettings, Main, Languages,
                               SiteLanguageRelation, ArticlePageTags,
-                              SectionPageTags, FooterPage)
+                              SectionPageTags, FooterPage, ArticlePage)
 from molo.core.tasks import promote_articles
 from itertools import chain
 
@@ -152,6 +152,38 @@ class TestTags(MoloTestCaseMixin, TestCase):
         self.assertEquals(len(response.context['object_list']), 5)
         for article in response.context['object_list']:
             self.assertEquals(article.get_site().pk, self.main.get_site().pk)
+
+    def test_new_tag_article_relations_made_when_copying_site(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.yourmind,
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now(), count=30)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        promote_articles()
+
+        self.user = self.login()
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        main3 = Main.objects.get(slug='blank')
+        new_articles = ArticlePage.objects.descendant_of(main3)
+        new_article_tags = ArticlePageTags.objects.filter(
+            page__in=new_articles)
+        for article_tag_relation in new_article_tags:
+            self.assertEquals(
+                article_tag_relation.tag.get_site().pk, main3.get_site().pk)
 
     def test_article_not_repeated_when_tag_navigation_enabled_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
