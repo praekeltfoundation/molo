@@ -184,6 +184,39 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '<span>2</span>English Pages')
         self.assertContains(response, '<span>2</span>French Pages')
 
+    def test_that_only_translated_sections_with_tag_navigation(self):
+        site_settings = SiteSettings.for_site(self.main.get_site())
+        site_settings.enable_tag_navigation = True
+        site_settings.show_only_translated_pages = True
+        site_settings.save()
+
+        self.mk_section_translation(
+            self.english_section, self.french,
+            title=self.english_section.title + ' in french')
+
+        article1 = self.mk_article(
+            self.english_section,
+            title='English article1 in English Section',
+            featured_in_homepage_start_date=datetime.now(),
+            featured_in_homepage=True)
+        self.mk_article_translation(
+            article1, self.french, title=article1.title + ' in french',)
+
+        promote_articles()
+
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections-main-1/english-section/"'
+            ' class="section-listing__theme-bg-link">English section</a>')
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections-main-1/english-section-in-french/"'
+            ' class="section-listing__theme-bg-link">'
+            'English section in french</a>')
+
     def test_that_only_translated_pages_are_shown_on_front_end(self):
         # set the site settings show_only_translated_pages to True
         default_site = Site.objects.get(is_default_site=True)
