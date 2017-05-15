@@ -399,9 +399,15 @@ def get_tag_articles(
             request, tag, exclude_pks, locale,
             context, exclude_pks)[:tag_count]
         exclude_pks += [p.pk for p in tag_articles]
-        tags_list.append((
-            get_pages(context, tag_qs.filter(pk=tag.pk), locale)[0],
-            tag_articles))
+        tag_for_locale = get_pages(context, tag_qs.filter(pk=tag.pk), locale)
+        if tag_for_locale:
+            tags_list.append((
+                tag_for_locale[0],
+                tag_articles))
+        else:
+            tags_list.append((
+                tag,
+                tag_articles))
     data.update({'tags_list': tags_list})
 
     # Latest Articles
