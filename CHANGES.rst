@@ -1,7 +1,7 @@
 CHANGE LOG
 ==========
 
-5.2.2
+5.2.3
 ~~~~~
 - Bug Fix: Show translation for Section Page on Home Page
 - Bug Fix: Only show articles relevant to site under a tag
