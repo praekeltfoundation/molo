@@ -9,7 +9,7 @@ from wagtail.wagtailcore.models import Site
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import SectionPage, SiteSettings, \
-    ArticlePage, Main, SiteLanguageRelation, Languages
+    ArticlePage, Main, SiteLanguageRelation, Languages, ArticlePageTags
 from molo.core.tasks import promote_articles
 
 
@@ -184,7 +184,31 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '<span>2</span>English Pages')
         self.assertContains(response, '<span>2</span>French Pages')
 
-    def test_that_only_translated_sections_with_tag_navigation(self):
+    def test_site_exists_if_no_iems_translated_for_translated_only(self):
+        site_settings = SiteSettings.for_site(self.main.get_site())
+        site_settings.enable_tag_navigation = True
+        site_settings.show_only_translated_pages = True
+        site_settings.save()
+
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.english_section,
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now(), count=30)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        promote_articles()
+
+        response = self.client.get('/')
+        self.assertEquals(response.status_code, 200)
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        self.assertEquals(response.status_code, 200)
+
+    def test_that_only_translated_sections_show_with_tag_navigation(self):
         site_settings = SiteSettings.for_site(self.main.get_site())
         site_settings.enable_tag_navigation = True
         site_settings.show_only_translated_pages = True
