@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.2.5
+~~~~~
+- Bug Fix: Only index tag list if list not empty for sections and tags
+
 5.2.4
 ~~~~~
 - Bug Fix: Only show articles in search results
