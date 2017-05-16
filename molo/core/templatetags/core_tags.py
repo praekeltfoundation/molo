@@ -170,7 +170,7 @@ def bannerpages(context, position=None):
         if position > (len(banners) - 1):
             return None
         banners = get_pages(context, pages, locale)
-        if banners and len(banners) <= position:
+        if banners and len(banners) > position:
             return {
                 'bannerpages': [banners[position]],
                 'request': context['request'],
@@ -399,7 +399,7 @@ def get_tag_articles(
             section = section_for_locale[0]
         sec_articles_for_locale = get_pages(context, sec_articles, locale)
         if sec_articles_for_locale and len(
-                sec_articles_for_locale > sec_articles_count):
+                sec_articles_for_locale) > sec_articles_count:
             sec_articles_for_locale = sec_articles_for_locale[
                 :sec_articles_count]
         if section_for_locale:
