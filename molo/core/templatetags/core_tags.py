@@ -169,11 +169,14 @@ def bannerpages(context, position=None):
         banners = get_pages(context, pages, locale)
         if position > (len(banners) - 1):
             return None
-        return {
-            'bannerpages': [get_pages(context, pages, locale)[position]],
-            'request': context['request'],
-            'locale_code': locale,
-        }
+        banners = get_pages(context, pages, locale)
+        if banners and len(banners) <= position:
+            return {
+                'bannerpages': [banners[position]],
+                'request': context['request'],
+                'locale_code': locale,
+            }
+        return None
     return {
         'bannerpages': get_pages(context, pages, locale),
         'request': context['request'],
@@ -354,11 +357,15 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
         for tag in qs:
             tag_articles = get_articles_for_tags_with_translations(
                 request, tag, exclude_pks, locale, context,
-                exclude_pks)[:tag_article_count]
+                exclude_pks)
+            if len(tag_articles) > tag_article_count:
+                tag_articles = tag_articles[:tag_article_count]
             exclude_pks += [p.pk for p in tag_articles]
-            tags_list.append((
-                get_pages(context, qs.filter(pk=tag.pk), locale)[0],
-                tag_articles))
+            tags = get_pages(context, qs.filter(pk=tag.pk), locale)
+            if tags:
+                tags_list.append((
+                    tags[0],
+                    tag_articles))
     else:
         return []
 
@@ -377,7 +384,7 @@ def get_tag_articles(
     tags_list = []
     sections_list = []
 
-    # Featured Section
+    # Featured Section/s
     sections = request.site.root_page.specific.sections()
     for section in sections[:section_count]:
         sec_articles = ArticlePage.objects.descendant_of(section).filter(
@@ -387,17 +394,29 @@ def get_tag_articles(
                 pk__in=exclude_pks)
         exclude_pks += [p.pk for p in sec_articles[:sec_articles_count]]
         section = SectionPage.objects.filter(pk=section.pk)
-        sections_list.append((
-            get_pages(context, section, locale)[0],
-            get_pages(context, sec_articles, locale)[:sec_articles_count]))
+        section_for_locale = get_pages(context, section, locale)
+        if section_for_locale:
+            section = section_for_locale[0]
+        sec_articles_for_locale = get_pages(context, sec_articles, locale)
+        if sec_articles_for_locale and len(
+                sec_articles_for_locale > sec_articles_count):
+            sec_articles_for_locale = sec_articles_for_locale[
+                :sec_articles_count]
+        if section_for_locale:
+            sections_list.append((
+                section,
+                sec_articles_for_locale))
     data.update({'sections': sections_list})
-    # Featured Tags
+
+    # Featured Tag/s
     tag_qs = Tag.objects.descendant_of(request.site.root_page).filter(
         feature_in_homepage=True).live()
     for tag in tag_qs:
         tag_articles = get_articles_for_tags_with_translations(
             request, tag, exclude_pks, locale,
-            context, exclude_pks)[:tag_count]
+            context, exclude_pks)
+        if tag_articles and len(tag_articles) > tag_count:
+            tag_articles = tag_articles[:tag_count]
         exclude_pks += [p.pk for p in tag_articles]
         tag_for_locale = get_pages(context, tag_qs.filter(pk=tag.pk), locale)
         if tag_for_locale:
