@@ -1,6 +1,6 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static i18n el_pagination_tags %}
 {% load_child_articles_for_section section count=0 as articles %}
-{% paginate 1 articles %}
+{% paginate 12 articles %}
 
 <ul class="promoted-article-list">
   {% for article in articles %}
