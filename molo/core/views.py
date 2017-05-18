@@ -22,7 +22,7 @@ from wagtail.wagtailsearch.models import Query
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     PageTranslation, ArticlePage, Languages, SiteSettings, Tag,
-    ArticlePageTags)
+    ArticlePageTags, SectionPage)
 from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm
@@ -272,6 +272,19 @@ def home_index(
             'patterns/components/article-teasers/latest-promoted_variations/'
             'article_for_paging.html')):
     return render(request, template, {})
+
+
+@page_template(
+    'patterns/basics/sections/sectionpage-article-list-'
+    'standard_for-paging.html')
+def section_index(
+        request,
+        extra_context=None,
+        template=(
+            'patterns/basics/sections/sectionpage-article-list-'
+            'standard_for-paging.html')):
+    section = SectionPage.objects.get(pk=request.GET.get('section'))
+    return render(request, template, {'section': section})
 
 
 @page_template(
