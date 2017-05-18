@@ -1,0 +1,40 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static i18n el_pagination_tags %}
+{% load_child_articles_for_section section count=0 as articles %}
+{% paginate 12 articles %}
+
+<ul class="promoted-article-list">
+  {% for article in articles %}
+  <li class="promoted-article-list__item promoted-article-list__item-standard {% if forloop.first %}promoted-article-list__item--hero{% endif %}">
+   {% if article.image %}
+     <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+       {% if forloop.first %}
+         {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
+       {% else %}
+         {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+       {% endif %}
+     </a>
+   {% endif %}
+   <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+     <h3 class="heading promoted-article__title">{{article.title}}</h3>
+   </a>
+   <p class="promoted-article-list__desc">{{article.subtitle}}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% include "patterns/basics/pagination/pagination-pageof.html" %}
+{% get_pages %}
+{% if pages.next %}
+<div id="articles-more"><a class="more-link" data-next="{% url 'section_index' %}?page={{pages.next.number}}&section={{section.pk}}">More...</a></div>
+{% endif %}
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+$('#articles-more').on('click', '.more-link', function(event){
+  $(".more-link").children().addClass('loading').html("<img src='/static/img/loading.gif' alt='Loading...' />");
+  event.preventDefault();
+  var more_url = $(this).attr('data-next');
+  $("#articles-more").append($('<div/>').load(more_url, function(){
+    $('.loading').parent().remove();
+  }));
+});
+</script>
