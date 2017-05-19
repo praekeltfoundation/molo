@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.3.0
+~~~~~
+- Add load more functionality to section page
+
 5.2.5
 ~~~~~
 - Bug Fix: Only index tag list if list not empty for sections and tags
