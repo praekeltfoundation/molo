@@ -13,7 +13,8 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-watch": "^4.3.9"
+    "gulp-watch": "^4.3.9",
+    "gulp-minify": "^1.0.0"
   },
   "repository": {
     "type": "git",

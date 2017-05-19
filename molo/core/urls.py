@@ -22,6 +22,11 @@ urlpatterns = patterns(
         name='home_index'
     ),
     url(
+        r'^section-index/$',
+        'molo.core.views.section_index',
+        name='section_index'
+    ),
+    url(
         r'^home-more/$',
         'molo.core.views.home_more',
         name='home_more'
