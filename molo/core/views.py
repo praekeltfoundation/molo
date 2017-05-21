@@ -36,7 +36,7 @@ def csrf_failure(request, reason=""):
     return render(request, '403_csrf.html', {'freebasics_url': freebasics_url})
 
 
-def search(request, results_per_page=10):
+def search(request, results_per_page=10, load_more=False):
     search_query = request.GET.get('q', None)
     page = request.GET.get('p', 1)
     locale = get_locale_code(get_language_from_request(request))
@@ -69,7 +69,8 @@ def search(request, results_per_page=10):
         Query.get(search_query).add_hit()
     else:
         results = ArticlePage.objects.none()
-
+    if load_more:
+        return results
     paginator = Paginator(results, results_per_page)
     try:
         search_results = paginator.page(page)
@@ -178,9 +179,9 @@ def get_pypi_version(plugin_name):
 
 
 class TagsListView(ListView):
-    template_name = "core/article_tags.html"
+    template_name = "core/article_tags_for_paging.html"
 
-    def get_queryset(self, **kwargs):
+    def get_queryset(self, *args, **kwargs):
         tag = self.kwargs["tag_name"]
         count = self.request.GET.get("count")
         main = self.request.site.root_page
@@ -198,6 +199,8 @@ class TagsListView(ListView):
                 pk__in=articles).descendant_of(main).order_by(
                     'latest_revision_created_at')
             # count = articles.count() if articles.count() < count else count
+            context = self.get_context_data(
+                object_list=get_pages(context, articles[:count], locale))
             return get_pages(context, articles[:count], locale)
         return ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
@@ -208,6 +211,9 @@ class TagsListView(ListView):
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
             slug=tag).descendant_of(self.request.site.root_page).first()})
+        object_list = self.kwargs["object_list"]
+        context.update({'object_list': object_list})
+        print 'in get context'
         return context
 
 
@@ -285,6 +291,25 @@ def section_index(
             'standard_for-paging.html')):
     section = SectionPage.objects.get(pk=request.GET.get('section'))
     return render(request, template, {'section': section})
+
+
+@page_template('core/article_tags_for_paging.html')
+def tag_index(
+        request,
+        extra_context=None,
+        template=('core/article_tags_for_paging.html')):
+    return render(request, template, {})
+
+
+@page_template('search/search_results_for_paging.html')
+def search_index(
+        request,
+        extra_context=None,
+        template=('search/search_results_for_paging.html')):
+    search_query = request.GET.get('q')
+    results = search(request, load_more=True)
+    return render(
+        request, template, {'search_query': search_query, 'results': results})
 
 
 @page_template(
