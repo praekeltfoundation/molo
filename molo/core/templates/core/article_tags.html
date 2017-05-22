@@ -1,10 +1,11 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags static core_tags i18n %}
+{% load wagtailcore_tags wagtailimages_tags static core_tags i18n el_pagination_tags %}
 {% block content %}
   <div class="article-teaser">
   <h1 class="article-teaser__heading">{{ tag.title }}</h1>
     <ul class="teaser-stacklist">
-    {% for each_article in object_list %}
+    {% paginate 10 object_list as articles %}
+    {% for each_article in articles %}
     <li class="teaser-stacklist__item">
       {% if each_article.image %}
       <a href="{% pageurl each_article %}" class="base-teaser__thumbnail-link">
@@ -26,4 +27,21 @@
     {% endfor %}
     </ul>
   </div>
+  {% get_pages %}
+  {% if pages.next %}
+  <div id="articles-more"><a class="more-link" data-next="{% url 'tag_index' %}?page={{pages.next.number}}&tag_name={{tag.title}}" href="{% url 'home_more' %}?page={{pages.next.number}}">More...</a></div>
+  {% endif %}
+
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script>
+  $('#articles-more').on('click', '.more-link', function(event){
+    $(".more-link").children().addClass('loading').html("<img src='/static/img/loading.gif' alt='Loading...' />");
+    event.preventDefault();
+    var more_url = $(this).attr('data-next');
+    $("#articles-more").append($('<div/>').load(more_url, function(){
+      $('.loading').parent().remove();
+    }));
+  });
+  </script>
+</div>
 {% endblock %}

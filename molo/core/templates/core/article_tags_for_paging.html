@@ -1,8 +1,6 @@
-{% extends "base.html" %}
 {% load wagtailcore_tags wagtailimages_tags static core_tags i18n el_pagination_tags %}
 {% block content %}
   <div class="article-teaser">
-  <h1 class="article-teaser__heading">{{ tag.title }}</h1>
       {% paginate 10 object_list as articles %}
     <ul class="teaser-stacklist">
     {% for each_article in articles %}

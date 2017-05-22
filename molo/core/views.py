@@ -179,7 +179,7 @@ def get_pypi_version(plugin_name):
 
 
 class TagsListView(ListView):
-    template_name = "core/article_tags_for_paging.html"
+    template_name = "core/article_tags.html"
 
     def get_queryset(self, *args, **kwargs):
         tag = self.kwargs["tag_name"]
@@ -199,8 +199,8 @@ class TagsListView(ListView):
                 pk__in=articles).descendant_of(main).order_by(
                     'latest_revision_created_at')
             # count = articles.count() if articles.count() < count else count
-            context = self.get_context_data(
-                object_list=get_pages(context, articles[:count], locale))
+            # context = self.get_context_data(
+            #     object_list=get_pages(context, articles[:count], locale))
             return get_pages(context, articles[:count], locale)
         return ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
@@ -211,9 +211,6 @@ class TagsListView(ListView):
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
             slug=tag).descendant_of(self.request.site.root_page).first()})
-        object_list = self.kwargs["object_list"]
-        context.update({'object_list': object_list})
-        print 'in get context'
         return context
 
 
@@ -294,11 +291,30 @@ def section_index(
 
 
 @page_template('core/article_tags_for_paging.html')
-def tag_index(
-        request,
-        extra_context=None,
-        template=('core/article_tags_for_paging.html')):
-    return render(request, template, {})
+def tag_index(request, extra_context=None,
+              template=('core/article_tags_for_paging.html')):
+    tag_name = request.GET.get("tag_name")
+    if not tag_name:
+        raise Http404
+
+    main = request.site.root_page
+    context = {'request': request}
+    locale = request.LANGUAGE_CODE
+
+    tag = Tag.objects.filter(slug=tag_name).descendant_of(main).first()
+    articles = []
+    for article_tag in ArticlePageTags.objects.filter(
+            tag=tag.get_main_language_page()).all():
+        articles.append(article_tag.page.pk)
+    articles = ArticlePage.objects.filter(
+        pk__in=articles).descendant_of(main).order_by(
+            'latest_revision_created_at')
+    # count = articles.count() if articles.count() < count else count
+    # context = self.get_context_data(
+    #     object_list=get_pages(context, articles[:count], locale))
+    object_list = get_pages(context, articles, locale)
+
+    return render(request, template, {'object_list': object_list, 'tag': tag})
 
 
 @page_template('search/search_results_for_paging.html')
