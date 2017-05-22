@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 
-from .views import search, TagsListView
+from .views import search, TagsListView, ReactionQuestionChoiceView
 
 
 urlpatterns = patterns(
@@ -31,7 +31,9 @@ urlpatterns = patterns(
         'molo.core.views.home_more',
         name='home_more'
     ),
-
+    url(r'^reaction/(?P<article_slug>[\w-]+)/(?P<question_id>\d+)/vote/$',
+        ReactionQuestionChoiceView.as_view(),
+        name='vote'),
     url(r'^import/', include(
         'molo.core.content_import.urls', namespace='content_import')),
     url(

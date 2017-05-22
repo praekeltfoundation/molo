@@ -7,7 +7,8 @@ from wagtail.wagtailcore.models import Page, Collection
 
 from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
                               SectionIndexPage, FooterIndexPage,
-                              BannerIndexPage, TagIndexPage, Tag)
+                              BannerIndexPage, TagIndexPage, Tag,
+                              ReactionQuestionIndexPage)
 from molo.core.utils import generate_slug
 
 
@@ -59,6 +60,9 @@ class MoloTestCaseMixin(object):
         self.section_index = SectionIndexPage.objects.child_of(
             self.main).first()
 
+        self.section_index = ReactionQuestionIndexPage.objects.child_of(
+            self.main).first()
+
         self.footer_index = FooterIndexPage.objects.child_of(self.main).first()
 
         self.banner_index = BannerIndexPage.objects.child_of(self.main).first()
@@ -97,6 +101,9 @@ class MoloTestCaseMixin(object):
 
         # Create index pages
         self.section_index2 = SectionIndexPage.objects.child_of(
+            self.main2).first()
+
+        self.section_index2 = ReactionQuestionIndexPage.objects.child_of(
             self.main2).first()
 
         self.footer_index2 = FooterIndexPage.objects.child_of(

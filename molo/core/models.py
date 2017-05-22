@@ -34,7 +34,8 @@ from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
     SocialMediaLinkBlock
-from molo.core import constants, forms
+from molo.core import constants
+from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 
 
@@ -312,7 +313,9 @@ class TranslatablePageMixinNotRoutable(object):
 
     def get_main_language_page(self):
         if hasattr(self.specific, 'source_page') and self.specific.source_page:
+            print '--->', self.specific.source_page.page
             return self.specific.source_page.page
+        print '---8>', self
         return self
 
     def get_site(self):
@@ -439,6 +442,49 @@ class TagIndexPage(Page, PreventDeleteMixin):
         super(TagIndexPage, self).copy(*args, **kwargs)
 
 
+class ReactionQuestionIndexPage(Page, PreventDeleteMixin):
+    parent_page_types = []
+    subpage_types = ['ReactionQuestion']
+
+    def copy(self, *args, **kwargs):
+        site = kwargs['to'].get_site()
+        main = site.root_page
+        ReactionQuestionIndexPage.objects.child_of(main).delete()
+        super(ReactionQuestionIndexPage, self).copy(*args, **kwargs)
+
+
+class ReactionQuestion(TranslatablePageMixin, Page):
+    parent_page_types = ['core.ReactionQuestionIndexPage']
+    subpage_types = ['ReactionQuestionChoice']
+
+
+class ReactionQuestionChoice(TranslatablePageMixinNotRoutable, Page):
+    parent_page_types = ['core.ReactionQuestion']
+    subpage_types = []
+
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+
+ReactionQuestionChoice.content_panels = [
+    FieldPanel('title', classname='full title'),
+    ImageChooserPanel('image'),
+]
+
+
+class ReactionQuestionResponse(models.Model):
+    user = models.ForeignKey('auth.User')
+    article = models.ForeignKey('core.ArticlePage')
+    choice = models.ForeignKey('core.ReactionQuestionChoice')
+    question = models.ForeignKey('core.ReactionQuestion')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class Tag(TranslatablePageMixin, Page):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
@@ -558,6 +604,11 @@ class Main(CommentedPageMixin, Page):
                     generate_slug(self.title), )))
             self.add_child(instance=tag_index)
             tag_index.save_revision().publish()
+            reaction_question_index = ReactionQuestionIndexPage(
+                title='Reaction Questions', slug=('reaction-questions-%s' % (
+                    generate_slug(self.title), )))
+            self.add_child(instance=reaction_question_index)
+            reaction_question_index.save_revision().publish()
             index_pages_after_copy.send(sender=self.__class__, instance=self)
 
 
@@ -1038,7 +1089,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
         FieldPanel('metadata_tags'),
     ]
 
-    base_form_class = forms.ArticlePageForm
+    base_form_class = ArticlePageForm
 
     def move(self, *args, **kwargs):
         current_site = self.get_site()
@@ -1133,6 +1184,7 @@ ArticlePage.content_panels = [
         ],
         heading="Social Media", ),
     InlinePanel('nav_tags', label="Tags for Navigation"),
+    InlinePanel('reaction_questions', label="Reaction Questions"),
     InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
@@ -1192,6 +1244,19 @@ class ArticlePageTags(Orderable):
         help_text=_('Tags for tag navigation')
     )
     panels = [PageChooserPanel('tag', 'core.Tag')]
+
+
+class ArticlePageReactionQuestions(Orderable):
+    page = ParentalKey(ArticlePage, related_name='reaction_questions')
+    reaction_question = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Reaction Questions')
+    )
+    panels = [PageChooserPanel('reaction_question', 'core.ReactionQuestion')]
 
 
 class ArticlePageRecommendedSections(Orderable):

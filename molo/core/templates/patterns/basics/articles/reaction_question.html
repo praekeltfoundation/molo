@@ -1,0 +1,19 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% load_reaction_question article as question %}
+{{ form.errors }}
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<form class="reaction__form" action="{% url 'vote' article.slug question.id %}" method="post">
+  {% csrf_token %}
+  <div class="poll-choices">
+    {% load_choices_for_reaction_question question as choices %}
+    {% if request.user.is_authenticated %}
+        {% for choice in choices %}
+           <div class="fieldset">
+              <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.specific.get_main_language_page.id }}" />
+              <label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
+          </div>
+      {% endfor %}
+       <input class="poll-choice__submit" type="submit" value="{% trans "Vote" %}" />
+    {% endif %}
+  </div>
+</form>

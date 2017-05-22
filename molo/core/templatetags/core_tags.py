@@ -458,6 +458,39 @@ def load_tags_for_article(context, article):
 
 
 @register.assignment_tag(takes_context=True)
+def load_choices_for_reaction_question(context, question):
+    locale = context.get('locale_code')
+    from molo.core.models import ReactionQuestion
+    question_pk = question.get_main_language_page().pk
+    question = ReactionQuestion.objects.filter(pk=question_pk)
+    if question and question.first().get_children():
+        return get_pages(context, question.first().get_children(), locale)
+    return []
+
+
+@register.assignment_tag(takes_context=True)
+def load_reaction_question(context, article):
+    from molo.core.models import ReactionQuestion
+    locale = context.get('locale_code')
+    request = context['request']
+    question = None
+    if article:
+        article_question = article.get_main_language_page() \
+            .specific.reaction_questions.all().first()
+        if article_question.reaction_question:
+            question = article_question.reaction_question
+
+        if question and request.site:
+            qs = ReactionQuestion.objects.descendant_of(
+                request.site.root_page).live().filter(pk=question.pk)
+        else:
+            return []
+        return get_pages(context, qs, locale)[0]
+    question = ReactionQuestion.objects.get(title=context['question'])
+    return question
+
+
+@register.assignment_tag(takes_context=True)
 def load_child_sections_for_section(context, section, count=None):
     '''
     Returns all child articles
