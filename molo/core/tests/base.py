@@ -60,7 +60,7 @@ class MoloTestCaseMixin(object):
         self.section_index = SectionIndexPage.objects.child_of(
             self.main).first()
 
-        self.section_index = ReactionQuestionIndexPage.objects.child_of(
+        self.reaction_index = ReactionQuestionIndexPage.objects.child_of(
             self.main).first()
 
         self.footer_index = FooterIndexPage.objects.child_of(self.main).first()
@@ -103,7 +103,7 @@ class MoloTestCaseMixin(object):
         self.section_index2 = SectionIndexPage.objects.child_of(
             self.main2).first()
 
-        self.section_index2 = ReactionQuestionIndexPage.objects.child_of(
+        self.reaction_index2 = ReactionQuestionIndexPage.objects.child_of(
             self.main2).first()
 
         self.footer_index2 = FooterIndexPage.objects.child_of(
