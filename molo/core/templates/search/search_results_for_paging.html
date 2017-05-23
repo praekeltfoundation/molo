@@ -30,22 +30,13 @@
     {% endwith %}
   {% endfor %}
 
+  <div id="pagination">
+    {% include "patterns/basics/pagination/pagination-pageof.html" %}
+  </div>
   {% get_pages %}
   {% if pages.next %}
-  <div id="articles-more"><a class="more-link" data-next="{% url 'search_index' %}?page={{pages.next.number}}&q={{search_query}}" href="{% url 'home_more' %}?page={{pages.next.number}}">More...</a></div>
+    <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'search_index' %}?page={{pages.next.number}}&q={{search_query}}">Load More</a>
   {% endif %}
-
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
-  <script>
-  $('#articles-more').on('click', '.more-link', function(event){
-    $(".more-link").children().addClass('loading').html("<img src='/static/img/loading.gif' alt='Loading...' />");
-    event.preventDefault();
-    var more_url = $(this).attr('data-next');
-    $("#articles-more").append($('<div/>').load(more_url, function(){
-      $('.loading').parent().remove();
-    }));
-  });
-  </script>
 
   {% endif %}
 {% endblock %}
