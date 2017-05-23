@@ -10,3 +10,9 @@
 
 .pagination__nav-anchor-next {}
 .pagination__nav-anchor-previous {}
+
+.toggle-hide{
+  .pagination {
+    display: none;
+  }
+}

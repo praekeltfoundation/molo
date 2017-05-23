@@ -19,7 +19,12 @@
 .related-articles-recommended__title {
   word-wrap: break-word;
   @include heading-fontsize-scale($heading-large);
+  padding: 0 15px;
 }
+.related-articles-recommended__desc {
+  padding: 0 15px;
+}
+
 .related-articles-recommended-list {
   list-style: none;
   padding: 0;
@@ -38,6 +43,9 @@
   @include float-clear(none);
   padding: 0;
   width: 100%;
+  .related-articles-recommended__title {
+    padding: 0 15px;
+  }
 }
 .related-articles-recommended-list__item--grid {
   .related-articles-recommended-list__content {

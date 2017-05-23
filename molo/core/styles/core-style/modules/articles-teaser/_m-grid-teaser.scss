@@ -8,6 +8,7 @@ Separate smart styles to states folder
 .grid-teaser-list  {
   display: block;
   padding: 0 15px;
+  overflow: auto;
 }
 .grid-teaser-list__item {
   list-style-type: none;

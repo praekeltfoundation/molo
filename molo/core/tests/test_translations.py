@@ -9,7 +9,7 @@ from wagtail.wagtailcore.models import Site
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import SectionPage, SiteSettings, \
-    ArticlePage, Main, SiteLanguageRelation, Languages
+    ArticlePage, Main, SiteLanguageRelation, Languages, ArticlePageTags
 from molo.core.tasks import promote_articles
 
 
@@ -184,6 +184,63 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '<span>2</span>English Pages')
         self.assertContains(response, '<span>2</span>French Pages')
 
+    def test_site_exists_if_no_iems_translated_for_translated_only(self):
+        site_settings = SiteSettings.for_site(self.main.get_site())
+        site_settings.enable_tag_navigation = True
+        site_settings.show_only_translated_pages = True
+        site_settings.save()
+
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.english_section,
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now(), count=30)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        promote_articles()
+
+        response = self.client.get('/')
+        self.assertEquals(response.status_code, 200)
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        self.assertEquals(response.status_code, 200)
+
+    def test_that_only_translated_sections_show_with_tag_navigation(self):
+        site_settings = SiteSettings.for_site(self.main.get_site())
+        site_settings.enable_tag_navigation = True
+        site_settings.show_only_translated_pages = True
+        site_settings.save()
+
+        self.mk_section_translation(
+            self.english_section, self.french,
+            title=self.english_section.title + ' in french')
+
+        article1 = self.mk_article(
+            self.english_section,
+            title='English article1 in English Section',
+            featured_in_homepage_start_date=datetime.now(),
+            featured_in_homepage=True)
+        self.mk_article_translation(
+            article1, self.french, title=article1.title + ' in french',)
+
+        promote_articles()
+
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections-main-1/english-section/"'
+            ' class="section-listing__theme-bg-link">English section</a>')
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        self.assertContains(
+            response,
+            '<a href="/sections-main-1/english-section-in-french/"'
+            ' class="section-listing__theme-bg-link">'
+            'English section in french</a>')
+
     def test_that_only_translated_pages_are_shown_on_front_end(self):
         # set the site settings show_only_translated_pages to True
         default_site = Site.objects.get(is_default_site=True)
@@ -218,7 +275,6 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         # tests that in Home page users will only see the sections
         # that have been translated
         response = self.client.get('/')
-        print response
         self.assertContains(
             response,
             '<a href="/sections-main-1/english-section/"'

@@ -1,0 +1,30 @@
+{% load wagtailcore_tags core_tags i18n %}
+
+<div class="section-listing section-listing--standard section-listing--standard{{self.get_effective_extra_style_hints}}">
+  {% include "patterns/basics/sections/sectionpage-subsection-list-standard.html" %}
+  {% include "patterns/basics/sections/sectionpage-article-list-standard_for-paging.html" with section=self %}
+  {% get_tags_for_section self as tags %}
+
+  {% for tag, tag_articles in tags %}
+  <div class="navigation">
+    <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
+      {{tag.title}}
+    </a>
+    <ul class="nav-list nav-list--column">
+      {% for article in tag_articles %}
+        <li class="nav-list__item nav-list__item--column">
+          <a href="{% pageurl article %}" class="nav-list__anchor nav-list__anchor--column">
+            {{article.title}}
+          </a>
+          {% load_tags_for_article article as tags %}
+          {% for tag in tags %}
+            <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
+              {{tag.title}}
+            </a>
+          {% endfor %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endfor %}

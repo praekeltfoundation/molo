@@ -5,7 +5,8 @@ from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteSettings, Main, Languages,
-                              SiteLanguageRelation, ArticlePageTags)
+                              SiteLanguageRelation, ArticlePageTags,
+                              SectionPageTags, FooterPage, ArticlePage)
 from molo.core.tasks import promote_articles
 from itertools import chain
 
@@ -34,6 +35,8 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         self.yourmind = self.mk_section(
             self.section_index, title='Your mind')
+        self.yourbody = self.mk_section(
+            self.section_index, title='Your body')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
 
@@ -68,7 +71,121 @@ class TestTags(MoloTestCaseMixin, TestCase):
         self.site_settings.enable_tag_navigation = True
         self.site_settings.save()
 
-    def test_article_not_repeated_when_tag_navigation_enabled(self):
+    def unique(self, g):
+        s = set()
+        for x in g:
+            if x.pk in s:
+                return False
+            s.add(x.pk)
+        return True
+
+    def test_tag_nav_data_does_not_pull_in_footer_pages(self):
+        self.mk_articles(parent=self.yourmind, count=2)
+        footer = FooterPage(title='Test Footer Page')
+        self.footer_index.add_child(instance=footer)
+        footer.save_revision().publish()
+        footer2 = FooterPage(title='Test Footer Page 2')
+        self.footer_index.add_child(instance=footer2)
+        footer2.save_revision().publish()
+        footer3 = FooterPage(title='Test Footer Page 3')
+        self.footer_index.add_child(instance=footer3)
+        footer3.save_revision().publish()
+        footer_pks = [footer.pk, footer2.pk, footer3.pk]
+
+        response = self.client.get('/')
+        data = response.context['tag_nav_data']
+        hoempage_articles = []
+        for section, section_list in data['sections']:
+            homepage_articles = list(chain(hoempage_articles, section_list))
+        for tag, tag_list in data['tags_list']:
+            homepage_articles = list(chain(homepage_articles, tag_list))
+        homepage_articles = list(chain(
+            homepage_articles, data['latest_articles']))
+        for article in homepage_articles:
+            self.assertFalse(article.pk in footer_pks)
+
+    def test_article_not_repeated_in_section_for_tag_navigation_enabled(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_section = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(parent=self.yourmind, count=30)
+        other_articles = self.mk_articles(parent=self.yourbody, count=10)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+        for article in other_articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+        SectionPageTags.objects.create(page=self.yourmind, tag=tag)
+        SectionPageTags.objects.create(page=self.yourbody, tag=tag)
+
+        response = self.client.get(self.yourmind.url)
+        tag_articles = response.context['tags'][0][1]
+        section_articles = response.context['articles']
+        all_section_articles = list(chain(section_articles, tag_articles))
+        self.assertTrue(self.unique(all_section_articles))
+        self.assertContains(response, tag.title)
+        self.assertEquals(len(tag_articles), 4)
+
+    def test_article_only_site_specific_artcles_show_under_tag(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.yourmind,
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now(), count=5)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        promote_articles()
+        self.user = self.login()
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        response = self.client.get('/tags/' + tag.slug + '/')
+        self.assertEquals(len(response.context['object_list']), 5)
+        for article in response.context['object_list']:
+            self.assertEquals(article.get_site().pk, self.main.get_site().pk)
+
+    def test_new_tag_article_relations_made_when_copying_site(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.yourmind,
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now(), count=30)
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        promote_articles()
+
+        self.user = self.login()
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(self.main.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.root.id,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        main3 = Main.objects.get(slug='blank')
+        new_articles = ArticlePage.objects.descendant_of(main3)
+        new_article_tags = ArticlePageTags.objects.filter(
+            page__in=new_articles)
+        for article_tag_relation in new_article_tags:
+            self.assertEquals(
+                article_tag_relation.tag.get_site().pk, main3.get_site().pk)
+
+    def test_article_not_repeated_when_tag_navigation_enabled_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
         tag.feature_in_homepage = True
         tag.save_revision().publish()
@@ -91,14 +208,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
         homepage_articles = list(chain(
             homepage_articles, data['latest_articles']))
 
-        def unique(g):
-            s = set()
-            for x in g:
-                if x.pk in s:
-                    return False
-                s.add(x.pk)
-            return True
-        self.assertTrue(unique(homepage_articles))
+        self.assertTrue(self.unique(homepage_articles))
 
     def test_tag_cloud_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
@@ -141,16 +251,13 @@ class TestTags(MoloTestCaseMixin, TestCase):
         response = self.client.get('/tags/' + tag.slug + '/')
         self.assertContains(
             response,
-            '<a href="/sections-main-1/your-mind/article'
-            '-1/">article 1</a><br>')
+            '<a href="/sections-main-1/your-mind/article-1/"')
         self.assertContains(
             response,
-            '<a href="/sections-main-1/your-mind/article'
-            '-2/">article 2</a><br>')
+            '<a href="/sections-main-1/your-mind/article-2/"')
         self.assertContains(
             response,
-            '<a href="/sections-main-1/your-mind/a'
-            'rticle-3/">article 3</a><br>')
+            '<a href="/sections-main-1/your-mind/article-3/"')
 
     def test_promoted_tags(self):
         articles = self.mk_articles(self.yourmind, count=5)
