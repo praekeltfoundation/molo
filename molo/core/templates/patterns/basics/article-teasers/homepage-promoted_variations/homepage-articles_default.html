@@ -8,7 +8,7 @@
   <ul class="promoted-article-list">
     {% for article in featured_articles %}
       <li class="promoted-article-list__item promoted-article-list__item-standard {% if forloop.first %}promoted-article-list__item--hero{% endif %}">
-        {% if article.image %}
+        {% if article.get_effective_image %}
           <a href="{% pageurl article %}" class="promoted-article-list__anchor">
             {% if forloop.first %}
               {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
