@@ -1063,8 +1063,8 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
         if self.image:
             return self.image
         page = self.get_main_language_page()
-        if page.image:
-            return page.get_effective_image()
+        if page.specific.image:
+            return page.specific.get_effective_image()
         return ''
 
     def get_parent_section(self):
