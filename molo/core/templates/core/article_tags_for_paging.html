@@ -1,15 +1,13 @@
-{% extends "base.html" %}
 {% load wagtailcore_tags wagtailimages_tags static core_tags i18n el_pagination_tags %}
 {% block content %}
   <div class="article-teaser">
-  <h1 class="article-teaser__heading">{{ tag.title }}</h1>
+      {% paginate 10 object_list as articles %}
     <ul class="teaser-stacklist">
-    {% paginate 10 object_list as articles %}
     {% for each_article in articles %}
     <li class="teaser-stacklist__item">
-      {% if each_article.get_effective_image %}
+      {% if each_article.image %}
       <a href="{% pageurl each_article %}" class="base-teaser__thumbnail-link">
-        {% image each_article.get_effective_image fill-96x96 as teaser_thumbnail %}
+        {% image each_article.image fill-96x96 as teaser_thumbnail %}
         <img src="{{ teaser_thumbnail.url }}" class="base-teaser__thumbnail" />
       </a>
       {% endif %}
@@ -34,5 +32,4 @@
   {% if pages.next %}
     <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'tag_index' %}?page={{pages.next.number}}&tag_name={{tag.title}}">Load More</a>
   {% endif %}
-</div>
 {% endblock %}
