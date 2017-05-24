@@ -231,7 +231,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEquals(Page.objects.descendant_of(self.main).count(), 12)
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 13)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
