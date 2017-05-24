@@ -7,7 +7,8 @@ from markdown import markdown
 
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
-    ArticlePageTags, SectionIndexPage)
+    ArticlePageTags, SectionIndexPage, ReactionQuestion,
+    ReactionQuestionChoice)
 
 register = template.Library()
 
@@ -460,17 +461,18 @@ def load_tags_for_article(context, article):
 @register.assignment_tag(takes_context=True)
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
-    from molo.core.models import ReactionQuestion
     question_pk = question.get_main_language_page().pk
     question = ReactionQuestion.objects.filter(pk=question_pk)
     if question and question.first().get_children():
-        return get_pages(context, question.first().get_children(), locale)
+        pks = [c.pk for c in question.first().get_children().filter(
+            languages__language__is_main_language=True)]
+        choices = ReactionQuestionChoice.objects.filter(pk__in=pks)
+        return get_pages(context, choices, locale)
     return []
 
 
 @register.assignment_tag(takes_context=True)
 def load_reaction_question(context, article):
-    from molo.core.models import ReactionQuestion
     locale = context.get('locale_code')
     request = context['request']
     question = None
@@ -482,12 +484,11 @@ def load_reaction_question(context, article):
 
         if question and request.site:
             qs = ReactionQuestion.objects.descendant_of(
-                request.site.root_page).live().filter(pk=question.pk)
+                request.site.root_page).live().filter(
+                    pk=question.pk, languages__language__is_main_language=True)
         else:
             return []
         return get_pages(context, qs, locale)[0]
-    question = ReactionQuestion.objects.get(title=context['question'])
-    return question
 
 
 @register.assignment_tag(takes_context=True)

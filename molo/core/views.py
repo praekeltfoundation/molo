@@ -16,7 +16,7 @@ from django.utils.translation import (
     get_language_from_request
 )
 from django.utils.translation import ugettext as _
-from django.views.generic.edit import FormView, CreateView
+from django.views.generic.edit import FormView
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
@@ -179,12 +179,6 @@ def get_pypi_version(plugin_name):
         return 'request failed'
 
 
-class ReactionQuestionView(CreateView):
-    model = ReactionQuestionResponse
-    fields = ['user', 'article', 'question', 'choice']
-    template_name = 'patterns/basics/articles/reaction_question.html'
-
-
 class ReactionQuestionChoiceView(FormView):
     form_class = ReactionQuestionChoiceForm
     template_name = 'patterns/basics/articles/reaction_question.html'
@@ -200,7 +194,6 @@ class ReactionQuestionChoiceView(FormView):
         return article.url
 
     def get_context_data(self, *args, **kwargs):
-        print 'in get context data'
         context = super(
             ReactionQuestionChoiceView, self).get_context_data(*args, **kwargs)
         question_id = self.kwargs.get('question_id')
@@ -210,7 +203,6 @@ class ReactionQuestionChoiceView(FormView):
         return context
 
     def form_valid(self, form, *args, **kwargs):
-        print 'in the view'
         question_id = self.kwargs.get('question_id')
         question = get_object_or_404(ReactionQuestion, pk=question_id)
         question = question.get_main_language_page().specific
@@ -221,12 +213,18 @@ class ReactionQuestionChoiceView(FormView):
             self.request.site.root_page).filter(slug=article_slug).first()
         if not article:
             raise Http404
-        obj, created = ReactionQuestionResponse.objects.get_or_create(
-            user=self.request.user,
-            question=question,
-            choice=choice,
-            article=article)
-
+        if question.has_user_submitted_reaction_response(
+                self.request, question_id, article.pk) is False:
+            created = ReactionQuestionResponse.objects.create(
+                question=question,
+                article=article)
+            if created:
+                created.choice = choice
+                created.save()
+                created.set_response_as_submitted_for_session(self.request)
+            if self.request.user.pk is not None:
+                created.user = self.request.user
+                created.save()
         return super(ReactionQuestionChoiceView, self).form_valid(
             form, *args, **kwargs)
 

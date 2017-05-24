@@ -31,9 +31,10 @@ urlpatterns = patterns(
         'molo.core.views.home_more',
         name='home_more'
     ),
-    url(r'^reaction/(?P<article_slug>[\w-]+)/(?P<question_id>\d+)/vote/$',
+    url(r'^reaction/(?P<article_slug>[0-9A-Za-z_\-]+)/'
+        '(?P<question_id>\d+)/vote/$',
         ReactionQuestionChoiceView.as_view(),
-        name='vote'),
+        name='reaction-vote'),
     url(r'^import/', include(
         'molo.core.content_import.urls', namespace='content_import')),
     url(

@@ -313,9 +313,7 @@ class TranslatablePageMixinNotRoutable(object):
 
     def get_main_language_page(self):
         if hasattr(self.specific, 'source_page') and self.specific.source_page:
-            print '--->', self.specific.source_page.page
             return self.specific.source_page.page
-        print '---8>', self
         return self
 
     def get_site(self):
@@ -457,6 +455,20 @@ class ReactionQuestion(TranslatablePageMixin, Page):
     parent_page_types = ['core.ReactionQuestionIndexPage']
     subpage_types = ['ReactionQuestionChoice']
 
+    def has_user_submitted_reaction_response(
+            self, request, reaction_id, article_id):
+        if 'reaction_response_submissions' not in request.session:
+            request.session['reaction_response_submissions'] = []
+
+        if request.user.pk is not None \
+            and ReactionQuestionResponse.objects.filter(
+                user__pk=request.user.pk,
+                question=self, article__pk=article_id).exists() \
+                or article_id in request.session[
+                    'reaction_response_submissions']:
+                    return True
+        return False
+
 
 class ReactionQuestionChoice(TranslatablePageMixinNotRoutable, Page):
     parent_page_types = ['core.ReactionQuestion']
@@ -478,11 +490,18 @@ ReactionQuestionChoice.content_panels = [
 
 
 class ReactionQuestionResponse(models.Model):
-    user = models.ForeignKey('auth.User')
+    user = models.ForeignKey('auth.User', blank=True, null=True)
     article = models.ForeignKey('core.ArticlePage')
-    choice = models.ForeignKey('core.ReactionQuestionChoice')
+    choice = models.ForeignKey(
+        'core.ReactionQuestionChoice', blank=True, null=True)
     question = models.ForeignKey('core.ReactionQuestion')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def set_response_as_submitted_for_session(self, request):
+        if 'reaction_response_submissions' not in request.session:
+            request.session['reaction_response_submissions'] = []
+        request.session['reaction_response_submissions'].append(self.id)
+        request.session.modified = True
 
 
 class Tag(TranslatablePageMixin, Page):
