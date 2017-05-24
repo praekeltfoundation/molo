@@ -198,7 +198,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEquals(Page.objects.descendant_of(self.main).count(), 12)
+        self.assertEquals(Page.objects.descendant_of(self.main).count(), 13)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -211,7 +211,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'publish_copies': 'true'})
         self.assertEquals(response.status_code, 302)
         new_main = Page.objects.get(slug='new-main')
-        self.assertEquals(Page.objects.descendant_of(new_main).count(), 12)
+        self.assertEquals(Page.objects.descendant_of(new_main).count(), 13)
 
         self.assertEqual(len(mail.outbox), 1)
         [email] = mail.outbox
