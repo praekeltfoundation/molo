@@ -225,6 +225,10 @@ class ReactionQuestionChoiceView(FormView):
             if self.request.user.pk is not None:
                 created.user = self.request.user
                 created.save()
+        else:
+            messages.error(
+                self.request,
+                "You have already given feedback on this article.")
         return super(ReactionQuestionChoiceView, self).form_valid(
             form, *args, **kwargs)
 
