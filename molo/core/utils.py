@@ -14,7 +14,7 @@ def create_new_article_relations(old_main, copied_main):
         ArticlePageReactionQuestions, ReactionQuestion, \
         ArticlePageRecommendedSections, ArticlePageRelatedSections, SectionPage
     if old_main and copied_main:
-        if copied_main.get_descendants().count >= \
+        if copied_main.get_descendants().count() >= \
                 old_main.get_descendants().count():
             for article in ArticlePage.objects.descendant_of(copied_main):
 
