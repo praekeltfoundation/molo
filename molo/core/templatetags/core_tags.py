@@ -350,8 +350,6 @@ def get_next_tag(context, tag):
     if len(tags) > 1:
         if (len(tags) == tags.index(tag) + 1):
             next_tag = tags[0]
-            print tags[0]
-            print tags
         else:
             next_tag = tags[tags.index(tag) + 1]
     else:
