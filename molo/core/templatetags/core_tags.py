@@ -332,6 +332,39 @@ def get_articles_for_tags_with_translations(
 
 
 @register.assignment_tag(takes_context=True)
+def get_articles_for_tag(context, tag):
+    request = context['request']
+    locale = context.get('locale_code')
+
+    pks = [article_tag.page.pk for article_tag in
+           ArticlePageTags.objects.filter(tag=tag)]
+    return get_pages(
+        context, ArticlePage.objects.descendant_of(
+            request.site.root_page).filter(pk__in=pks), locale)
+
+
+@register.assignment_tag(takes_context=True)
+def get_next_tag(context, tag):
+    locale_code = context.get('locale_code')
+    tags = load_tags(context)
+    if len(tags) > 1:
+        if (len(tags) == tags.index(tag) + 1):
+            next_tag = tags[0]
+            print tags[0]
+            print tags
+        else:
+            next_tag = tags[tags.index(tag) + 1]
+    else:
+        return None
+
+    if next_tag.get_translation_for(locale_code, context['request'].site):
+        return next_tag.get_translation_for(
+            locale_code, context['request'].site)
+    else:
+        return next_tag
+
+
+@register.assignment_tag(takes_context=True)
 def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     request = context['request']
     locale = context.get('locale_code')
