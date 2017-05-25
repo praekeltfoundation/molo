@@ -1,6 +1,16 @@
 CHANGE LOG
 ==========
 
+5.4.0
+~~~~~
+- Add load more for Search Page
+- Add load more for Tag Page
+- Add reaction questions basic functionality
+
+5.3.1
+~~~~~
+- Use get_effective_image instead of image in templates
+
 5.3.0
 ~~~~~
 - Add load more functionality to section page

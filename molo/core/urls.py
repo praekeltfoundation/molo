@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 
-from .views import search, TagsListView
+from .views import search, TagsListView, ReactionQuestionChoiceView
 
 
 urlpatterns = patterns(
@@ -27,11 +27,24 @@ urlpatterns = patterns(
         name='section_index'
     ),
     url(
+        r'^search-index/$',
+        'molo.core.views.search_index',
+        name='search_index'
+    ),
+    url(
+        r'^tag-index/$',
+        'molo.core.views.tag_index',
+        name='tag_index'
+    ),
+    url(
         r'^home-more/$',
         'molo.core.views.home_more',
         name='home_more'
     ),
-
+    url(r'^reaction/(?P<article_slug>[0-9A-Za-z_\-]+)/'
+        '(?P<question_id>\d+)/vote/$',
+        ReactionQuestionChoiceView.as_view(),
+        name='reaction-vote'),
     url(r'^import/', include(
         'molo.core.content_import.urls', namespace='content_import')),
     url(

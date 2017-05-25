@@ -11,7 +11,7 @@
   {% get_translation article.get_parent_section as origin_section %}
     {% if origin_section = section %}
     <li class="promoted-article-list__item promoted-article-list__item--theme-bg">
-      {% if article.image %}
+      {% if article.get_effective_image %}
       <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
         {% include "patterns/basics/images/article-thumbnail.html" with curve="none" %}
       </a>
