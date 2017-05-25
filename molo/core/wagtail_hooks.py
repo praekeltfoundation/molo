@@ -1,7 +1,9 @@
 from django.conf.urls import url
 
 from molo.core.models import LanguageRelation, PageTranslation, Languages, \
-    ArticlePage, Tag, ArticlePageTags
+    ArticlePage, Tag, ArticlePageTags, ArticlePageReactionQuestions, \
+    ReactionQuestion, ArticlePageRecommendedSections, \
+    ArticlePageRelatedSections, SectionPage
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
@@ -48,14 +50,50 @@ def show_main_language_only(parent_page, pages, request):
 
 @hooks.register('after_copy_page')
 def add_new_tag_article_relations(request, page, new_page):
-    if new_page.depth <= 2:
-        for article in ArticlePage.objects.descendant_of(new_page):
-            tag_relations = ArticlePageTags.objects.filter(page=article)
-            for relation in tag_relations:
-                new_tag = Tag.objects.descendant_of(
-                    new_page).filter(slug=relation.tag.slug).first()
-                relation.tag = new_tag
-                relation.save()
+    # check that the page that we are copying is the last page to be copied
+    # only works for when copying a main page
+    if new_page.depth < 3:
+        old_main = page
+        copied_main = new_page
+        if copied_main.get_descendants().count >= \
+                old_main.get_descendants().count():
+            for article in ArticlePage.objects.descendant_of(copied_main):
+
+                # replace old tag with new tag in tag relations
+                tag_relations = ArticlePageTags.objects.filter(page=article)
+                for relation in tag_relations:
+                    new_tag = Tag.objects.descendant_of(
+                        copied_main).filter(slug=relation.tag.slug).first()
+                    relation.tag = new_tag
+                    relation.save()
+                # replace old reaction question with new reaction question
+                question_relations = \
+                    ArticlePageReactionQuestions.objects.filter(page=article)
+                for relation in question_relations:
+                    new_question = ReactionQuestion.objects.descendant_of(
+                        copied_main).filter(
+                            slug=relation.reaction_question.slug).first()
+                    relation.reaction_question = new_question
+                    relation.save()
+
+                # replace old recommended articles with new articles
+                recommended_article_relations = \
+                    ArticlePageRecommendedSections.objects.filter(page=article)
+                for relation in recommended_article_relations:
+                    new_recommended_article = \
+                        ArticlePage.objects.descendant_of(copied_main).filter(
+                            slug=relation.recommended_article.slug).first()
+                    relation.recommended_article = new_recommended_article
+                    relation.save()
+
+                # replace old related sections with new sections
+                related_section_relations = \
+                    ArticlePageRelatedSections.objects.filter(page=article)
+                for relation in related_section_relations:
+                    new_related_section = SectionPage.objects.descendant_of(
+                        copied_main).filter(slug=relation.section.slug).first()
+                    relation.section = new_related_section
+                    relation.save()
 
 
 @hooks.register('after_copy_page')
