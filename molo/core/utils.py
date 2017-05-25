@@ -13,45 +13,46 @@ def create_new_article_relations(old_main, copied_main):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
         ArticlePageReactionQuestions, ReactionQuestion, \
         ArticlePageRecommendedSections, ArticlePageRelatedSections, SectionPage
-    if copied_main.get_descendants().count >= \
-            old_main.get_descendants().count():
-        for article in ArticlePage.objects.descendant_of(copied_main):
+    if old_main and copied_main:
+        if copied_main.get_descendants().count >= \
+                old_main.get_descendants().count():
+            for article in ArticlePage.objects.descendant_of(copied_main):
 
-            # replace old tag with new tag in tag relations
-            tag_relations = ArticlePageTags.objects.filter(page=article)
-            for relation in tag_relations:
-                new_tag = Tag.objects.descendant_of(
-                    copied_main).filter(slug=relation.tag.slug).first()
-                relation.tag = new_tag
-                relation.save()
-            # replace old reaction question with new reaction question
-            question_relations = \
-                ArticlePageReactionQuestions.objects.filter(page=article)
-            for relation in question_relations:
-                new_question = ReactionQuestion.objects.descendant_of(
-                    copied_main).filter(
-                        slug=relation.reaction_question.slug).first()
-                relation.reaction_question = new_question
-                relation.save()
+                # replace old tag with new tag in tag relations
+                tag_relations = ArticlePageTags.objects.filter(page=article)
+                for relation in tag_relations:
+                    new_tag = Tag.objects.descendant_of(
+                        copied_main).filter(slug=relation.tag.slug).first()
+                    relation.tag = new_tag
+                    relation.save()
+                # replace old reaction question with new reaction question
+                question_relations = \
+                    ArticlePageReactionQuestions.objects.filter(page=article)
+                for relation in question_relations:
+                    new_question = ReactionQuestion.objects.descendant_of(
+                        copied_main).filter(
+                            slug=relation.reaction_question.slug).first()
+                    relation.reaction_question = new_question
+                    relation.save()
 
-            # replace old recommended articles with new articles
-            recommended_article_relations = \
-                ArticlePageRecommendedSections.objects.filter(page=article)
-            for relation in recommended_article_relations:
-                new_recommended_article = \
-                    ArticlePage.objects.descendant_of(copied_main).filter(
-                        slug=relation.recommended_article.slug).first()
-                relation.recommended_article = new_recommended_article
-                relation.save()
+                # replace old recommended articles with new articles
+                recommended_article_relations = \
+                    ArticlePageRecommendedSections.objects.filter(page=article)
+                for relation in recommended_article_relations:
+                    new_recommended_article = \
+                        ArticlePage.objects.descendant_of(copied_main).filter(
+                            slug=relation.recommended_article.slug).first()
+                    relation.recommended_article = new_recommended_article
+                    relation.save()
 
-            # replace old related sections with new sections
-            related_section_relations = \
-                ArticlePageRelatedSections.objects.filter(page=article)
-            for relation in related_section_relations:
-                new_related_section = SectionPage.objects.descendant_of(
-                    copied_main).filter(slug=relation.section.slug).first()
-                relation.section = new_related_section
-                relation.save()
+                # replace old related sections with new sections
+                related_section_relations = \
+                    ArticlePageRelatedSections.objects.filter(page=article)
+                for relation in related_section_relations:
+                    new_related_section = SectionPage.objects.descendant_of(
+                        copied_main).filter(slug=relation.section.slug).first()
+                    relation.section = new_related_section
+                    relation.save()
 
 
 def get_locale_code(language_code=None):
