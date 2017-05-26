@@ -335,26 +335,43 @@ def get_articles_for_tags_with_translations(
 def get_articles_for_tag(context, tag):
     request = context['request']
     locale = context.get('locale_code')
-    main_tag = tag.specific.get_main_language_page()
-    pks = [article_tag.page.pk for article_tag in
-           ArticlePageTags.objects.filter(tag=main_tag)]
-    return get_pages(
-        context, ArticlePage.objects.descendant_of(
-            request.site.root_page).filter(pk__in=pks), locale)
+    if tag:
+        main_tag = tag.specific.get_main_language_page()
+        pks = [article_tag.page.pk for article_tag in
+               ArticlePageTags.objects.filter(tag=main_tag)]
+        return get_pages(
+            context, ArticlePage.objects.descendant_of(
+                request.site.root_page).filter(pk__in=pks), locale)
+    return None
 
 
 @register.assignment_tag(takes_context=True)
 def get_next_tag(context, tag):
+    request = context['request']
     locale_code = context.get('locale_code')
-
-    next_tag = tag.get_main_language_page().get_next_sibling()
-    if next_tag:
-        if next_tag.specific.get_translation_for(
-                locale_code, context['request'].site):
-            return next_tag.specific.get_translation_for(
-                locale_code, context['request'].site)
-        else:
-            return next_tag
+    if tag:
+        main_tag = tag.get_main_language_page()
+        if main_tag:
+            if main_tag.get_next_sibling() and \
+                    main_tag.get_next_sibling().languages.filter(
+                        language__is_main_language=True).exists():
+                next_tag = main_tag.get_next_sibling()
+                if next_tag.specific.get_translation_for(
+                        locale_code, context['request'].site):
+                    return next_tag.specific.get_translation_for(
+                        locale_code, context['request'].site)
+                else:
+                    return next_tag
+            else:
+                next_tag = Tag.objects.descendant_of(
+                    request.site.root_page).filter(
+                    languages__language__is_main_language=True).live().first()
+                if next_tag.specific.get_translation_for(
+                        locale_code, context['request'].site):
+                    return next_tag.specific.get_translation_for(
+                        locale_code, context['request'].site)
+                else:
+                    return next_tag
 
 
 @register.assignment_tag(takes_context=True)

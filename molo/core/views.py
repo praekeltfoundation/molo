@@ -346,7 +346,9 @@ def section_index(
             'patterns/basics/sections/sectionpage-article-list-'
             'standard_for-paging.html')):
     section = SectionPage.objects.get(pk=request.GET.get('section'))
-    return render(request, template, {'section': section})
+    locale_code = request.GET.get('locale')
+    return render(
+        request, template, {'section': section, 'locale_code': locale_code})
 
 
 @page_template('core/article_tags_for_paging.html')
@@ -372,8 +374,9 @@ def tag_index(request, extra_context=None,
     # context = self.get_context_data(
     #     object_list=get_pages(context, articles[:count], locale))
     object_list = get_pages(context, articles, locale)
-
-    return render(request, template, {'object_list': object_list, 'tag': tag})
+    locale_code = request.GET.get('locale')
+    return render(request, template, {
+        'object_list': object_list, 'tag': tag, 'locale_code': locale_code})
 
 
 @page_template('search/search_results_for_paging.html')
@@ -383,8 +386,11 @@ def search_index(
         template=('search/search_results_for_paging.html')):
     search_query = request.GET.get('q')
     results = search(request, load_more=True)
+    locale_code = request.GET.get('locale')
     return render(
-        request, template, {'search_query': search_query, 'results': results})
+        request, template, {
+            'search_query': search_query, 'results': results,
+            'locale_code': locale_code})
 
 
 @page_template(
@@ -392,4 +398,5 @@ def search_index(
     'st-articles_for-feature.html')
 def home_more(
         request, template='core/main-feature-more.html', extra_context=None):
-    return render(request, template, {})
+    locale_code = request.GET.get('locale')
+    return render(request, template, {'locale_code': locale_code})

@@ -26,6 +26,5 @@
 </div>
 {% get_pages %}
 {% if pages.next %}
-  <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'section_index' %}?page={{pages.next.number}}&section={{section.pk}}">Load More</a>
+  <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'section_index' %}?page={{pages.next.number}}&section={{section.pk}}&locale={{locale_code}}">Load More</a>
 {% endif %}
-

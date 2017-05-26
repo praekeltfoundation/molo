@@ -30,6 +30,6 @@
   </div>
   {% get_pages %}
   {% if pages.next %}
-    <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'tag_index' %}?page={{pages.next.number}}&tag_name={{tag.title}}">Load More</a>
+    <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'tag_index' %}?page={{pages.next.number}}&tag_name={{tag.title}}&locale={{locale_code}}">Load More</a>
   {% endif %}
 {% endblock %}
