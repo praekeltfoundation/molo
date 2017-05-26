@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+5.4.1
+~~~~~
+- Add get_next_tag Template Tag
+- Add admin views for Reaction Questions
+- Add util for creating new article relations when copying
+
 5.4.0
 ~~~~~
 - Add load more for Search Page
