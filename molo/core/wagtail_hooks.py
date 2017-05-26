@@ -1,7 +1,12 @@
 from django.conf.urls import url
 
-from molo.core.utils import create_new_article_relations
+from molo.core.admin import ReactionQuestionsModelAdmin, \
+    ReactionQuestionsSummaryModelAdmin
+from molo.core.admin_views import ReactionQuestionResultsAdminView, \
+    ReactionQuestionSummaryAdminView
 from molo.core.models import LanguageRelation, PageTranslation, Languages
+from molo.core.utils import create_new_article_relations
+
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
@@ -12,7 +17,7 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
 from wagtail.wagtailadmin.widgets import ButtonWithDropdownFromHook
-
+from wagtail.contrib.modeladmin.options import modeladmin_register
 from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
 from . import views
@@ -35,6 +40,30 @@ def register_admin_urls():
             views.import_from_git,
             name='import-from-git'),
     ]
+
+
+@hooks.register('register_admin_urls')
+def register_question_results_admin_view_url():
+    return [
+        url(r'reactionquestion/(?P<parent>\d+)/results/$',
+            ReactionQuestionResultsAdminView.as_view(),
+            name='reaction-question-results-admin'),
+    ]
+
+
+modeladmin_register(ReactionQuestionsModelAdmin)
+
+
+@hooks.register('register_admin_urls')
+def register_article_question_results_admin_view_url():
+    return [
+        url(r'reactionquestion/(?P<article>\d+)/results/summary/$',
+            ReactionQuestionSummaryAdminView.as_view(),
+            name='reaction-question-article-results-admin'),
+    ]
+
+
+modeladmin_register(ReactionQuestionsSummaryModelAdmin)
 
 
 @hooks.register('construct_explorer_page_queryset')
