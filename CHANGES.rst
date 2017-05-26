@@ -1,6 +1,22 @@
 CHANGE LOG
 ==========
 
+5.4.2
+~~~~~
+- show correct articles for language in load more and next tag on tag page
+
+5.4.1
+~~~~~
+- Add get_next_tag Template Tag
+- Add admin views for Reaction Questions
+- Add util for creating new article relations when copying
+
+5.4.0
+~~~~~
+- Add load more for Search Page
+- Add load more for Tag Page
+- Add reaction questions basic functionality
+
 5.3.1
 ~~~~~
 - Use get_effective_image instead of image in templates

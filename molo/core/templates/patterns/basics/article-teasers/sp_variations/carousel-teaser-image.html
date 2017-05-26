@@ -2,6 +2,6 @@
 {% if article.get_effective_image %}
 <a href="{% pageurl article %}" class="carousel-teaser__thumbnail-link">
   {% image article.get_effective_image width-168 as carousel_teaser_thumbnail %}
-  <img src="{{ carousel_teaser_thumbnail.url }}" class="carousel-teaser__thumbnail" />
+  <img alt="{{carousel_teaser_thumbnail}}" src="{{ carousel_teaser_thumbnail.url }}" class="carousel-teaser__thumbnail" />
 </a>
 {% endif %}
