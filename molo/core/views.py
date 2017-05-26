@@ -226,6 +226,9 @@ class ReactionQuestionChoiceView(FormView):
             if self.request.user.pk is not None:
                 created.user = self.request.user
                 created.save()
+                messages.add_message(
+                    self.request, messages.SUCCESS,
+                    'Thank you for your feedback')
         else:
             messages.error(
                 self.request,

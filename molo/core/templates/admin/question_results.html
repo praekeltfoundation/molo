@@ -1,0 +1,64 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n modeladmin_tags %}
+
+{% block titletag %}{{ view.get_meta_title }}{% endblock %}
+
+{% block css %}
+     {{ block.super }}
+     {{ view.media.css }}
+{% endblock %}
+
+{% block extra_js %}
+    {{ view.media.js }}
+{% endblock %}
+
+{% block content %}
+    {% block header %}
+        <header class="nice-padding">
+            <div class="row">
+                <div class="left">
+                    <div class="col">
+                        {% block h1 %}
+                            <h1 class="icon icon-doc-full">{{page_title }}</h1>
+                        {% endblock %}
+                    </div>
+                </div>
+                {% if user.is_superuser %}
+                <div class="right">
+                    <a class="button bicolor icon icon-download"
+                       href="?action=download">{% trans "Download CSV" %}</a>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+    {% endblock %}
+
+    {% block content_main %}
+        <div>
+            <div class="row nice-padding">
+                {% block content_cols %}
+                    <table class="listing">
+                        <thead>
+                            <tr>
+                                {% for heading in data_headings %}
+                                    <th>{{ heading }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in data_rows %}
+                                <tr>
+                                    {% for k, v in row.items %}
+                                        <td>
+                                            {{ v }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endblock %}
+            </div>
+        </div>
+    {% endblock %}
+{% endblock %}

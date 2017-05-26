@@ -332,6 +332,37 @@ def get_articles_for_tags_with_translations(
 
 
 @register.assignment_tag(takes_context=True)
+def get_articles_for_tag(context, tag):
+    request = context['request']
+    locale = context.get('locale_code')
+
+    pks = [article_tag.page.pk for article_tag in
+           ArticlePageTags.objects.filter(tag=tag)]
+    return get_pages(
+        context, ArticlePage.objects.descendant_of(
+            request.site.root_page).filter(pk__in=pks), locale)
+
+
+@register.assignment_tag(takes_context=True)
+def get_next_tag(context, tag):
+    locale_code = context.get('locale_code')
+    tags = load_tags(context)
+    if len(tags) > 1:
+        if (len(tags) == tags.index(tag) + 1):
+            next_tag = tags[0]
+        else:
+            next_tag = tags[tags.index(tag) + 1]
+    else:
+        return None
+
+    if next_tag.get_translation_for(locale_code, context['request'].site):
+        return next_tag.get_translation_for(
+            locale_code, context['request'].site)
+    else:
+        return next_tag
+
+
+@register.assignment_tag(takes_context=True)
 def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     request = context['request']
     locale = context.get('locale_code')
@@ -461,8 +492,9 @@ def load_tags_for_article(context, article):
 @register.assignment_tag(takes_context=True)
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
-    question_pk = question.get_main_language_page().pk
-    question = ReactionQuestion.objects.filter(pk=question_pk)
+    if question:
+        question_pk = question.get_main_language_page().pk
+        question = ReactionQuestion.objects.filter(pk=question_pk)
     if question and question.first().get_children():
         pks = [c.pk for c in question.first().get_children().filter(
             languages__language__is_main_language=True)]
@@ -479,7 +511,7 @@ def load_reaction_question(context, article):
     if article:
         article_question = article.get_main_language_page() \
             .specific.reaction_questions.all().first()
-        if article_question.reaction_question:
+        if hasattr(article_question, 'reaction_question'):
             question = article_question.reaction_question
 
         if question and request.site:
@@ -488,7 +520,10 @@ def load_reaction_question(context, article):
                     pk=question.pk, languages__language__is_main_language=True)
         else:
             return []
-        return get_pages(context, qs, locale)[0]
+        translated_question = get_pages(context, qs, locale)
+        if translated_question:
+            return get_pages(context, qs, locale)[0]
+        return question
 
 
 @register.assignment_tag(takes_context=True)

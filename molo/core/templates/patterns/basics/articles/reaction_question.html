@@ -1,5 +1,6 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 {% load_reaction_question article as question %}
+{% if question %}
 {{question.title}}
 {{ form.errors }}
 {% if messages %}
@@ -20,3 +21,4 @@
       {% endfor %}
   </div>
 </form>
+{% endif %}
