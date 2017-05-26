@@ -492,8 +492,9 @@ def load_tags_for_article(context, article):
 @register.assignment_tag(takes_context=True)
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
-    question_pk = question.get_main_language_page().pk
-    question = ReactionQuestion.objects.filter(pk=question_pk)
+    if question:
+        question_pk = question.get_main_language_page().pk
+        question = ReactionQuestion.objects.filter(pk=question_pk)
     if question and question.first().get_children():
         pks = [c.pk for c in question.first().get_children().filter(
             languages__language__is_main_language=True)]
@@ -510,7 +511,7 @@ def load_reaction_question(context, article):
     if article:
         article_question = article.get_main_language_page() \
             .specific.reaction_questions.all().first()
-        if article_question.reaction_question:
+        if hasattr(article_question, 'reaction_question'):
             question = article_question.reaction_question
 
         if question and request.site:
@@ -519,7 +520,10 @@ def load_reaction_question(context, article):
                     pk=question.pk, languages__language__is_main_language=True)
         else:
             return []
-        return get_pages(context, qs, locale)[0]
+        translated_question = get_pages(context, qs, locale)
+        if translated_question:
+            return get_pages(context, qs, locale)[0]
+        return question
 
 
 @register.assignment_tag(takes_context=True)
