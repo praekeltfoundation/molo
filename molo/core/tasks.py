@@ -13,6 +13,7 @@ from django.core import management
 from django.contrib.auth.models import User
 
 from molo.core.content_import import api
+from molo.core.utils import create_new_article_relations
 from molo.core.models import (
     ArticlePage, Main, SectionIndexPage, SectionPage, Languages, SiteSettings)
 from django.utils import timezone
@@ -288,6 +289,9 @@ def copy_sections_index(
             keep_live=keep_live,
             via_celery=True)
 
+        old_main = section_index.get_site().root_page
+        new_main = to.get_site().root_page
+        create_new_article_relations(old_main, new_main)
         send_copy_email(user.email, {
             'name': (user.get_full_name() or user.username) if user else None,
             'source': section_index.get_parent().title,
