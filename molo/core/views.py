@@ -333,7 +333,8 @@ def home_index(
         template=(
             'patterns/components/article-teasers/latest-promoted_variations/'
             'article_for_paging.html')):
-    return render(request, template, {})
+    locale_code = request.GET.get('locale')
+    return render(request, template, {'locale_code': locale_code})
 
 
 @page_template(
