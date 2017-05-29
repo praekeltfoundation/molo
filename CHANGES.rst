@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.4.3
+~~~~~
+- Fix a bug for `get_next_tag` template tag
+
 5.4.2
 ~~~~~
 - show correct articles for language in load more and next tag on tag page
