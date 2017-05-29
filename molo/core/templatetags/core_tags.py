@@ -349,29 +349,25 @@ def get_articles_for_tag(context, tag):
 def get_next_tag(context, tag):
     request = context['request']
     locale_code = context.get('locale_code')
-    if tag:
-        main_tag = tag.get_main_language_page()
-        if main_tag:
-            if main_tag.get_next_sibling() and \
-                    main_tag.get_next_sibling().languages.filter(
-                        language__is_main_language=True).exists():
-                next_tag = main_tag.get_next_sibling()
-                if next_tag.specific.get_translation_for(
-                        locale_code, context['request'].site):
-                    return next_tag.specific.get_translation_for(
-                        locale_code, context['request'].site)
-                else:
-                    return next_tag
+    current_tag = tag.get_main_language_page().specific
+    qs = Tag.objects.descendant_of(request.site.root_page).filter(
+        languages__language__is_main_language=True).live()
+    if qs:
+        tags = list(qs)
+        if len(tags) > 1:
+            if not (len(tags) == tags.index(current_tag) + 1):
+                next_tag = tags[tags.index(current_tag) + 1]
             else:
-                next_tag = Tag.objects.descendant_of(
-                    request.site.root_page).filter(
-                    languages__language__is_main_language=True).live().first()
-                if next_tag.specific.get_translation_for(
-                        locale_code, context['request'].site):
-                    return next_tag.specific.get_translation_for(
-                        locale_code, context['request'].site)
-                else:
-                    return next_tag
+                next_tag = tags[0]
+
+            if next_tag.get_translation_for(
+                    locale_code, context['request'].site):
+                return next_tag.get_translation_for(
+                    locale_code, context['request'].site)
+            else:
+                return next_tag
+        else:
+            return None
 
 
 @register.assignment_tag(takes_context=True)
