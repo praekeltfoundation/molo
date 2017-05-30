@@ -1,9 +1,9 @@
 {
-    "Logo": {
-        "modifiers": "left",
-        "img": {
-          "src": "/static/images/logo.png",
-          "alt": "Logo"
-        }
+  "Logo": {
+    "modifiers": "left",
+    "img": {
+      "src": "/static/images/logo.png",
+      "alt": "Logo"
     }
+  }
 }
