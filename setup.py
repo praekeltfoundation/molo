@@ -1,13 +1,15 @@
+import codecs
 import os
 
 from setuptools import setup, find_packages
 
-here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, 'README.rst')) as f:
-    readme = f.read()
+HERE = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'VERSION')) as f:
-    version = f.read().strip()
+
+def read(*parts):
+    with codecs.open(os.path.join(HERE, *parts), 'rb', 'utf-8') as f:
+        return f.read()
+
 
 install_requires = [
     'Django>=1.9,<1.10',
@@ -40,10 +42,10 @@ install_requires = [
 ]
 
 setup(name='molo.core',
-      version=version,
+      version=read('VERSION'),
       description=('Molo is a set of tools for publishing mobi sites with a '
                    'community focus.'),
-      long_description=readme,
+      long_description=read('README.rst'),
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
