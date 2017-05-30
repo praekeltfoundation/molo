@@ -9,21 +9,13 @@ env:
   - TEST_RUNNER="py.test" COVERAGE=true
 matrix:
   include:
-    - python: pypy
-      env: PYPY_VERSION="5.3.1" TEST_RUNNER="py.test" COVERAGE=false
     - python: "2.7"
       env: NODE_VERSION="5.6.0" TEST_RUNNER="cd client; npm run ci" COVERAGE=false
 cache:
   - pip
   - directories:
-    - $HOME/.pyenv_cache
     - client/node_modules
 before_install:
-  - |
-      if [[ -n "$PYPY_VERSION" ]]; then
-        wget https://github.com/praekeltfoundation/travis-pypy/releases/download/0.1.0/setup-pypy.sh
-        source setup-pypy.sh
-      fi
   - |
       if [[ -n "$NODE_VERSION" ]]; then
         nvm install "$NODE_VERSION"
