@@ -21,9 +21,9 @@ before_install:
         nvm install "$NODE_VERSION"
         nvm use "$NODE_VERSION"
       fi
+  - pip install --upgrade pip
 
 install:
-  - pip install --upgrade pip
   - pip install -e .
   - pip install -r requirements-dev.txt
   - if [[ "$COVERAGE" == "true" ]]; then pip install coveralls; fi
