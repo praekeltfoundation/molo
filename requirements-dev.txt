@@ -1,8 +1,8 @@
 -e .
-pytest==2.9.2
-pytest-django==2.9.1
-pytest-cov
-pytest-xdist
-flake8==2.6.2
 beautifulsoup4
+flake8==2.6.2
+pytest-cov
+pytest-django==2.9.1
+pytest-xdist
+pytest==2.9.2
 responses
