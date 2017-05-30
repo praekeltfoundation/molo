@@ -24,7 +24,6 @@ before_install:
   - pip install --upgrade pip
 
 install:
-  - pip install -e .
   - pip install -r requirements-dev.txt
   - if [[ "$COVERAGE" == "true" ]]; then pip install coveralls; fi
   - '[[ -z $NODE_VERSION ]] || (cd client; travis_retry npm install)'
