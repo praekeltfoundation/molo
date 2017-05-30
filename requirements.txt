@@ -3,7 +3,6 @@ cookiecutter==1.0.0
 raven==5.0.0
 markdown
 django-libsass
-certifi
 dj-database-url
 django-cas-ng==3.5.4
 django-mptt==0.8.5
