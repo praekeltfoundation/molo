@@ -485,16 +485,19 @@ def get_tag_articles(
 def load_tags_for_article(context, article):
     locale = context.get('locale_code')
     request = context['request']
-    tags = [
-        article_tag.tag.pk for article_tag in
-        article.get_main_language_page().specific.nav_tags.all()
-        if article_tag.tag]
-    if tags and request.site:
+
+    if not request.site:
+        return []
+
+    tags = article.get_main_language_page().specific.nav_tags.filter(
+        tag__isnull=False).values_list('tag__pk', flat=True)
+
+    if tags:
         qs = Tag.objects.descendant_of(
             request.site.root_page).live().filter(pk__in=tags)
-    else:
-        return []
-    return get_pages(context, qs, locale)
+        return get_pages(context, qs, locale)
+
+    return []
 
 
 @register.assignment_tag(takes_context=True)
