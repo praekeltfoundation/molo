@@ -3,5 +3,6 @@
       "busy": "Still needs testing."
   },
   "title": "Button ",
-  "description": "Can be applied to anchor, input and button HTML tags."
+  "description": "Can be applied to anchor, input and button HTML tags.",
+  "position": 8
 }
