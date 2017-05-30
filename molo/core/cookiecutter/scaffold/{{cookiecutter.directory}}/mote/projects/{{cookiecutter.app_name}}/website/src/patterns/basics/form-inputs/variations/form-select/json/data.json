@@ -1,0 +1,34 @@
+{
+  "FormInputs": {
+    "selectInputs": [
+      {"label":"Date of Birth","name":"dob","options": [
+        {"text":"1989","value":"1989"},
+        {"text":"1990","value":"1990"},
+        {"text":"1991","value":"1991"},
+        {"text":"1992","value":"1992"},
+        {"text":"1993","value":"1993"},
+        {"text":"1994","value":"1994"},
+        {"text":"1995","value":"1995"},
+        {"text":"1996","value":"1996"},
+        {"text":"1997","value":"1997"},
+        {"text":"1998","value":"1998"},
+        {"text":"1999","value":"1999"},
+        {"text":"2000","value":"2000"},
+        {"text":"2001","value":"2001"},
+        {"text":"2002","value":"2002"},
+        {"text":"2003","value":"2003"},
+        {"text":"2004","value":"2004"},
+        {"text":"2005","value":"2005"},
+        {"text":"2006","value":"2006"},
+        {"text":"2007","value":"2007"},
+        {"text":"2008","value":"2008"},
+        {"text":"2009","value":"2009"}
+      ]},
+    {"label":"Gender", "name":"gender","options":[
+        {"text":"Female","value":"female"},
+        {"text":"Male","value":"male"},
+        {"text":"Dont want to answer","value":"dont-want-to-answer"}
+      ]}
+    ]
+  }
+}

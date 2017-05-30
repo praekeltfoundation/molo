@@ -1,0 +1,11 @@
+
+.reaction-questions {
+  &__list {
+    @include grid(100%)
+  }
+  
+  &__item {
+    @include column($grid-four);
+    margin: 0;
+  }
+}

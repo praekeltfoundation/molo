@@ -1,0 +1,13 @@
+{
+  "FormSearch": {
+    "input":"search",
+    "placeholder":"Search here..",
+    "name":"Search",
+    "submitButton": {
+      "input":"submit",
+      "value":"Search",
+      "classType":"call-to-action__item call-to-action__item--with-icon",
+      "classModifiers": "call-to-action__item--search-icon"
+    }
+  }
+}

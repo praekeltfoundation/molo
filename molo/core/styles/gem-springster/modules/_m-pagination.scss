@@ -1,0 +1,36 @@
+.pagination {
+  background: #fff;
+  text-align: center;
+  padding: 35px 10px;
+}
+.pagination__current-page {
+  font-weight: bold;
+  vertical-align: middle;
+}
+.pagination__nav-anchor-next {
+  background: url("/static/img/icons/next@2x.png") 50%/70% no-repeat;
+  height: 24px;
+  width: 24px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.pagination__nav-anchor-previous {
+  background: url("/static/img/icons/back@2x.png") 50%/60% no-repeat;
+  height: 24px;
+  width: 24px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.toggle-hide{
+  .pagination {
+    display: none;
+  }
+}
+
+.endless_page_link {
+  display: block;
+  text-indent: 999px;
+  overflow: hidden;
+}
+

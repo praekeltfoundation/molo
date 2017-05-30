@@ -1,0 +1,69 @@
+label, .checkbox__legend {
+  display: block;
+}
+fieldset {
+  input[type=radio] + label,
+  input[type=checkbox] + label {
+    background: #E5E7E9 url('/static/img/icons/select@2x.png') 16px 50%/24px no-repeat;
+    opacity: 0.8;
+  }
+  input[type=radio]:checked + label,
+  input[type=checkbox]:checked + label {
+    background: #E5E7E9 url('/static/img/icons/selected@2x.png') 16px 50%/24px no-repeat;
+    opacity: 1;
+  }
+  ul {
+    li {
+      label {
+        background: #fff;
+        opacity: 0.8;
+        padding: 10px 10px 13px 10px;
+        margin: 0 0 10px;
+        input[type=radio],
+        input[type=checkbox] {
+          margin: 0 15px 0 12px;
+        }
+      }
+    }
+  }
+}
+.profiles__form,
+.comments__form,
+.surveys__form,
+.yourwords__form {
+  .choice input[type="checkbox"],
+  .choice input[type="radio"] {
+    position: inherit;
+    visibility: initial;
+  }
+  input[type=checkbox] + label,
+  input[type=radio] + label,
+  input[type=radio]:checked + label,
+  input[type=checkbox]:checked + label {
+    background-color: #fff;
+    background-image: none;
+    display: inline-block;
+  }
+}
+.choice {
+  label {
+    display: block;
+    padding: 16px 16px 16px 54px;
+    text-align: left;
+  }
+  input[type="checkbox"],
+  input[type="radio"]  {
+    position: absolute;
+    visibility: hidden;
+  }
+}
+.yourwords__form {
+  .choice {
+    background-color: #fff;
+    margin: 0 0 10px;
+    opacity: 0.8;
+     label {
+       padding: 16px 16px 16px 16px;
+     }
+  }
+}

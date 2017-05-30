@@ -1,0 +1,12 @@
+.article-teaser--hero {
+  .article__image--link {
+    float: none;
+  }
+  .article__image {
+    width: 100%;
+    height: auto;
+    @media screen and (min-width: 740px) {
+      width: auto;
+    }
+  }
+}

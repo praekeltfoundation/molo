@@ -1,0 +1,30 @@
+.polls-results-list,
+.polls__results {
+  margin: 0;
+  padding: 0 15px;
+}
+.polls-results-list__item {
+  display: block;
+  padding: 0 0 10px;
+  label {
+    text-align: left;
+  }
+}
+
+//The leading percentage votes needs a tick
+.polls-results-list__percent {
+  background: #fff;
+  color:$charcoal-grey;
+  border-radius: 20px;
+  margin: 10px 0 0;
+}
+.polls-results-list__percent-bar {
+  background: $sunny-yellow;
+  border-radius: 20px;
+  .choice-percentage {
+    font-size: $font-xx-small;
+    display: block;
+    vertical-align: middle;
+    padding: 6px 10px 3px;
+  }
+}

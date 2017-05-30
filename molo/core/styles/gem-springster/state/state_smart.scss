@@ -1,0 +1,9 @@
+// Toggle Does not work on Nokia Feature phones
+#search {
+  display: inline-block;
+}
+.header__search {
+  .header__search-bar {
+    display: none;
+  }
+}

@@ -1,0 +1,130 @@
+.call-to-action {
+  position: relative;
+  padding: 20px 0 18px 0;
+}
+.call-to-action__nav-item,
+.call-to-action__item {
+  cursor: pointer;
+  font-size: 14px;
+  padding: 10px 5px 0 0;
+  margin: 10px 0;
+  background: none;
+  border: none;
+  color: $springster-purple;
+  display: block;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline;
+  text-transform: uppercase;
+  @media screen and (min-width: 320px) {
+    background: #000;
+    color: #fff;
+    border-radius: 3px;
+    padding: 10px;
+    text-align: center;
+    font-weight: normal;
+    text-decoration: none;
+  }
+  [data-direction~="right"]:before,
+  [data-direction~="left"]:after {
+    color: #fff;
+  }
+}
+
+.call-to-action__hyperlink {
+  cursor: pointer;
+  font-family: $baton-medium;
+  font-size: $font-x-small;
+  text-transform: uppercase;
+  text-decoration: underline;
+}
+
+/*
+  Back/ Forward directional
+  Home
+*/
+.call-to-action__item--text {
+  cursor: pointer;
+  font-family: $baton-medium;
+  font-size: 16px;
+  text-transform: uppercase;
+  text-decoration: underline;
+  color: $springster-purple;
+  position: relative;
+  &:hover {
+    color: $black;
+  }
+}
+.call-to-action__item-text-upper {
+  cursor: pointer;
+  background: none;
+  text-transform: uppercase;
+  color: #000;
+  @media screen and (min-width: 320px) {
+    text-decoration: none;
+  }
+  &:hover {
+    text-decoration: underline;
+    color: #686A6B;
+  }
+}
+
+/*
+  Login
+  Submit
+  Reset
+*/
+.call-to-action__item-primary {
+  display: block;
+  margin: 5px 10px;
+}
+.call-to-action__item--secondary {
+  font-weight: bold;
+  @media screen and (min-width: 320px) {
+    background: #fff;
+    border: 1px solid #017AF5;
+    color: blue;
+    text-align: center;
+    text-decoration: none;
+    color: #017AF5;
+  }
+  &:hover {
+    border-color: #686A6B;
+  }
+}
+.call-to-action__item-primary {
+  display: block;
+  margin: 5px 10px;
+}
+
+
+[data-direction~="right"]  {
+  &:after {
+    display: inline-block;
+    padding-left: 10px;
+    text-decoration: none !important;
+    @media only screen and (min-width: 320px) {
+      content: ">";
+    }
+    @media only screen and (min-width: 490px) {
+      content: "❯";
+    }
+  }
+}
+[data-direction~="left"]  {
+  &:before {
+    display: inline-block;
+    padding-right: 10px;
+    text-decoration: none !important;
+    @media only screen and (min-width: 320px) {
+      content: "<";
+    }
+    @media only screen and (min-width: 490px) {
+       content: "❮";
+    }
+  }
+}
+[data-state~="disabled"] {
+  font-weight: bold;
+  background-color: #D7DBDD;
+}
