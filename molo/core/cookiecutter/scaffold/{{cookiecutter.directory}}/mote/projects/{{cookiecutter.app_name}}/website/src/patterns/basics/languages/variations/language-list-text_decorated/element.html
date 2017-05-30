@@ -1,6 +1,5 @@
 {% raw %}
 {% load mote_tags %}
-
 {% mask element.json.data.Language_list_text as "language_text" %}
 <div class="languages">
   <ul class="language-list language-list--text-decorated">
@@ -8,7 +7,6 @@
         <li class="language-list__item language-list__item--text-decorated">{{ item.language }}</li>
     {% endfor %}
   </ul>
-
   <h2>Footer Display</h2>
   <ul class="language-list language-list--text-decorated language-list--text-decorated-footer">
     <li class="language-list__item language-list--text-decorated language-list--text-decorated-footer">

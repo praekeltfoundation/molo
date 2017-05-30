@@ -1,7 +1,7 @@
 {
-    "flags": {
-        "busy": "Still needs testing."
-    },
-    "title": "Button ",
-    "description": "Can be applied to anchor, input and button HTML tags."
+  "flags": {
+      "busy": "Still needs testing."
+  },
+  "title": "Button ",
+  "description": "Can be applied to anchor, input and button HTML tags."
 }

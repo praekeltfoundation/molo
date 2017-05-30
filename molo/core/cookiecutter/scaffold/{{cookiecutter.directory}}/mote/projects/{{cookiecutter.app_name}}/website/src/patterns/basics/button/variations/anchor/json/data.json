@@ -1,7 +1,7 @@
 {
-    "Button": {
-        "tag": "a",
-        "text": "Call to action",
-        "modifiers": "text"
-    }
+  "Button": {
+    "tag": "a",
+    "text": "Call to action",
+    "modifiers": "text"
+  }
 }

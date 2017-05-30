@@ -3,23 +3,22 @@
 {% load mote_tags %}
 {% block codeblock %}
 <div class="sg-code-block">
-    <h4 class="title">
-        Tags Navigation Listing
-    </h4>
-    <div class="description">
-      The tag listing component are used to tag articles. A pre-defined list of tags should be added to the site instead of letting a client adding tag.
-    </div>
-    <div class="code-example">
-        <pre>
-            <code class="language-markup">
-                <xmp>
-                  {% render_element element %}
-                </xmp>
-            </code>
-        </pre>
-    </div>
-    <!-- code-example -->
+  <h4 class="title">
+    Standard Tag Cloud Listing
+  </h4>
+  <div class="description">
+    <p>The tag cloud at the bottom of the page is standard across all pages, and lists all the tags available for the site according to the order in which the tags were initially loaded, or re-arranged in the CMS.</p>
+    <p>Each tag, when clicked, navigates the users to the specific tag page. The order of tags on the tag cloud is set in the CMS, and remains the same throughout all the pages on the site.</p>
+  </div>
+  <div class="code-example">
+      <pre>
+          <code class="language-markup">
+              <xmp>
+                {% render_element element %}
+              </xmp>
+          </code>
+      </pre>
+  </div>
 </div>
-<!-- sg-code-block -->
 {% endblock %}
 {% endraw %}

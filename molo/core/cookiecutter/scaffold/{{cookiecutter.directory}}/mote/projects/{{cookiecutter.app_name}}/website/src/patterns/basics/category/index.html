@@ -1,7 +1,6 @@
 {% raw %}
 {% extends "mote/element/index.html" %}
 {% load mote_tags %}
-
 {% block codeblock %}
 <div class="sg-code-block">
     <h4 class="title">
@@ -15,15 +14,12 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-{% render_element element %}
+                  {% render_element element %}
                 </xmp>
             </code>
         </pre>
     </div>
-    <!-- code-example -->
 </div>
-<!-- sg-code-block -->
-
 <div class="sg-code-block">
     <h4 class="title">
         Section with Subsection
@@ -35,15 +31,12 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-{% render_element element.aspect.basics.category.subsection %}
+                  {% render_element element.aspect.basics.category.subsection %}
                 </xmp>
             </code>
         </pre>
     </div>
-    <!-- code-example -->
 </div>
-<!-- sg-code-block -->
-
 <div class="sg-code-block">
     <h4 class="title">
         Section with icon image
@@ -55,13 +48,11 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-{% render_element element.aspect.basics.category.with-icon %}
+                  {% render_element element.aspect.basics.category.with-icon %}
                 </xmp>
             </code>
         </pre>
     </div>
-    <!-- code-example -->
 </div>
-<!-- sg-code-block -->
 {% endblock %}
 {% endraw %}
