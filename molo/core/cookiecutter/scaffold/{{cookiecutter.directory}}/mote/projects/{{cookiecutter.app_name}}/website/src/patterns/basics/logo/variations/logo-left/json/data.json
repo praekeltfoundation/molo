@@ -1,6 +1,6 @@
 {
     "Logo": {
-        "modifiers": "right",
+        "modifiers": "left",
         "img": {
           "src": "/static/images/logo.png",
           "alt": "Logo"

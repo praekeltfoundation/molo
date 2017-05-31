@@ -1,11 +1,17 @@
 {
   "Menu": {
-    "modifiers": "section-nav",
+    "text": "Welcome to Molo design pattern",
+    "modifiers": "",
     "menu_list": [
       {
         "href": "#",
         "name": "Sign up",
-        "id": "profile"
+        "id": "profiles"
+      },
+      {
+        "href": "#",
+        "name": "Menu",
+        "id": "navigation"
       },
       {
         "href": "#",
