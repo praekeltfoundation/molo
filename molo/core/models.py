@@ -314,8 +314,8 @@ class TranslatablePageMixinNotRoutable(object):
 
     def get_main_language_page(self):
         if hasattr(self.specific, 'source_page') and self.specific.source_page:
-            return self.specific.source_page.page
-        return self
+            return self.specific.source_page.page.specific
+        return self.specific
 
     def get_site(self):
         return self.get_ancestors().filter(
