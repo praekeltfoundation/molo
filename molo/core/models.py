@@ -37,6 +37,7 @@ from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
 from molo.core import constants
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
+from molo.core.mixins import PageEffectiveImageMixin
 
 
 class BaseReadOnlyPanel(EditHandler):
@@ -470,7 +471,8 @@ class ReactionQuestion(TranslatablePageMixin, Page):
         return False
 
 
-class ReactionQuestionChoice(TranslatablePageMixinNotRoutable, Page):
+class ReactionQuestionChoice(
+        TranslatablePageMixinNotRoutable, PageEffectiveImageMixin, Page):
     parent_page_types = ['core.ReactionQuestion']
     subpage_types = []
 
@@ -481,14 +483,6 @@ class ReactionQuestionChoice(TranslatablePageMixinNotRoutable, Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
-    def get_effective_image(self):
-        if self.image:
-            return self.image
-        page = self.get_main_language_page()
-        if page.specific.image:
-            return page.specific.get_effective_image()
-        return ''
 
 
 ReactionQuestionChoice.content_panels = [
@@ -1008,7 +1002,9 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
+class ArticlePage(
+        CommentedPageMixin, TranslatablePageMixin, PageEffectiveImageMixin,
+        Page):
     parent_page_types = ['core.SectionPage']
 
     subtitle = models.TextField(null=True, blank=True)
@@ -1136,14 +1132,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
 
     def get_absolute_url(self):  # pragma: no cover
         return self.url
-
-    def get_effective_image(self):
-        if self.image:
-            return self.image
-        page = self.get_main_language_page()
-        if page.specific.image:
-            return page.specific.get_effective_image()
-        return ''
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
