@@ -482,6 +482,14 @@ class ReactionQuestionChoice(TranslatablePageMixinNotRoutable, Page):
         related_name='+'
     )
 
+    def get_effective_image(self):
+        if self.image:
+            return self.image
+        page = self.get_main_language_page()
+        if page.specific.image:
+            return page.specific.get_effective_image()
+        return ''
+
 
 ReactionQuestionChoice.content_panels = [
     FieldPanel('title', classname='full title'),

@@ -487,7 +487,7 @@ def load_tags_for_article(context, article):
     request = context['request']
     tags = [
         article_tag.tag.pk for article_tag in
-        article.get_main_language_page().specific.nav_tags.all()
+        article.specific.get_main_language_page().specific.nav_tags.all()
         if article_tag.tag]
     if tags and request.site:
         qs = Tag.objects.descendant_of(
