@@ -349,7 +349,7 @@ def get_articles_for_tag(context, tag):
 def get_next_tag(context, tag):
     request = context['request']
     locale_code = context.get('locale_code')
-    current_tag = tag.get_main_language_page().specific
+    current_tag = tag.get_main_language_page()
     qs = Tag.objects.descendant_of(request.site.root_page).filter(
         languages__language__is_main_language=True).live()
     if qs:
@@ -487,7 +487,7 @@ def load_tags_for_article(context, article):
     request = context['request']
     tags = [
         article_tag.tag.pk for article_tag in
-        article.get_main_language_page().specific.nav_tags.all()
+        article.specific.get_main_language_page().nav_tags.all()
         if article_tag.tag]
     if tags and request.site:
         qs = Tag.objects.descendant_of(
@@ -518,7 +518,7 @@ def load_reaction_question(context, article):
     question = None
     if article:
         article_question = article.get_main_language_page() \
-            .specific.reaction_questions.all().first()
+            .reaction_questions.all().first()
         if hasattr(article_question, 'reaction_question'):
             question = article_question.reaction_question
 
