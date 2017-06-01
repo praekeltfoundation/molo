@@ -37,7 +37,7 @@
     <script type="text/javascript">
       // cut the mustard
       var cutsTheMustard = 'querySelector' in document && 'localStorage' in window && 'addEventListener' in window;
-      
+
       if(cutsTheMustard === true) {
         js = document.createElement('script');
         js.src = '{{ STATIC_URL }}js/molo-min.js';
@@ -78,7 +78,7 @@
     {% endblock %}
 
     {% block navigation %}
-      {% include "patterns/components/navigation/navigation.html" %}
+      {% include "patterns/components/navigation/navigation-center.html" %}
     {% endblock %}
 
     {% block footer %}
@@ -88,8 +88,6 @@
     {% block copyright %}
       {% include "patterns/components/copyright/copyright-pipe.html" %}
     {% endblock %}
-
-
 
   </body>
 </html>
