@@ -1,33 +1,49 @@
 {
     "Navigation": {
         "text": "Welcome to Molo design pattern",
-        "description": "Welcome to the home page",
         "modifiers": "",
-        "nav_list": [
+        "nav_listColumnLeft": [
           {
             "href": "#",
-            "name": "Yourwords",
-            "desc":"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium"
+            "name": "Home"
           },
           {
             "href": "#",
-            "name": "Know your body",
-            "desc": "Doloremque laudantium, totam rem aperiam"
+            "name": "My Life"
           },
           {
             "href": "#",
-            "name": "Your Rights",
-            "desc": "Nemo enim ipsam voluptatem quia voluptas sit"
+            "name": "My Body"
           },
           {
             "href": "#",
-            "name": "Health Issues",
-            "desc": "Incidunt ut labore et dolore magnam aliquam"
+            "name": "My Future"
           },
           {
             "href": "#",
-            "name": "Life Tips",
-            "desc": "At vero eos et accusamus et iusto odio"
+            "name": "Girl Stories"
+          }
+        ],
+        "nav_listColumnRight": [
+          {
+            "href": "#",
+            "name": "About Springster"
+          },
+          {
+            "href": "#",
+            "name": "FAQ"
+          },
+          {
+            "href": "#",
+            "name": "Tips for use"
+          },
+          {
+            "href": "#",
+            "name": "Join us"
+          },
+          {
+            "href": "#",
+            "name": "Log in"
           }
         ]
     }
