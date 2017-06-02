@@ -1,0 +1,25 @@
+.logo {
+  padding: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  display: inline-block;
+  z-index: 999;
+  &:hover {
+    text-decoration: none;
+  }
+  img {
+    vertical-align: middle;
+    width: auto;
+  }
+}
+.logo--left {
+  text-align: left;
+}
+.logo--right {
+  float: right;
+}
+.logo--center {
+  display: block;
+  text-align: center;
+  margin: 0 auto;
+}

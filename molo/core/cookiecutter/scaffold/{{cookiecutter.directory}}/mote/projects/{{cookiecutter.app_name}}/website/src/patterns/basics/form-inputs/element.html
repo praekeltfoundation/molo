@@ -1,0 +1,15 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.FormInputs as "inputfields" %}
+  {% for item in inputfields.radioButtons %}
+  <fieldset class="choice choice-group">
+      <div class="heading heading__subheading">
+        <h3>{{item.legend}}</h3>
+      </div>
+    {% for option in item.options %}
+      <input type="{{option.input}}" value="{{option.value}}" name="{{option.name}}" />
+      <label>{{option.label}}</label>
+    {% endfor %}
+  </fieldset>
+  {% endfor %}
+{% endraw %}

@@ -1,0 +1,56 @@
+.surveys {
+  position: relative;
+  margin: 15px 0 0;
+}
+.surveys--call-to-action {
+  padding: 55px 8px 8px;
+}
+.identity-image--survey {
+  background: url('/static/img/icons/survey@2x.png') no-repeat 0 0/contain;
+  display: block;
+  text-align: center;
+  //Mote to States
+  @media screen and (min-width: 320px) {
+    position: absolute;
+    left: 0;
+    margin: 0 auto;
+    right: 0;
+    width: 75px;
+    height: 75px;
+    top: 0;
+  }
+}
+
+.surveys__form {
+  background-color: $mint-green-light;
+  padding: 0 0 20px;
+  fieldset {
+    padding: 0 8px 0;
+  }
+}
+.surveys--results {
+  background-color: $mint-green-light;
+  padding: 0 10px 20px;
+  label {
+    text-align: left;
+    padding: 0 0 5px;
+  }
+}
+.surveys__question-title {
+  font-size: 16px;
+  color: $slate-grey;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 30px 0 0;
+}
+
+.surveys__answers-counter-bar {
+  padding: 0 0 10px;
+}
+.surveys__answers-counter {
+  background: $sunny-yellow;
+  font-size: $font-xx-small;
+  display: inline-block;
+  vertical-align: middle;
+  padding: 8px;
+}

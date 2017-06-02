@@ -1,0 +1,59 @@
+
+$mustard: #edbf40;
+$turquoise-blue: #0fbfbf;
+$tangerine: #ff9966;
+$pink: #ef5274;
+
+$white: #fff;
+$black: #000;
+$springster-purple: #7300ff;
+$springster-purple-light: #f1e5ff;
+$mint-green: #a4eed2;
+$sunny-yellow: #fffc80;
+$mint-green-light: #d1f6e8;
+$pale-grey: #f8fafd;
+$bright-orange: #ff5500;
+$peach: #fcab88;
+$cool-grey: #a3a7ae;
+$pale-grey-two: #f0f3f5;
+$pale-grey-three: #eef0f3;
+$steel: #868b95;
+$slate-grey: #656d78;
+$gunmetal: #4e5358;
+$charcoal-grey: #33373c;
+$dark-grey: #1b1d1e;
+$light-gold: #ffe654;
+$tiffany-blue: #6be6e6;
+$peach-two: #ff9f73;
+$carnation: lighten( #ff7190, 10% );
+$pale-lilac: #e3ccff;
+$red: #D0011B;
+
+$color_scheme: (
+  my-body: $mustard,
+  my-life: $turquoise-blue,
+  my-future: $tangerine,
+  girl-stories: $pink,
+
+  white: $white,
+  black: $black,
+  springster-purple: $springster-purple,
+  springster-purple-light: $springster-purple-light,
+  mint-green: $mint-green,
+  sunny-yellow: $sunny-yellow,
+  mint-green-light: $mint-green-light,
+  pale-grey: $pale-grey,
+  bright-orange: $bright-orange,
+  peach: $peach,
+  pale-grey-two: $pale-grey-two,
+  cool-grey: $cool-grey,
+  steel: $steel,
+  slate-grey: $slate-grey,
+  gunmetal: $gunmetal,
+  charcoal-grey: $charcoal-grey,
+  light-gold: $light-gold,
+  tiffany-blue: $tiffany-blue,
+  peach-two: $peach-two,
+  carnation: $carnation,
+  pale-lilac: $pale-lilac,
+);

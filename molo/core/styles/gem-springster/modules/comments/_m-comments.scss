@@ -1,0 +1,90 @@
+.comments {
+  padding: 10px 0;
+  &__form {
+    padding: 0 15px;
+  }
+  &__title {
+    padding: 0 15px 10px;
+  }
+  &__alias {
+    font-size: $font-small;
+    padding: 0 15px 10px;
+  }
+  &__reply-meta {
+    padding: 10px 15px;
+  }
+  &__publish-date {
+    color: $cool-grey;
+    font-size: $font-xxx-small;
+    padding: 0 5px 0 15px;
+  }
+  &__body-small {
+    padding: 0 15px;
+    color: $charcoal-grey;
+    font-size: $font-x-small;
+  }
+  &__body-title {
+    color: $slate-grey;
+    font-size: $font-xx-small;
+    text-transform: uppercase;
+    padding: 5px 15px;
+  }
+  &__description {
+    text-align: center;
+    color: $slate-grey;
+    font-size: $font-xx-small;
+    text-transform: uppercase;
+  }
+}
+
+.comments-list {
+  &__item--reply {
+    background-color: $pale-grey;
+    padding: 10px 0;
+  }
+  &__item--parent-comment {
+    border-top: 4px solid $mint-green;
+    padding: 10px 0 0;
+  }
+  &__item--parent-comment:first-child {
+    border: none;
+  }
+}
+
+//Comments buttons
+.call-to-action__nav-item-text--report {
+  font-family: $baton-regular;
+  text-align: left;
+  display: inline-block;
+  text-decoration: underline;
+  text-transform: capitalize;
+  font-size: $font-xxx-small;
+  color: $cool-grey;
+}
+.call-to-action__nav-item-text--response,
+.call-to-action__nav-item--replies-counter,
+.call-to-action__nav-item-text--replies {
+  display: inline-block;
+}
+.call-to-action__nav-item--replies-counter {
+  font-family: $baton-regular;
+  font-size: $font-x-small;
+  color: $cool-grey;
+  text-decoration: none;
+  float: right;
+  font-weight: bold;
+}
+//Comments report pale-grey - Django View markup
+#id_report_reason {
+  margin: 0;
+  padding: 0;
+  li {
+    display: block;
+    label {
+      text-align: left;
+    }
+    input[type="radio"] {
+      cursor: pointer;
+    }
+  }
+}

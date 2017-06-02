@@ -1,0 +1,45 @@
+body{
+  font-size: $font-small;
+  font-family: $baton-turbo;
+  line-height: 1.5;
+}
+h1,h2,h3,h4,h5,h6 {
+  font-family: $baton-medium;
+  font-weight: normal;
+}
+.heading {
+  h1,h2,h3,h4,h5,h6,
+  .base-teaser_title {
+    font-weight: normal;
+  }
+}
+.errors, .error-list__item, .errorlist, .error-message {
+  font-family: $baton-medium;
+}
+
+.heading--xx-large {
+  @include heading-fontsize-scale($heading-xx-large);
+}
+.heading--x-large {
+  @include heading-fontsize-scale($heading-x-large);
+}
+.heading--large {
+  @include heading-fontsize-scale($heading-large);
+}
+.heading--small {
+  font-size: $font-small;
+}
+.heading--x-small {
+  font-size: $font-x-small;
+}
+.heading--xx-small {
+  font-size: $font-xx-small;
+}
+.breadcrumbs-list__anchor
+.tag__label,.tag__name,
+.nav-list__anchor,
+.nav-list__anchor-desc--vertical,
+.required-info,.hint-text,
+.reply-notification__popup-title {
+  font-weight: normal;
+}

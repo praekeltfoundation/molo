@@ -1,4 +1,5 @@
 {
-    "title": "Breadcrumb",
-    "description": "The breadcrumb trail are links to reveal the user’s location within a hierarchical structure of the site and a navigational aid"
+  "title": "Breadcrumb",
+  "description": "The breadcrumb trail are links to reveal the user’s location within a hierarchical structure of the site and a navigational aid",
+  "position": 5
 }

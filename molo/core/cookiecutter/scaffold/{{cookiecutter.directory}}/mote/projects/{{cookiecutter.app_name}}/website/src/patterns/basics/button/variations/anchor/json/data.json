@@ -1,7 +1,10 @@
 {
-    "Button": {
-        "tag": "a",
-        "text": "Call to action",
-        "modifiers": "text"
-    }
+  "Button": {
+    "attr": {
+      "tag": "a",
+      "href": "#"
+    },
+    "text": "Call to action",
+    "modifiers": "text"
+  }
 }

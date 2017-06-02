@@ -1,0 +1,15 @@
+.comment-counter {
+  display: inline-block;
+  height: 25px;
+  margin: 5px 0 0;
+  &__icon {
+    vertical-align: middle;
+    max-width: 21px;
+  }
+  &__numeral {
+    color: $slate-grey;
+    font-size: $font-x-small;
+    vertical-align: top;
+    margin-left: 5px;
+  }
+}

@@ -1,0 +1,52 @@
+.yourwords {
+  &__container {
+    @include divider-combo-1;
+    padding: 80px 0 8px;
+    margin-top: 20px;
+  }
+  .identity-image--yourwords {
+    background: url('/static/img/icons/words@2x.png') no-repeat 0 0/contain;
+    padding: 2px 5px;
+    height: 88px;
+    width: 100px;
+    position: absolute;
+    left: 53%;
+    margin-left: -50px
+  }
+  
+  article, .heading {
+    text-align: center;
+  }
+  
+  /*These headings need general padding set*/
+  .heading__component {
+    padding-top: 10px;
+  }
+  .heading__subheading h2 {
+     color: $charcoal-grey;
+  }
+  .heading__macro {
+    margin-bottom: 0;
+    padding: 0 15px;
+  }
+}
+
+.yourwords--call-to-action {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-top: 20px;
+  text-align: center;
+  .identity-image--yourwords {
+    left: 57%;
+    margin-left: -50px
+  }
+  .yourwords__container {
+    background-color: $mint-green-light;
+    padding: 45px 0 8px;
+    margin-top: 40px;
+  }
+}
+.yourwords__container-form {
+  background-color: $mint-green-light;
+}

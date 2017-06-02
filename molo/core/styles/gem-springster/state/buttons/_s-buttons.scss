@@ -1,0 +1,50 @@
+.call-to-action__nav-item--replies-counter,
+.call-to-action__item--secondary,
+.call-to-action__nav-item-text--backToTop  {
+  font-weight: normal;
+}
+
+.call-to-action__nav-item-text--backToTop {
+  font-family: $baton-medium;
+  font-weight: normal;
+}
+.call-to-action__button {
+  width: 100%;
+}
+
+//SEARCH BUTTONS - SPRINGSTER VARIATION
+.call-to-action__nav-item--search-icon,
+.call-to-action__item--search-icon,
+.call-to-action__nav-item--search-icon-bg,
+.call-to-action__item--search-icon-bg  {
+  background-color: transparent;
+  background-image: url(/static/img/icons/search.svg), url(/static/img/icons/search@2x.png);
+}
+
+.call-to-action__nav-item--with-icon,
+.call-to-action__item--with-icon {
+  text-indent: -99em;
+  height: 21px;
+  width: 21px;
+  position: absolute;
+  right: 10%;
+  top: 0;
+  padding: 0;
+}
+.call-to-action__nav-item--search-icon,
+.call-to-action__item--search-icon {
+  background-repeat:  no-repeat;
+  background-position: 100% 0;
+  background-size: auto 98%;
+  right: 0;
+}
+
+//SPRINGSTER VARIATION
+.call-to-action__nav-item--search-icon-bg,
+.call-to-action__item--search-icon-bg {
+  background-repeat:  no-repeat;
+  background-position: 12px 10px;
+  background-size: auto 60%;
+  right: 10%;
+  top: 10px;
+}

@@ -12,6 +12,7 @@ var gulp              =   require('gulp'),
     minify            =   require('gulp-minify'),
     sassPaths = [
         'molo/core/styles/core-style/styles.scss',
+        'molo/core/styles/gem-springster/springster.scss',
         'molo/core/styles/mote/mote.scss'
     ],
     sassDest = {
@@ -55,5 +56,10 @@ gulp.task('styles:dev', function() {
   return styles('dev');
 });
 
+gulp.task('watch', function() {
+    livereload.listen();
+    gulp.watch(['molo/styles/**/*.scss'],['styles']);
+});
+
 gulp.task('styles', ['styles:dev', 'styles:prd']);
-gulp.task('default', ['styles', 'compress']);
+gulp.task('default', ['styles', 'compress','watch']);
