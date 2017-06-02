@@ -3,6 +3,6 @@
     "tag": "input",
     "type":"submit",
     "text": "Button Primary",
-    "modifiers": "Button--primary"
+    "modifiers": "button--primary"
   }
 }
