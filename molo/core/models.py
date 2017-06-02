@@ -34,8 +34,10 @@ from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 
 from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
     SocialMediaLinkBlock
-from molo.core import constants, forms
+from molo.core import constants
+from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
+from molo.core.mixins import PageEffectiveImageMixin
 
 
 class BaseReadOnlyPanel(EditHandler):
@@ -312,8 +314,8 @@ class TranslatablePageMixinNotRoutable(object):
 
     def get_main_language_page(self):
         if hasattr(self.specific, 'source_page') and self.specific.source_page:
-            return self.specific.source_page.page
-        return self
+            return self.specific.source_page.page.specific
+        return self.specific
 
     def get_site(self):
         return self.get_ancestors().filter(
@@ -439,6 +441,71 @@ class TagIndexPage(Page, PreventDeleteMixin):
         super(TagIndexPage, self).copy(*args, **kwargs)
 
 
+class ReactionQuestionIndexPage(Page, PreventDeleteMixin):
+    parent_page_types = []
+    subpage_types = ['ReactionQuestion']
+
+    def copy(self, *args, **kwargs):
+        site = kwargs['to'].get_site()
+        main = site.root_page
+        ReactionQuestionIndexPage.objects.child_of(main).delete()
+        super(ReactionQuestionIndexPage, self).copy(*args, **kwargs)
+
+
+class ReactionQuestion(TranslatablePageMixin, Page):
+    parent_page_types = ['core.ReactionQuestionIndexPage']
+    subpage_types = ['ReactionQuestionChoice']
+
+    def has_user_submitted_reaction_response(
+            self, request, reaction_id, article_id):
+        if 'reaction_response_submissions' not in request.session:
+            request.session['reaction_response_submissions'] = []
+
+        if request.user.pk is not None \
+            and ReactionQuestionResponse.objects.filter(
+                user__pk=request.user.pk,
+                question=self, article__pk=article_id).exists() \
+                or article_id in request.session[
+                    'reaction_response_submissions']:
+                    return True
+        return False
+
+
+class ReactionQuestionChoice(
+        TranslatablePageMixinNotRoutable, PageEffectiveImageMixin, Page):
+    parent_page_types = ['core.ReactionQuestion']
+    subpage_types = []
+
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+
+ReactionQuestionChoice.content_panels = [
+    FieldPanel('title', classname='full title'),
+    ImageChooserPanel('image'),
+]
+
+
+class ReactionQuestionResponse(models.Model):
+    user = models.ForeignKey('auth.User', blank=True, null=True)
+    article = models.ForeignKey('core.ArticlePage')
+    choice = models.ForeignKey(
+        'core.ReactionQuestionChoice', blank=True, null=True)
+    question = models.ForeignKey('core.ReactionQuestion')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def set_response_as_submitted_for_session(self, request):
+        if 'reaction_response_submissions' not in request.session:
+            request.session['reaction_response_submissions'] = []
+        request.session['reaction_response_submissions'].append(self.id)
+        request.session.modified = True
+
+
 class Tag(TranslatablePageMixin, Page):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
@@ -558,6 +625,11 @@ class Main(CommentedPageMixin, Page):
                     generate_slug(self.title), )))
             self.add_child(instance=tag_index)
             tag_index.save_revision().publish()
+            reaction_question_index = ReactionQuestionIndexPage(
+                title='Reaction Questions', slug=('reaction-questions-%s' % (
+                    generate_slug(self.title), )))
+            self.add_child(instance=reaction_question_index)
+            reaction_question_index.save_revision().publish()
             index_pages_after_copy.send(sender=self.__class__, instance=self)
 
 
@@ -884,7 +956,8 @@ SectionPage.content_panels = [
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
         ],
-        heading="Commenting Settings", )
+        heading="Commenting Settings", ),
+    InlinePanel('section_tags', label="Tags for Navigation"),
 ]
 
 SectionPage.settings_panels = [
@@ -929,7 +1002,9 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
+class ArticlePage(
+        CommentedPageMixin, TranslatablePageMixin, PageEffectiveImageMixin,
+        Page):
     parent_page_types = ['core.SectionPage']
 
     subtitle = models.TextField(null=True, blank=True)
@@ -1037,7 +1112,7 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
         FieldPanel('metadata_tags'),
     ]
 
-    base_form_class = forms.ArticlePageForm
+    base_form_class = ArticlePageForm
 
     def move(self, *args, **kwargs):
         current_site = self.get_site()
@@ -1057,14 +1132,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
 
     def get_absolute_url(self):  # pragma: no cover
         return self.url
-
-    def get_effective_image(self):
-        if self.image:
-            return self.image
-        page = self.get_main_language_page()
-        if page.image:
-            return page.get_effective_image()
-        return ''
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()
@@ -1132,6 +1199,7 @@ ArticlePage.content_panels = [
         ],
         heading="Social Media", ),
     InlinePanel('nav_tags', label="Tags for Navigation"),
+    InlinePanel('reaction_questions', label="Reaction Questions"),
     InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
@@ -1167,6 +1235,19 @@ def demote_featured_articles(sender, instance, **kwargs):
         instance.featured_in_section = False
 
 
+class SectionPageTags(Orderable):
+    page = ParentalKey(SectionPage, related_name='section_tags')
+    tag = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Tags for tag navigation')
+    )
+    panels = [PageChooserPanel('tag', 'core.Tag')]
+
+
 class ArticlePageTags(Orderable):
     page = ParentalKey(ArticlePage, related_name='nav_tags')
     tag = models.ForeignKey(
@@ -1178,6 +1259,19 @@ class ArticlePageTags(Orderable):
         help_text=_('Tags for tag navigation')
     )
     panels = [PageChooserPanel('tag', 'core.Tag')]
+
+
+class ArticlePageReactionQuestions(Orderable):
+    page = ParentalKey(ArticlePage, related_name='reaction_questions')
+    reaction_question = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_('Reaction Questions')
+    )
+    panels = [PageChooserPanel('reaction_question', 'core.ReactionQuestion')]
 
 
 class ArticlePageRecommendedSections(Orderable):

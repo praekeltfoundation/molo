@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load static core_tags wagtailcore_tags i18n %}
-
+{% load static core_tags wagtailcore_tags el_pagination_tags i18n %}
 {% block content %}
     {% bannerpages %}
 
@@ -17,8 +16,6 @@
     {% include 'core/tags/nav_tag_section_listing_homepage.html' with section=tag_nav_data.sections.0.0 featured_articles=tag_nav_data.sections.0.1 %}
 
     {% include "patterns/components/article-tags/sp_variations/tag_articles_block.html" with tag=tag_nav_data.tags_list.1.0 tag_articles=tag_nav_data.tags_list.1.1 %}
-
     {% tag_menu_homepage %}
     {% endif %}
-
 {% endblock %}

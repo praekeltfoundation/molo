@@ -1,6 +1,72 @@
 CHANGE LOG
 ==========
 
+5.4.4
+~~~~~
+- Add `get_effective_image` to reaction question choices
+
+5.4.3
+~~~~~
+- Fix a bug for `get_next_tag` template tag
+
+5.4.2
+~~~~~
+- show correct articles for language in load more and next tag on tag page
+
+5.4.1
+~~~~~
+- Add get_next_tag Template Tag
+- Add admin views for Reaction Questions
+- Add util for creating new article relations when copying
+
+5.4.0
+~~~~~
+- Add load more for Search Page
+- Add load more for Tag Page
+- Add reaction questions basic functionality
+
+5.3.1
+~~~~~
+- Use get_effective_image instead of image in templates
+
+5.3.0
+~~~~~
+- Add load more functionality to section page
+
+5.2.5
+~~~~~
+- Bug Fix: Only index tag list if list not empty for sections and tags
+
+5.2.4
+~~~~~
+- Bug Fix: Only show articles in search results
+- Bug Fix: Only index tag list if list not empty
+
+5.2.3
+~~~~~
+- Bug Fix: Show translation for Section Page on Home Page
+- Bug Fix: Only show articles relevant to site under a tag
+- Bug Fix: Ensure new article tag relations are made when copying sites
+
+5.2.2
+~~~~~
+- Added Positional Banner Pages functionality
+- Bug Fix: Return Main language pages for latest articles
+
+5.2.1
+~~~~~
+- Added Tags to SectionPage
+- Added Load More functionality for ArticlePages on the homepage
+
+
+5.2.0
+~~~~~
+- Add gef_effective_image for ArticlePage (returns the image of article's main language page if article has no image, else returns article's image)
+- Add get_parent template tag (returns the parent of a page)
+- Bug fix: Filter tags via descendant of main
+- Bug fix: Use 'to' id directly for copying in celery
+
+
 5.1.1
 ~~~~~
 - Bug fix: Call correct template for tag navigation

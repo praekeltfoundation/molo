@@ -1,0 +1,59 @@
+@import "../utilities/utilities";
+@import "_s-typography";
+@media only screen and (min-width: 1024px) {
+  html {
+    -webkit-overflow-scrolling : touch;
+    -webkit-tap-highlight-color : lighten(#333, 75%);
+    body {
+      .header, .content, #language-bar {
+        max-width: 360px;
+        margin: 0 auto;
+      }
+      .content-wrapper {
+        background-color: transparent;
+      }
+    }
+  }
+  @-webkit-viewport {
+    width : device-width;
+  }
+  @-moz-viewport {
+    width : device-width;
+  }
+  @-ms-viewport {
+    width : device-width;
+  }
+  @-o-viewport {
+    width : device-width;
+  }
+  @viewport {
+    width : device-width;
+  }
+  ::-moz-selection {
+    background-color: $springster-purple-light;
+    color: $springster-purple;
+    text-shadow: none;
+  }
+  ::selection {
+    background-color: $springster-purple-light;
+    color: $springster-purple;
+    text-shadow: none;
+  }
+  .overflow-container { overflow-y: scroll; }
+  :not(a):focus {
+    outline: none;
+  }
+}
+@import "_s-profile";
+@import "header/_s-header";
+@import "header/_s-logo";
+@import "article-teaser/_s-base-teaser";
+@import "buttons/_s-buttons";
+@import "buttons/_s-springster-buttons.scss";
+@import "section/_s-section";
+@import "section/_s-section-teaser-listing";
+@import "menu/_s-menu";
+@import "comments/_s-comment-counter";
+@import "tags/_s-tags-cloud";
+@import "footer/_s-footer-menu";
+@import "reactions/_s-reaction-block";

@@ -7,8 +7,8 @@
     <ul class="related-articles-recommended-list">
       {% for article in recommended_articles %}
       <li class="related-articles-recommended-list__item">
-        {% if article.image %}
-          <a href="{% pageurl article %}" class="promoted-article-list__anchor">{% image article.image width-60 class="article__image" %}</a>
+        {% if article.get_effective_image %}
+          <a href="{% pageurl article %}" class="promoted-article-list__anchor">{% image article.get_effective_image width-60 class="article__image" %}</a>
         {% endif %}
         <div class="related-articles-recommended-list__content {% if forloop.first %} related-articles-recommended-list__content--hero {% endif %}">
           <h3 class="heading heading--large related-articles-recommended__title">

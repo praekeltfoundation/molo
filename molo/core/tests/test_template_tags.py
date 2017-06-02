@@ -1,9 +1,10 @@
 # coding=utf-8
 import pytest
 from django.test import TestCase, RequestFactory
-from molo.core.models import (Main, SiteLanguageRelation, Languages,)
+from molo.core.models import (
+    Main, SiteLanguageRelation, Languages, BannerPage)
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.templatetags.core_tags import get_parent
+from molo.core.templatetags.core_tags import get_parent, bannerpages
 
 
 @pytest.mark.django_db
@@ -29,6 +30,70 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
+
+    def test_bannerpages_without_position(self):
+        banner = BannerPage(title='test banner')
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+        banner2 = BannerPage(title='test banner 2')
+        self.banner_index.add_child(instance=banner2)
+        banner2.save_revision().publish()
+        banner3 = BannerPage(title='test banner 3')
+        self.banner_index.add_child(instance=banner3)
+        banner3.save_revision().publish()
+        self.assertEqual(self.main.bannerpages().count(), 3)
+
+        request = self.factory.get('/')
+        request.site = self.site
+
+        self.assertEquals(len(bannerpages({
+            'locale_code': 'en', 'request': request})['bannerpages']), 3)
+
+    def test_bannerpages_with_position(self):
+        banner = BannerPage(title='test banner')
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+        banner2 = BannerPage(title='test banner 2')
+        self.banner_index.add_child(instance=banner2)
+        banner2.save_revision().publish()
+        banner3 = BannerPage(title='test banner 3')
+        self.banner_index.add_child(instance=banner3)
+        banner3.save_revision().publish()
+        self.assertEqual(self.main.bannerpages().count(), 3)
+
+        request = self.factory.get('/')
+        request.site = self.site
+
+        self.assertEquals(len(bannerpages({
+            'locale_code': 'en',
+            'request': request}, position=0)['bannerpages']), 1)
+        self.assertEquals(bannerpages({
+            'locale_code': 'en',
+            'request': request}, position=0)['bannerpages'][0].title,
+            'test banner')
+        self.assertEquals(bannerpages({
+            'locale_code': 'en',
+            'request': request}, position=1)['bannerpages'][0].title,
+            'test banner 2')
+
+    def test_bannerpages_with_position_out_of_range(self):
+        banner = BannerPage(title='test banner')
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+        banner2 = BannerPage(title='test banner 2')
+        self.banner_index.add_child(instance=banner2)
+        banner2.save_revision().publish()
+        banner3 = BannerPage(title='test banner 3')
+        self.banner_index.add_child(instance=banner3)
+        banner3.save_revision().publish()
+        self.assertEqual(self.main.bannerpages().count(), 3)
+
+        request = self.factory.get('/')
+        request.site = self.site
+
+        self.assertEquals(bannerpages({
+            'locale_code': 'en',
+            'request': request}, position=4), None)
 
     def test_get_parent_template_tag(self):
         request = self.factory.get('/')

@@ -2,6 +2,19 @@ from django.utils import timezone
 from django import forms
 
 from wagtail.wagtailadmin.forms import WagtailAdminPageForm
+from django.utils.translation import ugettext_lazy as _
+
+
+class ReactionQuestionChoiceForm(forms.Form):
+    choice = forms.ChoiceField(
+        required=True,
+        error_messages={'required': _("You didn't select a choice")})
+
+    def __init__(self, *args, **kwargs):
+        from molo.core.models import ReactionQuestionChoice
+        super(ReactionQuestionChoiceForm, self).__init__(*args, **kwargs)
+        self.fields['choice'].choices = [(
+            c.pk, c.title) for c in ReactionQuestionChoice.objects.all()]
 
 
 class ArticlePageForm(WagtailAdminPageForm):

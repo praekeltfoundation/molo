@@ -1,13 +1,14 @@
 
 {% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags i18n%}
+{% load wagtailcore_tags wagtailimages_tags i18n el_pagination_tags %}
 
 {% block content %}
 {% if search_results %}
   <div class="search">
     <h3>{{search_query}}</h3>
   </div>
-  {% for page in search_results %}
+  {% paginate 10 results as paginated_results %}
+  {% for page in paginated_results %}
     {% with parent_section=page.get_parent_section ancestor=page.get_parent_section.get_ancestors.last %}
       <a href="{% pageurl page %}">
           {% if ancestor.sectionpage.image %}
@@ -32,6 +33,14 @@
       </a>
     {% endwith %}
   {% endfor %}
+
+  <div id="pagination">
+    {% include "patterns/basics/pagination/pagination-pageof.html" %}
+  </div>
+  {% get_pages %}
+  {% if pages.next %}
+    <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'search_index' %}?page={{pages.next.number}}&q={{search_query}}">Load More</a>
+  {% endif %}
 
   <div class="step-links">
     {% if search_results.has_previous %}

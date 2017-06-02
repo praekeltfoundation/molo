@@ -1,0 +1,4 @@
+{
+  "title": "Springster Search",
+  "description": "Search icon opens a search bar right on the header, below the site logo and above the navigation bar. Clicking the “Enter button”  on the device’s keypad should also launch the search (i.e., the user must not be required to click the icon as the only way to initiate the search - how it works on the Google Chrome mobile search bar)."
+}

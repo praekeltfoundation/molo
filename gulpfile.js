@@ -9,8 +9,10 @@ var gulp              =   require('gulp'),
     notify            =   require('gulp-notify'),
     sourcemaps        =   require('gulp-sourcemaps'),
     livereload        =   require('gulp-livereload'),
+    minify            =   require('gulp-minify'),
     sassPaths = [
         'molo/core/styles/core-style/styles.scss',
+        'molo/core/styles/gem-springster/springster.scss',
         'molo/core/styles/mote/mote.scss'
     ],
     sassDest = {
@@ -36,6 +38,17 @@ function styles(env) {
         .pipe(notify({ message: `Styles task complete: ${env}` }));
 }
 
+// Minify JS
+gulp.task('compress', function() {
+  gulp.src('molo/core/static/js/molo.js')
+    .pipe(minify({
+        ext:{
+            min:'-min.js'
+        },
+    }))
+    .pipe(gulp.dest('molo/core/static/js/'))
+});
+
 gulp.task('styles:prd', function() {
   return styles('prd');
 });
@@ -43,5 +56,10 @@ gulp.task('styles:dev', function() {
   return styles('dev');
 });
 
+gulp.task('watch', function() {
+    livereload.listen();
+    gulp.watch(['molo/styles/**/*.scss'],['styles']);
+});
+
 gulp.task('styles', ['styles:dev', 'styles:prd']);
-gulp.task('default', ['styles']);
+gulp.task('default', ['styles', 'compress','watch']);

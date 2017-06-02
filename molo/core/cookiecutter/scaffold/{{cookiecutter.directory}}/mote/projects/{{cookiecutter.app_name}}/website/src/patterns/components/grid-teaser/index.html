@@ -1,7 +1,6 @@
 {% raw %}
 {% extends "mote/element/index.html" %}
 {% load mote_tags %}
-
 {% block codeblock %}
 <div class="sg-code-block">
     <h4 class="title">
@@ -14,13 +13,11 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-{% render_element element %}
+                  {% render_element element %}
                 </xmp>
             </code>
         </pre>
     </div>
-    <!-- code-example -->
 </div>
-<!-- sg-code-block -->
 {% endblock %}
 {% endraw %}

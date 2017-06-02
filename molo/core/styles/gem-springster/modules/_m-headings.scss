@@ -1,0 +1,104 @@
+.heading {
+  &__square {
+    background-color: $springster-purple;
+    text-align: center;
+    padding: 15px 8px 35px;
+    *:first-child {
+      font-family: $baton-medium;
+      font-size: $font-xx-large;
+      text-transform: uppercase;
+      color: $white;
+    }
+  }
+  &__component {
+    text-align: center;
+    margin: 0 10px;
+    padding-top: 15px;
+    *:first-child {
+      font-family: $baton-medium;
+      font-size: $font-x-large;
+      text-transform: uppercase;
+      color: $gunmetal;
+    }
+  }
+  &__subheading {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 0 15px;
+    *:first-child {
+      font-family: $baton-regular;
+      font-size: $font-x-large;
+      color: $gunmetal;
+    }
+  }
+  &__micro {
+    margin: 20px 0;
+    text-align: center;
+    *:first-child  {
+      display: inline-block;
+      font-family: $baton-medium;
+      font-size: $font-small;
+      text-transform: uppercase;
+      color: $dark-grey;
+    }
+  }
+  &__basic {
+    text-align: center;
+    margin: 24px 8px 8px;
+    *:first-child  {
+      font-family: $baton-medium;
+      font-size: $font-small;
+      text-transform: uppercase;
+      color: $dark-grey;
+    }
+  }
+  &__section {
+    display: inline-flex;
+    align-items: flex-end;
+    *:first-child  {
+      font-family: $baton-medium;
+      font-size: $font-x-large;
+      line-height: 1.2;
+      color: $white;
+      margin:  8px 0 4px;
+    }
+  }
+  &__article {
+    text-align: center;
+    margin: 24px 8px 8px;
+    *:first-child  {
+      font-family: $baton-medium;
+      font-size: $font-xx-large;
+      color: $charcoal-grey;
+      text-transform: capitalize;
+    }
+  }
+
+  //Links
+  &__micro-hyperlink {
+    *:first-child  {
+      color: $slate-grey;
+    }
+  }
+  &__subheading-alt {
+    margin: 8px;
+    *:first-child {
+      font-family: $baton-medium;
+      font-size: $font-large;
+      color: $white;
+    }
+  }
+}
+
+.hash-tag {
+  *:first-child:before {
+    content: "#";
+  }
+}
+
+.heading--large {
+  font-size: $font-xx-large;
+}
+.article-tag-page .heading__component h1:before {
+  content: "#";
+}

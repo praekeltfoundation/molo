@@ -1,0 +1,9 @@
+{
+    "footerLogo": {
+        "modifiers": "center",
+        "img": {
+          "src": "/static/img/sp-footer-logo.png",
+          "alt": "Logo"
+        }
+    }
+}

@@ -16,17 +16,21 @@ from django.utils.translation import (
     get_language_from_request
 )
 from django.utils.translation import ugettext as _
+from django.views.generic.edit import FormView
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     PageTranslation, ArticlePage, Languages, SiteSettings, Tag,
-    ArticlePageTags)
+    ArticlePageTags, SectionPage, ReactionQuestionChoice,
+    ReactionQuestionResponse, ReactionQuestion)
 from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
-from molo.core.forms import MediaForm
+from molo.core.forms import MediaForm, ReactionQuestionChoiceForm
 from django.views.generic import ListView
+
+from el_pagination.decorators import page_template
 
 
 def csrf_failure(request, reason=""):
@@ -34,7 +38,7 @@ def csrf_failure(request, reason=""):
     return render(request, '403_csrf.html', {'freebasics_url': freebasics_url})
 
 
-def search(request, results_per_page=10):
+def search(request, results_per_page=10, load_more=False):
     search_query = request.GET.get('q', None)
     page = request.GET.get('p', 1)
     locale = get_locale_code(get_language_from_request(request))
@@ -44,7 +48,7 @@ def search(request, results_per_page=10):
 
         results = ArticlePage.objects.descendant_of(main).filter(
             languages__language__locale=locale
-        ).values_list('pk', flat=True)
+        ).exact_type(ArticlePage).values_list('pk', flat=True)
 
         # Elasticsearch backend doesn't support filtering
         # on related fields, at the moment.
@@ -67,7 +71,8 @@ def search(request, results_per_page=10):
         Query.get(search_query).add_hit()
     else:
         results = ArticlePage.objects.none()
-
+    if load_more:
+        return results
     paginator = Paginator(results, results_per_page)
     try:
         search_results = paginator.page(page)
@@ -175,10 +180,67 @@ def get_pypi_version(plugin_name):
         return 'request failed'
 
 
+class ReactionQuestionChoiceView(FormView):
+    form_class = ReactionQuestionChoiceForm
+    template_name = 'patterns/basics/articles/reaction_question.html'
+    success_url = '/'
+
+    def get_success_url(self, *args, **kwargs):
+        article_slug = self.kwargs.get('article_slug')
+        article = ArticlePage.objects.descendant_of(
+            self.request.site.root_page).filter(slug=article_slug).first()
+        if not article:
+            raise Http404
+
+        return article.url
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            ReactionQuestionChoiceView, self).get_context_data(*args, **kwargs)
+        question_id = self.kwargs.get('question_id')
+
+        question = get_object_or_404(ReactionQuestion, pk=question_id)
+        context.update({'question': question})
+        return context
+
+    def form_valid(self, form, *args, **kwargs):
+        question_id = self.kwargs.get('question_id')
+        question = get_object_or_404(ReactionQuestion, pk=question_id)
+        question = question.get_main_language_page().specific
+        choice_pk = form.cleaned_data['choice']
+        choice = get_object_or_404(ReactionQuestionChoice, pk=choice_pk)
+        article_slug = self.kwargs.get('article_slug')
+        article = ArticlePage.objects.descendant_of(
+            self.request.site.root_page).filter(slug=article_slug).first()
+        if not article:
+            raise Http404
+        if question.has_user_submitted_reaction_response(
+                self.request, question_id, article.pk) is False:
+            created = ReactionQuestionResponse.objects.create(
+                question=question,
+                article=article)
+            if created:
+                created.choice = choice
+                created.save()
+                created.set_response_as_submitted_for_session(self.request)
+            if self.request.user.pk is not None:
+                created.user = self.request.user
+                created.save()
+                messages.add_message(
+                    self.request, messages.SUCCESS,
+                    'Thank you for your feedback')
+        else:
+            messages.error(
+                self.request,
+                "You have already given feedback on this article.")
+        return super(ReactionQuestionChoiceView, self).form_valid(
+            form, *args, **kwargs)
+
+
 class TagsListView(ListView):
     template_name = "core/article_tags.html"
 
-    def get_queryset(self, **kwargs):
+    def get_queryset(self, *args, **kwargs):
         tag = self.kwargs["tag_name"]
         count = self.request.GET.get("count")
         main = self.request.site.root_page
@@ -187,18 +249,28 @@ class TagsListView(ListView):
         locale = self.request.LANGUAGE_CODE
 
         if site_settings.enable_tag_navigation:
-            tag = Tag.objects.get(slug=tag)
+            tag = Tag.objects.filter(slug=tag).descendant_of(main).first()
             articles = []
             for article_tag in ArticlePageTags.objects.filter(
                     tag=tag.get_main_language_page()).all():
                 articles.append(article_tag.page.pk)
             articles = ArticlePage.objects.filter(
-                pk__in=articles).order_by(
+                pk__in=articles).descendant_of(main).order_by(
                     'latest_revision_created_at')
-            return get_pages(context, articles, locale)[:count]
+            # count = articles.count() if articles.count() < count else count
+            # context = self.get_context_data(
+            #     object_list=get_pages(context, articles[:count], locale))
+            return get_pages(context, articles[:count], locale)
         return ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
                 'latest_revision_created_at')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(TagsListView, self).get_context_data(*args, **kwargs)
+        tag = self.kwargs['tag_name']
+        context.update({'tag': Tag.objects.filter(
+            slug=tag).descendant_of(self.request.site.root_page).first()})
+        return context
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -250,3 +322,82 @@ def download_file(request):
                           'django_admin/transfer_media_message.html',
                           {'error_message':
                            'media file does not exist'})
+
+
+@page_template(
+    'patterns/basics/article-teasers/latest-promoted_variations/'
+    'latest-articles_for-paging.html')
+def home_index(
+        request,
+        extra_context=None,
+        template=(
+            'patterns/components/article-teasers/latest-promoted_variations/'
+            'article_for_paging.html')):
+    locale_code = request.GET.get('locale')
+    return render(request, template, {'locale_code': locale_code})
+
+
+@page_template(
+    'patterns/basics/sections/sectionpage-article-list-'
+    'standard_for-paging.html')
+def section_index(
+        request,
+        extra_context=None,
+        template=(
+            'patterns/basics/sections/sectionpage-article-list-'
+            'standard_for-paging.html')):
+    section = SectionPage.objects.get(pk=request.GET.get('section'))
+    locale_code = request.GET.get('locale')
+    return render(
+        request, template, {'section': section, 'locale_code': locale_code})
+
+
+@page_template('core/article_tags_for_paging.html')
+def tag_index(request, extra_context=None,
+              template=('core/article_tags_for_paging.html')):
+    tag_name = request.GET.get("tag_name")
+    if not tag_name:
+        raise Http404
+
+    main = request.site.root_page
+    context = {'request': request}
+    locale = request.LANGUAGE_CODE
+
+    tag = Tag.objects.filter(slug=tag_name).descendant_of(main).first()
+    articles = []
+    for article_tag in ArticlePageTags.objects.filter(
+            tag=tag.get_main_language_page()).all():
+        articles.append(article_tag.page.pk)
+    articles = ArticlePage.objects.filter(
+        pk__in=articles).descendant_of(main).order_by(
+            'latest_revision_created_at')
+    # count = articles.count() if articles.count() < count else count
+    # context = self.get_context_data(
+    #     object_list=get_pages(context, articles[:count], locale))
+    object_list = get_pages(context, articles, locale)
+    locale_code = request.GET.get('locale')
+    return render(request, template, {
+        'object_list': object_list, 'tag': tag, 'locale_code': locale_code})
+
+
+@page_template('search/search_results_for_paging.html')
+def search_index(
+        request,
+        extra_context=None,
+        template=('search/search_results_for_paging.html')):
+    search_query = request.GET.get('q')
+    results = search(request, load_more=True)
+    locale_code = request.GET.get('locale')
+    return render(
+        request, template, {
+            'search_query': search_query, 'results': results,
+            'locale_code': locale_code})
+
+
+@page_template(
+    'patterns/basics/article-teasers/latest-promoted_variations/late'
+    'st-articles_for-feature.html')
+def home_more(
+        request, template='core/main-feature-more.html', extra_context=None):
+    locale_code = request.GET.get('locale')
+    return render(request, template, {'locale_code': locale_code})

@@ -1,0 +1,23 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n el_pagination_tags %}
+  {% get_tag_articles tag_count=4 as tag_nav_data %}
+
+  {% paginate 12 tag_nav_data.latest_articles as articles%}
+  {% for article in articles %}
+  <li class="promoted-article-list__item promoted-article-list__item--theme-headings promoted-article-list__item--theme-headings{{article.get_parent_section.get_effective_extra_style_hints}}">
+    <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-headings">
+      <h5 class="heading promoted-article__title--theme-headings">
+      {{article.title}}</h5>
+    </a>
+    {% if settings.core.SiteSettings.enable_tag_navigation %}
+    {% load_tags_for_article article as tags %}
+    {% if tags %}
+    {% for tag in tags %}
+      <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
+        {{tag.title}}
+      </a>
+    {% endfor %}
+    {% endif %}
+    {% endif %}
+  </li>
+  {% endfor %}
+  {% show_pages %}

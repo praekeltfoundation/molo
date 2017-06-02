@@ -17,6 +17,8 @@
     {% endif %}
   {% endfor %}
   </ul>
+{% include "patterns/components/article-teasers/homepage-promoted_variations/articles_subsection_with-bg.html" %}
+<a href="{% pageurl section %}" class="section-listing__theme-more-link">{% trans "More about" %} {{section.title}}</a>
   {% include "patterns/basics/buttons/sp_variations/text-dir-arrow_button.html" with direction="right" %}
 </div>
 {% endif %}

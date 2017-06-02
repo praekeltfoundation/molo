@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags static core_tags i18n %}
+{% load wagtailcore_tags wagtailimages_tags static core_tags i18n el_pagination_tags %}
 {% block content %}
   <div class="article-teaser">
-  <h1 class="article-teaser__heading">{{ tag }}</h1>
+  <h1 class="article-teaser__heading">{{ tag.title }}</h1>
     <ul class="teaser-stacklist">
     {% for article in object_list %}
     <li class="teaser-stacklist__item">
@@ -14,4 +14,12 @@
     {% endfor %}
     </ul>
   </div>
+  <div id="pagination">
+    {% include "patterns/basics/pagination/pagination-pageof.html" %}
+  </div>
+  {% get_pages %}
+  {% if pages.next %}
+    <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'tag_index' %}?page={{pages.next.number}}&tag_name={{tag.title}}&locale={{locale_code}}">Load More</a>
+  {% endif %}
+</div>
 {% endblock %}

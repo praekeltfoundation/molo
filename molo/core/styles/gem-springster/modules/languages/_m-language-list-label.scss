@@ -1,0 +1,37 @@
+
+#footer-bar {
+  .languages {
+    font-family: $baton-medium;
+    font-size: 16px;
+    color: $slate-grey;
+    text-transform: uppercase;
+    background-color: $white;
+    padding: 12px 0;
+    
+    a {
+      color: $springster-purple;
+      text-decoration: underline;
+      &:hover, &:visited, {
+        color: $springster-purple;
+      }
+    }
+  }
+  
+  .language-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 15px;
+    
+    &__item--with-label {
+      display: inline-block;
+      margin-right: 10px; 
+    }
+  }
+}
+
+.language-list--with-label__title {
+  font-size: 16px;
+  &:after {
+    content: ":";
+  }
+}

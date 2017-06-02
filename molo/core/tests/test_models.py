@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from molo.core.models import (
     ArticlePage, PageTranslation, SectionPage, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
-    BannerIndexPage, TagIndexPage, BannerPage)
+    BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
@@ -127,6 +127,13 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
 
+    def test_copy_method_of_reaction_index_wont_duplicate_index_pages(self):
+        self.assertEquals(
+            ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
+        self.reaction_index.copy(to=self.main2)
+        self.assertEquals(
+            ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
+
     def test_copy_method_of_tag_index_wont_duplicate_index_pages(self):
         self.assertEquals(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
@@ -152,7 +159,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         banner = BannerPage(title='test banner')
         self.banner_index.add_child(instance=banner)
         banner.save_revision().publish()
-        self.assertEqual(self.main.bannerpages().count(), 1)
+        banner = BannerPage(title='test banner 2')
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+        self.assertEqual(self.main.bannerpages().count(), 2)
 
     def test_article_order(self):
         now = datetime.now()
@@ -347,6 +357,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'nav_tags-MAX_NUM_FORMS': 1000,
             'nav_tags-MIN_NUM_FORMS': 0,
             'nav_tags-TOTAL_FORMS': 0,
+            'reaction_questions-INITIAL_FORMS': 0,
+            'reaction_questions-MAX_NUM_FORMS': 1000,
+            'reaciction_questions-MIN_NUM_FORMS': 0,
+            'reaction_questions-TOTAL_FORMS': 0,
             'related_sections-INITIAL_FORMS': 0,
             'related_sections-MAX_NUM_FORMS': 1000,
             'related_sections-MIN_NUM_FORMS': 0,
@@ -392,6 +406,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'recommended_articles-MAX_NUM_FORMS': 1000,
             'recommended_articles-MIN_NUM_FORMS': 0,
             'recommended_articles-TOTAL_FORMS': 0,
+            'reaction_questions-INITIAL_FORMS': 0,
+            'reaction_questions-MAX_NUM_FORMS': 1000,
+            'reaciction_questions-MIN_NUM_FORMS': 0,
+            'reaction_questions-TOTAL_FORMS': 0,
             'related_sections-INITIAL_FORMS': 0,
             'related_sections-MAX_NUM_FORMS': 1000,
             'related_sections-MIN_NUM_FORMS': 0,
@@ -602,6 +620,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'recommended_articles-MAX_NUM_FORMS': 1000,
             'recommended_articles-MIN_NUM_FORMS': 0,
             'recommended_articles-TOTAL_FORMS': 0,
+            'reaction_questions-INITIAL_FORMS': 0,
+            'reaction_questions-MAX_NUM_FORMS': 1000,
+            'reaciction_questions-MIN_NUM_FORMS': 0,
+            'reaction_questions-TOTAL_FORMS': 0,
             'nav_tags-INITIAL_FORMS': 0,
             'nav_tags-MAX_NUM_FORMS': 1000,
             'nav_tags-MIN_NUM_FORMS': 0,

@@ -1,0 +1,11 @@
+{
+  "Navigation": {
+      "navMenu": [
+        {"text":"Home","modifiers": ""},
+        {"text":"My Body","modifiers": "my-body"},
+        {"text":"My Life","modifiers": "my-life"},
+        {"text":"Girl Stories","modifiers": "girl-stories"},
+        {"text":"Life Tips","modifiers": "life-tips"}
+      ]
+  }
+}

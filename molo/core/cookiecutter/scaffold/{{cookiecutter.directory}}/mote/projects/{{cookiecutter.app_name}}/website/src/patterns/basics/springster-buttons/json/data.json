@@ -1,0 +1,48 @@
+{
+  "SringsterButtons": {
+    "buttonVariations":[
+      {
+        "anchor":{
+          "link":"#",
+          "classType":"call-to-action__nav-item-text",
+          "classModifiers": "call-to-action__nav-item-text--backToTop-up_arrow"
+        },
+        "spanTag":{
+          "spanPres":"false",
+          "spanClassType":"",
+          "spanModifiers":""
+        },
+        "text":"Back to Top",
+        "modifiers": "backToTop"
+      },
+      {
+        "anchor":{
+          "link":"#",
+          "classType":"call-to-action__button",
+          "classModifiers": "call-to-action__button--primary"
+        },
+        "spanTag":{
+          "spanPres":"true",
+          "spanClassType":"call-to-action__button-text",
+          "spanModifiers":"call-to-action__button-text--primary"
+        },
+        "text":"Load More",
+        "modifiers": ""
+      },
+      {
+        "anchor":{
+          "link":"#",
+          "classType":"call-to-action__button",
+          "classModifiers": "call-to-action__button--primary call-to-action__button--secondary"
+        },
+        "spanTag":{
+          "spanPres":"true",
+          "spanClassType":"call-to-action__button-text",
+          "spanModifiers":"call-to-action__button-text--primary"
+        },
+        "text":"Comment Anonymously",
+        "modifiers": ""
+      }
+    ]
+  }
+}
