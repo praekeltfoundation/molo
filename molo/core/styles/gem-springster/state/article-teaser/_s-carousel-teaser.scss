@@ -1,11 +1,8 @@
 .carousel-teaser {
   @include divider-combo-2;
-  background-color: $sunny-yellow;
-
   &__thumbnail {
     width: auto;
   }
-
   &__wrapper {
     height: 180px;
     display: table;

@@ -38,7 +38,6 @@
   display: block;
   padding: 8px;
   position: relative;
-  height: 100%;
   color: #000;
   border-bottom: 4px solid #edf0f2;
   font-size: 0;
@@ -55,7 +54,7 @@
   &__item {
     display: inline-block;
     list-style-type: none;
-    margin-right: 8px;
+    margin: 0 8px 0;
   }
   &__anchor {
     text-transform: lowercase;
