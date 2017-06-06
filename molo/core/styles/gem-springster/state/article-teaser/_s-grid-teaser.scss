@@ -1,0 +1,32 @@
+.grid-teaser-list {
+  @include grid(100%)
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  &__item {
+    @include column($grid-six)
+    text-align: center;
+  }
+}
+.grid-teaser {
+  &__thumbnail-link {
+    display: inline-block;
+    margin: 16px;
+  }
+  &__thumbnail {
+    width: auto;
+  }
+  &__title-link {
+    font-family: $baton-medium;
+    color: $charcoal-grey;
+    font-size: 16px;
+    &:hover {
+      color: $springster-purple;
+      text-decoration: none;
+    }
+  }
+  &__subtitle {
+    color: $slate-grey;
+    font-size: $font-x-small;
+  }
+}

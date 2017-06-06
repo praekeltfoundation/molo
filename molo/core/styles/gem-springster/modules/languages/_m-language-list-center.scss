@@ -1,0 +1,27 @@
+
+.languages {
+  background-color: $pale-grey-two;
+  width: 100%;
+  font-family: $baton-turbo;
+  font-size: 12px;
+}
+.language-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 3px 6px;
+}
+.language-list--standard-center {
+  text-align: center;
+}
+.language-list__item--standard-center {
+  display: inline-block;
+  font-size: 12px;
+  margin: 0px 5px;
+}
+.language-list__anchor-standard-center {
+  color: $cool-grey;
+  font-size: 12px;
+  &.is-active {
+    color: $gunmetal;
+  }
+}

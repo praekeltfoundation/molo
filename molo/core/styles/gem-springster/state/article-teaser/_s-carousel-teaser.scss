@@ -1,0 +1,31 @@
+.carousel-teaser {
+  @include divider-combo-2;
+  &__thumbnail {
+    width: auto;
+  }
+  &__wrapper {
+    height: 180px;
+    display: table;
+    width: 100%;
+  }
+  &__content {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+.carousel-teaser-list {
+  display: flex;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  &__item {
+    @include column($grid-twelve);
+    padding: 0 8px 0 8px;
+    flex: 0 0 auto;
+  }
+  &__item--container {
+    width: 218px;
+    margin-left: 8px;
+  }
+}

@@ -1,0 +1,19 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Navigation as "nav" %}
+<div class="navigation">
+  <h4 class="heading heading--large">
+    <a href="/" class="navigation__anchor">Home</a>
+  </h4>
+  <h4 class="heading heading--large">Categories</h4>
+  <ul class="nav-list">
+    {% for item in nav.nav_list %}
+      <li class="nav-list__item">
+        <a href="{{item.href}}" class="nav-list__anchor">
+          {{item.name}}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endraw %}

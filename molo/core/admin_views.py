@@ -31,7 +31,6 @@ class ReactionQuestionSummaryAdminView(FormView):
             row[counter] = i
             counter += 1
         data_rows.append(row)
-        print row
         action = request.GET.get('action', None)
         if action == 'download':
             return self.send_csv(question.title, data_headings, data_rows)

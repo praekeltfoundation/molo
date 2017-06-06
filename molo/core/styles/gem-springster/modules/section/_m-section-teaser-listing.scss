@@ -1,0 +1,28 @@
+.section-teaser-listing--base {
+  overflow: hidden;
+}
+.section-teaser-listing-header {
+  background-color: $springster-purple;
+  list-style-type: none;
+  position: relative;
+  overflow: auto;
+  .heading__section {
+    text-align: center;
+    display: block;
+    h1 {
+      font-size: $font-large;
+    }
+  }
+  .section-banner {
+    img {
+      width: auto;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+}
+@each $name, $color in $color_scheme {
+  .section-teaser-listing-header--#{$name} {
+    background-color: $color;
+  }
+}

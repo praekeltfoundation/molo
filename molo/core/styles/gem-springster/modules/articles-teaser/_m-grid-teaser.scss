@@ -1,0 +1,39 @@
+
+.grid-teaser-wrapper {
+  margin: 0 8px;
+}
+.grid-teaser-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  &__item {
+    text-align: center;
+    padding: 10px 20px 10px;
+  }
+}
+.grid-teaser {
+  &__thumbnail-link {
+    display: block;
+    margin: 0 0 10px;
+  }
+  &__thumbnail {
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+    max-width: 320px;
+  }
+  &__title-link {
+    font-family: $baton-medium;
+    color: $charcoal-grey;
+    font-size: $font-large;
+    text-transform: capitalize;
+    &:hover {
+      color: $springster-purple;
+      text-decoration: none;
+    }
+  }
+  &__subtitle {
+    color: $slate-grey;
+    font-size: $font-x-small;
+  }
+}

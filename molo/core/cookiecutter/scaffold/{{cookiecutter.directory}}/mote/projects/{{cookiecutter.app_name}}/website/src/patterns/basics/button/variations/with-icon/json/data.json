@@ -1,7 +1,0 @@
-{
-    "Button": {
-        "tag": "input",
-        "text": "Call to action",
-        "modifiers": "with-icon"
-    }
-}

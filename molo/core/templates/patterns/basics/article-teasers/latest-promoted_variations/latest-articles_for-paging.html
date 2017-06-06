@@ -22,7 +22,7 @@
   {% endfor %}
   {% get_pages %}
   {% if pages.next %}
-  <a class="more-link" data-next="{% url 'home_index' %}?page={{pages.next.number}}" href="{% url 'home_more' %}?page={{pages.next.number}}">More...</a>
+  <a class="more-link" data-next="{% url 'home_index' %}?page={{pages.next.number}}" href="{% url 'home_more' %}?page={{pages.next.number}}&locale={{locale_code}}">More...</a>
   {% endif %}
 
   {% block js %}

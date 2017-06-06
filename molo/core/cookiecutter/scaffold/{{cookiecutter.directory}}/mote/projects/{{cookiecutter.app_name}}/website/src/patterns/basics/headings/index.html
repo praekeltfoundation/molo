@@ -1,0 +1,24 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Page Heading Keywords
+    </h4>
+    <div class="description">
+      <p>To help tag page keywords h1, h2, h3, h4, h5, h5.
+      Search engines use the h1, h2, and h3 tags for SEO purposes</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

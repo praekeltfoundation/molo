@@ -1,0 +1,41 @@
+.base-teaser__title-link {
+  font-weight: normal;
+}
+.base-teaser__thumbnail-link  {
+  display: inline-block;
+  width: 30%;
+  img {
+    width: 100%;
+  }
+}
+.base-teaser__title {
+  font-family: $baton-medium;
+}
+
+.teaser-stacklist__item--content {
+  width: 60%;
+}
+.teaser-stacklist-tags {
+  padding: 0;
+  vertical-align: bottom;
+  &__anchor  {
+    font-family: $baton-medium;
+    font-size: $font-xxx-small;
+  }
+}
+.base-teaser {
+  &__title {
+    font-size: $font-x-large;
+  }
+}
+
+.teaser-stacklist-tags {
+  width: 80%;
+  list-style-position: inside;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &__anchor {
+    font-size: $font-x-small;
+  }
+}

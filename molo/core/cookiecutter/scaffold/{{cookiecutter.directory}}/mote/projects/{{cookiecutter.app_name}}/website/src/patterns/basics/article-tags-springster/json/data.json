@@ -1,0 +1,27 @@
+{
+  "ArticleTagsNav": {
+    "text": "Article Tags",
+    "modifiers": "dummy-class",
+    "tags_nav_list": [
+      {"name": "relationships"},
+      {"name": "nutrition"},
+      {"name": "puberty"},
+      {"name": "love"},
+      {"name": "confidence"},
+      {"name": "beauty"},
+      {"name": "rights"},
+      {"name": "career"},
+      {"name": "money"},
+      {"name": "online"},
+      {"name": "sex"},
+      {"name": "health"},
+      {"name": "periods"},
+      {"name": "family"},
+      {"name": "safety"},
+      {"name": "education"},
+      {"name": "friendship"},
+      {"name": "goals"},
+      {"name": "qa tag"}
+    ]
+  }
+}
