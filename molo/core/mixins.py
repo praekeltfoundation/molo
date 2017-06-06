@@ -1,4 +1,4 @@
-class PageEffectiveImageMixin:
+class PageEffectiveImageMixin(object):
     def get_effective_image(self):
         if self.image:
             return self.image
