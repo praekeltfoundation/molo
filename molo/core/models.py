@@ -460,15 +460,9 @@ class ReactionQuestion(TranslatablePageMixin, Page):
             self, request, reaction_id, article_id):
         if 'reaction_response_submissions' not in request.session:
             request.session['reaction_response_submissions'] = []
-
-        if request.user.pk is not None \
-            and ReactionQuestionResponse.objects.filter(
-                user__pk=request.user.pk,
-                question=self, article__pk=article_id).exists() \
-                or article_id in request.session[
-                    'reaction_response_submissions']:
-                    return True
-        return False
+        if article_id in request.session['reaction_response_submissions']:
+            return False
+        return True
 
 
 class ReactionQuestionChoice(
@@ -484,10 +478,20 @@ class ReactionQuestionChoice(
         related_name='+'
     )
 
+    success_message = models.CharField(blank=True, null=True, max_length=30)
+    success_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
 ReactionQuestionChoice.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('image'),
+    FieldPanel('success_message', classname='full title'),
+    ImageChooserPanel('success_image'),
 ]
 
 
