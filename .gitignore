@@ -46,4 +46,3 @@ db.sqlite3
 .DS_Store
 /htmlcov/
 .idea/
-molo/core/migrations/*
