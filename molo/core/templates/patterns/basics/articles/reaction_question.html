@@ -3,7 +3,7 @@
 {% if question %}
 {{question.title}}
 {{ form.errors }}
-{% load_user_can_vote question article.pk as user_can_vote%}
+{% load_user_can_vote_on_reaction_question question article.pk as user_can_vote%}
   {% if user_can_vote %}
     <form class="reaction__form" action="{% url 'reaction-vote' article.slug question.id %}" method="post">
       {% csrf_token %}

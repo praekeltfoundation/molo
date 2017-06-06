@@ -512,12 +512,12 @@ def load_choices_for_reaction_question(context, question):
 
 
 @register.assignment_tag(takes_context=True)
-def load_user_can_vote(context, question, article_pk):
+def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
         question = question.get_main_language_page().specific
         return question.has_user_submitted_reaction_response(
-                request, question.pk, article_pk)
+            request, question.pk, article_pk)
 
 
 @register.assignment_tag(takes_context=True)
