@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.14
+~~~~~~
+- #385, #366 Bug fix for search to only return articles
+
 4.4.13
 ~~~~~~
 - Insure content demotion happens for each section individually
