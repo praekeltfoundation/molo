@@ -1,0 +1,14 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.FormInputs as "inputfields" %}
+  {% for item in inputfields.selectInputs %}
+  <fieldset>
+    <label>{{item.label}}</label>
+    <select name="{{item.name}}">
+      {% for option in item.options %}
+        <option value="{{option.value}}">{{option.text}}</option>
+      {% endfor %}
+     </select>
+  </fieldset>
+  {% endfor %}
+{% endraw %}

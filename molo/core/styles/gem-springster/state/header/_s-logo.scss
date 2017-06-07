@@ -1,0 +1,15 @@
+.logo {
+  padding: 0 10px;
+  img {
+    width: auto;
+    max-width: 150px;
+  }
+}
+.logo--center {
+  display: inline-block;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  position: absolute;
+  width: 65%;
+}

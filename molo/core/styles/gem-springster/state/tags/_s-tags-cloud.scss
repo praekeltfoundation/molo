@@ -1,0 +1,14 @@
+.tag-cloud__container {
+  @include divider-combo-1;
+  background-color: $sunny-yellow;
+}
+.tag-cloud__icon {
+  margin: -35px auto;
+}
+.tag-cloud__heading  {
+  @include underline(zig-zag, 10px);
+}
+
+.article-page-tag-cloud {
+  @include divider-line(4px, $pale-grey-three);
+}

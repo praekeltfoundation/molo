@@ -1,0 +1,87 @@
+
+#gem-footer {
+  @include divider-combo-1;
+  background-color: $mint-green;
+  padding: 12px 8px;
+  a {
+    text-decoration: none;
+  }
+  .left {
+    float: left;
+    width: 50%;
+  }
+  .right {
+    float: right;
+    width: 50%;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  .group:after {
+    content:"";
+    display: table;
+    clear: both;
+  }
+  @media screen and (max-width: 280px) {
+    .left, .right {
+        float: none;
+        width: auto;
+    }
+  }
+  .search-bar {
+    margin: 0 8px;
+    }
+}
+
+.footer-menu-list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+
+  &__item {
+    margin: 0 8px;
+    line-height: 2.0;
+  }
+  &__anchor {
+    font-family: $baton-regular;
+    font-size: 20px;
+    color: $springster-purple;
+  }
+
+}
+
+#footer-bar {
+  padding-top: 8px;
+  text-align: center;
+ .footer-logo {
+    background-image: url('/static/img/sp-footer-logo.png');
+    background-repeat:  no-repeat;
+    background-size: 100%;
+    width: 100%;
+    max-width: 200px;
+    height: 60px;
+    margin: 5px auto;
+    display: block;
+  }
+}
+
+.copyright {
+  text-align: center;
+  font-size: 12px;
+  padding-bottom: 5px;
+  p {
+    color: $cool-grey;
+  }
+  a {
+    text-decoration: underline;
+    color: $gunmetal;
+    font-size: 12px;
+  }
+  &__footer-copy {
+    font-size: 12px;
+    padding: 15px 15px 10px;
+    margin: 0;
+    text-align: center;
+  }
+}

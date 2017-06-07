@@ -1,0 +1,91 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Radio Button Inputs
+    </h4>
+    <div class="description">
+      <p>Used to collect information</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Checkbox Button Inputs
+    </h4>
+    <div class="description">
+      <p>Used to collect information</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.form-inputs.form-checkboxes %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Inputs fields - hint and error messages
+    </h4>
+    <div class="description">
+      <p>Used to collect information</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.form-inputs.form-hint-and-error %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Select option Inputs
+    </h4>
+    <div class="description">
+      <p>Used to collect information</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.form-inputs.form-select %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Text, Email, Numbers etc. Input
+    </h4>
+    <div class="description">
+      <p>Used to collect information</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.form-inputs.form-text-inputs %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

@@ -1,0 +1,19 @@
+{% load wagtailcore_tags i18n %}
+<ul class="section-listing-standard-list section-listing-standard-list{{self.get_effective_extra_style_hints}}">
+  <li class="section-listing-standard-list__item">
+    <a href="/" class="section-listing-standard-list__link">{% trans "Home" %}</a>
+    <a href="{{request.site.root_page.url}}" class="section-listing-standard-list__link">{% trans "Home" %}</a>
+  </li>
+
+  {% if self.get_parent_section %}
+  <li class="section-listing-standard-list__item">
+    <a href="{% pageurl self.get_parent_section %}" class="section-listing-standard-list__link">
+      {{ self.get_parent_section }}
+    </a>
+   </li>
+  {% endif %}
+
+  <li class="section-listing-standard-list__item {% if self.get_parent_section %}section-listing-standard-list__item--subsection{% endif %}">
+    <a href="{% pageurl self %}" class="section-listing-standard-list__link">{{ self.title }}</a>
+  </li>
+</ul>

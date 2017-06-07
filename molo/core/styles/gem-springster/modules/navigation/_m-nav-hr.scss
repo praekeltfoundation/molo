@@ -1,0 +1,30 @@
+
+.nav-list--horizontal {
+  margin: 0 auto;
+}
+
+.nav-list--horizontal-center {
+  text-align: center;
+}
+.nav-list__item--horizontal  {
+  display: inline-block;
+  border: none;
+  color: #07292F;
+  padding: 5px 0;
+  font-size: 12px;
+
+  &:first-child,
+  &:last-child {
+    &:after {
+      display: none;
+    }
+  }
+  &:after {
+    color: #07292F;
+    content: "|";
+    padding: 0 3px;
+  }
+}
+.nav-list__anchor--horizontal {
+  text-transform: capitalize;
+}

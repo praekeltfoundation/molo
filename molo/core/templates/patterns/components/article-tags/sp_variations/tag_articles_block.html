@@ -1,25 +1,20 @@
 {% load wagtailcore_tags core_tags i18n %}
 {% block load_tags_for_homepage %}
 {% if tag %}
-<div class="navigation">
-  <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
-    {{tag.title}}
-  </a>
-  <ul class="nav-list nav-list--column">
+<div class="carousel-teaser">
+  <h1 class="carousel-teaser__heading">
+    <a href="{% pageurl tag %}" class="carousel-teaser__heading-link">{{tag.title}}</a>
+  </h1>
+  <ul class="carousel-teaser-list">
     {% for article in tag_articles %}
-      <li class="nav-list__item nav-list__item--column">
-        <a href="{% pageurl article %}" class="nav-list__anchor nav-list__anchor--column">
-          {{article.title}}
-        </a>
-        {% load_tags_for_article article as tags %}
-        {% for tag in tags %}
-          <a href="{% pageurl tag %}" class="nav-list__anchor nav-list__anchor--column">
-            {{tag.title}}
-          </a>
-        {% endfor %}
+      <li class="carousel-teaser-list__item">
+        {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-image.html" %}
+        {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-title.html" %}
+        {% include "patterns/basics/article-tags/article-tag_teaser.html" %}
       </li>
     {% endfor %}
   </ul>
+  {% include "patterns/basics/buttons/sp_variations/text-tag-dir-arrow_button.html" with direction="right" %}
 </div>
 {% endif %}
 {% endblock %}

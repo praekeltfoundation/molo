@@ -1,6 +1,14 @@
 CHANGE LOG
 ==========
 
+5.4.5
+~~~~~
+- Add reaction question success_messages
+
+5.4.4
+~~~~~
+- Add `get_effective_image` to reaction question choices
+
 5.4.3
 ~~~~~
 - Fix a bug for `get_next_tag` template tag

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 from molo.core.models import (
     Main, ReactionQuestionResponse,
-    SiteLanguageRelation, Languages)
+    SiteLanguageRelation, Languages, ReactionQuestionChoice)
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -219,13 +219,13 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
                 'question_id': question.id, 'article_slug': article.slug}),
             {'choice': choice1.id})
         self.assertEquals(ReactionQuestionResponse.objects.all().count(), 1)
-
-        # test user can only submit once
-        response = self.client.post(reverse(
-            'reaction-vote', kwargs={
-                'question_id': question.id, 'article_slug': article.slug}),
-            {'choice': choice1.id})
-        self.assertEquals(ReactionQuestionResponse.objects.all().count(), 1)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(
+            response['Location'], '/reaction/test-page-0/20/yes/feedback/')
+        response = self.client.get('/reaction/test-page-0/20/yes/feedback/')
+        self.assertContains(
+            response, '<a href="/sections-main-1/your-mind/test-page-0/">')
+        self.assertContains(response, 'well done')
 
     def test_correct_reaction_shown_for_locale(self):
         article = self.mk_article(self.yourmind)
@@ -234,13 +234,29 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
             article,
             self.french,
             title=article.title + ' in french',)
-        self.mk_reaction_translation(
+        translated_question = self.mk_reaction_translation(
             question,
             article,
             self.french,
             title=question.title + ' in french',)
+        translated_choice = ReactionQuestionChoice(
+            title='ja', success_message='mooi gedoen')
+        question.add_child(instance=translated_choice)
+        translated_choice.save_revision().publish()
+        translated_choice = self.mk_translation(
+            question.get_first_child(), self.french, translated_choice)
 
         self.client.get('/locale/fr/')
         response = self.client.get(
             '/sections-main-1/your-mind/test-page-0-in-french/')
         self.assertContains(response, 'Test Question in french')
+        response = self.client.post(reverse(
+            'reaction-vote', kwargs={
+                'question_id': translated_question.id,
+                'article_slug': article.slug}),
+            {'choice': translated_choice.id})
+        self.assertEquals(ReactionQuestionResponse.objects.all().count(), 1)
+        response = self.client.get('/reaction/test-page-0/20/yes/feedback/')
+        self.assertContains(
+            response, '<a href="/sections-main-1/your-mind/test-page-0/">')
+        self.assertContains(response, 'mooi gedoen')

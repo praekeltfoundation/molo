@@ -1,0 +1,17 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.FormInputs as "inputfields" %}
+  {% for item in inputfields.checkBoxes %}
+  <fieldset>
+    <div class="heading heading__subheading">
+      <h3>{{item.legend}}</h3>
+    </div>
+    {% for option in item.options %}
+    <label>
+      <input type="{{option.input}}" value="{{option.value}}" name="{{option.name}}" />
+      {{option.label}}
+    </label>
+    {% endfor %}
+  </fieldset>
+  {% endfor %}
+{% endraw %}

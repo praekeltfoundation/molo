@@ -1,0 +1,27 @@
+.polls {
+  &__container {
+    @include divider-combo-1;
+    background-color: $mint-green-light;
+    padding: 60px 0 8px;
+    margin-top: 40px;
+  }
+  &__bubble-icon {
+    background: url('/static/img/icons/poll@2x.png') no-repeat 0 0/contain;
+    padding: 2px 5px;
+    height: 88px;
+    width: 100px;
+    position: absolute;
+    left: 50%;
+    margin-left: -50px
+  }
+}
+.polls--call-to-action {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-top: 20px;
+
+  .heading__micro {
+    margin: 0px 0 8px 0;
+  }
+}

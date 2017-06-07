@@ -1,0 +1,42 @@
+
+.reaction-questions {
+  &__block {
+    @include divider-combo-1;
+    background-color: $springster-purple-light;
+    padding: 20px 0;
+  }
+  
+  &__list {
+    text-align: center;
+  }
+  
+  &__item {
+    display: inline-block;
+    margin: 0 20px;
+    
+    input {
+      display: none;
+    }
+  }
+  
+  &__image {
+    cursor: pointer;
+    line-height: 80px;
+    
+    img {
+      vertical-align: middle;
+    }
+  }
+  
+  &__label {
+    font-family: $baton-regular;
+    font-size: $font-x-large;
+    display: block;
+    cursor: pointer;
+  }
+  
+  &__message {
+    text-align: center;
+    padding: 0 10px 10px;
+  }
+}

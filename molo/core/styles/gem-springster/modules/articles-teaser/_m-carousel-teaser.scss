@@ -1,0 +1,51 @@
+
+.carousel-teaser {
+  &__thumbnail-link {
+    font-size: 0;
+    margin: 0;
+  }
+  &__title-link {
+    font-family: $baton-medium;
+    color: $charcoal-grey;
+    font-size: $font-large;
+    text-transform: capitalize;
+    &:hover {
+      color: $springster-purple;
+      text-decoration: none;
+    }
+  }
+  &__title {
+    padding: 8px 0;
+  }
+  &__subtitle {
+    color: $slate-grey;
+    font-size: $font-x-small;
+    padding: 0 8px;
+  }
+  h2:before {
+    content: "#";
+  }
+  &__thumbnail {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .comment-counter {
+    position: relative;
+    margin: 10px;
+  }
+}
+
+.carousel-teaser-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  &__item {
+    text-align: center;
+    padding: 10px 20px 10px;
+  }
+  &__item--container {
+    background-color: $white;
+  }
+}

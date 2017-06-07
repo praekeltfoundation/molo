@@ -1,0 +1,21 @@
+{% load wagtailcore_tags core_tags i18n %}
+<div class="article-page-tag-cloud">
+  <!-- I apply the heading/title class to the heading element itself  -->
+  <h4 class="article-page-tag-cloud__heading">{% trans "Read stories about"%}</h4>
+  <ul class="teaser-stacklist-tags">
+  {% if settings.core.SiteSettings.enable_tag_navigation%}
+    {% load_tags_for_article self as navigation_tags %}
+    {% for tag in navigation_tags  %}
+      <li class="teaser-stacklist-tags__item">
+        <a href="{% url 'tags_list' tag.slug %}" class="tag__item-anchor">{{tag}}</a>
+      </li>
+    {% endfor %}
+    {% elif settings.core.SiteSettings.enable_clickable_tags %}
+    {% for tag in self.tags_list %}
+      <li class="teaser-stacklist-tags__item">
+        <a href="{% url 'tags_list' tag %}" class="teaser-stacklist-tags__anchor">{{tag}}</a>
+      </li>
+    {% endfor %}
+  {% endif %}
+  </ul>
+</div>

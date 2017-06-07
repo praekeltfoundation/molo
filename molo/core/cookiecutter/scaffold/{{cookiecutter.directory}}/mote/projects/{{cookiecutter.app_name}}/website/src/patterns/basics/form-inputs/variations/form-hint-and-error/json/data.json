@@ -1,0 +1,21 @@
+{
+  "helperInputs": {
+    "textInput": {
+      "label":"Name",
+      "input":"text",
+      "name":"fullname",
+      "placeholder":"Name & Surname",
+      "hint":"Enter Name & Surname to be indentified",
+      "error":"This field is required"
+    },
+    "textarea": {
+      "label":"Your thoughts",
+      "placeholder":"Write comment",
+      "name":"write-comment",
+      "rows":10,
+      "cols":40,
+      "hint":"Write your comment here",
+      "error":"Please write your thoughts"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+@media screen and (max-width: 300px) {
+  .heading__section h1 {
+    font-size: $font-x-large !important;
+  }
+}
+
+@media screen and (min-width: 340px) {
+  @import "article-teaser/_s-carousel-teaser";
+  @import "article-teaser/_s-grid-teaser";
+  @import "_s-headings";
+  .call-to-action__nav-item-text--backToTop,
+  .call-to-action__nav-item-text--backToTop-up_arrow {
+    &:after {
+      background-image: url(/static/img/icons/up-arrow.svg);
+      height: 24px;
+      width: 24px;
+      top: 0;
+      margin-left: 10px;
+    }
+  }
+}
+@media only screen and (min-width: 360px) {
+  .base-teaser {
+    &__subtitle {
+      font-size: $font-x-small;
+    }
+  }
+  .base-teaser__thumbnail-link  {
+    width: auto!important;
+  }
+}
+@media screen and (min-width: 500px) {
+  @import "_s-forms";
+  .profiles-join-banner {
+    @include divider-combo-2;
+    background-color: $springster-purple;
+    @include grid(100%);
+    flex-direction: row-reverse !important;
+    &__content {
+      float: none !important;
+      @include column($grid-seven);
+    }
+    &__icon  {
+      float: none !important;
+      margin: 0 !important;
+      @include column($grid-five);
+    }
+  }
+}

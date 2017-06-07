@@ -155,7 +155,8 @@ class MoloTestCaseMixin(object):
         question = ReactionQuestion(**data)
         parent.add_child(instance=question)
         question.save_revision().publish()
-        choice1 = ReactionQuestionChoice(title='yes')
+        choice1 = ReactionQuestionChoice(
+            title='yes', success_message='well done')
         question.add_child(instance=choice1)
         choice1.save_revision().publish()
         choice2 = ReactionQuestionChoice(title='maybe')
