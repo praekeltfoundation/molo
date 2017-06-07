@@ -17,7 +17,9 @@
   {% for pattern in aspect.patterns %}
     <li role="menuitem">
       {% url "mote:pattern" project=aspect.project.id aspect=aspect.id pattern=pattern.id as the_url%}
-      <a href="{{ the_url }}" {% if request.path_info == the_url %}class="active"{% endif %}>{{ pattern.title }}</a>
+      <a href="{{ the_url }}" {% if request.path_info == the_url %}class="active"{% endif %} class="menuitem__main-project">
+        {{ pattern.title }}
+      </a>
       <ul role="menu" class="vertical tier-2">
           {% for element in pattern.elements %}
           <li role="menuitem">
