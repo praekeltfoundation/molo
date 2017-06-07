@@ -1,0 +1,12 @@
+{% load core_tags wagtailcore_tags i18n  %}
+<div class="pagination">
+  {% if page.has_previous %}
+    <a href="?p={{ page.previous_page_number }}" class="pagination__nav-item pagination__nav-anchor-previous"></a>
+  {% endif %}
+  <span class="pagination__nav-item pagination__nav-item--current">
+    Page {{ page.number }} of {{ page.paginator.num_pages }}
+  </span>
+  {% if page.has_next %}
+    <a href="?p={{ page.next_page_number }}" class="pagination__nav-item pagination__nav-anchor-next"></a>
+  {% endif %}
+</div>

@@ -11,9 +11,7 @@
       {% for tag in tags %}
         {% if tag %}
         <li class="tag-cloud__item">
-          <a href="{% pageurl tag %}" class="tag-cloud__anchor">
-            {{tag.title}}
-          </a>
+          <a href="{% url 'tags_list' tag.slug %}" class="tag-cloud__anchor">{{tag.title}}</a>
         </li>
         {% endif %}
       {% endfor %}
