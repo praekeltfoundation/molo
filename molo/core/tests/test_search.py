@@ -4,7 +4,7 @@ from django.test.client import Client
 
 from wagtail.wagtailsearch.backends import get_search_backend
 
-from molo.core.models import ArticlePage, SiteLanguage
+from molo.core.models import ArticlePage, SiteLanguage, FooterPage
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -25,6 +25,19 @@ class TestSearch(TestCase, MoloTestCaseMixin):
         # Creates a section under the index page
         self.english_section = self.mk_section(
             self.section_index, title='English section')
+
+    def test_search_only_includes_articles(self):
+        self.backend = get_search_backend('default')
+        self.backend.reset_index()
+        self.mk_articles(self.english_section, count=2)
+        footer = FooterPage(title='Test Footer')
+        self.footer_index.add_child(instance=footer)
+        footer.save_revision().publish()
+        self.backend.refresh_index()
+        response = self.client.get(reverse('search'), {'q': 'Test'})
+        results = response.context['results']
+        for article in results:
+            self.assertNotEquals(article.title, 'Test Footer')
 
     def test_search(self):
         self.backend = get_search_backend('default')
