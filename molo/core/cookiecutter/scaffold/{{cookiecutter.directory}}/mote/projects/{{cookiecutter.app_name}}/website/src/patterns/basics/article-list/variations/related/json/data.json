@@ -1,0 +1,11 @@
+{
+  "ArticleList": {
+    "text": "Article List",
+    "modifiers": "brown",
+    "list": [
+      {"text":"Title case ideally less than 120 characters"},
+      {"text":"But there is no way to limit"},
+      {"text":"Another example of the an article title"}
+    ]
+  }
+}

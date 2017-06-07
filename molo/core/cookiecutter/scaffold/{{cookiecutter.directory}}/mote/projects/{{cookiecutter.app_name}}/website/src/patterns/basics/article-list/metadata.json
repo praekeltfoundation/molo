@@ -1,0 +1,5 @@
+{
+  "title": "Article list",
+  "description": "A Article List can be used at the end of an article page to show articles that are related to the current article. It is best if the articles in the list are closely related to topic of article, so rather from the same tag than a category.",
+  "position": 7
+}

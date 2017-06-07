@@ -1,0 +1,74 @@
+{
+  "ArticleList": {
+      "text": "Article List",
+      "modifiers": "brown",
+      "hero": {
+        "image": {
+          "src":"/static/images/thumbnail.png",
+          "alt":"Article Image"
+        },
+        "title":"But there is no way to limit",
+        "subtitle":"Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo"
+      },
+      "list_hero": {
+          "image": {
+            "src":"/static/images/thumbnail.png",
+            "alt":"Article Image"
+          },
+          "title":"Title case ideally less than 120 characters",
+          "subtitle":"Sed ut perspiciatis unde omnis iste natus error sit voluptatem"
+      },
+      "list_subHero": [
+        {
+          "image": {
+            "src":"/static/images/thumbnail.png",
+            "alt":"Article Image"
+          },
+          "title":"But there is no way to limit",
+          "subtitle":"Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo"
+        },
+        {
+          "image": {
+            "src":"/static/images/thumbnail.png",
+            "alt":"Article Image"
+          },
+          "title":"Another example of the an article title",
+          "subtitle":"Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo"
+        }
+      ],
+      "list": [
+        {
+          "image": {
+            "src":"/static/images/thumbnail.png",
+            "alt":"Article Image"
+          },
+          "title":"But there is no way to limit",
+          "subtitle":"Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo"
+        },
+        {
+          "image": {
+            "src":"/static/images/thumbnail.png",
+            "alt":"Article Image"
+          },
+          "title":"Another example of the an article title",
+          "subtitle":"Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo"
+        },
+        {
+          "image": {
+            "src":"/static/images/thumbnail.png",
+            "alt":"Article Image"
+          },
+          "title":"But there is no way to limit",
+          "subtitle":"Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo"
+        },
+        {
+          "image": {
+            "src":"/static/images/thumbnail.png",
+            "alt":"Article Image"
+          },
+          "title":"Another example of the an article title",
+          "subtitle":"Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo"
+        }
+      ]
+    }
+}
