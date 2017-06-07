@@ -478,7 +478,7 @@ class ReactionQuestionChoice(
         related_name='+'
     )
 
-    success_message = models.CharField(blank=True, null=True, max_length=30)
+    success_message = models.CharField(blank=True, null=True, max_length=1000)
     success_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
