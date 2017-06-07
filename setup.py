@@ -37,7 +37,7 @@ install_requires = [
     'six>=1.9',
     'ujson==1.35',
     'unicore.content',
-    'wagtail==1.9',
+    'wagtail>=1.9,<1.10',
     'wagtailmedia==0.1.3',
 ]
 
