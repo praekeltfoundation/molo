@@ -243,7 +243,7 @@ class ReactionQuestionChoiceView(FormView):
             self.request.site.root_page).filter(slug=article_slug).first()
         if not article:
             raise Http404
-        if question.has_user_submitted_reaction_response(
+        if not question.has_user_submitted_reaction_response(
                 self.request, question_id, article.pk):
             created = ReactionQuestionResponse.objects.create(
                 question=question,
@@ -251,7 +251,8 @@ class ReactionQuestionChoiceView(FormView):
             if created:
                 created.choice = choice
                 created.save()
-                created.set_response_as_submitted_for_session(self.request)
+                created.set_response_as_submitted_for_session(
+                    self.request, article)
             if self.request.user.is_authenticated():
                 created.user = self.request.user
                 created.save()

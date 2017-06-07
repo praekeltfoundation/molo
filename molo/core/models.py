@@ -461,8 +461,8 @@ class ReactionQuestion(TranslatablePageMixin, Page):
         if 'reaction_response_submissions' not in request.session:
             request.session['reaction_response_submissions'] = []
         if article_id in request.session['reaction_response_submissions']:
-            return False
-        return True
+            return True
+        return False
 
 
 class ReactionQuestionChoice(
@@ -503,10 +503,10 @@ class ReactionQuestionResponse(models.Model):
     question = models.ForeignKey('core.ReactionQuestion')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def set_response_as_submitted_for_session(self, request):
+    def set_response_as_submitted_for_session(self, request, article):
         if 'reaction_response_submissions' not in request.session:
             request.session['reaction_response_submissions'] = []
-        request.session['reaction_response_submissions'].append(self.id)
+        request.session['reaction_response_submissions'].append(article.id)
         request.session.modified = True
 
 

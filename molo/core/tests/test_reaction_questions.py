@@ -226,6 +226,12 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response, '<a href="/sections-main-1/your-mind/test-page-0/">')
         self.assertContains(response, 'well done')
+        # test user can only submit once
+        response = self.client.post(reverse(
+            'reaction-vote', kwargs={
+                'question_id': question.id, 'article_slug': article.slug}),
+            {'choice': choice1.id})
+        self.assertEquals(ReactionQuestionResponse.objects.all().count(), 1)
 
     def test_correct_reaction_shown_for_locale(self):
         article = self.mk_article(self.yourmind)
