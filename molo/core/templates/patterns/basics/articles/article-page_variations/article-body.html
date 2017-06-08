@@ -1,5 +1,4 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags  %}
-<p class="article__desc">{{self.subtitle}}</p>
 <article class="{{articletype}}">
   {% for block in self.body %}
     {% if block.block_type == 'heading' %}

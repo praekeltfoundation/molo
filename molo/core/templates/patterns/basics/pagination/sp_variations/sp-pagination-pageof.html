@@ -1,0 +1,15 @@
+<div class="pagination">
+  {% if pages.previous %}
+    {% if pages.previous.number == 1 and pagelink == request.path %}
+        <a href="/" class="pagination__nav-anchor-previous"></a>
+    {% else %}
+      <a href="{{ pagelink }}?page={{ pages.previous.number }}" class="pagination__nav-anchor-previous"></a>
+    {% endif %}
+  {% endif %}
+  <span class="pagination__current-page">
+    Page {{ pages.current }} of {{ pages|length }}
+  </span>
+  {% if pages.next %}
+    <a href="{{ pagelink }}?page={{ pages.next.number }}" class="pagination__nav-anchor-next"></a>
+  {% endif %}
+</div>

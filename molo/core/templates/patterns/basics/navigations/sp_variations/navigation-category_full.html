@@ -1,0 +1,26 @@
+{% load wagtailcore_tags core_tags i18n %}
+<div class="section-nav">
+  <ul id="nav-list" class="section-nav-list">
+    <li class="section-nav-list__item">
+      <a href="/" class="section-nav-list__anchor{% if request.path == '/' %} selected{% endif %}">
+        {% trans "Home" %}
+      </a>
+    </li>
+  {% load_sections as sections %}
+  {% for section in sections %}
+  {% pageurl section as section_path %}
+    <li class="section-nav-list__item section-nav-list__item--{{section.get_effective_extra_style_hints}}">
+      <a href="{% pageurl section %}" class="section-nav-list__anchor{% if request.path == section_path %} selected{% endif %}">
+      {{section.title}}
+      </a>
+    </li>
+  {% if forloop.revcounter == 3 %}
+    <ul class="section-nav-list-wrap">
+  {% endif %}
+  {% if forloop.revcounter == 1 %}
+    </ul>
+  {% endif %}
+  {% endfor %}
+  </ul>
+</div>
+

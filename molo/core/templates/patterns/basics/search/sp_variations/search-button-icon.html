@@ -1,0 +1,10 @@
+{% load i18n %}
+{% block search_button %}
+<div class="search-bar">
+  <form action="{% url 'search' %}">
+    <input placeholder="{{placeholder}}" name="q" type="text" value="{{search_query}}" id="input__{{radius}}">
+    <input type="submit" value="{% trans "Search"%}" class="call-to-action__item call-to-action__item--with-icon call-to-action__item--search-icon">
+  </form>
+</div>
+{% endblock %}
+
