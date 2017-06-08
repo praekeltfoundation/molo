@@ -1,0 +1,12 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.sectionCategory as "category" %}
+  <div class="section-teaser-listing-header section-teaser-listing-header--{{category.modifiers}}">
+    <div class="heading heading__section">
+      <h1>{{category.text}}</h1>
+    </div>
+    <div class="section-banner">
+      <img alt="{{category.bannerImage.alt}}" src="{{category.bannerImage.src}}" width="172">
+    </div>
+  </div>
+{% endraw %}

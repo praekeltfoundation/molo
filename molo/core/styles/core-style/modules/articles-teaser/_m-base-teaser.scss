@@ -5,21 +5,17 @@ Separate smart styles to states folder
 .article-teaser {
   overflow: auto;
 }
-
 .base-teaser {
   &__thumbnail-link {
     cursor: pointer;
     outline: none;
-
     display: inline-block;
     width: 30%;
     vertical-align: top;
-
     img {
       width: 100%;
     }
   }
-
   &__title {
     font-size: $font-x-large;
     a {
@@ -45,14 +41,12 @@ Separate smart styles to states folder
     color: #000;
     border-bottom: 4px solid #edf0f2;
     font-size: 0;
-
     .comment-counter {
       position: absolute;
       right: 10px;
       bottom: 3px;
       display: inline-block;
       height: 25px;
-
       &__numeral {
         color: $slate-grey;
         font-size: $font-xx-small;
@@ -65,5 +59,6 @@ Separate smart styles to states folder
     display: inline-block;
     width: 60%;
     vertical-align: top;
+    padding: 0 0 0 10px;
   }
 }
