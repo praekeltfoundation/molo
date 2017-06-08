@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.4.6
+~~~~~
+- Increase character limit on reaction question success message
+
 5.4.5
 ~~~~~
 - Add reaction question success_messages
