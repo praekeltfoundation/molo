@@ -1,0 +1,36 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% load_reaction_question article as question %}
+{% if question %}
+<div class="reaction-questions__block">
+  {% include "patterns/basics/headings/sp_variations/heading.html" with type="subheading" htmltag="h3" title=question.title %}
+  <div class="errors">
+    {{ form.errors }}
+  </div>
+  {% if messages %}
+    {% for message in messages %}
+    <div class="reaction-questions__message">
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
+  <form class="reaction-questions__form" action="{% url 'reaction-vote' article.slug question.id %}" method="post">
+    {% csrf_token %}
+    <div class="reaction-questions__list">
+      {% load_choices_for_reaction_question question as choices %}
+          {% for choice in choices %}
+             <div class="reaction-questions__item">
+                <input type="submit" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.specific.get_main_language_page.id }}" />
+                <label for="choice{{ forloop.counter }}">
+                  <div class="reaction-questions__image">
+                    {% image choice.get_effective_image width-50 %}
+                  </div>
+                  <div class="reaction-questions__label">
+                    {{ choice.title }}
+                  </div>
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+  </form>
+</div>
+{% endif %}
