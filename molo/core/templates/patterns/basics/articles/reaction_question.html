@@ -1,36 +1,24 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
 {% load_reaction_question article as question %}
 {% if question %}
-<div class="reaction-questions__block">
-  {% include "patterns/basics/headings/sp_variations/heading.html" with type="subheading" htmltag="h3" title=question.title %}
-  <div class="errors">
-    {{ form.errors }}
-  </div>
-  {% if messages %}
-    {% for message in messages %}
-    <div class="reaction-questions__message">
-      {{ message }}
-    </div>
-    {% endfor %}
+{{question.title}}
+{{ form.errors }}
+{% load_user_can_vote_on_reaction_question question article.pk as user_can_vote%}
+  {% if user_can_vote %}
+    <form class="reaction__form" action="{% url 'reaction-vote' article.slug question.id %}" method="post">
+      {% csrf_token %}
+      <div class="poll-choices">
+        {% load_choices_for_reaction_question question as choices %}
+            {% for choice in choices %}
+               <div class="fieldset">
+                  <input type="submit" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.specific.get_main_language_page.id }}" />
+                  {% image choice.specific.image width-60 %}
+                  <label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
+              </div>
+          {% endfor %}
+      </div>
+    </form>
+  {% else %}
+    {% trans "You have already submitted a response for this article." %}
   {% endif %}
-  <form class="reaction-questions__form" action="{% url 'reaction-vote' question.id article.slug %}" method="post">
-    {% csrf_token %}
-    <div class="reaction-questions__list">
-      {% load_choices_for_reaction_question question as choices %}
-          {% for choice in choices %}
-             <div class="reaction-questions__item">
-                <input type="submit" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.specific.get_main_language_page.id }}" />
-                <label for="choice{{ forloop.counter }}">
-                  <div class="reaction-questions__image">
-                    {% image choice.get_effective_image width-50 %}
-                  </div>
-                  <div class="reaction-questions__label">
-                    {{ choice.title }}
-                  </div>
-                </label>
-            </div>
-        {% endfor %}
-    </div>
-  </form>
-</div>
 {% endif %}
