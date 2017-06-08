@@ -516,7 +516,7 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
         question = question.get_main_language_page().specific
-        return question.has_user_submitted_reaction_response(
+        return not question.has_user_submitted_reaction_response(
             request, question.pk, article_pk)
 
 
