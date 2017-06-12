@@ -12,7 +12,6 @@ var gulp              =   require('gulp'),
     minify            =   require('gulp-minify'),
     sassPaths = [
         'molo/core/styles/core-style/styles.scss',
-        'molo/core/styles/gem-springster/springster.scss',
         'molo/core/styles/mote/mote.scss'
     ],
     sassDest = {
@@ -38,6 +37,15 @@ function styles(env) {
         .pipe(notify({ message: `Styles task complete: ${env}` }));
 }
 
+//Wagtail Admin CSS override - must be on root static
+gulp.task('stylesAdmin', function() {
+  gulp.src('molo/core/styles/wagtail-admin.scss')
+      .pipe(sass().on('error', sass.logError))
+      .pipe(cleanCSSMinify())
+      .pipe(gulp.dest('molo/core/static/css/'))
+      .pipe(notify({ message: 'Styles task complete: Wagtail Admin' }));
+});
+
 // Minify JS
 gulp.task('compress', function() {
   gulp.src('molo/core/static/js/molo.js')
@@ -61,5 +69,5 @@ gulp.task('watch', function() {
     gulp.watch(['molo/styles/**/*.scss'],['styles']);
 });
 
-gulp.task('styles', ['styles:dev', 'styles:prd']);
+gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
 gulp.task('default', ['styles', 'compress','watch']);
