@@ -17,9 +17,10 @@
 
       //Extra Menu - Active state
       $('.extra-list__menuitem a').click(function() {
-        var currentItem = $(this);
+        var $this = $(this);
+
+        this.addClass('is-active');
         $('.extra-list__menuitem a').removeClass('is-active');
-        currentItem.addClass('is-active');
 
         $('.content__prk .content').css({
           'padding-top': '117px'

@@ -1,0 +1,24 @@
+{% load wagtailcore_tags wagtailimages_tags mptt_tags static core_tags i18n  %}
+{% if self.get_parent_section.enable_recommended_section %}
+{% get_recommended_articles self as articles %}
+  {% if articles %}
+  <div class="article-teaser">
+    <h3 class="heading heading--small related-articles__recommended">{% trans "You might like" %}</h3>
+    <ul class="teaser-stacklist">
+      {% for article in articles %}
+      <li class="teaser-stacklist__item">
+        {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="base" %}
+        <div class="teaser-stacklist__item--content">
+          {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="base" %}
+          {% include "patterns/basics/comment-counter/sp_comment-counter.html" with layouttype="base" %}
+          {% load_tags_for_article article as tags %}
+          {% if tags %}
+          {% include "patterns/basics/article-tags/article-tag_teaser.html" %}
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+{% endif %}
