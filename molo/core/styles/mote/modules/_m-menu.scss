@@ -1,6 +1,12 @@
 [role="menu"] {
   padding: 0 0 0 10px;
 }
+[role="menu"].vertical.tier-1 > [role="menuitem"] a {
+  font-weight: bold;
+}
+[role=menu].vertical.tier-2 > [role=menuitem] a {
+  font-weight: normal;
+}
 
 [role="menu"] [role="menuitem"] a {
   color: #000;
@@ -18,7 +24,6 @@
 [role="menu"] [role="menuitem"] a.active {
   color: rgba(0,0,0,.5);
 }
-
 [role="menu"] [role="menuitem"] a:active,
 [role="menu"] [role="menuitem"] a.active  {
     font-weight: bold;
@@ -30,7 +35,6 @@
   list-style: none;
   margin: 0;
 }
-
 .extra-list__menuitem {
   a {
     color: #000;
@@ -47,7 +51,6 @@
     font-weight: bold;
   }
 }
-
 .menuitem__main-project {
   color: #000;
   text-decoration: underline;
