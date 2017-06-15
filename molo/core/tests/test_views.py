@@ -347,7 +347,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/locale/en/?next=/?" class="language-list__anchor'
+            '<a href="/locale/en/?next=/?" class="language-list__anchor '
             'language-list__anchor-with-label is-active">English</a>',
             html=True)
         self.assertContains(
@@ -361,7 +361,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = client.get(self.site2.root_url)
         self.assertContains(
             response,
-            '<a href="/locale/en/?next=/?" class="language-list__anchor'
+            '<a href="/locale/en/?next=/?" class="language-list__anchor '
             'language-list__anchor-with-label is-active">English</a>',
             html=True)
         self.assertContains(
