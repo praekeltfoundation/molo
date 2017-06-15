@@ -397,7 +397,7 @@ class TranslatablePageMixinNotRoutable(object):
     def get_sitemap_urls(self):
         return [
             {
-                'location': self.full_url + 'noredirect/',
+                'location': self.full_url,
                 'lastmod': self.latest_revision_created_at
             }
         ]
