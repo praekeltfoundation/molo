@@ -6,17 +6,17 @@
       {
         "href": "#",
         "name": "Sign up",
-        "id": "profile_register"
+        "id": "profile_icon"
       },
       {
         "href": "#",
         "name": "Menu",
-        "id": "menu"
+        "id": "menu_icon"
       },
       {
         "href": "#",
         "name": "Search",
-        "id": "search"
+        "id": "search_icon"
       }
     ]
   }

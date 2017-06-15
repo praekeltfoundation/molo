@@ -1,0 +1,11 @@
+{
+  "sectionCategory":
+    {
+      "text": "My Life",
+      "modifiers": "my-life",
+      "bannerImage": {
+        "src": "/static/images/category_2.png",
+        "alt": "My Life"
+      }
+    }
+}
