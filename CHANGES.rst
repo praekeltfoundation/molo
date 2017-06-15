@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.4.7
+~~~~~
+- Update static files to fix missing/incorrect references
+
 5.4.6
 ~~~~~
 - Increase character limit on reaction question success message
