@@ -1,6 +1,6 @@
 .heading {
   &__square {
-    background-color: $springster-purple;
+    background-color: #d3d3d3;
     text-align: center;
     padding: 15px 8px 35px;
     *:first-child {
@@ -91,7 +91,7 @@
 
 .heading__square {
   @include divider-bottom-1;
-  background-color: $springster-purple;
+  background-color: #d3d3d3;
   *:first-child {
     @include underline(skewed, 10px);
   }
