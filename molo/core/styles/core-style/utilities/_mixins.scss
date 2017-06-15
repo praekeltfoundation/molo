@@ -46,11 +46,6 @@
   margin-top: 5px;
 }
 
-@mixin zig-zag-underline {
-	background: url('/static/img/zig-zag-underline.png') no-repeat 50% 100%/145px;
-  padding-bottom: 10px
-}
-
 @mixin divider-line($height, $color) {
   &:after {
     content: "";

@@ -26,9 +26,8 @@
     margin-left: -50px;
   }
   &__heading {
-    @include zig-zag-underline;
+    @include underline(zig-zag, 10px);
     text-align: center;
-
     h4 {
       font-size: $font-x-large;
       text-transform: uppercase;
