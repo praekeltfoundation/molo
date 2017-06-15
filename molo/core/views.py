@@ -17,6 +17,7 @@ from django.utils.translation import (
 )
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import FormView
+from django.views.generic.base import TemplateView
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
@@ -180,6 +181,31 @@ def get_pypi_version(plugin_name):
         return 'request failed'
 
 
+class ReactionQuestionChoiceFeedbackView(TemplateView):
+    template_name = 'patterns/basics/articles/reaction_question_feedback.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ReactionQuestionChoiceFeedbackView,
+                        self).get_context_data(**kwargs)
+        locale = self.request.LANGUAGE_CODE
+        choice_slug = self.kwargs.get('choice_slug')
+        context['request'] = self.request
+        main_lang_choice = ReactionQuestionChoice.objects.descendant_of(
+            self.request.site.root_page).filter(
+            slug=choice_slug)
+        choice = get_pages(context, main_lang_choice, locale)
+        if choice:
+            choice = choice[0]
+        else:
+            choice = main_lang_choice
+        context.update({'choice': choice})
+        article_slug = self.kwargs.get('article_slug')
+        article = ArticlePage.objects.descendant_of(
+            self.request.site.root_page).filter(slug=article_slug).first()
+        context.update({'article': article})
+        return context
+
+
 class ReactionQuestionChoiceView(FormView):
     form_class = ReactionQuestionChoiceForm
     template_name = 'patterns/basics/articles/reaction_question.html'
@@ -191,14 +217,17 @@ class ReactionQuestionChoiceView(FormView):
             self.request.site.root_page).filter(slug=article_slug).first()
         if not article:
             raise Http404
-
-        return article.url
+        choice_id = self.get_context_data()['form'].data.get('choice')
+        choice = get_object_or_404(ReactionQuestionChoice, pk=choice_id)
+        question_id = self.kwargs.get('question_id')
+        return reverse('reaction-feedback', kwargs={
+            'question_id': question_id, 'article_slug': article.slug,
+            'choice_slug': choice.slug})
 
     def get_context_data(self, *args, **kwargs):
         context = super(
             ReactionQuestionChoiceView, self).get_context_data(*args, **kwargs)
         question_id = self.kwargs.get('question_id')
-
         question = get_object_or_404(ReactionQuestion, pk=question_id)
         context.update({'question': question})
         return context
@@ -214,18 +243,20 @@ class ReactionQuestionChoiceView(FormView):
             self.request.site.root_page).filter(slug=article_slug).first()
         if not article:
             raise Http404
-        if question.has_user_submitted_reaction_response(
-                self.request, question_id, article.pk) is False:
+        if not question.has_user_submitted_reaction_response(
+                self.request, question_id, article.pk):
             created = ReactionQuestionResponse.objects.create(
                 question=question,
                 article=article)
             if created:
                 created.choice = choice
                 created.save()
-                created.set_response_as_submitted_for_session(self.request)
-            if self.request.user.pk is not None:
+                created.set_response_as_submitted_for_session(
+                    self.request, article)
+            if self.request.user.is_authenticated():
                 created.user = self.request.user
                 created.save()
+
         else:
             messages.error(
                 self.request,
@@ -330,7 +361,8 @@ def home_index(
         template=(
             'patterns/components/article-teasers/latest-promoted_variations/'
             'article_for_paging.html')):
-    return render(request, template, {})
+    locale_code = request.GET.get('locale')
+    return render(request, template, {'locale_code': locale_code})
 
 
 @page_template(
@@ -343,7 +375,9 @@ def section_index(
             'patterns/basics/sections/sectionpage-article-list-'
             'standard_for-paging.html')):
     section = SectionPage.objects.get(pk=request.GET.get('section'))
-    return render(request, template, {'section': section})
+    locale_code = request.GET.get('locale')
+    return render(
+        request, template, {'section': section, 'locale_code': locale_code})
 
 
 @page_template('core/article_tags_for_paging.html')
@@ -369,8 +403,9 @@ def tag_index(request, extra_context=None,
     # context = self.get_context_data(
     #     object_list=get_pages(context, articles[:count], locale))
     object_list = get_pages(context, articles, locale)
-
-    return render(request, template, {'object_list': object_list, 'tag': tag})
+    locale_code = request.GET.get('locale')
+    return render(request, template, {
+        'object_list': object_list, 'tag': tag, 'locale_code': locale_code})
 
 
 @page_template('search/search_results_for_paging.html')
@@ -380,8 +415,11 @@ def search_index(
         template=('search/search_results_for_paging.html')):
     search_query = request.GET.get('q')
     results = search(request, load_more=True)
+    locale_code = request.GET.get('locale')
     return render(
-        request, template, {'search_query': search_query, 'results': results})
+        request, template, {
+            'search_query': search_query, 'results': results,
+            'locale_code': locale_code})
 
 
 @page_template(
@@ -389,4 +427,5 @@ def search_index(
     'st-articles_for-feature.html')
 def home_more(
         request, template='core/main-feature-more.html', extra_context=None):
-    return render(request, template, {})
+    locale_code = request.GET.get('locale')
+    return render(request, template, {'locale_code': locale_code})

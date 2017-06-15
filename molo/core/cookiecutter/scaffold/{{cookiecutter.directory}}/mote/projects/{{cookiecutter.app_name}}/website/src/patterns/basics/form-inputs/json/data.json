@@ -1,0 +1,18 @@
+{
+  "FormInputs": {
+    "radioButtons":[
+      { "legend":"Radio group label is usually very long and go over two lines?","options": [
+        {"input":"radio","label":"Center aligned in container option","name":"choice", "value":"12"},
+        {"input":"radio","label":"Center aligned in container option if it goes over two lines or three lines","name":"choice", "value":"20"}
+      ]},
+      { "legend":"What is you favourite fruit?","options": [
+        {"input":"radio","label":"Banana","name":"choice", "value":"banana"},
+        {"input":"radio","label":"Mango","name":"choice", "value":"mango"},
+        {"input":"radio","label":"Strawberries","name":"choice", "value":"strawberries"},
+        {"input":"radio","label":"Apples","name":"choice", "value":"apples"},
+        {"input":"radio","label":"Pineappples","name":"choice", "value":"pineapples"},
+        {"input":"radio","label":"Cheries","name":"choice", "value":"cherries"}
+      ]}
+    ]
+  }
+}

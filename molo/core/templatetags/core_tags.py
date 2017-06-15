@@ -332,6 +332,45 @@ def get_articles_for_tags_with_translations(
 
 
 @register.assignment_tag(takes_context=True)
+def get_articles_for_tag(context, tag):
+    request = context['request']
+    locale = context.get('locale_code')
+    if tag:
+        main_tag = tag.specific.get_main_language_page()
+        pks = [article_tag.page.pk for article_tag in
+               ArticlePageTags.objects.filter(tag=main_tag)]
+        return get_pages(
+            context, ArticlePage.objects.descendant_of(
+                request.site.root_page).filter(pk__in=pks), locale)
+    return None
+
+
+@register.assignment_tag(takes_context=True)
+def get_next_tag(context, tag):
+    request = context['request']
+    locale_code = context.get('locale_code')
+    current_tag = tag.get_main_language_page()
+    qs = Tag.objects.descendant_of(request.site.root_page).filter(
+        languages__language__is_main_language=True).live()
+    if qs:
+        tags = list(qs)
+        if len(tags) > 1:
+            if not (len(tags) == tags.index(current_tag) + 1):
+                next_tag = tags[tags.index(current_tag) + 1]
+            else:
+                next_tag = tags[0]
+
+            if next_tag.get_translation_for(
+                    locale_code, context['request'].site):
+                return next_tag.get_translation_for(
+                    locale_code, context['request'].site)
+            else:
+                return next_tag
+        else:
+            return None
+
+
+@register.assignment_tag(takes_context=True)
 def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     request = context['request']
     locale = context.get('locale_code')
@@ -448,7 +487,7 @@ def load_tags_for_article(context, article):
     request = context['request']
     tags = [
         article_tag.tag.pk for article_tag in
-        article.get_main_language_page().specific.nav_tags.all()
+        article.specific.get_main_language_page().nav_tags.all()
         if article_tag.tag]
     if tags and request.site:
         qs = Tag.objects.descendant_of(
@@ -461,8 +500,9 @@ def load_tags_for_article(context, article):
 @register.assignment_tag(takes_context=True)
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
-    question_pk = question.get_main_language_page().pk
-    question = ReactionQuestion.objects.filter(pk=question_pk)
+    if question:
+        question_pk = question.get_main_language_page().pk
+        question = ReactionQuestion.objects.filter(pk=question_pk)
     if question and question.first().get_children():
         pks = [c.pk for c in question.first().get_children().filter(
             languages__language__is_main_language=True)]
@@ -472,14 +512,23 @@ def load_choices_for_reaction_question(context, question):
 
 
 @register.assignment_tag(takes_context=True)
+def load_user_can_vote_on_reaction_question(context, question, article_pk):
+    request = context['request']
+    if question:
+        question = question.get_main_language_page().specific
+        return not question.has_user_submitted_reaction_response(
+            request, question.pk, article_pk)
+
+
+@register.assignment_tag(takes_context=True)
 def load_reaction_question(context, article):
     locale = context.get('locale_code')
     request = context['request']
     question = None
     if article:
         article_question = article.get_main_language_page() \
-            .specific.reaction_questions.all().first()
-        if article_question.reaction_question:
+            .reaction_questions.all().first()
+        if hasattr(article_question, 'reaction_question'):
             question = article_question.reaction_question
 
         if question and request.site:
@@ -488,7 +537,10 @@ def load_reaction_question(context, article):
                     pk=question.pk, languages__language__is_main_language=True)
         else:
             return []
-        return get_pages(context, qs, locale)[0]
+        translated_question = get_pages(context, qs, locale)
+        if translated_question:
+            return get_pages(context, qs, locale)[0]
+        return question
 
 
 @register.assignment_tag(takes_context=True)

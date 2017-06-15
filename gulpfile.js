@@ -37,6 +37,15 @@ function styles(env) {
         .pipe(notify({ message: `Styles task complete: ${env}` }));
 }
 
+//Wagtail Admin CSS override - must be on root static
+gulp.task('stylesAdmin', function() {
+  gulp.src('molo/core/styles/wagtail-admin.scss')
+      .pipe(sass().on('error', sass.logError))
+      .pipe(cleanCSSMinify())
+      .pipe(gulp.dest('molo/core/static/css/'))
+      .pipe(notify({ message: 'Styles task complete: Wagtail Admin' }));
+});
+
 // Minify JS
 gulp.task('compress', function() {
   gulp.src('molo/core/static/js/molo.js')
@@ -55,5 +64,10 @@ gulp.task('styles:dev', function() {
   return styles('dev');
 });
 
-gulp.task('styles', ['styles:dev', 'styles:prd']);
-gulp.task('default', ['styles', 'compress']);
+gulp.task('watch', function() {
+    livereload.listen();
+    gulp.watch(['molo/styles/**/*.scss'],['styles']);
+});
+
+gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
+gulp.task('default', ['styles', 'compress','watch']);

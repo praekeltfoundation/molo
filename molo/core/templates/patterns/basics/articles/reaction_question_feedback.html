@@ -1,0 +1,6 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{{ choice.success_message }}
+{% image choice.specific.image width-60 %}
+<a href="{% pageurl article %}">
+  {{article.title}}
+</a>

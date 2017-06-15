@@ -3,9 +3,6 @@
   padding: 0 5px;
   display: inline-block;
   position: relative;
-  @media screen and (min-width:320px) {
-    padding: 0 0 0 15px;
-  }
 }
 .menu-list__item  {
   display: inline-block;
@@ -20,4 +17,8 @@
   text-transform: uppercase;
   font-weight: bold;
   font-size: 13px;
+}
+
+.menu-list--search-icon {
+  padding: 10px 0;
 }

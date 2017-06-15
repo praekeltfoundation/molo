@@ -1,0 +1,11 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.ArticleTagsNav as "tags" %}
+<ul class="tag-cloud__block">
+  {% for tag in tags.tags_nav_list %}
+    <li class="tag-cloud__item">
+      <a href="#" class="tag-cloud__anchor">{{tag.name}}</a>
+    </li>
+  {% endfor %}
+</ul>
+{% endraw %}

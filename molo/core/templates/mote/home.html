@@ -15,7 +15,9 @@
   <ul role="menu" class="vertical tier-1" id="sidebar-nav">
     {% for project in projects %}
       <li role="menuitem">
-          <a href="{% url 'mote:project' project=project.id %}">{{ project.title }}</a>
+          <a href="{% url 'mote:project' project=project.id %}" class="menuitem__main-project">
+            {{ project.title }} Project
+          </a>
       </li>
     {% endfor %}
   </ul>

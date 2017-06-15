@@ -16,8 +16,9 @@
 @import "buttons/_m-search-buttons";
 @import "buttons/_m-springster-buttons";
 
-@import "header/_m-header";
 @import "header/_m-logo";
+@import "header/_m-header-menu.scss";
+@import "header/_m-header";
 @import "languages/_m-language-list-standard";
 @import "languages/_m-language-list-center";
 @import "languages/_m-language-list-dropdown";
@@ -31,12 +32,16 @@
 @import "menu/_m-menu-with_profile-icon";
 @import "menu/_m-menu-standard";
 @import "menu/_m-menu-with_toggle";
+@import "menu/_m-sp_menu";
 
 
 @import "navigation/_m-nav";
 @import "navigation/_m-nav-hr";
 @import "navigation/_m-nav-vertical";
 @import "navigation/_m-navigation-column";
+
+
+@import "headings/_m-sp_headings";
 
 @import "breadcrumbs/_m-breadcrumbs-on-footer";
 @import "breadcrumbs/_m-breadcrumbs";

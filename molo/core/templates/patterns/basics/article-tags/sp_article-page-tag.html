@@ -1,0 +1,23 @@
+{% load wagtailcore_tags core_tags i18n %}
+{% load_tags_for_article self as navigation_tags %}
+{% if navigation_tags %}
+<div class="article-page-tag-cloud">
+  <ul class="tag-cloud__block">
+  {% if settings.core.SiteSettings.enable_tag_navigation %}
+    {% trans "Read more about" as headingtext%}
+    {% include "patterns/basics/headings/sp_variations/heading.html" with type="micro" htmltag="h4" title=headingtext %}
+    {% for tag in navigation_tags  %}
+      <li class="tag-cloud__item">
+        <a href="{% url 'tags_list' tag.slug %}" class="tag-cloud__anchor">{{tag}}</a>
+      </li>
+    {% endfor %}
+  {% elif settings.core.SiteSettings.enable_clickable_tags %}
+    {% for tag in self.tags_list %}
+      <li class="tag-cloud__item">
+        <a href="{% url 'tags_list' tag %}" class="tag-cloud__anchor">{{tag}}</a>
+      </li>
+    {% endfor %}
+  {% endif %}
+  </ul>
+</div>
+{% endif %}

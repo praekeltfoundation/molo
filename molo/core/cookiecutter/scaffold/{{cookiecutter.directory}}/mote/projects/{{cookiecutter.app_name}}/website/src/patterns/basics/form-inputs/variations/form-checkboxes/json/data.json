@@ -1,0 +1,10 @@
+{
+  "FormInputs": {
+    "checkBoxes": [
+      {"legend":"Checkbox group label is for optional choices for 1 or more options","options": [
+        {"input":"checkbox","label":"Checkbox label option","name":"choice", "value":"1"},
+        {"input":"checkbox","label":"Center aligned in container option if it goes over two lines or three lines","name":"choice", "value":"2"}
+      ]}
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Category as "category" %}
+<div class="section-listing section-listing--standard section-listing--standard{{category.modifiers}} section-listing--mote">
+  <h1 class="heading section-listing__title-theme-standard section-listing__title-theme-standard{{category.modifiers}}">
+    <a href="#" class="section-listing__link-theme-standard">{{category.text}}</a>
+  </h1>
+</div>
+<div class="section-listing section-listing--general section-listing--general{{category.modifiers}} section-listing--mote">
+  <h1 class="heading section-listing__title-theme-general section-listing__title-theme-general{{category.modifiers}}">
+    <a href="#" class="section-listing__link-theme-general">{{category.text}}</a>
+  </h1>
+</div>
+<div class="section-listing section-listing_theme-headings {{category.subtext}} section-listing--mote">
+  <h1 class="heading section-listing__title-theme-headings">
+    <a href="#" class="section-listing__link-theme-headings">{{category.text}}</a>
+  </h1>
+</div>
+<div class="section-listing section-listing__theme-bg{{category.modifiers}} section-listing--mote">
+  <h1 class="heading section-listing__theme-bg-title">
+    <a href="#" class="section-listing__theme-bg-link">{{category.text}}</a>
+  </h1>
+</div>
+{% endraw %}

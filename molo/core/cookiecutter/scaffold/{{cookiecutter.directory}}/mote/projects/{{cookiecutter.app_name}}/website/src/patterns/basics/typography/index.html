@@ -1,26 +1,23 @@
 {% raw %}
 {% extends "mote/element/index.html" %}
 {% load mote_tags %}
-
 {% block codeblock %}
 <div class="sg-code-block">
     <h4 class="title">
-        Code Block Title
+      Heading Typography
     </h4>
     <div class="description">
-        Code Block Description
+      <p>H tags are used to define important HTML headings using custom typography style</p>
     </div>
     <div class="code-example">
         <pre>
             <code class="language-markup">
                 <xmp>
-
+                  {% render_element element %}
                 </xmp>
             </code>
         </pre>
     </div>
-    <!-- code-example -->
 </div>
-<!-- sg-code-block -->
 {% endblock %}
 {% endraw %}

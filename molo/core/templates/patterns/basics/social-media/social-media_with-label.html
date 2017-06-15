@@ -1,0 +1,26 @@
+{% load wagtailcore_tags wagtailimages_tags wagtailsettings_tags static i18n %}
+{% get_settings %}
+<ul class="social-media-list">
+  <li class="social-media-list__item"><label class="social-media__label">Share:</label></li>
+  <li class="social-media-list__item">
+  <a href="/" class="call-to-action__nav-item-share">
+    <img alt="Instagram" src="{% static 'img/icons/instagram@2x.png' %}" width="30px" class="call-to-action__share-img" />
+  </a></li>
+  <li class="social-media-list__item"><a href="/" class="call-to-action__nav-item-share">
+    <img alt="Instagram" src="{% static 'img/icons/instagram@2x.png' %}" width="30px" class="call-to-action__share-img" />
+  </a></li>
+  <li class="social-media-list__item">
+    {% if settings.core.SiteSettings.facebook_sharing %}
+        <a href="http://www.facebook.com/sharer.php?u=http{% if request.is_secure %}s{%endif %}://{{ request.get_host }}{{ request.path }}" target="_blank" class="call-to-action__item-share call-to-action__nav-item-share--facebook {% if facebook %} call-to-action__nav-item-share-with-image {% endif %}">
+          {% image facebook width-30 jpegquality-70 alt="Facebook" class="call-to-action__share-img" %}
+        </a>
+    {% endif %}
+  </li>
+  <li class="social-media-list__item">
+    {% if settings.core.SiteSettings.twitter_sharing %}
+      <a href="https://twitter.com/share?url=http{% if request.is_secure %}s{%endif %}://{{ request.get_host }}{{ request.path }}" target="_blank" class="call-to-action__item-share call-to-action__nav-item-share--twitter {% if twitter %} call-to-action__nav-item-share-with-image {% endif %}">
+        {% image twitter width-30 jpegquality-70 alt="Twitter" class="call-to-action__share-img" %}
+      </a>
+    {% endif %}
+  </li>
+</ul>

@@ -1,0 +1,39 @@
+{% raw %}
+{% load mote_tags i18n %}
+{% mask element.json.data.ArticleList as "article" %}
+  <h4 class="heading related-articles__up-next">{% trans "Next up in [category]:" %}</h4>
+  <div class="related-articles-up-next">
+      <a href="#" class="article__anchor">
+        <img src="{{article.hero.image.src}}" alt="{{article.hero.image.alt}}" width="320" class="article__image">
+      </a>
+    <h1 class="heading related-articles-up-next__title">{{article.hero.title}}</h1>
+    <p class="related-articles-up-next__desc">{{article.hero.subtitle}}</p>
+  </div>
+  <h4 class="heading related-articles__recommended">{% trans "Recommended:" %}</h4>
+  <div class="related-articles-recommended">
+    <ul class="related-articles-recommended-list">
+      <li class="related-articles-recommended-list__item related-articles-recommended-list__item--hero">
+        <a href="#" class="promoted-article-list__anchor">
+          <img src="{{article.list_hero.image.src}}" alt="{{article.list_hero.image.alt}}" width="320" class="article__image">
+        </a>
+        <h3 class="heading related-articles-recommended__title">{{article.list_hero.title}}</h3>
+        <p class="related-articles-recommended__desc"> {{article.list_hero.subtitle}}</p>
+      </li>
+      {% for list_grid in  article.list_subHero %}
+      <li class="related-articles-recommended-list__item related-articles-recommended-list__item--grid">
+          <a href="#" class="promoted-article-list__anchor">
+            <img src="{{list_grid.image.src}}" alt="{{list_grid.image.alt}}" width="320" class="article__image">
+          </a>
+          <h3 class="heading heading--large related-articles-recommended__title">{{list_grid.title}}</h3>
+          <p class="related-articles-recommended__desc"> {{list_grid.subtitle}}</p>
+      </li>
+      {% endfor %}
+      {% for list in  article.list %}
+      <li class="related-articles-recommended-list__item">
+        <h3 class="heading heading--large related-articles-recommended__title">{{list.title}}</h3>
+        <p class="related-articles-recommended__desc"> {{list.subtitle}}</p>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endraw %}

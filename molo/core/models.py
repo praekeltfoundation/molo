@@ -37,6 +37,7 @@ from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
 from molo.core import constants
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
+from molo.core.mixins import PageEffectiveImageMixin
 
 
 class BaseReadOnlyPanel(EditHandler):
@@ -313,8 +314,8 @@ class TranslatablePageMixinNotRoutable(object):
 
     def get_main_language_page(self):
         if hasattr(self.specific, 'source_page') and self.specific.source_page:
-            return self.specific.source_page.page
-        return self
+            return self.specific.source_page.page.specific
+        return self.specific
 
     def get_site(self):
         return self.get_ancestors().filter(
@@ -396,7 +397,7 @@ class TranslatablePageMixinNotRoutable(object):
     def get_sitemap_urls(self):
         return [
             {
-                'location': self.full_url + 'noredirect/',
+                'location': self.full_url,
                 'lastmod': self.latest_revision_created_at
             }
         ]
@@ -459,18 +460,13 @@ class ReactionQuestion(TranslatablePageMixin, Page):
             self, request, reaction_id, article_id):
         if 'reaction_response_submissions' not in request.session:
             request.session['reaction_response_submissions'] = []
-
-        if request.user.pk is not None \
-            and ReactionQuestionResponse.objects.filter(
-                user__pk=request.user.pk,
-                question=self, article__pk=article_id).exists() \
-                or article_id in request.session[
-                    'reaction_response_submissions']:
-                    return True
+        if article_id in request.session['reaction_response_submissions']:
+            return True
         return False
 
 
-class ReactionQuestionChoice(TranslatablePageMixinNotRoutable, Page):
+class ReactionQuestionChoice(
+        TranslatablePageMixinNotRoutable, PageEffectiveImageMixin, Page):
     parent_page_types = ['core.ReactionQuestion']
     subpage_types = []
 
@@ -482,10 +478,20 @@ class ReactionQuestionChoice(TranslatablePageMixinNotRoutable, Page):
         related_name='+'
     )
 
+    success_message = models.CharField(blank=True, null=True, max_length=1000)
+    success_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
 ReactionQuestionChoice.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('image'),
+    FieldPanel('success_message', classname='full title'),
+    ImageChooserPanel('success_image'),
 ]
 
 
@@ -497,10 +503,10 @@ class ReactionQuestionResponse(models.Model):
     question = models.ForeignKey('core.ReactionQuestion')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def set_response_as_submitted_for_session(self, request):
+    def set_response_as_submitted_for_session(self, request, article):
         if 'reaction_response_submissions' not in request.session:
             request.session['reaction_response_submissions'] = []
-        request.session['reaction_response_submissions'].append(self.id)
+        request.session['reaction_response_submissions'].append(article.id)
         request.session.modified = True
 
 
@@ -1000,7 +1006,9 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
+class ArticlePage(
+        CommentedPageMixin, TranslatablePageMixin, PageEffectiveImageMixin,
+        Page):
     parent_page_types = ['core.SectionPage']
 
     subtitle = models.TextField(null=True, blank=True)
@@ -1128,14 +1136,6 @@ class ArticlePage(CommentedPageMixin, TranslatablePageMixin, Page):
 
     def get_absolute_url(self):  # pragma: no cover
         return self.url
-
-    def get_effective_image(self):
-        if self.image:
-            return self.image
-        page = self.get_main_language_page()
-        if page.specific.image:
-            return page.specific.get_effective_image()
-        return ''
 
     def get_parent_section(self):
         return SectionPage.objects.all().ancestor_of(self).last()

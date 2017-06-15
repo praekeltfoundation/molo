@@ -1,0 +1,13 @@
+{% load i18n wagtailsettings_tags %}
+{% block content %}
+<div class="profiles-join-banner">
+  <div class="profiles-join-banner__icon"></div>
+  <div class="profiles-join-banner__content">
+    {% trans "Share your opinions and stories, take polls, win fun prizes." as headingtext %}
+    {% include "patterns/basics/headings/sp_variations/heading.html" with type="subheading-alt" htmltag="h4" title=headingtext %}
+    {% trans "Join" as buttontext %}
+    {% url "molo.profiles:user_register" as link %}
+    {% include "patterns/basics/buttons/sp_variations/button.html" with type="yellow" hyperlink=link text=buttontext %}
+  </div>
+</div>
+{% endblock %}

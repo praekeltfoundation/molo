@@ -1,0 +1,10 @@
+{
+  "Category": {
+    "text": "Weather forecast",
+    "modifiers": "--green",
+    "icon_image": {
+      "src":  "/static/images/article-thumbnail.png",
+      "alt": "Category name thumb"
+    }
+  }
+}

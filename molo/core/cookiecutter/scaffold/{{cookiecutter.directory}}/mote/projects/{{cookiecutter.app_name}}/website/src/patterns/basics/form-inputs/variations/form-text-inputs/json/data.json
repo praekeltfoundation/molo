@@ -1,0 +1,13 @@
+{
+  "FormInputs": {
+    "defaultInputs": [
+      {"label":"Name","input":"text","name":"fullname", "placeholder":"Name & Surname"},
+      {"label":"Enter password","input":"password","name":"password", "placeholder":"Password"},
+      {"label":"Email Address","input":"email","name":"emal", "placeholder":"Email Address"}
+    ],
+    "textarea":[
+      {"label":"Your thoughts","placeholder":"Write comment", "name":"write-comment", "rows":10, "cols":"40"},
+      {"label":"Yourwords competition","placeholder":"Your Story competition", "name":"your-story", "rows":10, "cols":"40"}
+    ]
+  }
+}

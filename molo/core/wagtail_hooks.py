@@ -1,18 +1,25 @@
 from django.conf.urls import url
 
-from molo.core.models import LanguageRelation, PageTranslation, Languages, \
-    ArticlePage, Tag, ArticlePageTags
+from molo.core.admin import ReactionQuestionsModelAdmin, \
+    ReactionQuestionsSummaryModelAdmin
+from molo.core.admin_views import ReactionQuestionResultsAdminView, \
+    ReactionQuestionSummaryAdminView
+from molo.core.models import LanguageRelation, PageTranslation, Languages
+from molo.core.utils import create_new_article_relations
+
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.utils.html import format_html
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
 from wagtail.wagtailadmin.widgets import ButtonWithDropdownFromHook
-
+from wagtail.contrib.modeladmin.options import modeladmin_register
 from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
 from . import views
@@ -37,6 +44,30 @@ def register_admin_urls():
     ]
 
 
+@hooks.register('register_admin_urls')
+def register_question_results_admin_view_url():
+    return [
+        url(r'reactionquestion/(?P<parent>\d+)/results/$',
+            ReactionQuestionResultsAdminView.as_view(),
+            name='reaction-question-results-admin'),
+    ]
+
+
+modeladmin_register(ReactionQuestionsModelAdmin)
+
+
+@hooks.register('register_admin_urls')
+def register_article_question_results_admin_view_url():
+    return [
+        url(r'reactionquestion/(?P<article>\d+)/results/summary/$',
+            ReactionQuestionSummaryAdminView.as_view(),
+            name='reaction-question-article-results-admin'),
+    ]
+
+
+modeladmin_register(ReactionQuestionsSummaryModelAdmin)
+
+
 @hooks.register('construct_explorer_page_queryset')
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
@@ -48,14 +79,8 @@ def show_main_language_only(parent_page, pages, request):
 
 @hooks.register('after_copy_page')
 def add_new_tag_article_relations(request, page, new_page):
-    if new_page.depth <= 2:
-        for article in ArticlePage.objects.descendant_of(new_page):
-            tag_relations = ArticlePageTags.objects.filter(page=article)
-            for relation in tag_relations:
-                new_tag = Tag.objects.descendant_of(
-                    new_page).filter(slug=relation.tag.slug).first()
-                relation.tag = new_tag
-                relation.save()
+    if new_page.depth < 3:
+        create_new_article_relations(page, new_page)
 
 
 @hooks.register('after_copy_page')
@@ -208,3 +233,9 @@ def new_page_listing_buttons(page, page_perms, is_parent=False):
             if (hasattr(b, 'attrs') and
                     b.attrs.get('title').lower() != 'delete this page'):
                     yield b
+
+
+@hooks.register('insert_global_admin_css')
+def global_admin_css():
+    return format_html(
+        '<link rel="stylesheet" href="{}">', static('css/wagtail-admin.css'))

@@ -3,13 +3,19 @@
 {% if tag %}
   <div class="carousel-teaser">
   {% if tag_articles %}
-    <h1 class="carousel-teaser__heading">
-      <a href="{% pageurl tag %}" class="carousel-teaser__heading-link">{{tag.title}}</a></h1>
+    {% include "patterns/basics/headings/sp_variations/heading.html" with type="component" htmltag="h2" title=tag.title %}
     <ul class="carousel-teaser-list">
       {% for article in tag_articles %}
       <li class="carousel-teaser-list__item">
-        {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-image.html" %}
-        {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-title.html" %}
+        <div class="carousel-teaser-list__item--container">
+          {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-image.html" %}
+          <div class="carousel-teaser__wrapper">
+            <div class="carousel-teaser__content">
+              {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-title.html" %}
+              {% include "patterns/basics/comment-counter/sp_comment-counter.html" with layouttype="base" %}
+            </div>
+          </div>
+        </div>
       </li>
       {% endfor %}
     </ul>

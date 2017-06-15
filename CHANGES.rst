@@ -1,6 +1,36 @@
 CHANGE LOG
 ==========
 
+5.4.7
+~~~~~
+- Update static files to fix missing/incorrect references
+
+5.4.6
+~~~~~
+- Increase character limit on reaction question success message
+
+5.4.5
+~~~~~
+- Add reaction question success_messages
+
+5.4.4
+~~~~~
+- Add `get_effective_image` to reaction question choices
+
+5.4.3
+~~~~~
+- Fix a bug for `get_next_tag` template tag
+
+5.4.2
+~~~~~
+- show correct articles for language in load more and next tag on tag page
+
+5.4.1
+~~~~~
+- Add get_next_tag Template Tag
+- Add admin views for Reaction Questions
+- Add util for creating new article relations when copying
+
 5.4.0
 ~~~~~
 - Add load more for Search Page

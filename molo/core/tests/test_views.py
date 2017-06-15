@@ -17,12 +17,12 @@ from django.utils import timezone
 from django.http import HttpRequest
 
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import (FooterPage,
-                              SiteSettings, ArticlePage,
-                              ArticlePageRecommendedSections,
-                              Main, BannerIndexPage,
-                              SectionIndexPage,
-                              FooterIndexPage, Languages, SiteLanguageRelation)
+from molo.core.models import (
+    FooterPage, SectionPage, SiteSettings, ArticlePage,
+    ArticlePageRecommendedSections, ArticlePageRelatedSections, Main,
+    BannerIndexPage, SectionIndexPage, FooterIndexPage, Languages,
+    SiteLanguageRelation, Tag, ArticlePageTags, ReactionQuestion,
+    ArticlePageReactionQuestions)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -128,6 +128,16 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_able_to_copy_main(self):
         # testing that copying a main page does not give an error
         self.user = self.login()
+        article = self.mk_article(self.yourmind)
+        article2 = self.mk_article(self.yourmind)
+        question = self.mk_reaction_question(self.reaction_index, article)
+        tag = self.mk_tag(parent=self.tag_index)
+        ArticlePageTags.objects.create(page=article, tag=tag)
+        ArticlePageRecommendedSections.objects.create(
+            page=article, recommended_article=article2)
+        ArticlePageRelatedSections.objects.create(
+            page=article, section=self.yourmind)
+
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
             args=(self.main.id,)),
@@ -151,6 +161,23 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertTrue(
             'The content copy from Main to blank is complete.'
             in email.body)
+        new_article = ArticlePage.objects.descendant_of(main3).get(
+            slug=article.slug)
+        new_article2 = ArticlePage.objects.descendant_of(main3).get(
+            slug=article2.slug)
+        new_tag = Tag.objects.descendant_of(main3).get(slug=tag.slug)
+        new_question = ReactionQuestion.objects.descendant_of(main3).get(
+            slug=question.slug)
+        new_section = SectionPage.objects.descendant_of(main3).get(
+            slug=self.yourmind.slug)
+        self.assertEqual(ArticlePageTags.objects.get(
+            page=new_article).tag.pk, new_tag.pk)
+        self.assertEqual(ArticlePageReactionQuestions.objects.get(
+            page=new_article).reaction_question.pk, new_question.pk)
+        self.assertEqual(ArticlePageRelatedSections.objects.get(
+            page=new_article).section.pk, new_section.pk)
+        self.assertEqual(ArticlePageRecommendedSections.objects.get(
+            page=new_article).recommended_article.pk, new_article2.pk)
 
     def test_copy_method_of_section_page_copies_translations_subpages(self):
         self.assertFalse(
@@ -320,8 +347,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/locale/en/?next=/?"  class="language-list__anchor'
-            '  language-list__anchor-with-label is-active " >English</a>',
+            '<a href="/locale/en/?next=/?" class="language-list__anchor '
+            'language-list__anchor-with-label is-active">English</a>',
             html=True)
         self.assertContains(
             response, '<a href="/locale/fr/')
@@ -334,8 +361,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = client.get(self.site2.root_url)
         self.assertContains(
             response,
-            '<a href="/locale/en/?next=/?"  class="language-list__anchor'
-            '  language-list__anchor-with-label is-active " >English</a>',
+            '<a href="/locale/en/?next=/?" class="language-list__anchor '
+            'language-list__anchor-with-label is-active">English</a>',
             html=True)
         self.assertContains(
             response, '<a href="/locale/es/')
@@ -890,23 +917,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         fr_page.unpublish()
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
         self.assertEquals(response.status_code, 200)
-
-    def test_sitemap_translation_redirects(self):
-        self.yourmind_fr = self.mk_section_translation(
-            self.yourmind, self.french, title='Your mind in french')
-        client = Client(HTTP_HOST=self.main.get_site().hostname)
-        response = client.get('/sections-main-1/your-mind/noredirect/')
-        self.assertEquals(response.status_code, 200)
-
-        response = self.client.get(
-            '/sections-main-1/your-mind/your-mind-subsection/noredirect/')
-        self.assertEquals(response.status_code, 200)
-
-        response = self.client.get('/locale/fr/')
-
-        response = self.client.get(
-            '/sections-main-1/your-mind-in-french/noredirect/')
-        self.assertContains(response, 'Your mind subsection in french</a>')
 
     def test_subsection_is_translated(self):
         en_page = self.mk_article(self.yourmind_sub)

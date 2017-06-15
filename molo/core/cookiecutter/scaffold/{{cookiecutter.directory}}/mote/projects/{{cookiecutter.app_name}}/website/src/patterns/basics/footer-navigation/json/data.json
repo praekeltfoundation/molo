@@ -1,0 +1,50 @@
+{
+    "Navigation": {
+        "text": "Welcome to Molo design pattern",
+        "modifiers": "",
+        "nav_listColumnLeft": [
+          {
+            "href": "#",
+            "name": "Home"
+          },
+          {
+            "href": "#",
+            "name": "My Life"
+          },
+          {
+            "href": "#",
+            "name": "My Body"
+          },
+          {
+            "href": "#",
+            "name": "My Future"
+          },
+          {
+            "href": "#",
+            "name": "Girl Stories"
+          }
+        ],
+        "nav_listColumnRight": [
+          {
+            "href": "#",
+            "name": "About Springster"
+          },
+          {
+            "href": "#",
+            "name": "FAQ"
+          },
+          {
+            "href": "#",
+            "name": "Tips for use"
+          },
+          {
+            "href": "#",
+            "name": "Join us"
+          },
+          {
+            "href": "#",
+            "name": "Log in"
+          }
+        ]
+    }
+}
