@@ -11,6 +11,8 @@ from molo.core.utils import create_new_article_relations
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.utils.html import format_html
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
@@ -231,3 +233,9 @@ def new_page_listing_buttons(page, page_perms, is_parent=False):
             if (hasattr(b, 'attrs') and
                     b.attrs.get('title').lower() != 'delete this page'):
                     yield b
+
+
+@hooks.register('insert_global_admin_css')
+def global_admin_css():
+    return format_html(
+        '<link rel="stylesheet" href="{}">', static('css/wagtail-admin.css'))

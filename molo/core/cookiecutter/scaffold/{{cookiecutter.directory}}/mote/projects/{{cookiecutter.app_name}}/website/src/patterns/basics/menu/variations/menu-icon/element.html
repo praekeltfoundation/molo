@@ -1,11 +1,10 @@
 {% raw %}
 {% load mote_tags %}
 {% mask element.json.data.Menu as "menu" %}
-<ul class="menu-list menu-list--icon">
+<div class="menu-links">
   {% for item in menu.menu_list %}
-    <li id="{{item.id}}" class="menu-list__item menu-list__item--icon">
-      <a href="{{item.href}}" class="menu-list__anchor menu-list__anchor-icon">{{item.name}}</a>
-    </li>
+    <a id="{{item.id}}"  href="{{item.href}}" class="header__nav-item">
+      {{item.name}}</a>
 {% endfor %}
-</ul>
+</div>
 {% endraw %}
