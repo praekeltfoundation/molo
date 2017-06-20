@@ -105,7 +105,10 @@ db.sqlite3
 
 .DS_Store
 .idea/
+<<<<<<< HEAD
 
 /ve/
 node_modules/
 /testapp/
+=======
+>>>>>>> develop
