@@ -97,3 +97,16 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Additional custom rules
+/static/
+/media/
+db.sqlite3
+
+.DS_Store
+.idea/
+
+molo/core/migrations/*
+/ve/
+node_modules/
+/testapp/
