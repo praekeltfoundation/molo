@@ -106,7 +106,6 @@ db.sqlite3
 .DS_Store
 .idea/
 
-molo/core/migrations/*
 /ve/
 node_modules/
 /testapp/
