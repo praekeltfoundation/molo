@@ -1,6 +1,6 @@
 {
-    "ArticleTag": {
-      "text": "Article Tags",
-      "modifiers": "dummy-class"
-    }
+  "ArticleTag": {
+    "text": "Article Tags",
+    "modifiers": "featured-articles__page-link"
+  }
 }

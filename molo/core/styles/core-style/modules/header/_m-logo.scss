@@ -20,6 +20,7 @@
 }
 .logo--left {
   text-align: left;
+  padding: 0 10px 0 0;
 }
 .logo--right {
   float: right;
@@ -27,4 +28,5 @@
 .logo--center {
   text-align: center;
   display: block;
+  margin: 0 auto;
 }

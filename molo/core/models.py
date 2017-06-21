@@ -397,7 +397,7 @@ class TranslatablePageMixinNotRoutable(object):
     def get_sitemap_urls(self):
         return [
             {
-                'location': self.full_url + 'noredirect/',
+                'location': self.full_url,
                 'lastmod': self.latest_revision_created_at
             }
         ]
@@ -460,14 +460,8 @@ class ReactionQuestion(TranslatablePageMixin, Page):
             self, request, reaction_id, article_id):
         if 'reaction_response_submissions' not in request.session:
             request.session['reaction_response_submissions'] = []
-
-        if request.user.pk is not None \
-            and ReactionQuestionResponse.objects.filter(
-                user__pk=request.user.pk,
-                question=self, article__pk=article_id).exists() \
-                or article_id in request.session[
-                    'reaction_response_submissions']:
-                    return True
+        if article_id in request.session['reaction_response_submissions']:
+            return True
         return False
 
 
@@ -484,10 +478,20 @@ class ReactionQuestionChoice(
         related_name='+'
     )
 
+    success_message = models.CharField(blank=True, null=True, max_length=1000)
+    success_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
 ReactionQuestionChoice.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('image'),
+    FieldPanel('success_message', classname='full title'),
+    ImageChooserPanel('success_image'),
 ]
 
 
@@ -499,10 +503,10 @@ class ReactionQuestionResponse(models.Model):
     question = models.ForeignKey('core.ReactionQuestion')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def set_response_as_submitted_for_session(self, request):
+    def set_response_as_submitted_for_session(self, request, article):
         if 'reaction_response_submissions' not in request.session:
             request.session['reaction_response_submissions'] = []
-        request.session['reaction_response_submissions'].append(self.id)
+        request.session['reaction_response_submissions'].append(article.id)
         request.session.modified = True
 
 

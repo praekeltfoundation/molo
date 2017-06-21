@@ -51,7 +51,8 @@
                               {% for category, items in dict.items %}
                                   {% for item in items %}
                                   <li role="menuitem">
-                                      <a href="{% url 'mote:project' category %}#mote_{{ item }}" class="">{{ category }} - {{ item }}</a>
+                                      <a href="{% url 'mote:project' category %}#mote_{{ item }}" class="">
+                                        {{ category }} - {{ item }}</a>
                                   </li>
                                   {% endfor %}
                               {% endfor %}

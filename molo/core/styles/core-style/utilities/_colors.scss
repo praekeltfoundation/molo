@@ -71,6 +71,27 @@ $charcoal-grey            :         #33373c;
 $gunmetal                 :         #4e5358;
 $springster-purple        :         #7300ff;
 $springster-purple-light  :         #f1e5ff;
+$mint-green               :         #a4eed2;
+$mint-green-light         :         #d1f6e8;
+$dark-grey                :         #1b1d1e;
+$pale-grey                :         #f8fafd;
+$pale-grey-two            :         #f0f3f5;
+$pale-grey-three          :         #eef0f3;
+$charcoal-grey            :         #33373c;
+$bright-orange            :         #ff5500;
+$cool-grey                :         #a3a7ae;
+$peach                    :         #fcab88;
+$peach-two                :         #ff9f73;
+$steel                    :         #868b95;
+$light-gold               :         #ffe654;
+$tiffany-blue             :         #6be6e6;
+$pale-lilac               :         #e3ccff;
+$red                      :         #D0011B;
+$mustard                  :         #edbf40;
+$turquoise-blue           :         #0fbfbf;
+$tangerine                :         #ff9966;
+$pink                     :         #ef5274;
+$carnation                :         lighten( #ff7190, 10% );
 
 $color_scheme: (
   purple                  :         $purple,
@@ -140,4 +161,11 @@ $color_scheme: (
   dark_orange             :         $dark_orange,
   rose_pink               :         $rose_pink,
   meadow                  :         $meadow
+);
+
+$section_color_scheme: (
+  my-body                 :         $mustard,
+  my-life                 :         $turquoise-blue,
+  my-future               :         $tangerine,
+  girl-stories            :         $pink,
 );

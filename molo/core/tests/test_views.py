@@ -347,8 +347,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/locale/en/?next=/?"  class="language-list__anchor'
-            '  language-list__anchor-with-label is-active " >English</a>',
+            '<a href="/locale/en/?next=/?" class="language-list__anchor '
+            'language-list__anchor-with-label is-active">English</a>',
             html=True)
         self.assertContains(
             response, '<a href="/locale/fr/')
@@ -361,8 +361,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = client.get(self.site2.root_url)
         self.assertContains(
             response,
-            '<a href="/locale/en/?next=/?"  class="language-list__anchor'
-            '  language-list__anchor-with-label is-active " >English</a>',
+            '<a href="/locale/en/?next=/?" class="language-list__anchor '
+            'language-list__anchor-with-label is-active">English</a>',
             html=True)
         self.assertContains(
             response, '<a href="/locale/es/')
@@ -917,23 +917,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         fr_page.unpublish()
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
         self.assertEquals(response.status_code, 200)
-
-    def test_sitemap_translation_redirects(self):
-        self.yourmind_fr = self.mk_section_translation(
-            self.yourmind, self.french, title='Your mind in french')
-        client = Client(HTTP_HOST=self.main.get_site().hostname)
-        response = client.get('/sections-main-1/your-mind/noredirect/')
-        self.assertEquals(response.status_code, 200)
-
-        response = self.client.get(
-            '/sections-main-1/your-mind/your-mind-subsection/noredirect/')
-        self.assertEquals(response.status_code, 200)
-
-        response = self.client.get('/locale/fr/')
-
-        response = self.client.get(
-            '/sections-main-1/your-mind-in-french/noredirect/')
-        self.assertContains(response, 'Your mind subsection in french</a>')
 
     def test_subsection_is_translated(self):
         en_page = self.mk_article(self.yourmind_sub)

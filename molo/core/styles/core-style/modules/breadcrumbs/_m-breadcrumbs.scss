@@ -22,6 +22,11 @@
     display: inline-block;
   }
 }
+.breadcrumbs-list__item-pipe {
+  &:after {
+    content: " / ";
+  }
+}
 .breadcrumbs-list__anchor {
   color: #777;
   font-weight: 700;

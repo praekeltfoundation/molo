@@ -1,0 +1,11 @@
+{
+  "sectionCategory":
+    {
+      "text": "My Body",
+      "modifiers": "my-body",
+      "bannerImage": {
+        "src": "/static/images/category_1.png",
+        "alt": "My Body"
+      }
+    }
+}

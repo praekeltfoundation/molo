@@ -1,0 +1,21 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+<div class="banner">
+{% if bannerpages %}
+{% for bannerpage in bannerpages %}
+  {% if bannerpage.banner %}
+  {% image bannerpage.banner width-360 as tmp_photo %}
+    {% if bannerpage.banner_link_page %}
+      <a href="{% pageurl bannerpage.banner_link_page %}" target="_top" class="banner__item-link">
+      <img alt="{{ bannerpage.title }}" src="{{ tmp_photo.url }}" class="banner__image"/>
+      </a>
+    {% elif bannerpage.external_link %}
+      <a href="{{ bannerpage.external_link }}" target="_blank" class="banner__item-link">
+      <img alt="{{ bannerpage.title }}" src="{{ tmp_photo.url }}" class="banner__image"/>
+      </a>
+    {% else %}
+      <img alt="{{ bannerpage.title }}" src="{{ tmp_photo.url }}" class="banner__image"/>
+    {% endif %}
+	{% endif %}
+{% endfor%}
+{% endif %}
+</div>

@@ -17,6 +17,7 @@ from django.utils.translation import (
 )
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import FormView
+from django.views.generic.base import TemplateView
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
@@ -180,6 +181,31 @@ def get_pypi_version(plugin_name):
         return 'request failed'
 
 
+class ReactionQuestionChoiceFeedbackView(TemplateView):
+    template_name = 'patterns/basics/articles/reaction_question_feedback.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ReactionQuestionChoiceFeedbackView,
+                        self).get_context_data(**kwargs)
+        locale = self.request.LANGUAGE_CODE
+        choice_slug = self.kwargs.get('choice_slug')
+        context['request'] = self.request
+        main_lang_choice = ReactionQuestionChoice.objects.descendant_of(
+            self.request.site.root_page).filter(
+            slug=choice_slug)
+        choice = get_pages(context, main_lang_choice, locale)
+        if choice:
+            choice = choice[0]
+        else:
+            choice = main_lang_choice
+        context.update({'choice': choice})
+        article_slug = self.kwargs.get('article_slug')
+        article = ArticlePage.objects.descendant_of(
+            self.request.site.root_page).filter(slug=article_slug).first()
+        context.update({'article': article})
+        return context
+
+
 class ReactionQuestionChoiceView(FormView):
     form_class = ReactionQuestionChoiceForm
     template_name = 'patterns/basics/articles/reaction_question.html'
@@ -191,14 +217,17 @@ class ReactionQuestionChoiceView(FormView):
             self.request.site.root_page).filter(slug=article_slug).first()
         if not article:
             raise Http404
-
-        return article.url
+        choice_id = self.get_context_data()['form'].data.get('choice')
+        choice = get_object_or_404(ReactionQuestionChoice, pk=choice_id)
+        question_id = self.kwargs.get('question_id')
+        return reverse('reaction-feedback', kwargs={
+            'question_id': question_id, 'article_slug': article.slug,
+            'choice_slug': choice.slug})
 
     def get_context_data(self, *args, **kwargs):
         context = super(
             ReactionQuestionChoiceView, self).get_context_data(*args, **kwargs)
         question_id = self.kwargs.get('question_id')
-
         question = get_object_or_404(ReactionQuestion, pk=question_id)
         context.update({'question': question})
         return context
@@ -214,21 +243,20 @@ class ReactionQuestionChoiceView(FormView):
             self.request.site.root_page).filter(slug=article_slug).first()
         if not article:
             raise Http404
-        if question.has_user_submitted_reaction_response(
-                self.request, question_id, article.pk) is False:
+        if not question.has_user_submitted_reaction_response(
+                self.request, question_id, article.pk):
             created = ReactionQuestionResponse.objects.create(
                 question=question,
                 article=article)
             if created:
                 created.choice = choice
                 created.save()
-                created.set_response_as_submitted_for_session(self.request)
-            if self.request.user.pk is not None:
+                created.set_response_as_submitted_for_session(
+                    self.request, article)
+            if self.request.user.is_authenticated():
                 created.user = self.request.user
                 created.save()
-                messages.add_message(
-                    self.request, messages.SUCCESS,
-                    'Thank you for your feedback')
+
         else:
             messages.error(
                 self.request,

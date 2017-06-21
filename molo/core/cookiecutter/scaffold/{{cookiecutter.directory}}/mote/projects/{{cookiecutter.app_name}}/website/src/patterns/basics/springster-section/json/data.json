@@ -1,0 +1,28 @@
+{
+  "sectionCategory": [
+    {
+      "text": "My Body",
+      "modifiers": "my-body",
+      "bannerImage": {
+        "src": "/static/images/category_1.png",
+        "alt": "My Body"
+      }
+    },
+    {
+      "text": "My Life",
+      "modifiers": "my-life",
+      "bannerImage": {
+        "src": "/static/images/category_2.png",
+        "alt": "My Life"
+      }
+    },
+    {
+      "text": "My Future",
+      "modifiers": "my-future",
+      "bannerImage": {
+        "src": "/static/images/category_3.jpg",
+        "alt": "My Future"
+      }
+    }
+  ]
+}

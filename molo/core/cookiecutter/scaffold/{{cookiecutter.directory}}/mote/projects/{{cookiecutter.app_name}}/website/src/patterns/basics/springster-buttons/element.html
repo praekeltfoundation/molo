@@ -1,0 +1,17 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.SringsterButtons as "buttons" %}
+{% for item in buttons.buttonVariations %}
+  <div class="call-to-action  call-to-action--{{item.modifiers}}">
+    <a href="{{item.anchor.link}}" class="{{item.anchor.classType}} {{item.anchor.classModifiers}}">
+      {% if item.spanTag.spanPres == "true" %}
+        <span class="{{item.spanTag.spanClassType}} {{item.spanTag.spanModifiers}}">
+          {{item.text}}
+        </span>
+      {% elif item.spanTag.spanPres == "false" %}
+        {{item.text}}
+      {% endif %}
+    </a>
+  </div>
+{% endfor %}
+{% endraw %}
