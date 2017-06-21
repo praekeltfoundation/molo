@@ -1,6 +1,21 @@
 CHANGE LOG
 ==========
 
+5.5.0
+~~~~~
+- Remove PyPy Travis builds
+- Clean up Travis file
+- Travis: push wheels (bdist_wheel) to PyPI
+- Remove unused dependencies
+- Move some test dependencies out of main dependencies
+- Don't pin the required setuptools version
+- Update LICENSE file
+- Move requirements to setup.py
+- Remove django-modelcluster from scaffolded app dependencies, molo.core depends on newer version already
+- Allow minor updates to wagtail package (e.g. 1.9.1, not just 1.9)
+- Update .gitignore to newer standard (more Python 3 friendly)
+- Fix and cleanup MANIFEST.in
+
 5.4.7
 ~~~~~
 - Update static files to fix missing/incorrect references
