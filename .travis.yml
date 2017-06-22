@@ -6,7 +6,7 @@ matrix:
     - python: '2.7'
     # Include a separate job for the node tests
     - language: node_js
-      node_js: node
+      node_js: '6' # LTS version
       cache:
         directories: [client/node_modules]
       before_install:
