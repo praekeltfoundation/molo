@@ -7,10 +7,7 @@ python:
   - "2.7"
 env:
   - TEST_RUNNER="py.test" COVERAGE=true
-matrix:
-  include:
-    - python: "2.7"
-      env: NODE_VERSION="5.6.0" TEST_RUNNER="cd client; npm run ci" COVERAGE=false
+  - NODE_VERSION="5.6.0" TEST_RUNNER="cd client; npm run ci" COVERAGE=false
 cache:
   - pip
   - directories:
