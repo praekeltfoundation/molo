@@ -1,6 +1,26 @@
 sudo: false
 language: python
-python: '2.7'
+
+matrix:
+  include:
+    - python: '2.7'
+    # Include a separate job for the node tests
+    - language: node_js
+      node_js: node
+      cache:
+        directories: [client/node_modules]
+      before_install:
+        - cd client
+      install:
+        - travis_retry npm install
+      script:
+        - npm run ci
+
+      # Clear unused build steps
+      services: []
+      deploy: []
+      after_success: []
+
 services:
   - elasticsearch
   - redis-server
@@ -28,22 +48,3 @@ deploy:
   on:
     tags: true
     all_branches: true
-
-# Include a separate job for the node tests
-matrix:
-  include:
-    - language: node_js
-      node_js: node
-      cache:
-        directories: [client/node_modules]
-      before_install:
-        - cd client
-      install:
-        - travis_retry npm install
-      script:
-        - npm run ci
-
-      # Clear unused build steps
-      services: []
-      deploy: []
-      after_success: []
