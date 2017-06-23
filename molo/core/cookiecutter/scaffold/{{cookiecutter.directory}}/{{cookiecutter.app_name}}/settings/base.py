@@ -281,7 +281,8 @@ EXTRA_LANG_INFO = {
     }
 }
 
-locale.LANG_INFO = dict(locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
+locale.LANG_INFO = locale.LANG_INFO.copy()
+locale.LANG_INFO.update(EXTRA_LANG_INFO)
 
 
 LOCALE_PATHS = [
