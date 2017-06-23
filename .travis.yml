@@ -1,38 +1,44 @@
 sudo: false
 language: python
+
+matrix:
+  include:
+    - python: '2.7'
+    # Include a separate job for the node tests
+    - language: node_js
+      node_js: '6' # LTS version
+      cache:
+        directories: [client/node_modules]
+      before_install:
+        - cd client
+      install:
+        - travis_retry npm install
+      script:
+        - npm run ci
+
+      # Clear unused build steps
+      services: []
+      deploy: []
+      after_success: []
+
 services:
   - elasticsearch
   - redis-server
-python:
-  - "2.7"
-env:
-  - TEST_RUNNER="py.test" COVERAGE=true
-  - NODE_VERSION="5.6.0" TEST_RUNNER="cd client; npm run ci" COVERAGE=false
-cache:
-  - pip
-  - directories:
-    - client/node_modules
-before_install:
-  - |
-      if [[ -n "$NODE_VERSION" ]]; then
-        nvm install "$NODE_VERSION"
-        nvm use "$NODE_VERSION"
-      fi
-  - pip install --upgrade pip
+cache: pip
 
+before_install:
+  - pip install --upgrade pip
 install:
   - pip install -r requirements-dev.txt
-  - if [[ "$COVERAGE" == "true" ]]; then pip install coveralls; fi
-  - '[[ -z $NODE_VERSION ]] || (cd client; travis_retry npm install)'
+  - pip install coveralls
 script:
   - flake8 molo
   - molo scaffold testapp
   - flake8 testapp
   - pip install -e testapp
-  - if [[ "$COVERAGE" == "true" ]] && [[ "$TEST_RUNNER" == "py.test" ]]; then COVERAGE_OPT="--cov"; fi
-  - bash -c "$TEST_RUNNER $COVERAGE_OPT"
+  - py.test --cov
 after_success:
-  - if [[ "$COVERAGE" == "true" ]]; then coveralls; fi
+  - coveralls
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
