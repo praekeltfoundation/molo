@@ -147,7 +147,7 @@ def topic_of_the_day(context):
         articles = request.site.root_page.specific \
             .topic_of_the_day()
     else:
-        articles = ArticlePage.objects.None()
+        articles = ArticlePage.objects.none()
 
     return {
         'articles': get_pages(context, articles, locale),

@@ -2,7 +2,6 @@ from os import environ, path, walk
 import pkg_resources
 import requests
 import zipfile
-import StringIO
 
 from django.conf import settings
 from django.contrib import messages
@@ -18,6 +17,7 @@ from django.utils.translation import (
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
+from six import StringIO
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailsearch.models import Query
 
