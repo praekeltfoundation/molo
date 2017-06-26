@@ -516,8 +516,11 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
         question = question.get_main_language_page().specific
+        article = ArticlePage.objects.get(pk=article_pk)
+        if hasattr(article, 'get_main_language_page'):
+            article = article.get_main_language_page()
         return not question.has_user_submitted_reaction_response(
-            request, question.pk, article_pk)
+            request, question.pk, article.pk)
 
 
 @register.assignment_tag(takes_context=True)
