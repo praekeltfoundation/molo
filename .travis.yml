@@ -31,8 +31,8 @@ before_install:
   - pip install --upgrade pip
 install:
   # FIXME: Test with released versions once they're available
-  - pip install git+https://github.com/praekelt/molo.profiles.git@py3
   - pip install git+https://github.com/praekelt/django-google-analytics.git@py3
+  - pip install git+https://github.com/praekelt/molo.profiles.git@py3
 
   - pip install -r requirements-dev.txt
   - pip install coveralls
