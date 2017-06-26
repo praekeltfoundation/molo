@@ -4,6 +4,7 @@ language: python
 matrix:
   include:
     - python: '2.7'
+    - python: '3.5'
     # Include a separate job for the node tests
     - language: node_js
       node_js: '6' # LTS version
@@ -30,6 +31,9 @@ before_install:
   - pip install --upgrade pip
 install:
   - pip install -r requirements-dev.txt
+  # FIXME: Test with released versions once they're available
+  - pip install git+https://github.com/praekelt/molo.profiles.git@py3
+  - pip install git+https://github.com/praekelt/django-google-analytics.git@py3
   - pip install coveralls
 script:
   - flake8 molo
