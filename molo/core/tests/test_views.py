@@ -108,7 +108,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_site_redirect_if_no_languages(self):
         user = User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
-        self.mk_main2(title='main3', slug='main3', path=00010003)
+        self.mk_main2(title='main3', slug='main3', path=0o10003)
         main3_pk = Page.objects.get(title='main3').pk
         main3 = Main.objects.all().last()
         client = Client(HTTP_HOST=main3.get_site().hostname)

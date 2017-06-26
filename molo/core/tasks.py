@@ -297,7 +297,7 @@ def copy_sections_index(
             'source': section_index.get_parent().title,
             'to': to.title
         })
-    except Exception, e:
+    except Exception as e:
         logging.error(e, exc_info=True)
         send_copy_failed_email(user.email, {
             'name': (user.get_full_name() or user.username) if user else None,
