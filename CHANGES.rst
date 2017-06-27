@@ -1,6 +1,16 @@
 CHANGE LOG
 ==========
 
+5.5.1
+~~~~~
+- Add get_effective_banner
+- Run node tests in node_js Travis environment
+- Fix npm module caching
+- Run against latest Node LTS release
+- Allow first priority of articles on homepage to go to latest articles when tag navigation is enabled
+- Bug fix: make sure the delete button is not shown in drop down menus on cms
+- Bug fix: only allow voting to shown for main language page for reaction questions in cms
+
 5.5.0
 ~~~~~
 - Remove PyPy Travis builds

@@ -560,6 +560,14 @@ class BannerPage(TranslatablePageMixin, Page):
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
 
+    def get_effective_banner(self):
+        if self.banner:
+            return self.banner
+        page = self.get_main_language_page()
+        if page.specific.banner:
+            return page.specific.get_effective_banner()
+        return ''
+
 
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
