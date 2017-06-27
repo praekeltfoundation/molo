@@ -239,8 +239,11 @@ class ReactionQuestionChoiceView(FormView):
         choice_pk = form.cleaned_data['choice']
         choice = get_object_or_404(ReactionQuestionChoice, pk=choice_pk)
         article_slug = self.kwargs.get('article_slug')
+        # get main language article and store the vote there
         article = ArticlePage.objects.descendant_of(
             self.request.site.root_page).filter(slug=article_slug).first()
+        if hasattr(article, 'get_main_language_page'):
+            article = article.get_main_language_page()
         if not article:
             raise Http404
         if not question.has_user_submitted_reaction_response(

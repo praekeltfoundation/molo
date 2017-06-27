@@ -22,7 +22,7 @@ from molo.core.models import (
     ArticlePageRecommendedSections, ArticlePageRelatedSections, Main,
     BannerIndexPage, SectionIndexPage, FooterIndexPage, Languages,
     SiteLanguageRelation, Tag, ArticlePageTags, ReactionQuestion,
-    ArticlePageReactionQuestions)
+    ArticlePageReactionQuestions, BannerPage)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -137,6 +137,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             page=article, recommended_article=article2)
         ArticlePageRelatedSections.objects.create(
             page=article, section=self.yourmind)
+        banner = BannerPage(
+            title='banner', slug='banner', banner_link_page=article)
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -170,6 +174,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
             slug=question.slug)
         new_section = SectionPage.objects.descendant_of(main3).get(
             slug=self.yourmind.slug)
+        new_banner = BannerPage.objects.descendant_of(main3).get(
+            slug=banner.slug)
+        self.assertEqual(new_banner.banner_link_page.pk, new_article.pk)
         self.assertEqual(ArticlePageTags.objects.get(
             page=new_article).tag.pk, new_tag.pk)
         self.assertEqual(ArticlePageReactionQuestions.objects.get(
