@@ -231,7 +231,7 @@ def new_page_listing_buttons(page, page_perms, is_parent=False):
     else:
         for b in original_buttons:
             if (hasattr(b, 'attrs') and
-                    b.attrs.get('title').lower() != 'delete this page'):
+                    'delete' not in b.attrs.get('title').lower()):
                     yield b
 
 
