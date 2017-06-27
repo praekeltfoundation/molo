@@ -206,7 +206,6 @@ class TestTags(MoloTestCaseMixin, TestCase):
         latest_articles = response.context['tag_nav_data']['latest_articles']
         self.assertEqual(latest_articles[0].pk, latest_of_latest_articles.pk)
 
-
     def test_article_not_repeated_when_tag_navigation_enabled_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
         tag.feature_in_homepage = True
