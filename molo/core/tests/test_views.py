@@ -2,10 +2,8 @@ from os import environ
 import json
 import pytest
 import responses
-import urllib
 
 from datetime import timedelta, datetime
-from urlparse import parse_qs
 
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -31,6 +29,7 @@ from molo.core.wagtail_hooks import copy_translation_pages
 
 from mock import patch, Mock
 from six import b
+from six.moves import urllib
 from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site, Page
@@ -117,7 +116,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         admin_url = '/admin/pages/%s/' % main3_pk
         self.assertEqual(
             response['Location'],
-            '/admin/login/?next=' + urllib.quote(admin_url, safe=''))
+            '/admin/login/?next=' + urllib.parse.quote(admin_url, safe=''))
 
     def test_copy_langauges_for_translatable_pages_only(self):
         request = HttpRequest()
@@ -1059,10 +1058,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         ga_url = responses.calls[0].request.url
 
-        self.assertEqual(parse_qs(ga_url).get('t'), ['pageview'])
-        self.assertEqual(parse_qs(ga_url).get('dp'), ['/'])
-        self.assertEqual(parse_qs(ga_url).get('dt'), ['Main'])
-        self.assertEqual(parse_qs(ga_url).get('tid'), ['GA-1234567'])
+        self.assertEqual(urllib.parse.parse_qs(ga_url).get('t'), ['pageview'])
+        self.assertEqual(urllib.parse.parse_qs(ga_url).get('dp'), ['/'])
+        self.assertEqual(urllib.parse.parse_qs(ga_url).get('dt'), ['Main'])
+        self.assertEqual(
+            urllib.parse.parse_qs(ga_url).get('tid'), ['GA-1234567'])
 
     def test_global_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
