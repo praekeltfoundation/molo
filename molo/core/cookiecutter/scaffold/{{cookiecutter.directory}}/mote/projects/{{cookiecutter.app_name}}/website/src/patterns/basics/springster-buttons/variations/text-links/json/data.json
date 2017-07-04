@@ -1,0 +1,48 @@
+{
+  "SringsterButtons": {
+    "buttonVariations":[
+      {
+        "anchor":{
+          "link":"#",
+          "classType":"call-to-action__nav-item-text",
+          "classModifiers": "call-to-action__nav-item-text--left"
+        },
+        "spanTag":{
+          "spanPres":"false",
+          "spanClassType":"",
+          "spanModifiers":""
+        },
+        "text":"Back to Article",
+        "modifiers": "wide-back"
+      },
+      {
+        "anchor":{
+          "link":"#",
+          "classType":"call-to-action__nav-item-text",
+          "classModifiers": "call-to-action__nav-item-text--right"
+        },
+        "spanTag":{
+          "spanPres":"false",
+          "spanClassType":"",
+          "spanModifiers":""
+        },
+        "text":"Read All",
+        "modifiers": ""
+      },
+      {
+        "anchor":{
+          "link":"#",
+          "classType":"call-to-action__button",
+          "classModifiers": "call-to-action__button--hyperlink"
+        },
+        "spanTag":{
+          "spanPres":"true",
+          "spanClassType":"call-to-action__button-text",
+          "spanModifiers":"call-to-action__button-text--hyperlink"
+        },
+        "text":"Log out",
+        "modifiers": ""
+      }
+    ]
+  }
+}

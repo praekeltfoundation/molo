@@ -1,0 +1,352 @@
+{
+  "ColorSwatches": {
+    "text": "Color Swatches",
+    "colorScheme": [
+        {
+          "name": "purple",
+          "variable": "$purple",
+          "hex": "7D26CD"
+        },
+        {
+          "name": "tiber",
+          "variable": "$tiber",
+          "hex": "07292F"
+        },
+        {
+          "name": "mecury",
+          "variable": "$mecury",
+          "hex": "eae9e9"
+        },
+        {
+          "name": "light_scampi",
+          "variable": "$light_scampi",
+          "hex": "685FA1"
+        },
+        {
+          "name": "dove_gray",
+          "variable": "$dove_gray",
+          "hex": "737373"
+        },
+        {
+          "name": "brown",
+          "variable": "$brown",
+          "hex": "a03321"
+        },
+        {
+          "name": "medium_red_violet",
+          "variable": "$medium_red_violet",
+          "hex": "B62A99"
+        },
+        {
+          "name": "dark_medium_red_violet",
+          "variable": "$dark_medium_red_violet",
+          "hex": "b43393"
+        },
+        {
+          "name": "violet_blue",
+          "variable": "$violet_blue",
+          "hex": "a54f9e"
+        },
+        {
+          "name": "mandy",
+          "variable": "$mandy",
+          "hex": "E24256"
+        },
+        {
+          "name": "plum",
+          "variable": "$plum",
+          "hex": "7e2268"
+        },
+        {
+          "name": "wisteria",
+          "variable": "$wisteria",
+          "hex": "8e68ad"
+        },
+        {
+          "name": "grape",
+          "variable": "$grape",
+          "hex": "541c56"
+        },
+        {
+          "name": "paris_m",
+          "variable": "$paris_m",
+          "hex": "202855"
+        },
+        {
+          "name": "east_bay",
+          "variable": "$east_bay",
+          "hex": "4E4682"
+        },
+        {
+          "name": "victoria",
+          "variable": "$victoria",
+          "hex": "4D4391"
+        },
+        {
+          "name": "scampi",
+          "variable": "$scampi",
+          "hex": "685FA1"
+        },
+        {
+          "name": "sandybrown",
+          "variable": "$sandybrown",
+          "hex": "EF9955"
+        },
+        {
+          "name": "sandybrown",
+          "variable": "$sandybrown",
+          "hex": "EF9955"
+        },
+        {
+          "name": "jaffa",
+          "variable": "$jaffa",
+          "hex": "ee8c39"
+        },
+        {
+          "name": "saffron",
+          "variable": "$saffron",
+          "hex": "F2B438"
+        },
+        {
+          "name": "saffron_light",
+          "variable": "$saffron_light",
+          "hex": "f2b437"
+        },
+        {
+          "name": "cinnabar",
+          "variable": "$cinnabar",
+          "hex": "EC3B3A"
+        },
+        {
+          "name": "cinnabar_dark",
+          "variable": "$cinnabar_dark",
+          "hex": "ee5523"
+        },
+        {
+          "name": "cardinal",
+          "variable": "$cardinal",
+          "hex": "bf2026"
+        },
+        {
+          "name": "pomegranate",
+          "variable": "$pomegranate",
+          "hex": "ed3330"
+        },
+        {
+          "name": "roman",
+          "variable": "$roman",
+          "hex": "DF6859"
+        },
+        {
+          "name": "mauvelous",
+          "variable": "$mauvelous",
+          "hex": "F38AA5"
+        },
+        {
+          "name": "beed_blush",
+          "variable": "$beed_blush",
+          "hex": "e764a0"
+        },
+        {
+          "name": "maxican_red",
+          "variable": "$maxican_red",
+          "hex": "a21d2e"
+        },
+        {
+          "name": "kobi",
+          "variable": "$kobi",
+          "hex": "d481b5"
+        },
+        {
+          "name": "illusion",
+          "variable": "$illusion",
+          "hex": "ee97ac"
+        },
+        {
+          "name": "celery",
+          "variable": "$celery",
+          "hex": "A4CE55"
+        },
+        {
+          "name": "de_york",
+          "variable": "$de_york",
+          "hex": "6EC17F"
+        },
+        {
+          "name": "eucalyptus",
+          "variable": "$eucalyptus",
+          "hex": "2A9B58"
+        },
+        {
+          "name": "tradewind",
+          "variable": "$tradewind",
+          "hex": "4bab99"
+        },
+        {
+          "name": "moss_green",
+          "variable": "$moss_green",
+          "hex": "b3d9a1"
+        },
+        {
+          "name": "danube",
+          "variable": "$danube",
+          "hex": "6093CD"
+        },
+        {
+          "name": "danube",
+          "variable": "$danube",
+          "hex": "6093CD"
+        },
+        {
+          "name": "light_danube",
+          "variable": "$light_danube",
+          "hex": "627abc"
+        },
+        {
+          "name": "indigo",
+          "variable": "$indigo",
+          "hex": "5F7AC9"
+        },
+        {
+          "name": "mariner",
+          "variable": "$mariner",
+          "hex": "4759a6"
+        },
+        {
+          "name": "robin_egg_blue",
+          "variable": "$robin_egg_blue",
+          "hex": "00BFC6"
+        },
+        {
+          "name": "pelorous",
+          "variable": "$pelorous",
+          "hex": "37BFBE"
+        },
+        {
+          "name": "iris_blue",
+          "variable": "$iris_blue",
+          "hex": "03acc3"
+        },
+        {
+          "name": "red_berry",
+          "variable": "$red_berry",
+          "hex": "711e29"
+        },
+        {
+          "name": "bay_of_may",
+          "variable": "$bay_of_may",
+          "hex": "2b378c"
+        },
+        {
+          "name": "viking",
+          "variable": "$viking",
+          "hex": "3bbfbd"
+        },
+        {
+          "name": "denim",
+          "variable": "$denim",
+          "hex": "127f99"
+        },
+        {
+          "name": "tory_blue",
+          "variable": "$tory_blue",
+          "hex": "134b90"
+        },
+        {
+          "name": "wild_sand",
+          "variable": "$wild_sand",
+          "hex": "f4f4f4"
+        },
+        {
+          "name": "alto",
+          "variable": "$alto",
+          "hex": "dddddd"
+        },
+        {
+          "name": "grey",
+          "variable": "$grey",
+          "hex": "333333"
+        },
+        {
+          "name": "dusty_grey",
+          "variable": "$dusty_grey",
+          "hex": "999999"
+        },
+        {
+          "name": "santas_gray",
+          "variable": "$santas_gray",
+          "hex": "a3a3a6"
+        },
+        {
+          "name": "light_gray",
+          "variable": "$light_gray",
+          "hex": "cacaca"
+        },
+        {
+          "name": "turquoise",
+          "variable": "$turquoise",
+          "hex": "21e0d8"
+        },
+        {
+          "name": "green",
+          "variable": "$green",
+          "hex": "124f52"
+        },
+        {
+          "name": "gold",
+          "variable": "$gold",
+          "hex": "fad400"
+        },
+        {
+          "name": "violet",
+          "variable": "$violet",
+          "hex": "d127fc"
+        },
+        {
+          "name": "violet_electric",
+          "variable": "$violet_electric",
+          "hex": "cf25f8"
+        },
+        {
+          "name": "purple_dark",
+          "variable": "$purple_dark",
+          "hex": "cd36f5"
+        },
+        {
+          "name": "purple_flirt",
+          "variable": "$purple_flirt",
+          "hex": "990099"
+        },
+        {
+          "name": "red",
+          "variable": "$red",
+          "hex": "f82353"
+        },
+        {
+          "name": "cardinal_red",
+          "variable": "$cardinal_red",
+          "hex": "ce1d43"
+        },
+        {
+          "name": "orange",
+          "variable": "$orange",
+          "hex": "ff8e1f"
+        },
+        {
+          "name": "dark_orange",
+          "variable": "$dark_orange",
+          "hex": "d46900"
+        },
+        {
+          "name": "rose_pink",
+          "variable": "$rose_pink",
+          "hex": "e60382"
+        },
+        {
+          "name": "meadow",
+          "variable": "$meadow",
+          "hex": "21E078"
+        }
+      ]
+  }
+}

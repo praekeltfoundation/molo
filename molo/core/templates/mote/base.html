@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+{% load staticfiles static compress mote_tags %}
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Molo Design System</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static "mote/css/fonts.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "mote/css/mote.css" %}"/>
+    {% compress css %}
+      <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/{{ ENV }}/mote.css">
+    {% endcompress %}
+    <link rel="stylesheet" type="text/css" href="{% static "mote/js/libs/prism/css/prism.css" %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="{% static "mote/js/libs/jquery/js/jquery.js" %}"></script>
+    <script src="{% static "mote/js/libs/sticky-kit/js/jquery.sticky-kit.js" %}"></script>
+    <script src="{% static "mote/js/libs/prism/js/prism.js" %}"></script>
+    <script src="{% static "mote/js/libs/hideseek/js/jquery.hideseek.js" %}"></script>
+    <script src="{% static "mote/js/libs/lazysizes/js/lazysizes.js" %}"></script>
+    <script src="{% static "mote/js/mote.js" %}"></script>
+    <script src="{% static "js/main.js" %}"></script>
+</head>
+<body data-library="{{ library }}">
+    {% block header %}
+    <header role="banner" class="header">
+        <div class="wrapper">
+            <a href="{% url "mote:home" %}" class="logo">
+              <img src="{% static "mote/img/logo.png" %}" alt="Logo" />
+              Molo Design System <small>Beta</small>
+            </a>
+        </div>
+    </header>
+    {% endblock %}
+    <section class="hero {{ pattern.id }}">
+      <div class="wrapper">
+          {% block hero %}
+          {% endblock %}
+      </div>
+    </section>
+    <main role="main" class="main_wrapper">
+      <div class="wrapper">
+            <aside role="sidebar" class="sidebar">
+                {% if active_category %}
+                  <form class="sidebar-search">
+                    <input type="search" placeholder="Search pattern library">
+                    <div class="search-results">
+                        <ul role="menu" class="search-list vertical">
+                          {% for dict in menu_items %}
+                              {% for category, items in dict.items %}
+                                  {% for item in items %}
+                                  <li role="menuitem">
+                                      <a href="{% url 'mote:project' category %}#mote_{{ item }}" class="">
+                                        {{ category }} - {{ item }}</a>
+                                  </li>
+                                  {% endfor %}
+                              {% endfor %}
+                          {% endfor %}
+                        </ul>
+                    </div>
+                  </form>
+                {% endif %}
+                {% block menu-desc %}
+                {% endblock %}
+                {% block menu %}
+                {% endblock %}
+                {% block internal_extra_menu %}
+                <ul class="extra-list__menu vertical">
+                  <li class="extra-list__menuitem">
+                    <a href="#devices">Devices</a>
+                  </li>
+                  <li class="extra-list__menuitem">
+                    <a href="#principles">Principles</a>
+                  </li>
+                  <li class="extra-list__menuitem">
+                    <a href="#feature_phones">Designing for Feature Phones</a>
+                  </li>
+                  <li class="extra-list__menuitem">
+                    <a href="#accessibility">Accessibility</a>
+                  </li>
+                  <li class="extra-list__menuitem">
+                    <a href="#workflow">Proposed Workflow</a>
+                  </li>
+                  <li class="extra-list__menuitem">
+                    <a href="#markup_styleguide">Markup and Styleguide Approach</a>
+                  </li>
+                </ul>
+                {% endblock %}
+            </aside>
+
+        <section role="section" class="container">
+          {% block content %}
+            <div class="content__prk">
+              {% block devices %}
+                <div class="content" id="devices">
+                  <h2 class="content__heading-large">Devices</h2>
+                  <h5 class="content__description">We intend to document the list of devices our users use based on Google Analytics statistics.</h5>
+                  <h4 class="content__heading-small">UX for Phones consists of:</h4>
+                  <ul class="ordered-list">
+                    <li class="ordered-list__item">Feature phones</li>
+                    <li class="ordered-list__item">Slow-end phones</li>
+                    <li class="ordered-list__item">Smart phones</li>
+                  </ul>
+                  <table class="devices-list">
+                  <tbody>
+                    <tr>
+                      <th>Device type</th>
+                      <th>Screen resolution</th>
+                      <th>Device example</th>
+                      <th>Browser type</th>
+                    </tr>
+                    <tr>
+                      <td> Feature phone</td>
+                      <td>128 x 128 pixels</td>
+                      <td>(e.g. Nokia 105)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td> Feature phone </td>
+                      <td>128x 160 pixels</td>
+                      <td>(e.g. Nokia 110)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Feature phone</td>
+                      <td>240 x 320 pixels</td>
+                      <td>(e.g. Nokia 5130 Xpress Music)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Feature phone</td>
+                      <td>360 x 640 pixels</td>
+                      <td>(e.g. Nokia 5800 Xpress Music)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Smartphone</td>
+                      <td>240 x 320 pixels</td>
+                      <td>(e.g Samsung Pocket)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td> Smartphone</td>
+                      <td>480 x 360 pixels</td>
+                      <td>(e.g. Blackberry 9720)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Smartphone</td>
+                      <td>720 x 1280 pixels</td>
+                      <td>(e.g. Samsung J3)</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Smartphone</td>
+                      <td>1440 x 2560 pixels </td>
+                      <td>(e.g. Samsung S6)</td>
+                      <td></td>
+                    </tr>
+                    </tbody>
+                  </table>
+              </div>
+              {% endblock %}
+              {% block principles %}
+                <div class="content" id="principles">
+                <h2 class="content__heading-large">Principles</h2>
+                <h5 class="content__description">Molo design system is a code guide and documentation for our mobile-websites code patterns, in-order to keep designs and code base inline for reuse and consistency across multiple devices.</h5>
+                  <h4 class="content__heading-small">This site provides a range of resources for designers and developers, these includes:</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">Responsive component HTML mark-up</li>
+                    <li class="unordered-list__item"><strong>Show Usage:</strong> shows the component HTML layout and futher documentation</li>
+                    <li class="unordered-list__item"><strong>Colors:</strong> a range of color variables with hex values examples stocked from across our Molo mobi-sites</li>
+                  </ul>
+                  <h4 class="content__heading-small">How will we use Molo Design System - Pattern Library?</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">We will set our team’s workflow</li>
+                    <li class="unordered-list__item">Establish common vocabulary between disciplines</li>
+                    <li class="unordered-list__item">Establish browser, device, performance, and accessibility testing</li>
+                    <li class="unordered-list__item">Encourage design and functionality familiarity withing the teams to speed up team production and QA</li>
+                    <li class="unordered-list__item">Using a combination of BEM & SMACSS Methodology</li>
+                  </ul>
+              </div>
+              {% endblock %}
+              {% block feature_phones %}
+              <div class="content" id="feature_phones">
+                <h2 class="content__heading-large">Designing for Feature Phones</h2>
+                <h5 class="content__description">Feature phones have limited capability compared to smartphones. This principle discusses how these limitations affect the services we provide, as well as guidelines on how to make the best of our services despite these limitations.</h5>
+                <p>Feature phones either won't understand or will incorrectly implement the fancy CSS and design, especially the low-end feature phones. The best approach is to send feature phone users a very simple design, using typography, vertical spacing, and a little colouring.</p>
+                  <h4 class="content__heading-small">We shouldn’t design with widths bigger than ~320 pixels</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">Feature phone screens start at about 128 x 160 and only go up to about 240 x 320.</li>
+                  </ul>
+                  <h4 class="content__heading-small">We should use a simple one column layout.</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">Feature phones have tiny screens that would make your columns too small, even if they understood the code to make the grid layout in the first place. Floating text and images often results in a broken layout.</li>
+                  </ul>
+                  <h4 class="content__heading-small">We should use as few images as we can.</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">Each image we add costs the user time (to download the image) and money (for data). On top of that, some browsers have an image quota or a page size quota: when they reach it they either stop loading the page immediately, or reject the whole page and load nothing.</li>
+                    <li class="unordered-list__item">Images should be small, and displayed inline, or on a row of their own, for example, should be always above or below the texts. No fancy positioning or floating is possible. 72dpi resolution ideally.</li>
+                  </ul>
+                  <h4 class="content__heading-small">We shouldn’t use background colours and try to use less colour in the feature phone design.</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">Feature phone support for applying background colours is widely variable and can't be trusted. You might end up with text and background colours being the same, rendering the text invisible.</li>
+                    <li class="unordered-list__item">Low-end feature phones don’t show the colours and texts will appear black. Over-riding link colours in specific sections aren’t always supported on feature phones, and they often add underlines to all links.</li>
+                  </ul>
+                  <h4 class="content__heading-small">We shouldn’t make links as buttons</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">On low-end feature phones they won’t show the background colour and borders so it’s better to keep the link as a text link. Also, links should have a specific URL.</li>
+                    <li class="unordered-list__item">For example, we shouldn’t have a back link that doesn’t have a specific URL because this requires some code that either won’t work on feature phones or even if it works, sometimes it directs the user to the wrong page.</li>
+                    <li class="unordered-list__item">Hence it should be back to article or back to homepage so that we can give it a URL.</li>
+                  </ul>
+                  <h4 class="content__heading-small">Buttons should have short one word text.</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">The feature phone screens are small, and buttons will be smaller than the smartphone templates; if the text is long it will go under the buttons.</li>
+                  </ul>
+                  <h4 class="content__heading-small">Plus other points</h4>
+                  <ul class="unordered-list">
+                    <li class="unordered-list__item">Feature phone friendly font e.g. Arial</li>
+                    <li class="unordered-list__item">Left align everything - including buttons</li>
+                    <li class="unordered-list__item">Form fields with text above the field (not inline)</li>
+                    <li class="unordered-list__item">Use the word Menu instead of a hamburger icon</li>
+                  </ul>
+              </div>
+              {% endblock %}
+              {% block accessibility %}
+              <div class="content" id="accessibility">
+                  <h2 class="content__heading-large">Accessibility</h2>
+                  <h5 class="content__description">The Molo Design System enables accessible development by providing a set of semantically correct components, each with appropriate ARIA markup so they can be identified correctly.<br/><br/>
+                  This means properly identifying all form fields and buttons, providing text based alternatives for all images, videos, icons and SVGs, as well as building components that properly convey their identity.
+                  </h5>
+              </div>
+              {% endblock %}
+              {% block workflow %}
+              <div class="content" id="workflow">
+                <h2 class="content__heading-large">Proposed Workflow</h2>
+                <p>To really experience the full benefits of the design system we want to propose a new workflow that is not about designing pages but rather designing components.</p>
+                <h4 class="content__heading-small">When a new feature that is not part of the Design System is requested 2 things can happen:</h4>
+                <ul class="ordered-list">
+                  <li class="ordered-list__item">If it’s a simple feature the service designer might be able to take the component library and build the feature</li>
+                  <li class="ordered-list__item">If it’s more complicated the developer and designer might have to be pulled into the discussion earlier on in order to design the new feature</li>
+                </ul>
+                <p>BUT VERY IMPORTANT: Before a new feature is created it’s important to make sure that it’s not just a tweak to a current feature. In that case the feature can rather be altered to accommodate the adjustment and added to the Design System - remember to mark patterns that have been updated in the system so teammates can see.</p>
+                <img src="{% static "images/New-Workflow.png" %}" width="100%" alt="Workflow" />
+              </div>
+              {% endblock %}
+              {% block markup_styleguide %}
+              <div class="content" id="markup_styleguide">
+                <h2 class="content__heading-large">Markup and Style Guide</h2>
+                <h5 class="content__description">The Pattern library will be actively developed to enable developers to uniform applications while adhering to CSS best practices and conventions</h5>
+                <h4 class="content__heading-small">Why design a Pattern Library Markup?</h4>
+                <p>Design Systems entail that your prototype is built from functioning HTML, CSS and JavaScript code, which means QA iteration and vetting has taken place, this minimises bugs and time taken to do bug fixes as parties get familiar with the product</p>
+                <p>This increases FED and the rest of the engineering productivity</p>
+                <p>Streamline and automate the project project setup to maximum and enforce standards and minimised errors</p>
+                <h4 class="content__heading-small">In order to achieve this, we have chosen to use very specific naming techniques</h4>
+                <ul class="unordered-list">
+                  <li class="unordered-list__item"><strong>BEM Naming</strong><br/>BEM is a known method of naming components — block, element, modifier. For those unfamiliar, let’s briefly look at how BEM works below.</li>
+                  <li class="unordered-list__item"><strong>Block</strong><br/>A block represents the main component name. e.g. <span class="highlighter">call-to-action</span></li>
+                  <li class="unordered-list__item"><strong>Element</strong><br/>An element represents a part of a component and is separated by two underscores. e.g. <span class="highlighter">call-to-action__green</span></li>
+                  <li class="unordered-list__item"><strong>Modifier</strong><br/>A modifier is a component or element variation and is separated by two dashes. The variation can apply to the overall component or it can be applied to an element within the component. e.g. <span class="highlighter">call-to-action--main</span></li>
+                </ul>
+                <h4 class="content__heading-small">Standards Compliant Markup:</h4>
+                <p>The semantic markup in our components are based on W3C standards and industry best practices.</p>
+                <h4 class="content__heading-small">Appropriate use of color:</h4>
+                <p>We provide the basic combinations of text and their background colors for slow end feature phones and build our way up to smart-phones</p><br/><br/>
+                <h4 class="content__heading-small">Appropriate use of color:</h4>
+                <ul class="ordered-list">
+                  <li class="ordered-list__item">We provide the basic combinations of text and their background colors for slow end feature phones and build our way up to smart-phones</li>
+                </ul>
+              </div>
+              {% endblock %}
+            </div>
+          {% endblock %}
+        </section>
+      </div>
+    </main>
+</body>
+</html>

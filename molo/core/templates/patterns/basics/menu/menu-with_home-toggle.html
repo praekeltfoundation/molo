@@ -1,0 +1,28 @@
+{% load i18n %}
+{% if self.get_verbose_name|slugify  == "main" %}
+  <ul class="menu-list menu-list--toggle">
+    <li class="menu-list__item  menu-list__item--toggle">
+      <a  href="#" class="menu-list__anchor menu-list__anchor-toggle">{% trans "Sign up" %}</a>
+    </li>
+    <li class="menu-list__item  menu-list__item--toggle">
+      <a href="#section_menu" class="menu-list__anchor menu-list__anchor-toggle">{% trans "Menu" %}</a>
+    </li>
+  </ul>
+  {% if languages %}
+    {% include "search/search_block.html" %}
+  {% endif %}
+{% else %}
+  <ul class="menu-list menu-list--toggle">
+    <li id="search" class="menu-list__item menu-list__item--toggle">
+      <label class="menu-list__anchor menu-list__anchor-toggle" for="search-toggle__button">
+        {% trans "Search" %}
+      </label>
+    </li>
+    <li class="menu-list__item menu-list__item--toggle">
+      <a href="#section_menu" class="menu-list__anchor menu-list__anchor-toggle">{% trans "Menu" %}</a>
+    </li>
+  </ul>
+
+  <input id="search-toggle__button" type="checkbox" value="Search"/>
+  {% include "search/search_block.html" with class="toggle" %}
+{% endif %}

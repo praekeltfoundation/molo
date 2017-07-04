@@ -1,0 +1,45 @@
+.language-list--text-decorated {}
+.language-list__item--text-decorated {
+  font-size: 13px;
+  padding: 0 0 5px 0;
+  &:hover {
+    color: #00b8ae;
+  }
+  &:first-child {
+    display: none;
+  }
+}
+.language-list__anchor-text-decorated {
+  font-size: 13px;
+  &:hover, .is-active {
+    color: #00b8ae;
+  }
+}
+
+//Footer Position - Difference
+.language-list--text-decorated__title {
+  display: none;
+  font-size: 16px;
+  padding: 0 10px 0 0;
+  &:after {
+    content: ":";
+  }
+}
+.language-list--text-decorated__title--footer {
+  display: block;
+}
+.language-list__item--text-decorated-footer {
+  &:hover {
+    color: #00b8ae;
+    text-decoration: underline;
+  }
+  &:first-child {
+    display: block;
+  }
+}
+.language-list__anchor-text-decorated-footer {
+    &:hover, .is-active {
+    color: #00b8ae;
+    text-decoration: underline;
+  }
+}

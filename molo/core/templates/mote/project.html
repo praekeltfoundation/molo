@@ -1,0 +1,26 @@
+{% extends "mote/base.html" %}
+{% load staticfiles %}
+{% block hero %}
+  <div class="background"></div>
+  <div class="foreground">
+     <h3>Molo Design System</h3>
+    <h1>Molo Core - Design Principles</h1>
+    <h5 class="content__description">The design system will make it easy to build/scaffold custom Molo mobisites from our Python Django Molo Framework with a consistent look and feel using predefined Molo Core  patterns and features - without reverse engineering our styles.
+    The Design System and Molo Core serve as a single source of truth for our Frontend Templates stack, to help us prevent lose in translation for different mobisite applications.
+    </h5>
+  </div>
+{% endblock %}
+{% block menu-desc %}
+  <h5>Molo App:</h5>
+{% endblock %}
+{% block menu %}
+  <ul role="menu" class="vertical tier-1" id="sidebar-nav">
+    {% for aspect in project.aspects %}
+      <li role="menuitem">
+          <a href="{% url "mote:aspect" project=project.id aspect=aspect.id %}" class="menuitem__main-project">
+            {{ aspect.title }}
+          </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

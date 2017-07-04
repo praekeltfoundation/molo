@@ -1,0 +1,30 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static i18n el_pagination_tags %}
+{% load_child_articles_for_section section count=0 as articles %}
+{% paginate 12 articles %}
+
+<ul class="promoted-article-list">
+  {% for article in articles %}
+  <li class="promoted-article-list__item promoted-article-list__item-standard {% if forloop.first %}promoted-article-list__item--hero{% endif %}">
+   {% if article.get_effective_image %}
+     <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+       {% if forloop.first %}
+         {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
+       {% else %}
+         {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+       {% endif %}
+     </a>
+   {% endif %}
+   <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+     <h3 class="heading promoted-article__title">{{article.title}}</h3>
+   </a>
+   <p class="promoted-article-list__desc">{{article.subtitle}}</p>
+  </li>
+  {% endfor %}
+</ul>
+<div id="pagination">
+  {% include "patterns/basics/pagination/pagination-pageof.html" %}
+</div>
+{% get_pages %}
+{% if pages.next %}
+  <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'section_index' %}?page={{pages.next.number}}&section={{section.pk}}&locale={{locale_code}}">Load More</a>
+{% endif %}

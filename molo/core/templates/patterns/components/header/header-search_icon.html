@@ -1,0 +1,9 @@
+<div class="header">
+  <div class="header__menu">
+    {% include "patterns/basics/images/logo.html" with class="left" %}
+    {% include "patterns/basics/menu/menu-with_search-icon.html" %}
+  </div>
+</div>
+{% if self.get_verbose_name|slugify  == "main" %}
+  {% include "patterns/basics/languages/language-list-label.html" %}
+{% endif %}

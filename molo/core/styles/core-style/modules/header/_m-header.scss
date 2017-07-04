@@ -1,0 +1,13 @@
+.header {
+  .menu-list--center {
+    @media screen and (min-width: 240px) {
+      margin-left: 20%;
+    }
+  }
+
+  .logo--center {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+  }
+}

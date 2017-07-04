@@ -1,0 +1,22 @@
+
+.menu-list--toggle {
+  margin: 0;
+  @media screen and (min-width:320px) {
+    padding: 10px 0;
+  }
+}
+
+.search-toggling__button {
+  visibility: hidden;
+  position: absolute;
+}
+.search--toggling {
+  display: none;
+  padding: 15px 0 0 0; //NOTE: This only modify pattern-group inside a component
+}
+.search-toggling__button:not(checked) ~ .search--toggling {
+    display: none;
+}
+.search-toggling__button:checked ~ .search--toggling {
+    display: block;
+}

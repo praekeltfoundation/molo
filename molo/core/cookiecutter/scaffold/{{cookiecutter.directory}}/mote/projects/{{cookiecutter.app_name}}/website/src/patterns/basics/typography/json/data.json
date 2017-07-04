@@ -1,0 +1,10 @@
+{
+  "Heading": [
+    {"text": "Welcome to Molo design system","htmlTag": "h1", "headingClass":"heading--xx-large"},
+    {"text": "Welcome to Molo design system","htmlTag": "h2", "headingClass":"heading--x-large"},
+    {"text": "Welcome to Molo design system","htmlTag": "h3", "headingClass":"heading--large"},
+    {"text": "It is a long established fact that a reader will be distracted","htmlTag": "h4", "headingClass":"heading--small"},
+    {"text": "It is a long established fact that a reader will be distracted","htmlTag": "h5", "headingClass":"heading--x-small"},
+    {"text": "It is a long established fact that a reader will be distracted","htmlTag": "h6", "headingClass":"heading--xx-small"}
+  ]
+}

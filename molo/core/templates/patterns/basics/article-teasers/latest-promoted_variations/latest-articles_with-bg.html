@@ -1,0 +1,19 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+  <ul class="promoted-article-list promoted-article-list--theme-bg">
+  {% for article in articles %}
+  <li class="promoted-article-list__item promoted-article-list__item--theme-bg">
+    {% if article.get_effective_image %}
+      <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
+        {% include "patterns/basics/images/article-thumbnail.html" with curve="none" %}
+      </a>
+    {% endif %}
+    <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
+      <h3 class="heading promoted-article-list__heading">
+        {{article.title}}
+      </h3>
+    </a>
+  <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">
+    {{article.subtitle}}</p>
+  </li>
+  {% endfor %}
+</ul>

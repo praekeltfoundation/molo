@@ -1,0 +1,22 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+  <ul class="promoted-article-list">
+  {% for article in articles %}
+  <li class="promoted-article-list__item promoted-article-list__item-standard {% if forloop.first %}promoted-article-list__item--hero{% endif %}">
+    {% if article.get_effective_image %}
+      <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+        {% if forloop.first %}
+          {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
+        {% else %}
+          {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+        {% endif %}
+      </a>
+    {% endif %}
+    <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+      <h3 class="heading promoted-article__title">
+        {{article.title}}
+      </h3>
+    </a>
+    <p class="promoted-article-list__desc">{{article.subtitle}}</p>
+  </li>
+  {% endfor %}
+</ul>

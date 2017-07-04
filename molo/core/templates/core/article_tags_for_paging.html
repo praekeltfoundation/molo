@@ -1,0 +1,35 @@
+{% load wagtailcore_tags wagtailimages_tags static core_tags i18n el_pagination_tags %}
+{% block content %}
+  <div class="article-teaser">
+      {% paginate 10 object_list as articles %}
+    <ul class="teaser-stacklist">
+    {% for each_article in articles %}
+    <li class="teaser-stacklist__item">
+      {% if each_article.image %}
+      <a href="{% pageurl each_article %}" class="base-teaser__thumbnail-link">
+        {% image each_article.image fill-96x96 as teaser_thumbnail %}
+        <img src="{{ teaser_thumbnail.url }}" class="base-teaser__thumbnail" />
+      </a>
+      {% endif %}
+      <div class="teaser-stacklist__item--content">
+        <h3 class="base-teaser__title">
+          <a href="{% pageurl each_article %}" class="base-teaser__title-link">
+          {{ each_article.title }}</a>
+        </h3>
+        {% if each_article.subtitle %}
+          <p class="base-teaser__subtitle">{{ each_article.subtitle }}</p>
+        {% endif %}
+
+      </div>
+    </li>
+    {% endfor %}
+    </ul>
+  </div>
+  <div id="pagination">
+    {% include "patterns/basics/pagination/pagination-pageof.html" %}
+  </div>
+  {% get_pages %}
+  {% if pages.next %}
+    <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'tag_index' %}?page={{pages.next.number}}&tag_name={{tag.title}}&locale={{locale_code}}">Load More</a>
+  {% endif %}
+{% endblock %}

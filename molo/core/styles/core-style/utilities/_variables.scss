@@ -1,0 +1,30 @@
+$font-xx-large    :     32px;
+$font-x-large     :     24px;
+$font-large       :     21px;
+$font-small       :     18px;
+$font-x-small     :     16px;
+$font-xx-small    :     14px;
+$font-xxx-small   :     12px;
+
+$screen-xx-small      :     240px;
+$screen-small         :     320px;
+$screen-medium        :     502px;
+$screen-large         :     897px;
+
+$heading-xx-large: (
+  null: 17px,
+  $screen-xx-small: 24px,
+  $screen-small: 32px,
+);
+
+$heading-x-large: (
+  null: 16px,
+  $screen-xx-small: 21px,
+  $screen-small: 24px,
+);
+
+$heading-large: (
+  null: 15px,
+  $screen-xx-small: 18px,
+  $screen-small: 21px,
+);

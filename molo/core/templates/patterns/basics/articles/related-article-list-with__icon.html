@@ -1,0 +1,15 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% with section=self.get_parent_section %}
+  <div class="related-articles related-articles{{section.get_effective_extra_style_hints}}">
+    <p class="related-article__title">Related Article:</p>
+    {% if self.body %}
+      {% for block in self.body %}
+        {% if block.block_type == 'page'  %}
+          <a href="{% pageurl block.value %}" class="call-to-action__item--text call-to-action__item--text-related-article">
+            {{block.value }}
+          </a>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  </div>
+{% endwith %}

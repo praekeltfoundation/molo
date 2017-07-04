@@ -1,0 +1,11 @@
+{% raw %}
+{% load mote_tags i18n %}
+<div class="search search--{{class}}">
+  <form action="{% url 'search' %}" class="search__form" id="search-form">
+   <fieldset>
+    <input placeholder="{% trans "Looking for something?" %}" name="q" type="text" value="{{search_query}}" id="search__input-standard">
+    <input type="submit" value="{% trans "Search"%}" class="call-to-action__item call-to-action__item--with-icon call-to-action__item--search-icon call-to-action__item--search-icon-bg">
+    </fieldset>
+  </form>
+</div>
+{% endraw %}

@@ -23,6 +23,10 @@ urlpatterns += patterns(
         name='auth_logout'),
     url('^', include('django.contrib.auth.urls')),
     url(r'^admin/', include(wagtailadmin_urls)),
+    url(r'^profiles/',
+        include('molo.profiles.urls',
+                namespace='molo.profiles',
+                app_name='molo.profiles')),
     url(r'', include(wagtail_urls)),
 )
 
@@ -70,7 +74,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     def test_login_redirect(self):
         response = self.client.get('/admin/', follow=True)
-
         self.assertEquals(
             response.request.get('QUERY_STRING'),
             'service=http%3A%2F%2Ftestserver'
@@ -84,14 +87,16 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         mock_verify.return_value = (
             'test@example.com',
             {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True',
-             'is_admin': 'True'},
+             'is_admin': 'True', 'email': 'root@example.com'},
             None)
 
         response = self.client.get(
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
+        user = User.objects.get(username='test@example.com')
         self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
+        self.assertEqual(user.email, 'root@example.com')
 
     @patch('cas.CASClientV2.verify_ticket')
     def test_succesful_login_if_user_is_not_admin(self, mock_verify):
@@ -167,7 +172,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         mock_verify.return_value = (
             'test@example.com',
             {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True',
-             'is_admin': 'True'},
+             'is_admin': 'True', 'email': 'test@example.com'},
             None)
 
         # login a user

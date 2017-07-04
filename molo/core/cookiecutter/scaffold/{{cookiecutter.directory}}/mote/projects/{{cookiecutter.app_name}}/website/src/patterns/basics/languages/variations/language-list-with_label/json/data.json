@@ -1,0 +1,12 @@
+{
+  "Language_list_with_label": {
+    "text": "Language List with Label",
+    "modifiers": "dummy-class",
+    "languages":[
+      {"language":"English"},
+      {"language":"Kiswahili"},
+      {"language":"Bahasa"},
+      {"language":"Arabic"}
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Navigation as "nav" %}
+<div id="gem-footer">
+  <div class="group">
+  <ul class="sections footer-menu-list left">
+  {% for item in nav.nav_listColumnLeft %}
+    <li class="footer-menu-list__item">
+      <a href="{{item.href}}" class="footer-menu-list__anchor">
+        {{item.name}}
+      </a>
+    </li>
+  {% endfor %}
+  </ul>
+
+  <ul class="sections footer-menu-list right">
+  {% for item in nav.nav_listColumnRight %}
+    <li class="footer-menu-list__item">
+      <a href="{{item.href}}" class="footer-menu-list__anchor">{{item.name}}</a>
+    </li>
+  {% endfor %}
+  </ul>
+  </div>
+</div>
+{% endraw %}

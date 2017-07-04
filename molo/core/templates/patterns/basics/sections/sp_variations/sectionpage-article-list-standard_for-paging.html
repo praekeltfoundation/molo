@@ -1,0 +1,8 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static i18n el_pagination_tags %}
+{% load_child_articles_for_section section count=0 as articles %}
+{% paginate 12 articles %}
+{% include "patterns/components/article-teasers/sp_variations/base-teaser-listing.html" %}
+{% get_pages %}
+{% trans "Load more" as buttontext %}
+{% url 'section_index' as datalink %}
+{% include "patterns/basics/buttons/sp_variations/button-load-more.html" with type="primary" text=buttontext datalink=datalink %}

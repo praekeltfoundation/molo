@@ -1,0 +1,58 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Section Name
+    </h4>
+    <div class="description">
+      <p>Sometimes named as cateories
+      Website section title or heading is on the section page and consist of section name title, but also with accompanying icon.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Section with Subsection
+    </h4>
+    <div class="description">
+      <p>Website section title or heading is on the section page and consist of section and subsection name title, but also with accompanying icon.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.section.subsection %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Section with icon image
+    </h4>
+    <div class="description">
+      <p>Website section title or heading is on the section page and consist of section name title, but also with accompanying icon.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.section.with-icon %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

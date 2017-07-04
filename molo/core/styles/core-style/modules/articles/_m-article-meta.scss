@@ -1,0 +1,59 @@
+
+.teaser-meta-list {
+  border-top: 1px solid #E5E7E9;
+  padding: 10px 0 35px;
+  margin: 5px 0 0;
+}
+.teaser-meta-list__likes-counter {
+  padding: 5px 0;
+  display: inline-block;
+  vertical-align: middle;
+  @media screen and (min-width: 320px)  {
+    padding: 0 15px 0 10px;
+    float: left;
+  }
+}
+.teaser-meta-list__liked-label {
+    display: inline-block;
+    padding: 0 5px;
+    @media screen and (min-width: 320px)  {
+      background:  url('/static/images/icons/heart.svg') no-repeat 0 0 / auto 100%;
+      text-indent: -99em;
+      width: 30px;
+      height: 25px;
+    }
+}
+.teaser-meta-list__comment-counter {
+  padding: 5px 5px 5px 0;
+  display: inline-block;
+  vertical-align: middle;
+  @media screen and (min-width: 320px)  {
+    padding: 0 10px 0 15px;
+    float: left;
+  }
+}
+.teaser-meta-list__comment-label-icon {
+  display: inline-block;
+  padding: 0 5px 0;
+  @media screen and (min-width: 320px)  {
+    background:  url('/static/images/icons/bubble.svg') no-repeat 0 0 / auto 100%;
+    text-indent: -99em;
+    width: 30px;
+    height: 25px;
+    padding: 0;
+  }
+}
+.teaser-meta-list__comment-label {
+  display: inline-block;
+  padding: 0 5px 0;
+}
+.article-teaser-list__reply-counter {
+  @media screen and (min-width: 320px)  {
+    padding: 0 15px 0 10px;
+    float: right;
+  }
+}
+.article-teaser-list__reply-label,
+.article-list__reply-label {
+  padding: 0 5px 0;
+}

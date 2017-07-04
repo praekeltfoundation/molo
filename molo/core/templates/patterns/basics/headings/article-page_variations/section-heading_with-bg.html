@@ -1,0 +1,4 @@
+{% load wagtailcore_tags core_tags  %}
+<h2 class="heading heading-section-article__bg-title heading-section-article__bg-title{{section.get_effective_extra_style_hints}}">
+  <a href="{% pageurl section %}" class="heading-section-article__bg-link">{{section.title}}</a>
+</h2>

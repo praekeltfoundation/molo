@@ -1,0 +1,31 @@
+
+.section-listing_column-content {
+  position: relative;
+}
+.section-listing__column-icon-title {
+ font-weight: bold;
+ position: relative;
+}
+.section-listing__column-icon-title-hero {
+  padding: 10px 15px;
+  @media screen and (min-width: 320px) {
+    position: absolute;
+    bottom: 5px;
+  }
+}
+.section-listing__column-icon-image {
+  display: inline-block;
+  padding: 0 5px;
+  vertical-align: middle;
+  @media screen and (min-width: 320px) {
+    position: absolute;
+    right: 5px;
+    bottom: 10px;
+  }
+}
+.section-listing__column-icon-image-hero {
+  @media screen and (min-width: 320px) {
+    right: -220px;
+    top: 7px;
+  }
+}

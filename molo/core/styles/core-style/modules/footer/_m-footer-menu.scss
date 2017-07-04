@@ -1,0 +1,29 @@
+
+.footer-menu-list__item {
+  display: block;
+  border: none;
+  color: #5a5d5e;
+  padding: 5px;
+  font-size: 13px;
+}
+.footer-menu-list__anchor {
+  color: #5a5d5e;
+}
+
+.copyright {
+  padding: 20px 0 0;
+}
+.copyright__footer-copy {
+  font-size: 12px;
+  padding: 10px 15px 10px;
+  margin: 0;
+}
+
+.copyright__website-name {
+  font-weight: bold;
+  &:after {
+    content: "|";
+    font-size: 10px;
+    padding: 0 5px;
+  }
+}

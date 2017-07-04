@@ -1,0 +1,27 @@
+{
+  "Breadcrumb": {
+      "text": "Breadcrumbs",
+      "breadcrumb_links": [
+        {
+          "title":"Home",
+          "src":"/home"
+        },
+        {
+          "title":"Section name",
+          "src":"/section-name"
+        },
+        {
+          "title":"Subsection name",
+          "src":"/subsection-name"
+        },
+        {
+          "title":"Article name",
+          "src":"/article-name"
+        },
+        {
+          "title":"Other page name",
+          "src":"/other-page-name"
+        }
+      ]
+  }
+}

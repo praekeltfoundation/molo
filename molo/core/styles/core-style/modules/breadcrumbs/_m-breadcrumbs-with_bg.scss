@@ -1,0 +1,33 @@
+.breadcrumbs-list-with-bg {
+  padding: 0 15px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.breadcrumbs-list-with-bg__item {
+  color: #000;
+  display: inline;
+  &:after {
+    color: #000;
+    margin: 0 3px 0 -3px;
+    font-size: 14px;
+     @media only screen and (min-width: 320px) {
+      content: ">";
+    }
+    @media only screen and (min-width: 490px) {
+      content: "❯";
+    }
+  }
+  &:last-child {
+    &:after {
+      display: none;
+    }
+  }
+}
+
+.breadcrumbs-list-with-bg__anchor {
+  color: #000;
+  padding-right: 10px;
+  text-decoration: underline;
+  text-transform: uppercase;
+}

@@ -1,0 +1,58 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% mask element.json.data.Button as "button" %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Button Default
+    </h4>
+    <div class="description">
+      <p>Default button style - resets font styles, and sets correct font. No padding or border.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Button Primary
+    </h4>
+    <div class="description">
+      <p>Primary button style. Solid background color. No border.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.button.primary %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Button Secondary
+    </h4>
+    <div class="description">
+      <p>Secondary button style. No background colour. Has a border.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.button.secondary %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

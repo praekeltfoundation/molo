@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block coltype %}flex{% endblock %}
+
+{% block content %}
+  {% if copied_files %}
+    <h1>Media Files Successfully Copied</h1>
+    {% for file_name in copied_files %}
+      <p>{{ file_name }}</p>
+    {% endfor %}
+  {% else %}
+    <h1>Transfer of Media Failed</h1>
+    <h3>{{ error_message }}</h3>
+  {% endif %}
+{% endblock %}

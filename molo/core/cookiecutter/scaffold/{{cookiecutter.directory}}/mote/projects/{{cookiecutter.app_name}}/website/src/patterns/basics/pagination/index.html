@@ -1,0 +1,24 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Pagination
+    </h4>
+    <div class="description">
+      <p>The pagination is used to naigate from one content to another whenever there a lot of e.g. article pages, section articles, search results, comments and etc. to display on a single view.</p>
+      <p>Because we’re dealing with phones we usually don’t show more than 10 list of content at a time we rather include pagination to view older content.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

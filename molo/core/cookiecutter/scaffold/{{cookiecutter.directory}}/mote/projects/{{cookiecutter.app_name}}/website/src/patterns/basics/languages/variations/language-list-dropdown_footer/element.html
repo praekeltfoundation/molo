@@ -1,0 +1,20 @@
+{% raw %}
+{% load mote_tags wagtailimages_tags static i18n%}
+{% mask element.json.data.Language_list_dropdown as "language_list_dropdown" %}
+<div class="languages">
+    <input id="language-select_footer" class="language-select__toggle-input" type="checkbox">
+    <label class="language-select__change-label language-select__change-label-footer"  for="language-select_footer">
+        <img src="{% static 'images/icons/loop2.png' %}" width="auto" class="language-select__change-icon" />
+        {% trans "Change Language" %}</label>
+    <div role="languages" class="language-select language-select--footer">
+      <ul class="language-list language-list--dropdown language-list--dropdown-footer">
+        {% for item in language_list_dropdown.languages %}
+          <li class="language-list__item language-list__item--dropdown language-list__item--dropdown-footer">
+            {{ item.language }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+   </div>
+</div>
+{% endraw %}

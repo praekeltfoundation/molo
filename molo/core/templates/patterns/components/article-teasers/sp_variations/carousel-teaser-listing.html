@@ -1,0 +1,26 @@
+{% load wagtailcore_tags core_tags i18n %}
+{% block load_tags_for_homepage %}
+{% if tag %}
+  <div class="carousel-teaser">
+  {% if tag_articles %}
+    {% include "patterns/basics/headings/sp_variations/heading.html" with type="component" htmltag="h2" title=tag.title %}
+    <ul class="carousel-teaser-list">
+      {% for article in tag_articles %}
+      <li class="carousel-teaser-list__item">
+        <div class="carousel-teaser-list__item--container">
+          {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-image.html" %}
+          <div class="carousel-teaser__wrapper">
+            <div class="carousel-teaser__content">
+              {% include "patterns/basics/article-teasers/sp_variations/carousel-teaser-title.html" %}
+              {% include "patterns/basics/comment-counter/sp_comment-counter.html" with layouttype="base" %}
+            </div>
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% include "patterns/basics/buttons/sp_variations/text-tag-dir-arrow_button.html" with direction="right" %}
+  {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

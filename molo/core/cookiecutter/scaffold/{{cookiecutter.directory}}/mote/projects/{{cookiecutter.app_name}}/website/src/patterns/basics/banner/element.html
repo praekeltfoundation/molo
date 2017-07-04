@@ -1,0 +1,9 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Banner as "banner" %}
+  <div class="banner">
+    <a href="/" class="banner__item-link">
+      <img src="{{banner.img.src}}" alt="{{banner.img.alt}}" width="320" height="auto">
+    </a>
+  </div>
+{% endraw %}

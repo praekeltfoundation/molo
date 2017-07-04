@@ -1,0 +1,24 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% load_reaction_question article as question %}
+{% if question %}
+{{question.title}}
+{{ form.errors }}
+{% load_user_can_vote_on_reaction_question question article.pk as user_can_vote%}
+  {% if user_can_vote %}
+    <form class="reaction__form" action="{% url 'reaction-vote' article.slug question.id %}" method="post">
+      {% csrf_token %}
+      <div class="poll-choices">
+        {% load_choices_for_reaction_question question as choices %}
+            {% for choice in choices %}
+               <div class="fieldset">
+                  <input type="submit" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.specific.get_main_language_page.id }}" />
+                  {% image choice.specific.image width-60 %}
+                  <label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
+              </div>
+          {% endfor %}
+      </div>
+    </form>
+  {% else %}
+    {% trans "You have already submitted a response for this article." %}
+  {% endif %}
+{% endif %}

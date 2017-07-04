@@ -1,0 +1,28 @@
+{% block languages %}
+
+  {% load i18n %}
+
+  {% if languages|length > 1 %}
+  <div class="languages">
+      <div class="languages-current">
+        <span class="languages-current__label">{% trans "Language" %}</span>
+        <span class="languages-current__selected">{{ LANGUAGE_CODE|language_name_local }}</span>
+      </div>
+
+      <input id="language-select" class="language-select__toggle-input" type="checkbox">
+      <label class="language-select__change-label" for="language-select">{% trans "Change Language" %}</label>
+      <div role="languages" class="language-select">
+        <ul class="language-list language-list--dropdown">
+          {% for language in languages %}
+            <li class="language-list__item language-list__item--dropdown">
+              <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" class="language-list__anchor language-list__anchor-dropdown {% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">
+                {{language.locale|language_name_local}}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+     </div>
+  </div>
+  {% endif %}
+
+{% endblock %}

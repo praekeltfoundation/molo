@@ -1,0 +1,25 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% with section=self.get_parent_section %}
+<div class="related-articles related-articles{{ section.get_effective_extra_style_hints }}">
+  <h4 class="heading related-article__title-heading related-article__title-heading{{ section.get_effective_extra_style_hints }}">
+    {% trans "More Information" %}
+  </h4>
+  <ul class="related-article-list related-article-list{{ section.get_effective_extra_style_hints }}">
+  {% if self.body %}
+    {% for block in self.body %}
+      {% if block.block_type == 'page'  %}
+        <li class="related-article-list__item">
+          <a href="{% pageurl block.value %}" class="call-to-action__item--text">
+            {{ block.value }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+    <li class="related-article-list__item">
+      <a href="{% pageurl section %}" class="related-article-list__anchor related-article-list__anchor-more">
+        {% trans "More" %}
+      </a>
+    </li>
+  </ul>
+</div>
+{% endwith %}

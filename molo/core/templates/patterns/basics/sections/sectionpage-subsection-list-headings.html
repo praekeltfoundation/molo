@@ -1,0 +1,19 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static i18n %}
+
+{% for section in sections %}
+  <h1 class="heading section-listing__title-theme-headings">
+    <a href="{% pageurl section %}" class="section-listing__link-theme-headings">{{section.title}}</a>
+  </h1>
+  <ul class="promoted-article-list promoted-article-list--theme-headings">
+   <li class="promoted-article-list__item promoted-article-list__item--theme-headings">
+    {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
+    {% if featured_articles %}
+      {% for article in featured_articles %}
+       <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-headings">
+         <h5 class="heading promoted-article__title--theme-headings">{{article.title}}</h5>
+       </a>
+      {% endfor %}
+    {% endif %}
+   </li>
+  </ul>
+{% endfor %}

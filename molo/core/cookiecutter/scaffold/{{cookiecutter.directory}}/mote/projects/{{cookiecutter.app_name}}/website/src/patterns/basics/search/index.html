@@ -1,0 +1,27 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% mask element.json.data.Button as "button" %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Search form
+    </h4>
+    <div class="description">
+      <p>This is a search form used to query website content anywhere on the site.
+        Search icon on the header jumps the user to the search form on usually on the footer section
+        Search icon opens a search bar right on the header, below the site logo and above the navigation bar.</p>
+      <p>Clicking the “Enter button”  on the device’s keypad should also launch the search (i.e., the user must not be required to click the icon as the only way to initiate the search - how it works on the Google Chrome mobile search bar).</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

@@ -1,0 +1,29 @@
+{% load wagtailimages_tags static i18n %}
+{% include "patterns/basics/images/sp_variations/logo.html" %}
+<div class="header__menu">
+  <ul class="menu-list menu-list--section-nav">
+    <li id="profile" class="menu-list__item menu-list__item--section-nav">
+      {% if not user.is_authenticated %}
+        <a  href="{% url 'molo.profiles:user_register' %}" class="menu-list__anchor menu-list__anchor--section-nav">
+          {% trans "Sign up" %}
+        </a>
+      {% else %}
+        <a  href="{% url 'molo.profiles:view_my_profile' %}" class="menu-list__anchor menu-list__anchor--section-nav">
+          {% trans "Profile" %}
+        </a>
+      {% endif %}
+    </li>
+    <li id="search" class="menu-list__item menu-list__item--section-nav">
+      <a class="menu-list__anchor menu-list__anchor--section-nav">
+        <label for="search-toggle" >{% trans "Search" %}</label>
+      </a>
+    </li>
+  </ul>
+</div>
+<div class="header__search">
+  <input class="header__search-input" type="checkbox" id="search-toggle">
+  <div class="header__search-bar">
+    {% trans "Search" as placeholdertext %}
+    {% include "patterns/basics/search/sp_variations/search-button-icon.html" with radius="none" placeholder=placeholdertext %}
+  </div>
+</div>

@@ -1,0 +1,29 @@
+.pattern__intro-heading {
+  margin: 0;
+}
+.pattern__intro-desc {
+  margin-top: 20px;
+  font-weight: normal;
+}
+.sg-wrapper {
+  margin-top: 35px;
+}
+@media screen and (min-device-width: 320px) {
+  .iframe-variation-toggler--label {
+    display: block;
+  }
+  .iframe-variation-toggler {
+    background: #3b8ec2 url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 0;
+    border: 1px solid #3b8ec2;
+    padding: 5px 5px;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: auto !important;
+    width: 25%;
+  }
+}

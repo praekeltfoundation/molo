@@ -1,0 +1,27 @@
+
+{% load wagtailcore_tags  core_tags i18n %}
+
+{% block section_menu %}
+<div class="navigation">
+{% load_sections as sections %}
+  {% block logo %}
+    {% include "patterns/basics/images/logo.html" with class="left"%}
+  {% endblock %}
+  <ul class="nav-list nav-list--vertical">
+    <li class="nav-list__item nav-list__item--vertical">
+      <a href="/" class="nav-list__anchor nav-list__anchor--vertical">
+        {% trans "Home" %}
+      </a>
+      <span class="nav-list__anchor-desc nav-list__anchor-desc--vertical">{{section.description}}</span>
+    </li>
+    {% for section in sections %}
+      <li class="nav-list__item nav-list__item--vertical">
+        <a href="{% pageurl section %}" class="nav-list__anchor nav-list__anchor--vertical">
+          {{section.title}}
+        </a>
+        <span class="nav-list__anchor-desc nav-list__anchor-desc--vertical">{{section.description}}</span>
+      </li>
+      {% endfor %}
+  </ul>
+</div>
+{% endblock %}

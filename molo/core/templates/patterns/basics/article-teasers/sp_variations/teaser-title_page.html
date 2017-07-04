@@ -1,0 +1,10 @@
+{% load wagtailcore_tags core_tags %}
+<h2 class="heading heading--title">{{ parent_section.title }}</h2>
+<h3 class="{{layouttype}}-teaser__title">
+  <a href="{% pageurl page %}" class="{{layouttype}}-teaser__title-link">
+    {{ page.title }}
+  </a>
+</h3>
+{% if page.subtitle %}
+  <p class="{{layouttype}}-teaser__subtitle">{{ page.subtitle }}</p>
+{% endif %}

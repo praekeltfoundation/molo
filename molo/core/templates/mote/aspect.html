@@ -1,0 +1,53 @@
+{% extends "mote/base.html" %}
+{% load staticfiles %}
+{% block hero %}
+    <div class="background"></div>
+    <div class="foreground">
+       <h3>Molo Design System</h3>
+      <h1>Molo Core - Design Patterns</h1>
+      <h5 class="content__description">The design system will make it easy to build/scaffold custom Molo mobisites from our Python Django Molo Framework with a consistent look and feel using predefined Molo Core  patterns and features - without reverse engineering our styles.
+      The Design System and Molo Core serve as a single source of truth for our Frontend Templates stack, to help us prevent lose in translation for different mobisite applications.
+      </h5>
+    </div>
+{% endblock %}
+{% block menu-desc %}
+{% endblock %}
+{% block menu %}
+  <ul role="menu" class="vertical tier-1" id="sidebar-nav">
+  {% for pattern in aspect.patterns %}
+    <li role="menuitem">
+      {% url "mote:pattern" project=aspect.project.id aspect=aspect.id pattern=pattern.id as the_url%}
+      <a href="{{ the_url }}" {% if request.path_info == the_url %}class="active"{% endif %} class="menuitem__main-project">
+        {{ pattern.title }}
+      </a>
+      <ul role="menu" class="vertical tier-2">
+          {% for element in pattern.elements %}
+          <li role="menuitem">
+              <a href="{% url "mote:element-index" project=aspect.project.id aspect=aspect.id pattern=pattern.id element=element.id %}">{{ element.title }}</a>
+          </li>
+          {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+  </ul>
+{% endblock %}
+{% block internal_extra_menu %}{% endblock %}
+  {% block content %}
+  {% block content_intro %}
+    <h2 class="content__heading-large">Website Glossary</h2>
+    <h4 class="content__heading-small">These are the Molo sites:</h4>
+    <ul class="unordered-list">
+      <li class="unordered-list__item">Babycenter</li>
+      <li class="unordered-list__item"><a href="http://gem.molo.unicore.io/" alt="Gem">Gem</a></li>
+      <li class="unordered-list__item">FreeBasics</li>
+      <li class="unordered-list__item"><a href="http://molo.iogt.seed.p16n.org" alt="IoGT">Unicef IoGT</a></li>
+      <li class="unordered-list__item"><a href="https://tuneme.org/" alt="Tuneme">Tune</a></li>
+    </ul>
+  {% endblock %}
+  {% block devices %}{% endblock %}
+  {% block principles %}{% endblock %}
+  {% block feature_phones %}{% endblock %}
+  {% block accessibility %}{% endblock %}
+  {% block workflow %}{% endblock %}
+  {% block markup_styleguide %}{% endblock %}
+  {% endblock %}

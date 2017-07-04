@@ -1,0 +1,7 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Heading as "heading" %}
+  {% for title in heading %}
+    <{{title.htmlTag}} class="heading {{title.headingClass}}">{{title.text}}</{{title.htmlTag}}>
+  {% endfor %}
+{% endraw %}

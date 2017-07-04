@@ -1,6 +1,75 @@
+import os
+import shutil
+import zipfile
 import re
+import tempfile
+import distutils.dir_util
+
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
+
+
+def create_new_article_relations(old_main, copied_main):
+    from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
+        ArticlePageReactionQuestions, ReactionQuestion, \
+        ArticlePageRecommendedSections, ArticlePageRelatedSections, \
+        SectionPage, BannerPage
+    if old_main and copied_main:
+        if copied_main.get_descendants().count() >= \
+                old_main.get_descendants().count():
+            for article in ArticlePage.objects.descendant_of(copied_main):
+
+                # replace old tag with new tag in tag relations
+                tag_relations = ArticlePageTags.objects.filter(page=article)
+                for relation in tag_relations:
+                    if relation.tag:
+                        new_tag = Tag.objects.descendant_of(
+                            copied_main).filter(slug=relation.tag.slug).first()
+                        relation.tag = new_tag
+                        relation.save()
+                # replace old reaction question with new reaction question
+                question_relations = \
+                    ArticlePageReactionQuestions.objects.filter(page=article)
+                for relation in question_relations:
+                    if relation.reaction_question:
+                        new_question = ReactionQuestion.objects.descendant_of(
+                            copied_main).filter(
+                                slug=relation.reaction_question.slug).first()
+                        relation.reaction_question = new_question
+                        relation.save()
+
+                # replace old recommended articles with new articles
+                recommended_article_relations = \
+                    ArticlePageRecommendedSections.objects.filter(page=article)
+                for relation in recommended_article_relations:
+                    if relation.recommended_article:
+                        new_recommended_article = \
+                            ArticlePage.objects.descendant_of(
+                                copied_main).filter(
+                                slug=relation.recommended_article.slug).first()
+                        relation.recommended_article = new_recommended_article
+                        relation.save()
+
+                # replace old related sections with new sections
+                related_section_relations = \
+                    ArticlePageRelatedSections.objects.filter(page=article)
+                for relation in related_section_relations:
+                    if relation.section:
+                        new_related_section = \
+                            SectionPage.objects.descendant_of(
+                                copied_main).filter(
+                                slug=relation.section.slug).first()
+                        relation.section = new_related_section
+                        relation.save()
+
+                # replace old article banner relations with new articles
+                for banner in BannerPage.objects.descendant_of(copied_main):
+                    old_article_slug = ArticlePage.objects.get(
+                        pk=banner.banner_link_page).slug
+                    new_article = ArticlePage.objects.descendant_of(
+                        copied_main).get(slug=old_article_slug)
+                    banner.banner_link_page = new_article
+                    banner.save()
 
 
 def get_locale_code(language_code=None):
@@ -52,3 +121,36 @@ def generate_slug(text, tail_number=0):
     else:
         # No collisions
         return slug
+
+
+def update_media_file(upload_file):
+    '''
+    Update the Current Media Folder.
+
+    Returns list of files copied across or
+    raises an exception.
+    '''
+    temp_directory = tempfile.mkdtemp()
+    temp_file = tempfile.TemporaryFile()
+    # assumes the zip file contains a directory called media
+    temp_media_file = os.path.join(temp_directory, 'media')
+    try:
+        for chunk in upload_file.chunks():
+            temp_file.write(chunk)
+
+        with zipfile.ZipFile(temp_file, 'r') as z:
+            z.extractall(temp_directory)
+
+        if os.path.exists(temp_media_file):
+            return distutils.dir_util.copy_tree(
+                temp_media_file,
+                settings.MEDIA_ROOT)
+        else:
+            raise Exception("Error: There is no directory called "
+                            "'media' in the root of the zipped file")
+    except Exception as e:
+        raise e
+    finally:
+        temp_file.close()
+        if os.path.exists(temp_directory):
+            shutil.rmtree(temp_directory)

@@ -1,0 +1,171 @@
+$purple                   :         #7D26CD;
+$tiber                    :         #07292F;
+$mecury                   :         #eae9e9;
+$light_scampi             :         #685FA1;
+$dove_gray                :         #737373;
+$brown                    :         #a03321;
+$medium_red_violet        :         #B62A99;
+$dark_medium_red_violet   :         #b43393;
+$violet_blue              :         #a54f9e;
+$mandy                    :         #E24256;
+$plum                     :         #7e2268;
+$wisteria                 :         #8e68ad;
+$grape                    :         #541c56;
+$paris_m                  :         #202855;
+$east_bay                 :         #4E4682;
+$victoria                 :         #4D4391;
+$scampi                   :         #685FA1;
+$sandybrown               :         #EF9955;
+$jaffa                    :         #ee8c39;
+$saffron                  :         #F2B438;
+$saffron_light            :         #f2b437;
+$cinnabar                 :         #EC3B3A;
+$cinnabar_dark            :         #ee5523;
+$cardinal                 :         #bf2026;
+$pomegranate              :         #ed3330;
+$roman                    :         #DF6859;
+$mauvelous                :         #F38AA5;
+$beed_blush               :         #e764a0;
+$maxican_red              :         #a21d2e;
+$kobi                     :         #d481b5;
+$illusion                 :         #ee97ac;
+$celery                   :         #A4CE55;
+$de_york                  :         #6EC17F;
+$eucalyptus               :         #2A9B58;
+$tradewind                :         #4bab99;
+$moss_green               :         #b3d9a1;
+$danube                   :         #6093CD;
+$light_danube             :         #627abc;
+$indigo                   :         #5F7AC9;
+$mariner                  :         #4759a6;
+$robin_egg_blue           :         #00BFC6;
+$pelorous                 :         #37BFBE;
+$iris_blue                :         #03acc3;
+$red_berry                :         #711e29;
+$bay_of_may               :         #2b378c;
+$viking                   :         #3bbfbd;
+$denim                    :         #127f99;
+$tory_blue                :         #134b90;
+$wild_sand                :         #f4f4f4;
+$alto                     :         #dddddd;
+$grey                     :         #333333;
+$dusty_grey               :         #999999;
+$santas_gray              :         #a3a3a6;
+$light_gray               :         #cacaca;
+$turquoise                :         #21e0d8;
+$green                    :         #124f52;
+$gold                     :         #fad400;
+$violet                   :         #d127fc;
+$violet_electric          :         #cf25f8;
+$purple_dark              :         #cd36f5;
+$purple_flirt             :         #990099;
+$red                      :         #f82353;
+$cardinal_red             :         #ce1d43;
+$orange                   :         #ff8e1f;
+$dark_orange              :         #d46900;
+$rose_pink                :         #e60382;
+$meadow                   :         #21E078;
+$sunny-yellow             :         #fffc80;
+$slate-grey               :         #656d78;
+$charcoal-grey            :         #33373c;
+$gunmetal                 :         #4e5358;
+$springster-purple        :         #7300ff;
+$springster-purple-light  :         #f1e5ff;
+$mint-green               :         #a4eed2;
+$mint-green-light         :         #d1f6e8;
+$dark-grey                :         #1b1d1e;
+$pale-grey                :         #f8fafd;
+$pale-grey-two            :         #f0f3f5;
+$pale-grey-three          :         #eef0f3;
+$charcoal-grey            :         #33373c;
+$bright-orange            :         #ff5500;
+$cool-grey                :         #a3a7ae;
+$peach                    :         #fcab88;
+$peach-two                :         #ff9f73;
+$steel                    :         #868b95;
+$light-gold               :         #ffe654;
+$tiffany-blue             :         #6be6e6;
+$pale-lilac               :         #e3ccff;
+$red                      :         #D0011B;
+$mustard                  :         #edbf40;
+$turquoise-blue           :         #0fbfbf;
+$tangerine                :         #ff9966;
+$pink                     :         #ef5274;
+$carnation                :         lighten( #ff7190, 10% );
+
+$color_scheme: (
+  purple                  :         $purple,
+  tiber                   :         $tiber,
+  mecury                  :         $mecury,
+  light_scampi            :         $light_scampi,
+  dove_gray               :         $dove_gray,
+  brown                   :         $brown,
+  medium_red_violet       :         $medium_red_violet,
+  dark_medium_red_violet  :         $dark_medium_red_violet,
+  violet_blue             :         $violet_blue,
+  mandy                   :         $mandy,
+  plum                    :         $plum,
+  wisteria                :         $wisteria,
+  grape                   :         $grape,
+  paris_m                 :         $paris_m,
+  east_bay                :         $east_bay,
+  victoria                :         $victoria,
+  scampi                  :         $scampi,
+  sandybrown              :         $sandybrown,
+  jaffa                   :         $jaffa,
+  saffron                 :         $saffron,
+  saffron_light           :         $saffron_light,
+  cinnabar                :         $cinnabar,
+  cinnabar_dark           :         $cinnabar_dark,
+  cardinal                :         $cardinal,
+  pomegranate             :         $pomegranate,
+  roman                   :         $roman,
+  mauvelous               :         $mauvelous,
+  beed_blush              :         $beed_blush,
+  maxican_red             :         $maxican_red,
+  kobi                    :         $kobi,
+  illusion                :         $illusion,
+  celery                  :         $celery,
+  de_york                 :         $de_york,
+  eucalyptus              :         $eucalyptus,
+  tradewind               :         $tradewind,
+  moss_green              :         $moss_green,
+  danube                  :         $danube,
+  light_danube            :         $light_danube,
+  indigo                  :         $indigo,
+  mariner                 :         $mariner,
+  robin_egg_blue          :         $robin_egg_blue,
+  pelorous                :         $pelorous,
+  iris_blue               :         $iris_blue,
+  red_berry               :         $red_berry,
+  bay_of_may              :         $bay_of_may,
+  viking                  :         $viking,
+  denim                   :         $denim,
+  tory_blue               :         $tory_blue,
+  wild_sand               :         $wild_sand,
+  alto                    :         $alto,
+  grey                    :         $grey,
+  dusty_grey              :         $dusty_grey,
+  santas_gray             :         $santas_gray,
+  light_gray              :         $light_gray,
+  turquoise               :         $turquoise,
+  green                   :         $green,
+  gold                    :         $gold,
+  violet                  :         $violet,
+  violet_electric         :         $violet_electric,
+  purple_dark             :         $purple_dark,
+  purple_flirt            :         $purple_flirt,
+  red                     :         $red,
+  cardinal_red            :         $cardinal_red,
+  orange                  :         $orange,
+  dark_orange             :         $dark_orange,
+  rose_pink               :         $rose_pink,
+  meadow                  :         $meadow
+);
+
+$section_color_scheme: (
+  my-body                 :         $mustard,
+  my-life                 :         $turquoise-blue,
+  my-future               :         $tangerine,
+  girl-stories            :         $pink,
+);

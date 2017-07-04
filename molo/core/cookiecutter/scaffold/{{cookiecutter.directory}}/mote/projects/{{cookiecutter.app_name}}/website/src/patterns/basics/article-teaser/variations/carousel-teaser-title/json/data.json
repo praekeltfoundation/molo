@@ -1,0 +1,7 @@
+{
+  "CarouselArticleTeaser": {
+    "title": "Carousel teaser title with no more than 2 lines",
+    "subtitle": "Carousel teaser subtitle with no more than 2 lines",
+    "modifiers": "carousel"
+  }
+}

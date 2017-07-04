@@ -1,0 +1,54 @@
+
+#search,
+#profile,
+#profile_register,
+#menu  {
+  .menu-list__anchor {
+    width: 21px;
+    height: 21px;
+    padding: 0 0 0 10px;
+    @media screen and (min-width: 320px) {
+      text-indent: -99em;
+    }
+  }
+}
+#menu_icon,
+#search_icon,
+#profile_icon {
+  padding: 0;
+  display: inline-block;
+  @media screen and (min-width: 320px) {
+    text-indent: -999em;
+  }
+}
+
+#menu_icon,
+#menu > .menu-list__anchor {
+  @media screen and (min-width: 320px) {
+    background:  url('/static/images/icons/menu.svg') no-repeat 0 0 / auto 100%;
+  }
+}
+
+#search_icon,
+#search > .menu-list__anchor {
+  @media screen and (min-width: 320px) {
+    background:  url('/static/images/icons/search.svg') no-repeat 0 0 / auto 100%;
+  }
+}
+
+#profile_icon,
+#profile_register > .menu-list__anchor {
+  @media screen and (min-width: 320px) {
+    background:  url('/static/images/icons/user.svg') no-repeat 0 0 / auto 100%;
+  }
+}
+
+.menu-links {
+  display: inline-block;
+  float: right;
+  margin: 5% auto 0;
+}
+.menu-list__item--icon {
+  display: inline-block;
+  padding-right: 5px;
+}

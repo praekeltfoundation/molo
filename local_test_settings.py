@@ -10,6 +10,7 @@ MIDDLEWARE_CLASSES += (
 
 
 AUTHENTICATION_BACKENDS = (
+    'molo.core.backends.MoloModelBackend',
     'django.contrib.auth.backends.ModelBackend',
     'molo.core.backends.MoloCASBackend',
 )
@@ -21,3 +22,5 @@ CAS_VERSION = '3'
 
 UNICORE_DISTRIBUTE_API = 'http://testserver:6543'
 CELERY_ALWAYS_EAGER = True
+
+DEAFULT_SITE_PORT = 8000

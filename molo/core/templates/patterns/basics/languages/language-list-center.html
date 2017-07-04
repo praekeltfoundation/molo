@@ -1,0 +1,19 @@
+{% block languages %}
+
+  {% load i18n %}
+
+  {% if languages|length > 1 %}
+  <div class="languages">
+    <ul class="language-list language-list--standard-center">
+      {% for language in languages %}
+      <li class="language-list__item language-list__item--standard-center">
+        <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" class="language-list__anchor language-list__anchor-standard-center {% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">
+          {{language.locale|language_name_local}}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+{% endblock %}

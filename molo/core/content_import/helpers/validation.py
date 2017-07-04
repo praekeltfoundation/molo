@@ -2,7 +2,7 @@ from babel import Locale
 
 from unicore.content.models import Category, Page
 
-from molo.core.models import SiteLanguage
+from molo.core.models import Main
 from molo.core.content_import.helpers.locales import (
     partition_locales_in_repo, get_locale_english_name)
 
@@ -44,23 +44,25 @@ class ContentImportValidation(object):
 
     def validate_wagtail_has_no_language(self, main):
         main = Locale.parse(main).language
-
-        wagtail_main_language = SiteLanguage.objects.filter(
-            is_main_language=True).first()
-        if (wagtail_main_language and not
-                wagtail_main_language.locale == main):
-            self.errors.append({
-                'type': 'wrong_main_language_exist_in_wagtail',
-                'details': {
-                    'repo': self.repo.name,
-                    'lang': wagtail_main_language.get_locale_display(),
-                    'selected_lang': get_locale_english_name(main)
-                }})
+        main_page = Main.objects.all().first()
+        if main_page.get_site().languages.languages.exists():
+            wagtail_main_language = main_page.get_site(
+            ).languages.languages.filter(
+                is_main_language=True).first()
+            if (wagtail_main_language and not
+                    wagtail_main_language.locale == main):
+                self.errors.append({
+                    'type': 'wrong_main_language_exist_in_wagtail',
+                    'details': {
+                        'repo': self.repo.name,
+                        'lang': wagtail_main_language.get_locale_display(),
+                        'selected_lang': get_locale_english_name(main)
+                    }})
 
     def validate_translated_content_has_source(self, locale, main):
         if locale != main:
             categories = self.ws.S(Category).filter(
-                language=locale).order_by('position')[:10000]
+                language=locale).order_by('position').everything()
             for c in categories:
                 if not c.source:
                     self.errors.append({
@@ -71,7 +73,7 @@ class ContentImportValidation(object):
                             'lang': get_locale_english_name(locale)
                         }})
 
-            pages = self.ws.S(Page).filter(language=locale)[:10000]
+            pages = self.ws.S(Page).filter(language=locale).everything()
             for p in pages:
                 if not p.source:
                     self.errors.append({
@@ -85,7 +87,7 @@ class ContentImportValidation(object):
     def validate_translated_content_source_exists(self, locale, main):
         if locale != main:
             categories = self.ws.S(Category).filter(
-                language=locale).order_by('position')[:10000]
+                language=locale).order_by('position').everything()
             for c in categories:
                 if c.source and not self.validate_source_exists(
                         Category, c.source, main):
@@ -97,7 +99,7 @@ class ContentImportValidation(object):
                             'lang': get_locale_english_name(locale)
                         }})
 
-            pages = self.ws.S(Page).filter(language=locale)[:10000]
+            pages = self.ws.S(Page).filter(language=locale).everything()
             for p in pages:
                 if p.source and not self.validate_source_exists(
                         Page, p.source, main):
@@ -110,7 +112,7 @@ class ContentImportValidation(object):
                         }})
 
     def validate_page_primary_category_exists(self, locale):
-        pages = self.ws.S(Page).filter(language=locale)[:10000]
+        pages = self.ws.S(Page).filter(language=locale).everything()
         for p in pages:
             if p.primary_category and not self.validate_category_exists(
                     p.primary_category, locale):

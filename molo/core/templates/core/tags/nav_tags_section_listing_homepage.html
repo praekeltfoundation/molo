@@ -1,0 +1,24 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% if featured_articles %}
+<div class="grid-teaser-wrapper">
+  <h1 class="grid-teaser__heading">
+    <a href="{% pageurl section %}" class="grid-teaser__heading-link">
+      {{section.title}}
+    </a>
+  </h1>
+  <ul class="grid-teaser-list">
+  {% for article in featured_articles %}
+  {% get_translation article.get_parent_section as origin_section %}
+    {% if origin_section = section %}
+    <li class="grid-teaser-list__item">
+      {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="grid" %}
+      {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="grid" %}
+    </li>
+    {% endif %}
+  {% endfor %}
+  </ul>
+{% include "patterns/components/article-teasers/homepage-promoted_variations/articles_subsection_with-bg.html" %}
+<a href="{% pageurl section %}" class="section-listing__theme-more-link">{% trans "More about" %} {{section.title}}</a>
+  {% include "patterns/basics/buttons/sp_variations/text-dir-arrow_button.html" with direction="right" %}
+</div>
+{% endif %}

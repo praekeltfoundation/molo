@@ -1,0 +1,4 @@
+{
+  "title": "Header Menu - Toggle",
+  "description": "The 3 main navigation links that we place in the header are Search, User Tools (Log In, Register, Profile), and Menu. The Homepage displays search form while subsequent pages toggle the search form, it will be hidden by default"
+}

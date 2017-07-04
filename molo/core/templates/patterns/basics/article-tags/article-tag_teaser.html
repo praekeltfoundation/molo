@@ -1,0 +1,9 @@
+{% load wagtailcore_tags core_tags i18n %}
+  {% load_tags_for_article article as tags %}
+  <ul class="teaser-stacklist-tags">
+    {% for tag in tags %}
+    <li class="teaser-stacklist-tags__item">
+      <a href="{% pageurl tag %}" class="teaser-stacklist-tags__anchor">{{ tag.title }}</a>
+    </li>
+    {% endfor %}
+  </ul>

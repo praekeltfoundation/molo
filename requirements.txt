@@ -1,24 +1,2 @@
-Django>=1.9,<1.10
-cookiecutter==1.0.0
-psycopg2cffi
-raven==5.0.0
-markdown
-django-libsass
-certifi
-dj-database-url
-django-cas-ng==3.5.4
-django-mptt==0.8.5
-requests
-elastic-git
-unicore.content
-wagtail==1.4.5
-html5lib==0.9999999
-responses
-babel
-wagtailmodeladmin
-wagtailmedia==0.1.1
-django-extensions
-celery<4.0
-redis
-six>=1.9
-django-google-analytics-app==2.1.2
+# Our dependencies are all specified in setup.py
+-e .

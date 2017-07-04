@@ -1,0 +1,33 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static i18n %}
+
+{% for section in sections %}
+<div class="section-listing__column-icon-title">
+  {% image section.get_effective_image width-30 class="section-listing__column-icon-image" %}
+  <h1 class="heading section-listing__title">
+    <a href="{% pageurl section %}" class="section-listing__column-icon-link">{{section.title}}</a>
+  </h1>
+</div>
+
+<ul class="promoted-article-list promoted-article-list-column">
+  <li class="promoted-article-list__item {% if forloop.first %}promoted-article-list__item--hero-column{% endif %} promoted-article-list__item-column">
+    {% load_descendant_articles_for_section section featured_in_section=True as featured_articles %}
+    {% if featured_articles %}
+    {% for article in featured_articles %}
+      {% if article.get_effective_image %}
+        <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor-column">
+          {% if forloop.first %}
+            {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
+          {% else %}
+            {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+          {% endif %}
+        </a>
+      {% endif %}
+      <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor-column">
+        <h3 class="heading promoted-article-list__column-heading">{{article.title}}</h3>
+      </a>
+      <p class="promoted-article-list__desc promoted-article-list__desc--column">{{article.subtitle}}</p>
+    {% endfor %}
+  {% endif %}
+  </li>
+</ul>
+{% endfor %}

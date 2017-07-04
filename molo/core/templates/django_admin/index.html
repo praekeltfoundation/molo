@@ -1,0 +1,27 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+{% block content %}
+<div class="module">
+  <table>
+    <caption>
+      <a href="" class="section" title="">MEDIA</a>
+    </caption>
+    <tr >
+      <th scope="row"><a href="{% url 'molo_upload_media' %}">Upload Media</a></th>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="model-{{ model.object_name|lower }}">
+      <th scope="row"><a href="{% url 'molo_download_media' %}">Download Media</a></th>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</div>
+
+{{ block.super }}
+{% endblock %}
+
+{% block sidebar %}
+{{ block.super }}
+{% endblock %}

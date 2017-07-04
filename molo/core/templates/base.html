@@ -1,0 +1,92 @@
+{% load wagtailcore_tags wagtailsettings_tags wagtailimages_tags wagtailuserbar %}
+{% load compress static core_tags i18n %}
+{% load google_analytics_tags %}
+{% get_settings %}
+
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+  <head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="{% if self.social_media_title %}{{ self.social_media_title }}{% elif self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}"/>
+    <meta name="twitter:description" content="{% if self.social_media_description %}{{ self.social_media_description }}{% else %}{{ self.subtitle }}{% endif %}"/>
+    {% image self.social_media_image width-300 as tmp_photo %}
+    <meta name="twitter:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+    <meta property="og:title" content= "{% if self.social_media_title %}{{ self.social_media_title }}{% elif self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}" />
+    <meta property="og:description" content="{% if self.social_media_description %}{{ self.social_media_description }}{% else %}{{ self.subtitle }}{% endif %}"/>
+    {% image self.social_media_image width-300 as tmp_photo %}
+    <meta property="og:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+    <meta property="og:image:url" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% compress css %}
+      <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/{{ ENV }}/styles.css">
+    {% endcompress %}
+    <noscript>
+      <style>#articles-more {display:none;}</style>
+    </noscript>
+    <script type="text/javascript">
+      // cut the mustard
+      var cutsTheMustard = 'querySelector' in document && 'localStorage' in window && 'addEventListener' in window;
+
+      if(cutsTheMustard === true) {
+        js = document.createElement('script');
+        js.src = '{{ STATIC_URL }}js/molo-min.js';
+        js.async = true;
+        document.querySelector('script').parentNode.appendChild(js);
+        loadJS( "{% static 'js/main.js' %}" );
+      }
+
+    {% get_current_language as LANGUAGE_CODE %}
+    </script>
+  </head>
+  <body class="{% block body_class %}{% endblock %}" {% if LANGUAGE_CODE|language_bidi == True %}dir="rtl"{% endif %}>
+    {% block google_analytics %}
+      {% include "patterns/components/ga_tag_manager.html" %}
+    {% endblock %}
+
+    {% wagtailuserbar %}
+
+
+    {% block header %}
+      {% include "patterns/components/header/header-search_icon.html" %}
+    {% endblock %}
+
+    {% block breadcrumbs %}
+      {% breadcrumbs %}
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+
+    {% block extra_js %}
+    {% endblock %}
+
+    {% block search %}
+      {% if languages %}
+        {% include "search/search_block.html" %}
+      {% endif %}
+    {% endblock %}
+
+    {% block navigation %}
+      {% include "patterns/components/navigation/navigation.html" %}
+    {% endblock %}
+
+    {% block footer %}
+      {% footer_page %}
+    {% endblock %}
+
+    {% block copyright %}
+      {% include "patterns/components/copyright/copyright-pipe.html" %}
+    {% endblock %}
+  </body>
+</html>

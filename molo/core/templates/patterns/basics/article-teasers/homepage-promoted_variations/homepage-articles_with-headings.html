@@ -1,0 +1,21 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+{% if featured_articles %}
+<div class="section-listing section-listing_theme-headings section-listing_theme-headings{{section.get_effective_extra_style_hints}}">
+  <h1 class="heading section-listing__title-theme-headings">
+    <a href="{% pageurl section %}" class="section-listing__link-theme-headings">{{section.title}}</a>
+  </h1>
+  <p class="promoted-article-list__desc-theme-headings">{{section.description}}</p>
+  <ul class="promoted-article-list promoted-article-list--theme-headings">
+    {% for article in featured_articles %}
+      <li class="promoted-article-list__item promoted-article-list__item--theme-headings">
+        <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-headings">
+          <h5 class="heading promoted-article__title--theme-headings">
+            {{article.title}}
+          </h5>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

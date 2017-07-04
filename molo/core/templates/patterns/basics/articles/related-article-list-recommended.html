@@ -1,0 +1,24 @@
+{% load wagtailcore_tags wagtailimages_tags mptt_tags static core_tags i18n  %}
+<div class="related-articles related-articles{{section.get_effective_extra_style_hints}}">
+{% if self.get_parent_section.enable_recommended_section %}
+{% get_recommended_articles self as recommended_articles %}
+  <h3 class="heading heading--small related-articles__recommended">{% trans "Recommended" %}</h3>
+  <div class="related-articles-recommended">
+    <ul class="related-articles-recommended-list">
+      {% for article in recommended_articles %}
+      <li class="related-articles-recommended-list__item">
+        {% if article.get_effective_image %}
+          <a href="{% pageurl article %}" class="promoted-article-list__anchor">{% image article.get_effective_image width-60 class="article__image" %}</a>
+        {% endif %}
+        <div class="related-articles-recommended-list__content {% if forloop.first %} related-articles-recommended-list__content--hero {% endif %}">
+          <h3 class="heading heading--large related-articles-recommended__title">
+            <a href="{% pageurl article %}">{{article.title}}</a>
+          </h3>
+          <p class="related-articles-recommended__desc">{{article.subtitle}}</p>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+</div>

@@ -1,0 +1,9 @@
+{
+  "Banner": {
+      "modifiers": "",
+      "img": {
+        "src": "/static/images/embed-image.png",
+        "alt": "Banner"
+      }
+  }
+}

@@ -1,0 +1,7 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+
+{% block topic_of_the_day %}
+{% if articles %}
+  {% include "patterns/components/article-teasers/topic-of-day_variations/articles_default.html" %}
+{% endif %}
+{% endblock %}

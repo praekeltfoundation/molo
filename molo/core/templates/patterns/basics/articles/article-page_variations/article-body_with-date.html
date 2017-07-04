@@ -1,0 +1,26 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags  %}
+<p class="article__desc">{{self.subtitle}}</p>
+<article class="{{articletype}}">
+  {% for block in self.body %}
+    {% if block.block_type == 'heading' %}
+      <h3 class="heading heading--large">{{ block.value }}</h3>
+    {% elif block.block_type == 'image' %}
+      {% image block.value width-320 %}
+    {% elif block.block_type == 'numbered_list' %}
+    <ol class="ordered-list">
+    {% for item in block.value %}
+      <li class="ordered-list__item">{{ item|handle_markdown }}</li>
+    {% endfor %}
+    </ol>
+    {% elif block.block_type == 'list' %}
+      <ul class="unordered-list">
+      {% for item in block.value %}
+        <li class="unordered-list__item">{{ item|handle_markdown }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      {{ block }}
+    {% endif %}
+  {% endfor %}
+  <p class="article-page__publish-date">{{self.first_published_at | date:"j F Y"}}</p>
+</article>

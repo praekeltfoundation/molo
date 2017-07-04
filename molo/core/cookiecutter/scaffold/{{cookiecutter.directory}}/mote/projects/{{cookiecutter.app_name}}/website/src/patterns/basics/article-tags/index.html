@@ -1,0 +1,25 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+  <h4 class="title">
+      Related Tag Listing
+  </h4>
+  <div class="description">
+    <p>The tag listing component are used to tag articles. A pre-defined list of tags should be added to the site instead of letting a client adding tag.</p>
+    <p>The user is prompted to read more on tags related to the article.
+    A maximum of five tags related to the article are presented.</p>
+  </div>
+  <div class="code-example">
+    <pre>
+        <code class="language-markup">
+            <xmp>
+              {% render_element element %}
+            </xmp>
+        </code>
+    </pre>
+  </div>
+</div>
+{% endblock %}
+{% endraw %}

@@ -1,0 +1,106 @@
+@mixin no-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+
+@mixin heading-fontsize-scale($headingFontSizeMap) {
+  @each $screen-breakpoint, $font-size in $headingFontSizeMap {
+    @if $screen-breakpoint == null {
+      font-size: $font-size;
+    }
+    @else {
+      @media screen and (min-width: $screen-breakpoint) {
+        font-size: $font-size;
+      }
+    }
+  }
+}
+
+@mixin float-clear($value) {
+  float: $value;
+  clear: $value;
+}
+
+// Dividers
+// TODO: combine divder mixins
+@mixin divider-top-1 {
+  background: url('/static/img/top-div-1@2x.png') no-repeat 0 0/contain;
+  margin-top: 5px;
+}
+@mixin divider-top-2 {
+  background: url('/static/img/top-div-2@2x.png') no-repeat 0 0/contain;
+  margin-top: 5px;
+}
+@mixin divider-bottom-1 {
+  background: url('/static/img/bottom-div-1@2x.png') no-repeat 0 100%/contain;
+}
+@mixin divider-combo-1 {
+  background: url('/static/img/bottom-div-1@2x.png') no-repeat 0 100%/contain, url('/static/img/top-div-2@2x.png') no-repeat 0 0/contain;
+  margin-top: 5px;
+}
+
+@mixin divider-combo-2 {
+  background: url('/static/img/bottom-div-1@2x.png') no-repeat 0 100%/contain, url('/static/img/top-div-1@2x.png') no-repeat 0 0/contain;
+  margin-top: 5px;
+}
+
+@mixin divider-line($height, $color) {
+  &:after {
+    content: "";
+    display: block;
+    margin: 8px 0;
+    border-bottom: $height solid $color;
+  }
+}
+
+// Underlines
+@mixin underline($style, $padding) {
+  @if $style == 'zig-zag' {
+    background: url('/static/img/lines/zig-zag-underline.png') no-repeat 50% 100%/145px;
+  } @else if $style == 'skewed' {
+    background: url('/static/img/lines/skewed-underline.png') no-repeat 50% 100%/200px;
+  } @else if $style == 'sharpie'{
+    background: url('/static/img/lines/sharpie-underline.png') no-repeat 50% 100%/122px;
+  }
+	padding-bottom: $padding;
+}
+
+// Grid Container Mixin
+@mixin grid($width: $container) {
+
+  $container: $width;
+
+  display: flex;
+  flex-direction: row;
+  flex-flow: wrap;
+  flex: 0 1 auto;
+
+  max-width: $container;
+  margin: 0 auto;
+}
+
+// Grid Column Mixin
+@mixin column($span: $columns) {
+
+  $columns: $span;
+
+  box-sizing: border-box;
+  flex: $columns $columns auto;
+  flex-basis: $columns;
+  max-width: $columns;
+
+  padding-right: $grid-gutter;
+  padding-left: $grid-gutter;
+  padding-bottom: $grid-gutter*2;
+
+}
+
+// background contain mixin for older IE and nokias
+@mixin background-cover($image-path) {
+  background-size: contain;
+  background-image: url(#{$image-path});
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='#{$image-path}', sizingMethod='crop');
+  -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='#{$image-path}', sizingMethod='crop')";
+}
