@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.4.15
+~~~~~~
+- Include pages with status code 302 in GA tracking
+
 4.4.14
 ~~~~~~
 - #385, #366 Bug fix for search to only return articles
