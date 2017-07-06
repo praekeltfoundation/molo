@@ -22,11 +22,11 @@ Website Glossary
 These are the Molo sites:
 
 - .. _`TuneMe`: https://tuneme.org/
-- GEM (Girl Effect Mobile)
+- .. _ GEM (Girl Effect Mobile)
 - .. _`Sprinster`: http://sa.heyspringster.com/
-- FreeBasics
-- Babycenter
-- IoGT (Internet of Good Things)
+- .. _`FreeBasics`: http://amabhungane.molo.site/
+- .. _ `Babycenter`: http://southafrica.babycenter.io/
+- .. _`IoGT (Internet of Good Things)`: http://za.goodinternet.org/
 
 Website Components
 ------------------
