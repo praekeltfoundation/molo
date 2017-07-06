@@ -68,6 +68,10 @@ npm install
 npm install --global gulp-cli npm install
 gulp
 
+Asset processing & bundling, concatenating and minification script and package modules on project root folder::
+  gulpfile.js
+  package.json
+
 .. image:: docs/gulp-scripts.png
     :target: http://gulpjs.com/
     :alt: Gulp.js
