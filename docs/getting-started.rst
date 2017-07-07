@@ -1,6 +1,6 @@
 .. _getting-started:
 .. _molo_bundle:
-.. _template-tags:
+
 
 Getting Started
 ===============
