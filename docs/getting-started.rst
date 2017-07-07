@@ -79,8 +79,7 @@ For convenience, here's the full scaffold command for the current plugins::
         --require=molo.commenting --include=molo.commenting ^commenting/ \
         --require=molo.yourwords --include=molo.yourwords ^yourwords/
 
-.. note:: molo.profiles is a requirement of molo core and is there installed when molo
-is installed.
+.. note:: ``molo.profiles`` is a requirement of molo core and is therefor automatically installed when molo is installed.
 
 Molo, Django & settings files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
