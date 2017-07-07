@@ -9,23 +9,23 @@ Molo consists of a core structure onto which new feature plugins can be added. T
 Core Features
 -------------
 
-    - Banners
-        - Image banners on the home page that can be linked to any page on the site
-    - Sections (and subsections)
-        - Content sections that allows structuring of content on the site
-    - Articles
-        - The main content element of molo.
-        - It allows you to create rich articles containing multiple images, lists (bulleted/numbered) and links to other pages
-    - Footer pages
-        - Content pages mostly used for About, Terms and Contact information
-    - Tags
-        - Tags are words or hashtags that can be added to articles and can be used to navigate through a site.
-    - Reaction Questions
-        - Questions that have set responses that a user can choose from. These are added to articles to get a response for a specific article.
-    - Search
-        - The ability to search for any content on the site
-        - The ability to show a highlighted term in the results
-        - Support for both Elastichsearch 1.x & 2.x
+- Banners
+    - Image banners on the home page that can be linked to any page on the site
+- Sections (and subsections)
+    - Content sections that allows structuring of content on the site
+- Articles
+    - The main content element of molo.
+    - It allows you to create rich articles containing multiple images, lists (bulleted/numbered) and links to other pages
+- Footer pages
+    - Content pages mostly used for About, Terms and Contact information
+- Tags
+    - Tags are words or hashtags that can be added to articles and can be used to navigate through a site.
+- Reaction Questions
+    - Questions that have set responses that a user can choose from. These are added to articles to get a response for a specific article.
+- Search
+    - The ability to search for any content on the site
+    - The ability to show a highlighted term in the results
+    - Support for both Elastichsearch 1.x & 2.x
 
 .. note:: Search highlighting is only supported by the Elasticsearch backend.
 
@@ -83,5 +83,5 @@ Core Features
             {% endfor %}
 
 
-    - Multiple Languages
-        - Molo allows you to offer you content in multiple languages using the TranslatablePageMixin
+- Multiple Languages
+    - Molo allows you to offer you content in multiple languages using the TranslatablePageMixin
