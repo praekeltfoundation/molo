@@ -5,8 +5,8 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views.generic import FormView
 
-from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin
-from wagtailmodeladmin.views import ChooseParentView
+from wagtail.contrib.modeladmin.options import ModelAdmin as WagtailModelAdmin
+from wagtail.contrib.modeladmin.views import ChooseParentView
 
 from molo.core.api import forms, importers
 from molo.core.api.constants import ARTICLE_SESSION_VARS, SECTION_SESSION_VARS

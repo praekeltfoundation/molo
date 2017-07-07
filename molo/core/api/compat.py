@@ -8,5 +8,5 @@ wagtail.wagtailimages.api.v2.endpoints
 """
 
 from wagtail.api.v2.endpoints import PagesAPIEndpoint  # noqa
-from wagtail.api.v2.endpoints import ImagesAPIEndpoint  # noqa
+from wagtail.wagtailimages.api.v2.endpoints import ImagesAPIEndpoint  # noqa
 from wagtail.api.v2.serializers import PageSerializer  # noqa
