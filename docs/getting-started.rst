@@ -152,4 +152,3 @@ And then run the full test suite with::
 Pull requests are expected to follow Praekelt's `Ways Of Working`_.
 
 .. _`Ways of Working`: http://ways-of-working.rtfd.org
-.. _`Wagtail CMS`: http://wagtail.io

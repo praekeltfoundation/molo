@@ -5,7 +5,7 @@ What is bundled with Molo?
 ==========================
 
 1. `Wagtail CMS`_
-2. Molo Profiles
+2. `Molo Profiles`_
 3. Basic feature phone template set.
 4. Basic models for the following tree structure:
 
@@ -13,7 +13,7 @@ What is bundled with Molo?
     - All content has to initially be created in the main language. Thereafter translations can be made for that content.
     - Translations for content cannot exist for additional languages if it does not first exist for the main language.
     - The first language added will be the main language, any other languages added after will be additional languages.
-    .. image:: view_languages.png
+    .. image:: main_language.png
    2. Once a main language has been created, a main page will be created as well. A main page consists of index pages.
     - Index pages exist for each content type.
     - All section pages are grouped into the 'Sections' index page.
@@ -28,3 +28,7 @@ What is bundled with Molo?
     .. image:: translation.png
    5. A Settings tab that includes Site Settings. Site Settings is where the logo, google analytics and various other settings are set.
     .. image:: site_settings.png
+
+
+.. _`Wagtail CMS`: http://wagtail.io
+.. _`Molo Profiles`: https://github.com/praekelt/molo.profiles/tree/develop/molo/profiles
