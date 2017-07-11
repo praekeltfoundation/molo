@@ -126,13 +126,15 @@ def register_import_menu_item():
         classnames='icon icon-download',
     )
 
+
 # API admin
 @hooks.register("register_admin_urls")
 def add_import_view():
     return molo_api_urls.urlpatterns
 
+
 @hooks.register('register_admin_menu_item')
-def register_import_menu_item():
+def register_api_menu_item():
     return MenuItem(
         _('API'),
         urlresolvers.reverse('main-import'),
@@ -186,7 +188,6 @@ def hide_import_content_if_not_uc_user(request, menu_items):
             groups__name='Universal Core Importers').exists():
         menu_items[:] = [
             item for item in menu_items if item.name != 'import-content']
-
 
 
 @hooks.register('construct_main_menu')
