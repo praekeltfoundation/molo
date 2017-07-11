@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from rest_framework import serializers
 
-from molo.core.api.compat import PageSerializer
+from wagtail.api.v2.serializers import PageSerializer
 
 
 class PageChildrenField(serializers.Field):

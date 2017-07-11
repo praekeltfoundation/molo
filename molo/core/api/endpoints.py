@@ -1,4 +1,5 @@
-from molo.core.api.compat import ImagesAPIEndpoint, PagesAPIEndpoint
+from wagtail.api.v2.endpoints import PagesAPIEndpoint
+from wagtail.wagtailimages.api.v2.endpoints import ImagesAPIEndpoint
 from molo.core.api.serializers import MoloPageSerializer
 
 
