@@ -1,0 +1,8 @@
+{
+  "Button": {
+    "tag": "input",
+    "type":"submit",
+    "text": "Button Primary",
+    "modifiers": "button--primary"
+  }
+}

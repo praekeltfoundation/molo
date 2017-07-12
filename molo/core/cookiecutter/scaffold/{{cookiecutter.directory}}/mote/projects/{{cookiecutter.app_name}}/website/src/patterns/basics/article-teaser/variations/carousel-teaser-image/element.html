@@ -1,0 +1,9 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.CarouselTeaserImage.img as "carousel_image" %}
+{% if carousel_image %}
+<a href="#" class="carousel-teaser__thumbnail-link">
+  <img alt="{{ carousel_image.alt }}" src="{{ carousel_image.src }}" class="carousel-teaser__thumbnail" />
+</a>
+{% endif %}
+{% endraw %}

@@ -1,0 +1,35 @@
+{
+  "name": "molo",
+  "version": "1.0.0",
+  "description": "Molo Core",
+  "main": "gulpfile.js",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.0.13",
+    "gulp-gzip": "^1.4.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-notify": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-watch": "^4.3.9",
+    "gulp-minify": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/praekelt/molo.git"
+  },
+  "author": "Prakelt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/praekelt/molo.git/issues"
+  },
+  "homepage": "https://github.com/praekelt/molo.git#readme",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

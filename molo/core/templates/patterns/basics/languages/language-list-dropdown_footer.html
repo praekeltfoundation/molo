@@ -1,0 +1,26 @@
+{% block languages %}
+
+  {% load wagtailimages_tags static i18n %}
+
+  {% if languages|length > 1 %}
+  <div class="languages">
+      <input id="language-select_footer" class="language-select__toggle-input" type="checkbox">
+      <label class="language-select__change-label language-select__change-label-footer" for="language-select_footer">
+        <img src="{% static 'images/icons/loop2.png' %}" width="auto" class="language-select__change-icon" />
+        {% trans "Change Language" %}</label>
+
+      <div role="languages" class="language-select language-select--footer">
+        <ul class="language-list language-list--dropdown language-list--dropdown-footer">
+          {% for language in languages %}
+            <li class="language-list__item language-list__item--dropdown language-list__item--dropdown-footer">
+              <a href="{% url 'locale_set' language.locale %}?next={{request.path}}?{{ request.GET.urlencode }}" class="language-list__anchor language-list__anchor-dropdown language-list__anchor-dropdown-footer {% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">
+                {{language.locale|language_name_local}}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+     </div>
+  </div>
+  {% endif %}
+
+{% endblock %}

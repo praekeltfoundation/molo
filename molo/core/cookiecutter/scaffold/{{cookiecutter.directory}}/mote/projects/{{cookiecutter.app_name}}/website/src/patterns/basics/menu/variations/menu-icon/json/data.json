@@ -1,0 +1,23 @@
+{
+  "Menu": {
+    "text": "Welcome to Molo design pattern",
+    "modifiers": "",
+    "menu_list": [
+      {
+        "href": "#",
+        "name": "Sign up",
+        "id": "profile_icon"
+      },
+      {
+        "href": "#",
+        "name": "Menu",
+        "id": "menu_icon"
+      },
+      {
+        "href": "#",
+        "name": "Search",
+        "id": "search_icon"
+      }
+    ]
+  }
+}

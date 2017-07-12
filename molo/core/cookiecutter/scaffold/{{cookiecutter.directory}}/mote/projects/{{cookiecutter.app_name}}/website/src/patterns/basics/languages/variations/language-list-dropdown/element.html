@@ -1,0 +1,23 @@
+{% raw %}
+{% load mote_tags i18n%}
+{% mask element.json.data.Language_list_dropdown as "language_list_dropdown" %}
+<div class="languages">
+  <div class="languages__bar">
+    <div class="languages-current">
+      <span class="languages-current__label">{% trans "Language" %}</span>
+      <span class="languages-current__selected">English</span>
+    </div>
+    <input id="language-select" class="language-select__toggle-input" type="checkbox">
+    <label class="language-select__change-label" for="language-select">{% trans "Change Language" %}</label>
+    <div role="languages__bar" class="language-select">
+      <ul class="language-list language-list__item--dropdown">
+        {% for item in language_list_dropdown.languages %}
+          <li class="language-list__item language-list__item--dropdown">
+            {{ item.language }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+   </div>
+</div>
+{% endraw %}

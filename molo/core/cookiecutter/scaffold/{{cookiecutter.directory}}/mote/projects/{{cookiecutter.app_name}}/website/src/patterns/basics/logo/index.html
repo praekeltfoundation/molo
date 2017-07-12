@@ -1,0 +1,57 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Main Logo image
+    </h4>
+    <div class="description">
+      <p>Logo positioned to the left</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Main Logo image
+    </h4>
+    <div class="description">
+      <p>Logo positioned to the right</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.logo.logo-right %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Main big Logo image
+    </h4>
+    <div class="description">
+      <p>Logo positioned aligned center</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.logo.logo-left %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

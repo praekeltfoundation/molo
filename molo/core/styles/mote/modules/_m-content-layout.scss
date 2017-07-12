@@ -1,0 +1,60 @@
+
+.content__prk {
+  @media screen and (min-width: 650px) {
+    padding-right: 15%;
+  }
+  .content:first-child {
+    padding-top: 0;
+  }
+  .content {
+    padding-top: 117px;
+  }
+}
+.content__heading-medium {
+  @media screen and (min-width: 650px) {
+    padding-right: 40%;
+  }
+}
+.content__heading-small {
+  @media screen and (min-width: 650px) {
+    padding-right: 30%;
+  }
+}
+.content__description {
+  color: #5A5D5E;
+  font-weight: 300;
+  font-size: 18px;
+}
+.content__princinples {
+  padding-top: 30px;
+}
+
+#pdf-embed-iframe {
+  width: 100%;
+  height: 600px;
+  margin-bottom: 10%;
+  html, body {
+    background-color: #fff !important;
+  }
+}
+
+.iframe-variation-toggler {
+  border: 1px solid #e6e6e6;
+  height: 30px;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+
+//Note: Mote Progress Bar currently isn't implemented
+.stickySidebar {
+  position: fixed;
+  top: 175px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  bottom: 0;
+  margin-bottom: 30px;
+}
+.noStickySidebar {
+  position: inherit;
+}

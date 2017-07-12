@@ -1,0 +1,14 @@
+{% if pages.next %}
+{% include "patterns/basics/pagination/sp-pagination-pageof.html" %}
+  {% if section %}
+    <a id="more-link" href="#" data-next="{{datalink}}?page={{pages.next.number}}&section={{section.pk}}&locale={{locale_code}}" class="more-link call-to-action__button call-to-action__button--{{type}}">
+  {% elif search_query %}
+      <a id="more-link" href="#" data-next="{{datalink}}?page={{pages.next.number}}&q={{search_query}}&locale={{locale_code}}" class="more-link call-to-action__button call-to-action__button--{{type}}">
+  {% elif 'tag' in request.path %}
+      <a id="more-link" href="#" data-next="{{datalink}}?page={{pages.next.number}}&tag_name={{tag.title}}&locale={{locale_code}}" class="more-link call-to-action__button call-to-action__button--{{type}}">
+  {% else %}
+    <a id="more-link" data-next="{{datalink}}?page={{pages.next.number}}&locale={{locale_code}}" class="more-link call-to-action__button call-to-action__button--{{type}}">
+  {% endif %}
+      <span class="call-to-action__button-text call-to-action__button-text--{{type}}">{{text}}</span>
+    </a>
+{% endif %}

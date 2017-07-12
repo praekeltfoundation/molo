@@ -1,0 +1,12 @@
+{% raw %}
+{% load mote_tags i18n %}
+{% mask element.json.data.ArticleList as "article" %}
+  <div class="related-articles related-articles--{{article.modifiers}}">
+    <p class="related-article__title">Recommended Articles:</p>
+    {% for list in  article.list%}
+      <a href="/" class="call-to-action__item--text">
+        {{list.text}}
+      </a>
+    {% endfor %}
+  </div>
+{% endraw %}

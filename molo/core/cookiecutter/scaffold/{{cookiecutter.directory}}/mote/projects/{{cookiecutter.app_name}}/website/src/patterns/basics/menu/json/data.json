@@ -1,0 +1,17 @@
+{
+  "Menu": {
+    "modifiers": "section-nav",
+    "menu_list": [
+      {
+        "href": "#",
+        "name": "Sign up",
+        "id": "profile"
+      },
+      {
+        "href": "#",
+        "name": "Search",
+        "id": "search"
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "Search": {
+      "text": "Welcome to Molo design pattern",
+      "modifiers": "",
+      "search_field": {
+        "type": "text",
+        "label": "Please search the website here:",
+        "value": "Search",
+        "validate": "",
+        "maxlength": "",
+        "hint": "Please enter your name"
+      }
+  }
+}

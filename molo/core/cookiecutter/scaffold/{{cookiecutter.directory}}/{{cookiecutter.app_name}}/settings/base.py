@@ -30,6 +30,7 @@ SECRET_KEY = "{{cookiecutter.secret_key}}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ENV = 'dev'
 
 ALLOWED_HOSTS = ['*']
 
@@ -43,8 +44,8 @@ BASE_URL = 'http://example.com'
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -55,8 +56,10 @@ INSTALLED_APPS = [
     'taggit',
     'modelcluster',
 
-    'molo.core',
     '{{cookiecutter.app_name}}',
+    'molo.core',
+    'molo.profiles',
+    'mote',
     'google_analytics',
 
     'wagtail.wagtailcore',
@@ -70,12 +73,15 @@ INSTALLED_APPS = [
     'wagtail.wagtailsearch',
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
-    'wagtailmodeladmin',
     'wagtailmedia',
+    'wagtail.contrib.wagtailsitemaps',
     'wagtail.contrib.settings',
+    'wagtail.contrib.modeladmin',
+    'wagtail.api.v2',
 
     'mptt',
     'djcelery',
+    'el_pagination',
 {% for app_name, _ in cookiecutter.include %}    '{{app_name}}',
 {% endfor %}
     'raven.contrib.django.raven_compat',
@@ -84,10 +90,12 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
+DEFAULT_SITE_PORT = 8000
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'molo.core.middleware.ForceDefaultLanguageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -96,20 +104,26 @@ MIDDLEWARE_CLASSES = [
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
-    'wagtailmodeladmin.middleware.ModelAdminMiddleware',
 
-    'molo.core.middleware.ForceDefaultLanguageMiddleware',
     'molo.core.middleware.AdminLocaleMiddleware',
     'molo.core.middleware.NoScriptGASessionMiddleware',
 
     'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
+    'molo.core.middleware.MultiSiteRedirectToHomepage',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'molo.core.backends.MoloModelBackend',
+    'django.contrib.auth.backends.ModelBackend'
 ]
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            join(PROJECT_ROOT, '{{cookiecutter.app_name}}', 'templates'),
+        ],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -117,8 +131,15 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'molo.core.context_processors.locale',
+                'molo.core.processors.compress_settings',
                 'wagtail.contrib.settings.context_processors.settings',
             ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "mote.loaders.app_directories.Loader",
+                "django.template.loaders.app_directories.Loader",
+
+            ]
         },
     },
 ]
@@ -144,6 +165,8 @@ GOOGLE_ANALYTICS_IGNORE_PATH = [
     # when using nginx, we handle statics and media
     # but including them here just incase
     '/media/', '/static/',
+    # metrics URL used by promethius monitoring system
+    '/metrics/',
 ]
 
 # Database
@@ -176,17 +199,13 @@ BROKER_URL = environ.get('BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = environ.get(
     'CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 CELERYBEAT_SCHEDULE = {
-    'rotate_promote_content': {
+    'rotate_content': {
         'task': 'molo.core.tasks.rotate_content',
         'schedule': crontab(minute=0),
     },
-    'demote_articles': {
-        'task': 'molo.core.tasks.demote_articles',
-        'schedule': crontab(minute="*"),
-    },
-    'promote_articles': {
-        'task': 'molo.core.tasks.promote_articles',
-        'schedule': crontab(minute="*"),
+    'molo_consolidated_minute_task': {
+        'task': 'molo.core.tasks.molo_consolidated_minute_task',
+        'schedule': crontab(minute='*'),
     },
 }
 
@@ -275,6 +294,7 @@ LOCALE_PATHS = [
 
 STATIC_ROOT = join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
+COMPRESS_ENABLED = True
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -330,6 +350,10 @@ ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
 FROM_EMAIL = environ.get('FROM_EMAIL', "support@moloproject.org")
 CONTENT_IMPORT_SUBJECT = environ.get(
     'CONTENT_IMPORT_SUBJECT', 'Molo Content Import')
+CONTENT_COPY_SUBJECT = environ.get(
+    'CONTENT_COPY_SUBJECT', 'Molo Content Copy')
+CONTENT_COPY_FAILED_SUBJECT = environ.get(
+    'CONTENT_COPY_FAILED_SUBJECT', 'Molo Content Copy Failed')
 
 # SMTP Settings
 EMAIL_HOST = environ.get('EMAIL_HOST', 'localhost')

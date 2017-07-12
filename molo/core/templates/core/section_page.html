@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block content %}
+  {% block section %}
+    {% load_child_sections_for_section self as sections %}
+    {% if not settings.core.SiteSettings.enable_tag_navigation %}
+      {% include "patterns/components/sectionpage/sectionpage-standard.html" %}
+    {% else %}
+      {% include "patterns/components/sectionpage/sectionpage-standard_with-tags.html"%}
+    {% endif %}
+  {% endblock %}
+{% endblock %}

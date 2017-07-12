@@ -1,0 +1,132 @@
+@each $name, $color in $color_scheme {
+  //SECTION PAGES
+
+  //Basics - Section Page Heading variations
+  .section-listing__title-theme-general--#{$name} {
+    color: $color;
+    .section-listing__link-theme-general {
+      color: $color;
+    }
+  }
+
+  .subsection-listing__theme-bg--#{$name} {
+    .section-listing__theme-subsection_bg-title { background: rgba($color,0.4); }
+    .section-listing__theme-subsection_bg-link { color: $color; }
+  }
+
+  .section-listing_theme-headings--#{$name} {
+
+    .section-listing__title-theme-headings {
+      border-top-color: $color;
+      border-bottom-color: $color;
+      background: rgba($color,0.4);
+    }
+
+    .section-listing__link-theme-headings,
+    .promoted-article-list__anchor--theme-headings {
+      color: $color;
+    }
+
+    .promoted-article-list__item--theme-headings {
+      border-top-color: $color;
+    }
+  }
+
+  .section-listing__column--#{$name} {
+    .subsection-listing__column-title,
+    .subsection-listing__column-link {
+      color: $color;
+    }
+  }
+
+  .section-listing__column-icon--#{$name} {
+    .section-listing__column-icon-title,
+    .section-listing__column-icon-link {
+      color: $color;
+    }
+    .section-listing__column-icon-title-hero {
+      background: $color;
+      .section-listing__column-icon-link {
+        color: #fff;
+      }
+    }
+  }
+
+  //PROMOTED SECTION: Homepage section listing
+  .section-listing__theme-bg--#{$name} {
+    .section-listing__theme-bg-title { background: $color;
+      .section-listing__theme-bg-link { color: #fff; }
+    }
+    .subsection-listing__theme-bg-title {
+        background: rgba($color,0.4);
+        .subsection-listing__theme-bg-link {
+          color: #fff;
+        }
+    }
+    .section-listing__theme-more-link,
+    .subsection-list__theme-more-link { color: $color; }
+  }
+
+  .section-listing--#{$name} {
+    .section-listing__title { background: none; }
+    .section-listing__link { color: $color; }
+  }
+
+  .section-listing-standard-list--#{$name} {
+    background: $color;
+    .section-listing-standard-list__item,
+    .section-listing-standard-list__link {
+      color: #fff;
+    }
+  }
+
+  .promoted-article-list__item--theme-headings--#{$name} {
+    .promoted-article-list__anchor--theme-headings {
+      color: $color;
+    }
+  }
+
+  //ARTICLE PAGES
+
+  //Basics - Article page: content variations
+  .heading--section-article--#{$name} {
+    background: $color;
+    .heading--section-article__link {
+      color: #fff;
+    }
+  }
+
+  .heading-section-article__bg-title--#{$name} {
+    background: rgba($color,0.4);
+    .heading-section-article__bg-link {
+      color: #fff;
+    }
+  }
+
+  .heading--article-bg--#{$name} {
+    background: $color;
+    color: #fff;
+  }
+
+  //ARTICLE LINK BUTTONS
+
+  //Basics - Article page: content variations
+  .article-back__anchor--#{$name} {
+    color: $color;
+  }
+
+  //Basic - Article related links
+  .related-article-list--#{$name} {
+    color: $color;
+    .call-to-action__item--text {
+      color: $color;
+    }
+  }
+
+  //Depreciated
+  .featured-page-list__heading--#{$name} {
+    background: $color;
+    color: #fff;
+  }
+
+}

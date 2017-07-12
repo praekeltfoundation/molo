@@ -1,0 +1,8 @@
+{
+  "Button": {
+    "tag":"input",
+    "type":"submit",
+    "text": "Call to action",
+    "modifiers": "secondary"
+  }
+}

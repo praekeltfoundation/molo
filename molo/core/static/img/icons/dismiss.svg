@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Search Icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="header/search" transform="translate(-333.000000, -13.000000)" stroke="#A4EED2">
+            <g id="icons/close-mint" transform="translate(328.000000, 8.000000)">
+                <g id="ui-24px-outline-1_simple-remove" transform="translate(6.000000, 6.000000)">
+                    <g id="Group" stroke-width="2">
+                        <path d="M12,0 L0,12" id="Shape"></path>
+                        <path d="M12,11 L0,0" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,58 @@
+[role="menu"] {
+  padding: 0 0 0 10px;
+}
+[role="menu"].vertical.tier-1 > [role="menuitem"] a {
+  font-weight: bold;
+}
+[role=menu].vertical.tier-2 > [role=menuitem] a {
+  font-weight: normal;
+}
+
+[role="menu"] [role="menuitem"] a {
+  color: #000;
+  text-transform: capitalize;
+}
+
+[role="menu"] [role="menuitem"] a + [role="menu"] [role="menuitem"]:after {
+  background-color: rgba(0, 0,0 ,0.8);
+}
+[role="menu"] [role="menuitem"] a:hover,
+[role="menu"] [role="menuitem"] a:focus,
+[role="menu"] [role="menuitem"] a:visited:hover,
+[role="menu"] [role="menuitem"] a:visited:focus,
+[role="menu"] [role="menuitem"] a:active,
+[role="menu"] [role="menuitem"] a.active {
+  color: rgba(0,0,0,.5);
+}
+[role="menu"] [role="menuitem"] a:active,
+[role="menu"] [role="menuitem"] a.active  {
+    font-weight: bold;
+}
+
+.extra-list__menu {
+  padding: 10px 0 10px 20px;
+  display: block;
+  list-style: none;
+  margin: 0;
+}
+.extra-list__menuitem {
+  a {
+    color: #000;
+    text-decoration: none;
+    padding: 5px 0;
+    &:hover,
+    &:focus {
+      color: rgba(0,0,0,.5);
+    }
+  }
+  .is-active {
+    color: rgba(0,0,0,.5);
+    text-decoration: underline;
+    font-weight: bold;
+  }
+}
+.menuitem__main-project {
+  color: #000;
+  text-decoration: underline;
+  font-weight: bold;
+}

@@ -1,0 +1,42 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+
+<h1 class="heading heading--xx-large">{{self.title}}</h3>
+<p>{{self.subtitle}}</p>
+{% if self.get_effective_image %}
+  <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+    {% image self.get_effective_image width-240 %}
+  </a>
+{% endif %}
+
+<article>
+  {% for block in self.body %}
+    {% if block.block_type == 'heading' %}
+      <h3 class="heading heading--large">{{ block.value }}</h3>
+
+    {% elif block.block_type == 'image' %}
+      {% image block.value width-320 %}
+
+    {% elif block.block_type == 'numbered_list' %}
+      <ol class="default-ordered-list">
+      {% for item in block.value %}
+        <li class="default-ordered-list__item">{{ item|handle_markdown }}</li>
+      {% endfor %}
+      </ol>
+
+    {% elif block.block_type == 'list' %}
+      <ul class="default-unordered-list">
+      {% for item in block.value %}
+        <li class="default-unordered-list__item">{{ item|handle_markdown }}</li>
+      {% endfor %}
+    </ul>
+
+    {% elif block.block_type == 'page' %}
+      <a href="{% pageurl block.value %}" class="featured-page-list featured-page-list__anchor">
+        {{block.value }}
+      </a>
+
+    {% else %}
+        {{ block }}
+    {% endif %}
+  {% endfor %}
+</article>

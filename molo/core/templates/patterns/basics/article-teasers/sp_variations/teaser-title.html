@@ -1,0 +1,12 @@
+{% load wagtailcore_tags core_tags %}
+<h3 class="{{layouttype}}-teaser__title block-with-text">
+  <a href="{% pageurl article %}" class="{{layouttype}}-teaser__title-link">
+  {{ article.title|truncatechars:38|lower|capfirst }}</a>
+</h3>
+{% if article.subtitle %}
+  {% if article.title.30 %}
+    <p class="{{layouttype}}-teaser__subtitle block-with-text">{{ article.subtitle|truncatechars:28|lower|capfirst }}</p>
+  {% else %}
+    <p class="{{layouttype}}-teaser__subtitle block-with-text">{{ article.subtitle|truncatechars:50|lower|capfirst }}</p>
+  {% endif %}
+{% endif %}

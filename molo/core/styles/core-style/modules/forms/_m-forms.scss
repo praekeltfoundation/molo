@@ -1,0 +1,110 @@
+
+fieldset {
+  font-family: 'Quicksand', sans-serif;
+  border: none;
+  padding: 10px 0;
+  margin: 0;
+  @media screen and (min-width: 320px) {
+    padding: 10px 15px 0;
+  }
+}
+
+label, .checkbox__legend {
+  font-size: 16px;
+  padding: 10px 0 0;
+  color: #000;
+  text-transform: uppercase;
+  display: block;
+}
+.checkbox__label {
+  display: block;
+  text-transform: capitalize;;
+}
+
+.required-asterisk {
+  color: #909497;
+  font-size: 13px;
+}
+.required-info {
+  color: #909497;
+  display: block;
+  font-size: 14px;
+  font-weight: normal;
+  margin: -5px 0 0;
+}
+.hint-text {
+  color: #909497;
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  padding-bottom: 5px;
+  text-transform: capitalize;
+}
+.search-icon {
+  font-size:12px;
+  color: #909497;
+}
+
+label.error {
+  .required-asterisk,
+  .required-info {
+    color: red;
+  }
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="search"] {
+    border: 1px solid red;
+  }
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+input[type="search"],
+input[type="week"],
+input[type="date"],
+input[type="month"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="url"],
+textarea {
+  border: 1px solid #B0B9BB;
+  display: block;
+  font-size: 14px;
+  margin: 10px 0;
+  padding: 10px;
+  width: 80%; //Smaller screen resolution
+  @media screen and (min-width: 320px) {
+    border-radius: 5px;
+    width: 90%;
+  }
+}
+
+input[type="checkbox"],
+input[type="radio"]  {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+select {
+  background: url(/static/images/shape.png) no-repeat  95% 55%;
+  display: block;
+  padding: 10px 5px;
+  font-size: $font-xx-small;
+  margin: 10px 0;
+  width: 90%;
+  min-width: 90px;
+}
+
+.select-group {
+  display: inline-block;
+  padding: 15px 0;
+}
+.sub_label {
+  display: block;
+}

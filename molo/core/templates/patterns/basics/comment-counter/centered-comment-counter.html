@@ -1,0 +1,11 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static comments molo_commenting_tags i18n %}
+{% get_comment_count for article as comment_count %}
+{% if comment_count > 0 %}
+<a href="/" class="comment-counter comment-counter--carousel">
+  <img alt="Comments" srcset="{% static 'img/icons/check.svg' %}" src="{% static 'img/icons/check@2x.png' %}" class="comment-counter__icon">
+  <span class="comment-counter__numeral">{{comment_count}}</span>
+  <span class="comment-counter__numeral comment-counter__numeral--plural">
+    {% trans "comment" %}{{comment_count|pluralize}}
+  </span>
+</a>
+{% endif %}

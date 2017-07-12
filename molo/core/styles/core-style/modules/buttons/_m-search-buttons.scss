@@ -1,0 +1,41 @@
+//Form input could not be overridden by class - hence the id
+#search__input-standard {
+  border-radius: 0;
+  border: 1px solid #000;
+}
+#input__semi-round {
+  border-radius: 5px;
+}
+#input__round {
+  border-radius: 20px;
+}
+#input__none {
+  border-radius: 0;
+}
+
+.call-to-action__item--search {
+  background: #fff;
+  color: #666666;
+  border: 1px solid #D0D0D0;
+  text-align: center;
+  font-size: 12px;
+  margin: 0 auto;
+  padding: 5px;
+}
+.call-to-action__item--search-icon {
+  display: block;
+  @media screen and (min-width: 320px) {
+    background:  url('/static/images/icons/search.svg') no-repeat 0 0 / auto 100%;
+  }
+}
+
+.call-to-action__item--search-icon-bg {
+  border-radius: 0;
+  @media screen and (min-width: 320px) {
+    background:  #000 url('/static/images/icons/search_white.svg') no-repeat 12px 10px / auto 60%;
+    right: 10%;
+    top: 10px;
+    height: 39px;
+    width: 45px;
+  }
+}

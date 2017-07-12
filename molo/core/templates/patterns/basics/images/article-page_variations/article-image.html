@@ -1,0 +1,6 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+{% if self.get_effective_image %}
+  <a href="{% pageurl self %}" class="article__anchor article__anchor--{{type}}">
+    {% image self.get_effective_image width-320 class="article__image article__image--{{type}}"%}
+  </a>
+{% endif %}

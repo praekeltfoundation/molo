@@ -1,0 +1,34 @@
+{
+    "Navigation": {
+        "text": "Welcome to Molo design pattern",
+        "description": "Welcome to the home page",
+        "modifiers": "",
+        "nav_list": [
+          {
+            "href": "#",
+            "name": "Yourwords",
+            "desc":"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium"
+          },
+          {
+            "href": "#",
+            "name": "Know your body",
+            "desc": "Doloremque laudantium, totam rem aperiam"
+          },
+          {
+            "href": "#",
+            "name": "Your Rights",
+            "desc": "Nemo enim ipsam voluptatem quia voluptas sit"
+          },
+          {
+            "href": "#",
+            "name": "Health Issues",
+            "desc": "Incidunt ut labore et dolore magnam aliquam"
+          },
+          {
+            "href": "#",
+            "name": "Life Tips",
+            "desc": "At vero eos et accusamus et iusto odio"
+          }
+        ]
+    }
+}

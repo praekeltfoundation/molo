@@ -1,0 +1,91 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Language Navigation
+    </h4>
+    <div class="description">
+      <p>A language selection bar appears before the page header. For sites with more than 2 (two) languages: the site will show two languages with a more button that jumps the user to the bottom of  the page to reveal the rest of languages.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Language Navigation Variation
+    </h4>
+    <div class="description">
+      <p>A language selection bar appears before the page header. For sites with more than 2 (two) languages</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.languages.language-list-center %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Language Navigation Dropdown toggle
+    </h4>
+    <div class="description">
+      <p>A language selection bar appears before the page header. For sites with more than 2 (two) languages the list is shown in a dropdown</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.languages.language-list-dropdown %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Language Navigation Variation
+    </h4>
+    <div class="description">
+      <p>A language selection bar appears before the page header</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.languages.language-list-text_decorated %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Language Navigation with Label
+    </h4>
+    <div class="description">
+      <p>A language selection bar appears before the page header</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.languages.language-list-with_label %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

@@ -9,18 +9,35 @@ from wagtail.wagtailimages.tests.utils import get_test_image_file, Image
 
 from molo.core.api.tests.utils import mocked_requests_get
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import ArticlePage
+from molo.core.models import (
+    Main,
+    Languages,
+    SiteLanguageRelation,
+    ArticlePage,
+)
 
 
-class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
-
+class APIMoloTestCase(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.mk_main()
         self.client = Client()
+
+        main = Main.objects.all().first()
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='en',
+            is_active=True)
+        self.english_section = self.mk_section(
+            self.section_index, title='English section')
+        self.mk_article(self.english_section)
+
         User.objects.create_superuser(
             username="admin", email="admin@admin.com", password="admin"
         )
         self.client.login(username="admin", password="admin")
+
+
+class MainImportViewTestCase(APIMoloTestCase):
 
     @patch(
         "molo.core.api.forms.requests.get",
@@ -54,15 +71,7 @@ class MainImportViewTestCase(MoloTestCaseMixin, TestCase):
         self.assertContains(response, "Add Article")
 
 
-class ArticleParentChooserTestCase(MoloTestCaseMixin, TestCase):
-
-    def setUp(self):
-        self.mk_main()
-        self.client = Client()
-        User.objects.create_superuser(
-            username="admin", email="admin@admin.com", password="admin"
-        )
-        self.client.login(username="admin", password="admin")
+class ArticleParentChooserTestCase(APIMoloTestCase):
 
     def test_redirects_to_first_page_if_session_not_set(self):
         response = self.client.get(reverse("molo_api:article-parent-chooser"))
@@ -72,15 +81,7 @@ class ArticleParentChooserTestCase(MoloTestCaseMixin, TestCase):
         )
 
 
-class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
-
-    def setUp(self):
-        self.mk_main()
-        self.client = Client()
-        User.objects.create_superuser(
-            username="admin", email="admin@admin.com", password="admin"
-        )
-        self.client.login(username="admin", password="admin")
+class ArticleImportViewTestCase(APIMoloTestCase):
 
     def test_redirects_to_main_page_if_session_not_set(self):
         response = self.client.get(
@@ -122,6 +123,7 @@ class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
     def test_articles_can_be_imported(
             self, mock_image, mock_get, mock_importer_get
     ):
+        initial_article_number = ArticlePage.objects.count()
         image = Image.objects.create(
             title="Test image",
             file=get_test_image_file(),
@@ -172,18 +174,12 @@ class ArticleImportViewTestCase(MoloTestCaseMixin, TestCase):
         )
 
         # The articles should be saved, check them in the DB
-        self.assertEqual(ArticlePage.objects.all().count(), 2)
+        self.assertEqual(
+            ArticlePage.objects.all().count(),
+            initial_article_number + 2)
 
 
-class SectionParentChooserTestCase(MoloTestCaseMixin, TestCase):
-
-    def setUp(self):
-        self.mk_main()
-        self.client = Client()
-        User.objects.create_superuser(
-            username="admin", email="admin@admin.com", password="admin"
-        )
-        self.client.login(username="admin", password="admin")
+class SectionParentChooserTestCase(APIMoloTestCase):
 
     def test_session_redirects_to_first_page_if_session_not_set(self):
         response = self.client.get(reverse("molo_api:section-parent-chooser"))

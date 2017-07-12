@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block coltype %}flex{% endblock %}
+
+
+{% block content %}
+  <h1>WARNING: Uploading Zip File Will Overwrite Any Media Files With The Same Name</h1>
+  <form action="/django-admin/upload_media/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" value="upload">
+  </form>
+{% endblock %}

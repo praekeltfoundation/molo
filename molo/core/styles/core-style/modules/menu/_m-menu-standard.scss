@@ -1,0 +1,6 @@
+.menu-list__anchor-standard {
+  text-decoration:underline;
+  @media screen and (min-width: 320px) {
+    text-decoration: none;
+  }
+}

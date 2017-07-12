@@ -1,0 +1,12 @@
+{% if hyperlink %}
+  <div class="heading heading__{{type}} heading__{{type}}-hyperlink {{extraclass}}">
+    <{{htmltag}}>{{title|lower|capfirst}}</{{htmltag}}>
+    <a href="{{hyperlink}}" class="call-to-action__hyperlink">
+        {{linktitle}}
+    </a>
+  </div>
+{% else %}
+  <div class="heading heading__{{type}} {{extraclass}}">
+    <{{htmltag}}>{{title|lower|capfirst}}</{{htmltag}}>
+  </div>
+{% endif %}

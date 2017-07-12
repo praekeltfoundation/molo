@@ -1,0 +1,33 @@
+/**
+Take Note:
+Separate smart styles to states folder
+*/
+.carousel-teaser {
+  overflow: auto;
+}
+.carousel-teaser-list {
+  display: inline-block;
+  padding: 0 10px;
+}
+.carousel-teaser-list__item {
+  list-style-type: none;
+  padding: 10px 0;
+}
+.carousel-teaser__thumbnail {
+  margin: 0 auto;
+  text-align: center;
+  display: block;
+}
+.carousel-teaser__thumbnail-link {
+  cursor: pointer;
+  outline: none;
+}
+.carousel-teaser__title {
+  text-align: center;
+}
+.carousel-teaser__title-link {
+  color: gray;
+}
+.carousel-teaser__subtitle {
+  text-align: center;
+}

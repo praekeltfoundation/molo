@@ -1,0 +1,75 @@
+.tag {
+  background: #fff;
+  padding: 10px 15px;
+  font-family: 'Quicksand', sans-serif;
+}
+.tag__name {
+  color: #017AF5;
+  font-weight: bold;
+}
+
+.tag__link {
+  display: block;
+  color: #909497;
+}
+.tag__label {
+  display: inline-block;
+  color: #909497;
+  padding: 10px;
+  margin: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1.5;
+  text-transform: uppercase;
+  font-weight: normal;
+  &:before {
+    content: "";
+    display: block;
+    color: #000;
+    width: 20px;
+    background: #000;
+    height: 2px;
+    margin-bottom: 8px;
+  }
+}
+
+//MOTE STYLE
+.tags {
+  background: #fff;
+  padding: 10px 15px;
+}
+.tags-list__item {
+  background: #EBEBEB;
+  display: inline-block;
+  padding: 5px;
+  margin: 5px 0;
+  font-size: 13px;
+  cursor: pointer;
+  line-height: 1.5;
+  a {
+    color: #252627;
+    text-decoration: none;
+    word-break: break-word;
+  }
+}
+
+.article-tag {
+  background: transparent;
+  padding: 0 15px;
+}
+.article-tag-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.article-tag__item {
+  display: inline-block;
+}
+.article-tag__title {
+  font-size: $font-small;
+  background: transparent;
+  padding: 0;
+}
+.article-tag__title:after {
+  content: ":";
+}

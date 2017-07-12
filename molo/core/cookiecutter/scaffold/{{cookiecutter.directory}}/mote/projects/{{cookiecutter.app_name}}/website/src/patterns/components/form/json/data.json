@@ -1,0 +1,124 @@
+{
+    "FormInputs": {
+      "text": "Language dropdown",
+      "modifiers": "dummy-class",
+      "standard_inputs": [
+        {
+          "type": "text",
+          "label": "Name",
+          "value": "Name",
+          "validate": "",
+          "maxlength": "",
+          "hint": "Please enter your name"
+        },
+        {
+          "type": "text",
+          "label": "Surname",
+          "value": "Surname",
+          "validate": "",
+          "maxlength": "",
+          "hint": "Please enter your surname"
+        },
+        {
+          "type": "password",
+          "label": "Password",
+          "value": "Password",
+          "validate": "required",
+          "maxlength": "",
+          "hint": "e.g. 2086"
+        },
+        {
+          "type": "email",
+          "label": "Email address",
+          "value": "Email address",
+          "validate": "required",
+          "maxlength": "",
+          "hint": "Please enter valid email address"
+        },
+        {
+          "type": "number",
+          "label": "Enter number",
+          "value": "Enter number",
+          "validate": "",
+          "maxlength": "",
+          "hint": "Please enter no. range between 0 - 100"
+        },
+        {
+          "type": "tel",
+          "label": "Phone no.",
+          "value": "Phone no.",
+          "validate": "required",
+          "maxlength": "10",
+          "hint": "Please enter SA's 10 digit phone number"
+        },
+        {
+          "type": "search",
+          "label": "Search",
+          "value": "Search",
+          "validate": "",
+          "maxlength": "",
+          "hint": "Please type words to search"
+        },
+        {
+          "type": "date",
+          "label": "Date",
+          "value": "yyyy-mm-dd",
+          "validate": "",
+          "maxlength": "",
+          "hint": "Please enter valid date YYY/MM/DD"
+        },
+        {
+          "type": "datetime",
+          "label": "Date time",
+          "value": "Y-m-d H:i:s",
+          "validate": "",
+          "maxlength": "",
+          "hint": "YYY/MM/DD HH:MM:SS"
+        },
+        {
+          "type": "url",
+          "label": "URL",
+          "value": "url",
+          "validate": "",
+          "maxlength": "",
+          "hint": "Please enter URL"
+        }
+      ],
+      "dob_select_fields":  {
+        "label": "Please choose DOB",
+        "dob_year": {
+          "id":"dob_year",
+          "sub_label": "Year",
+          "list":[
+            {"value":"1980"},
+            {"value":"1981"}
+          ]
+        },
+        "dob_month": {
+          "id":"dob_month",
+          "sub_label": "Month",
+          "list":[
+            {"value":"January"},
+            {"value":"Feb"}
+          ]
+        },
+        "dob_day": {
+          "id":"dob_day",
+          "sub_label": "Day",
+          "list":[
+            {"value":"01"},
+            {"value":"02"}
+          ]
+        }
+      },
+      "select_field": {
+        "label": "Please select province",
+        "list":[
+          {"value":"Gauteng"},
+          {"value":"Western Cape"},
+          {"value":"Eastern Cape"},
+          {"value":"Kwazulu Natal"}
+        ]
+      }
+    }
+}

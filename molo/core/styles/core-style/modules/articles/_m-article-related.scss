@@ -1,0 +1,68 @@
+.related-articles__up-next,
+.related-articles__recommended {
+  padding: 10px 15px;
+  text-transform: uppercase;
+  @include heading-fontsize-scale($heading-large);
+}
+//UP NEXT - LIST
+.related-articles-up-next {
+  padding: 0 0 25px;
+}
+.related-articles-up-next__title {
+  padding: 10px 15px;
+  @include heading-fontsize-scale($heading-large);
+}
+.related-articles-up-next__desc {
+  padding: 0 15px;
+}
+//RECOMMENDED - LIST
+.related-articles-recommended__title {
+  word-wrap: break-word;
+  @include heading-fontsize-scale($heading-large);
+  padding: 0 15px;
+}
+.related-articles-recommended__desc {
+  padding: 0 15px;
+}
+
+.related-articles-recommended-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.related-articles-recommended-list__item {
+  margin: 0 0 20px;
+  padding: 0;
+  overflow: auto;
+  clear: both;
+}
+.related-articles-recommended-list__content {
+    padding: 0 15px;
+}
+.related-articles-recommended-list__item--hero {
+  @include float-clear(none);
+  padding: 0;
+  width: 100%;
+  .related-articles-recommended__title {
+    padding: 0 15px;
+  }
+}
+.related-articles-recommended-list__item--grid {
+  .related-articles-recommended-list__content {
+    padding: 0;
+  }
+}
+.related-articles-recommended-list__item--grid:nth-child(even) {
+  @media screen and (min-width: 320px) {
+    width: 45%;
+    @include float-clear(right);
+    padding: 0 10px 0 0;
+  }
+}
+.related-articles-recommended-list__item--grid:nth-child(odd) {
+  @media screen and (min-width: 320px) {
+    width: 46%;
+    @include float-clear(left);
+    padding: 0 0 0 10px;
+  }
+}

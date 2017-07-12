@@ -1,0 +1,39 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+{% if featured_articles %}
+<div class="section-listing section-listing__column-icon section-listing__column-icon{{section.get_effective_extra_style_hints}}">
+  <ul class="promoted-article-list promoted-article-list--column-icon">
+  {% for article in featured_articles %}
+  <li class="promoted-article-list__item promoted-article-list__item--column-icon {% if forloop.first %}promoted-article-list__item--column-icon-hero{% endif %}">
+  <div class="section-listing_column-content">
+  <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--column-icon">
+    {% if article.get_effective_image %}
+      {% if forloop.first %}
+        {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
+      {% else %}
+        {% include "patterns/basics/images/article-thumbnail_medium.html" with curve="none" %}
+      {% endif %}
+    {% endif %}
+  </a>
+  <div class="section-listing__column-icon-title {% if forloop.first %}section-listing__column-icon-title-hero{% endif %}">
+  <a href="{% pageurl section %}" class="section-listing__column-icon-link">{{section.title}}</a>
+  {% if section.get_effective_image %}
+    {% if forloop.first %}
+      {% image section.get_effective_image width-30 class="section-listing__column-icon-image section-listing__column-icon-image-hero" %}
+    {% else %}
+      {% image section.get_effective_image width-30 class="section-listing__column-icon-image" %}
+    {% endif %}
+  {% endif %}
+  </div>
+  </div>
+  <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--column-icon">
+    <h3 class="heading promoted-article-list__column-icon-heading">
+      {{article.title}}
+    </h3>
+  </a>
+  <p class="promoted-article-list__desc promoted-article-list__desc--column-icon">{{article.subtitle}}</p>
+  </li>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}

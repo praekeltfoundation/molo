@@ -1,6 +1,262 @@
 CHANGE LOG
 ==========
 
+5.5.1
+~~~~~
+- Add get_effective_banner
+- Run node tests in node_js Travis environment
+- Fix npm module caching
+- Run against latest Node LTS release
+- Allow first priority of articles on homepage to go to latest articles when tag navigation is enabled
+- Bug fix: make sure the delete button is not shown in drop down menus on cms
+- Bug fix: only allow voting to shown for main language page for reaction questions in cms
+
+5.5.0
+~~~~~
+- Remove PyPy Travis builds
+- Clean up Travis file
+- Travis: push wheels (bdist_wheel) to PyPI
+- Remove unused dependencies
+- Move some test dependencies out of main dependencies
+- Don't pin the required setuptools version
+- Update LICENSE file
+- Move requirements to setup.py
+- Remove django-modelcluster from scaffolded app dependencies, molo.core depends on newer version already
+- Allow minor updates to wagtail package (e.g. 1.9.1, not just 1.9)
+- Update .gitignore to newer standard (more Python 3 friendly)
+- Fix and cleanup MANIFEST.in
+
+5.4.7
+~~~~~
+- Update static files to fix missing/incorrect references
+
+5.4.6
+~~~~~
+- Increase character limit on reaction question success message
+
+5.4.5
+~~~~~
+- Add reaction question success_messages
+
+5.4.4
+~~~~~
+- Add `get_effective_image` to reaction question choices
+
+5.4.3
+~~~~~
+- Fix a bug for `get_next_tag` template tag
+
+5.4.2
+~~~~~
+- show correct articles for language in load more and next tag on tag page
+
+5.4.1
+~~~~~
+- Add get_next_tag Template Tag
+- Add admin views for Reaction Questions
+- Add util for creating new article relations when copying
+
+5.4.0
+~~~~~
+- Add load more for Search Page
+- Add load more for Tag Page
+- Add reaction questions basic functionality
+
+5.3.1
+~~~~~
+- Use get_effective_image instead of image in templates
+
+5.3.0
+~~~~~
+- Add load more functionality to section page
+
+5.2.5
+~~~~~
+- Bug Fix: Only index tag list if list not empty for sections and tags
+
+5.2.4
+~~~~~
+- Bug Fix: Only show articles in search results
+- Bug Fix: Only index tag list if list not empty
+
+5.2.3
+~~~~~
+- Bug Fix: Show translation for Section Page on Home Page
+- Bug Fix: Only show articles relevant to site under a tag
+- Bug Fix: Ensure new article tag relations are made when copying sites
+
+5.2.2
+~~~~~
+- Added Positional Banner Pages functionality
+- Bug Fix: Return Main language pages for latest articles
+
+5.2.1
+~~~~~
+- Added Tags to SectionPage
+- Added Load More functionality for ArticlePages on the homepage
+
+
+5.2.0
+~~~~~
+- Add gef_effective_image for ArticlePage (returns the image of article's main language page if article has no image, else returns article's image)
+- Add get_parent template tag (returns the parent of a page)
+- Bug fix: Filter tags via descendant of main
+- Bug fix: Use 'to' id directly for copying in celery
+
+
+5.1.1
+~~~~~
+- Bug fix: Call correct template for tag navigation
+- Bug fix: Only call translation hook for translatable pages
+
+5.1.0
+~~~~~
+- Add basics and components for Springster
+- Add tag navigation
+- Add better error handling for copying section index contents
+
+5.0.4
+~~~~~
+- Use celery for copying section index contents
+
+5.0.3
+~~~~~
+- Add parent_page_types to SectionPage
+
+5.0.2
+~~~~~
+- Fix test for admin url redirect
+
+5.0.1
+~~~~~
+- Version bump for molo profiles to resolve pin dependencies
+
+5.0.0
+~~~~~
+- Pin molo.profiles to latest version
+- Move templates out from cookiecutter
+- Implement pattern library components to templates
+- Add Mote to cookiecutter
+- Fix of previous release
+- Added index creation signals
+- Added non routable mixin for Surveys
+- Added profiles urls
+- Added multi-site cms functionality (Merged CMS)
+- Added authentication backend for linking users to sites
+- Added middleware for site redirect
+
+4.4.13
+~~~~~~
+- Insure content demotion happens for each section individually
+
+4.4.12
+~~~~~~
+- Remove promotion settings from footer pages
+
+4.4.11
+~~~~~~
+- Fixed content import to return all data and not just default 10
+
+4.4.10
+~~~~~
+- Fixed recommended article ordering in templatetag logic
+
+4.4.9
+~~~~~
+- Added Non routable page mixin
+
+4.4.8
+~~~~~
+- Pulled in changes from previous versions that were accidentally excluded
+- Consolidated celery tasks in base settings file
+
+4.4.7
+~~~~~
+- Fixed random test failures in content rotation test
+
+4.4.6
+~~~~~
+- consolidate minute tasks into 1 call
+
+4.4.4
+~~~~~
+- Fixed bug for previewing pages
+
+4.4.3
+~~~~~
+- Excluded metrics URL from Google Analytics
+- Fixed access to Explorer bug for superuser's with non-superuser roles
+
+4.4.2
+~~~~~
+- Allows content rotation to pick from descendant articles not only child articles
+
+4.4.1
+~~~~~
+- Updated template overrides to fix missing Page admin buttons
+
+4.4.0
+~~~~~
+- Content rotation enhancement:
+  - Only promote pages that are exact type of ArticlePage
+  - Only demote an article if there is more than two promoted articles
+
+4.3.3
+~~~~~
+- Add django clearsessions to celery tasks
+
+4.3.2
+~~~~~
+- Added missing classes in custom admin template
+
+4.3.1
+~~~~~
+- Fixed template error
+
+4.3.0
+~~~~~
+- Removed the ability to delete index pages using the admin UI
+
+4.2.0
+~~~~~
+- added multi-language next and recommended article feature
+
+4.1.0
+~~~~~~
+- Add sitemap - include translations
+
+4.x
+---
+
+Main Features::
+
+- Upgraded to Wagtail 1.8
+- Added upload/download functionality for zipped media files
+- Next and Recommended articles in articles
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Deprecatad use of ``wagtailmodeladmin``: ``wagtailmodeladmin`` package has been replaced by ``wagtail.contrib.modeladmin``
+- ``wagtailmodeladmin_register`` function is replaced by ``modeladmin_register``
+- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
+- ``search_fields`` now uses a list instead of a tuple
+
+4.0.2
+~~~~~~
+- Fixed template overrides for django-admin templates
+
+4.0.1
+~~~~~~
+- Added upload/download functionality for zipped media files
+
+4.0.0
+~~~~~~
+
+- upgraded wagtial to 1.8
+- removed external dependency on wagtailmodeladmin to use internal wagtailadmin feature
+- added bulk-delete permission feature for the Moderator group
+- added edit permission for Main page to moderator and editor groups
+
 3.x
 ---
 
@@ -29,6 +285,41 @@ Backwards incompatible changes
 - Deprecated use of ``Section.featured_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_homepage=True %}``
 - Deprecated use of ``Section.latest_articles_in_homepage``: use the template tag ``{% load_descendant_articles_for_section section featured_in_latest=True %}``
 - Deprecated use of ``Section.articles``: use the template tag ``{% load_child_articles_for_section page %}``
+
+3.17.4
+~~~~~~
+
+- Fix the bug with draft article publishing when content rotation is on
+
+3.17.3
+~~~~~~
+
+- Ensure email address is set when using SSO
+
+3.17.2
+~~~~~~
+
+- Put ForceDefaultLanguageMiddleware before django.middleware.locale.LocaleMiddleware
+
+3.17.1
+~~~~~~
+
+- (bug) use datetime instead of UTC timezone for rotation
+
+3.17.0
+~~~~~~
+
+- Add celery task for publishing pages
+
+3.16.2
+~~~~~~
+
+- (bug) content rotation on homepage
+
+3.16.1
+~~~~~~
+
+- (bug) only show published articles on front end
 
 3.16.0
 ~~~~~~

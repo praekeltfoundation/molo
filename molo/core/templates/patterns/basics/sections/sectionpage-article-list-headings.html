@@ -1,0 +1,16 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags static i18n %}
+
+{% load_child_articles_for_section self as articles %}
+
+<ul class="promoted-article-list promoted-article-list--theme-headings">
+ {% for article in articles %}
+ <li class="promoted-article-list__item promoted-article-list__item--theme-headings">
+   <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-headings">
+     <h5 class="heading promoted-article__title--theme-headings">
+       {{article.title}}
+     </h5>
+   </a>
+ </li>
+ {% endfor %}
+</ul>
+{% include "patterns/basics/pagination/pagination-pageof.html" %}

@@ -1,0 +1,23 @@
+.menu-list--profile-icon {
+  text-align: left;
+  display: block;
+  #profile_register {
+    margin: -8px 0 0 0;
+  }
+}
+.menu-list__item--profile-icon {
+  &:after {
+    content: "|";
+    font-size: 20px;
+    vertical-align: middle;
+  }
+  &:last-child {
+    &:after {
+      display: none;
+    }
+  }
+}
+.menu-list__anchor-profile-icon {
+  vertical-align: middle;
+  font-size: 16px;
+}

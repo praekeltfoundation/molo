@@ -1,0 +1,12 @@
+{
+  "Language_list": {
+    "text": "Language listed across",
+    "modifiers": "dummy-class",
+    "languages":[
+      {"language":"English"},
+      {"language":"Kiswahili"},
+      {"language":"Bahasa"},
+      {"language":"Arabic"}
+    ]
+  }
+}

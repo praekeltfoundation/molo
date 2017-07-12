@@ -1,0 +1,11 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags  %}
+<div class="section-article__heading">
+  {% if section.get_effective_image %}
+  <a href="{% pageurl section %}" class="heading-section-article__link">
+    {% image section.get_effective_image width-30 class="section-article__icon-image" %}
+  </a>
+  {% endif %}
+  <h2 class="heading heading-section-article">
+    <a href="{% pageurl section %}" class="heading-section-article__link">{{section.title}}</a>
+  </h2>
+</div>

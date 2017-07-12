@@ -1,0 +1,21 @@
+{% load staticfiles static compress mote_tags %}
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="UTF-8">
+  <title>Molo Design System</title>
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% compress css %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/{{ ENV }}/styles.css">
+    <!--Write  a comment-->
+  {% endcompress %}
+</head>
+<body>
+    {% render_element element %}
+</body>
+</html>

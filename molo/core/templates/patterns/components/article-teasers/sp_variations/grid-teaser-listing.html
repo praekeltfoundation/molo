@@ -1,0 +1,19 @@
+{% load wagtailcore_tags core_tags i18n %}
+{% if featured_articles %}
+<div class="grid-teaser-wrapper">
+  {% include "patterns/basics/headings/sp_variations/heading.html" with type="component" htmltag="h2" title=section.title %}
+  <ul class="grid-teaser-list">
+  {% for article in featured_articles %}
+  {% get_translation article.get_parent_section as origin_section %}
+    {% if origin_section = section %}
+    <li class="grid-teaser-list__item">
+      {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="grid" %}
+      {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="grid" %}
+      {% include "patterns/basics/comment-counter/sp_comment-counter.html" with layouttype="base" %}
+    </li>
+    {% endif %}
+  {% endfor %}
+  </ul>
+  {% include "patterns/basics/buttons/sp_variations/text-dir-arrow_button.html" with direction="right" %}
+</div>
+{% endif %}

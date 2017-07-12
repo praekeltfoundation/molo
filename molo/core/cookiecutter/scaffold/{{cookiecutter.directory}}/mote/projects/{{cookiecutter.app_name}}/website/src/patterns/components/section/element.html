@@ -1,0 +1,26 @@
+{% raw %}
+{% load mote_tags %}
+
+{% mask element.json.data.SectionArticleList as "list" %}
+<div class="section-listing section-listing--general section-listing--general{{list.modifiers}}">
+  <h1 class="heading section-listing__title-theme-general section-listing__title-theme-general">
+    <a href="#" class="section-listing__link-theme-general">
+      {{list.section.heading}}
+    </a>
+  </h1>
+  <ul class="promoted-article-list">
+    {% for article in list.articles %}
+    <li class="promoted-article-list__item promoted-article-list__item-general">
+      {% if article.image %}
+        <a href="#" class="promoted-article-list__anchor">
+          <img src="{{article.img_src}}" alt="Article image">
+        </a>
+      {% endif %}
+      <a href="#" class="promoted-article-list__anchor">
+        <h3 class="heading promoted-article__title-general">{{article.title}}</h3></a>
+      <p class="promoted-article-list__desc">{{article.subtitle}}</p>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endraw %}

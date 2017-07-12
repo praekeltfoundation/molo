@@ -1,0 +1,29 @@
+/**
+Take Note:
+Separate smart styles to states folder
+*/
+.grid-teaser {
+  overflow: auto;
+}
+.grid-teaser-list  {
+  display: block;
+  overflow: auto;
+  padding: 0 10px;
+}
+.grid-teaser-list__item {
+  list-style-type: none;
+  padding: 10px 0;
+  float: left;
+}
+.grid-teaser__thumbnail {}
+.grid-teaser__thumbnail-link {
+  display: block;
+  text-align: center;
+}
+.grid-teaser__title,
+.grid-teaser__subtitle {
+  text-align: center;
+}
+.grid-teaser__title-link {
+  color: gray;
+}

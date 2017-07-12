@@ -1,0 +1,23 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Article Meta
+    </h4>
+    <div class="description">
+      <p>The article meta component contains the like and comment count in an article teaser and page.</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

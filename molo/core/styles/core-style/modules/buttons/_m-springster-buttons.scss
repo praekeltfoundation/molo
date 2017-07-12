@@ -1,0 +1,180 @@
+.call-to-action--wide-back {
+  padding: 10px;
+  font-size: $font-x-small;
+  background: #F1E5FF;
+}
+.call-to-action__item-text {
+  color: #7300FF;
+  display: block;
+  font-weight: 600;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: underline;
+  text-transform: uppercase;
+}
+.call-to-action__item-button--right,
+.call-to-action__item-button--left {
+  &:after {
+    display: block;
+    background-size:auto;
+    position: absolute;
+    top: 35%;
+  }
+}
+.call-to-action__item-button--right {
+  &:after {
+    content: url("/static/images/icons/next.svg");
+    right: 20%;
+  }
+}
+.call-to-action__item-button--left {
+  &:after {
+    content: url("/static/images/icons/back.svg");
+    left: 20%;
+  }
+}
+
+
+
+.call-to-action__nav-item-text {
+  cursor: pointer;
+  text-transform: uppercase;
+  text-decoration: underline;
+  color: $springster-purple;
+  font-size: $font-x-small;
+  font-weight: bold;
+  position: relative;
+  display: block;
+  text-align: center;
+}
+.call-to-action__nav-item-text--article-comments {
+  padding-bottom: 15px;
+}
+.call-to-action__nav-item-text--right {
+  margin: 0 30px;
+  line-height: 24px;
+
+  &:after {
+    background-image: url("/static/img/icons/next.png");
+    background-image: url("/static/img/icons/next.svg"),
+      linear-gradient(transparent, transparent);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    content:"";
+    position: absolute;
+    margin: 0 0 0 10px;
+    width: 24px;
+    height: 25px;
+  }
+}
+.call-to-action__nav-item-text--right-wide {
+  margin: 0 30px;
+  line-height: 24px;
+  text-align: left;
+
+  &:after {
+    background-image: url("/static/img/icons/next.png");
+    background-image: url("/static/img/icons/next.svg"),
+      linear-gradient(transparent, transparent);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    content:"";
+    position: absolute;
+    right: 0;
+    margin: 0 0 0 10px;
+    width: 24px;
+    height: 25px;
+  }
+}
+.call-to-action__nav-item-text--left {
+  line-height: 24px;
+  &:before {
+    background-image: url("/static/img/icons/back.png");
+    background-image: url("/static/img/icons/back.svg"),
+      linear-gradient(transparent, transparent);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    content: "";
+    position: absolute;
+    left: 0;
+    margin: 0 0 0 10px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.call-to-action__button {
+  cursor: pointer;
+  text-align: center;
+  display: block;
+  width: 95%;
+  border-radius: 5px;
+}
+.call-to-action__button {
+  white-space: normal;
+}
+.call-to-action__button--primary,
+.call-to-action__button--secondary  {
+  background-image: url('/static/img/buttons/button-sprite.png');
+  background-size: 1870px 334px;
+}
+.call-to-action__button--primary {
+  background-color: $springster-purple;
+  background-position: -792px -123px; //What should be doen with these
+  border: none;
+  color: #fff;
+  font-size: $font-small;
+  font-weight: bold;
+  margin: 16px auto;
+  height: 40px;
+}
+.call-to-action__button--secondary {
+  background-color: #D7DBDD;
+  background-position: -1728px -260px;
+  color: $springster-purple;
+  margin: 16px auto;
+  height: 42px;
+}
+
+.call-to-action__button-text {
+  cursor: pointer;
+  font-size: $font-small;
+  color: #fff;
+  padding: 8px 0 0;
+  display: block;
+  border-radius: 5px;
+}
+input.call-to-action__button-text {
+  border: 0;
+  display: block;
+}
+.call-to-action__button-text--primary,
+.call-to-action__button-text--secondary,
+.call-to-action__button-text--hyperlink {
+  color: #fff;
+  background-color: $springster-purple;
+}
+.call-to-action__button-text--disabled {
+  color: $cool-grey;
+}
+.call-to-action__button-text--hyperlink {
+  background: transparent;
+  font-size: $font-x-small;
+  color: $springster-purple;
+  text-transform: uppercase;
+  text-decoration: underline;
+}
+
+.call-to-action__button--yellow {
+  background: url('/static/img/buttons/button-yellow.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center 50%;
+  margin: 8px;
+  width: 95%;
+}
+.call-to-action__button-text--yellow {
+  color: $springster-purple;
+  background-color: $sunny-yellow;
+  padding: 8px 0;
+}

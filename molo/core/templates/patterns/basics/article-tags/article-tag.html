@@ -1,0 +1,19 @@
+{% load wagtailcore_tags core_tags %}
+<div class="tags">
+  <ul class="tags-list">
+  {% if settings.core.SiteSettings.enable_tag_navigation%}
+    {% load_tags_for_article self as navigation_tags %}
+    {% for tag in navigation_tags  %}
+      <li class="tags-list__item">
+        <a href="{% url 'tags_list' tag.slug %}" class="tag__item-anchor">{{tag}}</a>
+      </li>
+    {% endfor %}
+    {% elif settings.core.SiteSettings.enable_clickable_tags %}
+    {% for tag in self.tags_list %}
+      <li class="tags-list__item">
+        <a href="{% url 'tags_list' tag %}" class="tag__item-anchor">{{tag}}</a>
+      </li>
+    {% endfor %}
+  {% endif %}
+  </ul>
+</div>

@@ -1,0 +1,61 @@
+.section-listing__title-theme-headings {
+  border-top-style: dotted;
+  border-top-width: 1px;
+}
+.section-listing__title-theme-headings,
+.promoted-article__title--theme-headings  {
+  padding: 5px 15px;
+  font-size: $font-small;
+}
+.section-listing__title-theme-general,
+.section-listing__title-theme-standard {
+  padding: 0 10px;
+  @include heading-fontsize-scale($heading-xx-large);
+}
+.section-listing__link-theme-headings,
+.section-listing__title-theme-headings,
+.section-listing__link-theme-standard {
+  color: #000;
+  @include heading-fontsize-scale($heading-xx-large);
+}
+
+.section-listing-latest__title {
+  padding: 10px 15px;
+  @include heading-fontsize-scale($heading-xx-large);
+}
+.section-listing__theme-bg-title,
+.subsection-listing__theme-bg-title,
+.section-listing__theme-subsection_bg-title {
+  padding: 5px 15px;
+    @include heading-fontsize-scale($heading-xx-large);
+}
+
+//SP Styles
+.section-teaser-listing--base {
+  overflow: hidden;
+}
+.section-teaser-listing-header {
+  background-color: $springster-purple;
+  list-style-type: none;
+  position: relative;
+  overflow: auto;
+  .heading__section {
+    text-align: center;
+    display: block;
+    h1 {
+      font-size: $font-large;
+    }
+  }
+  .section-banner {
+    img {
+      width: auto;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+}
+@each $name, $color in $section_color_scheme {
+  .section-teaser-listing-header--#{$name} {
+    background-color: $color;
+  }
+}

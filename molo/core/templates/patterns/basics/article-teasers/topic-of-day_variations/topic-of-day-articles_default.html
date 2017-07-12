@@ -1,0 +1,21 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{% if articles %}
+  <ul class="promoted-article-list">
+  {% for article in articles %}
+  <li class="promoted-article-list__item">
+    {% if article.get_effective_image %}
+      <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+          {% include "patterns/basics/images/article-image.html" with curve="semi-round" %}
+      </a>
+    {% endif %}
+    <a href="{% pageurl article %}" class="promoted-article-list__anchor">
+      <h3 class="heading promoted-article__title">
+        {{article.title}}
+      </h3>
+    </a>
+    <p class="promoted-article-list__desc">{{article.subtitle}}</p>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endif %}

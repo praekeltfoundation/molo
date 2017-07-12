@@ -1,0 +1,17 @@
+{
+  "Language_list_dropdown": {
+    "text": "Language dropdown",
+    "modifiers": "",
+    "languages":[
+      {"language":"English"},
+      {"language":"Kiswahili"},
+      {"language":"Bahasa"},
+      {"language":"Arabic"},
+      {"language":"Kiswahili"},
+      {"language":"Espanol"},
+      {"language":"Portugues"},
+      {"language":"French"},
+      {"language":"Afrikaans"}
+    ]
+  }
+}

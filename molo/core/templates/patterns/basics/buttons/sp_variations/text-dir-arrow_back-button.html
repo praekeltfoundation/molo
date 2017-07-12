@@ -1,0 +1,6 @@
+{% load wagtailcore_tags i18n %}
+<div class="call-to-action call-to-action--wide-back">
+  <a href="{{hyperlink}}" class="call-to-action__nav-item-text call-to-action__nav-item-text--{{direction}}">
+    {% trans "Back to" %} {% trans page_name %}
+  </a>
+</div>

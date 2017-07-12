@@ -1,0 +1,43 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Ordered List
+    </h4>
+    <div class="description">
+      <p><i><ol></i> - Is an ordered list. This will use different schemes of numbers to list your items
+        This is used to define an ordered list and list items of content inside a page article</p>
+      </p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+<div class="sg-code-block">
+    <h4 class="title">
+      Unordered Bullet List
+    </h4>
+    <div class="description">
+      <p><i><ul></i> - Is an unordered list. This will list items using plain bullets.
+     This is used to define an unordered list and list items of content inside a page article</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element.aspect.basics.list.unordered-list %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

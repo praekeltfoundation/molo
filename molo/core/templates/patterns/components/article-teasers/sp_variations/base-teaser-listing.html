@@ -1,0 +1,20 @@
+{% load core_tags wagtailcore_tags i18n %}
+<div class="article-teaser">
+{% if articles %}
+  <ul class="teaser-stacklist">
+    {% for article in articles %}
+    <li class="teaser-stacklist__item">
+      {% include "patterns/basics/article-teasers/sp_variations/teaser-thumbnail.html" with layouttype="base" %}
+      <div class="teaser-stacklist__item--content">
+        {% include "patterns/basics/article-teasers/sp_variations/teaser-title.html" with layouttype="base" %}
+        {% load_tags_for_article article as tags %}
+        {% if tags %}
+        {% include "patterns/basics/article-tags/article-tag_teaser.html" %}
+        {% endif %}
+        {% include "patterns/basics/comment-counter/sp_comment-counter.html" with layouttype="base" %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+</div>

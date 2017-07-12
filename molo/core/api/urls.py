@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from wagtail.api.v2.router import WagtailAPIRouter
-from wagtail.api.v2 import endpoints
+from wagtail.wagtaildocs.api.v2.endpoints import DocumentsAPIEndpoint
 
 from molo.core.api import admin_views
 from molo.core.api.endpoints import MoloImagesAPIEndpoint, MoloPagesEndpoint
@@ -13,7 +13,7 @@ from molo.core.api.endpoints import MoloImagesAPIEndpoint, MoloPagesEndpoint
 api_router = WagtailAPIRouter("wagtailapi_v2")
 api_router.register_endpoint("images", MoloImagesAPIEndpoint)
 api_router.register_endpoint("pages", MoloPagesEndpoint)
-api_router.register_endpoint("documents", endpoints.DocumentsAPIEndpoint)
+api_router.register_endpoint("documents", DocumentsAPIEndpoint)
 
 urlpatterns = [
     url(

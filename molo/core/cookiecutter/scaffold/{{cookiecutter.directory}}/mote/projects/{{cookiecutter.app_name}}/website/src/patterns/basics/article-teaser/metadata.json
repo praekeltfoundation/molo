@@ -1,0 +1,5 @@
+{
+  "title": "Article Teaser",
+  "description": "Latest promoted articles (latest according to publish date or randomized rotation), the most recent being at the top. The functionality to promote articles to the homepage will continue to exist in the CMS, so if the admin wants to promote certain articles (older articles), those articles can still be promoted; and will appear before the latest article",
+  "position": 14
+}

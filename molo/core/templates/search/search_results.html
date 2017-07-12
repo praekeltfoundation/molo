@@ -1,0 +1,77 @@
+
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags i18n el_pagination_tags %}
+
+{% block content %}
+{% if search_results %}
+  <div class="search">
+    <h3>{{search_query}}</h3>
+  </div>
+  {% paginate 10 results as paginated_results %}
+  {% for page in paginated_results %}
+    {% with parent_section=page.get_parent_section ancestor=page.get_parent_section.get_ancestors.last %}
+      <a href="{% pageurl page %}">
+          {% if ancestor.sectionpage.image %}
+              <h6>{{ancestor.title}}</h6>
+          {% else %}
+              <h6>{{parent_section.title}}</h6>
+          {% endif %}
+          {% if page.title_highlight %}
+              <h3>{{page.title_highlight|safe}}</h3>
+          {% else %}
+              <h3>{{page.title}}</h3>
+          {% endif %}
+          {% if page.subtitle_highlight or page.body_highlight %}
+              {% if page.subtitle_highlight %}
+                  <p>{{page.subtitle_highlight|safe}}</p>
+              {% elif page.body_highlight %}
+                  <p>{{page.body_highlight|safe}}</p>
+              {% endif %}
+          {% else %}
+              <p>{{page.subtitle}}</p>
+          {% endif %}
+      </a>
+    {% endwith %}
+  {% endfor %}
+
+  <div id="pagination">
+    {% include "patterns/basics/pagination/pagination-pageof.html" %}
+  </div>
+  {% get_pages %}
+  {% if pages.next %}
+    <a id="more-link" class="call-to-action call-to-action__item more-link" href="#" data-next="{% url 'search_index' %}?page={{pages.next.number}}&q={{search_query}}">Load More</a>
+  {% endif %}
+
+  <div class="step-links">
+    {% if search_results.has_previous %}
+        <a href="?p={{ search_results.previous_page_number }}&amp;q={{search_query}}">&larr;</a>
+    {% endif %}
+    <span class="current">
+        Page {{ search_results.number }} of {{ search_results.paginator.num_pages }}
+    </span>
+    {% if search_results.has_next %}
+        <a href="?p={{ search_results.next_page_number }}&amp;q={{search_query}}">&rarr;</a>
+    {% endif %}
+  </div>
+
+  {% else %}
+    <div class="search search--{{class}}">
+      <h3 class="heading heading--x-large">{% trans "Search" %}</h3>
+      <h6 class="heading heading--xx-small">{% trans "No search results for " %}{{search_query}}.</h6>
+
+      <form action="{% url 'search' %}" class="search__form">
+        <fieldset>
+          <input placeholder="{% trans "Looking for something?" %}" name="q" type="text" value="{{search_query}}">
+          <input type="submit" value="{% trans "Search"%}" class="call-to-action__item call-to-action__item--search">
+        </fieldset>
+      </form>
+
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block search %}
+  {% if search_results %}
+      {% include "search/search_block.html" %}
+  {% endif %}
+{% endblock %}

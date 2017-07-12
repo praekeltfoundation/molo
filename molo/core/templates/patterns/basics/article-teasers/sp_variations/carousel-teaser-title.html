@@ -1,0 +1,7 @@
+{% load wagtailcore_tags core_tags %}
+<h3 class="carousel-teaser__title">
+  <a href="{% pageurl article %}" class="carousel-teaser__title-link">{{ article.title|truncatechars:45|lower|capfirst }}</a>
+</h3>
+{% if article.subtitle %}
+  <p class="carousel-teaser__subtitle">{{ article.subtitle|truncatechars:45|lower|capfirst }}</p>
+{% endif %}

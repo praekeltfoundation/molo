@@ -1,0 +1,20 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Navigation as "nav" %}
+<div class="navigation">
+  {% render_element element.aspect.basics.logo %}
+  <ul class="nav-list nav-list--vertical">
+    <li class="nav-list__item nav-list__item--vertical">
+      <a href="/" class="nav-list__anchor nav-list__anchor--vertical">Home</a>
+      <span class="nav-list__anchor-desc nav-list__anchor-desc--vertical">{{nav.description}}</span>
+    </li>
+    {% for item in nav.nav_list %}
+      <li class="nav-list__item nav-list__item--vertical">
+        <a href="{{item.href}}" class="nav-list__anchor nav-list__anchor--vertical">
+          {{item.name}}</a>
+        <span class="nav-list__anchor-desc nav-list__anchor-desc--vertical">{{item.desc}}</span>
+      </li>
+      {% endfor %}
+  </ul>
+</div>
+{% endraw %}

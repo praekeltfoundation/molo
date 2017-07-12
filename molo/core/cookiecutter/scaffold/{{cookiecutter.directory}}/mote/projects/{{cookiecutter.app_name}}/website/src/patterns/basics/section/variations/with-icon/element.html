@@ -1,0 +1,12 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Category as "category" %}
+<div class="section-listing section-listing__column-icon section-listing__column-icon{{category.modifiers}}">
+  <div class="section-listing__column-icon-title">
+  <img src="{{category.icon_image.src}}" alt="{{category.icon_image.alt}}" width="30" height="auto" class="section-listing__column-icon-image" >
+    <h1 class="heading section-listing__title">
+      <a href="#" class="section-listing__column-icon-link">{{category.text}}</a>
+    </h1>
+  </div>
+</div>
+{% endraw %}

@@ -1,0 +1,8 @@
+{% load wagtailimages_tags static i18n %}
+<a href="/" class="logo logo--center">
+{% if settings.core.SiteSettings.logo %}
+  {% image settings.core.SiteSettings.logo width-97 %}
+{% else %}
+  <img alt="{% trans "Springster" %}" srcset="{% static '' %}img/springster-logo.svg" src="{% static '' %}img/sp-logo.png" width="97" height="24"/>
+{% endif %}
+</a>

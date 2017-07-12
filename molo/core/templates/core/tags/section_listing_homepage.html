@@ -1,0 +1,7 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+
+{% block homepage_section %}
+{% for section in sections %}
+  {% include "patterns/components/article-teasers/homepage-promoted_variations/articles_subsection_with-bg.html" %}
+{% endfor%}
+{% endblock %}

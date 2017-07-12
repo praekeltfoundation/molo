@@ -1,0 +1,30 @@
+.nav-list--column {
+  margin: 0;
+  padding: 0;
+}
+.nav-list__item--column  {
+  padding: 5px 0;
+  @media screen and (min-width: 320px) {
+    display: flex;
+    align-items: flex-start;
+  }
+}
+.nav-list__anchor--column {
+  background: #f5f5dc;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  color: #000;
+  border-bottom-right-radius: 25px;
+  border-top-right-radius: 25px;
+  border: 0;
+  @media screen and (min-width: 320px) {
+    flex: 1;
+  }
+}
+.nav-list__anchor-desc--column {
+  padding: 10px 20px 0;
+  display: block;
+  @media screen and (min-width: 320px) {
+    flex: 1.25;
+  }
+ }

@@ -1,0 +1,18 @@
+.pagination {
+  background: #fff;
+  text-align: center;
+  padding: 35px 10px;
+}
+
+.pagination__current-page {
+  font-weight: bold;
+}
+
+.pagination__nav-anchor-next {}
+.pagination__nav-anchor-previous {}
+
+.toggle-hide{
+  .pagination {
+    display: none;
+  }
+}

@@ -1,0 +1,6 @@
+{% load wagtailimages_tags %}
+{% if settings.core.SiteSettings.logo %}
+  <a href="/" class="logo logo--{{class}}">
+     {% image settings.core.SiteSettings.logo width-140 %}
+  </a>
+{% endif %}

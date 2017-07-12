@@ -2,7 +2,7 @@ import pytest
 
 from elasticgit.tests.base import ModelBaseTest
 
-from molo.core.models import SiteLanguage
+from molo.core.models import SiteLanguageRelation, Main, Languages
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.content_import.tests.base import ElasticGitTestMixin
 from molo.core.content_import.api import Repo
@@ -16,13 +16,19 @@ class TestGetLanguages(
         ModelBaseTest, MoloTestCaseMixin, ElasticGitTestMixin):
 
     def setUp(self):
-        self.english = SiteLanguage.objects.create(
-            locale='en',
-        )
-        self.spanish = SiteLanguage.objects.create(
-            locale='es',
-        )
         self.mk_main()
+        main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=main.get_site().pk)
+
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='es',
+            is_active=True)
 
         self.ws1 = self.create_workspace('1')
         self.ws2 = self.create_workspace('2')
@@ -50,6 +56,19 @@ class TestGetLanguages(
             }],
             'warnings': []
         })
+
+    def test_get_locale_more_than_10(self):
+        langs = [
+            'eng_GB', 'spa_ES', 'spa_MX', 'por_PT', 'por_BR', 'hin_IN',
+            'ind_ID', 'swa_TZ', 'swa_KE', 'afr_ZA', 'ara_AE', 'tha_TH']
+        for l in langs:
+            lang = eg_models.Localisation({'locale': l})
+            self.ws1.save(lang, 'Added %s' % l)
+            self.create_categories(self.ws1, locale='eng_GB', count=2)
+
+        res = api.get_languages([self.repo1])
+
+        self.assertEquals(len(res['locales']), 12)
 
     def test_get_locale_multirepo(self):
         lang1 = eg_models.Localisation({'locale': 'eng_GB'})

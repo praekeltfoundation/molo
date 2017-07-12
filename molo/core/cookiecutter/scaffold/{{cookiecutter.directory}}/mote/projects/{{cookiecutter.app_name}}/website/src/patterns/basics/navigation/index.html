@@ -1,0 +1,24 @@
+{% raw %}
+{% extends "mote/element/index.html" %}
+{% load mote_tags %}
+{% block codeblock %}
+<div class="sg-code-block">
+    <h4 class="title">
+      Navigation Menu Bar
+    </h4>
+    <div class="description">
+      <p>A navigation bar appears below or top of the header and profiles menu,
+        can customize the section title with a color theme using section title. Underline an active section title</p>
+    </div>
+    <div class="code-example">
+        <pre>
+            <code class="language-markup">
+                <xmp>
+                  {% render_element element %}
+                </xmp>
+            </code>
+        </pre>
+    </div>
+</div>
+{% endblock %}
+{% endraw %}

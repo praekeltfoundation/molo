@@ -1,0 +1,12 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+
+{% social_media_footer %}
+<ul class="footer-list">
+  {% for footer in footers %}
+    <li class="footer-list__item">
+      <a href="{% pageurl footer %}">
+        {{footer.title}}
+      </a>
+    </li>
+  {% endfor %}
+</ul>

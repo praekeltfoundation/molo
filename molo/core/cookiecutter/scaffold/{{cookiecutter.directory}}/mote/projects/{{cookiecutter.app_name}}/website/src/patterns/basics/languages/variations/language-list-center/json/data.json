@@ -1,0 +1,12 @@
+{
+  "Language_list_centered": {
+    "text": "Language list",
+    "modifiers": "dummy-class",
+    "languages":[
+      {"language":"English"},
+      {"language":"Kiswahili"},
+      {"language":"Bahasa"},
+      {"language":"Arabic"}
+    ]
+  }
+}

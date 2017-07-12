@@ -1,0 +1,69 @@
+{% extends "mote/base.html" %}
+{% load staticfiles mote_tags %}
+{% block hero %}
+    {% if intro %}
+        {{ intro|safe }}
+    {% endif %}
+{% endblock %}
+{% block toolbar %}
+<div class="toolbar">
+    <form class="toolbar-version-picker">
+        <select name="pick-version" id="pick-version">s
+            <option value="basic">Emulated Basic</option>
+            <option value="enhanced">Emulated Enhanced</option>
+            <option value="production" selected="selected">Production</option>
+        </select>
+    </form>
+    <form class="toolbar-breakpoint-picker">
+        <input type="text" id="global-px" value="1920"> px  <input type="text" id="global-em" value="120"> em
+        &nbsp;&nbsp;&nbsp;
+        <select name="pick-breakpoint" id="pick-breakpoint">
+            {% for name, value in sass_breakpoints %}
+                <option value="{{ value }}">{{ name|title }} - {{ value }}px</option>
+            {% endfor %}
+        </select>
+        <div class="button-set">
+            <button id="breakpoint-reset">Reset</button>
+            <button id="breakpoint-random">Random</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block menu %}
+    <ul role="menu" class="vertical tier-1" id="sidebar-nav">
+        {% for pattern in pattern.aspect.patterns %}
+            <li role="menuitem">
+                {% url "mote:pattern" project=pattern.project.id aspect=pattern.aspect.id pattern=pattern.id as the_url%}
+                <a href="{{ the_url }}" {% if request.path_info == the_url %}class="active"{% endif %}>{{ pattern.title }}</a>
+                <ul role="menu" class="vertical tier-2">
+                    {% for element in pattern.elements %}
+                    <li role="menuitem">
+                        <a href="{% url "mote:pattern" project=pattern.project.id aspect=pattern.aspect.id pattern=pattern.id %}#element-{{ element.id }}">{{ element.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+{% block internal_extra_menu %}{% endblock %}
+{% block content %}
+{% for element in pattern.elements %}
+  <div class="pattern__introduction">
+      <h3 class="title pattern__intro-heading">
+          <a name="element-{{ element.id }}">{{ element.title }}</a>
+          <small>
+              <a class="link-out" data-linksto="#iframe-{{ element.id }}" href="{% url "mote:element-iframe" project=element.project.id aspect=element.aspect.id pattern=element.pattern.id element=element.id %}" target="_blank">
+                  <img src="{% static "images/rocket.png" %}" alt="">
+              </a>
+          </small>
+      </h3>
+    {% if element.description %}
+        <h5 class="pattern__intro-desc">
+            {{ element.description|safe }}
+        </h5>
+    {% endif %}
+  </div>
+  {% render_element_index element %}
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+<div class="related-articles related-articles{{section.get_effective_extra_style_hints}}">
+{% get_translation self.get_parent_section as section %}
+{% get_next_article self as next_article %}
+{% if next_article and self.get_parent_section.enable_next_section %}
+  <h3 class="heading related-articles__up-next">{% trans "Next up in" %} {{ section.title }}</h3>
+  <div class="related-articles-up-next">
+    {% if next_article.get_effective_image %}
+      <a href="{% pageurl next_article %}" class="article__anchor">
+        {% image next_article.get_effective_image width-320 class="article__image" %}
+      </a>
+    {% endif %}
+    <h1 class="heading related-articles-up-next__title">
+      <a href="{% pageurl next_article %}" class="call-to-action__item--text call-to-action__item--text-related-article">
+        {{next_article.title}}
+      </a>
+    </h1>
+    {% if next_article.subtitle %}
+      <p class="related-articles-up-next__desc">{{next_article.subtitle}}</p>
+    {% endif %}
+  </div>
+{% endif %}
+</div>

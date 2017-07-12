@@ -1,0 +1,5 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Button as "button" %}
+  {% render_element original_element button=button %}
+{% endraw %}

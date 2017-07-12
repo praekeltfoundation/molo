@@ -1,0 +1,78 @@
+.call-to-action__item-text--backto-top {
+  border-top: 1px solid #000;
+  padding: 10px 0;
+  color: #000;
+  display: inline-block;
+  @media screen and (min-width: 320px) {
+    text-decoration: none;
+    padding: 20px 0 0;
+    position: relative;
+    width: auto;
+  }
+  &:after {
+    content: "";
+    background: url('/static/images/icons/chevron-up.svg') no-repeat 0 0 / auto 100%;
+    height: 21px;
+    width: 21px;
+    position: absolute;
+    right: 5px;
+  }
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.call-to-action--backto-top-bg {
+  background: #F0F3F5;
+  padding: 10px 0;
+}
+.call-to-action__item-text--backto-top-up_arrow {
+  &:after {
+    content: url("/static/images/icons/up-arrow.svg");
+    right: 20%;
+    top: 30%;
+    position: absolute;
+  }
+}
+
+//Springster
+.call-to-action--backToTop {
+  background-color: $pale-grey-two;
+}
+.call-to-action__nav-item-text--backToTop-up_arrow {
+  &:after {
+    content: "";
+    background-image: url(/static/img/icons/up-arrow.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: auto 100%;
+    position: absolute;
+    height: 14px;
+    width: 14px;
+  }
+}
+.call-to-action__nav-item-text--backToTop {
+  font-size: 16px;
+  text-transform: uppercase;
+  text-decoration: underline;
+  color: $springster-purple;
+  position: relative;
+  font-weight: bold;
+  &:after {
+    top: 3px;
+    margin-left: 10px;
+  }
+  &:hover {
+    text-decoration: none;
+  }
+}
+.call-to-action--backToTop-bg {
+  background: #F0F3F5;
+  padding: 10px 0;
+}
+.call-to-action__nav-item-text--backToTop-up_arrow {
+  &:after {
+    right: 20%;
+    top: 30%;
+  }
+}

@@ -1,0 +1,30 @@
+
+{% extends "base.html" %}
+{% load i18n static compress %}
+
+{% block content %}
+<table class="versions" style="width:100%">
+  <tr>
+    <th>{% trans "Plugin" %}</th>
+    <th>{% trans "PyPI Version" %}</th>
+    <th>{% trans "Runing Version" %}</th>
+    <th>{% trans "Status" %}</th>
+  </tr>
+  {% for name,pypi_version,curent_version,compare in plugins_info %}
+      <tr>
+        <td class="plugin">{{name}}</td>
+        <td>{{pypi_version}}</td>
+        <td>{{curent_version}}</td>
+        {% if pypi_version == curent_version %}
+          <td class="latest">{% trans "UpToDate" %}</td>
+        {% else %}
+          {% if curent_version == "-" %}
+            <td class="not-installed">{% trans "Not installed" %}</td>
+          {% else %}
+            <td><a href={{compare}}>{% trans "Compare" %}</a></td>
+          {% endif %}
+        {% endif %}
+      </tr>
+  {% endfor%}
+</table>
+{% endblock %}

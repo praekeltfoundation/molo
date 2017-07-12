@@ -1,0 +1,32 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+{% load_descendant_articles_for_section section featured_in_homepage=True as featured_articles %}
+{% if featured_articles %}
+
+<div class="section-listing section-listing__theme-bg subsection-listing__theme-bg{{section.get_effective_extra_style_hints}}">
+  <h1 class="heading section-listing__theme-bg-title">
+    <a href="{% pageurl section %}" class="section-listing__theme-bg-link">{{section.title}}</a>
+  </h1>
+  <ul class="promoted-article-list promoted-article-list--theme-bg">
+  {% for article in featured_articles %}
+  {% get_translation article.get_parent_section as origin_section %}
+    {% if origin_section = section %}
+    <li class="promoted-article-list__item promoted-article-list__item--theme-bg">
+      {% if article.get_effective_image %}
+      <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
+        {% include "patterns/basics/images/article-thumbnail.html" with curve="none" %}
+      </a>
+      {% endif %}
+      <a href="{% pageurl article %}" class="promoted-article-list__anchor promoted-article-list__anchor--theme-bg">
+        <h3 class="heading promoted-article-list__heading">
+          {{article.title}}
+        </h3>
+      </a>
+      <p class="promoted-article-list__desc promoted-article-list__desc--theme-bg">{{ article.subtitle }}</p>
+    </li>
+    {% endif %}
+  {% endfor %}
+  </ul>
+{% include "patterns/basics/article-teasers/homepage-promoted_variations/homepage-articles-subsection-child_with-bg.html" %}
+<a href="{% pageurl section %}" class="section-listing__theme-more-link">{% trans "More about" %} {{section.title}}</a>
+</div>
+{% endif %}
