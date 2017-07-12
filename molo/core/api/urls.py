@@ -4,7 +4,10 @@ from wagtail.api.v2.router import WagtailAPIRouter
 from wagtail.wagtaildocs.api.v2.endpoints import DocumentsAPIEndpoint
 
 from molo.core.api import admin_views
-from molo.core.api.endpoints import MoloImagesAPIEndpoint, MoloPagesEndpoint
+from molo.core.api.endpoints import (
+    MoloImagesAPIEndpoint,
+    MoloPagesEndpoint,
+)
 
 # Adding extended images endpoint to new router.
 # For consistency, the "pages" and "documents"
@@ -17,9 +20,9 @@ api_router.register_endpoint("documents", DocumentsAPIEndpoint)
 
 urlpatterns = [
     url(
-        r"^import-articles/$",
-        admin_views.ArticleImportView.as_view(),
-        name="article-import"
+        r"^import-content/$",
+        admin_views.MainImportView.as_view(),
+        name="main-import"
     ),
     url(
         r"^choose-article-parent/$",
@@ -28,9 +31,9 @@ urlpatterns = [
         ), name="article-parent-chooser"
     ),
     url(
-        r"^import-content/$",
-        admin_views.MainImportView.as_view(),
-        name="main-import"
+        r"^import-articles/$",
+        admin_views.ArticleImportView.as_view(),
+        name="article-import"
     ),
     url(
         r"^choose-section-parent/$",
