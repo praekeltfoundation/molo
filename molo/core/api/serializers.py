@@ -3,6 +3,7 @@ from collections import OrderedDict
 from rest_framework import serializers
 
 from wagtail.api.v2.serializers import PageSerializer
+from molo.core.models import SiteLanguage
 
 
 class PageChildrenField(serializers.Field):
@@ -30,3 +31,10 @@ class PageChildrenField(serializers.Field):
 
 class MoloPageSerializer(PageSerializer):
     children = PageChildrenField(read_only=True)
+
+
+class SiteLanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteLanguage
+        fields = ("locale", "is_main_language", "is_active")
+        read_only_fields = ("locale", "is_main_language", "is_active")

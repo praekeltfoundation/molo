@@ -4,6 +4,7 @@ from django.views.decorators.cache import never_cache
 from wagtail.utils.urlpatterns import decorate_urlpatterns
 
 from .api.urls import api_router
+from .api.views import SiteLanguagesList
 from .views import (
     search, TagsListView, ReactionQuestionChoiceView,
     ReactionQuestionChoiceFeedbackView)
@@ -65,7 +66,10 @@ urlpatterns = patterns(
         decorate_urlpatterns(api_router.get_urlpatterns(), never_cache),
         namespace=api_router.url_namespace
     )),
-
+    url(r'^api/v2/languages/',
+        SiteLanguagesList.as_view(),
+        name="api-lanugages"
+    ),
     url(
         r'^versions/$',
         'molo.core.views.versions',
