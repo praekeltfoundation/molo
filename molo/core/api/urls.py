@@ -3,7 +3,6 @@ from django.conf.urls import url
 from wagtail.api.v2.router import WagtailAPIRouter
 from wagtail.wagtaildocs.api.v2.endpoints import DocumentsAPIEndpoint
 
-from molo.core.api import views
 from molo.core.api import admin_views
 from molo.core.api.endpoints import (
     MoloImagesAPIEndpoint,
@@ -20,6 +19,11 @@ api_router.register_endpoint("pages", MoloPagesEndpoint)
 api_router.register_endpoint("documents", DocumentsAPIEndpoint)
 
 urlpatterns = [
+    url(
+        r"^import-site/$",
+        admin_views.SiteImportView.as_view(),
+        name="site-import"
+    ),
     url(
         r"^import-content/$",
         admin_views.MainImportView.as_view(),
@@ -46,5 +50,10 @@ urlpatterns = [
         r"^import-section/$",
         admin_views.SectionImportView.as_view(),
         name="section-import"
+    ),
+    url(
+        r"^import-begun/$",
+        admin_views.ImportBegun.as_view(),
+        name="begun-import"
     ),
 ]

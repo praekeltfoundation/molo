@@ -1,9 +1,10 @@
 """
 Views for importing content from another wagtail instance
 """
+from django.shortcuts import render
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
-from django.views.generic import FormView
+from django.views.generic import View, FormView
 
 from wagtail.contrib.modeladmin.options import ModelAdmin as WagtailModelAdmin
 from wagtail.contrib.modeladmin.views import ChooseParentView
@@ -11,6 +12,25 @@ from wagtail.contrib.modeladmin.views import ChooseParentView
 from molo.core.api import forms, importers
 from molo.core.api.constants import ARTICLE_SESSION_VARS, SECTION_SESSION_VARS
 from molo.core.models import ArticlePage, SectionPage
+from molo.core.tasks import import_site
+
+
+class SiteImportView(FormView):
+    '''
+    The first import view that takes a URL, begins a
+    celery tak to import the site if the site is responsive
+    and redirects user to a message that the site content
+    is being fetched
+    '''
+    form_class = forms.SiteImportForm
+    template_name = "core/api/site_import_page.html"
+    success_url = reverse_lazy("molo_api:begun-import")
+
+    def form_valid(self, form):
+        url = form.cleaned_data["url"]
+        site_pk = self.request.site.root_page.get_site().pk
+        import_site.delay(url, site_pk)
+        return super(SiteImportView, self).form_valid(form)
 
 
 class MainImportView(FormView):
@@ -167,3 +187,10 @@ class SectionImportView(FormView):
     def form_valid(self, form):
         self.importer = form.save()
         return super(SectionImportView, self).form_valid(form)
+
+
+class ImportBegun(View):
+    template_name = 'core/api/import_begun.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)

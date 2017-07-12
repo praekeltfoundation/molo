@@ -15,10 +15,19 @@ from django.contrib.auth.models import User
 from molo.core.content_import import api
 from molo.core.utils import create_new_article_relations
 from molo.core.models import (
-    ArticlePage, Main, SectionIndexPage, SectionPage, Languages, SiteSettings)
+    ArticlePage,
+    Main,
+    SectionIndexPage,
+    SectionPage,
+    Languages,
+    SiteSettings,
+    SiteLanguageRelation,
+)
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
+
+import requests
 
 IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"
 VALIDATE_EMAIL_TEMPLATE = "content_import/validate_email.html"
@@ -304,3 +313,24 @@ def copy_sections_index(
             'source': section_index.get_parent().title,
             'to': to.title
         })
+
+
+@task(ignore_result=True)
+def import_site(root_url, site_pk):
+    api_url = root_url + '/api/v2/'
+    lang_url = api_url + 'languages/'
+    response = requests.get(lang_url)
+
+    # create the languages for the site
+    # get main as reference for the site that is being added to
+    language_setting, created = Languages.objects.get_or_create(
+        site_id=site_pk)
+
+    # Deal with the main language
+    # Possible conflicts
+    for language in response.json():
+        value = language['is_active']
+        SiteLanguageRelation.objects.get_or_create(
+            locale=language['locale'],
+            is_active=value,
+            language_setting=language_setting)

@@ -6,16 +6,10 @@ from molo.core.api import constants
 from molo.core.api.constants import MAIN_IMPORT_FORM_MESSAGES
 
 
-class MainImportForm(forms.Form):
+class SiteImportForm(forms.Form):
     url = forms.CharField(
         required=True,
         max_length=100,
-    )
-
-    content_type = forms.ChoiceField(
-        choices=constants.CONTENT_TYPES,
-        required=True,
-        widget=forms.RadioSelect
     )
 
     def clean_url(self):
@@ -40,6 +34,14 @@ class MainImportForm(forms.Form):
             )
         finally:
             return url
+
+
+class MainImportForm(SiteImportForm):
+    content_type = forms.ChoiceField(
+        choices=constants.CONTENT_TYPES,
+        required=True,
+        widget=forms.RadioSelect
+    )
 
 
 class ArticleImportForm(forms.Form):

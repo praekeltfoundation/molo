@@ -68,8 +68,7 @@ urlpatterns = patterns(
     )),
     url(r'^api/v2/languages/',
         SiteLanguagesList.as_view(),
-        name="api-lanugages"
-    ),
+        name="api-lanugages"),
     url(
         r'^versions/$',
         'molo.core.views.versions',
