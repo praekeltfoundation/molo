@@ -33,8 +33,5 @@ class MoloPageSerializer(PageSerializer):
     children = PageChildrenField(read_only=True)
 
 
-class SiteLanguageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SiteLanguage
-        fields = ("locale", "is_main_language", "is_active")
-        read_only_fields = ("locale", "is_main_language", "is_active")
+class SiteLanguageSerializer(BaseSerializer):
+    pass

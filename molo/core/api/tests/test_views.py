@@ -217,10 +217,12 @@ class LanguageEndpointTestCase(APIMoloTestCase):
 
     def test_languages_passed(self):
         api_client = Client()
-        response = api_client.get("/api/v2/languages/")
+        args = '?fields=locale,is_main_language,is_active'
+        url = "/api/v2/languages/" + args
+        response = api_client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        obj = json.loads(response.content)
+        obj = json.loads(response.content)['items']
 
         self.assertEqual(obj[0]['locale'], 'en')
         self.assertEqual(obj[0]['is_main_language'], True)
@@ -231,8 +233,8 @@ class LanguageEndpointTestCase(APIMoloTestCase):
             locale='fr',
             is_active=True)
 
-        response = api_client.get("/api/v2/languages/")
-        obj = json.loads(response.content)
+        response = api_client.get(url)
+        obj = json.loads(response.content)['items']
 
         self.assertEqual(response.status_code, 200)
 
