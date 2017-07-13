@@ -7,10 +7,12 @@ import StringIO
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import redirect, get_object_or_404, render
+from django.utils.http import is_safe_url
 from django.utils.translation import (
     LANGUAGE_SESSION_KEY,
     get_language_from_request
@@ -18,7 +20,7 @@ from django.utils.translation import (
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
-from wagtail.wagtailcore.models import Page
+from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
 from wagtail.wagtailsearch.models import Query
 
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
@@ -432,3 +434,51 @@ def home_more(
         request, template='core/main-feature-more.html', extra_context=None):
     locale_code = request.GET.get('locale')
     return render(request, template, {'locale_code': locale_code})
+
+
+def get_valid_next_url_from_request(request):
+    next_url = request.POST.get('next') or request.GET.get('next')
+    if not next_url or not is_safe_url(url=next_url, host=request.get_host()):
+        return ''
+    return next_url
+
+
+def publish(request, page_id):
+    page = get_object_or_404(Page, id=page_id).specific
+
+    user_perms = UserPagePermissionsProxy(request.user)
+    if not user_perms.for_page(page).can_publish():
+        raise PermissionDenied
+
+    next_url = get_valid_next_url_from_request(request)
+
+    if request.method == 'POST':
+        include_descendants = request.POST.get("include_descendants", False)
+
+        page.save_revision().publish()
+
+        if include_descendants:
+            live_descendant_pages = page.get_descendants().live().specific()
+            for live_descendant_page in live_descendant_pages:
+                if user_perms.for_page(live_descendant_page).can_publish():
+                    live_descendant_page.publish()
+
+        messages.success(
+            request,
+            _("Page '{0}' published.").format(page.get_admin_display_title()),
+            buttons=[
+                messages.button(
+                    reverse('wagtailadmin_pages:edit', args=(page.id,)), _('Edit')
+                )
+            ]
+        )
+
+        if next_url:
+            return redirect(next_url)
+        return redirect('wagtailadmin_explore', page.get_parent().id)
+
+    return render(request, 'wagtailadmin/pages/confirm_publish.html', {
+        'page': page,
+        'next': next_url,
+        'live_descendant_count': page.get_descendants().live().count(),
+    })
