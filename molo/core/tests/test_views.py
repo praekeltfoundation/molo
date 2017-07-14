@@ -1174,6 +1174,24 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
 
+    def test_publish_view(self):
+        """
+        This tests that the publish view responds with an publish confirm page
+        """
+        self.client.login(username='testuser', password='password')
+
+        self.user = self.login()
+        article = self.mk_article(self.yourmind)
+
+        response = self.client.get(reverse('publish', args=[article.id]))
+
+        # Check that the user received an publish confirm page
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            'wagtailadmin/pages/confirm_publish.html'
+        )
+
 
 class MultimediaViewTest(TestCase, MoloTestCaseMixin):
 
@@ -1780,28 +1798,3 @@ class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
         self.assertEquals(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertFalse(soup.find('a', string='Explorer'))
-
-    def test_publish_view(self):
-        """
-        This tests that the publish view responds with an publish confirm page
-        """
-        self.client.login(username='testuser', password='password')
-
-        section = self.mk_section(
-            self.section_index, title='section')
-        article = self.mk_article(
-            section,
-            title='article 1',
-            subtitle='article 1 subtitle',
-            slug='article-1'
-        )
-
-        print section, article
-        response = self.client.get(reverse('publish', args=(article.id, )))
-
-        # Check that the user received an publish confirm page
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(
-            response,
-            'wagtailadmin/pages/confirm_publish.html'
-        )
