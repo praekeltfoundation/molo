@@ -487,6 +487,7 @@ class ReactionQuestionChoice(
         related_name='+'
     )
 
+
 ReactionQuestionChoice.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('image'),

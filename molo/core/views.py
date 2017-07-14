@@ -468,7 +468,8 @@ def publish(request, page_id):
             _("Page '{0}' published.").format(page.get_admin_display_title()),
             buttons=[
                 messages.button(
-                    reverse('wagtailadmin_pages:edit', args=(page.id,)), _('Edit')
+                    reverse('wagtailadmin_pages:edit', args=(page.id,)),
+                    _('Edit')
                 )
             ]
         )
