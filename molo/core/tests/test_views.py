@@ -1795,6 +1795,8 @@ class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
             subtitle='article 1 subtitle',
             slug='article-1'
         )
+
+        print section, article
         response = self.client.get(reverse('publish', args=(article.id, )))
 
         # Check that the user received an publish confirm page
