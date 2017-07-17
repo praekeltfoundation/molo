@@ -1193,7 +1193,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_publish_view_invalid_page_id(self):
         """
-        This tests that the publish view returns an error if the page id is invalid
+        This tests that the publish view returns an error
+        if the page id is invalid.
         """
         # Get unpublish page
         response = self.client.get(reverse('publish', args=(12345, )))
@@ -1203,7 +1204,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_publish_does_not_contain_descendants_view(self):
         """
-        This tests that the publish view responds with an publish confirm page that does not contain the form field 'include_descendants'
+        This tests that the publish view responds with an publish confirm page
+        that does not contain the form field 'include_descendants'
         """
         self.user = self.login()
         article = self.mk_article(self.yourmind)
@@ -1212,13 +1214,21 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         # Check that the user received an unpublish confirm page
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'wagtailadmin/pages/confirm_publish.html')
-        # Check the form does not contain the checkbox field include_descendants
-        self.assertNotContains(response, '<input id="id_include_descendants" name="include_descendants" type="checkbox">')
+        self.assertTemplateUsed(
+            response,
+            'wagtailadmin/pages/confirm_publish.html'
+        )
+        # Check the form does not contain the checkbox field
+        # include_descendants
+        self.assertNotContains(
+            response,
+            '<input id="id_include_descendants" name="include_descendants"'
+        )
 
     def test_publish_include_descendants_view(self):
         """
-        This tests that the publish view responds with an publish confirm page that contains the form field 'include_descendants'
+        This tests that the publish view responds with an publish confirm page
+        that contains the form field 'include_descendants'
         """
         self.user = self.login()
         self.article = self.mk_article(self.yourmind)
@@ -1226,12 +1236,20 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.article2 = self.mk_article(self.yourmind)
         self.article2.unpublish()
 
-        response = self.client.get(reverse('publish', args=(self.yourmind.id, )))
+        response = self.client.get(
+            reverse('publish', args=(self.yourmind.id, ))
+        )
         # Check that the user received an unpublish confirm page
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'wagtailadmin/pages/confirm_publish.html')
+        self.assertTemplateUsed(
+            response,
+            'wagtailadmin/pages/confirm_publish.html'
+        )
         # Check the form contains the checkbox field include_descendants
-        self.assertContains(response, '<input id="id_include_descendants" name="include_descendants" type="checkbox">')
+        self.assertContains(
+            response,
+            '<input id="id_include_descendants" name="include_descendants"'
+        )
 
 
 class MultimediaViewTest(TestCase, MoloTestCaseMixin):
