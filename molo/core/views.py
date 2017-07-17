@@ -458,21 +458,11 @@ def publish(request, page_id):
         page.save_revision().publish()
 
         if include_descendants:
-            live_descendant_pages = page.get_descendants().live().specific()
-            for live_descendant_page in live_descendant_pages:
-                if user_perms.for_page(live_descendant_page).can_publish():
-                    live_descendant_page.publish()
-
-        messages.success(
-            request,
-            _("Page '{0}' published.").format(page.get_admin_display_title()),
-            buttons=[
-                messages.button(
-                    reverse('wagtailadmin_pages:edit', args=(page.id,)),
-                    _('Edit')
-                )
-            ]
-        )
+            not_live_descendant_pages = (
+                page.get_descendants().not_live().specific())
+            for not_live_descendant_page in not_live_descendant_pages:
+                if user_perms.for_page(not_live_descendant_page).can_publish():
+                    not_live_descendant_page.save_revision().publish()
 
         if next_url:
             return redirect(next_url)
@@ -481,5 +471,5 @@ def publish(request, page_id):
     return render(request, 'wagtailadmin/pages/confirm_publish.html', {
         'page': page,
         'next': next_url,
-        'live_descendant_count': page.get_descendants().live().count(),
+        'not_live_descendant_count': page.get_descendants().not_live().count()
     })

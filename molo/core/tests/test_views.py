@@ -1178,7 +1178,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         """
         This tests that the publish view responds with an publish confirm page
         """
-        self.client.login(username='testuser', password='password')
 
         self.user = self.login()
         article = self.mk_article(self.yourmind)
