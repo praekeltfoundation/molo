@@ -64,12 +64,13 @@ def create_new_article_relations(old_main, copied_main):
 
                 # replace old article banner relations with new articles
                 for banner in BannerPage.objects.descendant_of(copied_main):
-                    old_article_slug = ArticlePage.objects.get(
-                        pk=banner.banner_link_page).slug
-                    new_article = ArticlePage.objects.descendant_of(
-                        copied_main).get(slug=old_article_slug)
-                    banner.banner_link_page = new_article
-                    banner.save()
+                    old_article = ArticlePage.objects.get(
+                        pk=banner.banner_link_page)
+                    if old_article:
+                        new_article = ArticlePage.objects.descendant_of(
+                            copied_main).get(slug=old_article.slug)
+                        banner.banner_link_page = new_article
+                        banner.save()
 
 
 def get_locale_code(language_code=None):
