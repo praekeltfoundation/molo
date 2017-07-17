@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+5.5.2
+~~~~~
+- Bug fix: ensure that the old article exist in create_new_article_relations
+- Bug fix: use full path for GA tracking
+
 5.5.1
 ~~~~~
 - Add get_effective_banner
