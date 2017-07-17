@@ -315,3 +315,48 @@ AVAILABLE_SECTION_CHILDREN = {
         },
     ]
 }
+
+LANGUAGE_LIST_RESPONSE = {
+    "meta": {
+        "total_count": 2
+    },
+    "items": [
+        {
+            "id": 1,
+            "meta": {
+                "type": "core.SiteLanguage",
+                "detail_url": "http://localhost:8000/api/v2/languages/1/"
+            }
+        },
+        {
+            "id": 2,
+            "meta": {
+                "type": "core.SiteLanguage",
+                "detail_url": "http://localhost:8000/api/v2/languages/2/"
+            }
+        }
+    ]
+}
+
+LANGUAGE_RESPONSE_1 = {
+    "id": 1,
+    "meta": {
+        "type": "core.SiteLanguage",
+        "detail_url": "http://localhost:8000/api/v2/languages/1/"
+    },
+    "locale": "en",
+    "is_main_language": True,
+    "is_active": True
+}
+
+LANGUAGE_RESPONSE_2 = {
+    "id": 2,
+    "meta": {
+        "type": "core.SiteLanguage",
+        "detail_url": "http://localhost:8000/api/v2/languages/2/"
+    },
+    "locale": "fr",
+    "is_main_language": False,
+    "is_active": True
+}
+
