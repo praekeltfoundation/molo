@@ -12,7 +12,7 @@ The design system will make it easy to build/scaffold custom Molo mobisites from
 Django Molo Framework with a consistent look and feel using predefined Molo Core patterns
 and features - without reverse engineering our styles. The Design System and Molo Core serve
 as a single source of truth for our Frontend Templates stack, to help us establish cohesive user experience,
-common texonomy, enforce a modular approach and good quality code on mobile site applications.
+common taxonomy, enforce a modular approach and good quality code on mobile site applications.
 
 Mote is a container that renders pattern libraries being built by Praekelt.com.
 
