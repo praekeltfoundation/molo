@@ -102,3 +102,47 @@ class SectionImportTestCase(MoloTestCaseMixin, TestCase):
     #     # Save the first available article
     #     self.importer.save([0, ], self.section_index.id)
     #     self.assertEqual(SectionPage.objects.all().count(), 1)
+
+
+class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
+    def setUp(self):
+        self.fake_base_url = "http://localhost:8000"
+        self.mk_main()
+        self.importer = importers.SiteImporter(self.site.pk,
+                                               self.fake_base_url)
+
+    @responses.activate
+    def test_get_language_ids(self):
+        responses.add(responses.GET,
+                      "{}/api/v2/languages/".format(self.fake_base_url),
+                      json=constants.LANGUAGE_LIST_RESPONSE, status=200)
+        self.assertEqual(
+            self.importer.get_language_ids(),
+            [constants.LANGUAGE_LIST_RESPONSE["items"][0]["id"],
+             constants.LANGUAGE_LIST_RESPONSE["items"][1]["id"]])
+
+    @responses.activate
+    def test_copy_site_languages(self):
+        responses.add(responses.GET,
+                      "{}/api/v2/languages/".format(self.fake_base_url),
+                      json=constants.LANGUAGE_LIST_RESPONSE, status=200)
+        responses.add(responses.GET,
+                      "{}/api/v2/languages/1/".format(self.fake_base_url),
+                      json=constants.LANGUAGE_RESPONSE_1, status=200)
+        responses.add(responses.GET,
+                      "{}/api/v2/languages/2/".format(self.fake_base_url),
+                      json=constants.LANGUAGE_RESPONSE_2, status=200)
+
+        self.importer.copy_site_languages()
+
+        eng_lang = SiteLanguageRelation.objects.get(locale="en")
+        fr_lang = SiteLanguageRelation.objects.get(locale="fr")
+
+        self.assertTrue(eng_lang)
+        self.assertTrue(eng_lang.is_active)
+        self.assertTrue(eng_lang.is_main_language)
+
+        self.assertTrue(fr_lang)
+        self.assertTrue(fr_lang.is_active)
+        self.assertFalse(fr_lang.is_main_language)
+

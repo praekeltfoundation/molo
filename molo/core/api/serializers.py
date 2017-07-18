@@ -32,5 +32,3 @@ class MoloPageSerializer(PageSerializer):
     children = PageChildrenField(read_only=True)
 
 
-class SiteLanguageSerializer(serializers.BaseSerializer):
-    pass
