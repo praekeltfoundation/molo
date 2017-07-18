@@ -12,7 +12,8 @@ from wagtail.wagtailcore.utils import cautious_slugify
 def create_new_article_relations(old_main, copied_main):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
         ArticlePageReactionQuestions, ReactionQuestion, \
-        ArticlePageRecommendedSections, ArticlePageRelatedSections, SectionPage
+        ArticlePageRecommendedSections, ArticlePageRelatedSections, \
+        SectionPage, BannerPage
     if old_main and copied_main:
         if copied_main.get_descendants().count() >= \
                 old_main.get_descendants().count():
@@ -61,9 +62,20 @@ def create_new_article_relations(old_main, copied_main):
                         relation.section = new_related_section
                         relation.save()
 
+                # replace old article banner relations with new articles
+                for banner in BannerPage.objects.descendant_of(copied_main):
+                    old_article = ArticlePage.objects.get(
+                        pk=banner.banner_link_page)
+                    if old_article:
+                        new_article = ArticlePage.objects.descendant_of(
+                            copied_main).get(slug=old_article.slug)
+                        banner.banner_link_page = new_article
+                        banner.save()
+
 
 def get_locale_code(language_code=None):
     return (language_code or settings.LANGUAGE_CODE).replace('_', '-')
+
 
 RE_NUMERICAL_SUFFIX = re.compile(r'^[\w-]*-(\d+)+$')
 

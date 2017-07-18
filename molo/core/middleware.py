@@ -107,7 +107,7 @@ class MoloGoogleAnalyticsMiddleware(object):
         except:
             title = None
 
-        path = request.path
+        path = request.get_full_path()
         referer = request.META.get('HTTP_REFERER', '')
         params = build_ga_params(
             request, account, path=path, referer=referer, title=title)

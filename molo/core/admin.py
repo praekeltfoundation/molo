@@ -26,6 +26,7 @@ class ReactionQuestionResponseAdmin(admin.ModelAdmin):
     )
     readonly_fields = ['question', 'choice']
 
+
 admin.site.register(ReactionQuestion, ReactionQuestionAdmin)
 admin.site.register(ReactionQuestionResponse, ReactionQuestionResponseAdmin)
 
@@ -66,7 +67,9 @@ class ReactionQuestionsSummaryModelAdmin(
 
     def get_queryset(self, request):
         qs = ArticlePage.objects.descendant_of(
-            request.site.root_page).exclude(reaction_questions=None)
+            request.site.root_page).filter(
+                languages__language__is_main_language=True).exclude(
+                    reaction_questions=None)
         return qs
 
     articles.allow_tags = True

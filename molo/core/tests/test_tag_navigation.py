@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -184,6 +184,27 @@ class TestTags(MoloTestCaseMixin, TestCase):
         for article_tag_relation in new_article_tags:
             self.assertEquals(
                 article_tag_relation.tag.get_site().pk, main3.get_site().pk)
+
+    def test_latest_articles_get_priority_when_tag_navigation_enabled(self):
+        tag = self.mk_tag(parent=self.tag_index)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.yourmind,
+            featured_in_latest_start_date=(
+                datetime.now() - timedelta(days=1)),
+            featured_in_homepage_start_date=datetime.now(), count=30)
+        latest_of_latest_articles = self.mk_article(
+            parent=self.yourmind, featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now())
+        for article in articles:
+            ArticlePageTags.objects.create(page=article, tag=tag)
+
+        promote_articles()
+
+        response = self.client.get('/')
+        latest_articles = response.context['tag_nav_data']['latest_articles']
+        self.assertEqual(latest_articles[0].pk, latest_of_latest_articles.pk)
 
     def test_article_not_repeated_when_tag_navigation_enabled_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)

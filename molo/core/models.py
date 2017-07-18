@@ -487,6 +487,7 @@ class ReactionQuestionChoice(
         related_name='+'
     )
 
+
 ReactionQuestionChoice.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('image'),
@@ -559,6 +560,14 @@ class BannerPage(TranslatablePageMixin, Page):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+
+    def get_effective_banner(self):
+        if self.banner:
+            return self.banner
+        page = self.get_main_language_page()
+        if page.specific.banner:
+            return page.specific.get_effective_banner()
+        return ''
 
 
 BannerPage.content_panels = [
