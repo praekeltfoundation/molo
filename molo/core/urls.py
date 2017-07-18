@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 
 from .views import (
     search, TagsListView, ReactionQuestionChoiceView,
-    ReactionQuestionChoiceFeedbackView)
+    ReactionQuestionChoiceFeedbackView, publish)
 
 
 urlpatterns = patterns(
@@ -63,4 +63,5 @@ urlpatterns = patterns(
         TagsListView.as_view(),
         name='tags_list'
     ),
+    url(r'^(\d+)/publish/$', publish, name='publish'),
 )

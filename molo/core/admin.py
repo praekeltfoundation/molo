@@ -26,6 +26,7 @@ class ReactionQuestionResponseAdmin(admin.ModelAdmin):
     )
     readonly_fields = ['question', 'choice']
 
+
 admin.site.register(ReactionQuestion, ReactionQuestionAdmin)
 admin.site.register(ReactionQuestionResponse, ReactionQuestionResponseAdmin)
 
