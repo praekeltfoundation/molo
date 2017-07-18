@@ -109,7 +109,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     menu_label = 'Articles'
     menu_icon = 'doc-full-inverse'
     list_display = [
-        'title', 'section', 'live', 'first_published_at', 'owner',
+        'title', 'parent_section', 'section', 'live', 'first_published_at', 'owner',
         'latest_revision_created_at',
         'featured_in_latest', 'featured_in_homepage', 'featured_in_section',
         'image_img'
@@ -127,13 +127,24 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     def section(self, obj):
         if obj.get_parent_section():
             return format_html(
-                "<a href='{url}'>{section}</a>",
-                section=obj.get_parent_section().get_admin_display_title(),
-                url=obj.get_parent_section().url_path
+                "<a href='{section}'>{section_title}</a>",
+                section_title=obj.get_parent_section().get_admin_display_title(),
+                section=obj.get_parent_section().url
             )
 
     section.short_description = 'Section'
     section.allow_tags = True
+
+    def parent_section(self, obj):
+        if obj.get_parent_section() and obj.get_parent_section().get_parent_section():
+            return format_html(
+                "<a href='{section}'>{section_title}</a>",
+                section_title=obj.get_parent_section().get_parent_section().get_admin_display_title(),
+                section=obj.get_parent_section().get_parent_section().url
+            )
+
+    parent_section.short_description = 'Parent'
+    parent_section.allow_tags = True
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
