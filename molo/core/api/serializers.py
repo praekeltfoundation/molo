@@ -87,8 +87,8 @@ class PageTranslationsField(serializers.Field):
 
             for translated_page in pages:
                 items.append({
-                    "id":translated_page.id,
-                    "locale":translated_page.languages.get().language.locale
+                    "id": translated_page.id,
+                    "locale": translated_page.languages.get().language.locale
                 })
             return items
         else:
