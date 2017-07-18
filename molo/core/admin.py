@@ -4,6 +4,8 @@ from molo.core.models import (
     ReactionQuestion, ReactionQuestionResponse, ArticlePage,
     ArticlePageLanguageProxy
 )
+from django.utils.html import format_html
+
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin,
 )
@@ -79,17 +81,6 @@ class ReactionQuestionsSummaryModelAdmin(
     articles.short_description = 'Title'
 
 
-class ArticlePageAdmin(admin.ModelAdmin):
-    list_display = [
-        'title', 'live', 'first_published_at', 'owner',
-        'latest_revision_created_at', 'go_live_at'
-        'featured_in_latest', 'featured_in_homepage'
-    ]
-    list_filter = ['title']
-    search_fields = ['title', 'content', 'description']
-    date_hierarchy = 'latest_revision_created_at'
-
-
 class ArticleModelAdminTemplate(IndexView):
 
     def get_template_names(self):
@@ -100,7 +91,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display = (
         'title', 'live', 'first_published_at', 'owner',
         'latest_revision_created_at', 'go_live_at'
-        'featured_in_latest', 'featured_in_homepage'
+        'featured_in_latest', 'featured_in_homepage', 'featured_in_section'
     )
 
     fieldsets = (
@@ -117,10 +108,26 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     menu_label = 'Articles'
     menu_icon = 'doc-full-inverse'
     list_display = [
-        'title', 'live', 'first_published_at', 'owner',
-        'latest_revision_created_at', 'go_live_at',
-        'featured_in_latest', 'featured_in_homepage'
+        'title', 'section', 'live', 'first_published_at', 'owner',
+        'latest_revision_created_at',
+        'featured_in_latest', 'featured_in_homepage', 'featured_in_section',
+        'image_img'
     ]
+
+    def image_img(self, obj):
+        if obj.image:
+            return u'<img src="%s" />' % obj.image
+
+    image_img.short_description = 'Thumb'
+    image_img.allow_tags = True
+
+    def section(self, obj):
+        return format_html(
+            "<a href='{url}'>Section</a>", url=obj.get_parent().url
+        )
+
+    section.short_description = 'Section'
+    section.allow_tags = True
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
