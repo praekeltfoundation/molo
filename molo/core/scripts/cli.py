@@ -89,5 +89,6 @@ def scaffold(**kwargs):
 def main():
     pass
 
+
 main.add_command(scaffold, name='scaffold')
 main.add_command(unpack_templates, name='unpack-templates')

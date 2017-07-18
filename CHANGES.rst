@@ -1,6 +1,14 @@
 CHANGE LOG
 ==========
 
+5.7.0
+~~~~~
+- Deprecate use of search backends in Molo. Use wagatailsearch instead.
+
+5.6.0
+~~~~~
+- New Feature: Add Article Publish action to shortcuts
+
 5.5.2
 ~~~~~
 - Bug fix: ensure that the old article exist in create_new_article_relations
