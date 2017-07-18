@@ -242,6 +242,21 @@ class SiteImporter(object):
         self.base_url = base_url
         self.api_url = self.base_url + '/api/v2/'
         self.site_pk = site_pk
+        self.content = None
+        # maps foreign IDs to local page IDs
+        self.id_map = {}
+        # maps foreign image IDs to local IDs
+        self.image_map = {}
+        # maps local id to list of foreign section page ids
+        self.related_sections = {}
+        # maps local id to list of foreign page ids
+        self.recommended_articles = {}
+        # maps local pages to list of foreign reaction question IDs
+        self.reaction_questions = {}
+        # maps local pages to list of foreign nav_tag IDs
+        self.nav_tags = {}
+        # maps local pages to list of foreign section_tag IDs
+        self.section_tags = {}
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -270,3 +285,122 @@ class SiteImporter(object):
                 locale=content['locale'],
                 is_active=content['is_active'],
                 language_setting=language_setting)
+
+    def fetch_and_create_image(self):
+        # create image object
+        # update self.image_map
+        # return image
+        pass
+
+    def attach_image(self):
+        # if not (image has already been imported)
+        #   get_image()
+        # attach image
+        pass
+
+    def create_page(self, parent, content):
+        print("creating 'new_id' with title: {} and parent {}".format(
+            content["title"], parent.id))
+
+        fields, nested_fields = separate_fields(content)
+
+        # handle the unwanted fields
+        foreign_id = content.pop('id')
+
+        page = None
+        if content["meta"]["type"] == "core.SectionPage":
+            page = SectionPage(**fields)
+        elif content["meta"]["type"] == "core.ArticlePage":
+            page = ArticlePage(**fields)
+        # TODO: handle other Page types
+
+        parent.add_child(instance=page)
+
+        # TODO: handle live/published
+        # Need to review this line:
+        #   handle drafts and 'not live' content
+        parent.save_revision().publish()
+
+        self.id_map[foreign_id] = page.id
+        print("PAGE ID IS {}".format(page.id))
+
+        # time
+        if (("time" in nested_fields) and
+                nested_fields["time"]):
+            page.time = json.dumps(nested_fields["time"])
+
+        # section_tags/nav_tags
+        #  list -> ["tag"]["id"]
+        # -> Need to fetch and create the nav tags
+        #  THEN create the link between page and nav_tag
+        if (("section_tags" in nested_fields) and
+                nested_fields["section_tags"]):
+            self.section_tags[page.id] = []
+            for section_tag in nested_fields["section_tags"]:
+                self.section_tags[page.id].append(
+                    section_tag["tag"]["id"])
+
+        # nav_tags
+        #  list -> ["tag"]["id"]
+        # -> Need to fetch and create the nav tags
+        #  THEN create the link between page and nav_tag
+        if (("nav_tags" in nested_fields) and
+                nested_fields["nav_tags"]):
+            self.nav_tags[page.id] = []
+            for nav_tag in nested_fields["nav_tags"]:
+                self.nav_tags[page.id].append(
+                    nav_tag["tag"]["id"])
+
+        # reaction_questions
+        #  list -> ["reaction_question"]["id"]
+        # -> Need to fetch and create the reaction questions
+        #  THEN create the link between page and reaction question
+        if (("reaction_questions" in nested_fields) and
+                nested_fields["reaction_questions"]):
+            self.reaction_questions[page.id] = []
+            for reaction_question in nested_fields["reaction_questions"]:
+                self.reaction_questions[page.id].append(
+                    reaction_question["reaction_question"]["id"])
+
+        # recommended_articles
+        #  list -> ["recommended_article"]["id"]
+        # -> Only need to create the relationship
+        if (("recommended_articles" in nested_fields) and
+                nested_fields["recommended_articles"]):
+            self.recommended_articles[page.id] = []
+            for recommended_article in nested_fields["recommended_articles"]:
+                self.recommended_articles[page.id].append(
+                    recommended_article["recommended_article"]["id"])
+
+        # related_sections
+        #  list -> ["section"]["id"]
+        # -> Only need to create the relationship
+        if (("related_sections" in nested_fields) and
+                nested_fields["related_sections"]):
+            self.related_sections[page.id] = []
+            for related_section in nested_fields["related_sections"]:
+                self.related_sections[page.id].append(
+                    related_section["section"]["id"])
+
+        if ("body" in nested_fields) and nested_fields["body"]:
+            page.body = json.dumps(nested_fields["body"])
+
+        if ("tags" in nested_fields) and nested_fields["tags"]:
+            for tag in nested_fields["tags"]:
+                page.tags.add(tag)
+
+        if (("metadata_tags" in nested_fields) and
+                nested_fields["metadata_tags"]):
+            for tag in nested_fields["metadata_tags"]:
+                page.metadata_tags.add(tag)
+
+        if (("social_media_image" in nested_fields) and
+                nested_fields["social_media_image"]):
+            self.attach_image()
+
+        if ("image" in nested_fields) and nested_fields["image"]:
+            self.attach_image()
+
+        # update the state of the page ?
+        page.save()
+        return page
