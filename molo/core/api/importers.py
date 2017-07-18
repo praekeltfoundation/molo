@@ -299,9 +299,6 @@ class SiteImporter(object):
         pass
 
     def create_page(self, parent, content):
-        print("creating 'new_id' with title: {} and parent {}".format(
-            content["title"], parent.id))
-
         fields, nested_fields = separate_fields(content)
 
         # handle the unwanted fields
@@ -322,7 +319,6 @@ class SiteImporter(object):
         parent.save_revision().publish()
 
         self.id_map[foreign_id] = page.id
-        print("PAGE ID IS {}".format(page.id))
 
         # time
         if (("time" in nested_fields) and
