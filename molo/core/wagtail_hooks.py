@@ -1,7 +1,9 @@
 from django.conf.urls import url
 
-from molo.core.admin import ReactionQuestionsModelAdmin, \
-    ReactionQuestionsSummaryModelAdmin, AdminViewGroup
+from molo.core.admin import (
+    ReactionQuestionsModelAdmin, ReactionQuestionsSummaryModelAdmin,
+    AdminViewGroup
+)
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
 from molo.core.models import LanguageRelation, PageTranslation, Languages

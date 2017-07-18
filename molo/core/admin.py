@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from molo.core.models import (
-    ReactionQuestion, ReactionQuestionResponse, ArticlePage)
+    ReactionQuestion, ReactionQuestionResponse, ArticlePage,
+    ArticlePageLanguageProxy
+)
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin,
 )
@@ -78,7 +80,11 @@ class ReactionQuestionsSummaryModelAdmin(
 
 
 class ArticlePageAdmin(admin.ModelAdmin):
-    list_display = ['title', 'latest_revision_created_at', 'live']
+    list_display = [
+        'title', 'live', 'first_published_at', 'owner',
+        'latest_revision_created_at', 'go_live_at'
+        'featured_in_latest', 'featured_in_homepage'
+    ]
     list_filter = ['title']
     search_fields = ['title', 'content', 'description']
     date_hierarchy = 'latest_revision_created_at'
@@ -90,42 +96,42 @@ class ArticleModelAdminTemplate(IndexView):
         return 'admin/model_admin_template.html'
 
 
-class ArticleModelAdmin(WagtailModelAdmin):
-    model = ArticlePage
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = (
+        'title', 'live', 'first_published_at', 'owner',
+        'latest_revision_created_at', 'go_live_at'
+        'featured_in_latest', 'featured_in_homepage'
+    )
+
+    fieldsets = (
+        (
+            None,
+            {'fields': ('title', )}
+        ),
+    )
+    readonly_fields = ['title']
+
+
+class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
+    model = ArticlePageLanguageProxy
     menu_label = 'Articles'
     menu_icon = 'doc-full-inverse'
     list_display = [
-        'title', 'latest_revision_created_at', 'live',
+        'title', 'live', 'first_published_at', 'owner',
+        'latest_revision_created_at', 'go_live_at',
+        'featured_in_latest', 'featured_in_homepage'
     ]
 
     def get_queryset(self, request):
-        qs = ArticlePage.objects.descendant_of(
-            request.site.root_page).filter(
-            languages__language__is_main_language=True)
+        qs = ArticlePageLanguageProxy.objects.descendant_of(
+            request.site.root_page)
         return qs
-
-    def articles(self, obj, *args, **kwargs):
-        url = reverse(
-            'reaction-question-article-results-admin', args=(obj.id,))
-        return '<a href="%s">%s</a>' % (url, obj)
-
-    articles.allow_tags = True
-    articles.short_description = 'Title'
-
-
-# class PersonAdmin(WagtailModelAdmin):
-#     list_display = ('title', 'live')
-#
-#     def get_queryset(self, request):
-#         qs = super(PersonAdmin, self).get_queryset(request)
-#         # Only show people managed by the current user
-#         return qs.filter(managed_by=request.user)
 
 
 class AdminViewGroup(ModelAdminGroup):
     menu_label = 'Admin View'
     menu_icon = 'folder-open-inverse'
-    menu_order = 400
+    menu_order = 1500
     items = (
         ArticleModelAdmin,
     )
