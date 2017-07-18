@@ -30,5 +30,3 @@ class PageChildrenField(serializers.Field):
 
 class MoloPageSerializer(PageSerializer):
     children = PageChildrenField(read_only=True)
-
-

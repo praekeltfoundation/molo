@@ -13,6 +13,10 @@ from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.api import importers
 from molo.core.api.tests import constants
 from molo.core.models import ArticlePage
+from molo.core.models import (
+    SiteLanguageRelation,
+)
+import responses
 
 
 class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
@@ -145,4 +149,3 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertTrue(fr_lang)
         self.assertTrue(fr_lang.is_active)
         self.assertFalse(fr_lang.is_main_language)
-
