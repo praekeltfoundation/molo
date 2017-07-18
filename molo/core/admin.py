@@ -4,6 +4,7 @@ from molo.core.models import (
     ReactionQuestion, ReactionQuestionResponse, ArticlePage,
     ArticlePageLanguageProxy
 )
+
 from django.utils.html import format_html
 
 from wagtail.contrib.modeladmin.options import (
@@ -116,15 +117,20 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     def image_img(self, obj):
         if obj.image:
-            return u'<img src="%s" />' % obj.image
+            return u'<img src="%s" />' % (
+                obj.image.get_rendition('height-50').url
+            )
 
-    image_img.short_description = 'Thumb'
+    image_img.short_description = 'Image'
     image_img.allow_tags = True
 
     def section(self, obj):
-        return format_html(
-            "<a href='{url}'>Section</a>", url=obj.get_parent().url
-        )
+        if obj.get_parent_section():
+            return format_html(
+                "<a href='{url}'>{section}</a>",
+                section=obj.get_parent_section().get_admin_display_title(),
+                url=obj.get_parent_section().url_path
+            )
 
     section.short_description = 'Section'
     section.allow_tags = True
