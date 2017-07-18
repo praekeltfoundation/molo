@@ -15,6 +15,7 @@ from molo.core.api.serializers import (
 
 class MoloImagesAPIEndpoint(ImagesAPIEndpoint):
     body_fields = ImagesAPIEndpoint.body_fields + [
+        "filename",
         "file",
     ]
 

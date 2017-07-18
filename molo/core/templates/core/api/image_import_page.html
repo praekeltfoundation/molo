@@ -1,0 +1,15 @@
+{% extends "wagtailadmin/base.html" %}
+{% load static i18n %}
+
+{% block content %}
+    <div>
+        <form action="{% url 'molo_api:image-import' %}" method="POST">
+            {% csrf_token %}
+            {% for image in images %}
+              <img src="http://localhost:8000/media/original_images/0XfAFOJvCA4.jpg" alt="" style="height:200px;">
+              <p>thing</p>
+            {% endfor %}
+            <input type="submit" class="Button" value="{% trans "Get content" %}"/>
+        </form>
+    </div>
+{% endblock %}

@@ -14,6 +14,9 @@ from molo.core.api.constants import ARTICLE_SESSION_VARS, SECTION_SESSION_VARS
 from molo.core.models import ArticlePage, SectionPage
 from molo.core.tasks import import_site
 
+import json
+import requests
+
 
 class SiteImportView(FormView):
     '''
@@ -31,6 +34,19 @@ class SiteImportView(FormView):
         site_pk = self.request.site.root_page.get_site().pk
         import_site.delay(url, site_pk)
         return super(SiteImportView, self).form_valid(form)
+
+import pprint
+class ImageImportView(View):
+    def get(self, request, *args, **kwargs):
+
+        response = requests.get("http://localhost:8000/api/v2/images/")
+        images = json.loads(response.content)["items"]
+
+        pprint.pprint(images[0]['meta']['detail_url'])
+
+        return render(request,
+                      "core/api/image_import_page.html",
+                      {"images": images})
 
 
 class MainImportView(FormView):
