@@ -111,7 +111,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     menu_icon = 'doc-full-inverse'
     list_display = [
         'title', 'parent_section', 'section', 'live', 'status',
-        'first_published_at', 'owner',
+        'first_published_at', 'owner', 'first_created_at',
         'latest_revision_created_at', 'last_edited_by',
         'image_img', 'tags_html',
         'featured_in_latest', 'featured_in_homepage', 'featured_in_section',
@@ -119,6 +119,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     def image_img(self, obj):
         if obj.image:
+
             return u'<img src="%s" />' % (
                 obj.image.get_rendition('height-50').url
             )
@@ -188,6 +189,13 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     last_edited_by.short_description = 'Last edited by'
     last_edited_by.allow_tags = True
+
+    def first_created_at(self, obj):
+        if obj.revisions.first():
+            return obj.revisions.first().created_at
+
+    first_created_at.short_description = 'Created at'
+    first_created_at.allow_tags = True
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
