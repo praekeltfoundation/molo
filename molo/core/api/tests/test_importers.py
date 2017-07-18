@@ -3,8 +3,6 @@ Test the importing module.
 This module relies heavily on an external service and requires
 quite a bit of mocking.
 """
-import json
-
 from django.test import TestCase
 
 from mock import patch
@@ -17,8 +15,6 @@ from molo.core.models import (
     SiteLanguageRelation,
 )
 from molo.core.tests.base import MoloTestCaseMixin
-
-import requests
 
 import responses
 

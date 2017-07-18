@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from rest_framework import serializers
 
-from wagtail.api.v2.serializers import PageSerializer, BaseSerializer
+from wagtail.api.v2.serializers import PageSerializer
 from molo.core.models import TranslatablePageMixinNotRoutable
 
 
