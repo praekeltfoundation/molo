@@ -147,7 +147,7 @@ def topic_of_the_day(context):
         articles = request.site.root_page.specific \
             .topic_of_the_day()
     else:
-        articles = ArticlePage.objects.None()
+        articles = ArticlePage.objects.none()
 
     return {
         'articles': get_pages(context, articles, locale),
@@ -157,7 +157,7 @@ def topic_of_the_day(context):
 
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
-def bannerpages(context, position=None):
+def bannerpages(context, position=-1):
     request = context['request']
     locale = context.get('locale_code')
 

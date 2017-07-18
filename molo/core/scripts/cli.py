@@ -36,7 +36,7 @@ def unpack_templates(**kwargs):
                 pkg_resources.resource_filename(
                     target_pkg.key, os.path.join('templates', directory))
             )
-        except (OSError,), e:
+        except OSError as e:
             raise click.ClickException(str(e))
 
 

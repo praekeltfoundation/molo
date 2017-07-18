@@ -1,4 +1,4 @@
-from urlparse import ParseResult, urlunparse
+from six.moves.urllib.parse import ParseResult, urlunparse
 
 from molo.core.content_import.utils import conj, omit_nones
 

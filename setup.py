@@ -22,7 +22,7 @@ install_requires = [
     'django-cas-ng==3.5.4',
     'django-el-pagination==3.1.0',
     'django-extensions',
-    'django-google-analytics-app==2.1.4',
+    'django-google-analytics-app==2.1.6',
     'django-libsass',
     'django-mptt==0.8.5',
     'djangorestframework==3.3.2',
