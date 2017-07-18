@@ -110,7 +110,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     menu_label = 'Articles'
     menu_icon = 'doc-full-inverse'
     list_display = [
-        'title', 'parent_section', 'section', 'live', 'first_published_at',
+        'title', 'parent_section', 'section', 'live', 'status', 'first_published_at',
         'owner', 'latest_revision_created_at', 'image_img', 'tags_html',
         'featured_in_latest', 'featured_in_homepage', 'featured_in_section',
     ]
@@ -168,6 +168,17 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     tags_html.short_description = 'Tags'
     tags_html.allow_tags = True
+
+    def status(self, obj):
+        if obj.get_latest_revision().submitted_for_moderation:
+            return "In Review"
+        elif obj.live:
+            return "Published"
+        else:
+            return "Draft"
+
+    status.short_description = 'Status'
+    status.allow_tags = True
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
