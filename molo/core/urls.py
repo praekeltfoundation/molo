@@ -4,7 +4,6 @@ from django.views.decorators.cache import never_cache
 from wagtail.utils.urlpatterns import decorate_urlpatterns
 
 from .api.urls import api_router
-from .api.views import SiteLanguagesList
 from .views import (
     search, TagsListView, ReactionQuestionChoiceView,
     ReactionQuestionChoiceFeedbackView)

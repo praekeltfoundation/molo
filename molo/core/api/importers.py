@@ -270,4 +270,3 @@ class SiteImporter(object):
                 locale=content['locale'],
                 is_active=content['is_active'],
                 language_setting=language_setting)
-

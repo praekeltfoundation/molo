@@ -21,13 +21,11 @@ from molo.core.models import (
     SectionPage,
     Languages,
     SiteSettings,
-    SiteLanguageRelation,
 )
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
 
-import requests
 
 IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"
 VALIDATE_EMAIL_TEMPLATE = "content_import/validate_email.html"

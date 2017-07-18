@@ -359,4 +359,3 @@ LANGUAGE_RESPONSE_2 = {
     "is_main_language": False,
     "is_active": True
 }
-
