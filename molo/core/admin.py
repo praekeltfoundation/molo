@@ -6,6 +6,7 @@ from molo.core.models import (
 )
 
 from django.utils.html import format_html
+from django.template.defaultfilters import truncatechars
 
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin,
@@ -109,10 +110,9 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     menu_label = 'Articles'
     menu_icon = 'doc-full-inverse'
     list_display = [
-        'title', 'parent_section', 'section', 'live', 'first_published_at', 'owner',
-        'latest_revision_created_at',
+        'title', 'parent_section', 'section', 'live', 'first_published_at',
+        'owner', 'latest_revision_created_at', 'image_img', 'tags_html',
         'featured_in_latest', 'featured_in_homepage', 'featured_in_section',
-        'image_img'
     ]
 
     def image_img(self, obj):
@@ -128,23 +128,46 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
         if obj.get_parent_section():
             return format_html(
                 "<a href='{section}'>{section_title}</a>",
-                section_title=obj.get_parent_section().get_admin_display_title(),
-                section=obj.get_parent_section().url
+                section_title=obj.get_parent_section(
+                ).get_admin_display_title(),
+                section=reverse(
+                    'wagtailadmin_explore',
+                    args=[obj.get_parent_section().id]
+                )
             )
 
     section.short_description = 'Section'
     section.allow_tags = True
 
     def parent_section(self, obj):
-        if obj.get_parent_section() and obj.get_parent_section().get_parent_section():
+        if obj.get_parent_section() and \
+                obj.get_parent_section().get_parent_section():
             return format_html(
                 "<a href='{section}'>{section_title}</a>",
-                section_title=obj.get_parent_section().get_parent_section().get_admin_display_title(),
-                section=obj.get_parent_section().get_parent_section().url
+                section_title=obj.get_parent_section(
+                ).get_parent_section().get_admin_display_title(),
+                section=reverse(
+                    'wagtailadmin_explore',
+                    args=[obj.get_parent_section().get_parent_section().id]
+                )
             )
 
     parent_section.short_description = 'Parent'
     parent_section.allow_tags = True
+
+    def tags_html(self, obj):
+        if obj.tags_list():
+            display_value = ", ".join(obj.tags_list())
+            result = format_html(
+                '<a href="{}">{}</a>'.format(
+                    reverse("wagtailadmin_pages:edit", args=[obj.id]),
+                    truncatechars(display_value.upper(), 30)
+                )
+            )
+            return result
+
+    tags_html.short_description = 'Tags'
+    tags_html.allow_tags = True
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
