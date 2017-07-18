@@ -3,6 +3,8 @@ from .constants import (
     AVAILABLE_SECTIONS,
     AVAILABLE_SECTION_CHILDREN,
     RELATED_IMAGE,
+    ARTICLE_PAGE_RESPONSE,
+    SECTION_PAGE_RESPONSE,
 )
 
 
@@ -59,3 +61,27 @@ def mocked_requests_get(url, *args, **kwargs):
         return MockResponse(AVAILABLE_ARTICLES, 200)
 
     return MockResponse({}, 404)
+
+
+def fake_article_page_response(**kwargs):
+    '''
+    Returns a fully featured article with all the
+    bells and whistles.
+
+    Pass in kwargs to suppress certain elements
+    '''
+    response = ARTICLE_PAGE_RESPONSE
+    response.update(kwargs)
+    return response
+
+
+def fake_section_page_response(**kwargs):
+    '''
+    Returns a fully featured article with all the
+    bells and whistles.
+
+    Pass in kwargs to suppress certain elements
+    '''
+    response = SECTION_PAGE_RESPONSE
+    response.update(kwargs)
+    return response
