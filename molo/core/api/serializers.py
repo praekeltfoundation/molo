@@ -3,6 +3,7 @@ from collections import OrderedDict
 from rest_framework import serializers
 
 from wagtail.api.v2.serializers import PageSerializer
+from wagtail.wagtailimages.api.v2.serializers import ImageSerializer
 from molo.core.models import TranslatablePageMixinNotRoutable
 
 
@@ -99,3 +100,19 @@ class MoloPageSerializer(PageSerializer):
     children = PageChildrenField(read_only=True)
     translations = PageTranslationsField(read_only=True)
     main_language_children = MainLanguageChildrenField(read_only=True)
+
+
+class ImageUrlField(serializers.Field):
+    """
+    Provides an accesible URL for image file
+    """
+    def get_attribute(self, instance):
+        return instance
+
+    def to_representation(self, image):
+        rendition = image.get_rendition('original')
+        return rendition.url
+
+
+class MoloImageSerializer(ImageSerializer):
+    image_url = ImageUrlField(read_only=True)

@@ -10,13 +10,16 @@ from molo.core.models import SiteLanguage
 from molo.core.api.filters import MainLanguageFilter
 from molo.core.api.serializers import (
     MoloPageSerializer,
+    MoloImageSerializer,
 )
 
 
 class MoloImagesAPIEndpoint(ImagesAPIEndpoint):
+    base_serializer_class = MoloImageSerializer
     body_fields = ImagesAPIEndpoint.body_fields + [
         "filename",
         "file",
+        "image_url",
     ]
 
 
