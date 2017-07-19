@@ -1,6 +1,7 @@
 """
 Various importers for the different content types
 """
+import math
 import json
 import requests
 from io import BytesIO
@@ -64,6 +65,31 @@ def separate_fields(fields):
                 nested_fields.update({k: v})
 
     return flat_fields, nested_fields
+
+
+def list_of_objects_from_api(url):
+        '''
+        API only serves 20 pages by default
+        This fetches info on all of items and return them as a list
+
+        Assumption: limit of API is not less than 20
+        '''
+        response = requests.get(url)
+        content = json.loads(response.content)
+        count = content["meta"]["total_count"]
+
+        if count <= 20:
+            return content["items"]
+        else:
+            items = [] + content["items"]
+            num_requests = int(math.ceil(count // 20))
+
+            for i in range(1, num_requests + 1):
+                paginated_url = "{}?limit=20&offset={}".format(
+                    url, str(i * 20))
+                paginated_response = requests.get(paginated_url)
+                items = items + json.loads(paginated_response.content)["items"]
+        return items
 
 
 class PageImporter(object):
@@ -297,8 +323,7 @@ class SiteImporter(object):
         if a match is found it refers to local instance instead
         if it is not, the image is fetched, created and referenced
         '''
-        response = requests.get(self.image_url)
-        images = json.loads(response.content)["items"]
+        images = list_of_objects_from_api(self.image_url)
 
         for image in images:
             image_detail_url = "{}{}/".format(self.image_url, image["id"])
