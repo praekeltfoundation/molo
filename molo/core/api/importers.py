@@ -66,7 +66,7 @@ def separate_fields(fields):
 
     return flat_fields, nested_fields
 
-
+from pprint import pprint
 def list_of_objects_from_api(url):
         '''
         API only serves 20 pages by default
@@ -75,6 +75,13 @@ def list_of_objects_from_api(url):
         Assumption: limit of API is not less than 20
         '''
         response = requests.get(url)
+        pprint("response")
+        pprint(response)
+        print("&&&&&&&&&&&&&&&&")
+        pprint("response.content")
+        pprint(response.content)
+        pprint(type(response.content))
+
         content = json.loads(response.content)
         count = content["meta"]["total_count"]
 
@@ -88,7 +95,7 @@ def list_of_objects_from_api(url):
                 paginated_url = "{}?limit=20&offset={}".format(
                     url, str(i * 20))
                 paginated_response = requests.get(paginated_url)
-                items = items + json.loads(paginated_response.content)["items"]
+                items = items + list(json.loads(paginated_response.content)["items"])
         return items
 
 

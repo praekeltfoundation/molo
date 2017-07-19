@@ -16,6 +16,7 @@ from molo.core.models import (
     SiteLanguageRelation,
 )
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.api.tests.utils import mocked_requests_get
 
 import responses
 
@@ -127,25 +128,24 @@ class TestImporterUtilFunctions(TestCase):
             returned_list,
             constants.WAGTAIL_API_LIST_VIEW["items"])
 
-    @responses.activate
-    def test_list_of_objects_from_api_paginated(self):
+    @patch("molo.core.api.importers.requests.get",
+           side_effect=utils.mocked_requests_get)
+    def test_list_of_objects_from_api_paginated(self, mock_get):
         responses.add(responses.GET,
                       self.test_url,
                       json=constants.WAGTAIL_API_LIST_VIEW_PAGE_1, status=200)
         responses.add(responses.GET,
                       "{}?limit=20&offset=20".format(self.test_url),
                       json=constants.WAGTAIL_API_LIST_VIEW_PAGE_2, status=200)
+        print(type(importers.list_of_objects_from_api(self.test_url)))
         returned_list = importers.list_of_objects_from_api(self.test_url)
         expected_response = (
             constants.WAGTAIL_API_LIST_VIEW_PAGE_1["items"] +
             constants.WAGTAIL_API_LIST_VIEW_PAGE_2["items"]
         )
-        # TODO: fix test -> responses does not differentiate between
-        # urls with args
-        # self.assertEqual(
-        #     returned_list,
-        #     expected_response)
-
+        self.assertEqual(
+            returned_list,
+            expected_response)
 
 
 class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):

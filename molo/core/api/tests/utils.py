@@ -1,3 +1,4 @@
+import json
 from .constants import (
     AVAILABLE_ARTICLES,
     AVAILABLE_SECTIONS,
@@ -5,6 +6,8 @@ from .constants import (
     RELATED_IMAGE,
     ARTICLE_PAGE_RESPONSE,
     SECTION_PAGE_RESPONSE,
+    WAGTAIL_API_LIST_VIEW_PAGE_1,
+    WAGTAIL_API_LIST_VIEW_PAGE_2,
 )
 
 
@@ -59,6 +62,10 @@ def mocked_requests_get(url, *args, **kwargs):
                 "image,social_media_image,social_media_description," \
                 "social_media_title&order=latest_revision_created_at":
         return MockResponse(AVAILABLE_ARTICLES, 200)
+    if url == "http://localhost:8000/api/v2/images/":
+        return MockResponse(json.dumps(WAGTAIL_API_LIST_VIEW_PAGE_1), 200)
+    if url == "http://localhost:8000/api/v2/images/?limit=20&offset=20":
+        return MockResponse(json.dumps(WAGTAIL_API_LIST_VIEW_PAGE_2), 200)
 
     return MockResponse({}, 404)
 
