@@ -361,11 +361,33 @@ class SiteImporter(object):
         local_image.save()
         return local_image
 
-    def attach_image(self):
-        # if not (image has already been imported)
-        #   get_image()
-        # attach image
-        pass
+    def attach_image(self, page, foreign_image_id):
+        '''
+        Attaches image to page
+
+        Assumes that images have already been imported
+        otherwise will fail silently
+        '''
+        try:
+            local_image_id = self.image_map["foreign_image_id"]
+            local_image = Image.objects.get(id=local_image_id)
+            page.image = local_image
+        except (KeyError, ObjectDoesNotExist):
+            pass
+
+    def attach_social_media_image(self, page, foreign_image_id):
+        '''
+        Attaches social media image to page
+
+        Assumes that images have already been imported
+        otherwise will fail silently
+        '''
+        try:
+            local_image_id = self.image_map["foreign_image_id"]
+            local_image = Image.objects.get(id=local_image_id)
+            page.social_media_image = local_image
+        except (KeyError, ObjectDoesNotExist):
+            pass
 
     def create_page(self, parent, content):
         fields, nested_fields = separate_fields(content)
@@ -461,10 +483,12 @@ class SiteImporter(object):
 
         if (("social_media_image" in nested_fields) and
                 nested_fields["social_media_image"]):
-            self.attach_image()
+            self.attach_social_media_image(
+                page,
+                nested_fields["social_media_image"]["id"])
 
         if ("image" in nested_fields) and nested_fields["image"]:
-            self.attach_image()
+            self.attach_image(page, nested_fields["image"]["id"])
 
         # update the state of the page ?
         page.save()
