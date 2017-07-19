@@ -1,21 +1,21 @@
 from daterange_filter.filter import DateRangeFilter
-
 from django.contrib import admin
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import reverse
-from molo.core.models import (
-    ReactionQuestion, ReactionQuestionResponse, ArticlePage,
-    ArticlePageLanguageProxy
-)
-
-from django.utils.html import format_html
-from django.template.defaultfilters import truncatechars
 from django.db.models import Q
-
+from django.template.defaultfilters import truncatechars
+from django.utils.html import format_html
+from django.utils.translation import ugettext_lazy as _
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin,
 )
 from wagtail.contrib.modeladmin.options import ModelAdminGroup
 from wagtail.contrib.modeladmin.views import IndexView
+
+from molo.core.models import (
+    ReactionQuestion, ReactionQuestionResponse, ArticlePage,
+    ArticlePageLanguageProxy, SectionPage
+)
 
 
 class DateFilter(DateRangeFilter):
@@ -114,8 +114,8 @@ class ArticleAdmin(admin.ModelAdmin):
 
 
 class StatusCategoryListFilter(admin.SimpleListFilter):
-    title = 'Status'
-    parameter_name = 'status_category'
+    title = _('Status')
+    parameter_name = 'status'
 
     def lookups(self, request, model_admin):
         return (
@@ -137,6 +137,45 @@ class StatusCategoryListFilter(admin.SimpleListFilter):
             return queryset
 
 
+class SectionListFilter(admin.SimpleListFilter):
+    title = _('Sections')
+    parameter_name = 'section'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        list_tuple = []
+        for article in ArticlePage.objects.all():
+            if article.get_parent_section():
+                section_tuple = (
+                    article.get_parent_section().id,
+                    article.get_parent_section().title
+                )
+                if section_tuple not in list_tuple:
+                    list_tuple.append(section_tuple)
+        return list_tuple
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        # Compare the requested value (either '80s' or 'other')
+        # to decide how to filter the queryset.
+        if self.value():
+            try:
+                section = SectionPage.objects.get(id=self.value())
+                return queryset.child_of(section).all()
+            except (ObjectDoesNotExist, MultipleObjectsReturned):
+                return queryset
+
+
 class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     model = ArticlePageLanguageProxy
     menu_label = 'Articles'
@@ -150,8 +189,10 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     ]
     list_filter = [
         StatusCategoryListFilter,
+        SectionListFilter,
         ('first_published_at', DateFilter),
-        ('latest_revision_created_at', DateFilter)
+        ('latest_revision_created_at', DateFilter),
+        'tags'
     ]
     search_fields = ('title', 'subtitle')
 
