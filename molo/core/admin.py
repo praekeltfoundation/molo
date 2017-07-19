@@ -43,6 +43,7 @@ class ReactionQuestionResponseAdmin(admin.ModelAdmin):
     )
     readonly_fields = ['question', 'choice']
 
+
 admin.site.register(ReactionQuestion, ReactionQuestionAdmin)
 admin.site.register(ReactionQuestionResponse, ReactionQuestionResponseAdmin)
 
@@ -129,7 +130,9 @@ class StatusCategoryListFilter(admin.SimpleListFilter):
         elif self.value() == 'published':
             return queryset.filter(live=True)
         elif self.value() == 'draft':
-            return queryset.filter(~Q(revisions__submitted_for_moderation=True) & ~Q(live=True))
+            return queryset.filter(
+                ~Q(revisions__submitted_for_moderation=True) & ~Q(live=True)
+            )
         else:
             return queryset
 
@@ -150,7 +153,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
         ('first_published_at', DateFilter),
         ('latest_revision_created_at', DateFilter)
     ]
-    search_fields = ('title',)
+    search_fields = ('title', 'subtitle')
 
     def image_img(self, obj):
         if obj.image:

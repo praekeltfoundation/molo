@@ -488,6 +488,7 @@ class ReactionQuestionChoice(
         related_name='+'
     )
 
+
 ReactionQuestionChoice.content_panels = [
     FieldPanel('title', classname='full title'),
     ImageChooserPanel('image'),
@@ -1251,7 +1252,7 @@ def demote_featured_articles(sender, instance, **kwargs):
 class ArticlePageLanguageManager(PageManager):
     def get_queryset(self):
         return super(ArticlePageLanguageManager, self).get_queryset().filter(
-                languages__language__is_main_language=True
+            languages__language__is_main_language=True
         )
 
 
