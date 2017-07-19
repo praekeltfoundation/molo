@@ -76,6 +76,7 @@ def create_new_article_relations(old_main, copied_main):
 def get_locale_code(language_code=None):
     return (language_code or settings.LANGUAGE_CODE).replace('_', '-')
 
+
 RE_NUMERICAL_SUFFIX = re.compile(r'^[\w-]*-(\d+)+$')
 
 
