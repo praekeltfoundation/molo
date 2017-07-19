@@ -27,11 +27,6 @@ urlpatterns = [
         name="site-import"
     ),
     url(
-        r"^import-images/$",
-        admin_views.ImageImportView.as_view(),
-        name='image-import'
-    ),
-    url(
         r"^import-content/$",
         admin_views.MainImportView.as_view(),
         name="main-import"
