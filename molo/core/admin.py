@@ -19,7 +19,7 @@ from molo.core.models import (
 
 
 class DateFilter(DateRangeFilter):
-    template = 'admin/yourtips/yourtips_date_range_filter.html'
+    template = 'admin/date_range_filter.html'
 
 
 class ReactionQuestionAdmin(admin.ModelAdmin):
