@@ -8,7 +8,7 @@ from io import BytesIO
 
 from django.core.files.images import ImageFile
 
-from wagtail.wagtailcore.models import Page
+from wagtail.wagtailcore.models import Site, Page
 from wagtail.wagtailimages.models import Image
 
 from molo.core.models import (
@@ -16,6 +16,7 @@ from molo.core.models import (
     SiteLanguageRelation,
     ArticlePage,
     SectionPage,
+    PageTranslation,
 )
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
@@ -272,6 +273,9 @@ class SiteImporter(object):
         self.api_url = self.base_url + '/api/v2/'
         self.image_url = "{}images/".format(self.api_url)
         self.site_pk = site_pk
+        self.site = Site.objects.get(id=site_pk)
+        self.language_setting = Languages.objects.create(
+            site_id=self.site_pk)
         self.content = None
         # maps foreign IDs to local page IDs
         self.id_map = {}
@@ -388,6 +392,30 @@ class SiteImporter(object):
             page.social_media_image = local_image
         except (KeyError, ObjectDoesNotExist):
             pass
+
+    def create_translated_content(self, local_main_lang_page,
+                                  content, locale):
+        '''
+        Wrapper for  create_content
+
+        Creates the content
+        Then attaches a language relation from the main language page to the
+        newly created Page
+        Note: we get the parent from the main language page
+        '''
+        page = self.create_page(local_main_lang_page.get_parent(), content)
+
+        language = SiteLanguageRelation.objects.get(
+            language_setting=self.language_setting,
+            locale=locale)
+        language_relation = page.languages.first()
+        language_relation.language = language
+        language_relation.save()
+        page.save_revision().publish()
+        PageTranslation.objects.get_or_create(
+            page=local_main_lang_page,
+            translated_page=page)
+        return page
 
     def create_page(self, parent, content):
         fields, nested_fields = separate_fields(content)
