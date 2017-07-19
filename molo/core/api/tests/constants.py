@@ -735,3 +735,59 @@ WAGTAIL_API_LIST_VIEW_PAGE_2 = {
     },
     "items": [21, 22, 23, 24, 25]
 }
+
+IMAGE_LIST_RESPONSE = {
+    "meta": {
+        "total_count": 2
+    },
+    "items": [
+        {
+            "id": 97,
+            "meta": {
+                "type": "wagtailimages.Image",
+                "detail_url": "http://localhost:8000/api/v2/images/97/",
+                "tags": []
+            },
+            "title": "GAO_A4qQsiM.jpg"
+        },
+        {
+            "id": 98,
+            "meta": {
+                "type": "wagtailimages.Image",
+                "detail_url": "http://localhost:8000/api/v2/images/98/",
+                "tags": []
+            },
+            "title": "boop.png"
+        }
+    ]
+}
+
+IMAGE_DETAIL_1 = {
+    "id": 97,
+    "meta": {
+        "type": "wagtailimages.Image",
+        "detail_url": "http://localhost:8000/api/v2/images/97/",
+        "tags": []
+    },
+    "title": "GAO_A4qQsiM.jpg",
+    "width": 1080,
+    "height": 720,
+    "filename": "GAO_A4qQsiM.jpg",
+    "file": "http://localhost:8000/media/original_images/GAO_A4qQsiM.jpg",
+    "image_url": "/media/images/GAO_A4qQsiM.original.jpg"
+}
+
+IMAGE_DETAIL_2 = {
+    "id": 98,
+    "meta": {
+        "type": "wagtailimages.Image",
+        "detail_url": "http://localhost:8000/api/v2/images/98/",
+        "tags": []
+    },
+    "title": "uYh_80lp8.png",
+    "width": 1080,
+    "height": 644,
+    "filename": "uYh_80lp8.png",
+    "file": "http://localhost:8000/media/original_images/uYh_80lp8.png",
+    "image_url": "/media/images/uYh_80lp8.original.jpg"
+}
