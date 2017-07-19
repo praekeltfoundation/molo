@@ -122,8 +122,8 @@ class MoloGoogleAnalyticsMiddleware(object):
             if any(exclude):
                 return response
 
-        # Only track 200 responses. Non 200 responses don't have `request.site`
-        if not response.status_code == 200:
+        # Only track 200 and 302 responses for request.site
+        if not (response.status_code == 200 or response.status_code == 302):
             return response
 
         site_settings = SiteSettings.for_site(request.site)
