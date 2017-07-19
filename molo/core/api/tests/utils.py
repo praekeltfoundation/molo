@@ -75,7 +75,6 @@ def mocked_requests_get(url, *args, **kwargs):
 
 
 def mocked_fetch_and_create_image(relative_url, image_title):
-    print("Mocked!")
     return Image.objects.create(
         title=image_title,
         file=get_test_image_file(),
