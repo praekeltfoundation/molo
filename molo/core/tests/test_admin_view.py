@@ -68,6 +68,32 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Test page 0')
         self.assertNotContains(response, 'Test page 1')
 
+    def test_status_custom_filter_in_review_in_admin_view(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+        self.mk_articles(self.yourmind)
+        self.article2 = ArticlePage.objects.get(title="Test page 1")
+        self.article2.save_revision(submitted_for_moderation=True)
+        response = self.client.get(
+            '/admin/core/articlepagelanguageproxy/?status=in_review'
+        )
+        self.assertNotContains(response, 'Test page 0')
+        self.assertContains(response, 'Test page 1')
+
+    def test_status_custom_filter_draft_in_admin_view(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+        self.mk_articles(self.yourmind)
+        self.article2 = ArticlePage.objects.get(title="Test page 1")
+        self.article2.unpublish()
+        response = self.client.get(
+            '/admin/core/articlepagelanguageproxy/?status=draft'
+        )
+        self.assertNotContains(response, 'Test page 0')
+        self.assertContains(response, 'Test page 1')
+
     def test_status_custom_filter_sections_in_admin_view(self):
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
