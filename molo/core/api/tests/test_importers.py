@@ -6,6 +6,7 @@ quite a bit of mocking.
 from django.test import TestCase
 
 from mock import patch
+import requests
 
 from molo.core.api import importers
 from molo.core.api.tests import constants, utils
@@ -110,6 +111,41 @@ class SectionImportTestCase(MoloTestCaseMixin, TestCase):
     #     # Save the first available article
     #     self.importer.save([0, ], self.section_index.id)
     #     self.assertEqual(SectionPage.objects.all().count(), 1)
+
+
+class TestImporterUtilFunctions(TestCase):
+    def setUp(self):
+        self.test_url = "http://localhost:8000/api/v2/images/"
+
+    @responses.activate
+    def test_list_of_objects_from_api(self):
+        responses.add(responses.GET,
+                      self.test_url,
+                      json=constants.WAGTAIL_API_LIST_VIEW, status=200)
+        returned_list = importers.list_of_objects_from_api(self.test_url)
+        self.assertEqual(
+            returned_list,
+            constants.WAGTAIL_API_LIST_VIEW["items"])
+
+    @responses.activate
+    def test_list_of_objects_from_api_paginated(self):
+        responses.add(responses.GET,
+                      self.test_url,
+                      json=constants.WAGTAIL_API_LIST_VIEW_PAGE_1, status=200)
+        responses.add(responses.GET,
+                      "{}?limit=20&offset=20".format(self.test_url),
+                      json=constants.WAGTAIL_API_LIST_VIEW_PAGE_2, status=200)
+        returned_list = importers.list_of_objects_from_api(self.test_url)
+        expected_response = (
+            constants.WAGTAIL_API_LIST_VIEW_PAGE_1["items"] +
+            constants.WAGTAIL_API_LIST_VIEW_PAGE_2["items"]
+        )
+        # TODO: fix test -> responses does not differentiate between
+        # urls with args
+        # self.assertEqual(
+        #     returned_list,
+        #     expected_response)
+
 
 
 class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
