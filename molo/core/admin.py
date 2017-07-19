@@ -1,3 +1,5 @@
+from daterange_filter.filter import DateRangeFilter
+
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from molo.core.models import (
@@ -7,12 +9,17 @@ from molo.core.models import (
 
 from django.utils.html import format_html
 from django.template.defaultfilters import truncatechars
+from django.db.models import Q
 
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin,
 )
 from wagtail.contrib.modeladmin.options import ModelAdminGroup
 from wagtail.contrib.modeladmin.views import IndexView
+
+
+class DateFilter(DateRangeFilter):
+    template = 'admin/yourtips/yourtips_date_range_filter.html'
 
 
 class ReactionQuestionAdmin(admin.ModelAdmin):
@@ -105,6 +112,28 @@ class ArticleAdmin(admin.ModelAdmin):
     readonly_fields = ['title']
 
 
+class StatusCategoryListFilter(admin.SimpleListFilter):
+    title = 'Status'
+    parameter_name = 'status_category'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('published', 'Published'),
+            ('in_review', 'In Review'),
+            ('draft', 'Draft')
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'in_review':
+            return queryset.filter(revisions__submitted_for_moderation=True)
+        elif self.value() == 'published':
+            return queryset.filter(live=True)
+        elif self.value() == 'draft':
+            return queryset.filter(~Q(revisions__submitted_for_moderation=True) & ~Q(live=True))
+        else:
+            return queryset
+
+
 class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     model = ArticlePageLanguageProxy
     menu_label = 'Articles'
@@ -116,6 +145,12 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
         'image_img', 'tags_html',
         'featured_in_latest', 'featured_in_homepage', 'featured_in_section',
     ]
+    list_filter = [
+        StatusCategoryListFilter,
+        ('first_published_at', DateFilter),
+        ('latest_revision_created_at', DateFilter)
+    ]
+    search_fields = ('title',)
 
     def image_img(self, obj):
         if obj.image:
