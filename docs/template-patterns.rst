@@ -46,7 +46,7 @@ MARKUP & CSS
 SMACSS,BEM for single responsibility principle
 
 BEM is a naming convention of markup and CSS classes sticking to single responsibility principle and organising e.g.
-  .. image:: bem-markup.png :target: https://en.bem.info/methodology/quick-start/ :alt: BEM Methodology
+  .. image:: bem-markup.png
 
 
 SMACSS is the categorization of CSS in a logical and layered fashion broken down into 5 categories: Base, layout, module, state and theme.
@@ -54,7 +54,7 @@ Each category can either be a folder, or file which contains CSS.
 We use CSS preprocessors (SASS) that removes performance penalties of using separate files by compressing and combining them into a single file.
 e.g.
 
-  .. image:: smacss-setup.png :target: https://smacss.com/ :alt: SMACSS Methodology
+  .. image:: smacss-setup.png
 
 We use gulp scripts to compress and combine SASS, JS, Icon Sprites into a minified file assets.
 
@@ -70,7 +70,7 @@ Asset processing & bundling, concatenating and minification script and package m
   gulpfile.js
   package.json
 
-  .. image:: gulp-scripts.png :target: http://gulpjs.com/ :alt: Gulp.js
+  .. image:: gulp-scripts.png
 
 Target Audience
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
