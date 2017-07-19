@@ -1,11 +1,9 @@
-# coding=utf-8
 from django.test import TestCase
-from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
 from molo.core.models import (
-    Main, ReactionQuestionResponse,
-    SiteLanguageRelation, Languages, ReactionQuestionChoice)
+    Main, SiteLanguageRelation, Languages,
+    ArticlePage)
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -46,14 +44,40 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.yourmind2 = self.mk_section(
             self.section_index2, title='Your mind2')
 
-    def test_articles_appears_in_wagtail_admin(self):
+    def test_articles_appears_in_admin_view(self):
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
         self.mk_article(self.yourmind)
-        self.mk_article(self.yourmind2)
         response = self.client.get(
             '/admin/core/articlepagelanguageproxy/'
         )
+        self.assertContains(response, 'Test page 0')
         self.assertContains(response, 'Your mind')
-        self.assertContains(response, 'Your mind2')
+
+    def test_status_custom_filter_published_in_admin_view(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+        self.mk_articles(self.yourmind)
+        self.article2 = ArticlePage.objects.get(title="Test page 1")
+        self.article2.unpublish()
+        response = self.client.get(
+            '/admin/core/articlepagelanguageproxy/?status=published'
+        )
+        self.assertContains(response, 'Test page 0')
+        self.assertNotContains(response, 'Test page 1')
+
+    def test_status_custom_filter_sections_in_admin_view(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+        self.mk_articles(self.yourmind)
+        self.article2 = ArticlePage.objects.get(title="Test page 1")
+        self.article2.unpublish()
+        response = self.client.get(
+            '/admin/core/articlepagelanguageproxy/?section=%d' % self.yourmind.id
+        )
+        self.assertContains(response, 'Test page 0')
+        self.assertContains(response, 'Test page 1')
+
