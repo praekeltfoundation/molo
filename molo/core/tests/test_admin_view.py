@@ -76,8 +76,8 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.article2 = ArticlePage.objects.get(title="Test page 1")
         self.article2.unpublish()
         response = self.client.get(
-            '/admin/core/articlepagelanguageproxy/?section=%d' % self.yourmind.id
+            '/admin/core/articlepagelanguageproxy/?section=%d' %
+            self.yourmind.id
         )
         self.assertContains(response, 'Test page 0')
         self.assertContains(response, 'Test page 1')
-
