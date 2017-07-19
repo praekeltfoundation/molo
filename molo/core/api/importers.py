@@ -20,6 +20,8 @@ from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
 )
 
+from django.core.exceptions import ObjectDoesNotExist
+
 
 # functions used to find images
 def get_image_attributes(base_url, image_id):
@@ -241,6 +243,7 @@ class SiteImporter(object):
     def __init__(self, site_pk, base_url=''):
         self.base_url = base_url
         self.api_url = self.base_url + '/api/v2/'
+        self.image_url = "{}images/".format(self.api_url)
         self.site_pk = site_pk
         self.content = None
         # maps foreign IDs to local page IDs
@@ -286,11 +289,51 @@ class SiteImporter(object):
                 is_active=content['is_active'],
                 language_setting=language_setting)
 
-    def fetch_and_create_image(self):
-        # create image object
-        # update self.image_map
-        # return image
-        pass
+    def import_images(self):
+        '''
+        Fetches images from site
+
+        Attempts to avoid duplicates by matching image titles
+        if a match is found it refers to local instance instead
+        if it is not, the image is fetched, created and referenced
+        '''
+        response = requests.get(self.image_url)
+        images = json.loads(response.content)["items"]
+
+        for image in images:
+            image_detail_url = "{}{}/".format(self.image_url, image["id"])
+            img_response = requests.get(image_detail_url)
+            img_info = json.loads(img_response.content)
+
+            local_image = None
+
+            try:
+                local_image = Image.objects.get(title=img_info['title'])
+                # do not import image
+                # update images references to point to existing image
+            except ObjectDoesNotExist:
+                # import the image
+                local_image = self.fetch_and_create_image(
+                    img_info['image_url'],
+                    img_info["title"])
+
+            self.image_map[image["id"]] = local_image.id
+
+    def fetch_and_create_image(self, relative_url, image_title):
+        '''
+        fetches, creates and return image object
+        '''
+        # TODO: handle image unavailable
+        image_media_url = "{}{}".format(self.base_url, relative_url)
+        image_file = requests.get(image_media_url)
+        local_image = Image(
+            title=image_title,
+            file=ImageFile(
+                BytesIO(image_file.content), name=image_title
+            )
+        )
+        local_image.save()
+        return local_image
 
     def attach_image(self):
         # if not (image has already been imported)
