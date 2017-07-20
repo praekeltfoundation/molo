@@ -65,7 +65,6 @@ urlpatterns = patterns(
         decorate_urlpatterns(api_router.get_urlpatterns(), never_cache),
         namespace=api_router.url_namespace
     )),
-
     url(
         r'^versions/$',
         'molo.core.views.versions',

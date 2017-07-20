@@ -10,7 +10,12 @@ from django.core.files.images import ImageFile
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
-from molo.core.models import ArticlePage, SectionPage
+from molo.core.models import (
+    Languages,
+    SiteLanguageRelation,
+    ArticlePage,
+    SectionPage,
+)
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
 )
@@ -229,3 +234,39 @@ class SectionPageImporter(PageImporter):
 
             section_page = response.json()
             self.process_child_section(section_page["id"], parent)
+
+
+class SiteImporter(object):
+
+    def __init__(self, site_pk, base_url=''):
+        self.base_url = base_url
+        self.api_url = self.base_url + '/api/v2/'
+        self.site_pk = site_pk
+
+    def get_language_ids(self):
+        language_url = "{}{}/".format(self.api_url, "languages")
+        response = requests.get(language_url)
+
+        language_ids = []
+        # TODO: handle broken case
+        for language in json.loads(response.content)["items"]:
+            language_ids.append(language["id"])
+        return language_ids
+
+    def copy_site_languages(self):
+        language_foreign_ids = self.get_language_ids()
+        language_setting, created = Languages.objects.get_or_create(
+            site_id=self.site_pk)
+        for foreign_id in language_foreign_ids:
+            language_url = "{}{}/{}/".format(self.api_url,
+                                             "languages",
+                                             foreign_id)
+            response = requests.get(language_url)
+            content = json.loads(response.content)
+
+            # TODO: review whether this works with Multi-site
+            # TODO: handle case where Main lang is not first
+            sle, created = SiteLanguageRelation.objects.get_or_create(
+                locale=content['locale'],
+                is_active=content['is_active'],
+                language_setting=language_setting)

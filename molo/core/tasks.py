@@ -15,10 +15,17 @@ from django.contrib.auth.models import User
 from molo.core.content_import import api
 from molo.core.utils import create_new_article_relations
 from molo.core.models import (
-    ArticlePage, Main, SectionIndexPage, SectionPage, Languages, SiteSettings)
+    ArticlePage,
+    Main,
+    SectionIndexPage,
+    SectionPage,
+    Languages,
+    SiteSettings,
+)
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
+
 
 IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"
 VALIDATE_EMAIL_TEMPLATE = "content_import/validate_email.html"
@@ -304,3 +311,8 @@ def copy_sections_index(
             'source': section_index.get_parent().title,
             'to': to.title
         })
+
+
+@task(ignore_result=True)
+def import_site(root_url, site_pk):
+    pass

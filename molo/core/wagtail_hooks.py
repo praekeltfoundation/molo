@@ -137,7 +137,7 @@ def add_import_view():
 def register_api_menu_item():
     return MenuItem(
         _('API'),
-        urlresolvers.reverse('main-import'),
+        urlresolvers.reverse('site-import'),
         classnames='icon icon-download',
     )
 
@@ -178,7 +178,9 @@ def hide_menu_items_if_no_language(request, menu_items):
     if not Languages.for_site(request.site).languages.all().exists():
         menu_items[:] = [
             item for item in menu_items if (
-                item.name == 'settings' or item.name == 'import-content')]
+                item.name == 'settings' or
+                item.name == 'import-content' or
+                item.name == 'api')]
 
 
 @hooks.register('construct_main_menu')

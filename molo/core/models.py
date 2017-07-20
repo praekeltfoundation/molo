@@ -743,6 +743,8 @@ class SiteLanguage(models.Model):
         ReadOnlyPanel('is_main_language')
     ]
 
+    api_fields = ["locale", "is_main_language", "is_active"]
+
 
 class SiteLanguageRelation(Orderable, SiteLanguage):
     language_setting = ParentalKey(Languages, related_name='languages')
