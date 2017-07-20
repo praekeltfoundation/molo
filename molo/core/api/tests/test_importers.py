@@ -292,6 +292,85 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             self.importer.image_map[constants.IMAGE_DETAIL_2["id"]],
             Image.objects.last().id)
 
+    def check_article_and_footer_fields(self, page, content):
+        self.assertEqual(page.title, content["title"])
+        self.assertEqual(page.subtitle, content["subtitle"])
+        self.assertEqual(page.commenting_state, content["commenting_state"])
+        self.assertEqual(page.social_media_title,
+                         content["social_media_title"])
+        self.assertEqual(page.social_media_description,
+                         content["social_media_description"])
+        self.assertEqual(page.featured_in_latest,
+                         content["featured_in_latest"])
+        self.assertEqual(page.featured_in_section,
+                         content["featured_in_section"])
+        self.assertEqual(page.featured_in_homepage,
+                         content["featured_in_homepage"])
+        self.assertEqual(page.feature_as_topic_of_the_day,
+                         content["feature_as_topic_of_the_day"])
+
+        self.assertEqual(page.commenting_open_time,
+                         parser.parse(content["commenting_open_time"]))
+        self.assertEqual(page.commenting_close_time,
+                         parser.parse(content["commenting_close_time"]))
+        self.assertEqual(page.featured_in_latest_start_date,
+                         parser.parse(
+                             content["featured_in_latest_start_date"]))
+        self.assertEqual(page.featured_in_latest_end_date,
+                         parser.parse(content["featured_in_latest_end_date"]))
+        self.assertEqual(page.featured_in_section_start_date,
+                         parser.parse(
+                             content["featured_in_section_start_date"]))
+        self.assertEqual(page.featured_in_section_end_date,
+                         parser.parse(content["featured_in_section_end_date"]))
+        self.assertEqual(page.featured_in_homepage_start_date,
+                         parser.parse(
+                             content["featured_in_homepage_start_date"]))
+        self.assertEqual(page.featured_in_homepage_end_date,
+                         parser.parse(
+                             content["featured_in_homepage_end_date"]))
+        self.assertEqual(page.promote_date,
+                         parser.parse(content["promote_date"]))
+        self.assertEqual(page.demote_date,
+                         parser.parse(content["demote_date"]))
+
+        # NESTED FIELDS
+        self.assertEqual(page.body.stream_data, content['body'])
+        self.assertEqual(page.tags.count(), len(content['tags']))
+        for tag in page.tags.all():
+            self.assertTrue(tag.name in content["tags"])
+
+        self.assertEqual(page.metadata_tags.count(),
+                         len(content['metadata_tags']))
+        for metadata_tag in page.metadata_tags.all():
+            self.assertTrue(metadata_tag.name in content["metadata_tags"])
+
+        # Check that all reference fields have been properly stored
+        # for further processing later
+
+        # nav_tags
+        self.assertEqual(self.importer.id_map[content["id"]], page.id)
+        self.assertEqual(self.importer.nav_tags[page.id],
+                         [content["nav_tags"][0]["tag"]["id"], ])
+        # TODO
+        # self.assertEqual(self.importer.image_map[page.id], [])
+
+        self.assertEqual(
+            self.importer.related_sections[page.id],
+            [content["related_sections"][0]["section"]["id"],
+             content["related_sections"][1]["section"]["id"]])
+        self.assertEqual(
+            self.importer.recommended_articles[page.id],
+            [content["recommended_articles"][0]["recommended_article"]["id"],
+             content["recommended_articles"][1]["recommended_article"]["id"]])
+        self.assertEqual(
+            self.importer.reaction_questions[page.id],
+            [content["reaction_questions"][0]["reaction_question"]["id"],
+             content["reaction_questions"][1]["reaction_question"]["id"]])
+
+        # TODO: check that social media file has been added
+        # TODO: check that image file has been added
+
     def test_create_article_page(self):
         # fake the content passed to the importer
         content = utils.fake_article_page_response()
@@ -306,86 +385,8 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
 
         self.assertEqual(ArticlePage.objects.count(), 1)
         self.assertEqual(article.get_parent(), parent)
-        self.assertNotEqual(article.id, content["id"])
 
-        # FLAT FIELDS
-        self.assertEqual(article.title, content["title"])
-        self.assertEqual(article.subtitle, content["subtitle"])
-        self.assertEqual(article.commenting_state, content["commenting_state"])
-        self.assertEqual(article.social_media_title,
-                         content["social_media_title"])
-        self.assertEqual(article.social_media_description,
-                         content["social_media_description"])
-        self.assertEqual(article.featured_in_latest,
-                         content["featured_in_latest"])
-        self.assertEqual(article.featured_in_section,
-                         content["featured_in_section"])
-        self.assertEqual(article.featured_in_homepage,
-                         content["featured_in_homepage"])
-        self.assertEqual(article.feature_as_topic_of_the_day,
-                         content["feature_as_topic_of_the_day"])
-
-        self.assertEqual(article.commenting_open_time,
-                         parser.parse(content["commenting_open_time"]))
-        self.assertEqual(article.commenting_close_time,
-                         parser.parse(content["commenting_close_time"]))
-        self.assertEqual(article.featured_in_latest_start_date,
-                         parser.parse(
-                             content["featured_in_latest_start_date"]))
-        self.assertEqual(article.featured_in_latest_end_date,
-                         parser.parse(content["featured_in_latest_end_date"]))
-        self.assertEqual(article.featured_in_section_start_date,
-                         parser.parse(
-                             content["featured_in_section_start_date"]))
-        self.assertEqual(article.featured_in_section_end_date,
-                         parser.parse(content["featured_in_section_end_date"]))
-        self.assertEqual(article.featured_in_homepage_start_date,
-                         parser.parse(
-                             content["featured_in_homepage_start_date"]))
-        self.assertEqual(article.featured_in_homepage_end_date,
-                         parser.parse(
-                             content["featured_in_homepage_end_date"]))
-        self.assertEqual(article.promote_date,
-                         parser.parse(content["promote_date"]))
-        self.assertEqual(article.demote_date,
-                         parser.parse(content["demote_date"]))
-
-        # NESTED FIELDS
-        self.assertEqual(article.body.stream_data, content['body'])
-        self.assertEqual(article.tags.count(), len(content['tags']))
-        for tag in article.tags.all():
-            self.assertTrue(tag.name in content["tags"])
-
-        self.assertEqual(article.metadata_tags.count(),
-                         len(content['metadata_tags']))
-        for metadata_tag in article.metadata_tags.all():
-            self.assertTrue(metadata_tag.name in content["metadata_tags"])
-
-        # Check that all reference fields have been properly stored
-        # for further processing later
-
-        # nav_tags
-        self.assertEqual(self.importer.id_map[content["id"]], article.id)
-        self.assertEqual(self.importer.nav_tags[article.id],
-                         [content["nav_tags"][0]["tag"]["id"], ])
-        # TODO
-        # self.assertEqual(self.importer.image_map[article.id], [])
-
-        self.assertEqual(
-            self.importer.related_sections[article.id],
-            [content["related_sections"][0]["section"]["id"],
-             content["related_sections"][1]["section"]["id"]])
-        self.assertEqual(
-            self.importer.recommended_articles[article.id],
-            [content["recommended_articles"][0]["recommended_article"]["id"],
-             content["recommended_articles"][1]["recommended_article"]["id"]])
-        self.assertEqual(
-            self.importer.reaction_questions[article.id],
-            [content["reaction_questions"][0]["reaction_question"]["id"],
-             content["reaction_questions"][1]["reaction_question"]["id"]])
-
-        # TODO: check that social media file has been added
-        # TODO: check that image file has been added
+        self.check_article_and_footer_fields(article, content)
 
     def test_create_section_page(self):
         # fake the content passed to the importer
