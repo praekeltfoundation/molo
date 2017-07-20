@@ -18,6 +18,7 @@ from molo.core.models import (
     SectionPage,
     FooterPage,
     BannerPage,
+    Tag,
     PageTranslation,
 )
 from molo.core.api.constants import (
@@ -450,6 +451,8 @@ class SiteImporter(object):
             page = FooterPage(**fields)
         elif content["meta"]["type"] == "core.BannerPage":
             page = BannerPage(**fields)
+        elif content["meta"]["type"] == "core.Tag":
+            page = Tag(**fields)
 
         # TODO: handle other Page types
 
