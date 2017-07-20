@@ -15,6 +15,8 @@ from molo.core.models import (
     FooterPage,
     BannerPage,
     Tag,
+    ArticlePageRecommendedSections,
+    ArticlePageRelatedSections,
     SiteLanguageRelation,
 )
 from molo.core.tests.base import MoloTestCaseMixin
@@ -538,3 +540,51 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(self.importer.id_map[content["id"]], tag.id)
 
         self.assertEqual(tag.title, content["title"])
+
+    def test_create_recommended_articles(self):
+        section = self.mk_section(
+            self.section_index, title="Parent Test Section 1",
+        )
+        # create 2 articles
+        self.mk_articles(section)
+        article_main = ArticlePage.objects.first()
+        article_rec = ArticlePage.objects.last()
+
+        # update map_id
+        # attach imaginary foreign IDs to articles, to fake import data
+        self.importer.id_map = {111: article_main.id, 222: article_rec.id}
+        # refer copied page to foreign id of recomended article
+        self.importer.recommended_articles[article_main.id] = [222]
+
+        self.assertEqual(ArticlePageRecommendedSections.objects.count(), 0)
+        self.importer.create_recommended_articles()
+        self.assertEqual(ArticlePageRecommendedSections.objects.count(), 1)
+        recomendation = ArticlePageRecommendedSections.objects.first()
+        self.assertEqual(recomendation.page.specific, article_main)
+        self.assertEqual(recomendation.recommended_article.specific,
+                         article_rec)
+
+    def test_create_related_sections(self):
+        section_main = self.mk_section(
+            self.section_index, title="Parent Test Section 1",
+        )
+        section_rel = self.mk_section(
+            self.section_index, title="Parent Test Section 1",
+        )
+        # create articles
+        self.mk_article(section_main)
+        article = ArticlePage.objects.first()
+
+        # update map_id
+        # attach imaginary foreign IDs to sections, to fake import data
+        self.importer.id_map = {111: section_main.id, 222: section_rel.id}
+        # refer copied page to foreign id of related section
+        self.importer.related_sections[article.id] = [222]
+
+        self.assertEqual(ArticlePageRelatedSections.objects.count(), 0)
+        self.importer.create_related_sections()
+        self.assertEqual(ArticlePageRelatedSections.objects.count(), 1)
+        relation = ArticlePageRelatedSections.objects.first()
+        self.assertEqual(relation.page.specific, article)
+        self.assertEqual(relation.section.specific,
+                         section_rel)

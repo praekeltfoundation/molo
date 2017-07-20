@@ -19,6 +19,8 @@ from molo.core.models import (
     FooterPage,
     BannerPage,
     Tag,
+    ArticlePageRecommendedSections,
+    ArticlePageRelatedSections,
     PageTranslation,
 )
 from molo.core.api.constants import (
@@ -557,3 +559,31 @@ class SiteImporter(object):
         # update the state of the page ?
         page.save()
         return page
+
+    def create_recommended_articles(self):
+        # iterate through articles with recomended articles
+        for article_id, foreign_rec_article_id_list in self.recommended_articles.iteritems():  # noqa
+
+            main_article = ArticlePage.objects.get(id=article_id)
+            for foreign_rec_article_id in foreign_rec_article_id_list:
+                local_version_page_id = self.id_map[foreign_rec_article_id]
+                rec_article = ArticlePage.objects.get(id=local_version_page_id)
+
+                ArticlePageRecommendedSections(
+                    page=main_article,
+                    recommended_article=rec_article
+                ).save()
+
+    def create_related_sections(self):
+        # iterate through articles with related sections
+        for article_id, foreign_rel_section_id_list in self.related_sections.iteritems():  # noqa
+
+            main_article = ArticlePage.objects.get(id=article_id)
+            for foreign_rel_section_id in foreign_rel_section_id_list:
+                local_version_page_id = self.id_map[foreign_rel_section_id]
+                rel_section = SectionPage.objects.get(id=local_version_page_id)
+
+                ArticlePageRelatedSections(
+                    page=main_article,
+                    section=rel_section
+                ).save()
