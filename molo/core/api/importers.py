@@ -16,6 +16,7 @@ from molo.core.models import (
     SiteLanguageRelation,
     ArticlePage,
     SectionPage,
+    FooterPage,
     PageTranslation,
 )
 from molo.core.api.constants import (
@@ -428,6 +429,9 @@ class SiteImporter(object):
             page = SectionPage(**fields)
         elif content["meta"]["type"] == "core.ArticlePage":
             page = ArticlePage(**fields)
+        elif content["meta"]["type"] == "core.FooterPage":
+            page = FooterPage(**fields)
+
         # TODO: handle other Page types
 
         parent.add_child(instance=page)

@@ -12,6 +12,7 @@ from molo.core.api.tests import constants, utils
 from molo.core.models import (
     ArticlePage,
     SectionPage,
+    FooterPage,
     SiteLanguageRelation,
 )
 from molo.core.tests.base import MoloTestCaseMixin
@@ -475,3 +476,19 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(article.get_translation_for(
             "fr", self.importer.site),
             translated_article)
+
+    def test_create_footer_page(self):
+        content = constants.ARTICLE_PAGE_RESPONSE
+        content["meta"]["type"] = "core.FooterPage"
+        content_copy = dict(content)
+
+        parent = self.footer_index
+
+        self.assertEqual(ArticlePage.objects.count(), 0)
+
+        footer_page = self.importer.create_page(parent, content_copy)
+
+        self.assertEqual(FooterPage.objects.count(), 1)
+        self.assertEqual(footer_page.get_parent(), parent)
+
+        self.check_article_and_footer_fields(footer_page, content)
