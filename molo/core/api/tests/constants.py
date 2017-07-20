@@ -965,3 +965,31 @@ BANNER_PAGE_RESPONSE = {
     },
     "external_link": "https://www.google.co.za/"
 }
+
+TAG_PAGE_RESPONSE = {
+    "id": 35,
+    "meta": {
+        "type": "core.Tag",
+        "detail_url": "http://localhost:8000/api/v2/pages/35/",
+        "html_url": "http://localhost:8000/tags/nav-tag-1/",
+        "slug": "nav-tag-1",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-07-16T17:51:43.179465Z",
+        "parent": {
+            "id": 8,
+            "meta": {
+                "type": "core.TagIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/8/",
+                "html_url": "http://localhost:8000/tags/"
+            },
+            "title": "Tags"
+        },
+        "children": None,
+        "translations": [],
+        "main_language_children": None
+    },
+    "title": "NAV TAG 1",
+    "feature_in_homepage": False
+}
