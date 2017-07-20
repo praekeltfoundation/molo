@@ -14,6 +14,7 @@ from molo.core.models import (
     SectionPage,
     FooterPage,
     BannerPage,
+    Tag,
     SiteLanguageRelation,
 )
 from molo.core.tests.base import MoloTestCaseMixin
@@ -520,3 +521,20 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(
             self.importer.banner_page_links[banner_page.id],
             content["banner_link_page"]["id"])
+
+    def test_create_tag_page(self):
+        content = constants.TAG_PAGE_RESPONSE
+        content_copy = dict(content)
+
+        parent = self.tag_index
+
+        self.assertEqual(Tag.objects.count(), 0)
+
+        tag = self.importer.create_page(parent, content_copy)
+
+        self.assertEqual(Tag.objects.count(), 1)
+        self.assertEqual(tag.get_parent(), parent)
+
+        self.assertEqual(self.importer.id_map[content["id"]], tag.id)
+
+        self.assertEqual(tag.title, content["title"])
