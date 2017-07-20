@@ -17,6 +17,7 @@ from molo.core.models import (
     ArticlePage,
     SectionPage,
     FooterPage,
+    BannerPage,
     PageTranslation,
 )
 from molo.core.api.constants import (
@@ -292,6 +293,8 @@ class SiteImporter(object):
         self.nav_tags = {}
         # maps local pages to list of foreign section_tag IDs
         self.section_tags = {}
+        # maps local banner page id to foreign linked page id
+        self.banner_page_links = {}
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -394,6 +397,20 @@ class SiteImporter(object):
         except (KeyError, ObjectDoesNotExist):
             pass
 
+    def attach_social_banner_image(self, page, foreign_image_id):
+        '''
+        Attaches banner image to banner
+
+        Assumes that images have already been imported
+        otherwise will fail silently
+        '''
+        try:
+            local_image_id = self.image_map["foreign_image_id"]
+            local_image = Image.objects.get(id=local_image_id)
+            page.banner = local_image
+        except (KeyError, ObjectDoesNotExist):
+            pass
+
     def create_translated_content(self, local_main_lang_page,
                                   content, locale):
         '''
@@ -431,6 +448,8 @@ class SiteImporter(object):
             page = ArticlePage(**fields)
         elif content["meta"]["type"] == "core.FooterPage":
             page = FooterPage(**fields)
+        elif content["meta"]["type"] == "core.BannerPage":
+            page = BannerPage(**fields)
 
         # TODO: handle other Page types
 
@@ -513,14 +532,24 @@ class SiteImporter(object):
             for tag in nested_fields["metadata_tags"]:
                 page.metadata_tags.add(tag)
 
+        if ("image" in nested_fields) and nested_fields["image"]:
+            self.attach_image(page, nested_fields["image"]["id"])
+
         if (("social_media_image" in nested_fields) and
                 nested_fields["social_media_image"]):
             self.attach_social_media_image(
                 page,
                 nested_fields["social_media_image"]["id"])
 
-        if ("image" in nested_fields) and nested_fields["image"]:
-            self.attach_image(page, nested_fields["image"]["id"])
+        if (("banner" in nested_fields) and
+                nested_fields["banner"]):
+            self.attach_social_banner_image(
+                page,
+                nested_fields["banner"]["id"])
+
+        if (("banner_link_page" in nested_fields) and
+                nested_fields["banner_link_page"]):
+            self.banner_page_links[page.id] = content["banner_link_page"]["id"]
 
         # update the state of the page ?
         page.save()

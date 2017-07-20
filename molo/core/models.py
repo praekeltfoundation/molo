@@ -559,6 +559,7 @@ class BannerPage(TranslatablePageMixin, Page):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    api_fields = ["banner", "banner_link_page", "external_link"]
 
     def get_effective_banner(self):
         if self.banner:
