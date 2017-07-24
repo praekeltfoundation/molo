@@ -215,6 +215,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         # NESTED FIELDS
         self.assertTrue(hasattr(article.body, "stream_data"))
         self.assertEqual(article.body.stream_data, content['body'])
+
         self.assertEqual(article.tags.count(), len(content['tags']))
         for tag in article.tags.all():
             self.assertTrue(tag.name in content["tags"])

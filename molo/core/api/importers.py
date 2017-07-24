@@ -370,9 +370,6 @@ class SiteImporter(object):
         self.add_article_body(nested_fields, page)
         self.add_section_time(nested_fields, page)
 
-        if ("tags" in nested_fields) and nested_fields["tags"]:
-            for tag in nested_fields["tags"]:
-                page.tags.add(tag)
 
         if (("metadata_tags" in nested_fields) and
                 nested_fields["metadata_tags"]):
