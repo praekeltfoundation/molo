@@ -86,6 +86,15 @@ def add_json_dump(field):
     return _add_json_dump
 
 
+def add_list_of_things(field):
+    def _add_list_of_things(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            attr = getattr(page, field)
+            for item in nested_fields[field]:
+                attr.add(item)
+    return _add_list_of_things
+
+
 class PageImporter(object):
 
     def __init__(self, base_url=None, content=None, content_type=None):
@@ -299,6 +308,8 @@ class SiteImporter(object):
         self.add_article_body = add_json_dump("body")
         self.add_section_time = add_json_dump("time")
 
+        self.add_tags = add_list_of_things("tags")
+
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
         response = requests.get(language_url)
@@ -370,6 +381,7 @@ class SiteImporter(object):
         self.add_article_body(nested_fields, page)
         self.add_section_time(nested_fields, page)
 
+        self.add_tags(nested_fields, page)
 
         if (("metadata_tags" in nested_fields) and
                 nested_fields["metadata_tags"]):
