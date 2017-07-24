@@ -302,6 +302,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
 
         # section_tags/nav_tags
         self.assertEqual(self.importer.id_map[content["id"]], section.id)
+        self.assertTrue(section.id in self.importer.section_tags)
         self.assertEqual(self.importer.section_tags[section.id],
                          [content["section_tags"][0]["tag"]["id"],
                           content["section_tags"][1]["tag"]["id"]])
