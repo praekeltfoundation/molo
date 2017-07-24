@@ -7,6 +7,7 @@ import distutils.dir_util
 
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
+from wagtail.wagtailcore.models import Page
 
 
 def create_new_article_relations(old_main, copied_main):
@@ -64,11 +65,11 @@ def create_new_article_relations(old_main, copied_main):
 
                 # replace old article banner relations with new articles
                 for banner in BannerPage.objects.descendant_of(copied_main):
-                    old_article = ArticlePage.objects.get(
-                        pk=banner.banner_link_page)
-                    if old_article:
-                        new_article = ArticlePage.objects.descendant_of(
-                            copied_main).get(slug=old_article.slug)
+                    old_page = Page.objects.get(
+                        pk=banner.banner_link_page.pk)
+                    if old_page:
+                        new_article = Page.objects.descendant_of(
+                            copied_main).get(slug=old_page.slug)
                         banner.banner_link_page = new_article
                         banner.save()
 
