@@ -1259,6 +1259,8 @@ class ArticlePageLanguageManager(PageManager):
 class ArticlePageLanguageProxy(ArticlePage):
     class Meta:
         proxy = True
+        verbose_name = _('Article View')
+        verbose_name_plural = _('Article View')
 
     objects = ArticlePageLanguageManager()
 

@@ -170,11 +170,12 @@ class SectionListFilter(admin.SimpleListFilter):
 
 
 class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
+
     model = ArticlePageLanguageProxy
     menu_label = 'Articles'
     menu_icon = 'doc-full-inverse'
     list_display = [
-        'title', 'parent_section', 'section', 'live', 'status',
+        'article_title', 'section', 'live', 'status',
         'first_published_at', 'owner', 'first_created_at',
         'latest_revision_created_at', 'last_edited_by',
         'image_img', 'tags_html',
@@ -185,9 +186,17 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
         SectionListFilter,
         ('first_published_at', DateFilter),
         ('latest_revision_created_at', DateFilter),
+        'featured_in_latest',
+        'featured_in_homepage',
+        'featured_in_section',
         'tags'
     ]
     search_fields = ('title', 'subtitle')
+
+    def article_title(self, obj):
+        return obj.title
+    article_title.admin_order_field = 'title'
+    article_title.short_description = 'Article Title'
 
     def image_img(self, obj):
         if obj.image:
@@ -213,22 +222,6 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     section.short_description = 'Section'
     section.allow_tags = True
-
-    def parent_section(self, obj):
-        if obj.get_parent_section() and \
-                obj.get_parent_section().get_parent_section():
-            return format_html(
-                "<a href='{section}'>{section_title}</a>",
-                section_title=obj.get_parent_section(
-                ).get_parent_section().get_admin_display_title(),
-                section=reverse(
-                    'wagtailadmin_explore',
-                    args=[obj.get_parent_section().get_parent_section().id]
-                )
-            )
-
-    parent_section.short_description = 'Parent'
-    parent_section.allow_tags = True
 
     def tags_html(self, obj):
         if obj.tags_list():
