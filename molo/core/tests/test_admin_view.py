@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages,
-    ArticlePage)
+    ArticlePage, ArticlePageTags)
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -76,6 +76,18 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         )
         self.assertContains(response, 'Your Mind')
         self.assertContains(response, 'Your mind subsection')
+
+    def test_article_tags_in_admin_view(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+        article = self.mk_article(self.yourmind, title='article')
+        article.tags.add("the tag")
+        article.save_revision().publish()
+        response = self.client.get(
+            '/admin/core/articlepagelanguageproxy/'
+        )
+        self.assertContains(response, 'the tag')
 
     def test_status_custom_filter_published_in_admin_view(self):
         User.objects.create_superuser(
