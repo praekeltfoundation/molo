@@ -356,6 +356,8 @@ class SiteImporter(object):
 
         # handle the unwanted fields
         foreign_id = content.pop('id')
+        # ignore when article was last revised
+        content.pop('latest_revision_created_at')
 
         page = None
         if content["meta"]["type"] == "core.SectionPage":

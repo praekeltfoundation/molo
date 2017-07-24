@@ -297,8 +297,6 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
                          parser.parse(content["content_rotation_start_date"]))
         self.assertEqual(section.content_rotation_end_date,
                          parser.parse(content["content_rotation_end_date"]))
-        self.assertEqual(section.latest_revision_created_at,
-                         parser.parse(content["latest_revision_created_at"]))
 
         # NESTED FIELDS
         # TODO: check that image file has been added
