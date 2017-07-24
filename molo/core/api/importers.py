@@ -284,6 +284,9 @@ class SiteImporter(object):
         self.record_reaction_questions = record_foreign_relation(
             "reaction_questions", "reaction_question",
             self.reaction_questions)
+        self.record_related_sections = record_foreign_relation(
+            "related_sections", "section",
+            self.related_sections)
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -356,6 +359,7 @@ class SiteImporter(object):
         self.record_nav_tags(nested_fields, page.id)
         self.record_reaction_questions(nested_fields, page.id)
         self.record_recommended_articles(nested_fields, page.id)
+        self.record_related_sections(nested_fields, page.id)
 
         if ("body" in nested_fields) and nested_fields["body"]:
             page.body = json.dumps(nested_fields["body"])
