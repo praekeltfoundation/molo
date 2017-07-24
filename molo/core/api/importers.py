@@ -394,6 +394,6 @@ class SiteImporter(object):
         if ("image" in nested_fields) and nested_fields["image"]:
             self.attach_image()
 
-        # update the state of the page ?
-        page.save()
+        # note that unpublished pages will be published
+        page.save_revision().publish()
         return page
