@@ -361,8 +361,6 @@ class SiteImporter(object):
         self.record_recommended_articles(nested_fields, page.id)
         self.record_related_sections(nested_fields, page.id)
 
-        if ("body" in nested_fields) and nested_fields["body"]:
-            page.body = json.dumps(nested_fields["body"])
 
         if ("tags" in nested_fields) and nested_fields["tags"]:
             for tag in nested_fields["tags"]:
