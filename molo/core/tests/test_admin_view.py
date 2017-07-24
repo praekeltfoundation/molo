@@ -44,11 +44,11 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
 
         self.yourmind2 = self.mk_section(
             self.section_index2, title='Your mind2')
-
-    def test_articles_appears_in_admin_view(self):
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
+
+    def test_articles_appears_in_admin_view(self):
         self.mk_article(self.yourmind)
         response = self.client.get(
             '/admin/core/articlepagelanguageproxy/'
@@ -56,9 +56,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Test page 0')
 
     def test_section_in_admin_view(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
         self.mk_article(self.yourmind)
         response = self.client.get(
             '/admin/core/articlepagelanguageproxy/'
@@ -66,9 +63,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Your Mind')
 
     def test_parent_section_in_admin_view(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
         self.mk_article(self.yourmind_sub)
@@ -79,9 +73,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Your mind subsection')
 
     def test_article_tag_in_admin_view(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
         article = self.mk_article(self.yourmind, title='article')
         article.tags.add("the tag")
         article.save_revision().publish()
@@ -91,9 +82,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'the tag')
 
     def test_article_image_in_admin_view(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
         self.image = Image.objects.create(
             title="Test image",
             file=get_test_image_file(),
@@ -109,9 +97,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '<img src="/media/images/')
 
     def test_status_custom_filter_published_in_admin_view(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
         self.mk_articles(self.yourmind)
         self.article2 = ArticlePage.objects.get(title="Test page 1")
         self.article2.unpublish()
@@ -122,9 +107,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, 'Test page 1')
 
     def test_status_custom_filter_in_review_in_admin_view(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
         self.mk_articles(self.yourmind)
         self.article2 = ArticlePage.objects.get(title="Test page 1")
         self.article2.save_revision(submitted_for_moderation=True)
@@ -135,9 +117,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Test page 1')
 
     def test_status_custom_filter_draft_in_admin_view(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
         self.mk_articles(self.yourmind)
         self.article2 = ArticlePage.objects.get(title="Test page 1")
         self.article2.unpublish()
@@ -148,9 +127,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Test page 1')
 
     def test_status_custom_filter_sections_in_admin_view(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
         self.mk_articles(self.yourmind)
         self.article2 = ArticlePage.objects.get(title="Test page 1")
         self.article2.unpublish()
