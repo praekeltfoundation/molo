@@ -141,6 +141,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             title='banner', slug='banner', banner_link_page=article)
         self.banner_index.add_child(instance=banner)
         banner.save_revision().publish()
+        banner2 = BannerPage(
+            title='banner2', slug='banner2', banner_link_page=self.yourmind)
+        self.banner_index.add_child(instance=banner2)
+        banner2.save_revision().publish()
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
