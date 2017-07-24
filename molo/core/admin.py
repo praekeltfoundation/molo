@@ -10,7 +10,6 @@ from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin,
 )
 from wagtail.contrib.modeladmin.options import ModelAdminGroup
-from wagtail.contrib.modeladmin.views import IndexView
 
 from molo.core.models import (
     ReactionQuestion, ReactionQuestionResponse, ArticlePage,
@@ -167,7 +166,7 @@ class SectionListFilter(admin.SimpleListFilter):
                 section = SectionPage.objects.get(id=self.value())
                 return queryset.child_of(section).all()
             except (ObjectDoesNotExist, MultipleObjectsReturned):
-                return queryset
+                return None
 
 
 class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
