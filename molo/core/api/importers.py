@@ -93,6 +93,37 @@ def list_of_objects_from_api(url):
         return items
 
 
+def record_foreign_relation(field, key, record_keeper, id_key="id"):
+    '''
+    returns a function with the attributes necessary to
+    correctly reference the necessary objects, to correctly record
+    the relationship between a page and its foreign foreign-key pages
+    '''
+    def record_relationship(nested_fields, page_id):
+        if ((field in nested_fields) and nested_fields[field]):
+            record_keeper[page_id] = []
+            for thing in nested_fields[field]:
+                record_keeper[page_id].append(thing[key][id_key])
+    return record_relationship
+
+
+def add_json_dump(field):
+    def _add_json_dump(nested_fields, page):
+        if ((field in nested_fields) and
+                nested_fields[field]):
+            setattr(page, field, json.dumps(nested_fields[field]))
+    return _add_json_dump
+
+
+def add_list_of_things(field):
+    def _add_list_of_things(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            attr = getattr(page, field)
+            for item in nested_fields[field]:
+                attr.add(item)
+    return _add_list_of_things
+
+
 class PageImporter(object):
 
     def __init__(self, base_url=None, content=None, content_type=None):
@@ -288,6 +319,28 @@ class SiteImporter(object):
         # maps local pages to list of foreign section_tag IDs
         self.section_tags = {}
 
+        self.record_recommended_articles = record_foreign_relation(
+            "recommended_articles", "recommended_article",
+            self.recommended_articles)
+        self.record_section_tags = record_foreign_relation(
+            "section_tags", "tag",
+            self.section_tags)
+        self.record_nav_tags = record_foreign_relation(
+            "nav_tags", "tag",
+            self.nav_tags)
+        self.record_reaction_questions = record_foreign_relation(
+            "reaction_questions", "reaction_question",
+            self.reaction_questions)
+        self.record_related_sections = record_foreign_relation(
+            "related_sections", "section",
+            self.related_sections)
+
+        self.add_article_body = add_json_dump("body")
+        self.add_section_time = add_json_dump("time")
+
+        self.add_tags = add_list_of_things("tags")
+        self.add_metadata_tags = add_list_of_things("metadata_tags")
+
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
         response = requests.get(language_url)
@@ -394,6 +447,8 @@ class SiteImporter(object):
 
         # handle the unwanted fields
         foreign_id = content.pop('id')
+        # ignore when article was last revised
+        content.pop('latest_revision_created_at')
 
         page = None
         if content["meta"]["type"] == "core.SectionPage":
@@ -411,75 +466,17 @@ class SiteImporter(object):
 
         self.id_map[foreign_id] = page.id
 
-        # time
-        if (("time" in nested_fields) and
-                nested_fields["time"]):
-            page.time = json.dumps(nested_fields["time"])
+        self.record_section_tags(nested_fields, page.id)
+        self.record_nav_tags(nested_fields, page.id)
+        self.record_reaction_questions(nested_fields, page.id)
+        self.record_recommended_articles(nested_fields, page.id)
+        self.record_related_sections(nested_fields, page.id)
 
-        # section_tags/nav_tags
-        #  list -> ["tag"]["id"]
-        # -> Need to fetch and create the nav tags
-        #  THEN create the link between page and nav_tag
-        if (("section_tags" in nested_fields) and
-                nested_fields["section_tags"]):
-            self.section_tags[page.id] = []
-            for section_tag in nested_fields["section_tags"]:
-                self.section_tags[page.id].append(
-                    section_tag["tag"]["id"])
+        self.add_article_body(nested_fields, page)
+        self.add_section_time(nested_fields, page)
 
-        # nav_tags
-        #  list -> ["tag"]["id"]
-        # -> Need to fetch and create the nav tags
-        #  THEN create the link between page and nav_tag
-        if (("nav_tags" in nested_fields) and
-                nested_fields["nav_tags"]):
-            self.nav_tags[page.id] = []
-            for nav_tag in nested_fields["nav_tags"]:
-                self.nav_tags[page.id].append(
-                    nav_tag["tag"]["id"])
-
-        # reaction_questions
-        #  list -> ["reaction_question"]["id"]
-        # -> Need to fetch and create the reaction questions
-        #  THEN create the link between page and reaction question
-        if (("reaction_questions" in nested_fields) and
-                nested_fields["reaction_questions"]):
-            self.reaction_questions[page.id] = []
-            for reaction_question in nested_fields["reaction_questions"]:
-                self.reaction_questions[page.id].append(
-                    reaction_question["reaction_question"]["id"])
-
-        # recommended_articles
-        #  list -> ["recommended_article"]["id"]
-        # -> Only need to create the relationship
-        if (("recommended_articles" in nested_fields) and
-                nested_fields["recommended_articles"]):
-            self.recommended_articles[page.id] = []
-            for recommended_article in nested_fields["recommended_articles"]:
-                self.recommended_articles[page.id].append(
-                    recommended_article["recommended_article"]["id"])
-
-        # related_sections
-        #  list -> ["section"]["id"]
-        # -> Only need to create the relationship
-        if (("related_sections" in nested_fields) and
-                nested_fields["related_sections"]):
-            self.related_sections[page.id] = []
-            for related_section in nested_fields["related_sections"]:
-                self.related_sections[page.id].append(
-                    related_section["section"]["id"])
-
-        if ("body" in nested_fields) and nested_fields["body"]:
-            page.body = json.dumps(nested_fields["body"])
-
-        if ("tags" in nested_fields) and nested_fields["tags"]:
-            for tag in nested_fields["tags"]:
-                page.tags.add(tag)
-
-        if (("metadata_tags" in nested_fields) and
-                nested_fields["metadata_tags"]):
-            for tag in nested_fields["metadata_tags"]:
-                page.metadata_tags.add(tag)
+        self.add_tags(nested_fields, page)
+        self.add_metadata_tags(nested_fields, page)
 
         if (("social_media_image" in nested_fields) and
                 nested_fields["social_media_image"]):
@@ -490,6 +487,6 @@ class SiteImporter(object):
         if ("image" in nested_fields) and nested_fields["image"]:
             self.attach_image(page, nested_fields["image"]["id"])
 
-        # update the state of the page ?
-        page.save()
+        # note that unpublished pages will be published
+        page.save_revision().publish()
         return page
