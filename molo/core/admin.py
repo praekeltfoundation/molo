@@ -93,12 +93,6 @@ class ReactionQuestionsSummaryModelAdmin(
     articles.short_description = 'Title'
 
 
-class ArticleModelAdminTemplate(IndexView):
-
-    def get_template_names(self):
-        return 'admin/model_admin_template.html'
-
-
 class ArticleAdmin(admin.ModelAdmin):
     list_display = (
         'title', 'live', 'first_published_at', 'owner',
