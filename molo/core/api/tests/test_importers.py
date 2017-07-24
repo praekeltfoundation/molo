@@ -213,6 +213,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
                          parser.parse(content["demote_date"]))
 
         # NESTED FIELDS
+        self.assertTrue(hasattr(article.body, "stream_data"))
         self.assertEqual(article.body.stream_data, content['body'])
         self.assertEqual(article.tags.count(), len(content['tags']))
         for tag in article.tags.all():
