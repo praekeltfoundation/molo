@@ -1,9 +1,10 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from wagtail.wagtailimages.tests.utils import get_test_image_file, Image
 
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages,
-    ArticlePage, ArticlePageTags)
+    ArticlePage)
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -77,7 +78,7 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Your Mind')
         self.assertContains(response, 'Your mind subsection')
 
-    def test_article_tags_in_admin_view(self):
+    def test_article_tag_in_admin_view(self):
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
@@ -88,6 +89,24 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
             '/admin/core/articlepagelanguageproxy/'
         )
         self.assertContains(response, 'the tag')
+
+    def test_article_image_in_admin_view(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+        self.image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+        article = self.mk_article(self.yourmind,
+                                  title='article',
+                                  image=self.image
+                                  )
+        article.save_revision().publish()
+        response = self.client.get(
+            '/admin/core/articlepagelanguageproxy/'
+        )
+        self.assertContains(response, '<img src="/media/images/')
 
     def test_status_custom_filter_published_in_admin_view(self):
         User.objects.create_superuser(
