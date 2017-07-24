@@ -78,6 +78,14 @@ def record_foreign_relation(field, key, record_keeper, id_key="id"):
     return record_relationship
 
 
+def add_json_dump(field):
+    def _add_json_dump(nested_fields, page):
+        if ((field in nested_fields) and
+                nested_fields[field]):
+            setattr(page, field, json.dumps(nested_fields[field]))
+    return _add_json_dump
+
+
 class PageImporter(object):
 
     def __init__(self, base_url=None, content=None, content_type=None):
@@ -288,6 +296,8 @@ class SiteImporter(object):
             "related_sections", "section",
             self.related_sections)
 
+        self.add_article_body = add_json_dump("body")
+
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
         response = requests.get(language_url)
@@ -361,6 +371,7 @@ class SiteImporter(object):
         self.record_recommended_articles(nested_fields, page.id)
         self.record_related_sections(nested_fields, page.id)
 
+        self.add_article_body(nested_fields, page)
 
         if ("tags" in nested_fields) and nested_fields["tags"]:
             for tag in nested_fields["tags"]:
