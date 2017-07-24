@@ -281,6 +281,9 @@ class SiteImporter(object):
         self.record_nav_tags = record_foreign_relation(
             "nav_tags", "tag",
             self.nav_tags)
+        self.record_reaction_questions = record_foreign_relation(
+            "reaction_questions", "reaction_question",
+            self.reaction_questions)
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -351,7 +354,7 @@ class SiteImporter(object):
 
         self.record_section_tags(nested_fields, page.id)
         self.record_nav_tags(nested_fields, page.id)
-
+        self.record_reaction_questions(nested_fields, page.id)
         self.record_recommended_articles(nested_fields, page.id)
 
         # related_sections
