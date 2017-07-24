@@ -309,6 +309,7 @@ class SiteImporter(object):
         self.add_section_time = add_json_dump("time")
 
         self.add_tags = add_list_of_things("tags")
+        self.add_metadata_tags = add_list_of_things("metadata_tags")
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -382,6 +383,7 @@ class SiteImporter(object):
         self.add_section_time(nested_fields, page)
 
         self.add_tags(nested_fields, page)
+        self.add_metadata_tags(nested_fields, page)
 
         if (("social_media_image" in nested_fields) and
                 nested_fields["social_media_image"]):
