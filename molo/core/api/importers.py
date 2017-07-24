@@ -358,15 +358,6 @@ class SiteImporter(object):
                 self.reaction_questions[page.id].append(
                     reaction_question["reaction_question"]["id"])
 
-        # recommended_articles
-        #  list -> ["recommended_article"]["id"]
-        # -> Only need to create the relationship
-        if (("recommended_articles" in nested_fields) and
-                nested_fields["recommended_articles"]):
-            self.recommended_articles[page.id] = []
-            for recommended_article in nested_fields["recommended_articles"]:
-                self.recommended_articles[page.id].append(
-                    recommended_article["recommended_article"]["id"])
 
         # related_sections
         #  list -> ["section"]["id"]
