@@ -342,16 +342,6 @@ class SiteImporter(object):
                 nested_fields["time"]):
             page.time = json.dumps(nested_fields["time"])
 
-        # section_tags/nav_tags
-        #  list -> ["tag"]["id"]
-        # -> Need to fetch and create the nav tags
-        #  THEN create the link between page and nav_tag
-        if (("section_tags" in nested_fields) and
-                nested_fields["section_tags"]):
-            self.section_tags[page.id] = []
-            for section_tag in nested_fields["section_tags"]:
-                self.section_tags[page.id].append(
-                    section_tag["tag"]["id"])
 
         # nav_tags
         #  list -> ["tag"]["id"]
