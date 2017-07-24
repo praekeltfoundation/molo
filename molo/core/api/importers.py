@@ -271,9 +271,13 @@ class SiteImporter(object):
         self.nav_tags = {}
         # maps local pages to list of foreign section_tag IDs
         self.section_tags = {}
+
         self.record_recommended_articles = record_foreign_relation(
             "recommended_articles", "recommended_article",
             self.recommended_articles)
+        self.record_section_tags = record_foreign_relation(
+            "section_tags", "tag",
+            self.section_tags)
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -342,6 +346,7 @@ class SiteImporter(object):
                 nested_fields["time"]):
             page.time = json.dumps(nested_fields["time"])
 
+        self.record_section_tags(nested_fields, page.id)
 
         # nav_tags
         #  list -> ["tag"]["id"]
