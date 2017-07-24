@@ -302,9 +302,8 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         # NESTED FIELDS
         # TODO: check that image file has been added
         # time
-        self.assertEqual(
-            section.time.stream_data,
-            content["time"])
+        self.assertTrue(hasattr(section.time, "stream_data"))
+        self.assertEqual(section.time.stream_data, content["time"])
 
         # section_tags/nav_tags
         self.assertEqual(self.importer.id_map[content["id"]], section.id)
