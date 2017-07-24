@@ -22,7 +22,7 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
             is_active=True)
 
         self.yourmind = self.mk_section(
-            self.section_index, title='Your mind')
+            self.section_index, title='Your Mind')
 
         self.yourmind_fr = self.mk_section_translation(
             self.yourmind, self.french, title='Your mind in french')
@@ -53,7 +53,29 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
             '/admin/core/articlepagelanguageproxy/'
         )
         self.assertContains(response, 'Test page 0')
-        self.assertContains(response, 'Your mind')
+
+    def test_section_in_admin_view(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+        self.mk_article(self.yourmind)
+        response = self.client.get(
+            '/admin/core/articlepagelanguageproxy/'
+        )
+        self.assertContains(response, 'Your Mind')
+
+    def test_parent_section_in_admin_view(self):
+        User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+        self.yourmind_sub = self.mk_section(
+            self.yourmind, title='Your mind subsection')
+        self.mk_article(self.yourmind_sub)
+        response = self.client.get(
+            '/admin/core/articlepagelanguageproxy/'
+        )
+        self.assertContains(response, 'Your Mind')
+        self.assertContains(response, 'Your mind subsection')
 
     def test_status_custom_filter_published_in_admin_view(self):
         User.objects.create_superuser(
