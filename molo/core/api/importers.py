@@ -383,11 +383,6 @@ class SiteImporter(object):
 
         self.add_tags(nested_fields, page)
 
-        if (("metadata_tags" in nested_fields) and
-                nested_fields["metadata_tags"]):
-            for tag in nested_fields["metadata_tags"]:
-                page.metadata_tags.add(tag)
-
         if (("social_media_image" in nested_fields) and
                 nested_fields["social_media_image"]):
             self.attach_image()
