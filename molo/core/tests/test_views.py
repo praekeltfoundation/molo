@@ -181,6 +181,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_banner = BannerPage.objects.descendant_of(main3).get(
             slug=banner.slug)
         self.assertEqual(new_banner.banner_link_page.pk, new_article.pk)
+        new_banner2 = BannerPage.objects.descendant_of(main3).get(
+            slug=banner2.slug)
+        self.assertEqual(new_banner2.banner_link_page.pk, new_section.pk)
         self.assertEqual(ArticlePageTags.objects.get(
             page=new_article).tag.pk, new_tag.pk)
         self.assertEqual(ArticlePageReactionQuestions.objects.get(
