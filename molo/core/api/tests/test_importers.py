@@ -234,10 +234,12 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         # TODO
         # self.assertEqual(self.importer.image_map[article.id], [])
 
+        self.assertTrue(article.id in self.importer.related_sections)
         self.assertEqual(
             self.importer.related_sections[article.id],
             [content["related_sections"][0]["section"]["id"],
              content["related_sections"][1]["section"]["id"]])
+
         self.assertTrue(article.id in self.importer.recommended_articles)
         self.assertEqual(
             self.importer.recommended_articles[article.id],
