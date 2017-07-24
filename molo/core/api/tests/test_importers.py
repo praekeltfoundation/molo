@@ -237,6 +237,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             self.importer.related_sections[article.id],
             [content["related_sections"][0]["section"]["id"],
              content["related_sections"][1]["section"]["id"]])
+        self.assertTrue(article.id in self.importer.recommended_articles)
         self.assertEqual(
             self.importer.recommended_articles[article.id],
             [content["recommended_articles"][0]["recommended_article"]["id"],
