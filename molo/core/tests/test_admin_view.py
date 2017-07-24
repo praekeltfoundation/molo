@@ -62,16 +62,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         )
         self.assertContains(response, 'Your Mind')
 
-    def test_parent_section_in_admin_view(self):
-        self.yourmind_sub = self.mk_section(
-            self.yourmind, title='Your mind subsection')
-        self.mk_article(self.yourmind_sub)
-        response = self.client.get(
-            '/admin/core/articlepagelanguageproxy/'
-        )
-        self.assertContains(response, 'Your Mind')
-        self.assertContains(response, 'Your mind subsection')
-
     def test_article_tag_in_admin_view(self):
         article = self.mk_article(self.yourmind, title='article')
         article.tags.add("the tag")
