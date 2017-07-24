@@ -297,6 +297,7 @@ class SiteImporter(object):
             self.related_sections)
 
         self.add_article_body = add_json_dump("body")
+        self.add_section_time = add_json_dump("time")
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -367,6 +368,7 @@ class SiteImporter(object):
         self.record_related_sections(nested_fields, page.id)
 
         self.add_article_body(nested_fields, page)
+        self.add_section_time(nested_fields, page)
 
         if ("tags" in nested_fields) and nested_fields["tags"]:
             for tag in nested_fields["tags"]:
