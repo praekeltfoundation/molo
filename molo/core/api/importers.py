@@ -360,11 +360,6 @@ class SiteImporter(object):
 
         self.id_map[foreign_id] = page.id
 
-        # time
-        if (("time" in nested_fields) and
-                nested_fields["time"]):
-            page.time = json.dumps(nested_fields["time"])
-
         self.record_section_tags(nested_fields, page.id)
         self.record_nav_tags(nested_fields, page.id)
         self.record_reaction_questions(nested_fields, page.id)
