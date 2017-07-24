@@ -352,17 +352,6 @@ class SiteImporter(object):
         self.record_section_tags(nested_fields, page.id)
         self.record_nav_tags(nested_fields, page.id)
 
-        # reaction_questions
-        #  list -> ["reaction_question"]["id"]
-        # -> Need to fetch and create the reaction questions
-        #  THEN create the link between page and reaction question
-        if (("reaction_questions" in nested_fields) and
-                nested_fields["reaction_questions"]):
-            self.reaction_questions[page.id] = []
-            for reaction_question in nested_fields["reaction_questions"]:
-                self.reaction_questions[page.id].append(
-                    reaction_question["reaction_question"]["id"])
-
         self.record_recommended_articles(nested_fields, page.id)
 
         # related_sections
