@@ -64,6 +64,20 @@ def separate_fields(fields):
     return flat_fields, nested_fields
 
 
+def record_foreign_relation(field, key, record_keeper, id_key="id"):
+    '''
+    returns a function with the attributes necessary to
+    correctly reference the necessary objects, to correctly record
+    the relationship between a page and its foreign foreign-key pages
+    '''
+    def record_relationship(nested_fields, page_id):
+        if ((field in nested_fields) and nested_fields[field]):
+            record_keeper[page_id] = []
+            for thing in nested_fields[field]:
+                record_keeper[page_id].append(thing[key][id_key])
+    return record_relationship
+
+
 class PageImporter(object):
 
     def __init__(self, base_url=None, content=None, content_type=None):
@@ -257,6 +271,9 @@ class SiteImporter(object):
         self.nav_tags = {}
         # maps local pages to list of foreign section_tag IDs
         self.section_tags = {}
+        self.record_recommended_articles = record_foreign_relation(
+            "recommended_articles", "recommended_article",
+            self.recommended_articles)
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -358,6 +375,7 @@ class SiteImporter(object):
                 self.reaction_questions[page.id].append(
                     reaction_question["reaction_question"]["id"])
 
+        self.record_recommended_articles(nested_fields, page.id)
 
         # related_sections
         #  list -> ["section"]["id"]
