@@ -1,7 +1,9 @@
 from django.conf.urls import url
 
-from molo.core.admin import ReactionQuestionsModelAdmin, \
-    ReactionQuestionsSummaryModelAdmin
+from molo.core.admin import (
+    ReactionQuestionsModelAdmin, ReactionQuestionsSummaryModelAdmin,
+    AdminViewGroup
+)
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
 from molo.core.models import LanguageRelation, PageTranslation, Languages
@@ -66,6 +68,7 @@ def register_article_question_results_admin_view_url():
 
 
 modeladmin_register(ReactionQuestionsSummaryModelAdmin)
+modeladmin_register(AdminViewGroup)
 
 
 @hooks.register('construct_explorer_page_queryset')

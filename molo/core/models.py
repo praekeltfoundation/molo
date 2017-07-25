@@ -29,6 +29,7 @@ from wagtail.wagtailadmin.edit_handlers import (
     MultiFieldPanel, InlinePanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
+from wagtail.wagtailcore.models import PageManager
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 
@@ -1246,6 +1247,22 @@ def demote_featured_articles(sender, instance, **kwargs):
         instance.featured_in_section_start_date is None and \
             instance.featured_in_section is True:
         instance.featured_in_section = False
+
+
+class ArticlePageLanguageManager(PageManager):
+    def get_queryset(self):
+        return super(ArticlePageLanguageManager, self).get_queryset().filter(
+            languages__language__is_main_language=True
+        )
+
+
+class ArticlePageLanguageProxy(ArticlePage):
+    class Meta:
+        proxy = True
+        verbose_name = _('Article View')
+        verbose_name_plural = _('Article View')
+
+    objects = ArticlePageLanguageManager()
 
 
 class SectionPageTags(Orderable):

@@ -1,6 +1,14 @@
 CHANGE LOG
 ==========
 
+5.8.0
+~~~~~
+- Add Admin View menu  with the Article View to the CMS
+
+5.7.0
+~~~~~
+- Deprecate use of search backends in Molo. Use wagatailsearch instead.
+
 5.6.0
 ~~~~~
 - New Feature: Add Article Publish action to shortcuts
