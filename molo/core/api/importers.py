@@ -600,3 +600,6 @@ class SiteImporter(object):
                     page=page,
                     tag=tag
                 ).save()
+
+    def create_section_tag_relationship(self):
+        pass

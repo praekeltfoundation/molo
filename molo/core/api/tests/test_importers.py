@@ -19,6 +19,7 @@ from molo.core.models import (
     ArticlePageRelatedSections,
     SiteLanguageRelation,
     ArticlePageTags,
+    SectionPageTags,
 )
 from molo.core.tests.base import MoloTestCaseMixin
 
@@ -616,5 +617,30 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
                          tag_1)
 
         self.assertEqual(relation_2.page.specific, article)
+        self.assertEqual(relation_2.tag.specific,
+                         tag_2)
+
+    def test_create_section_tag_relationships(self):
+        section = self.mk_section(self.section_index)
+
+        # create tag
+        [tag_1, tag_2] = self.mk_tags(self.tag_index, count=2)
+
+        # update map_id
+        # attach imaginary foreign IDs to sections, to fake import data
+        self.importer.id_map = {111: tag_1.id, 222: tag_2.id}
+        self.importer.section_tags[section.id] = [111, 222]
+
+        self.assertEqual(SectionPageTags.objects.count(), 0)
+        self.importer.create_section_tag_relationship()
+        self.assertEqual(SectionPageTags.objects.count(), 2)
+
+        [relation_1, relation_2] = list(SectionPageTags.objects.all())
+
+        self.assertEqual(relation_1.page.specific, section)
+        self.assertEqual(relation_1.tag.specific,
+                         tag_1)
+
+        self.assertEqual(relation_2.page.specific, section)
         self.assertEqual(relation_2.tag.specific,
                          tag_2)
