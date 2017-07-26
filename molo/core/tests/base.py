@@ -143,6 +143,23 @@ class MoloTestCaseMixin(object):
         tag.save_revision().publish()
         return tag
 
+    def mk_tags(self, parent, count=2, **kwargs):
+        tags = []
+        for i in range(count):
+            data = {}
+            data.update({
+                'title': 'Test Tag {}'.format(i),
+            })
+            data.update(kwargs)
+            data.update({
+                'slug': generate_slug(data['title'])
+            })
+            tag = Tag(**data)
+            parent.add_child(instance=tag)
+            tag.save_revision().publish()
+            tags.append(tag)
+        return tags
+
     def mk_reaction_question(self, parent, article, **kwargs):
         data = {}
         data.update({
