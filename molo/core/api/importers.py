@@ -23,6 +23,7 @@ from molo.core.models import (
     ArticlePageRelatedSections,
     PageTranslation,
     ArticlePageTags,
+    SectionPageTags,
 )
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
@@ -602,4 +603,13 @@ class SiteImporter(object):
                 ).save()
 
     def create_section_tag_relationship(self):
-        pass
+        for page_id, foreign_tags_id_list in self.section_tags.iteritems():
+            page = Page.objects.get(id=page_id).specific
+            for foreign_tag_id in foreign_tags_id_list:
+                local_tag_id = self.id_map[foreign_tag_id]
+                tag = Tag.objects.get(id=local_tag_id)
+
+                SectionPageTags(
+                    page=page,
+                    tag=tag
+                ).save()
