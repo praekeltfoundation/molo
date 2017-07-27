@@ -135,7 +135,6 @@ class TestImporterUtilFunctions(TestCase):
         responses.add(responses.GET,
                       "{}?limit=20&offset=20".format(self.test_url),
                       json=constants.WAGTAIL_API_LIST_VIEW_PAGE_2, status=200)
-        print(type(importers.list_of_objects_from_api(self.test_url)))
         returned_list = importers.list_of_objects_from_api(self.test_url)
         expected_response = (
             constants.WAGTAIL_API_LIST_VIEW_PAGE_1["items"] +
