@@ -412,7 +412,10 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         # Check that image file has been added
         self.assertTrue(article.image)
         self.assertEqual(article.image.title, content["image"]["title"])
-        # TODO: check that social media file has been added
+        # Check that social media file has been added
+        self.assertTrue(article.social_media_image)
+        self.assertEqual(article.social_media_image.title,
+                         content["social_media_image"]["title"])
 
     def test_create_section_page(self):
         # fake the content passed to the importer
