@@ -294,6 +294,24 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
     def test_create_article_page(self):
         # fake the content passed to the importer
         content = utils.fake_article_page_response()
+
+        # create local versions of images, mapped to foreign ID
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+        self.importer.image_map[foreign_image_id] = image.id
+
+        foreign_social_media_image_id = content["social_media_image"]["id"]
+        social_media_image = Image.objects.create(
+            title=content["social_media_image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        (self.importer
+             .image_map[foreign_social_media_image_id]) = social_media_image.id
+
         # avoid any side effects by creating a copy of content
         content_copy = dict(content)
 
@@ -391,8 +409,10 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             [content["reaction_questions"][0]["reaction_question"]["id"],
              content["reaction_questions"][1]["reaction_question"]["id"]])
 
-        # TODO: check that social media file has been added
         # TODO: check that image file has been added
+        self.assertTrue(article.image)
+        self.assertEqual(article.image.title, content["image"]["title"])
+        # TODO: check that social media file has been added
 
     def test_create_section_page(self):
         # fake the content passed to the importer
