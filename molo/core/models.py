@@ -465,8 +465,8 @@ class ReactionQuestion(TranslatablePageMixin, Page):
         return False
 
 
-class ReactionQuestionChoice(
-        TranslatablePageMixinNotRoutable, PageEffectiveImageMixin, Page):
+class ReactionQuestionChoice(TranslatablePageMixinNotRoutable,
+                             PageEffectiveImageMixin, Page):
     parent_page_types = ['core.ReactionQuestion']
     subpage_types = []
 
@@ -876,13 +876,13 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
                        "subheading")))
 
     api_fields = [
-        "title", "description", "image", "extra_style_hints",
+        "title", "live", "description", "image", "extra_style_hints",
         "commenting_state", "commenting_open_time",
         "commenting_close_time", "time", "monday_rotation",
         "tuesday_rotation", "wednesday_rotation", "thursday_rotation",
         "friday_rotation", "saturday_rotation", "sunday_rotation",
         "content_rotation_start_date", "content_rotation_end_date",
-        "latest_revision_created_at",
+        "section_tags",
     ]
 
     @classmethod
@@ -1030,9 +1030,8 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(
-        CommentedPageMixin, TranslatablePageMixin, PageEffectiveImageMixin,
-        Page):
+class ArticlePage(CommentedPageMixin,
+                  TranslatablePageMixin, PageEffectiveImageMixin, Page):
     parent_page_types = ['core.SectionPage']
 
     subtitle = models.TextField(null=True, blank=True)
@@ -1217,7 +1216,8 @@ class ArticlePage(
         "promote_date", "demote_date", "metadata_tags",
         "latest_revision_created_at", "image",
         "social_media_image", "social_media_description",
-        "social_media_title",
+        "social_media_title", "reaction_questions",
+        "nav_tags", "recommended_articles", "related_sections",
     ]
 
     @classmethod
@@ -1293,6 +1293,7 @@ class SectionPageTags(Orderable):
         help_text=_('Tags for tag navigation')
     )
     panels = [PageChooserPanel('tag', 'core.Tag')]
+    api_fields = ['tag']
 
 
 class ArticlePageTags(Orderable):
@@ -1306,6 +1307,7 @@ class ArticlePageTags(Orderable):
         help_text=_('Tags for tag navigation')
     )
     panels = [PageChooserPanel('tag', 'core.Tag')]
+    api_fields = ['tag']
 
 
 class ArticlePageReactionQuestions(Orderable):
@@ -1319,6 +1321,7 @@ class ArticlePageReactionQuestions(Orderable):
         help_text=_('Reaction Questions')
     )
     panels = [PageChooserPanel('reaction_question', 'core.ReactionQuestion')]
+    api_fields = ['reaction_question']
 
 
 class ArticlePageRecommendedSections(Orderable):
@@ -1332,6 +1335,7 @@ class ArticlePageRecommendedSections(Orderable):
         help_text=_('Recommended articles for this article')
     )
     panels = [PageChooserPanel('recommended_article', 'core.ArticlePage')]
+    api_fields = ['recommended_article']
 
 
 class ArticlePageRelatedSections(Orderable):
@@ -1345,6 +1349,7 @@ class ArticlePageRelatedSections(Orderable):
         help_text=_('Section that this page also belongs too')
     )
     panels = [PageChooserPanel('section', 'core.SectionPage')]
+    api_fields = ['section']
 
 
 class FooterIndexPage(Page, PreventDeleteMixin):

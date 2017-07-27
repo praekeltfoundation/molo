@@ -64,6 +64,37 @@ def separate_fields(fields):
     return flat_fields, nested_fields
 
 
+def record_foreign_relation(field, key, record_keeper, id_key="id"):
+    '''
+    returns a function with the attributes necessary to
+    correctly reference the necessary objects, to correctly record
+    the relationship between a page and its foreign foreign-key pages
+    '''
+    def record_relationship(nested_fields, page_id):
+        if ((field in nested_fields) and nested_fields[field]):
+            record_keeper[page_id] = []
+            for thing in nested_fields[field]:
+                record_keeper[page_id].append(thing[key][id_key])
+    return record_relationship
+
+
+def add_json_dump(field):
+    def _add_json_dump(nested_fields, page):
+        if ((field in nested_fields) and
+                nested_fields[field]):
+            setattr(page, field, json.dumps(nested_fields[field]))
+    return _add_json_dump
+
+
+def add_list_of_things(field):
+    def _add_list_of_things(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            attr = getattr(page, field)
+            for item in nested_fields[field]:
+                attr.add(item)
+    return _add_list_of_things
+
+
 class PageImporter(object):
 
     def __init__(self, base_url=None, content=None, content_type=None):
@@ -242,6 +273,43 @@ class SiteImporter(object):
         self.base_url = base_url
         self.api_url = self.base_url + '/api/v2/'
         self.site_pk = site_pk
+        self.content = None
+        # maps foreign IDs to local page IDs
+        self.id_map = {}
+        # maps foreign image IDs to local IDs
+        self.image_map = {}
+        # maps local id to list of foreign section page ids
+        self.related_sections = {}
+        # maps local id to list of foreign page ids
+        self.recommended_articles = {}
+        # maps local pages to list of foreign reaction question IDs
+        self.reaction_questions = {}
+        # maps local pages to list of foreign nav_tag IDs
+        self.nav_tags = {}
+        # maps local pages to list of foreign section_tag IDs
+        self.section_tags = {}
+
+        self.record_recommended_articles = record_foreign_relation(
+            "recommended_articles", "recommended_article",
+            self.recommended_articles)
+        self.record_section_tags = record_foreign_relation(
+            "section_tags", "tag",
+            self.section_tags)
+        self.record_nav_tags = record_foreign_relation(
+            "nav_tags", "tag",
+            self.nav_tags)
+        self.record_reaction_questions = record_foreign_relation(
+            "reaction_questions", "reaction_question",
+            self.reaction_questions)
+        self.record_related_sections = record_foreign_relation(
+            "related_sections", "section",
+            self.related_sections)
+
+        self.add_article_body = add_json_dump("body")
+        self.add_section_time = add_json_dump("time")
+
+        self.add_tags = add_list_of_things("tags")
+        self.add_metadata_tags = add_list_of_things("metadata_tags")
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -270,3 +338,62 @@ class SiteImporter(object):
                 locale=content['locale'],
                 is_active=content['is_active'],
                 language_setting=language_setting)
+
+    def fetch_and_create_image(self):
+        # create image object
+        # update self.image_map
+        # return image
+        pass
+
+    def attach_image(self):
+        # if not (image has already been imported)
+        #   get_image()
+        # attach image
+        pass
+
+    def create_page(self, parent, content):
+        fields, nested_fields = separate_fields(content)
+
+        # handle the unwanted fields
+        foreign_id = content.pop('id')
+        # ignore when article was last revised
+        content.pop('latest_revision_created_at')
+
+        page = None
+        if content["meta"]["type"] == "core.SectionPage":
+            page = SectionPage(**fields)
+        elif content["meta"]["type"] == "core.ArticlePage":
+            page = ArticlePage(**fields)
+        # TODO: handle other Page types
+
+        parent.add_child(instance=page)
+
+        # TODO: handle live/published
+        # Need to review this line:
+        #   handle drafts and 'not live' content
+        parent.save_revision().publish()
+
+        self.id_map[foreign_id] = page.id
+
+        self.record_section_tags(nested_fields, page.id)
+        self.record_nav_tags(nested_fields, page.id)
+        self.record_reaction_questions(nested_fields, page.id)
+        self.record_recommended_articles(nested_fields, page.id)
+        self.record_related_sections(nested_fields, page.id)
+
+        self.add_article_body(nested_fields, page)
+        self.add_section_time(nested_fields, page)
+
+        self.add_tags(nested_fields, page)
+        self.add_metadata_tags(nested_fields, page)
+
+        if (("social_media_image" in nested_fields) and
+                nested_fields["social_media_image"]):
+            self.attach_image()
+
+        if ("image" in nested_fields) and nested_fields["image"]:
+            self.attach_image()
+
+        # note that unpublished pages will be published
+        page.save_revision().publish()
+        return page

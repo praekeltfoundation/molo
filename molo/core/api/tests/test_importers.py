@@ -3,20 +3,24 @@ Test the importing module.
 This module relies heavily on an external service and requires
 quite a bit of mocking.
 """
-
 from django.test import TestCase
 
 from mock import patch
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
-from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.api import importers
-from molo.core.api.tests import constants
-from molo.core.models import ArticlePage
+from molo.core.api.tests import constants, utils
 from molo.core.models import (
+    ArticlePage,
+    SectionPage,
     SiteLanguageRelation,
 )
+from molo.core.tests.base import MoloTestCaseMixin
+
 import responses
+
+from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+
+from dateutil import parser
 
 
 class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
@@ -149,3 +153,160 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertTrue(fr_lang)
         self.assertTrue(fr_lang.is_active)
         self.assertFalse(fr_lang.is_main_language)
+
+    def test_create_article_page(self):
+        # fake the content passed to the importer
+        content = utils.fake_article_page_response()
+        # avoid any side effects by creating a copy of content
+        content_copy = dict(content)
+
+        parent = self.mk_section(self.section_index)
+
+        self.assertEqual(ArticlePage.objects.count(), 0)
+
+        article = self.importer.create_page(parent, content_copy)
+
+        self.assertEqual(ArticlePage.objects.count(), 1)
+        self.assertEqual(article.get_parent(), parent)
+        self.assertNotEqual(article.id, content["id"])
+
+        # FLAT FIELDS
+        self.assertEqual(article.title, content["title"])
+        self.assertEqual(article.subtitle, content["subtitle"])
+        self.assertEqual(article.commenting_state, content["commenting_state"])
+        self.assertEqual(article.social_media_title,
+                         content["social_media_title"])
+        self.assertEqual(article.social_media_description,
+                         content["social_media_description"])
+        self.assertEqual(article.featured_in_latest,
+                         content["featured_in_latest"])
+        self.assertEqual(article.featured_in_section,
+                         content["featured_in_section"])
+        self.assertEqual(article.featured_in_homepage,
+                         content["featured_in_homepage"])
+        self.assertEqual(article.feature_as_topic_of_the_day,
+                         content["feature_as_topic_of_the_day"])
+
+        self.assertEqual(article.commenting_open_time,
+                         parser.parse(content["commenting_open_time"]))
+        self.assertEqual(article.commenting_close_time,
+                         parser.parse(content["commenting_close_time"]))
+        self.assertEqual(article.featured_in_latest_start_date,
+                         parser.parse(
+                             content["featured_in_latest_start_date"]))
+        self.assertEqual(article.featured_in_latest_end_date,
+                         parser.parse(content["featured_in_latest_end_date"]))
+        self.assertEqual(article.featured_in_section_start_date,
+                         parser.parse(
+                             content["featured_in_section_start_date"]))
+        self.assertEqual(article.featured_in_section_end_date,
+                         parser.parse(content["featured_in_section_end_date"]))
+        self.assertEqual(article.featured_in_homepage_start_date,
+                         parser.parse(
+                             content["featured_in_homepage_start_date"]))
+        self.assertEqual(article.featured_in_homepage_end_date,
+                         parser.parse(
+                             content["featured_in_homepage_end_date"]))
+        self.assertEqual(article.promote_date,
+                         parser.parse(content["promote_date"]))
+        self.assertEqual(article.demote_date,
+                         parser.parse(content["demote_date"]))
+
+        # NESTED FIELDS
+        self.assertTrue(hasattr(article.body, "stream_data"))
+        self.assertEqual(article.body.stream_data, content['body'])
+
+        self.assertEqual(article.tags.count(), len(content['tags']))
+        for tag in article.tags.all():
+            self.assertTrue(tag.name in content["tags"])
+
+        self.assertEqual(article.metadata_tags.count(),
+                         len(content['metadata_tags']))
+        for metadata_tag in article.metadata_tags.all():
+            self.assertTrue(metadata_tag.name in content["metadata_tags"])
+
+        # Check that all reference fields have been properly stored
+        # for further processing later
+
+        # nav_tags
+        self.assertEqual(self.importer.id_map[content["id"]], article.id)
+        self.assertTrue(article.id in self.importer.nav_tags)
+        self.assertEqual(self.importer.nav_tags[article.id],
+                         [content["nav_tags"][0]["tag"]["id"], ])
+        # TODO
+        # self.assertEqual(self.importer.image_map[article.id], [])
+
+        self.assertTrue(article.id in self.importer.related_sections)
+        self.assertEqual(
+            self.importer.related_sections[article.id],
+            [content["related_sections"][0]["section"]["id"],
+             content["related_sections"][1]["section"]["id"]])
+
+        self.assertTrue(article.id in self.importer.recommended_articles)
+        self.assertEqual(
+            self.importer.recommended_articles[article.id],
+            [content["recommended_articles"][0]["recommended_article"]["id"],
+             content["recommended_articles"][1]["recommended_article"]["id"]])
+
+        self.assertTrue(article.id in self.importer.reaction_questions)
+        self.assertEqual(
+            self.importer.reaction_questions[article.id],
+            [content["reaction_questions"][0]["reaction_question"]["id"],
+             content["reaction_questions"][1]["reaction_question"]["id"]])
+
+        # TODO: check that social media file has been added
+        # TODO: check that image file has been added
+
+    def test_create_section_page(self):
+        # fake the content passed to the importer
+        content = utils.fake_section_page_response()
+        # avoid any side effects by creating a copy of content
+        content_copy = dict(content)
+
+        parent = self.section_index
+
+        self.assertEqual(SectionPage.objects.count(), 0)
+
+        section = self.importer.create_page(parent, content_copy)
+
+        self.assertEqual(section.get_parent(), parent)
+        self.assertNotEqual(section.id, content["id"])
+
+        # TODO test live attribute
+        self.assertEqual(section.title, content["title"])
+        self.assertEqual(section.description, content["description"])
+        self.assertEqual(section.extra_style_hints,
+                         content["extra_style_hints"])
+        self.assertEqual(section.commenting_state, content["commenting_state"])
+        self.assertEqual(section.monday_rotation, content["monday_rotation"])
+        self.assertEqual(section.tuesday_rotation, content["tuesday_rotation"])
+        self.assertEqual(section.wednesday_rotation,
+                         content["wednesday_rotation"])
+        self.assertEqual(section.thursday_rotation,
+                         content["thursday_rotation"])
+        self.assertEqual(section.friday_rotation, content["friday_rotation"])
+        self.assertEqual(section.saturday_rotation,
+                         content["saturday_rotation"])
+        self.assertEqual(section.sunday_rotation, content["sunday_rotation"])
+
+        self.assertEqual(section.commenting_open_time,
+                         parser.parse(content["commenting_open_time"]))
+        self.assertEqual(section.commenting_close_time,
+                         parser.parse(content["commenting_close_time"]))
+        self.assertEqual(section.content_rotation_start_date,
+                         parser.parse(content["content_rotation_start_date"]))
+        self.assertEqual(section.content_rotation_end_date,
+                         parser.parse(content["content_rotation_end_date"]))
+
+        # NESTED FIELDS
+        # TODO: check that image file has been added
+        # time
+        self.assertTrue(hasattr(section.time, "stream_data"))
+        self.assertEqual(section.time.stream_data, content["time"])
+
+        # section_tags/nav_tags
+        self.assertEqual(self.importer.id_map[content["id"]], section.id)
+        self.assertTrue(section.id in self.importer.section_tags)
+        self.assertEqual(self.importer.section_tags[section.id],
+                         [content["section_tags"][0]["tag"]["id"],
+                          content["section_tags"][1]["tag"]["id"]])
