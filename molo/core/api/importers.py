@@ -361,6 +361,9 @@ class SiteImporter(object):
         self.add_metadata_tags = add_list_of_things("metadata_tags")
 
         self.attach_image = attach_image("image", self.image_map)
+        self.attach_social_media_image = attach_image("social_media_image",
+                                                      self.image_map)
+
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
         response = requests.get(language_url)
@@ -484,13 +487,8 @@ class SiteImporter(object):
         self.add_tags(nested_fields, page)
         self.add_metadata_tags(nested_fields, page)
 
-        if (("social_media_image" in nested_fields) and
-                nested_fields["social_media_image"]):
-            self.attach_social_media_image(
-                page,
-                nested_fields["social_media_image"]["id"])
-
         self.attach_image(nested_fields, page)
+        self.attach_social_media_image(nested_fields, page)
 
         # note that unpublished pages will be published
         page.save_revision().publish()
