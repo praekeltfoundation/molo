@@ -124,6 +124,25 @@ def add_list_of_things(field):
     return _add_list_of_things
 
 
+def attach_image(field, image_map):
+    '''
+    Returns a function that attaches an image to page if it exists
+
+    Assumes that images have already been imported
+    otherwise will fail silently
+    '''
+    def _attach_image(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            foreign_image_id = nested_fields[field]["id"]
+            try:
+                local_image_id = image_map[foreign_image_id]
+                local_image = Image.objects.get(id=local_image_id)
+                setattr(page, field, local_image)
+            except (KeyError, ObjectDoesNotExist):
+                pass
+    return _attach_image
+
+
 class PageImporter(object):
 
     def __init__(self, base_url=None, content=None, content_type=None):
@@ -341,6 +360,7 @@ class SiteImporter(object):
         self.add_tags = add_list_of_things("tags")
         self.add_metadata_tags = add_list_of_things("metadata_tags")
 
+        self.attach_image = attach_image("image", self.image_map)
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
         response = requests.get(language_url)
@@ -414,20 +434,6 @@ class SiteImporter(object):
         local_image.save()
         return local_image
 
-    def attach_image(self, page, foreign_image_id):
-        '''
-        Attaches image to page
-
-        Assumes that images have already been imported
-        otherwise will fail silently
-        '''
-        try:
-            local_image_id = self.image_map["foreign_image_id"]
-            local_image = Image.objects.get(id=local_image_id)
-            page.image = local_image
-        except (KeyError, ObjectDoesNotExist):
-            pass
-
     def attach_social_media_image(self, page, foreign_image_id):
         '''
         Attaches social media image to page
@@ -484,8 +490,7 @@ class SiteImporter(object):
                 page,
                 nested_fields["social_media_image"]["id"])
 
-        if ("image" in nested_fields) and nested_fields["image"]:
-            self.attach_image(page, nested_fields["image"]["id"])
+        self.attach_image(nested_fields, page)
 
         # note that unpublished pages will be published
         page.save_revision().publish()

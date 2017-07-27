@@ -409,7 +409,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             [content["reaction_questions"][0]["reaction_question"]["id"],
              content["reaction_questions"][1]["reaction_question"]["id"]])
 
-        # TODO: check that image file has been added
+        # Check that image file has been added
         self.assertTrue(article.image)
         self.assertEqual(article.image.title, content["image"]["title"])
         # TODO: check that social media file has been added
