@@ -420,6 +420,15 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
     def test_create_section_page(self):
         # fake the content passed to the importer
         content = utils.fake_section_page_response()
+
+        # create local versions of images, mapped to foreign ID
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+        self.importer.image_map[foreign_image_id] = image.id
+
         # avoid any side effects by creating a copy of content
         content_copy = dict(content)
 
@@ -459,7 +468,6 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
                          parser.parse(content["content_rotation_end_date"]))
 
         # NESTED FIELDS
-        # TODO: check that image file has been added
         # time
         self.assertTrue(hasattr(section.time, "stream_data"))
         self.assertEqual(section.time.stream_data, content["time"])
@@ -470,3 +478,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(self.importer.section_tags[section.id],
                          [content["section_tags"][0]["tag"]["id"],
                           content["section_tags"][1]["tag"]["id"]])
+
+        # Check that image file has been added
+        self.assertTrue(section.image)
+        self.assertEqual(section.image.title, content["image"]["title"])
