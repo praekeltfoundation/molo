@@ -4,7 +4,9 @@ from rest_framework import serializers
 
 from wagtail.api.v2.serializers import PageSerializer
 from wagtail.wagtailimages.api.v2.serializers import ImageSerializer
+
 from molo.core.models import TranslatablePageMixinNotRoutable
+from molo.core.utils import get_image_hash
 
 
 class PageChildrenField(serializers.Field):
@@ -114,5 +116,17 @@ class ImageUrlField(serializers.Field):
         return rendition.url
 
 
+class ImageFileHashField(serializers.Field):
+    """
+    Provides an accesible URL for image file
+    """
+    def get_attribute(self, instance):
+        return instance
+
+    def to_representation(self, image):
+        return get_image_hash(image)
+
+
 class MoloImageSerializer(ImageSerializer):
     image_url = ImageUrlField(read_only=True)
+    image_hash = ImageFileHashField(read_only=True)
