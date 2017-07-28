@@ -3,8 +3,10 @@ import shutil
 import zipfile
 import re
 import tempfile
+import imagehash
 import distutils.dir_util
 
+from PIL import Image as PILImage
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
 
@@ -154,3 +156,17 @@ def update_media_file(upload_file):
         temp_file.close()
         if os.path.exists(temp_directory):
             shutil.rmtree(temp_directory)
+
+
+def get_image_hash(image):
+    '''
+    Returns an image hash of a Wagtail Image
+    '''
+    try:
+        image.file.file.open()
+        file = PILImage.open(image.file.file)
+        image.file.file.close()
+        return imagehash.average_hash(file).__str__()
+    except:
+        image.file.file.close()
+        return None
