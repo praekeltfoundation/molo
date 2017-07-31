@@ -268,7 +268,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
 
         # create 'duplicate' image with same name
         Image.objects.create(
-            title=constants.IMAGE_DETAIL_1["title"],
+            title='local image',
             file=get_test_image_file(),
         )
         self.assertEqual(Image.objects.count(), 1)
@@ -276,9 +276,10 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.importer.import_images()
 
         self.assertEqual(Image.objects.count(), 2)
+        # Note that local title is used over foreign title
         self.assertEqual(
             Image.objects.first().title,
-            constants.IMAGE_DETAIL_1["title"])
+            'local image')
         self.assertEqual(
             Image.objects.last().title,
             constants.IMAGE_DETAIL_2["title"])

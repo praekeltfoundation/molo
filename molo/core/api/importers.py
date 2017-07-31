@@ -20,6 +20,7 @@ from molo.core.models import (
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
 )
+from molo.core.utils import get_image_hash
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -402,24 +403,64 @@ class SiteImporter(object):
         '''
         images = list_of_objects_from_api(self.image_url)
 
+        if not images:
+            return None
+
+        # store info about local images in order to match
+        # with imported images
+        local_image_hashes = {}
+        image_width = {}
+        image_height = {}
+
+        for local_image in Image.objects.all():
+            local_image_hashes[get_image_hash(local_image)] = local_image
+
+            if local_image.width in image_width:
+                image_width[local_image.width].append(local_image)
+            else:
+                image_width[local_image.width] = [local_image]
+
+            if local_image.height in image_height:
+                image_height[local_image.height].append(local_image)
+            else:
+                image_height[local_image.height] = [local_image]
+
+        print("local_image_hashes {}".format(local_image_hashes))
+        print("image_width {}".format(image_width))
+        print("image_height {}".format(image_height))
+
+        # iterate through foreign images
         for image in images:
             image_detail_url = "{}{}/".format(self.image_url, image["id"])
             img_response = requests.get(image_detail_url)
             img_info = json.loads(img_response.content)
 
-            local_image = None
+            if img_info["image_hash"] is None:
+                raise ValueError('image hash should not be none')
 
-            try:
-                local_image = Image.objects.get(title=img_info['title'])
-                # do not import image
-                # update images references to point to existing image
-            except ObjectDoesNotExist:
-                # import the image
-                local_image = self.fetch_and_create_image(
-                    img_info['image_url'],
-                    img_info["title"])
+            # check if a replica exists
+            if img_info["width"] in image_width:
+                possible_matches = image_width[img_info["width"]]
+                if img_info["height"] in image_height:
+                    possible_matches = list(
+                        set(image_height[img_info["height"]] +
+                            possible_matches))
+                    if img_info["image_hash"] in local_image_hashes:
+                        result = list(
+                            set([local_image_hashes[img_info["image_hash"]]] +
+                                possible_matches))
+                        # edge case where we have more than one match
+                        result = result[0]
 
-            self.image_map[image["id"]] = local_image.id
+                        # use the local title of the image
+                        self.image_map[image["id"]] = result.id
+                        # LOG THIS
+                        continue
+
+            new_image = self.fetch_and_create_image(
+                img_info['image_url'],
+                img_info["title"])
+            self.image_map[image["id"]] = new_image.id
 
     def fetch_and_create_image(self, relative_url, image_title):
         '''
