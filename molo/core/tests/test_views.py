@@ -141,6 +141,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             title='banner', slug='banner', banner_link_page=article)
         self.banner_index.add_child(instance=banner)
         banner.save_revision().publish()
+        banner2 = BannerPage(
+            title='banner2', slug='banner2', banner_link_page=self.yourmind)
+        self.banner_index.add_child(instance=banner2)
+        banner2.save_revision().publish()
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -177,6 +181,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_banner = BannerPage.objects.descendant_of(main3).get(
             slug=banner.slug)
         self.assertEqual(new_banner.banner_link_page.pk, new_article.pk)
+        new_banner2 = BannerPage.objects.descendant_of(main3).get(
+            slug=banner2.slug)
+        self.assertEqual(new_banner2.banner_link_page.pk, new_section.pk)
         self.assertEqual(ArticlePageTags.objects.get(
             page=new_article).tag.pk, new_tag.pk)
         self.assertEqual(ArticlePageReactionQuestions.objects.get(
