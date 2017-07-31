@@ -1,5 +1,57 @@
 FED
 
+RESPONSIVE TABLES
+
+$breakpoint-apha: 480px;
+.table-class {
+  margin: 1em 0;
+  min-width: 300px; //To be adjusted
+
+  tr {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
+  td {
+    visibility: hidden;
+  }
+
+  td {
+    display: block;
+    &:first-child {
+      padding-top: .5em;
+    }
+    &:last-child {
+      padding-bottom: .5em;
+    }
+    &:before {
+      content attr(data-th)":";
+      font-weight: bold;
+      width: 6.5em;
+      display: inline-block;
+      @media (min-width $breakpoint-apha) {
+        display: none;
+      }
+    }
+  }
+  th, td {
+    align:left;
+      @media (min-width $breakpoint-apha) {
+        display table-cell;
+        padding: .25em .5em;
+        &first-child {
+          padding-left: 0;
+        }
+
+        &:last-child {
+          padding-right: 0;
+        }
+      }
+  }
+
+}
+
+
 TestApp setup
 ----------------
 MOLO CORE TEMPLATES - USES DEFAULT PATTERNS
