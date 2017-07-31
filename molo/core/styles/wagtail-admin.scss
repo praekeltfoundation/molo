@@ -35,10 +35,14 @@ WAGTAIL ADMIN
       max-width: 180px;
     }
   }
-
   .content-wrapper {
     .pagination {
       padding: 0;
     }
+  }
+}
+@media screen and (min-width: 90em) {
+  .wrapper {
+    max-width: 100%;
   }
 }
