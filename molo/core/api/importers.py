@@ -425,10 +425,6 @@ class SiteImporter(object):
             else:
                 image_height[local_image.height] = [local_image]
 
-        print("local_image_hashes {}".format(local_image_hashes))
-        print("image_width {}".format(image_width))
-        print("image_height {}".format(image_height))
-
         # iterate through foreign images
         for image in images:
             image_detail_url = "{}{}/".format(self.image_url, image["id"])
