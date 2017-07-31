@@ -5,6 +5,7 @@ WAGTAIL ADMIN
 */
 .wrapper {
   width: 100%;
+  padding: 0 0 0 12.6%; //Desktop vs Smaller screens
 }
 @import "wagtail-admin/modules/_m-buttons";
 @import "wagtail-admin/modules/_m-filter";
