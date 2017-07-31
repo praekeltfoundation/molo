@@ -4,7 +4,7 @@ NOTE: Difference in Tables classes:
       .result-list.col9 and .result_list.col9
 */
 .content-wrapper {
-  width: 90%;
+  border: none;
   .result_list.col9,
   .result-list.col9  {
     cursor: pointer;
@@ -36,6 +36,7 @@ NOTE: Difference in Tables classes:
 }
 @media screen and (min-width: 781px) {
   .content-wrapper {
+    width: 90%;
     .result_list.col9,
     .result-list.col9 {
       width: 80%;
