@@ -483,7 +483,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertTrue(section.image)
         self.assertEqual(section.image.title, content["image"]["title"])
 
-    def test_create_section_page_translated(self):
+    def test_create_article_page_translated(self):
         # create 2 languages
         self.english = SiteLanguageRelation.objects.create(
             language_setting=self.importer.language_setting,
