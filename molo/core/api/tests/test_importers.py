@@ -414,7 +414,6 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         (self.importer
              .image_map[foreign_social_media_image_id]) = social_media_image.id
 
-
         parent = self.mk_section(self.section_index)
 
         self.assertEqual(ArticlePage.objects.count(), 0)
@@ -544,7 +543,6 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
 
         (self.importer
              .image_map[foreign_social_media_image_id]) = social_media_image.id
-
 
         parent = self.footer_index
 
@@ -702,6 +700,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(relation_2.page.specific, section)
         self.assertEqual(relation_2.tag.specific,
                          tag_2)
+
     def test_create_section_page_translated(self):
         # create 2 languages
         self.english = SiteLanguageRelation.objects.create(
