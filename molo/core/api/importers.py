@@ -1,6 +1,7 @@
 """
 Various importers for the different content types
 """
+import math
 import json
 import requests
 from io import BytesIO
@@ -19,6 +20,9 @@ from molo.core.models import (
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
 )
+from molo.core.utils import get_image_hash
+
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # functions used to find images
@@ -64,6 +68,32 @@ def separate_fields(fields):
     return flat_fields, nested_fields
 
 
+def list_of_objects_from_api(url):
+        '''
+        API only serves 20 pages by default
+        This fetches info on all of items and return them as a list
+
+        Assumption: limit of API is not less than 20
+        '''
+        response = requests.get(url)
+
+        content = json.loads(response.content)
+        count = content["meta"]["total_count"]
+
+        if count <= 20:
+            return content["items"]
+        else:
+            items = [] + content["items"]
+            num_requests = int(math.ceil(count // 20))
+
+            for i in range(1, num_requests + 1):
+                paginated_url = "{}?limit=20&offset={}".format(
+                    url, str(i * 20))
+                paginated_response = requests.get(paginated_url)
+                items = items + json.loads(paginated_response.content)["items"]
+        return items
+
+
 def record_foreign_relation(field, key, record_keeper, id_key="id"):
     '''
     returns a function with the attributes necessary to
@@ -93,6 +123,25 @@ def add_list_of_things(field):
             for item in nested_fields[field]:
                 attr.add(item)
     return _add_list_of_things
+
+
+def attach_image(field, image_map):
+    '''
+    Returns a function that attaches an image to page if it exists
+
+    Assumes that images have already been imported
+    otherwise will fail silently
+    '''
+    def _attach_image(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            foreign_image_id = nested_fields[field]["id"]
+            try:
+                local_image_id = image_map[foreign_image_id]
+                local_image = Image.objects.get(id=local_image_id)
+                setattr(page, field, local_image)
+            except (KeyError, ObjectDoesNotExist):
+                pass
+    return _attach_image
 
 
 class PageImporter(object):
@@ -272,6 +321,7 @@ class SiteImporter(object):
     def __init__(self, site_pk, base_url=''):
         self.base_url = base_url
         self.api_url = self.base_url + '/api/v2/'
+        self.image_url = "{}images/".format(self.api_url)
         self.site_pk = site_pk
         self.content = None
         # maps foreign IDs to local page IDs
@@ -311,6 +361,10 @@ class SiteImporter(object):
         self.add_tags = add_list_of_things("tags")
         self.add_metadata_tags = add_list_of_things("metadata_tags")
 
+        self.attach_image = attach_image("image", self.image_map)
+        self.attach_social_media_image = attach_image("social_media_image",
+                                                      self.image_map)
+
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
         response = requests.get(language_url)
@@ -339,17 +393,100 @@ class SiteImporter(object):
                 is_active=content['is_active'],
                 language_setting=language_setting)
 
-    def fetch_and_create_image(self):
-        # create image object
-        # update self.image_map
-        # return image
-        pass
+    def import_images(self):
+        '''
+        Fetches images from site
 
-    def attach_image(self):
-        # if not (image has already been imported)
-        #   get_image()
-        # attach image
-        pass
+        Attempts to avoid duplicates by matching image titles
+        if a match is found it refers to local instance instead
+        if it is not, the image is fetched, created and referenced
+        '''
+        images = list_of_objects_from_api(self.image_url)
+
+        if not images:
+            return None
+
+        # store info about local images in order to match
+        # with imported images
+        local_image_hashes = {}
+        image_width = {}
+        image_height = {}
+
+        for local_image in Image.objects.all():
+            local_image_hashes[get_image_hash(local_image)] = local_image
+
+            if local_image.width in image_width:
+                image_width[local_image.width].append(local_image)
+            else:
+                image_width[local_image.width] = [local_image]
+
+            if local_image.height in image_height:
+                image_height[local_image.height].append(local_image)
+            else:
+                image_height[local_image.height] = [local_image]
+
+        # iterate through foreign images
+        for image in images:
+            image_detail_url = "{}{}/".format(self.image_url, image["id"])
+            img_response = requests.get(image_detail_url)
+            img_info = json.loads(img_response.content)
+
+            if img_info["image_hash"] is None:
+                raise ValueError('image hash should not be none')
+
+            # check if a replica exists
+            if img_info["width"] in image_width:
+                possible_matches = image_width[img_info["width"]]
+                if img_info["height"] in image_height:
+                    possible_matches = list(
+                        set(image_height[img_info["height"]] +
+                            possible_matches))
+                    if img_info["image_hash"] in local_image_hashes:
+                        result = list(
+                            set([local_image_hashes[img_info["image_hash"]]] +
+                                possible_matches))
+                        # edge case where we have more than one match
+                        result = result[0]
+
+                        # use the local title of the image
+                        self.image_map[image["id"]] = result.id
+                        # LOG THIS
+                        continue
+
+            new_image = self.fetch_and_create_image(
+                img_info['image_url'],
+                img_info["title"])
+            self.image_map[image["id"]] = new_image.id
+
+    def fetch_and_create_image(self, relative_url, image_title):
+        '''
+        fetches, creates and return image object
+        '''
+        # TODO: handle image unavailable
+        image_media_url = "{}{}".format(self.base_url, relative_url)
+        image_file = requests.get(image_media_url)
+        local_image = Image(
+            title=image_title,
+            file=ImageFile(
+                BytesIO(image_file.content), name=image_title
+            )
+        )
+        local_image.save()
+        return local_image
+
+    def attach_social_media_image(self, page, foreign_image_id):
+        '''
+        Attaches social media image to page
+
+        Assumes that images have already been imported
+        otherwise will fail silently
+        '''
+        try:
+            local_image_id = self.image_map["foreign_image_id"]
+            local_image = Image.objects.get(id=local_image_id)
+            page.social_media_image = local_image
+        except (KeyError, ObjectDoesNotExist):
+            pass
 
     def create_page(self, parent, content):
         fields, nested_fields = separate_fields(content)
@@ -387,12 +524,8 @@ class SiteImporter(object):
         self.add_tags(nested_fields, page)
         self.add_metadata_tags(nested_fields, page)
 
-        if (("social_media_image" in nested_fields) and
-                nested_fields["social_media_image"]):
-            self.attach_image()
-
-        if ("image" in nested_fields) and nested_fields["image"]:
-            self.attach_image()
+        self.attach_image(nested_fields, page)
+        self.attach_social_media_image(nested_fields, page)
 
         # note that unpublished pages will be published
         page.save_revision().publish()

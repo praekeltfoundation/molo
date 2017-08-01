@@ -1,3 +1,4 @@
+import json
 from .constants import (
     AVAILABLE_ARTICLES,
     AVAILABLE_SECTIONS,
@@ -5,7 +6,11 @@ from .constants import (
     RELATED_IMAGE,
     ARTICLE_PAGE_RESPONSE,
     SECTION_PAGE_RESPONSE,
+    WAGTAIL_API_LIST_VIEW_PAGE_1,
+    WAGTAIL_API_LIST_VIEW_PAGE_2,
 )
+from wagtail.wagtailimages.tests.utils import get_test_image_file
+from wagtail.wagtailimages.models import Image
 
 
 # Inspired by http://stackoverflow.com/a/28507806
@@ -59,8 +64,21 @@ def mocked_requests_get(url, *args, **kwargs):
                 "image,social_media_image,social_media_description," \
                 "social_media_title&order=latest_revision_created_at":
         return MockResponse(AVAILABLE_ARTICLES, 200)
+    elif url == "http://localhost:8000/api/v2/images/":
+        return MockResponse(json.dumps(WAGTAIL_API_LIST_VIEW_PAGE_1), 200)
+    elif url == "http://localhost:8000/api/v2/images/?limit=20&offset=20":
+        return MockResponse(json.dumps(WAGTAIL_API_LIST_VIEW_PAGE_2), 200)
+    elif url == "http://localhost:8000/media/images/SIbomiWV1AQ.original.jpg":
+        return MockResponse(get_test_image_file().__str__(), 200)
 
     return MockResponse({}, 404)
+
+
+def mocked_fetch_and_create_image(relative_url, image_title):
+    return Image.objects.create(
+        title=image_title,
+        file=get_test_image_file(),
+    )
 
 
 def fake_article_page_response(**kwargs):

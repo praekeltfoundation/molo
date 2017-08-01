@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.views.decorators.cache import never_cache
 
 from wagtail.utils.urlpatterns import decorate_urlpatterns
+from wagtail.wagtailimages.views.serve import ServeView
 
 from .api.urls import api_router
 from .views import (
@@ -11,6 +12,11 @@ from .views import (
 
 urlpatterns = patterns(
     '',
+    url(
+        r'^images/([^/]*)/(\d*)/([^/]*)/[^/]*$',
+        ServeView.as_view(),
+        name='wagtailimages_serve'
+    ),
     url(r'^search/$', search, name='search'),
     url(
         r'^locale/(?P<locale>[\w\-\_]+)/$',

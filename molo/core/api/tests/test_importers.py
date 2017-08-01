@@ -3,8 +3,8 @@ Test the importing module.
 This module relies heavily on an external service and requires
 quite a bit of mocking.
 """
+import os
 from django.test import TestCase
-
 from mock import patch
 
 from molo.core.api import importers
@@ -112,6 +112,39 @@ class SectionImportTestCase(MoloTestCaseMixin, TestCase):
     #     self.assertEqual(SectionPage.objects.all().count(), 1)
 
 
+class TestImporterUtilFunctions(TestCase):
+    def setUp(self):
+        self.test_url = "http://localhost:8000/api/v2/images/"
+
+    @responses.activate
+    def test_list_of_objects_from_api(self):
+        responses.add(responses.GET,
+                      self.test_url,
+                      json=constants.WAGTAIL_API_LIST_VIEW, status=200)
+        returned_list = importers.list_of_objects_from_api(self.test_url)
+        self.assertEqual(
+            returned_list,
+            constants.WAGTAIL_API_LIST_VIEW["items"])
+
+    @patch("molo.core.api.importers.requests.get",
+           side_effect=utils.mocked_requests_get)
+    def test_list_of_objects_from_api_paginated(self, mock_get):
+        responses.add(responses.GET,
+                      self.test_url,
+                      json=constants.WAGTAIL_API_LIST_VIEW_PAGE_1, status=200)
+        responses.add(responses.GET,
+                      "{}?limit=20&offset=20".format(self.test_url),
+                      json=constants.WAGTAIL_API_LIST_VIEW_PAGE_2, status=200)
+        returned_list = importers.list_of_objects_from_api(self.test_url)
+        expected_response = (
+            constants.WAGTAIL_API_LIST_VIEW_PAGE_1["items"] +
+            constants.WAGTAIL_API_LIST_VIEW_PAGE_2["items"]
+        )
+        self.assertEqual(
+            returned_list,
+            expected_response)
+
+
 class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.fake_base_url = "http://localhost:8000"
@@ -154,9 +187,132 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertTrue(fr_lang.is_active)
         self.assertFalse(fr_lang.is_main_language)
 
+    @responses.activate
+    def test_fetch_and_create_image_new_image(self):
+        image_title = "test_title.png"
+        relative_url = "/media/images/SIbomiWV1AQ.original.jpg"
+        test_file_path = os.getcwd() + '/molo/core/api/tests/test_image.png'
+
+        with open(test_file_path, 'rb') as img1:
+            responses.add(
+                responses.GET, '{}{}'.format(self.fake_base_url, relative_url),
+                body=img1.read(), status=200,
+                content_type='image/jpeg',
+                stream=True
+            )
+        result = self.importer.fetch_and_create_image(
+            relative_url,
+            image_title)
+
+        self.assertEqual(type(result), Image)
+        self.assertEqual(result.title, image_title)
+        self.assertEqual(Image.objects.count(), 1)
+
+    @responses.activate
+    @patch("molo.core.api.importers.SiteImporter.fetch_and_create_image",
+           side_effect=utils.mocked_fetch_and_create_image)
+    def test_import_images(self, mock_fetch_and_create_image):
+        image_list_url = '{}/api/v2/images/'.format(self.fake_base_url)
+        image_detail_url_1 = "{}{}/".format(image_list_url,
+                                            constants.IMAGE_DETAIL_1["id"])
+        image_detail_url_2 = "{}{}/".format(image_list_url,
+                                            constants.IMAGE_DETAIL_2["id"])
+        responses.add(
+            responses.GET, image_list_url,
+            json=constants.IMAGE_LIST_RESPONSE, status=200)
+        responses.add(
+            responses.GET, image_detail_url_1,
+            json=constants.IMAGE_DETAIL_1, status=200)
+        responses.add(
+            responses.GET, image_detail_url_2,
+            json=constants.IMAGE_DETAIL_2, status=200)
+
+        self.assertEqual(Image.objects.count(), 0)
+
+        self.importer.import_images()
+
+        self.assertEqual(Image.objects.count(), 2)
+        self.assertEqual(
+            Image.objects.first().title,
+            constants.IMAGE_DETAIL_1["title"])
+        self.assertEqual(
+            Image.objects.last().title,
+            constants.IMAGE_DETAIL_2["title"])
+
+        # check that image mapping from foreign to local exists
+        self.assertEqual(
+            self.importer.image_map[constants.IMAGE_DETAIL_1["id"]],
+            Image.objects.first().id)
+        self.assertEqual(
+            self.importer.image_map[constants.IMAGE_DETAIL_2["id"]],
+            Image.objects.last().id)
+
+    @responses.activate
+    @patch("molo.core.api.importers.SiteImporter.fetch_and_create_image",
+           side_effect=utils.mocked_fetch_and_create_image)
+    def test_import_images_avoid_duplicates(self, mock_fetch_and_create_image):
+        image_list_url = '{}/api/v2/images/'.format(self.fake_base_url)
+        image_detail_url_1 = "{}{}/".format(image_list_url,
+                                            constants.IMAGE_DETAIL_1["id"])
+        image_detail_url_2 = "{}{}/".format(image_list_url,
+                                            constants.IMAGE_DETAIL_2["id"])
+        responses.add(
+            responses.GET, image_list_url,
+            json=constants.IMAGE_LIST_RESPONSE, status=200)
+        responses.add(
+            responses.GET, image_detail_url_1,
+            json=constants.IMAGE_DETAIL_1, status=200)
+        responses.add(
+            responses.GET, image_detail_url_2,
+            json=constants.IMAGE_DETAIL_2, status=200)
+
+        # create 'duplicate' image with same name
+        Image.objects.create(
+            title='local image',
+            file=get_test_image_file(),
+        )
+        self.assertEqual(Image.objects.count(), 1)
+
+        self.importer.import_images()
+
+        self.assertEqual(Image.objects.count(), 2)
+        # Note that local title is used over foreign title
+        self.assertEqual(
+            Image.objects.first().title,
+            'local image')
+        self.assertEqual(
+            Image.objects.last().title,
+            constants.IMAGE_DETAIL_2["title"])
+
+        # check that image mapping from foreign to local exists
+        self.assertEqual(
+            self.importer.image_map[constants.IMAGE_DETAIL_1["id"]],
+            Image.objects.first().id)
+        self.assertEqual(
+            self.importer.image_map[constants.IMAGE_DETAIL_2["id"]],
+            Image.objects.last().id)
+
     def test_create_article_page(self):
         # fake the content passed to the importer
         content = utils.fake_article_page_response()
+
+        # create local versions of images, mapped to foreign ID
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+        self.importer.image_map[foreign_image_id] = image.id
+
+        foreign_social_media_image_id = content["social_media_image"]["id"]
+        social_media_image = Image.objects.create(
+            title=content["social_media_image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        (self.importer
+             .image_map[foreign_social_media_image_id]) = social_media_image.id
+
         # avoid any side effects by creating a copy of content
         content_copy = dict(content)
 
@@ -254,12 +410,26 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             [content["reaction_questions"][0]["reaction_question"]["id"],
              content["reaction_questions"][1]["reaction_question"]["id"]])
 
-        # TODO: check that social media file has been added
-        # TODO: check that image file has been added
+        # Check that image file has been added
+        self.assertTrue(article.image)
+        self.assertEqual(article.image.title, content["image"]["title"])
+        # Check that social media file has been added
+        self.assertTrue(article.social_media_image)
+        self.assertEqual(article.social_media_image.title,
+                         content["social_media_image"]["title"])
 
     def test_create_section_page(self):
         # fake the content passed to the importer
         content = utils.fake_section_page_response()
+
+        # create local versions of images, mapped to foreign ID
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+        self.importer.image_map[foreign_image_id] = image.id
+
         # avoid any side effects by creating a copy of content
         content_copy = dict(content)
 
@@ -299,7 +469,6 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
                          parser.parse(content["content_rotation_end_date"]))
 
         # NESTED FIELDS
-        # TODO: check that image file has been added
         # time
         self.assertTrue(hasattr(section.time, "stream_data"))
         self.assertEqual(section.time.stream_data, content["time"])
@@ -310,3 +479,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(self.importer.section_tags[section.id],
                          [content["section_tags"][0]["tag"]["id"],
                           content["section_tags"][1]["tag"]["id"]])
+
+        # Check that image file has been added
+        self.assertTrue(section.image)
+        self.assertEqual(section.image.title, content["image"]["title"])
