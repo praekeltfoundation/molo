@@ -28,6 +28,7 @@ from molo.core.models import (
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
 )
+from molo.core.utils import get_image_hash
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -99,6 +100,57 @@ def list_of_objects_from_api(url):
                 paginated_response = requests.get(paginated_url)
                 items = items + json.loads(paginated_response.content)["items"]
         return items
+
+
+def record_foreign_relation(field, key, record_keeper, id_key="id"):
+    '''
+    returns a function with the attributes necessary to
+    correctly reference the necessary objects, to correctly record
+    the relationship between a page and its foreign foreign-key pages
+    '''
+    def record_relationship(nested_fields, page_id):
+        if ((field in nested_fields) and nested_fields[field]):
+            record_keeper[page_id] = []
+            for thing in nested_fields[field]:
+                record_keeper[page_id].append(thing[key][id_key])
+    return record_relationship
+
+
+def add_json_dump(field):
+    def _add_json_dump(nested_fields, page):
+        if ((field in nested_fields) and
+                nested_fields[field]):
+            setattr(page, field, json.dumps(nested_fields[field]))
+    return _add_json_dump
+
+
+def add_list_of_things(field):
+    def _add_list_of_things(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            attr = getattr(page, field)
+            for item in nested_fields[field]:
+                attr.add(item)
+    return _add_list_of_things
+
+
+def attach_image(field, image_map):
+    '''
+    Returns a function that attaches an image to page if it exists
+
+    Assumes that images have already been imported
+    otherwise will fail silently
+    '''
+    def _attach_image(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            foreign_image_id = nested_fields[field]["id"]
+            try:
+                local_image_id = image_map[foreign_image_id]
+                local_image = Image.objects.get(id=local_image_id)
+                setattr(page, field, local_image)
+            except (KeyError, ObjectDoesNotExist):
+                # TODO: log when page is not found
+                pass
+    return _attach_image
 
 
 class PageImporter(object):
@@ -301,6 +353,32 @@ class SiteImporter(object):
         # maps local banner page id to foreign linked page id
         self.banner_page_links = {}
 
+        self.record_recommended_articles = record_foreign_relation(
+            "recommended_articles", "recommended_article",
+            self.recommended_articles)
+        self.record_section_tags = record_foreign_relation(
+            "section_tags", "tag",
+            self.section_tags)
+        self.record_nav_tags = record_foreign_relation(
+            "nav_tags", "tag",
+            self.nav_tags)
+        self.record_reaction_questions = record_foreign_relation(
+            "reaction_questions", "reaction_question",
+            self.reaction_questions)
+        self.record_related_sections = record_foreign_relation(
+            "related_sections", "section",
+            self.related_sections)
+
+        self.add_article_body = add_json_dump("body")
+        self.add_section_time = add_json_dump("time")
+
+        self.add_tags = add_list_of_things("tags")
+        self.add_metadata_tags = add_list_of_things("metadata_tags")
+
+        self.attach_image = attach_image("image", self.image_map)
+        self.attach_social_media_image = attach_image("social_media_image",
+                                                      self.image_map)
+
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
         response = requests.get(language_url)
@@ -339,24 +417,60 @@ class SiteImporter(object):
         '''
         images = list_of_objects_from_api(self.image_url)
 
+        if not images:
+            return None
+
+        # store info about local images in order to match
+        # with imported images
+        local_image_hashes = {}
+        image_width = {}
+        image_height = {}
+
+        for local_image in Image.objects.all():
+            local_image_hashes[get_image_hash(local_image)] = local_image
+
+            if local_image.width in image_width:
+                image_width[local_image.width].append(local_image)
+            else:
+                image_width[local_image.width] = [local_image]
+
+            if local_image.height in image_height:
+                image_height[local_image.height].append(local_image)
+            else:
+                image_height[local_image.height] = [local_image]
+
+        # iterate through foreign images
         for image in images:
             image_detail_url = "{}{}/".format(self.image_url, image["id"])
             img_response = requests.get(image_detail_url)
             img_info = json.loads(img_response.content)
 
-            local_image = None
+            if img_info["image_hash"] is None:
+                raise ValueError('image hash should not be none')
 
-            try:
-                local_image = Image.objects.get(title=img_info['title'])
-                # do not import image
-                # update images references to point to existing image
-            except ObjectDoesNotExist:
-                # import the image
-                local_image = self.fetch_and_create_image(
-                    img_info['image_url'],
-                    img_info["title"])
+            # check if a replica exists
+            if img_info["width"] in image_width:
+                possible_matches = image_width[img_info["width"]]
+                if img_info["height"] in image_height:
+                    possible_matches = list(
+                        set(image_height[img_info["height"]] +
+                            possible_matches))
+                    if img_info["image_hash"] in local_image_hashes:
+                        result = list(
+                            set([local_image_hashes[img_info["image_hash"]]] +
+                                possible_matches))
+                        # edge case where we have more than one match
+                        result = result[0]
 
-            self.image_map[image["id"]] = local_image.id
+                        # use the local title of the image
+                        self.image_map[image["id"]] = result.id
+                        # LOG THIS
+                        continue
+
+            new_image = self.fetch_and_create_image(
+                img_info['image_url'],
+                img_info["title"])
+            self.image_map[image["id"]] = new_image.id
 
     def fetch_and_create_image(self, relative_url, image_title):
         '''
@@ -373,48 +487,6 @@ class SiteImporter(object):
         )
         local_image.save()
         return local_image
-
-    def attach_image(self, page, foreign_image_id):
-        '''
-        Attaches image to page
-
-        Assumes that images have already been imported
-        otherwise will fail silently
-        '''
-        try:
-            local_image_id = self.image_map["foreign_image_id"]
-            local_image = Image.objects.get(id=local_image_id)
-            page.image = local_image
-        except (KeyError, ObjectDoesNotExist):
-            pass
-
-    def attach_social_media_image(self, page, foreign_image_id):
-        '''
-        Attaches social media image to page
-
-        Assumes that images have already been imported
-        otherwise will fail silently
-        '''
-        try:
-            local_image_id = self.image_map["foreign_image_id"]
-            local_image = Image.objects.get(id=local_image_id)
-            page.social_media_image = local_image
-        except (KeyError, ObjectDoesNotExist):
-            pass
-
-    def attach_social_banner_image(self, page, foreign_image_id):
-        '''
-        Attaches banner image to banner
-
-        Assumes that images have already been imported
-        otherwise will fail silently
-        '''
-        try:
-            local_image_id = self.image_map["foreign_image_id"]
-            local_image = Image.objects.get(id=local_image_id)
-            page.banner = local_image
-        except (KeyError, ObjectDoesNotExist):
-            pass
 
     def create_translated_content(self, local_main_lang_page,
                                   content, locale):
@@ -445,6 +517,9 @@ class SiteImporter(object):
 
         # handle the unwanted fields
         foreign_id = content.pop('id')
+        # ignore when article was last revised
+        if 'latest_revision_created_at' in content:
+            content.pop('latest_revision_created_at')
 
         page = None
         if content["meta"]["type"] == "core.SectionPage":
@@ -469,97 +544,23 @@ class SiteImporter(object):
 
         self.id_map[foreign_id] = page.id
 
-        # time
-        if (("time" in nested_fields) and
-                nested_fields["time"]):
-            page.time = json.dumps(nested_fields["time"])
+        self.record_section_tags(nested_fields, page.id)
+        self.record_nav_tags(nested_fields, page.id)
+        self.record_reaction_questions(nested_fields, page.id)
+        self.record_recommended_articles(nested_fields, page.id)
+        self.record_related_sections(nested_fields, page.id)
 
-        # section_tags/nav_tags
-        #  list -> ["tag"]["id"]
-        # -> Need to fetch and create the nav tags
-        #  THEN create the link between page and nav_tag
-        if (("section_tags" in nested_fields) and
-                nested_fields["section_tags"]):
-            self.section_tags[page.id] = []
-            for section_tag in nested_fields["section_tags"]:
-                self.section_tags[page.id].append(
-                    section_tag["tag"]["id"])
+        self.add_article_body(nested_fields, page)
+        self.add_section_time(nested_fields, page)
 
-        # nav_tags
-        #  list -> ["tag"]["id"]
-        # -> Need to fetch and create the nav tags
-        #  THEN create the link between page and nav_tag
-        if (("nav_tags" in nested_fields) and
-                nested_fields["nav_tags"]):
-            self.nav_tags[page.id] = []
-            for nav_tag in nested_fields["nav_tags"]:
-                self.nav_tags[page.id].append(
-                    nav_tag["tag"]["id"])
+        self.add_tags(nested_fields, page)
+        self.add_metadata_tags(nested_fields, page)
 
-        # reaction_questions
-        #  list -> ["reaction_question"]["id"]
-        # -> Need to fetch and create the reaction questions
-        #  THEN create the link between page and reaction question
-        if (("reaction_questions" in nested_fields) and
-                nested_fields["reaction_questions"]):
-            self.reaction_questions[page.id] = []
-            for reaction_question in nested_fields["reaction_questions"]:
-                self.reaction_questions[page.id].append(
-                    reaction_question["reaction_question"]["id"])
+        self.attach_image(nested_fields, page)
+        self.attach_social_media_image(nested_fields, page)
 
-        # recommended_articles
-        #  list -> ["recommended_article"]["id"]
-        # -> Only need to create the relationship
-        if (("recommended_articles" in nested_fields) and
-                nested_fields["recommended_articles"]):
-            self.recommended_articles[page.id] = []
-            for recommended_article in nested_fields["recommended_articles"]:
-                self.recommended_articles[page.id].append(
-                    recommended_article["recommended_article"]["id"])
-
-        # related_sections
-        #  list -> ["section"]["id"]
-        # -> Only need to create the relationship
-        if (("related_sections" in nested_fields) and
-                nested_fields["related_sections"]):
-            self.related_sections[page.id] = []
-            for related_section in nested_fields["related_sections"]:
-                self.related_sections[page.id].append(
-                    related_section["section"]["id"])
-
-        if ("body" in nested_fields) and nested_fields["body"]:
-            page.body = json.dumps(nested_fields["body"])
-
-        if ("tags" in nested_fields) and nested_fields["tags"]:
-            for tag in nested_fields["tags"]:
-                page.tags.add(tag)
-
-        if (("metadata_tags" in nested_fields) and
-                nested_fields["metadata_tags"]):
-            for tag in nested_fields["metadata_tags"]:
-                page.metadata_tags.add(tag)
-
-        if ("image" in nested_fields) and nested_fields["image"]:
-            self.attach_image(page, nested_fields["image"]["id"])
-
-        if (("social_media_image" in nested_fields) and
-                nested_fields["social_media_image"]):
-            self.attach_social_media_image(
-                page,
-                nested_fields["social_media_image"]["id"])
-
-        if (("banner" in nested_fields) and
-                nested_fields["banner"]):
-            self.attach_social_banner_image(
-                page,
-                nested_fields["banner"]["id"])
-
-        if (("banner_link_page" in nested_fields) and
-                nested_fields["banner_link_page"]):
-            self.banner_page_links[page.id] = content["banner_link_page"]["id"]
-
-        # update the state of the page ?
-        page.save()
+        # note that unpublished pages will be published
+        page.save_revision().publish()
         return page
 
     def create_recommended_articles(self):

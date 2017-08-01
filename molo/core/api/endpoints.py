@@ -20,6 +20,7 @@ class MoloImagesAPIEndpoint(ImagesAPIEndpoint):
         "filename",
         "file",
         "image_url",
+        "image_hash",
     ]
 
 

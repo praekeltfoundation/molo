@@ -142,7 +142,6 @@ class TestImporterUtilFunctions(TestCase):
         responses.add(responses.GET,
                       "{}?limit=20&offset=20".format(self.test_url),
                       json=constants.WAGTAIL_API_LIST_VIEW_PAGE_2, status=200)
-        print(type(importers.list_of_objects_from_api(self.test_url)))
         returned_list = importers.list_of_objects_from_api(self.test_url)
         expected_response = (
             constants.WAGTAIL_API_LIST_VIEW_PAGE_1["items"] +
@@ -276,7 +275,7 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
 
         # create 'duplicate' image with same name
         Image.objects.create(
-            title=constants.IMAGE_DETAIL_1["title"],
+            title='local image',
             file=get_test_image_file(),
         )
         self.assertEqual(Image.objects.count(), 1)
@@ -284,9 +283,10 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.importer.import_images()
 
         self.assertEqual(Image.objects.count(), 2)
+        # Note that local title is used over foreign title
         self.assertEqual(
             Image.objects.first().title,
-            constants.IMAGE_DETAIL_1["title"])
+            'local image')
         self.assertEqual(
             Image.objects.last().title,
             constants.IMAGE_DETAIL_2["title"])
@@ -342,7 +342,9 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
                          parser.parse(content["demote_date"]))
 
         # NESTED FIELDS
+        self.assertTrue(hasattr(page.body, "stream_data"))
         self.assertEqual(page.body.stream_data, content['body'])
+
         self.assertEqual(page.tags.count(), len(content['tags']))
         for tag in page.tags.all():
             self.assertTrue(tag.name in content["tags"])
@@ -357,32 +359,61 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
 
         # nav_tags
         self.assertEqual(self.importer.id_map[content["id"]], page.id)
+        self.assertTrue(page.id in self.importer.nav_tags)
         self.assertEqual(self.importer.nav_tags[page.id],
                          [content["nav_tags"][0]["tag"]["id"], ])
         # TODO
         # self.assertEqual(self.importer.image_map[page.id], [])
 
+        self.assertTrue(page.id in self.importer.related_sections)
         self.assertEqual(
             self.importer.related_sections[page.id],
             [content["related_sections"][0]["section"]["id"],
              content["related_sections"][1]["section"]["id"]])
+
+        self.assertTrue(page.id in self.importer.recommended_articles)
         self.assertEqual(
             self.importer.recommended_articles[page.id],
             [content["recommended_articles"][0]["recommended_article"]["id"],
              content["recommended_articles"][1]["recommended_article"]["id"]])
+
+        self.assertTrue(page.id in self.importer.reaction_questions)
         self.assertEqual(
             self.importer.reaction_questions[page.id],
             [content["reaction_questions"][0]["reaction_question"]["id"],
              content["reaction_questions"][1]["reaction_question"]["id"]])
 
-        # TODO: check that social media file has been added
-        # TODO: check that image file has been added
+        # Check that image file has been added
+        self.assertTrue(page.image)
+        self.assertEqual(page.image.title, content["image"]["title"])
+        # Check that social media file has been added
+        self.assertTrue(page.social_media_image)
+        self.assertEqual(page.social_media_image.title,
+                         content["social_media_image"]["title"])
 
     def test_create_article_page(self):
         # fake the content passed to the importer
         content = utils.fake_article_page_response()
         # avoid any side effects by creating a copy of content
         content_copy = dict(content)
+
+        # create local versions of images, mapped to foreign ID
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+        self.importer.image_map[foreign_image_id] = image.id
+
+        foreign_social_media_image_id = content["social_media_image"]["id"]
+        social_media_image = Image.objects.create(
+            title=content["social_media_image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        (self.importer
+             .image_map[foreign_social_media_image_id]) = social_media_image.id
+
 
         parent = self.mk_section(self.section_index)
 
@@ -398,6 +429,15 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
     def test_create_section_page(self):
         # fake the content passed to the importer
         content = utils.fake_section_page_response()
+
+        # create local versions of images, mapped to foreign ID
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+        self.importer.image_map[foreign_image_id] = image.id
+
         # avoid any side effects by creating a copy of content
         content_copy = dict(content)
 
@@ -435,23 +475,23 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
                          parser.parse(content["content_rotation_start_date"]))
         self.assertEqual(section.content_rotation_end_date,
                          parser.parse(content["content_rotation_end_date"]))
-        self.assertEqual(section.latest_revision_created_at,
-                         parser.parse(content["latest_revision_created_at"]))
 
         # NESTED FIELDS
-        # TODO: check that image file has been added
         # time
-        self.assertEqual(
-            section.time.stream_data,
-            content["time"])
+        self.assertTrue(hasattr(section.time, "stream_data"))
+        self.assertEqual(section.time.stream_data, content["time"])
 
         # section_tags/nav_tags
         self.assertEqual(self.importer.id_map[content["id"]], section.id)
+        self.assertTrue(section.id in self.importer.section_tags)
         self.assertEqual(self.importer.section_tags[section.id],
                          [content["section_tags"][0]["tag"]["id"],
                           content["section_tags"][1]["tag"]["id"]])
+        # Check that image file has been added
+        self.assertTrue(section.image)
+        self.assertEqual(section.image.title, content["image"]["title"])
 
-    def test_create_section_page_translated(self):
+    def test_create_article_page_translated(self):
         # create 2 languages
         self.english = SiteLanguageRelation.objects.create(
             language_setting=self.importer.language_setting,
@@ -487,6 +527,24 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         content = constants.ARTICLE_PAGE_RESPONSE
         content["meta"]["type"] = "core.FooterPage"
         content_copy = dict(content)
+
+        # create local versions of images, mapped to foreign ID
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+        self.importer.image_map[foreign_image_id] = image.id
+
+        foreign_social_media_image_id = content["social_media_image"]["id"]
+        social_media_image = Image.objects.create(
+            title=content["social_media_image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        (self.importer
+             .image_map[foreign_social_media_image_id]) = social_media_image.id
+
 
         parent = self.footer_index
 
@@ -644,3 +702,34 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(relation_2.page.specific, section)
         self.assertEqual(relation_2.tag.specific,
                          tag_2)
+    def test_create_section_page_translated(self):
+        # create 2 languages
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.importer.language_setting,
+            locale='en',
+            is_active=True)
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=self.importer.language_setting,
+            locale='fr',
+            is_active=True)
+
+        content = constants.SECTION_PAGE_RESPONSE
+        content_for_translated = constants.SECTION_PAGE_RESPONSE_FRENCH
+        content_copy = dict(content)
+        content_for_translated_copy = dict(content_for_translated)
+
+        parent = self.section_index
+
+        self.assertEqual(SectionPage.objects.count(), 0)
+
+        section = self.importer.create_page(parent, content_copy)
+
+        self.assertEqual(SectionPage.objects.count(), 1)
+
+        translated_section = self.importer.create_translated_content(
+            section, content_for_translated_copy, "fr")
+
+        self.assertEqual(SectionPage.objects.count(), 2)
+        self.assertEqual(section.get_translation_for(
+            "fr", self.importer.site),
+            translated_section)
