@@ -478,20 +478,6 @@ class SiteImporter(object):
         local_image.save()
         return local_image
 
-    def attach_social_media_image(self, page, foreign_image_id):
-        '''
-        Attaches social media image to page
-
-        Assumes that images have already been imported
-        otherwise will fail silently
-        '''
-        try:
-            local_image_id = self.image_map["foreign_image_id"]
-            local_image = Image.objects.get(id=local_image_id)
-            page.social_media_image = local_image
-        except (KeyError, ObjectDoesNotExist):
-            pass
-
     def create_translated_content(self, local_main_lang_page,
                                   content, locale):
         '''
