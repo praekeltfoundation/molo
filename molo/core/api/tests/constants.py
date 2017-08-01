@@ -923,3 +923,57 @@ ARTICLE_PAGE_RESPONSE_FRENCH = {
     "nav_tags": [],
     "recommended_articles": []
 }
+
+SECTION_PAGE_RESPONSE_FRENCH = {
+    "id": 25,
+    "meta": {
+        "type": "core.SectionPage",
+        "detail_url": "http://localhost:8000/api/v2/pages/25/",
+        "html_url": "http://localhost:8000/sections/french-translation-of-test-section/",  # noqa
+        "slug": "french-translation-of-test-section",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-07-13T10:31:18.587366Z",
+        "parent": {
+            "id": 6,
+            "meta": {
+                "type": "core.SectionIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/6/",
+                "html_url": "http://localhost:8000/sections/"
+            },
+            "title": "Sections"
+        },
+        "children": None,
+        "translations": [
+            {
+                "locale": "en",
+                "id": 11
+            },
+            {
+                "locale": "ve",
+                "id": 24
+            }
+        ],
+        "main_language_children": None
+    },
+    "title": "French translation of Test Section",
+    "live": True,
+    "description": "",
+    "image": None,
+    "extra_style_hints": "",
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "time": [],
+    "monday_rotation": False,
+    "tuesday_rotation": False,
+    "wednesday_rotation": False,
+    "thursday_rotation": False,
+    "friday_rotation": False,
+    "saturday_rotation": False,
+    "sunday_rotation": False,
+    "content_rotation_start_date": None,
+    "content_rotation_end_date": None,
+    "section_tags": []
+}

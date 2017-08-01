@@ -514,3 +514,35 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(article.get_translation_for(
             "fr", self.importer.site),
             translated_article)
+
+    def test_create_section_page_translated(self):
+        # create 2 languages
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.importer.language_setting,
+            locale='en',
+            is_active=True)
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=self.importer.language_setting,
+            locale='fr',
+            is_active=True)
+
+        content = constants.SECTION_PAGE_RESPONSE
+        content_for_translated = constants.SECTION_PAGE_RESPONSE_FRENCH
+        content_copy = dict(content)
+        content_for_translated_copy = dict(content_for_translated)
+
+        parent = self.section_index
+
+        self.assertEqual(SectionPage.objects.count(), 0)
+
+        section = self.importer.create_page(parent, content_copy)
+
+        self.assertEqual(SectionPage.objects.count(), 1)
+
+        translated_section = self.importer.create_translated_content(
+            section, content_for_translated_copy, "fr")
+
+        self.assertEqual(SectionPage.objects.count(), 2)
+        self.assertEqual(section.get_translation_for(
+            "fr", self.importer.site),
+            translated_section)
