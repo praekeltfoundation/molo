@@ -11,11 +11,12 @@
 @media screen and (min-width: 781px) {
   //Filter
   .content-wrapper .changelist-filter {
-    float: right;
-    width: auto;
-    h2, h3, ul,li {
-      margin: 0;
-      padding: 0;
+    display: inline-block; //Override incorrect Bootstap
+    float: none;
+    width: 100%;
+    ul, #date_range_filter {
+      width: 80%;
+      padding: 0 10% 0 5px;
     }
     li {
       padding: 2px 0 0;
@@ -26,18 +27,20 @@
 @media screen and (min-width: 50em) {
   //Filter
   .content-wrapper .changelist-filter {
-    display: inline-block; //Override incorrect Bootstap
-    float: none;
-    width: 100%;
+    ul, #date_range_filter {
+      width: auto;
+    }
   }
 }
 @media screen and (min-width: 1200px) {
   //Filter
   .content-wrapper .changelist-filter {
+    width: auto;
     float: right;
     margin: 0 15px 0 5px;
     width: 18%; // This is getting overriden
     h2, h3, ul, #date_range_filter {
+      margin: 0;
       padding: 0 5px 0 5px;
     }
   }

@@ -11,6 +11,7 @@ NOTE: Difference in Tables classes:
     padding: 0;
     overflow: auto;
     display: inline-block;
+    overflow: scroll;
 
     //Table
     table.listing,
@@ -39,7 +40,7 @@ NOTE: Difference in Tables classes:
     width: 90%;
     .result_list.col9,
     .result-list.col9 {
-      width: 80%;
+      width: 100%;
       overflow-x: scroll;
       overflow-y: hidden;
     }
@@ -59,6 +60,7 @@ NOTE: Difference in Tables classes:
   .content-wrapper {
     .result_list.col9,
     .result-list.col9 {
+      width: 80%;
       //Table
       table.listing,
       .listing.full-width {
