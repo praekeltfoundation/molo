@@ -793,3 +793,187 @@ IMAGE_DETAIL_2 = {
     "image_url": "/media/images/uYh_80lp8.original.jpg",
     "image_hash": '3f7ffffffee00000'
 }
+
+ARTICLE_PAGE_RESPONSE_MAIN_LANG = {
+    "id": 12,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:8000/api/v2/pages/12/",
+        "html_url": "http://localhost:8000/sections/test-section/article-1/",
+        "slug": "article-1",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-07-07T09:48:40.807381Z",
+        "parent": {
+            "id": 11,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/11/",
+                "html_url": "http://localhost:8000/sections/test-section/"
+            },
+            "title": "Test Section"
+        },
+        "children": None,
+        "translations": [
+            {
+                "locale": "fr",
+                "id": 2
+            }
+        ],
+        "main_language_children": None
+    },
+    "title": "Article 1",
+    "subtitle": "Subtitle for article 1",
+    "body": [
+        {
+            "type": "paragraph",
+            "value": "Content of Article 1 "
+        }
+    ],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-07-10T08:52:14.326306Z",
+    "image": None,
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": []
+}
+
+ARTICLE_PAGE_RESPONSE_FRENCH = {
+    "id": 13,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:8000/api/v2/pages/13/",
+        "html_url": "http://localhost:8000/sections/test-section/french-translation-of-article-1/",  # noqa
+        "slug": "french-translation-of-article-1",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-07-10T08:52:14.349610Z",
+        "parent": {
+            "id": 11,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/11/",
+                "html_url": "http://localhost:8000/sections/test-section/"
+            },
+            "title": "Test Section"
+        },
+        "children": None,
+        "translations": [
+            {
+                "locale": "en",
+                "id": 12
+            }
+        ],
+        "main_language_children": None
+    },
+    "title": "French translation of Article 1",
+    "subtitle": "",
+    "body": [
+        {
+            "type": "paragraph",
+            "value": "article 1 content in french"
+        }
+    ],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-07-10T08:52:14.326306Z",
+    "image": None,
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": []
+}
+
+SECTION_PAGE_RESPONSE_FRENCH = {
+    "id": 25,
+    "meta": {
+        "type": "core.SectionPage",
+        "detail_url": "http://localhost:8000/api/v2/pages/25/",
+        "html_url": "http://localhost:8000/sections/french-translation-of-test-section/",  # noqa
+        "slug": "french-translation-of-test-section",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-07-13T10:31:18.587366Z",
+        "parent": {
+            "id": 6,
+            "meta": {
+                "type": "core.SectionIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/6/",
+                "html_url": "http://localhost:8000/sections/"
+            },
+            "title": "Sections"
+        },
+        "children": None,
+        "translations": [
+            {
+                "locale": "en",
+                "id": 11
+            },
+            {
+                "locale": "ve",
+                "id": 24
+            }
+        ],
+        "main_language_children": None
+    },
+    "title": "French translation of Test Section",
+    "live": True,
+    "description": "",
+    "image": None,
+    "extra_style_hints": "",
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "time": [],
+    "monday_rotation": False,
+    "tuesday_rotation": False,
+    "wednesday_rotation": False,
+    "thursday_rotation": False,
+    "friday_rotation": False,
+    "saturday_rotation": False,
+    "sunday_rotation": False,
+    "content_rotation_start_date": None,
+    "content_rotation_end_date": None,
+    "section_tags": []
+}
