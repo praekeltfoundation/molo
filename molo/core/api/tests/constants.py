@@ -770,11 +770,12 @@ IMAGE_DETAIL_1 = {
         "tags": []
     },
     "title": "GAO_A4qQsiM.jpg",
-    "width": 1080,
-    "height": 720,
+    "width": 640,
+    "height": 480,
     "filename": "GAO_A4qQsiM.jpg",
     "file": "http://localhost:8000/media/original_images/GAO_A4qQsiM.jpg",
-    "image_url": "/media/images/GAO_A4qQsiM.original.jpg"
+    "image_url": "/media/images/GAO_A4qQsiM.original.jpg",
+    "image_hash": '0000000000000000'
 }
 
 IMAGE_DETAIL_2 = {
@@ -789,7 +790,8 @@ IMAGE_DETAIL_2 = {
     "height": 644,
     "filename": "uYh_80lp8.png",
     "file": "http://localhost:8000/media/original_images/uYh_80lp8.png",
-    "image_url": "/media/images/uYh_80lp8.original.jpg"
+    "image_url": "/media/images/uYh_80lp8.original.jpg",
+    "image_hash": '3f7ffffffee00000'
 }
 
 ARTICLE_PAGE_RESPONSE_MAIN_LANG = {
