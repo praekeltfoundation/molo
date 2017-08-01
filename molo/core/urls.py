@@ -7,7 +7,7 @@ from wagtail.wagtailimages.views.serve import ServeView
 from .api.urls import api_router
 from .views import (
     search, TagsListView, ReactionQuestionChoiceView,
-    ReactionQuestionChoiceFeedbackView)
+    ReactionQuestionChoiceFeedbackView, publish)
 
 
 urlpatterns = patterns(
@@ -81,4 +81,5 @@ urlpatterns = patterns(
         TagsListView.as_view(),
         name='tags_list'
     ),
+    url(r'^(\d+)/publish/$', publish, name='publish'),
 )

@@ -1,0 +1,53 @@
+  .nav-main .menu-item {
+    a {
+    padding: .8em 0.8em .8em 2.5em;
+    white-space: normal;
+    &:before {
+      position: absolute;
+      left: 0.5em;
+    }
+  }
+
+  .nav-submenu .menu-item {
+    a {
+      padding-left: 3.5em;
+      &:before {
+        position: inherit;
+        left: 0;
+      }
+    }
+  }
+}
+
+.content-wrapper .changelist-filter {
+  input[type=submit],
+  input[type=reset],
+  input[type=button],
+  button {
+    border-radius: 3px;
+    background-color: #358c8b;
+    border: 1px solid #43b1b0;
+    color: #fff;
+    cursor: pointer;
+    width: auto;
+    font-weight: normal;
+    vertical-align: middle;
+    display: inline-block;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-font-smoothing: auto;
+    -webkit-appearance: button;
+    font-size: 0.95em;
+    padding: 0 1.4em;
+    height: 3em;
+    &:hover {
+      background-color: #358c8b;
+      color: #fff;
+      }
+    }
+}
