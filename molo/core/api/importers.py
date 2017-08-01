@@ -141,6 +141,7 @@ def attach_image(field, image_map):
                 local_image = Image.objects.get(id=local_image_id)
                 setattr(page, field, local_image)
             except (KeyError, ObjectDoesNotExist):
+                # TODO: log when page is not found
                 pass
     return _attach_image
 
