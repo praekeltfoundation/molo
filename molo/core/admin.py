@@ -1,15 +1,18 @@
 from daterange_filter.filter import DateRangeFilter
 from django.contrib import admin
+from django.contrib.admin.utils import quote
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.template.defaultfilters import truncatechars
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+from wagtail.contrib.modeladmin.helpers import PageButtonHelper
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin,
 )
 from wagtail.contrib.modeladmin.options import ModelAdminGroup
+from wagtail.contrib.modeladmin.views import IndexView
 
 from molo.core.models import (
     ReactionQuestion, ReactionQuestionResponse, ArticlePage,
@@ -169,13 +172,63 @@ class SectionListFilter(admin.SimpleListFilter):
                 return None
 
 
+class ArticleButtonHelper(PageButtonHelper):
+    def publish_button(self, pk, classnames_add=[], classnames_exclude=[]):
+        classnames = classnames_add
+        cn = self.finalise_classname(classnames, classnames_exclude)
+        return {
+            'url': reverse('publish', args=[pk]),
+            'label': _('Publish'),
+            'classname': cn,
+            'title': _('Publish for this %s') % self.verbose_name,
+        }
+
+    def unpublish_button(self, pk, classnames_add=[], classnames_exclude=[]):
+        classnames = classnames_add
+        cn = self.finalise_classname(classnames, classnames_exclude)
+        return {
+            'url': reverse('wagtailadmin_pages:unpublish', args=[pk]),
+            'label': _('Unpublish'),
+            'classname': cn,
+            'title': _('Unpublish for this %s') % self.verbose_name,
+        }
+
+    def get_buttons_for_obj(self, obj, exclude=[], classnames_add=[],
+                            classnames_exclude=[]):
+        ph = self.permission_helper
+        pk = quote(getattr(obj, self.opts.pk.attname))
+        btns = super(ArticleButtonHelper, self).get_buttons_for_obj(obj, exclude, classnames_add, classnames_exclude)
+
+        if 'publish' not in exclude and ph.user_can_edit_obj(self.request.user, obj):
+            btns.append(
+                self.publish_button(pk, classnames_add, classnames_exclude)
+            )
+        if 'unpublish' not in exclude and ph.user_can_edit_obj(self.request.user, obj):
+            btns.append(
+                self.unpublish_button(pk, classnames_add, classnames_exclude)
+            )
+        return btns
+
+
+class ArticleModelAdminTemplate(IndexView):
+    def post(self, request, *args, **kwargs):
+        print request.GET.get(
+            'select-item-checkbox'
+        )
+        print self, request, args, kwargs
+        return self.get(request, *args, **kwargs)
+
+    def get_template_names(self):
+        return 'admin/model_admin_template.html'
+
+
 class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     model = ArticlePageLanguageProxy
     menu_label = 'Articles'
     menu_icon = 'doc-full-inverse'
     list_display = [
-        'article_title', 'section', 'live', 'status',
+        'article_title', 'obj_checkbox', 'section', 'live', 'status',
         'first_published_at', 'owner', 'first_created_at',
         'latest_revision_created_at', 'last_edited_by',
         'image_img', 'tags_html',
@@ -192,11 +245,20 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
         'tags'
     ]
     search_fields = ('title', 'subtitle')
+    button_helper_class = ArticleButtonHelper
+    index_view_class = ArticleModelAdminTemplate
 
     def article_title(self, obj):
         return obj.title
     article_title.admin_order_field = 'title'
     article_title.short_description = 'Article Title'
+
+    def obj_checkbox(self, obj):
+        return u'<input id="checkBox-%s" name="select-item-checkbox" ' \
+               u'type="checkbox">' % obj.id
+
+    obj_checkbox.short_description = 'Select'
+    obj_checkbox.allow_tags = True
 
     def image_img(self, obj):
         if obj.image:
