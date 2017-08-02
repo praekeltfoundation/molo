@@ -212,10 +212,7 @@ class ArticleButtonHelper(PageButtonHelper):
 
 class ArticleModelAdminTemplate(IndexView):
     def post(self, request, *args, **kwargs):
-        print request.GET.get(
-            'select-item-checkbox'
-        )
-        print self, request, args, kwargs
+        #TODO: Retrieve selected checkboxes and handle urls
         return self.get(request, *args, **kwargs)
 
     def get_template_names(self):

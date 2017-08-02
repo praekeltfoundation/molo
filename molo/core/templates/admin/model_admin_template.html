@@ -25,7 +25,8 @@
           // Return the array if it is non-empty, or null
           return checkboxesChecked.length > 0 ? checkboxesChecked : null;
         }
-        function doSomething() {
+        // TODO: Parse getCheckedBoxes and add selected checkboxes to url
+        function parseCheckboxData() {
             if (getCheckedBoxes('select-item-checkbox')) {
                 return true;
             } else {
@@ -49,7 +50,7 @@
 
 
             <div class="right">
-                <form onsubmit="return doSomething();" class="my-form" action="." method="post">
+                <form class="my-form" onsubmit="return parseCheckboxData();" action="." method="post">
                     {% csrf_token %}
                     <button type="submit" class="button">{% trans "Unpublish" %}</button>
                     <button type="submit" class="button">{% trans "Publish" %}</button>
