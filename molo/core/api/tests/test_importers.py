@@ -580,12 +580,11 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(banner_page.title, content["title"])
         self.assertEqual(banner_page.external_link, content["external_link"])
 
-
         # check that banner link has been created
         self.assertEqual(
             self.importer.banner_page_links[banner_page.id],
             content["banner_link_page"]["id"])
-        
+
         # check that banner image has been attached
         self.assertTrue(banner_page.banner)
         self.assertEqual(banner_page.banner.title, content["banner"]["title"])

@@ -118,12 +118,13 @@ def record_foreign_relation(field, key, record_keeper, id_key="id"):
 
 def record_foreign_key(field, record_keeper, id_key="id"):
     '''
-    returns a function with the attributes necessary to replicate 
+    returns a function with the attributes necessary to replicate
     a foreign key relation
-    ''' 
+    '''
     def _record_foreign_key(nested_fields, page_id):
         record_keeper[page_id] = nested_fields[field][id_key]
     return _record_foreign_key
+
 
 def add_json_dump(field):
     def _add_json_dump(nested_fields, page):
@@ -378,7 +379,7 @@ class SiteImporter(object):
             "related_sections", "section",
             self.related_sections)
         self.record_banner_page_link = record_foreign_key(
-            "banner_link_page", 
+            "banner_link_page",
             self.banner_page_links)
 
         self.add_article_body = add_json_dump("body")
