@@ -116,6 +116,15 @@ def record_foreign_relation(field, key, record_keeper, id_key="id"):
     return record_relationship
 
 
+def record_foreign_key(field, record_keeper, id_key="id"):
+    '''
+    returns a function with the attributes necessary to replicate 
+    a foreign key relation
+    ''' 
+    def _record_foreign_key(nested_fields, page_id):
+        record_keeper[page_id] = nested_fields[field][id_key]
+    return _record_foreign_key
+
 def add_json_dump(field):
     def _add_json_dump(nested_fields, page):
         if ((field in nested_fields) and
@@ -368,6 +377,9 @@ class SiteImporter(object):
         self.record_related_sections = record_foreign_relation(
             "related_sections", "section",
             self.related_sections)
+        self.record_banner_page_link = record_foreign_key(
+            "banner_link_page", 
+            self.banner_page_links)
 
         self.add_article_body = add_json_dump("body")
         self.add_section_time = add_json_dump("time")
@@ -549,6 +561,7 @@ class SiteImporter(object):
         self.record_reaction_questions(nested_fields, page.id)
         self.record_recommended_articles(nested_fields, page.id)
         self.record_related_sections(nested_fields, page.id)
+        self.record_banner_page_link(nested_fields, page.id)
 
         self.add_article_body(nested_fields, page)
         self.add_section_time(nested_fields, page)
