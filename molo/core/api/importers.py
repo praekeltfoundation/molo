@@ -631,3 +631,11 @@ class SiteImporter(object):
                     page=page,
                     tag=tag
                 ).save()
+
+    def create_banner_page_links(self):
+        for banner_page_id, linked_page_foreign_id in self.banner_page_links.iteritems():  # noqa
+            banner = BannerPage.objects.get(id=banner_page_id)
+            local_id = self.id_map[linked_page_foreign_id]
+            linked_page = Page.objects.get(id=local_id).specific
+            banner.banner_link_page = linked_page
+            banner.save_revision().publish()
