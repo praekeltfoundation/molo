@@ -10,6 +10,7 @@ from PIL import Image as PILImage
 from StringIO import StringIO
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
+from wagtail.wagtailcore.models import Page
 
 
 def create_new_article_relations(old_main, copied_main):
@@ -67,16 +68,18 @@ def create_new_article_relations(old_main, copied_main):
 
                 # replace old article banner relations with new articles
                 for banner in BannerPage.objects.descendant_of(copied_main):
-                    old_article_slug = ArticlePage.objects.get(
-                        pk=banner.banner_link_page).slug
-                    new_article = ArticlePage.objects.descendant_of(
-                        copied_main).get(slug=old_article_slug)
-                    banner.banner_link_page = new_article
-                    banner.save()
+                    old_page = Page.objects.get(
+                        pk=banner.banner_link_page.pk)
+                    if old_page:
+                        new_article = Page.objects.descendant_of(
+                            copied_main).get(slug=old_page.slug)
+                        banner.banner_link_page = new_article
+                        banner.save()
 
 
 def get_locale_code(language_code=None):
     return (language_code or settings.LANGUAGE_CODE).replace('_', '-')
+
 
 RE_NUMERICAL_SUFFIX = re.compile(r'^[\w-]*-(\d+)+$')
 

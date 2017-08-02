@@ -29,7 +29,7 @@ install_requires = [
     'elastic-git',
     'markdown',
     'molo.profiles<6.0.0,>=5.0.0',
-    'mote-prk==0.2.1',
+    'mote-prk==0.3.1',
     'raven==5.0.0',
     'redis',
     'requests',

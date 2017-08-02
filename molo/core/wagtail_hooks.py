@@ -1,7 +1,9 @@
 from django.conf.urls import url
 
-from molo.core.admin import ReactionQuestionsModelAdmin, \
-    ReactionQuestionsSummaryModelAdmin
+from molo.core.admin import (
+    ReactionQuestionsModelAdmin, ReactionQuestionsSummaryModelAdmin,
+    AdminViewGroup
+)
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
 from molo.core.models import LanguageRelation, PageTranslation, Languages
@@ -18,7 +20,7 @@ from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
-from wagtail.wagtailadmin.widgets import ButtonWithDropdownFromHook
+from wagtail.wagtailadmin.widgets import Button, ButtonWithDropdownFromHook
 from wagtail.contrib.modeladmin.options import modeladmin_register
 from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
@@ -68,6 +70,7 @@ def register_article_question_results_admin_view_url():
 
 
 modeladmin_register(ReactionQuestionsSummaryModelAdmin)
+modeladmin_register(AdminViewGroup)
 
 
 @hooks.register('construct_explorer_page_queryset')
@@ -252,6 +255,16 @@ def new_page_listing_buttons(page, page_perms, is_parent=False):
             if (hasattr(b, 'attrs') and
                     'delete' not in b.attrs.get('title').lower()):
                     yield b
+
+    if not page_perms.can_unpublish():
+        yield Button(
+            _('Publish'),
+            urlresolvers.reverse('publish', args=(page.id,)),
+            attrs={'title': _("Publish page '{title}'").format(
+                title=page.get_admin_display_title()
+            )},
+            priority=40
+        )
 
 
 @hooks.register('insert_global_admin_css')

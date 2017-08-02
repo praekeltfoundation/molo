@@ -1,6 +1,27 @@
 CHANGE LOG
 ==========
 
+5.8.1
+~~~~~
+- Fix the styling for Admin dashboard
+
+5.8.0
+~~~~~
+- Add Admin View menu with the Article View to the CMS
+
+5.7.0
+~~~~~
+- Deprecate use of search backends in Molo. Use wagatailsearch instead.
+
+5.6.0
+~~~~~
+- New Feature: Add Article Publish action to shortcuts
+
+5.5.2
+~~~~~
+- Bug fix: ensure that the old article exist in create_new_article_relations
+- Bug fix: use full path for GA tracking
+
 5.5.1
 ~~~~~
 - Add get_effective_banner
@@ -178,6 +199,10 @@ CHANGE LOG
 ~~~~~
 - consolidate minute tasks into 1 call
 
+4.4.5
+~~~~~
+- consolidate minute tasks into 1 call
+
 4.4.4
 ~~~~~
 - Fixed bug for previewing pages
@@ -198,8 +223,8 @@ CHANGE LOG
 4.4.0
 ~~~~~
 - Content rotation enhancement:
-  - Only promote pages that are exact type of ArticlePage
-  - Only demote an article if there is more than two promoted articles
+- Only promote pages that are exact type of ArticlePage
+- Only demote an article if there is more than two promoted articles
 
 4.3.3
 ~~~~~
