@@ -739,3 +739,19 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(section.get_translation_for(
             "fr", self.importer.site),
             translated_section)
+
+    def test_create_banner_page_links(self):
+        banner = self.mk_banner(parent=self.banner_index)
+        section = self.mk_section(parent=self.section_index)
+        # fake the banner page data
+        fake_foreign_id = 111
+        self.importer.id_map[fake_foreign_id] = section.id
+        self.importer.banner_page_links[banner.id] = fake_foreign_id
+
+        self.assertFalse(banner.banner_link_page)
+
+        self.importer.create_banner_page_links()
+
+        banner = BannerPage.objects.get(id=banner.id)
+        self.assertTrue(banner.banner_link_page)
+        self.assertEqual(banner.banner_link_page.specific, section)
