@@ -122,7 +122,8 @@ def record_foreign_key(field, record_keeper, id_key="id"):
     a foreign key relation
     '''
     def _record_foreign_key(nested_fields, page_id):
-        record_keeper[page_id] = nested_fields[field][id_key]
+        if ((field in nested_fields) and nested_fields[field]):
+            record_keeper[page_id] = nested_fields[field][id_key]
     return _record_foreign_key
 
 
