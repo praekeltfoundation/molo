@@ -559,6 +559,13 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         content = constants.BANNER_PAGE_RESPONSE
         content_copy = dict(content)
 
+        foreign_image_id = content["banner"]["id"]
+        image = Image.objects.create(
+            title=content["banner"]["title"],
+            file=get_test_image_file(),
+        )
+        self.importer.image_map[foreign_image_id] = image.id
+
         parent = self.banner_index
 
         self.assertEqual(BannerPage.objects.count(), 0)
@@ -573,14 +580,15 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(banner_page.title, content["title"])
         self.assertEqual(banner_page.external_link, content["external_link"])
 
-        # check that image has been accounted for
-        # TODO: mock out creation of image for this to work
-        # self.assertTrue(banner_page.banner)
 
         # check that banner link has been created
         self.assertEqual(
             self.importer.banner_page_links[banner_page.id],
             content["banner_link_page"]["id"])
+        
+        # check that banner image has been attached
+        self.assertTrue(banner_page.banner)
+        self.assertEqual(banner_page.banner.title, content["banner"]["title"])
 
     def test_create_tag_page(self):
         content = constants.TAG_PAGE_RESPONSE
