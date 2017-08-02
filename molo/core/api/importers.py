@@ -390,6 +390,7 @@ class SiteImporter(object):
         self.attach_image = attach_image("image", self.image_map)
         self.attach_social_media_image = attach_image("social_media_image",
                                                       self.image_map)
+        self.attach_banner_image = attach_image("banner", self.image_map)
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -571,6 +572,7 @@ class SiteImporter(object):
 
         self.attach_image(nested_fields, page)
         self.attach_social_media_image(nested_fields, page)
+        self.attach_banner_image(nested_fields, page)
 
         # note that unpublished pages will be published
         page.save_revision().publish()
