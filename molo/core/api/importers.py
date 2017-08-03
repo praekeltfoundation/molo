@@ -649,8 +649,6 @@ class SiteImporter(object):
 
         Only works for index pages
         '''
-        print("METHOD URL:")
-        print("{}pages/?type={}".format(self.api_url, page_type))
         response = requests.get("{}pages/?type={}".format(
             self.api_url, page_type))
         content = json.loads(response.content)
