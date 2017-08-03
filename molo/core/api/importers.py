@@ -639,3 +639,17 @@ class SiteImporter(object):
             linked_page = Page.objects.get(id=local_id).specific
             banner.banner_link_page = linked_page
             banner.save_revision().publish()
+
+    def get_foreign_page_id_from_type(self, page_type):
+        '''
+        Get the foreign page id based on type
+
+        Only works for index pages
+        '''
+        print("METHOD URL:")
+        print("{}pages/?type={}".format(self.api_url, page_type))
+        response = requests.get("{}pages/?type={}".format(
+            self.api_url, page_type))
+        content = json.loads(response.content)
+        return content["items"][0]["id"]
+

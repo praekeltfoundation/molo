@@ -755,3 +755,12 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         banner = BannerPage.objects.get(id=banner.id)
         self.assertTrue(banner.banner_link_page)
         self.assertEqual(banner.banner_link_page.specific, section)
+
+    @patch("molo.core.api.importers.requests.get",
+           side_effect=utils.mocked_requests_get)
+    def test_get_foreign_page_id_from_type(self, mock_get):
+        page_type = "core.SectionIndexPage"
+        _id = self.importer.get_foreign_page_id_from_type(page_type)
+        self.assertEqual(
+            _id,
+            constants.TYPE_SECTION_INDEX_PAGE_RESPONSE['items'][0]["id"])

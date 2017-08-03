@@ -8,6 +8,7 @@ from .constants import (
     SECTION_PAGE_RESPONSE,
     WAGTAIL_API_LIST_VIEW_PAGE_1,
     WAGTAIL_API_LIST_VIEW_PAGE_2,
+    TYPE_SECTION_INDEX_PAGE_RESPONSE,
 )
 from wagtail.wagtailimages.tests.utils import get_test_image_file
 from wagtail.wagtailimages.models import Image
@@ -70,6 +71,10 @@ def mocked_requests_get(url, *args, **kwargs):
         return MockResponse(json.dumps(WAGTAIL_API_LIST_VIEW_PAGE_2), 200)
     elif url == "http://localhost:8000/media/images/SIbomiWV1AQ.original.jpg":
         return MockResponse(get_test_image_file().__str__(), 200)
+    elif url == "http://localhost:8000/api/v2/pages/?type=core.SectionIndexPage":  # noqa
+        return MockResponse(
+            json.dumps(TYPE_SECTION_INDEX_PAGE_RESPONSE),
+            200)
 
     return MockResponse({}, 404)
 

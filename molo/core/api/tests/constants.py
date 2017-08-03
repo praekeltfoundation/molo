@@ -1049,3 +1049,22 @@ SECTION_PAGE_RESPONSE_FRENCH = {
     "content_rotation_end_date": None,
     "section_tags": []
 }
+
+TYPE_SECTION_INDEX_PAGE_RESPONSE = {
+    "meta": {
+        "total_count": 1
+    },
+    "items": [
+        {
+            "id": 6,
+            "meta": {
+                "type": "core.SectionIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/6/",
+                "html_url": "http://localhost:8000/sections/",
+                "slug": "sections",
+                "first_published_at": "2017-07-06T14:35:24.673565Z"
+            },
+            "title": "Sections"
+        }
+    ]
+}
