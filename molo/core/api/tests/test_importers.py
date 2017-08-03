@@ -738,8 +738,9 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             section, content_for_translated_copy, "fr")
 
         self.assertEqual(SectionPage.objects.count(), 2)
+        site = Site.objects.get(pk=self.importer.site_pk)
         self.assertEqual(section.get_translation_for(
-            "fr", self.importer.site),
+            "fr", site),
             translated_section)
 
     def test_create_banner_page_links(self):
