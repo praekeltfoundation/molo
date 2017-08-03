@@ -339,7 +339,11 @@ class SectionPageImporter(PageImporter):
 class SiteImporter(object):
 
     def __init__(self, site_pk, base_url=''):
-        self.base_url = base_url
+        if base_url[-1] == '/':
+            self.base_url = base_url[:-1]
+        else:
+            self.base_url = base_url
+
         self.api_url = self.base_url + '/api/v2/'
         self.image_url = "{}images/".format(self.api_url)
         self.site_pk = site_pk
