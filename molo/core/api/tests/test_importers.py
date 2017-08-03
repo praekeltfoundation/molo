@@ -25,6 +25,7 @@ from molo.core.tests.base import MoloTestCaseMixin
 
 import responses
 
+from wagtail.wagtailcore.models import Site
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 from dateutil import parser
@@ -518,8 +519,9 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             article, content_for_translated_copy, "fr")
 
         self.assertEqual(ArticlePage.objects.count(), 2)
+        site = Site.objects.get(pk=self.importer.site_pk)
         self.assertEqual(article.get_translation_for(
-            "fr", self.importer.site),
+            "fr", site),
             translated_article)
 
     def test_create_footer_page(self):

@@ -343,7 +343,6 @@ class SiteImporter(object):
         self.api_url = self.base_url + '/api/v2/'
         self.image_url = "{}images/".format(self.api_url)
         self.site_pk = site_pk
-        self.site = Site.objects.get(id=site_pk)
         self.language_setting = Languages.objects.create(
             site_id=self.site_pk)
         self.content = None
