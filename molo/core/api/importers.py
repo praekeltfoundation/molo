@@ -16,7 +16,14 @@ from molo.core.models import (
     SiteLanguageRelation,
     ArticlePage,
     SectionPage,
+    FooterPage,
+    BannerPage,
+    Tag,
+    ArticlePageRecommendedSections,
+    ArticlePageRelatedSections,
     PageTranslation,
+    ArticlePageTags,
+    SectionPageTags,
 )
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
@@ -107,6 +114,17 @@ def record_foreign_relation(field, key, record_keeper, id_key="id"):
             for thing in nested_fields[field]:
                 record_keeper[page_id].append(thing[key][id_key])
     return record_relationship
+
+
+def record_foreign_key(field, record_keeper, id_key="id"):
+    '''
+    returns a function with the attributes necessary to replicate
+    a foreign key relation
+    '''
+    def _record_foreign_key(nested_fields, page_id):
+        if ((field in nested_fields) and nested_fields[field]):
+            record_keeper[page_id] = nested_fields[field][id_key]
+    return _record_foreign_key
 
 
 def add_json_dump(field):
@@ -343,6 +361,8 @@ class SiteImporter(object):
         self.nav_tags = {}
         # maps local pages to list of foreign section_tag IDs
         self.section_tags = {}
+        # maps local banner page id to foreign linked page id
+        self.banner_page_links = {}
 
         self.record_recommended_articles = record_foreign_relation(
             "recommended_articles", "recommended_article",
@@ -359,6 +379,9 @@ class SiteImporter(object):
         self.record_related_sections = record_foreign_relation(
             "related_sections", "section",
             self.related_sections)
+        self.record_banner_page_link = record_foreign_key(
+            "banner_link_page",
+            self.banner_page_links)
 
         self.add_article_body = add_json_dump("body")
         self.add_section_time = add_json_dump("time")
@@ -369,6 +392,7 @@ class SiteImporter(object):
         self.attach_image = attach_image("image", self.image_map)
         self.attach_social_media_image = attach_image("social_media_image",
                                                       self.image_map)
+        self.attach_banner_image = attach_image("banner", self.image_map)
 
     def get_language_ids(self):
         language_url = "{}{}/".format(self.api_url, "languages")
@@ -517,6 +541,13 @@ class SiteImporter(object):
             page = SectionPage(**fields)
         elif content["meta"]["type"] == "core.ArticlePage":
             page = ArticlePage(**fields)
+        elif content["meta"]["type"] == "core.FooterPage":
+            page = FooterPage(**fields)
+        elif content["meta"]["type"] == "core.BannerPage":
+            page = BannerPage(**fields)
+        elif content["meta"]["type"] == "core.Tag":
+            page = Tag(**fields)
+
         # TODO: handle other Page types
 
         parent.add_child(instance=page)
@@ -533,6 +564,7 @@ class SiteImporter(object):
         self.record_reaction_questions(nested_fields, page.id)
         self.record_recommended_articles(nested_fields, page.id)
         self.record_related_sections(nested_fields, page.id)
+        self.record_banner_page_link(nested_fields, page.id)
 
         self.add_article_body(nested_fields, page)
         self.add_section_time(nested_fields, page)
@@ -542,7 +574,68 @@ class SiteImporter(object):
 
         self.attach_image(nested_fields, page)
         self.attach_social_media_image(nested_fields, page)
+        self.attach_banner_image(nested_fields, page)
 
         # note that unpublished pages will be published
         page.save_revision().publish()
         return page
+
+    def create_recommended_articles(self):
+        # iterate through articles with recomended articles
+        for article_id, foreign_rec_article_id_list in self.recommended_articles.iteritems():  # noqa
+
+            main_article = ArticlePage.objects.get(id=article_id)
+            for foreign_rec_article_id in foreign_rec_article_id_list:
+                local_version_page_id = self.id_map[foreign_rec_article_id]
+                rec_article = ArticlePage.objects.get(id=local_version_page_id)
+
+                ArticlePageRecommendedSections(
+                    page=main_article,
+                    recommended_article=rec_article
+                ).save()
+
+    def create_related_sections(self):
+        # iterate through articles with related sections
+        for article_id, foreign_rel_section_id_list in self.related_sections.iteritems():  # noqa
+
+            main_article = ArticlePage.objects.get(id=article_id)
+            for foreign_rel_section_id in foreign_rel_section_id_list:
+                local_version_page_id = self.id_map[foreign_rel_section_id]
+                rel_section = SectionPage.objects.get(id=local_version_page_id)
+
+                ArticlePageRelatedSections(
+                    page=main_article,
+                    section=rel_section
+                ).save()
+
+    def create_nav_tag_relationships(self):
+        for page_id, foreign_tags_id_list in self.nav_tags.iteritems():
+            page = Page.objects.get(id=page_id).specific
+            for foreign_tag_id in foreign_tags_id_list:
+                local_tag_id = self.id_map[foreign_tag_id]
+                tag = Tag.objects.get(id=local_tag_id)
+
+                ArticlePageTags(
+                    page=page,
+                    tag=tag
+                ).save()
+
+    def create_section_tag_relationship(self):
+        for page_id, foreign_tags_id_list in self.section_tags.iteritems():
+            page = Page.objects.get(id=page_id).specific
+            for foreign_tag_id in foreign_tags_id_list:
+                local_tag_id = self.id_map[foreign_tag_id]
+                tag = Tag.objects.get(id=local_tag_id)
+
+                SectionPageTags(
+                    page=page,
+                    tag=tag
+                ).save()
+
+    def create_banner_page_links(self):
+        for banner_page_id, linked_page_foreign_id in self.banner_page_links.iteritems():  # noqa
+            banner = BannerPage.objects.get(id=banner_page_id)
+            local_id = self.id_map[linked_page_foreign_id]
+            linked_page = Page.objects.get(id=local_id).specific
+            banner.banner_link_page = linked_page
+            banner.save_revision().publish()

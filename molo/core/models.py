@@ -518,6 +518,7 @@ class Tag(TranslatablePageMixin, Page):
 
     feature_in_homepage = models.BooleanField(default=False)
 
+    api_fields = ["id", "title", "feature_in_homepage"]
 
 Tag.promote_panels = [
     FieldPanel('feature_in_homepage'),
@@ -561,6 +562,7 @@ class BannerPage(TranslatablePageMixin, Page):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    api_fields = ["banner", "banner_link_page", "external_link"]
 
     def get_effective_banner(self):
         if self.banner:

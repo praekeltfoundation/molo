@@ -924,6 +924,78 @@ ARTICLE_PAGE_RESPONSE_FRENCH = {
     "recommended_articles": []
 }
 
+BANNER_PAGE_RESPONSE = {
+    "id": 40,
+    "meta": {
+        "type": "core.BannerPage",
+        "detail_url": "http://localhost:8000/api/v2/pages/40/",
+        "html_url": "http://localhost:8000/banners/banner-1/",
+        "slug": "banner-1",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-07-17T14:04:05.433345Z",
+        "parent": {
+            "id": 5,
+            "meta": {
+                "type": "core.BannerIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/5/",
+                "html_url": "http://localhost:8000/banners/"
+            },
+            "title": "Banners"
+        },
+        "children": None,
+        "translations": [],
+        "main_language_children": None
+    },
+    "title": "Banner 1",
+    "banner": {
+        "id": 97,
+        "meta": {
+            "type": "wagtailimages.Image",
+            "detail_url": "http://localhost:8000/api/v2/images/97/"
+        },
+        "title": "GAO_A4qQsiM.jpg"
+    },
+    "banner_link_page": {
+        "id": 13,
+        "meta": {
+            "type": "core.ArticlePage",
+            "detail_url": "http://localhost:8000/api/v2/pages/13/"
+        },
+        "title": "French translation of Article 1"
+    },
+    "external_link": "https://www.google.co.za/"
+}
+
+TAG_PAGE_RESPONSE = {
+    "id": 35,
+    "meta": {
+        "type": "core.Tag",
+        "detail_url": "http://localhost:8000/api/v2/pages/35/",
+        "html_url": "http://localhost:8000/tags/nav-tag-1/",
+        "slug": "nav-tag-1",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-07-16T17:51:43.179465Z",
+        "parent": {
+            "id": 8,
+            "meta": {
+                "type": "core.TagIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/8/",
+                "html_url": "http://localhost:8000/tags/"
+            },
+            "title": "Tags"
+        },
+        "children": None,
+        "translations": [],
+        "main_language_children": None
+    },
+    "title": "NAV TAG 1",
+    "feature_in_homepage": False
+}
+
 SECTION_PAGE_RESPONSE_FRENCH = {
     "id": 25,
     "meta": {
