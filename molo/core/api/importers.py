@@ -8,7 +8,7 @@ from io import BytesIO
 
 from django.core.files.images import ImageFile
 
-from wagtail.wagtailcore.models import Site, Page
+from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
 from molo.core.models import (
@@ -518,7 +518,8 @@ class SiteImporter(object):
         '''
         page = self.create_page(local_main_lang_page.get_parent(), content)
 
-        language = SiteLanguageRelation.objects.get(language_setting=self.language_setting, locale=locale)
+        language = SiteLanguageRelation.objects.get(
+            language_setting=self.language_setting, locale=locale)
         language_relation = page.languages.first()
         language_relation.language = language
         language_relation.save()

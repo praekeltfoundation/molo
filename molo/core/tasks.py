@@ -321,7 +321,6 @@ def copy_sections_index(
 @task(ignore_result=True)
 def import_site(site_pk, root_url, user_pk):
     user = User.objects.get(pk=user_pk) if user_pk else None
-    to = Page.objects.get(pk=to_pk).specific
     site = Site.objects.get(pk=site_pk)
     try:
         importer = SiteImporter(site_pk, root_url)
