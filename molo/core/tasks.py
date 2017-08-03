@@ -15,13 +15,18 @@ from django.contrib.auth.models import User
 from molo.core.content_import import api
 from molo.core.utils import create_new_article_relations
 from molo.core.models import (
+    Site,
     ArticlePage,
     Main,
     SectionIndexPage,
     SectionPage,
     Languages,
     SiteSettings,
+    BannerIndexPage,
+    FooterIndexPage,
+    TagIndexPage,
 )
+from molo.core.api.importers import SiteImporter
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
@@ -314,5 +319,64 @@ def copy_sections_index(
 
 
 @task(ignore_result=True)
-def import_site(root_url, site_pk):
-    pass
+def import_site(site_pk, root_url, user_pk):
+    user = User.objects.get(pk=user_pk) if user_pk else None
+    to = Page.objects.get(pk=to_pk).specific
+    site = Site.objects.get(pk=site_pk)
+    try:
+        importer = SiteImporter(site_pk, root_url)
+        # get languages
+        importer.copy_site_languages()
+        # get images
+        importer.import_images()
+
+        # copy_content SectionIndexPage
+        section_index_page = SectionIndexPage.objects.descendant_of(
+            site.root_page).first()
+        foreign_section_index_page_id = importer.get_foreign_page_id_from_type(
+            "core.SectionIndexPage")
+        importer.copy_children(foreign_id=foreign_section_index_page_id,
+                               existing_node=section_index_page)
+
+        # copy_content Banner Pages
+        banner_index_page_id = BannerIndexPage.objects.descendant_of(
+            site.root_page).first().id
+        foreign_banner_index_page_id = importer.get_foreign_page_id_from_type(
+            "core.BannerIndexPage")
+        importer.copy_content_from_id(foreign_id=foreign_banner_index_page_id,
+                                      existing_node=banner_index_page_id)
+        # copy_content Footer Pages
+        footer_index_page_id = FooterIndexPage.objects.descendant_of(
+            site.root_page).first().id
+        foreign_footer_index_page_id = importer.get_foreign_page_id_from_type(
+            "core.FooterIndexPage")
+        importer.copy_content_from_id(foreign_id=foreign_footer_index_page_id,
+                                      existing_node=footer_index_page_id)
+
+        # copy_content TagIndexPage
+        tag_index_page_id = TagIndexPage.objects.descendant_of(
+            site.root_page).first().id
+        foreign_tag_index_page_id = importer.get_foreign_page_id_from_type(
+            "core.TagIndexPage")
+        importer.copy_content_from_id(foreign_id=foreign_tag_index_page_id,
+                                      existing_node=tag_index_page_id)
+
+        importer.create_recommended_articles()
+        importer.create_related_sections()
+        importer.create_nav_tag_relationships()
+        importer.create_section_tag_relationship()
+        importer.create_banner_page_links()
+
+        # send email
+        send_copy_email(user.email, {
+            'name': (user.get_full_name() or user.username) if user else None,
+            'source': root_url,
+            'to': site.root_url
+        })
+    except Exception, e:
+        logging.error(e, exc_info=True)
+        send_copy_failed_email(user.email, {
+            'name': (user.get_full_name() or user.username) if user else None,
+            'source': root_url,
+            'to': site.root_url
+        })
