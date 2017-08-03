@@ -347,7 +347,7 @@ class SiteImporter(object):
         self.api_url = self.base_url + '/api/v2/'
         self.image_url = "{}images/".format(self.api_url)
         self.site_pk = site_pk
-        self.language_setting = Languages.objects.create(
+        self.language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
         self.content = None
         # maps foreign IDs to local page IDs
@@ -518,9 +518,7 @@ class SiteImporter(object):
         '''
         page = self.create_page(local_main_lang_page.get_parent(), content)
 
-        language = SiteLanguageRelation.objects.get(
-            language_setting=self.language_setting,
-            locale=locale)
+        language = SiteLanguageRelation.objects.get(language_setting=self.language_setting, locale=locale)
         language_relation = page.languages.first()
         language_relation.language = language
         language_relation.save()
@@ -654,3 +652,48 @@ class SiteImporter(object):
         content = json.loads(response.content)
         return content["items"][0]["id"]
 
+    def copy_children(self, foreign_id, existing_node):
+        '''
+        Initiates copying of tree, with existing_node acting as root
+        '''
+        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
+
+        response = requests.get(url)
+        content = json.loads(response.content)
+
+        main_language_child_ids = content["meta"]["main_language_children"]
+        for main_language_child_id in main_language_child_ids:
+                self.copy_page_and_children(foreign_id=main_language_child_id,
+                                            parent_id=existing_node.id)
+
+    def copy_page_and_children(self, foreign_id, parent_id):
+        '''
+        Recusively copies over pages, their translations and child pages
+        '''
+        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
+
+        # TODO handle connection errors
+        response = requests.get(url)
+        content = json.loads(response.content)
+
+        parent = Page.objects.get(id=parent_id).specific
+        page = self.create_page(parent, content)
+
+        # create translations
+        if content["meta"]["translations"]:
+            for translation_obj in content["meta"]["translations"]:
+                _url = "{}/api/v2/pages/{}/".format(self.base_url,
+                                                    translation_obj["id"])
+                _response = requests.get(_url)
+                _content = json.loads(_response.content)
+
+                self.create_translated_content(
+                    page, _content, translation_obj["locale"])
+
+        main_language_child_ids = content["meta"]["main_language_children"]
+
+        # recursively iterate through child nodes
+        if main_language_child_ids:
+            for main_language_child_id in main_language_child_ids:
+                self.copy_page_and_children(foreign_id=main_language_child_id,
+                                            parent_id=page.id)
