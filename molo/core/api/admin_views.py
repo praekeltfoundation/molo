@@ -29,7 +29,8 @@ class SiteImportView(FormView):
     def form_valid(self, form):
         url = form.cleaned_data["url"]
         site_pk = self.request.site.root_page.get_site().pk
-        import_site.delay(url, site_pk)
+        user_pk = self.request.user.pk
+        import_site.delay(url, site_pk, self.request.user_pk)
         return super(SiteImportView, self).form_valid(form)
 
 
