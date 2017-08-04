@@ -8,6 +8,16 @@ from .constants import (
     SECTION_PAGE_RESPONSE,
     WAGTAIL_API_LIST_VIEW_PAGE_1,
     WAGTAIL_API_LIST_VIEW_PAGE_2,
+    TYPE_SECTION_INDEX_PAGE_RESPONSE,
+    SECTION_INDEX_PAGE_RESPONSE,
+    SECTION_RESPONSE_1,
+    SECTION_RESPONSE_1_TRANSLATION_1,
+    ARTICLE_RESPONSE_1,
+    ARTICLE_RESPONSE_1_TRANSLATION,
+    ARTICLE_RESPONSE_2,
+    SECTION_RESPONSE_2,
+    SUB_SECTION_RESPONSE_1,
+    NESTED_ARTICLE_RESPONSE,
 )
 from wagtail.wagtailimages.tests.utils import get_test_image_file
 from wagtail.wagtailimages.models import Image
@@ -70,6 +80,28 @@ def mocked_requests_get(url, *args, **kwargs):
         return MockResponse(json.dumps(WAGTAIL_API_LIST_VIEW_PAGE_2), 200)
     elif url == "http://localhost:8000/media/images/SIbomiWV1AQ.original.jpg":
         return MockResponse(get_test_image_file().__str__(), 200)
+    elif url == "http://localhost:8000/api/v2/pages/?type=core.SectionIndexPage":  # noqa
+        return MockResponse(
+            json.dumps(TYPE_SECTION_INDEX_PAGE_RESPONSE),
+            200)
+    elif url == "http://localhost:8000/api/v2/pages/6/":
+        return MockResponse(json.dumps(SECTION_INDEX_PAGE_RESPONSE), 200)
+    elif url == "http://localhost:8000/api/v2/pages/178/":
+        return MockResponse(json.dumps(SECTION_RESPONSE_1), 200)
+    elif url == "http://localhost:8000/api/v2/pages/180/":
+        return MockResponse(json.dumps(SECTION_RESPONSE_1_TRANSLATION_1), 200)
+    elif url == "http://localhost:8000/api/v2/pages/181/":
+        return MockResponse(json.dumps(ARTICLE_RESPONSE_1), 200)
+    elif url == "http://localhost:8000/api/v2/pages/183/":
+        return MockResponse(json.dumps(ARTICLE_RESPONSE_1_TRANSLATION), 200)
+    elif url == "http://localhost:8000/api/v2/pages/182/":
+        return MockResponse(json.dumps(ARTICLE_RESPONSE_2), 200)
+    elif url == "http://localhost:8000/api/v2/pages/179/":
+        return MockResponse(json.dumps(SECTION_RESPONSE_2), 200)
+    elif url == "http://localhost:8000/api/v2/pages/184/":
+        return MockResponse(json.dumps(SUB_SECTION_RESPONSE_1), 200)
+    elif url == "http://localhost:8000/api/v2/pages/185/":
+        return MockResponse(json.dumps(NESTED_ARTICLE_RESPONSE), 200)
 
     return MockResponse({}, 404)
 

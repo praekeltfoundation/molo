@@ -1,6 +1,7 @@
 """
 Views for importing content from another wagtail instance
 """
+from django.conf import settings
 from django.shortcuts import render
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
@@ -29,7 +30,14 @@ class SiteImportView(FormView):
     def form_valid(self, form):
         url = form.cleaned_data["url"]
         site_pk = self.request.site.root_page.get_site().pk
-        import_site.delay(url, site_pk)
+        user_pk = self.request.user.pk
+
+        # call the function synchronously if locally hosted
+        if settings.DEBUG:
+            import_site(url, site_pk, user_pk)
+        else:
+            import_site.delay(url, site_pk, user_pk)
+
         return super(SiteImportView, self).form_valid(form)
 
 

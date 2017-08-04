@@ -8,7 +8,7 @@ from io import BytesIO
 
 from django.core.files.images import ImageFile
 
-from wagtail.wagtailcore.models import Site, Page
+from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
 from molo.core.models import (
@@ -339,12 +339,15 @@ class SectionPageImporter(PageImporter):
 class SiteImporter(object):
 
     def __init__(self, site_pk, base_url=''):
-        self.base_url = base_url
+        if base_url[-1] == '/':
+            self.base_url = base_url[:-1]
+        else:
+            self.base_url = base_url
+
         self.api_url = self.base_url + '/api/v2/'
         self.image_url = "{}images/".format(self.api_url)
         self.site_pk = site_pk
-        self.site = Site.objects.get(id=site_pk)
-        self.language_setting = Languages.objects.create(
+        self.language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
         self.content = None
         # maps foreign IDs to local page IDs
@@ -516,8 +519,7 @@ class SiteImporter(object):
         page = self.create_page(local_main_lang_page.get_parent(), content)
 
         language = SiteLanguageRelation.objects.get(
-            language_setting=self.language_setting,
-            locale=locale)
+            language_setting=self.language_setting, locale=locale)
         language_relation = page.languages.first()
         language_relation.language = language
         language_relation.save()
@@ -639,3 +641,60 @@ class SiteImporter(object):
             linked_page = Page.objects.get(id=local_id).specific
             banner.banner_link_page = linked_page
             banner.save_revision().publish()
+
+    def get_foreign_page_id_from_type(self, page_type):
+        '''
+        Get the foreign page id based on type
+
+        Only works for index pages
+        '''
+        response = requests.get("{}pages/?type={}".format(
+            self.api_url, page_type))
+        content = json.loads(response.content)
+        return content["items"][0]["id"]
+
+    def copy_children(self, foreign_id, existing_node):
+        '''
+        Initiates copying of tree, with existing_node acting as root
+        '''
+        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
+
+        response = requests.get(url)
+        content = json.loads(response.content)
+
+        main_language_child_ids = content["meta"]["main_language_children"]
+        for main_language_child_id in main_language_child_ids:
+                self.copy_page_and_children(foreign_id=main_language_child_id,
+                                            parent_id=existing_node.id)
+
+    def copy_page_and_children(self, foreign_id, parent_id):
+        '''
+        Recusively copies over pages, their translations and child pages
+        '''
+        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
+
+        # TODO handle connection errors
+        response = requests.get(url)
+        content = json.loads(response.content)
+
+        parent = Page.objects.get(id=parent_id).specific
+        page = self.create_page(parent, content)
+
+        # create translations
+        if content["meta"]["translations"]:
+            for translation_obj in content["meta"]["translations"]:
+                _url = "{}/api/v2/pages/{}/".format(self.base_url,
+                                                    translation_obj["id"])
+                _response = requests.get(_url)
+                _content = json.loads(_response.content)
+
+                self.create_translated_content(
+                    page, _content, translation_obj["locale"])
+
+        main_language_child_ids = content["meta"]["main_language_children"]
+
+        # recursively iterate through child nodes
+        if main_language_child_ids:
+            for main_language_child_id in main_language_child_ids:
+                self.copy_page_and_children(foreign_id=main_language_child_id,
+                                            parent_id=page.id)

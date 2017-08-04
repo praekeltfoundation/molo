@@ -1049,3 +1049,513 @@ SECTION_PAGE_RESPONSE_FRENCH = {
     "content_rotation_end_date": None,
     "section_tags": []
 }
+
+TYPE_SECTION_INDEX_PAGE_RESPONSE = {
+    "meta": {
+        "total_count": 1
+    },
+    "items": [
+        {
+            "id": 6,
+            "meta": {
+                "type": "core.SectionIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/6/",
+                "html_url": "http://localhost:8000/sections/",
+                "slug": "sections",
+                "first_published_at": "2017-07-06T14:35:24.673565Z"
+            },
+            "title": "Sections"
+        }
+    ]
+}
+
+# START
+# Integration Test for Recursive Import
+# http://localhost:8000/api/v2/pages/6/
+SECTION_INDEX_PAGE_RESPONSE = {
+    "id": 6,
+    "meta": {
+        "type": "core.SectionIndexPage",
+        "detail_url": "http://localhost:8000/api/v2/pages/6/",
+        "html_url": "http://localhost:8000/sections/",
+        "slug": "sections",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-07-07T10:48:23.219970Z",
+        "parent": {
+            "id": 4,
+            "meta": {
+                "type": "core.Main",
+                "detail_url": "http://localhost:8000/api/v2/pages/4/",
+                "html_url": "http://localhost:8000/"
+            },
+            "title": "Main"
+        },
+        "children": {
+            "items": [
+                178,
+                179,
+                180
+            ]
+        },
+        "translations": None,
+        "main_language_children": [
+            178,
+            179
+        ]
+    },
+    "title": "Sections"
+}
+
+# First Section Imported
+# http://localhost:8000/api/v2/pages/178/
+SECTION_RESPONSE_1 = {
+    "id": 178,
+    "meta": {
+        "type": "core.SectionPage",
+        "detail_url": "http://localhost:8000/api/v2/pages/178/",
+        "html_url": "http://localhost:8000/sections/section-1/",
+        "slug": "section-1",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-04T10:07:03.947926Z",
+        "parent": {
+            "id": 6,
+            "meta": {
+                "type": "core.SectionIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/6/",
+                "html_url": "http://localhost:8000/sections/"
+            },
+            "title": "Sections"
+        },
+        "children": {
+            "items": [
+                181,
+                182,
+                183
+            ]
+        },
+        "translations": [
+            {
+                "locale": "fr",
+                "id": 180
+            }
+        ],
+        "main_language_children": [
+            181,
+            182
+        ]
+    },
+    "title": "Section 1",
+    "live": True,
+    "description": "Description for Site 1",
+    "image": None,
+    "extra_style_hints": "",
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "time": [],
+    "monday_rotation": False,
+    "tuesday_rotation": False,
+    "wednesday_rotation": False,
+    "thursday_rotation": False,
+    "friday_rotation": False,
+    "saturday_rotation": False,
+    "sunday_rotation": False,
+    "content_rotation_start_date": None,
+    "content_rotation_end_date": None,
+    "section_tags": []
+}
+
+# Translation of Section 1
+# http://localhost:8000/api/v2/pages/180/
+SECTION_RESPONSE_1_TRANSLATION_1 = {
+    "id": 180,
+    "meta": {
+        "type": "core.SectionPage",
+        "detail_url": "http://localhost:8000/api/v2/pages/180/",
+        "html_url": "http://localhost:8000/sections/french-translation-of-section-1/",  # noqa
+        "slug": "french-translation-of-section-1",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-04T10:07:28.164537Z",
+        "parent": {
+            "id": 6,
+            "meta": {
+                "type": "core.SectionIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/6/",
+                "html_url": "http://localhost:8000/sections/"
+            },
+            "title": "Sections"
+        },
+        "children": None,
+        "translations": [
+            {
+                "locale": "en",
+                "id": 178
+            }
+        ],
+        "main_language_children": None
+    },
+    "title": "French translation of Section 1",
+    "live": True,
+    "description": "",
+    "image": None,
+    "extra_style_hints": "",
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "time": [],
+    "monday_rotation": False,
+    "tuesday_rotation": False,
+    "wednesday_rotation": False,
+    "thursday_rotation": False,
+    "friday_rotation": False,
+    "saturday_rotation": False,
+    "sunday_rotation": False,
+    "content_rotation_start_date": None,
+    "content_rotation_end_date": None,
+    "section_tags": []
+}
+
+# Article Page
+# http://localhost:8000/api/v2/pages/181/
+ARTICLE_RESPONSE_1 = {
+    "id": 181,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:8000/api/v2/pages/181/",
+        "html_url": "http://localhost:8000/sections/section-1/article-1/",
+        "slug": "article-1",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-04T10:07:58.625958Z",
+        "parent": {
+            "id": 178,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/178/",
+                "html_url": "http://localhost:8000/sections/section-1/"
+            },
+            "title": "Section 1"
+        },
+        "children": None,
+        "translations": [
+            {
+                "locale": "fr",
+                "id": 183
+            }
+        ],
+        "main_language_children": None
+    },
+    "title": "Article 1",
+    "subtitle": "",
+    "body": [],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-08-04T10:07:58.605558Z",
+    "image": None,
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": []
+}
+
+# http://localhost:8000/api/v2/pages/183/
+ARTICLE_RESPONSE_1_TRANSLATION = {
+    "id": 183,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:8000/api/v2/pages/183/",
+        "html_url": "http://localhost:8000/sections/section-1/french-translation-of-article-1-2/",  # noqa
+        "slug": "french-translation-of-article-1-2",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-04T10:08:14.444885Z",
+        "parent": {
+            "id": 178,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/178/",
+                "html_url": "http://localhost:8000/sections/section-1/"
+            },
+            "title": "Section 1"
+        },
+        "children": None,
+        "translations": [
+            {
+                "locale": "en",
+                "id": 181
+            }
+        ],
+        "main_language_children": None
+    },
+    "title": "French translation of Article 1",
+    "subtitle": "",
+    "body": [],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-08-04T10:08:14.425964Z",
+    "image": None,
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": []
+}
+
+# http://localhost:8000/api/v2/pages/182/
+ARTICLE_RESPONSE_2 = {
+    "id": 182,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:8000/api/v2/pages/182/",
+        "html_url": "http://localhost:8000/sections/section-1/article-2/",
+        "slug": "article-2",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-04T10:08:08.877299Z",
+        "parent": {
+            "id": 178,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/178/",
+                "html_url": "http://localhost:8000/sections/section-1/"
+            },
+            "title": "Section 1"
+        },
+        "children": None,
+        "translations": [],
+        "main_language_children": None
+    },
+    "title": "Article 2",
+    "subtitle": "",
+    "body": [],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-08-04T10:08:08.854104Z",
+    "image": None,
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": []
+}
+
+# http://localhost:8000/api/v2/pages/179/
+SECTION_RESPONSE_2 = {
+    "id": 179,
+    "meta": {
+        "type": "core.SectionPage",
+        "detail_url": "http://localhost:8000/api/v2/pages/179/",
+        "html_url": "http://localhost:8000/sections/section-2/",
+        "slug": "section-2",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-04T10:07:14.463717Z",
+        "parent": {
+            "id": 6,
+            "meta": {
+                "type": "core.SectionIndexPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/6/",
+                "html_url": "http://localhost:8000/sections/"
+            },
+            "title": "Sections"
+        },
+        "children": {
+            "items": [
+                184
+            ]
+        },
+        "translations": [],
+        "main_language_children": [
+            184
+        ]
+    },
+    "title": "Section 2",
+    "live": True,
+    "description": "Description 2",
+    "image": None,
+    "extra_style_hints": "",
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "time": [],
+    "monday_rotation": False,
+    "tuesday_rotation": False,
+    "wednesday_rotation": False,
+    "thursday_rotation": False,
+    "friday_rotation": False,
+    "saturday_rotation": False,
+    "sunday_rotation": False,
+    "content_rotation_start_date": None,
+    "content_rotation_end_date": None,
+    "section_tags": []
+}
+
+# http://localhost:8000/api/v2/pages/184/
+SUB_SECTION_RESPONSE_1 = {
+    "id": 184,
+    "meta": {
+        "type": "core.SectionPage",
+        "detail_url": "http://localhost:8000/api/v2/pages/184/",
+        "html_url": "http://localhost:8000/sections/section-2/sub-section/",
+        "slug": "sub-section",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-04T10:08:47.727354Z",
+        "parent": {
+            "id": 179,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/179/",
+                "html_url": "http://localhost:8000/sections/section-2/"
+            },
+            "title": "Section 2"
+        },
+        "children": {
+            "items": [
+                185
+            ]
+        },
+        "translations": [],
+        "main_language_children": [
+            185
+        ]
+    },
+    "title": "Sub Section",
+    "live": True,
+    "description": "",
+    "image": None,
+    "extra_style_hints": "",
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "time": [],
+    "monday_rotation": False,
+    "tuesday_rotation": False,
+    "wednesday_rotation": False,
+    "thursday_rotation": False,
+    "friday_rotation": False,
+    "saturday_rotation": False,
+    "sunday_rotation": False,
+    "content_rotation_start_date": None,
+    "content_rotation_end_date": None,
+    "section_tags": []
+}
+
+# http://localhost:8000/api/v2/pages/185/
+NESTED_ARTICLE_RESPONSE = {
+    "id": 185,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:8000/api/v2/pages/185/",
+        "html_url": "http://localhost:8000/sections/section-2/sub-section/article-3/",  # noqa
+        "slug": "article-3",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-04T10:09:01.177880Z",
+        "parent": {
+            "id": 184,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:8000/api/v2/pages/184/",
+                "html_url": "http://localhost:8000/sections/section-2/sub-section/"  # noqa
+            },
+            "title": "Sub Section"
+        },
+        "children": None,
+        "translations": [],
+        "main_language_children": None
+    },
+    "title": "Article 3",
+    "subtitle": "",
+    "body": [],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-08-04T10:09:01.158928Z",
+    "image": None,
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": []
+}

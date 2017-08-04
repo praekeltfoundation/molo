@@ -25,6 +25,7 @@ from molo.core.tests.base import MoloTestCaseMixin
 
 import responses
 
+from wagtail.wagtailcore.models import Site
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 from dateutil import parser
@@ -518,8 +519,9 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             article, content_for_translated_copy, "fr")
 
         self.assertEqual(ArticlePage.objects.count(), 2)
+        site = Site.objects.get(pk=self.importer.site_pk)
         self.assertEqual(article.get_translation_for(
-            "fr", self.importer.site),
+            "fr", site),
             translated_article)
 
     def test_create_footer_page(self):
@@ -736,8 +738,9 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             section, content_for_translated_copy, "fr")
 
         self.assertEqual(SectionPage.objects.count(), 2)
+        site = Site.objects.get(pk=self.importer.site_pk)
         self.assertEqual(section.get_translation_for(
-            "fr", self.importer.site),
+            "fr", site),
             translated_section)
 
     def test_create_banner_page_links(self):
@@ -755,3 +758,85 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         banner = BannerPage.objects.get(id=banner.id)
         self.assertTrue(banner.banner_link_page)
         self.assertEqual(banner.banner_link_page.specific, section)
+
+    @patch("molo.core.api.importers.requests.get",
+           side_effect=utils.mocked_requests_get)
+    def test_get_foreign_page_id_from_type(self, mock_get):
+        page_type = "core.SectionIndexPage"
+        _id = self.importer.get_foreign_page_id_from_type(page_type)
+        self.assertEqual(
+            _id,
+            constants.TYPE_SECTION_INDEX_PAGE_RESPONSE['items'][0]["id"])
+
+    @patch("molo.core.api.importers.requests.get",
+           side_effect=utils.mocked_requests_get)
+    def test_recursive_copy(self, mock_get):
+        '''
+        This test will copy content with the following structure:
+        |--Sections
+           |--Section 1 [with French translation]
+           |  |--Article 1  [with French translation]
+           |  |--Article 2
+           |
+           |--Section 2
+              |--Sub Section
+                 |--Article 3
+        '''
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=self.importer.language_setting,
+            locale='fr',
+            is_active=True)
+
+        self.assertEqual(SectionPage.objects.count(), 0)
+        self.assertEqual(ArticlePage.objects.count(), 0)
+
+        self.importer.copy_children(
+            foreign_id=constants.SECTION_INDEX_PAGE_RESPONSE["id"],
+            existing_node=self.section_index)
+
+        self.assertEqual(SectionPage.objects.count(), 4)
+        self.assertEqual(ArticlePage.objects.count(), 4)
+
+        sec_1 = SectionPage.objects.get(
+            title=constants.SECTION_RESPONSE_1["title"])
+        self.assertTrue(sec_1)
+        self.assertEqual(sec_1.get_parent().specific, self.section_index)
+        self.assertEqual(sec_1.get_children().count(), 3)
+
+        sec_1_trans = SectionPage.objects.get(
+            title=constants.SECTION_RESPONSE_1_TRANSLATION_1["title"])
+        self.assertTrue(sec_1_trans)
+        self.assertEqual(sec_1_trans.get_parent().specific, self.section_index)
+        self.assertEqual(sec_1_trans.get_children().count(), 0)
+
+        sec_2 = SectionPage.objects.get(
+            title=constants.SECTION_RESPONSE_2["title"])
+        self.assertTrue(sec_2)
+        self.assertEqual(sec_2.get_parent().specific, self.section_index)
+        self.assertEqual(sec_2.get_children().count(), 1)
+
+        sec_3 = SectionPage.objects.get(
+            title=constants.SUB_SECTION_RESPONSE_1["title"])
+        self.assertTrue(sec_3)
+        self.assertEqual(sec_3.get_parent().specific, sec_2)
+        self.assertEqual(sec_3.get_children().count(), 1)
+
+        art_1 = ArticlePage.objects.get(
+            title=constants.ARTICLE_RESPONSE_1["title"])
+        self.assertTrue(art_1)
+        self.assertTrue(art_1.get_parent().specific, sec_1)
+
+        art_1_trans = ArticlePage.objects.get(
+            title=constants.ARTICLE_RESPONSE_1_TRANSLATION["title"])
+        self.assertTrue(art_1_trans)
+        self.assertTrue(art_1_trans.get_parent().specific, sec_1)
+
+        art_2 = ArticlePage.objects.get(
+            title=constants.ARTICLE_RESPONSE_2["title"])
+        self.assertTrue(art_2)
+        self.assertTrue(art_2.get_parent().specific, sec_1)
+
+        art_3 = ArticlePage.objects.get(
+            title=constants.NESTED_ARTICLE_RESPONSE["title"])
+        self.assertTrue(art_3)
+        self.assertTrue(art_3.get_parent().specific, sec_3)
