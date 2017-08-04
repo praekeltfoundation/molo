@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.8.2
+~~~~~
+- Fix the responsive styling for Admin dashboard
+
 5.8.1
 ~~~~~
 - Fix the styling for Admin dashboard
