@@ -828,8 +828,8 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
 
         art_1_trans = ArticlePage.objects.get(
             title=constants.ARTICLE_RESPONSE_1_TRANSLATION["title"])
-        self.assertTrue(art_1)
-        self.assertTrue(art_1.get_parent().specific, sec_1)
+        self.assertTrue(art_1_trans)
+        self.assertTrue(art_1_trans.get_parent().specific, sec_1)
 
         art_2 = ArticlePage.objects.get(
             title=constants.ARTICLE_RESPONSE_2["title"])

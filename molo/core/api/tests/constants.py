@@ -1176,7 +1176,7 @@ SECTION_RESPONSE_1_TRANSLATION_1 = {
     "meta": {
         "type": "core.SectionPage",
         "detail_url": "http://localhost:8000/api/v2/pages/180/",
-        "html_url": "http://localhost:8000/sections/french-translation-of-section-1/",
+        "html_url": "http://localhost:8000/sections/french-translation-of-section-1/",  # noqa
         "slug": "french-translation-of-section-1",
         "show_in_menus": False,
         "seo_title": "",
@@ -1289,7 +1289,7 @@ ARTICLE_RESPONSE_1_TRANSLATION = {
     "meta": {
         "type": "core.ArticlePage",
         "detail_url": "http://localhost:8000/api/v2/pages/183/",
-        "html_url": "http://localhost:8000/sections/section-1/french-translation-of-article-1-2/",
+        "html_url": "http://localhost:8000/sections/section-1/french-translation-of-article-1-2/",  # noqa
         "slug": "french-translation-of-article-1-2",
         "show_in_menus": False,
         "seo_title": "",
@@ -1510,7 +1510,7 @@ NESTED_ARTICLE_RESPONSE = {
     "meta": {
         "type": "core.ArticlePage",
         "detail_url": "http://localhost:8000/api/v2/pages/185/",
-        "html_url": "http://localhost:8000/sections/section-2/sub-section/article-3/",
+        "html_url": "http://localhost:8000/sections/section-2/sub-section/article-3/",  # noqa
         "slug": "article-3",
         "show_in_menus": False,
         "seo_title": "",
@@ -1521,7 +1521,7 @@ NESTED_ARTICLE_RESPONSE = {
             "meta": {
                 "type": "core.SectionPage",
                 "detail_url": "http://localhost:8000/api/v2/pages/184/",
-                "html_url": "http://localhost:8000/sections/section-2/sub-section/"
+                "html_url": "http://localhost:8000/sections/section-2/sub-section/"  # noqa
             },
             "title": "Sub Section"
         },
