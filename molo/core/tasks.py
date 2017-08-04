@@ -319,7 +319,7 @@ def copy_sections_index(
 
 
 @task(ignore_result=True)
-def import_site(site_pk, root_url, user_pk):
+def import_site(root_url, site_pk, user_pk):
     user = User.objects.get(pk=user_pk) if user_pk else None
     site = Site.objects.get(pk=site_pk)
     try:
@@ -338,27 +338,27 @@ def import_site(site_pk, root_url, user_pk):
                                existing_node=section_index_page)
 
         # copy_content Banner Pages
-        banner_index_page_id = BannerIndexPage.objects.descendant_of(
-            site.root_page).first().id
+        banner_index_page = BannerIndexPage.objects.descendant_of(
+            site.root_page).first()
         foreign_banner_index_page_id = importer.get_foreign_page_id_from_type(
             "core.BannerIndexPage")
-        importer.copy_content_from_id(foreign_id=foreign_banner_index_page_id,
-                                      existing_node=banner_index_page_id)
+        importer.copy_children(foreign_id=foreign_banner_index_page_id,
+                               existing_node=banner_index_page)
         # copy_content Footer Pages
-        footer_index_page_id = FooterIndexPage.objects.descendant_of(
-            site.root_page).first().id
+        footer_index_page = FooterIndexPage.objects.descendant_of(
+            site.root_page).first()
         foreign_footer_index_page_id = importer.get_foreign_page_id_from_type(
             "core.FooterIndexPage")
-        importer.copy_content_from_id(foreign_id=foreign_footer_index_page_id,
-                                      existing_node=footer_index_page_id)
+        importer.copy_children(foreign_id=foreign_footer_index_page_id,
+                               existing_node=footer_index_page)
 
         # copy_content TagIndexPage
-        tag_index_page_id = TagIndexPage.objects.descendant_of(
-            site.root_page).first().id
+        tag_index_page = TagIndexPage.objects.descendant_of(
+            site.root_page).first()
         foreign_tag_index_page_id = importer.get_foreign_page_id_from_type(
             "core.TagIndexPage")
-        importer.copy_content_from_id(foreign_id=foreign_tag_index_page_id,
-                                      existing_node=tag_index_page_id)
+        importer.copy_children(foreign_id=foreign_tag_index_page_id,
+                               existing_node=tag_index_page)
 
         importer.create_recommended_articles()
         importer.create_related_sections()
