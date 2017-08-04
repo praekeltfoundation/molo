@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.wagtailsitemaps',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
+    'wagtail.api.v2',
 
     'mptt',
     'djcelery',

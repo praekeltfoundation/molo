@@ -26,6 +26,8 @@ from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
 from . import views
 
+from molo.core.api import urls as molo_api_urls
+
 
 @hooks.register('register_admin_urls')
 def urlconf_translations():
@@ -128,6 +130,21 @@ def register_import_menu_item():
     )
 
 
+# API admin
+@hooks.register("register_admin_urls")
+def add_import_view():
+    return molo_api_urls.urlpatterns
+
+
+@hooks.register('register_admin_menu_item')
+def register_api_menu_item():
+    return MenuItem(
+        _('API'),
+        urlresolvers.reverse('site-import'),
+        classnames='icon icon-download',
+    )
+
+
 class LanguageSummaryItem(SummaryItem):
     order = 500
     template = 'wagtail/site_languages_summary.html'
@@ -164,7 +181,9 @@ def hide_menu_items_if_no_language(request, menu_items):
     if not Languages.for_site(request.site).languages.all().exists():
         menu_items[:] = [
             item for item in menu_items if (
-                item.name == 'settings' or item.name == 'import-content')]
+                item.name == 'settings' or
+                item.name == 'import-content' or
+                item.name == 'api')]
 
 
 @hooks.register('construct_main_menu')
