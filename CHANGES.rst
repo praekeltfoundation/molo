@@ -1,6 +1,18 @@
 CHANGE LOG
 ==========
 
+5.9.0
+~~~~~
+- New Feature: API that exposes content via the `/api/v2/` url
+- New Feature: Import some site content to a new site via the newly created API. Imports the following content:
+  - Site languages
+  - Images
+  - Sections
+  - Articles
+  - Tags
+  - Banners Pages
+  - Footer Pages
+
 5.8.2
 ~~~~~
 - Fix the responsive styling for Admin dashboard

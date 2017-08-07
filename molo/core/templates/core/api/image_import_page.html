@@ -1,0 +1,26 @@
+{% extends "wagtailadmin/base.html" %}
+{% load static i18n wagtailimages_tags %}
+
+{% block content %}
+    <div>
+        <form action="{% url 'molo_api:image-import' %}" method="POST">
+            {% csrf_token %}
+            <input type="checkbox" name="love" value="love" id="love"><label for="love"> Check if you love this website!</label>
+            <table style="width:100%">
+                <tr>
+                  <th>Title</th>
+                  <th>Foreign Image</th>
+                  <th>Local Match</th>
+                </tr>
+                {% for image in matched_images %}
+                <tr>
+                  <td><p>{{ image.foreign_img_title }}</p></td>
+                  <td><img src="{{ image.foreign_image_url }}" alt="" style="height:200px;"></td>
+                  <td>{% image image.local_image height-200 %}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <input type="submit" class="Button" value="{% trans "Get content" %}"/>
+        </form>
+    </div>
+{% endblock %}
