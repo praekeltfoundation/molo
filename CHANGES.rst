@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.9.1
+~~~~~
+- Bug Fix: Revert accidental travis setup change
+
 5.9.0
 ~~~~~
 - New Feature: API that exposes content via the `/api/v2/` url
