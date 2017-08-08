@@ -1,8 +1,15 @@
 "use strict";
 (function() {
+  $(window).scroll(function(){
+    if ($(window).scrollTop() >= 320) {
+       $('header').addClass('fixed-header');
+    }
+    else {
+       $('header').removeClass('fixed-header');
+    }
+});
 
-  $(document).ready(function(){
-    //Div Scroll Style
+    //Div Scroll Style - For MOTE
     var initialDivPostion = $('.main_wrapper').offset().top;
       $(window).scroll(function() {
         var currentScrollPosition = $(window).scrollTop();
@@ -15,6 +22,8 @@
         }
       });
 
+
+  $(document).ready(function(){
       //Extra Menu - Active state
       $('.extra-list__menuitem a').click(function() {
         var $this = $(this);
@@ -27,5 +36,4 @@
         });
       });
   });
-
 })();
