@@ -1,7 +1,7 @@
 {% load i18n admin_static %}
 {% block extra_js %}
   {% include "wagtailadmin/shared/datetimepicker_translations.html" %}
-  <script>
+  <script type="text/javascript">
   $(function() {
     $('#id_drf__submission_date__gte').datetimepicker({
       timepicker: false,
@@ -50,15 +50,15 @@
 </style>
 {% with choices.0 as i %}
 <form id="date_range_filter" method="GET" action="">
-    {{ spec.form.media }}
-    {{ spec.form.as_p }}
-    <p class="submit-row">
-      {#create hidden inputs to preserve values from other filters and search field#}
-      {% for k, v in i.get_query.items %}
-              <input type="hidden" name="{{ k }}" value="{{ v }}">
-      {% endfor %}
-    </p>
-    <button type="submit">{% trans "Search" %}</button>
-    <button type="submit" id="resetbtn">{% trans "Clear" %}</button>
+  {{ spec.form.media }}
+  {{ spec.form.as_p }}
+  <p class="submit-row">
+  {#create hidden inputs to preserve values from other filters and search field#}
+  </p>
+  {% for k, v in i.get_query.items %}
+    <input type="hidden" name="{{ k }}" value="{{ v }}">
+  {% endfor %}
+  <button class="button" type="submit">{% trans "Search" %}</button>
+  <button class="button" type="submit" id="resetbtn">{% trans "Clear" %}</button>
 </form>
 {% endwith %}

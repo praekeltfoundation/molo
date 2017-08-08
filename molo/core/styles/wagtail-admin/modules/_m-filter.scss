@@ -8,18 +8,34 @@
   }
 }
 
+
+
 @media screen and (min-width: 781px) {
   //Filter
-  .content-wrapper .changelist-filter {
-    display: inline-block; //Override incorrect Bootstap
-    float: none;
-    width: 100%;
-    ul, #date_range_filter {
-      width: 80%;
-      padding: 0 10% 0 5px;
+  .content-wrapper {
+    .filter__label {
+      font-weight: bold;
+      padding: 5px 0;
+      &--title {
+        font-weight: bold;
+        color: red;
+      }
     }
-    li {
-      padding: 2px 0 0;
+    .filter__media {
+      font-weight: bold;
+      color: red;
+    }
+    .changelist-filter {
+      display: inline-block; //Override incorrect Bootstap
+      float: none;
+      width: 100%;
+      ul, #date_range_filter {
+        width: 80%;
+        padding: 0 10% 0 5px;
+      }
+      li {
+        padding: 2px 0 0;
+      }
     }
   }
 }
