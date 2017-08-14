@@ -549,6 +549,8 @@ class SiteImporter(object):
             page = BannerPage(**fields)
         elif content["meta"]["type"] == "core.Tag":
             page = Tag(**fields)
+        else:
+            return None
 
         # TODO: handle other Page types
 
@@ -680,21 +682,22 @@ class SiteImporter(object):
         parent = Page.objects.get(id=parent_id).specific
         page = self.create_page(parent, content)
 
-        # create translations
-        if content["meta"]["translations"]:
-            for translation_obj in content["meta"]["translations"]:
-                _url = "{}/api/v2/pages/{}/".format(self.base_url,
-                                                    translation_obj["id"])
-                _response = requests.get(_url)
-                _content = json.loads(_response.content)
+        if page:
+            # create translations
+            if content["meta"]["translations"]:
+                for translation_obj in content["meta"]["translations"]:
+                    _url = "{}/api/v2/pages/{}/".format(self.base_url,
+                                                        translation_obj["id"])
+                    _response = requests.get(_url)
+                    _content = json.loads(_response.content)
 
-                self.create_translated_content(
-                    page, _content, translation_obj["locale"])
+                    self.create_translated_content(
+                        page, _content, translation_obj["locale"])
 
-        main_language_child_ids = content["meta"]["main_language_children"]
+            main_language_child_ids = content["meta"]["main_language_children"]
 
-        # recursively iterate through child nodes
-        if main_language_child_ids:
-            for main_language_child_id in main_language_child_ids:
-                self.copy_page_and_children(foreign_id=main_language_child_id,
-                                            parent_id=page.id)
+            # recursively iterate through child nodes
+            if main_language_child_ids:
+                for main_language_child_id in main_language_child_ids:
+                    self.copy_page_and_children(foreign_id=main_language_child_id,
+                                                parent_id=page.id)
