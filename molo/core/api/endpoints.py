@@ -86,4 +86,5 @@ class LanguagesAPIEndpoint(BaseAPIEndpoint):
         Only serve site-specific languages
         '''
         request = self.request
-        return Languages.for_site(request.site).languages.filter()
+        return (Languages.for_site(request.site)
+                         .languages.filter().order_by('pk'))
