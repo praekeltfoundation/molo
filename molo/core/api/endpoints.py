@@ -6,7 +6,10 @@ from wagtail.api.v2.utils import BadRequestError
 from wagtail.wagtailimages.api.v2.endpoints import ImagesAPIEndpoint
 from wagtail.wagtailimages.api.v2.endpoints import BaseAPIEndpoint
 
-from molo.core.models import SiteLanguage
+from molo.core.models import (
+    SiteLanguage,
+    Languages,
+)
 from molo.core.api.filters import MainLanguageFilter
 from molo.core.api.serializers import (
     MoloPageSerializer,
@@ -77,3 +80,10 @@ class LanguagesAPIEndpoint(BaseAPIEndpoint):
     extra_api_fields = []
     name = 'languages'
     model = SiteLanguage
+
+    def get_queryset(self):
+        '''
+        Only serve site-specific languages
+        '''
+        request = self.request
+        return Languages.for_site(request.site).languages.filter()
