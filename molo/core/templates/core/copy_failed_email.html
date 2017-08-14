@@ -3,4 +3,12 @@ Hi {{name}},
 
 The content copy from {{source}} to {{to}} was unsuccessful.
 
+{% if logs %}
+These are the logs from the operation:
+--------------------------------------
+{% for log in logs %}
+{{log}}
+{% endfor %}
+{% endif %}
+
 Please contact an administrator for assistance.

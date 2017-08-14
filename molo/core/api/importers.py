@@ -338,7 +338,7 @@ class SectionPageImporter(PageImporter):
 
 class SiteImporter(object):
 
-    def __init__(self, site_pk, base_url=''):
+    def __init__(self, site_pk, base_url='', log=[]):
         if base_url[-1] == '/':
             self.base_url = base_url[:-1]
         else:
@@ -349,6 +349,7 @@ class SiteImporter(object):
         self.site_pk = site_pk
         self.language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
+        self.log = log
         self.content = None
         # maps foreign IDs to local page IDs
         self.id_map = {}
@@ -408,6 +409,7 @@ class SiteImporter(object):
         return language_ids
 
     def copy_site_languages(self):
+        self.log.append(">> Copying Site Languages")
         language_foreign_ids = self.get_language_ids()
         language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
@@ -433,6 +435,7 @@ class SiteImporter(object):
         if a match is found it refers to local instance instead
         if it is not, the image is fetched, created and referenced
         '''
+        self.log.append(">> Importing Images")
         images = list_of_objects_from_api(self.image_url)
 
         if not images:

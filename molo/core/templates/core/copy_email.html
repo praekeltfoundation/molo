@@ -3,4 +3,12 @@ Hi {{name}},
 
 The content copy from {{source}} to {{to}} is complete.
 
+{% if logs %}
+These are the logs from the operation:
+--------------------------------------
+{% for log in logs %}
+{{log}}
+{% endfor %}
+{% endif %}
+
 You can now visit the site to see the content.

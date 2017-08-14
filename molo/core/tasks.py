@@ -320,10 +320,11 @@ def copy_sections_index(
 
 @task(ignore_result=True)
 def import_site(root_url, site_pk, user_pk):
+    logs = []
     user = User.objects.get(pk=user_pk) if user_pk else None
     site = Site.objects.get(pk=site_pk)
     try:
-        importer = SiteImporter(site_pk, root_url)
+        importer = SiteImporter(site_pk, root_url, log=logs)
         # get languages
         importer.copy_site_languages()
         # get images
@@ -370,12 +371,14 @@ def import_site(root_url, site_pk, user_pk):
         send_copy_email(user.email, {
             'name': (user.get_full_name() or user.username) if user else None,
             'source': root_url,
-            'to': site.root_url
+            'to': site.root_url,
+            'logs': logs,
         })
     except Exception, e:
         logging.error(e, exc_info=True)
         send_copy_failed_email(user.email, {
             'name': (user.get_full_name() or user.username) if user else None,
             'source': root_url,
-            'to': site.root_url
+            'to': site.root_url,
+            'logs':logs,
         })
