@@ -249,8 +249,8 @@ class SiteSettings(BaseSetting):
     ]
 
 
-class ImportabelMixin(object)
-    def create_page(self, content, record_keeper):
+class ImportabelMixin(object):
+    def create_page(self, content, record_keeper=None):
         pass
 
 
