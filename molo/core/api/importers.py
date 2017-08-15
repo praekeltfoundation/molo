@@ -370,6 +370,109 @@ class ImageImporter(BaseImporter):
         super(ImageImporter, self).__init__(site_pk, base_url,
                                             record_keeper=None)
         self.image_url = "{}images/".format(self.api_url)
+        self.image_hashes = {}
+        self.image_widths = {}
+        self.image_heights = {}
+        self.get_image_details()
+
+    def get_image_details(self):
+        '''
+        Create a reference of site images by hash, width and height
+        '''
+        if Image.objects.count() == 0:
+            return None
+
+        for local_image in Image.objects.all():
+            self.image_hashes[get_image_hash(local_image)] = local_image
+
+            if local_image.width in self.image_widths:
+                self.image_widths[local_image.width].append(local_image)
+            else:
+                self.image_widths[local_image.width] = [local_image]
+
+            if local_image.height in self.image_heights:
+                self.image_heights[local_image.height].append(local_image)
+            else:
+                self.image_heights[local_image.height] = [local_image]
+
+    def get_replica_image(self, width, height, img_hash):
+        if width in self.image_widths:
+                possible_matches = self.image_widths[width]
+                if height in self.image_heights:
+                    possible_matches = list(
+                        set(self.image_heights[height] +
+                            possible_matches))
+                    if (img_hash in self.image_hashes and
+                            self.image_hashes[img_hash] in possible_matches):
+                        matching_image = self.image_hashes[img_hash]
+                        return matching_image
+        return None
+
+    def import_image(self, image_id):
+        '''
+        Imports an image
+
+        Input: foreign image ID
+
+        Attempts to avoid duplicates by matching image titles.
+        If a match is found it refers to local instance instead.
+        If it is not, the image is fetched, created and referenced.
+        '''
+        image_detail_url = "{}{}/".format(self.image_url, image_id)
+        img_response = requests.get(image_detail_url)
+        img_info = json.loads(img_response.content)
+
+        if img_info["image_hash"] is None:
+            raise ValueError('image hash should not be none')
+
+        # check if a replica exists
+        local_image = self.get_replica_image(
+            img_info["width"],
+            img_info["height"],
+            img_info["image_hash"])
+        if local_image:
+            pass
+            # TODO: update record keeper
+            # TODO: update logs
+            type(local_image)
+        else:
+            # use the local title of the image
+            new_image = self.fetch_and_create_image(
+                img_info['image_url'],
+                img_info["title"])
+            type(new_image)
+            # TODO: update record keeper
+            # TODO: update logs
+
+    def import_images(self):
+        '''
+        Fetches all images from site
+        '''
+        images = list_of_objects_from_api(self.image_url)
+
+        if not images:
+            return None
+
+        # iterate through foreign images
+        for image_summary in images:
+            self.import_image(image_summary["id"])
+
+
+    def fetch_and_create_image(self, relative_url, image_title):
+        '''
+        fetches, creates and return image object
+        '''
+        # TODO: handle image unavailable
+        image_media_url = "{}{}".format(self.base_url, relative_url)
+        image_file = requests.get(image_media_url)
+        local_image = Image(
+            title=image_title,
+            file=ImageFile(
+                BytesIO(image_file.content), name=image_title
+            )
+        )
+        local_image.save()
+        return local_image
 
 
 class LanguageImporter(BaseImporter):

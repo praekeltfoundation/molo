@@ -4,6 +4,7 @@ This module relies heavily on an external service and requires
 quite a bit of mocking.
 """
 import os
+import pytest
 from django.test import TestCase
 from mock import patch
 
@@ -22,6 +23,7 @@ from molo.core.models import (
     SectionPageTags,
 )
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.utils import get_image_hash
 
 import responses
 
@@ -866,6 +868,165 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
     def test_image_importer_init(self):
         self.assertEqual(self.importer.image_url,
                          "http://localhost:8000/api/v2/images/")
+
+    def test_get_image_details(self):
+        local_image = Image.objects.create(
+            title='local image',
+            file=get_test_image_file(),
+        )
+        local_image_hash = get_image_hash(local_image)
+
+        importer = importers.ImageImporter(self.site.pk,
+                                           self.fake_base_url)
+
+        self.assertEqual(importer.image_hashes[local_image_hash], local_image)
+        self.assertEqual(
+            importer.image_widths[local_image.width], [local_image])
+        self.assertEqual(
+            importer.image_heights[local_image.height], [local_image])
+
+    def test_get_replica_image_returns_match(self):
+        local_image = Image.objects.create(
+            title='local image',
+            file=get_test_image_file(),
+        )
+        local_image_hash = get_image_hash(local_image)
+        self.assertEqual(Image.objects.count(), 1)
+        self.importer.get_image_details()
+
+        replica_image = self.importer.get_replica_image(
+            local_image.width, local_image.height, local_image_hash)
+        self.assertEqual(replica_image, local_image)
+
+    def test_get_replica_image_returns_none(self):
+        local_image = Image.objects.create(
+            title='local image',
+            file=get_test_image_file(),
+        )
+        local_image_hash = get_image_hash(local_image)
+        self.importer.get_image_details()
+
+        replica_image = self.importer.get_replica_image(
+            local_image.width + 1, local_image.height, local_image_hash)
+        self.assertTrue(replica_image is None)
+
+        replica_image = self.importer.get_replica_image(
+            local_image.width, local_image.height + 1, local_image_hash)
+        self.assertTrue(replica_image is None)
+
+        replica_image = self.importer.get_replica_image(
+            local_image.width, local_image.height, 'fake_hash')
+        self.assertTrue(replica_image is None)
+
+    @responses.activate
+    def test_fetch_and_create_image_new_image(self):
+        image_title = "test_title.png"
+        relative_url = "/media/images/SIbomiWV1AQ.original.jpg"
+        test_file_path = os.getcwd() + '/molo/core/api/tests/test_image.png'
+
+        with open(test_file_path, 'rb') as img1:
+            responses.add(
+                responses.GET, '{}{}'.format(self.fake_base_url, relative_url),
+                body=img1.read(), status=200,
+                content_type='image/jpeg',
+                stream=True
+            )
+        result = self.importer.fetch_and_create_image(
+            relative_url,
+            image_title)
+
+        self.assertEqual(type(result), Image)
+        self.assertEqual(result.title, image_title)
+        self.assertEqual(Image.objects.count(), 1)
+
+    @responses.activate
+    def test_import_image_raise_exception(self):
+        image_url = '{}/api/v2/images/'.format(self.fake_base_url)
+        image_detail_url_1 = "{}{}/".format(image_url,
+                                            constants.IMAGE_DETAIL_1["id"])
+        responses.add(
+            responses.GET, image_detail_url_1,
+            json=constants.IMAGE_DETAIL_1_NO_HASH, status=200)
+        with pytest.raises(ValueError) as exception_info:
+            self.importer.import_image(
+                constants.IMAGE_LIST_RESPONSE["items"][0]["id"])
+        self.assertEqual(
+            exception_info.value.__str__(),
+            'image hash should not be none')
+
+    @responses.activate
+    @patch("molo.core.api.importers.ImageImporter.fetch_and_create_image",
+           side_effect=utils.mocked_fetch_and_create_image)
+    def test_import_image(self, mock_fetch_and_create_image):
+        image_url = '{}/api/v2/images/'.format(self.fake_base_url)
+        image_detail_url_2 = "{}{}/".format(image_url,
+                                            constants.IMAGE_DETAIL_2["id"])
+        responses.add(
+            responses.GET, image_detail_url_2,
+            json=constants.IMAGE_DETAIL_2, status=200)
+
+        self.assertEqual(Image.objects.count(), 0)
+
+        self.importer.import_image(constants.IMAGE_DETAIL_2["id"])
+
+        self.assertEqual(Image.objects.count(), 1)
+
+    @responses.activate
+    def test_import_image_avoid_duplicates(self):
+        image_url = '{}/api/v2/images/'.format(self.fake_base_url)
+        image_detail_url_1 = "{}{}/".format(image_url,
+                                            constants.IMAGE_DETAIL_1["id"])
+        responses.add(
+            responses.GET, image_detail_url_1,
+            json=constants.IMAGE_DETAIL_1, status=200)
+
+        # create 'duplicate' image with same name
+        Image.objects.create(
+            title='local image',
+            file=get_test_image_file(constants.IMAGE_DETAIL_1["id"]),
+        )
+        # NOTE: images must be referenced once added
+        self.importer.get_image_details()
+        self.assertEqual(Image.objects.count(), 1)
+
+        self.importer.import_image(constants.IMAGE_DETAIL_1["id"])
+
+        self.assertEqual(Image.objects.count(), 1)
+
+        # TODO: Check logs
+
+    @responses.activate
+    @patch("molo.core.api.importers.ImageImporter.fetch_and_create_image",
+           side_effect=utils.mocked_fetch_and_create_image)
+    def test_import_images(self, mock_fetch_and_create_image):
+        image_list_url = '{}/api/v2/images/'.format(self.fake_base_url)
+        image_detail_url_1 = "{}{}/".format(image_list_url,
+                                            constants.IMAGE_DETAIL_1["id"])
+        image_detail_url_2 = "{}{}/".format(image_list_url,
+                                            constants.IMAGE_DETAIL_2["id"])
+        responses.add(
+            responses.GET, image_list_url,
+            json=constants.IMAGE_LIST_RESPONSE, status=200)
+        responses.add(
+            responses.GET, image_detail_url_1,
+            json=constants.IMAGE_DETAIL_1, status=200)
+        responses.add(
+            responses.GET, image_detail_url_2,
+            json=constants.IMAGE_DETAIL_2, status=200)
+
+        self.assertEqual(Image.objects.count(), 0)
+
+        self.importer.import_images()
+
+        self.assertEqual(Image.objects.count(), 2)
+        self.assertEqual(
+            Image.objects.first().title,
+            constants.IMAGE_DETAIL_1["title"])
+        self.assertEqual(
+            Image.objects.last().title,
+            constants.IMAGE_DETAIL_2["title"])
+
+        # TODO: check logs
 
 
 class TestLanguageSectionImporter(MoloTestCaseMixin, TestCase):

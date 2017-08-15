@@ -794,6 +794,22 @@ IMAGE_DETAIL_2 = {
     "image_hash": '3f7ffffffee00000'
 }
 
+IMAGE_DETAIL_1_NO_HASH = {
+    "id": 97,
+    "meta": {
+        "type": "wagtailimages.Image",
+        "detail_url": "http://localhost:8000/api/v2/images/97/",
+        "tags": []
+    },
+    "title": "GAO_A4qQsiM.jpg",
+    "width": 640,
+    "height": 480,
+    "filename": "GAO_A4qQsiM.jpg",
+    "file": "http://localhost:8000/media/original_images/GAO_A4qQsiM.jpg",
+    "image_url": "/media/images/GAO_A4qQsiM.original.jpg",
+    "image_hash": None
+}
+
 ARTICLE_PAGE_RESPONSE_MAIN_LANG = {
     "id": 12,
     "meta": {
