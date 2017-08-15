@@ -866,8 +866,10 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.fake_base_url = "http://localhost:8000"
         self.mk_main()
-        self.importer = importers.ImageImporter(self.site.pk,
-                                                self.fake_base_url)
+        self.record_keeper = importers.RecordKeeper()
+        self.importer = importers.ImageImporter(
+            self.site.pk,self.fake_base_url,
+            record_keeper=self.record_keeper)
 
     def test_image_importer_init(self):
         self.assertEqual(self.importer.image_url,
@@ -963,23 +965,31 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
            side_effect=utils.mocked_fetch_and_create_image)
     def test_import_image(self, mock_fetch_and_create_image):
         image_url = '{}/api/v2/images/'.format(self.fake_base_url)
-        image_detail_url_2 = "{}{}/".format(image_url,
-                                            constants.IMAGE_DETAIL_2["id"])
+        foreign_image_id = constants.IMAGE_DETAIL_2["id"]
+        image_detail_url_2 = "{}{}/".format(image_url, foreign_image_id)
+
         responses.add(
             responses.GET, image_detail_url_2,
             json=constants.IMAGE_DETAIL_2, status=200)
 
         self.assertEqual(Image.objects.count(), 0)
 
-        self.importer.import_image(constants.IMAGE_DETAIL_2["id"])
+        local_image = self.importer.import_image(
+            constants.IMAGE_DETAIL_2["id"])
 
         self.assertEqual(Image.objects.count(), 1)
+
+        # check that record has been created
+        self.assertEqual(
+            self.record_keeper.get_local_image(foreign_image_id),
+            local_image.id)
 
     @responses.activate
     def test_import_image_avoid_duplicates(self):
         image_url = '{}/api/v2/images/'.format(self.fake_base_url)
-        image_detail_url_1 = "{}{}/".format(image_url,
-                                            constants.IMAGE_DETAIL_1["id"])
+        foreign_image_id = constants.IMAGE_DETAIL_1["id"]
+        image_detail_url_1 = "{}{}/".format(image_url, foreign_image_id)
+
         responses.add(
             responses.GET, image_detail_url_1,
             json=constants.IMAGE_DETAIL_1, status=200)
@@ -989,15 +999,20 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
             title='local image',
             file=get_test_image_file(constants.IMAGE_DETAIL_1["id"]),
         )
-        # NOTE: images must be referenced once added
+        # NOTE: images must be re-referenced once added
         self.importer.get_image_details()
         self.assertEqual(Image.objects.count(), 1)
 
-        self.importer.import_image(constants.IMAGE_DETAIL_1["id"])
+        local_image = self.importer.import_image(
+            constants.IMAGE_DETAIL_1["id"])
 
         self.assertEqual(Image.objects.count(), 1)
 
-        # TODO: Check logs
+        # check logs
+        self.assertEqual(
+            self.record_keeper.get_local_image(foreign_image_id),
+            local_image.id)
+
 
     @responses.activate
     @patch("molo.core.api.importers.ImageImporter.fetch_and_create_image",
@@ -1030,7 +1045,13 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
             Image.objects.last().title,
             constants.IMAGE_DETAIL_2["title"])
 
-        # TODO: check logs
+        # check logs
+        self.assertEqual(
+            self.record_keeper.get_local_image(constants.IMAGE_DETAIL_1["id"]),
+            Image.objects.first().id)
+        self.assertEqual(
+            self.record_keeper.get_local_image(constants.IMAGE_DETAIL_2["id"]),
+            Image.objects.last().id)
 
 
 class TestLanguageSectionImporter(MoloTestCaseMixin, TestCase):

@@ -453,7 +453,7 @@ class ImageImporter(BaseImporter):
 
     def import_image(self, image_id):
         '''
-        Imports an image
+        Imports and returns image
 
         Input: foreign image ID
 
@@ -477,15 +477,15 @@ class ImageImporter(BaseImporter):
             pass
             # TODO: update record keeper
             # TODO: update logs
-            type(local_image)
+            return local_image
         else:
             # use the local title of the image
             new_image = self.fetch_and_create_image(
                 img_info['image_url'],
                 img_info["title"])
-            type(new_image)
             # TODO: update record keeper
             # TODO: update logs
+            return new_image
 
     def import_images(self):
         '''
