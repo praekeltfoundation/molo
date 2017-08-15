@@ -373,8 +373,8 @@ class ImageImporter(BaseImporter):
 
 class LanguageImporter(BaseImporter):
     def __init__(self, site_pk, base_url, record_keeper=None):
-        super(ImageImporter, self).__init__(site_pk, base_url,
-                                            record_keeper=None)
+        super(LanguageImporter, self).__init__(site_pk, base_url,
+                                               record_keeper=None)
         self.language_url = "{}languages/".format(self.api_url)
 
 
