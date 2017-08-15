@@ -343,6 +343,7 @@ class SectionPageImporter(PageImporter):
             section_page = response.json()
             self.process_child_section(section_page["id"], parent)
 
+
 class RecordKeeper(object):
     def __init__(self):
         pass
@@ -376,6 +377,34 @@ class LanguageImporter(BaseImporter):
         super(LanguageImporter, self).__init__(site_pk, base_url,
                                                record_keeper=None)
         self.language_url = "{}languages/".format(self.api_url)
+
+    def get_language_ids(self):
+        '''
+        Return list of foreign language IDs from API language endpoint
+
+        TODO: add in validation before creating languages
+        '''
+        languages = list_of_objects_from_api(self.language_url)
+
+        language_ids = []
+        for language in languages:
+            language_ids.append(language["id"])
+        return language_ids
+
+    def copy_site_languages(self):
+        language_foreign_ids = self.get_language_ids()
+        language_setting, created = Languages.objects.get_or_create(
+            site_id=self.site_pk)
+        for foreign_id in language_foreign_ids:
+            language_url = "{}{}/".format(self.language_url,
+                                          foreign_id)
+            response = requests.get(language_url)
+            content = json.loads(response.content)
+
+            sle, created = SiteLanguageRelation.objects.get_or_create(
+                locale=content['locale'],
+                is_active=content['is_active'],
+                language_setting=language_setting)
 
 
 class SiteImporter(object):
