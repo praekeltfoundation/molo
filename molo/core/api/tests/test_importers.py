@@ -759,6 +759,30 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertTrue(banner.banner_link_page)
         self.assertEqual(banner.banner_link_page.specific, section)
 
+    def test_create_banner_page_links_failure(self):
+        '''
+        Test that when Foreign Key Id has not been imported
+        The change is logged
+        '''
+
+        banner = self.mk_banner(parent=self.banner_index)
+        # create a link with no page imported
+        fake_foreign_id = 111
+        self.importer.id_map[fake_foreign_id] = None
+        self.importer.banner_page_links[banner.id] = fake_foreign_id
+
+        self.assertFalse(banner.banner_link_page)
+
+        self.importer.create_banner_page_links()
+
+        self.assertFalse(banner.banner_link_page)
+        self.assertEqual(
+            self.importer.logs[-1],
+            self.importer.create_error_message(
+                    "Create banner page links",
+                    foreign_id=fake_foreign_id
+                ))
+
     @patch("molo.core.api.importers.requests.get",
            side_effect=utils.mocked_requests_get)
     def test_get_foreign_page_id_from_type(self, mock_get):
