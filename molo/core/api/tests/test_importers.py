@@ -868,7 +868,7 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
         self.mk_main()
         self.record_keeper = importers.RecordKeeper()
         self.importer = importers.ImageImporter(
-            self.site.pk,self.fake_base_url,
+            self.site.pk, self.fake_base_url,
             record_keeper=self.record_keeper)
 
     def test_image_importer_init(self):
@@ -1012,7 +1012,6 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(
             self.record_keeper.get_local_image(foreign_image_id),
             local_image.id)
-
 
     @responses.activate
     @patch("molo.core.api.importers.ImageImporter.fetch_and_create_image",
