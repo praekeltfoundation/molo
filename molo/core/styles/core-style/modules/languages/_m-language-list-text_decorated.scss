@@ -1,4 +1,4 @@
-.language-list--text-decorated {}
+.language-list--text-decorated-center {text-align: center;}
 .language-list__item--text-decorated {
   font-size: 13px;
   padding: 0 0 5px 0;
@@ -13,6 +13,11 @@
   font-size: 13px;
   &:hover, .is-active {
     color: #00b8ae;
+  }
+}
+.language-list--pipe-center {
+  .language-list__item--standard-center {
+    margin: 0;
   }
 }
 
