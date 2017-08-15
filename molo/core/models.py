@@ -249,6 +249,11 @@ class SiteSettings(BaseSetting):
     ]
 
 
+class ImportabelMixin(object)
+    def create_page(self, content, record_keeper):
+        pass
+
+
 class PreventDeleteMixin(object):
     hide_delete_button = True
 

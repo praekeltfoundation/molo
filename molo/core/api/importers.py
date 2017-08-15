@@ -343,6 +343,40 @@ class SectionPageImporter(PageImporter):
             section_page = response.json()
             self.process_child_section(section_page["id"], parent)
 
+class RecordKeeper(object):
+    def __init__(self):
+        pass
+
+
+class BaseImporter(object):
+    def __init__(self, site_pk, base_url, record_keeper=None):
+        # TODO: handle case where base_url is not valid
+        self.base_url = self.format_base_url(base_url)
+        self.api_url = '{}/api/v2/'.format(self.base_url)
+        self.site_pk = site_pk
+        self.language_setting, created = Languages.objects.get_or_create(
+            site_id=self.site_pk)
+
+    def format_base_url(self, base_url):
+        if base_url[-1] == '/':
+            return base_url[:-1]
+        else:
+            return base_url
+
+
+class ImageImporter(BaseImporter):
+    def __init__(self, site_pk, base_url, record_keeper=None):
+        super(ImageImporter, self).__init__(site_pk, base_url,
+                                            record_keeper=None)
+        self.image_url = "{}images/".format(self.api_url)
+
+
+class LanguageImporter(BaseImporter):
+    def __init__(self, site_pk, base_url, record_keeper=None):
+        super(ImageImporter, self).__init__(site_pk, base_url,
+                                            record_keeper=None)
+        self.language_url = "{}languages/".format(self.api_url)
+
 
 class SiteImporter(object):
 

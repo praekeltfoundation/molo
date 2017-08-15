@@ -840,3 +840,41 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
             title=constants.NESTED_ARTICLE_RESPONSE["title"])
         self.assertTrue(art_3)
         self.assertTrue(art_3.get_parent().specific, sec_3)
+
+
+class TestBaseImporter(MoloTestCaseMixin, TestCase):
+    def setUp(self):
+        self.fake_base_url = "http://localhost:8000"
+        self.mk_main()
+        self.importer = importers.BaseImporter(self.site.pk,
+                                               self.fake_base_url)
+
+    def test_format_base_url(self):
+        self.fake_base_url = "http://localhost:8000/"
+        base_importer = importers.BaseImporter(self.site.pk,
+                                               self.fake_base_url)
+        self.assertEqual(base_importer.base_url, self.fake_base_url[:-1])
+
+
+class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
+    def setUp(self):
+        self.fake_base_url = "http://localhost:8000"
+        self.mk_main()
+        self.importer = importers.ImageImporter(self.site.pk,
+                                                self.fake_base_url)
+
+    def test_image_importer_init(self):
+        self.assertEqual(self.importer.image_url,
+                         "http://localhost:8000/api/v2/images/")
+
+
+class TestLanguageSectionImporter(MoloTestCaseMixin, TestCase):
+    def setUp(self):
+        self.fake_base_url = "http://localhost:8000"
+        self.mk_main()
+        self.importer = importers.LanguageImporter(self.site.pk,
+                                                   self.fake_base_url)
+
+    def test_language_importer_init(self):
+        self.assertEqual(self.importer.language_url,
+                         "http://localhost:8000/api/v2/languages/")
