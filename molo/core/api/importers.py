@@ -400,6 +400,7 @@ class BaseImporter(object):
         self.site_pk = site_pk
         self.language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
+        self.record_keeper = record_keeper
 
     def format_base_url(self, base_url):
         if base_url[-1] == '/':
@@ -411,7 +412,7 @@ class BaseImporter(object):
 class ImageImporter(BaseImporter):
     def __init__(self, site_pk, base_url, record_keeper=None):
         super(ImageImporter, self).__init__(site_pk, base_url,
-                                            record_keeper=None)
+                                            record_keeper=record_keeper)
         self.image_url = "{}images/".format(self.api_url)
         self.image_hashes = {}
         self.image_widths = {}
@@ -474,8 +475,11 @@ class ImageImporter(BaseImporter):
             img_info["height"],
             img_info["image_hash"])
         if local_image:
-            pass
-            # TODO: update record keeper
+            # update record keeper
+            if self.record_keeper:
+                self.record_keeper.record_image_relation(
+                    img_info["id"],
+                    local_image.id)
             # TODO: update logs
             return local_image
         else:
@@ -483,7 +487,12 @@ class ImageImporter(BaseImporter):
             new_image = self.fetch_and_create_image(
                 img_info['image_url'],
                 img_info["title"])
-            # TODO: update record keeper
+
+            # update record keeper
+            if self.record_keeper:
+                self.record_keeper.record_image_relation(
+                    img_info["id"],
+                    new_image.id)
             # TODO: update logs
             return new_image
 
@@ -520,7 +529,7 @@ class ImageImporter(BaseImporter):
 class LanguageImporter(BaseImporter):
     def __init__(self, site_pk, base_url, record_keeper=None):
         super(LanguageImporter, self).__init__(site_pk, base_url,
-                                               record_keeper=None)
+                                               record_keeper=record_keeper)
         self.language_url = "{}languages/".format(self.api_url)
 
     def get_language_ids(self):
