@@ -457,7 +457,6 @@ class ImageImporter(BaseImporter):
         for image_summary in images:
             self.import_image(image_summary["id"])
 
-
     def fetch_and_create_image(self, relative_url, image_title):
         '''
         fetches, creates and return image object
