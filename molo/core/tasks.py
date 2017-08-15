@@ -324,13 +324,14 @@ def import_site(root_url, site_pk, user_pk):
     user = User.objects.get(pk=user_pk) if user_pk else None
     site = Site.objects.get(pk=site_pk)
     try:
-        importer = SiteImporter(site_pk, root_url, log=logs)
+        importer = SiteImporter(site_pk, root_url, logs=logs)
         # get languages
         importer.copy_site_languages()
         # get images
         importer.import_images()
 
         # copy_content SectionIndexPage
+        importer.log("Importing Section and Article Pages")
         section_index_page = SectionIndexPage.objects.descendant_of(
             site.root_page).first()
         foreign_section_index_page_id = importer.get_foreign_page_id_from_type(
@@ -339,12 +340,15 @@ def import_site(root_url, site_pk, user_pk):
                                existing_node=section_index_page)
 
         # copy_content Banner Pages
+        importer.log("Importing Banner Pages")
         banner_index_page = BannerIndexPage.objects.descendant_of(
             site.root_page).first()
         foreign_banner_index_page_id = importer.get_foreign_page_id_from_type(
             "core.BannerIndexPage")
         importer.copy_children(foreign_id=foreign_banner_index_page_id,
                                existing_node=banner_index_page)
+
+        importer.log("Importing Footer Pages")
         # copy_content Footer Pages
         footer_index_page = FooterIndexPage.objects.descendant_of(
             site.root_page).first()
@@ -354,6 +358,7 @@ def import_site(root_url, site_pk, user_pk):
                                existing_node=footer_index_page)
 
         # copy_content TagIndexPage
+        importer.log("Importing Tag Navigation Pages")
         tag_index_page = TagIndexPage.objects.descendant_of(
             site.root_page).first()
         foreign_tag_index_page_id = importer.get_foreign_page_id_from_type(
@@ -361,10 +366,19 @@ def import_site(root_url, site_pk, user_pk):
         importer.copy_children(foreign_id=foreign_tag_index_page_id,
                                existing_node=tag_index_page)
 
+        importer.log("Creating Recommended Articles")
         importer.create_recommended_articles()
+
+        importer.log("Creating Related Sections")
         importer.create_related_sections()
+
+        importer.log("Creating Nav Tag Relationships")
         importer.create_nav_tag_relationships()
+
+        importer.log("Creating Section Tag Relationships")
         importer.create_section_tag_relationship()
+
+        importer.log("Creating Banner Page Links")
         importer.create_banner_page_links()
 
         # send email

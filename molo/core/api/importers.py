@@ -31,6 +31,7 @@ from molo.core.api.constants import (
 from molo.core.utils import get_image_hash
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 
 # functions used to find images
@@ -112,7 +113,13 @@ def record_foreign_relation(field, key, record_keeper, id_key="id"):
         if ((field in nested_fields) and nested_fields[field]):
             record_keeper[page_id] = []
             for thing in nested_fields[field]:
-                record_keeper[page_id].append(thing[key][id_key])
+                if thing[key]:
+                    if thing[key][id_key]:
+                        record_keeper[page_id].append(thing[key][id_key])
+                    else:
+                        print("key of: {} does not exist in thing[]".format(key))
+                else:
+                    print("key of: {} does not exist".format(key))
     return record_relationship
 
 
@@ -338,7 +345,7 @@ class SectionPageImporter(PageImporter):
 
 class SiteImporter(object):
 
-    def __init__(self, site_pk, base_url='', log=[]):
+    def __init__(self, site_pk, base_url='', logs=[]):
         if base_url[-1] == '/':
             self.base_url = base_url[:-1]
         else:
@@ -349,7 +356,7 @@ class SiteImporter(object):
         self.site_pk = site_pk
         self.language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
-        self.log = log
+        self.logs = logs
         self.content = None
         # maps foreign IDs to local page IDs
         self.id_map = {}
@@ -409,7 +416,7 @@ class SiteImporter(object):
         return language_ids
 
     def copy_site_languages(self):
-        self.log.append(">> Copying Site Languages")
+        self.log("Copying Site Languages")
         language_foreign_ids = self.get_language_ids()
         language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
@@ -435,7 +442,7 @@ class SiteImporter(object):
         if a match is found it refers to local instance instead
         if it is not, the image is fetched, created and referenced
         '''
-        self.log.append(">> Importing Images")
+        self.log("Importing Images")
         images = list_of_objects_from_api(self.image_url)
 
         if not images:
@@ -476,22 +483,37 @@ class SiteImporter(object):
                     possible_matches = list(
                         set(image_height[img_info["height"]] +
                             possible_matches))
-                    if img_info["image_hash"] in local_image_hashes:
-                        result = list(
-                            set([local_image_hashes[img_info["image_hash"]]] +
-                                possible_matches))
-                        # edge case where we have more than one match
-                        result = result[0]
+                    if (img_info["image_hash"] in local_image_hashes and
+                        local_image_hashes[img_info["image_hash"]] in possible_matches):
+                        result = local_image_hashes[img_info["image_hash"]]
 
                         # use the local title of the image
                         self.image_map[image["id"]] = result.id
-                        # LOG THIS
+
+                        action_context = {
+                            "Foreign Image ID": img_info["id"],
+                            "Foreign Image Hash": img_info["image_hash"],
+                            "Local Image ID": result.id,
+                            "Local Image Hash": get_image_hash(result),
+                        }
+                        self.log(self.create_action_message(
+                            'found image match',
+                            context=action_context))
                         continue
 
             new_image = self.fetch_and_create_image(
                 img_info['image_url'],
                 img_info["title"])
             self.image_map[image["id"]] = new_image.id
+
+            action_context = {
+                "Foreign image ID": img_info["id"],
+                "New image ID": new_image.id,
+            }
+            self.log(
+                self.create_action_message(
+                    'imported new image',
+                    context=action_context))
 
     def fetch_and_create_image(self, relative_url, image_title):
         '''
@@ -553,9 +575,12 @@ class SiteImporter(object):
         elif content["meta"]["type"] == "core.Tag":
             page = Tag(**fields)
         else:
+            self.id_map[foreign_id] = None
+            self.log(
+                ("Foreign Page with ID: {} and "
+                 "Type: {} was not imported").format(
+                     content["id"], content["meta"]["type"]))
             return None
-
-        # TODO: handle other Page types
 
         parent.add_child(instance=page)
 
@@ -680,10 +705,23 @@ class SiteImporter(object):
 
         # TODO handle connection errors
         response = requests.get(url)
-        content = json.loads(response.content)
+        try:
+            content = json.loads(response.content)
+        except Exception as e:
+            context = {
+                "foreign page url":url,
+            }
+            self.log(self.create_error_message(
+                "fetch page data", context=context, error=e))
+            return None
 
         parent = Page.objects.get(id=parent_id).specific
-        page = self.create_page(parent, content)
+        page = None
+        try:
+            page = self.create_page(parent, content)
+        except Exception as e:
+            self.log(
+                self.create_error_message("create page", error=e))
 
         if page:
             # create translations
@@ -692,10 +730,15 @@ class SiteImporter(object):
                     _url = "{}/api/v2/pages/{}/".format(self.base_url,
                                                         translation_obj["id"])
                     _response = requests.get(_url)
-                    _content = json.loads(_response.content)
+                    if _response.content:
+                        _content = json.loads(_response.content)
 
-                    self.create_translated_content(
-                        page, _content, translation_obj["locale"])
+                        self.create_translated_content(
+                            page, _content, translation_obj["locale"])
+                    else:
+                        self.log(self.create_error_message(
+                            "fetch translated page",
+                            foreign_id=translation_obj["id"]))
 
             main_language_child_ids = content["meta"]["main_language_children"]
 
@@ -704,3 +747,28 @@ class SiteImporter(object):
                 for main_language_child_id in main_language_child_ids:
                     self.copy_page_and_children(foreign_id=main_language_child_id,
                                                 parent_id=page.id)
+
+    def log(self, message):
+        if settings.DEBUG:
+            print message
+        self.logs.append(message)
+
+    def create_error_message(self, action, error=None, foreign_id=None, context = {}):
+        error_message = "ERROR: failed to '{}'".format(action)
+        if error:
+            error_message += "\n| Error Type: {}".format(type(error))
+            error_message += "\n| Error Detail: {}".format(error)
+        if foreign_id:
+            error_message += "\n| Foreign ID: {}".format(foreign_id)
+        for key, item in context.iteritems():
+            error_message += "\n| {}: {}".format(key, item)
+        error_message += "\n-----------------------"
+        return error_message
+
+    def create_action_message(self, action, context = {}):
+        message = "ACTION: Succesfully '{}'".format(action)
+        for key, item in context.iteritems():
+            message += "\n| {}: {}".format(key, item)
+        message += "\n-----------------------"
+        return message
+
