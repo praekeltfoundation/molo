@@ -9,6 +9,10 @@ from django.test import TestCase
 from mock import patch
 
 from molo.core.api import importers
+from molo.core.api.errors import (
+    RecordOverwriteError,
+    ReferenceUnimportedContent,
+)
 from molo.core.api.tests import constants, utils
 from molo.core.models import (
     ArticlePage,
@@ -1074,3 +1078,32 @@ class TestLanguageSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertTrue(fr_lang)
         self.assertTrue(fr_lang.is_active)
         self.assertFalse(fr_lang.is_main_language)
+
+
+class TestRecordKeeper(TestCase):
+    def setUp(self):
+        self.record_keeper = importers.RecordKeeper()
+
+    def test_record_keeper_record_local_id(self):
+        self.record_keeper.record_page_relation(1, 2)
+        self.assertEqual(self.record_keeper.id_map[1], 2)
+
+    def test_record_keeper_record_local_id_exception(self):
+        self.record_keeper.id_map[1] = 2
+        with pytest.raises(RecordOverwriteError) as exception_info:
+            self.record_keeper.record_page_relation(1, 6)
+        self.assertEqual(
+            exception_info.value.__str__(),
+            "RecordOverwriteError")
+
+    def test_record_keeper_get_local_id(self):
+        self.record_keeper.id_map[1] = 2
+        self.assertEqual(
+            self.record_keeper.get_local_page(1), 2)
+
+    def test_record_keeper_get_local_id_exception(self):
+        with pytest.raises(ReferenceUnimportedContent) as exception_info:
+            self.record_keeper.get_local_page(1)
+        self.assertEqual(
+            exception_info.value.__str__(),
+            "ReferenceUnimportedContent")

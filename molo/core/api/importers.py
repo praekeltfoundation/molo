@@ -28,6 +28,10 @@ from molo.core.models import (
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
 )
+from molo.core.api.errors import (
+    RecordOverwriteError,
+    ReferenceUnimportedContent,
+)
 from molo.core.utils import get_image_hash
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -344,9 +348,48 @@ class SectionPageImporter(PageImporter):
             self.process_child_section(section_page["id"], parent)
 
 
+def record_relation(record):
+    def _record_relation(foreign_page_id, local_page_id):
+            if (foreign_page_id in record and
+                    record[foreign_page_id] != local_page_id):
+                raise RecordOverwriteError("RecordOverwriteError", None)
+            else:
+                record[foreign_page_id] = local_page_id
+    return _record_relation
+
+
+def get_related_item(record):
+    def get_item(foreign_page_id):
+        if foreign_page_id in record:
+            return record[foreign_page_id]
+        else:
+            raise ReferenceUnimportedContent(
+                "ReferenceUnimportedContent",
+                None)
+    return get_item
+
+
 class RecordKeeper(object):
     def __init__(self):
-        pass
+        # maps foreign IDs to local IDs
+        # used when a new item is created
+        self.id_map = {}
+        self.image_map = {}
+
+        # maps local id to list of foreign page ids
+        # used when a foreign item is referenced
+        self.related_sections = {}
+        self.recommended_articles = {}
+        self.reaction_questions = {}
+        self.nav_tags = {}
+        self.section_tags = {}
+        self.banner_page_links = {}
+
+        self.record_page_relation = record_relation(self.id_map)
+        self.record_image_relation = record_relation(self.image_map)
+
+        self.get_local_page = get_related_item(self.id_map)
+        self.get_local_image = get_related_item(self.image_map)
 
 
 class BaseImporter(object):
