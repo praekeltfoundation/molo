@@ -779,9 +779,9 @@ class TestSiteSectionImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(
             self.importer.logs[-1],
             self.importer.create_error_message(
-                    "Create banner page links",
-                    foreign_id=fake_foreign_id
-                ))
+                "Create banner page links",
+                foreign_id=fake_foreign_id
+            ))
 
     @patch("molo.core.api.importers.requests.get",
            side_effect=utils.mocked_requests_get)

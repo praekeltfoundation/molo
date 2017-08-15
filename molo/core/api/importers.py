@@ -117,7 +117,8 @@ def record_foreign_relation(field, key, record_keeper, id_key="id"):
                     if thing[key][id_key]:
                         record_keeper[page_id].append(thing[key][id_key])
                     else:
-                        print("key of: {} does not exist in thing[]".format(key))
+                        print(
+                            "key of: {} does not exist in thing[]".format(key))
                 else:
                     print("key of: {} does not exist".format(key))
     return record_relationship
@@ -484,7 +485,8 @@ class SiteImporter(object):
                         set(image_height[img_info["height"]] +
                             possible_matches))
                     if (img_info["image_hash"] in local_image_hashes and
-                        local_image_hashes[img_info["image_hash"]] in possible_matches):
+                        local_image_hashes[img_info["image_hash"]] in
+                            possible_matches):
                         result = local_image_hashes[img_info["image_hash"]]
 
                         # use the local title of the image
@@ -709,7 +711,7 @@ class SiteImporter(object):
             content = json.loads(response.content)
         except Exception as e:
             context = {
-                "foreign page url":url,
+                "foreign page url": url,
             }
             self.log(self.create_error_message(
                 "fetch page data", context=context, error=e))
@@ -745,15 +747,17 @@ class SiteImporter(object):
             # recursively iterate through child nodes
             if main_language_child_ids:
                 for main_language_child_id in main_language_child_ids:
-                    self.copy_page_and_children(foreign_id=main_language_child_id,
-                                                parent_id=page.id)
+                    self.copy_page_and_children(
+                        foreign_id=main_language_child_id,
+                        parent_id=page.id)
 
     def log(self, message):
         if settings.DEBUG:
             print message
         self.logs.append(message)
 
-    def create_error_message(self, action, error=None, foreign_id=None, context = {}):
+    def create_error_message(
+            self, action, error=None, foreign_id=None, context={}):
         error_message = "ERROR: failed to '{}'".format(action)
         if error:
             error_message += "\n| Error Type: {}".format(type(error))
@@ -765,10 +769,9 @@ class SiteImporter(object):
         error_message += "\n-----------------------"
         return error_message
 
-    def create_action_message(self, action, context = {}):
+    def create_action_message(self, action, context={}):
         message = "ACTION: Succesfully '{}'".format(action)
         for key, item in context.iteritems():
             message += "\n| {}: {}".format(key, item)
         message += "\n-----------------------"
         return message
-

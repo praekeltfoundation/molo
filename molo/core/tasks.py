@@ -394,5 +394,5 @@ def import_site(root_url, site_pk, user_pk):
             'name': (user.get_full_name() or user.username) if user else None,
             'source': root_url,
             'to': site.root_url,
-            'logs':logs,
+            'logs': logs,
         })
