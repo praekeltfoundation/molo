@@ -1,6 +1,4 @@
 header {
-  width: 80%;
-    position: fixed;
   .search-form {
     float: none;
     display: inline-block;
@@ -9,15 +7,11 @@ header {
     margin: 0;
   }
 }
-.fixed-header {
-  position: fixed;
-}
 .heading__icon {
   display: inline-block;
 }
 .download__cta {
   float: right;
-  //display:inline-block;
 }
 .filter {
   padding: 10px 0 0;
