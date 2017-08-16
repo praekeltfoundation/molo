@@ -11,7 +11,7 @@ from StringIO import StringIO
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
 from wagtail.wagtailcore.models import Page
-
+from molo.core.api.constants import KEYS_TO_EXCLUDE
 
 def create_new_article_relations(old_main, copied_main):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
@@ -170,3 +170,25 @@ def get_image_hash(image):
         image_in_memory = StringIO(file.read())
         pil_image = PILImage.open(image_in_memory)
         return imagehash.average_hash(pil_image).__str__()
+
+
+def separate_fields(fields):
+    """
+    Non-foreign key fields can be mapped to new article instances
+    directly. Foreign key fields require a bit more work.
+    This method returns a tuple, of the same format:
+    (flat fields, nested fields)
+    """
+    flat_fields = {}
+    nested_fields = {}
+
+    # exclude "id" and "meta" elements
+    for k, v in fields.items():
+        # TODO: remove dependence on KEYS_TO_INCLUDE
+        if k not in KEYS_TO_EXCLUDE:
+            if type(v) not in [type({}), type([])]:
+                flat_fields.update({k: v})
+            else:
+                nested_fields.update({k: v})
+
+    return flat_fields, nested_fields

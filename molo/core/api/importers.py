@@ -32,7 +32,7 @@ from molo.core.api.errors import (
     RecordOverwriteError,
     ReferenceUnimportedContent,
 )
-from molo.core.utils import get_image_hash
+from molo.core.utils import get_image_hash, separate_fields
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -60,25 +60,7 @@ def get_image(base_url, image_id):
     return image
 
 
-def separate_fields(fields):
-    """
-    Non-foreign key fields can be mapped to new article instances
-    directly. Foreign key fields require a bit more work.
-    This method returns a tuple, of the same format:
-    (flat fields, nested fields)
-    """
-    flat_fields = {}
-    nested_fields = {}
 
-    # exclude "id" and "meta" elements
-    for k, v in fields.items():
-        if k not in KEYS_TO_EXCLUDE:
-            if type(v) not in [type({}), type([])]:
-                flat_fields.update({k: v})
-            else:
-                nested_fields.update({k: v})
-
-    return flat_fields, nested_fields
 
 
 def list_of_objects_from_api(url):
@@ -383,6 +365,8 @@ class RecordKeeper(object):
         self.reaction_questions = {}
         self.nav_tags = {}
         self.section_tags = {}
+
+        # maps local page to foreign id
         self.banner_page_links = {}
 
         self.record_page_relation = record_relation(self.id_map)
@@ -992,3 +976,12 @@ class SiteImporter(object):
             message += "\n| {}: {}".format(key, item)
         message += "\n-----------------------"
         return message
+
+
+class ContentImporter(BaseImporter):
+    def __init__(self, site_pk, base_url, record_keeper=None):
+        super(ContentImporter, self).__init__(site_pk, base_url,
+                                              record_keeper=record_keeper)
+
+    def attach_page(self, content):
+        pass
