@@ -39,6 +39,7 @@ from molo.core import constants
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
+from molo.core.utils import separate_fields
 
 
 class BaseReadOnlyPanel(EditHandler):
@@ -249,9 +250,20 @@ class SiteSettings(BaseSetting):
     ]
 
 
-class ImportabelMixin(object):
-    def create_page(self, content, record_keeper=None):
-        pass
+class ImportableMixin(object):
+    @classmethod
+    def create_page(self, content, class_, record_keeper=None):
+        fields, nested_fields = separate_fields(content)
+
+        foreign_id = content.pop('id')
+
+        # remove unwanted fields
+        if 'latest_revision_created_at' in content:
+            content.pop('latest_revision_created_at')
+
+        page = class_(**fields)
+
+        return page
 
 
 class PreventDeleteMixin(object):
@@ -517,7 +529,7 @@ class ReactionQuestionResponse(models.Model):
         request.session.modified = True
 
 
-class Tag(TranslatablePageMixin, Page):
+class Tag(TranslatablePageMixin, Page, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
 
