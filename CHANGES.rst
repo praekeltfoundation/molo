@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.9.2
+~~~~~
+- Mote Update: Mote files updated to flexible accept applications style directory
+
 5.9.1
 ~~~~~
 - Bug Fix: Revert accidental travis setup change

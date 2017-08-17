@@ -296,6 +296,10 @@ STATIC_ROOT = join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
 COMPRESS_ENABLED = True
 
+STATICFILES_DIRS = [
+    join(PROJECT_ROOT, "{{cookiecutter.app_name}}/{{ STATIC_URL }}css/{{ ENV }}"),
+]
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
