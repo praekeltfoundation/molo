@@ -4,6 +4,7 @@ import zipfile
 import re
 import tempfile
 import imagehash
+import json
 import distutils.dir_util
 
 from PIL import Image as PILImage
@@ -192,3 +193,19 @@ def separate_fields(fields):
                 nested_fields.update({k: v})
 
     return flat_fields, nested_fields
+
+def add_json_dump(field):
+    def _add_json_dump(nested_fields, page):
+        if ((field in nested_fields) and
+                nested_fields[field]):
+            setattr(page, field, json.dumps(nested_fields[field]))
+    return _add_json_dump
+
+
+def add_list_of_things(field):
+    def _add_list_of_things(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            attr = getattr(page, field)
+            for item in nested_fields[field]:
+                attr.add(item)
+    return _add_list_of_things

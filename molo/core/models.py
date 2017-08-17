@@ -1051,7 +1051,7 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(CommentedPageMixin,
+class ArticlePage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, PageEffectiveImageMixin, Page):
     parent_page_types = ['core.SectionPage']
 

@@ -10,7 +10,7 @@ from molo.core.api.tests import constants
 from molo.core.tests.base import MoloTestCaseMixin
 
 
-class ImportableMixin(MoloTestCaseMixin, TestCase):
+class TestImportableMixin(MoloTestCaseMixin, TestCase):
     def setUp(self):
         pass
 
@@ -23,3 +23,47 @@ class ImportableMixin(MoloTestCaseMixin, TestCase):
 
         self.assertEqual(type(tag), Tag)
         self.assertEqual(tag.title, content["title"])
+
+    def test_article_importable(self):
+        content = constants.ARTICLE_PAGE_RESPONSE
+        content_copy = dict(content)
+        class_ = ArticlePage
+
+        page = ArticlePage.create_page(content_copy, class_)
+
+        self.assertEqual(page.title, content["title"])
+        self.assertEqual(page.subtitle, content["subtitle"])
+        self.assertEqual(page.commenting_state, content["commenting_state"])
+        self.assertEqual(page.social_media_title,
+                         content["social_media_title"])
+        self.assertEqual(page.social_media_description,
+                         content["social_media_description"])
+        self.assertEqual(page.featured_in_latest,
+                         content["featured_in_latest"])
+        self.assertEqual(page.featured_in_section,
+                         content["featured_in_section"])
+        self.assertEqual(page.featured_in_homepage,
+                         content["featured_in_homepage"])
+        self.assertEqual(page.feature_as_topic_of_the_day,
+                         content["feature_as_topic_of_the_day"])
+
+        self.assertEqual(page.commenting_open_time,
+                        content["commenting_open_time"])
+        self.assertEqual(page.commenting_close_time,
+                         content["commenting_close_time"])
+        self.assertEqual(page.featured_in_latest_start_date,
+                         content["featured_in_latest_start_date"])
+        self.assertEqual(page.featured_in_latest_end_date,
+                         content["featured_in_latest_end_date"])
+        self.assertEqual(page.featured_in_section_start_date,
+                         content["featured_in_section_start_date"])
+        self.assertEqual(page.featured_in_section_end_date,
+                         content["featured_in_section_end_date"])
+        self.assertEqual(page.featured_in_homepage_start_date,
+                         content["featured_in_homepage_start_date"])
+        self.assertEqual(page.featured_in_homepage_end_date,
+                         content["featured_in_homepage_end_date"])
+        self.assertEqual(page.promote_date,
+                         content["promote_date"])
+        self.assertEqual(page.demote_date,
+                         content["demote_date"])

@@ -32,7 +32,12 @@ from molo.core.api.errors import (
     RecordOverwriteError,
     ReferenceUnimportedContent,
 )
-from molo.core.utils import get_image_hash, separate_fields
+from molo.core.utils import (
+    get_image_hash,
+    separate_fields,
+    add_json_dump,
+    add_list_of_things,
+)
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -121,21 +126,6 @@ def record_foreign_key(field, record_keeper, id_key="id"):
     return _record_foreign_key
 
 
-def add_json_dump(field):
-    def _add_json_dump(nested_fields, page):
-        if ((field in nested_fields) and
-                nested_fields[field]):
-            setattr(page, field, json.dumps(nested_fields[field]))
-    return _add_json_dump
-
-
-def add_list_of_things(field):
-    def _add_list_of_things(nested_fields, page):
-        if (field in nested_fields) and nested_fields[field]:
-            attr = getattr(page, field)
-            for item in nested_fields[field]:
-                attr.add(item)
-    return _add_list_of_things
 
 
 def attach_image(field, image_map):
@@ -369,6 +359,25 @@ class RecordKeeper(object):
         # maps local page to foreign id
         self.banner_page_links = {}
 
+        self.record_recommended_articles = record_foreign_relation(
+            "recommended_articles", "recommended_article",
+            self.recommended_articles)
+        self.record_section_tags = record_foreign_relation(
+            "section_tags", "tag",
+            self.section_tags)
+        self.record_nav_tags = record_foreign_relation(
+            "nav_tags", "tag",
+            self.nav_tags)
+        self.record_reaction_questions = record_foreign_relation(
+            "reaction_questions", "reaction_question",
+            self.reaction_questions)
+        self.record_related_sections = record_foreign_relation(
+            "related_sections", "section",
+            self.related_sections)
+        self.record_banner_page_link = record_foreign_key(
+            "banner_link_page",
+            self.banner_page_links)
+
         self.record_page_relation = record_relation(self.id_map)
         self.record_image_relation = record_relation(self.image_map)
 
@@ -576,25 +585,6 @@ class SiteImporter(object):
         self.section_tags = {}
         # maps local banner page id to foreign linked page id
         self.banner_page_links = {}
-
-        self.record_recommended_articles = record_foreign_relation(
-            "recommended_articles", "recommended_article",
-            self.recommended_articles)
-        self.record_section_tags = record_foreign_relation(
-            "section_tags", "tag",
-            self.section_tags)
-        self.record_nav_tags = record_foreign_relation(
-            "nav_tags", "tag",
-            self.nav_tags)
-        self.record_reaction_questions = record_foreign_relation(
-            "reaction_questions", "reaction_question",
-            self.reaction_questions)
-        self.record_related_sections = record_foreign_relation(
-            "related_sections", "section",
-            self.related_sections)
-        self.record_banner_page_link = record_foreign_key(
-            "banner_link_page",
-            self.banner_page_links)
 
         self.add_article_body = add_json_dump("body")
         self.add_section_time = add_json_dump("time")
