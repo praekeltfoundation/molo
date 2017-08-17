@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.9.3
+~~~~~
+- Temporarily removed API import from sidebar
+
 5.9.2
 ~~~~~
 - Mote Update: Mote files updated to flexible accept applications style directory
