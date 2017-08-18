@@ -575,6 +575,35 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
         self.assertTrue(art_3)
         self.assertTrue(art_3.get_parent().specific, sec_3)
 
+    def test_create_recommended_articles(self):
+        section = self.mk_section(
+            self.section_index, title="Parent Test Section 1",
+        )
+        # create 2 articles
+        self.mk_articles(section)
+        article_main = ArticlePage.objects.first()
+        article_rec = ArticlePage.objects.last()
+
+        # update map_id
+        # attach imaginary foreign IDs to articles, to fake import data
+        self.record_keeper.id_map = {111: article_main.id, 222: article_rec.id}
+        # refer copied page to foreign id of recomended article
+        self.record_keeper.recommended_articles[article_main.id] = [222]
+
+        self.assertEqual(ArticlePageRecommendedSections.objects.count(), 0)
+
+        # recreate importer with updated record_keeper
+        self.importer = importers.ContentImporter(
+            self.site.pk, self.fake_base_url,
+            record_keeper=self.record_keeper)
+        self.importer.create_recommended_articles()
+
+        self.assertEqual(ArticlePageRecommendedSections.objects.count(), 1)
+        recomendation = ArticlePageRecommendedSections.objects.first()
+        self.assertEqual(recomendation.page.specific, article_main)
+        self.assertEqual(recomendation.recommended_article.specific,
+                         article_rec)
+
 class TestRecordKeeper(TestCase):
     def setUp(self):
         self.record_keeper = importers.RecordKeeper()
