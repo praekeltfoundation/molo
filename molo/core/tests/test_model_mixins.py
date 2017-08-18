@@ -7,6 +7,7 @@ from molo.core.models import (
     SectionPage,
     Tag,
     FooterPage,
+    BannerPage,
 )
 from molo.core.api.tests import constants
 from molo.core.api import importers
@@ -233,3 +234,38 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
             content_copy, class_, record_keeper=record_keeper)
 
         self.check_article_and_footer_fields(page, content, record_keeper)
+
+    def test_banner_importable(self):
+        content = constants.BANNER_PAGE_RESPONSE
+        content_copy = dict(content)
+
+        # Validate Assumptions
+        #   The images have already been imported
+        #   The record keeper has mapped the relationship
+
+        foreign_image_id = content["banner"]["id"]
+        image = Image.objects.create(
+            title=content["banner"]["title"],
+            file=get_test_image_file(),
+        )
+
+        record_keeper = importers.RecordKeeper()
+        record_keeper.record_image_relation(foreign_image_id, image.id)
+
+        class_ = BannerPage
+
+        page = BannerPage.create_page(
+            content_copy, class_, record_keeper=record_keeper)
+
+        self.assertEqual(page.title, content["title"])
+        self.assertEqual(page.external_link, content["external_link"])
+
+        # check that banner link has been created
+        self.assertEqual(
+            record_keeper.banner_page_links[page.id],
+            content["banner_link_page"]["id"])
+
+        # check that banner image has been attached
+        self.assertTrue(page.banner)
+        self.assertEqual(page.banner, image)
+        self.assertEqual(page.banner.title, content["banner"]["title"])

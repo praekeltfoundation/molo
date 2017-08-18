@@ -267,6 +267,7 @@ class ImportableMixin(object):
         attach_image = attach_image_function("image")
         attach_social_media_image = attach_image_function(
             "social_media_image")
+        attach_banner_image = attach_image_function("banner")
 
         fields, nested_fields = separate_fields(content)
 
@@ -288,6 +289,7 @@ class ImportableMixin(object):
 
         attach_image(nested_fields, page, record_keeper)
         attach_social_media_image(nested_fields, page, record_keeper)
+        attach_banner_image(nested_fields, page, record_keeper)
 
         # Handle relationships in nested_fields
         if record_keeper:
@@ -296,6 +298,7 @@ class ImportableMixin(object):
             record_keeper.record_reaction_questions(nested_fields, page.id)
             record_keeper.record_related_sections(nested_fields, page.id)
             record_keeper.record_section_tags(nested_fields, page.id)
+            record_keeper.record_banner_page_link(nested_fields, page.id)
 
         return page
 
@@ -579,7 +582,7 @@ Tag.promote_panels = [
 ]
 
 
-class BannerIndexPage(Page, PreventDeleteMixin):
+class BannerIndexPage(Page, PreventDeleteMixin, ImportableMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
 
@@ -590,7 +593,7 @@ class BannerIndexPage(Page, PreventDeleteMixin):
         super(BannerIndexPage, self).copy(*args, **kwargs)
 
 
-class BannerPage(TranslatablePageMixin, Page):
+class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
     parent_page_types = ['core.BannerIndexPage']
     subpage_types = []
 
