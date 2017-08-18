@@ -626,7 +626,7 @@ class ContentImporter(BaseImporter):
             page.delete()
         return page
 
-    def copy_page_with_children(self, foreign_id, parent_id):
+    def copy_page_and_children(self, foreign_id, parent_id):
         '''
         Recusively copies over pages, their translations, and child pages
         '''
@@ -673,7 +673,7 @@ class ContentImporter(BaseImporter):
                         foreign_id=main_language_child_id,
                         parent_id=page.id)
 
-    def copy_with_children(self, foreign_id, existing_node):
+    def copy_children(self, foreign_id, existing_node):
         '''
         Initiates copying of tree, with existing_node acting as root
         '''
