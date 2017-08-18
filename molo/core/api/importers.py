@@ -381,7 +381,6 @@ class RecordKeeper(object):
             self.banner_page_links)
 
 
-
 class BaseImporter(object):
     def __init__(self, site_pk, base_url, record_keeper=None):
         # TODO: handle case where base_url is not valid
