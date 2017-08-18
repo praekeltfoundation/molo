@@ -354,6 +354,12 @@ class RecordKeeper(object):
         # maps local page to foreign id
         self.banner_page_links = {}
 
+        self.record_page_relation = record_relation(self.id_map)
+        self.record_image_relation = record_relation(self.image_map)
+
+        self.get_local_page = get_related_item(self.id_map)
+        self.get_local_image = get_related_item(self.image_map)
+
         self.record_recommended_articles = record_foreign_relation(
             "recommended_articles", "recommended_article",
             self.recommended_articles)
@@ -369,15 +375,11 @@ class RecordKeeper(object):
         self.record_related_sections = record_foreign_relation(
             "related_sections", "section",
             self.related_sections)
+
         self.record_banner_page_link = record_foreign_key(
             "banner_link_page",
             self.banner_page_links)
 
-        self.record_page_relation = record_relation(self.id_map)
-        self.record_image_relation = record_relation(self.image_map)
-
-        self.get_local_page = get_related_item(self.id_map)
-        self.get_local_image = get_related_item(self.image_map)
 
 
 class BaseImporter(object):
