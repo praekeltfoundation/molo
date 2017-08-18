@@ -279,6 +279,7 @@ class ImportableMixin(object):
 
         page = class_(**fields)
 
+        # Handle content in nested_fields
         add_article_body(nested_fields, page)
         add_tags(nested_fields, page)
         add_metadata_tags(nested_fields, page)
@@ -286,6 +287,9 @@ class ImportableMixin(object):
         attach_image(nested_fields, page, record_keeper)
         attach_social_media_image(nested_fields, page, record_keeper)
 
+        # Handle relationships in nested_fields
+        if record_keeper:
+            record_keeper.record_nav_tags(nested_fields, page.id)
         return page
 
 

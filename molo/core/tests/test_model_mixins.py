@@ -112,3 +112,8 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         self.assertTrue(page.social_media_image)
         self.assertEqual(page.social_media_image.title,
                          content["social_media_image"]["title"])
+
+        # Check that foreign relationships have been created
+        self.assertTrue(page.id in record_keeper.nav_tags)
+        self.assertEqual(record_keeper.nav_tags[page.id],
+                         [content["nav_tags"][0]["tag"]["id"], ])
