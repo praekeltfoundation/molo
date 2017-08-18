@@ -26,36 +26,7 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         self.assertEqual(type(tag), Tag)
         self.assertEqual(tag.title, content["title"])
 
-    def test_article_importable(self):
-        content = constants.ARTICLE_PAGE_RESPONSE
-        content_copy = dict(content)
-
-        # Validate Assumptions
-        #   The images have already been imported
-        #   The record keeper has mapped the relationship
-
-        foreign_image_id = content["image"]["id"]
-        image = Image.objects.create(
-            title=content["image"]["title"],
-            file=get_test_image_file(),
-        )
-
-        foreign_social_media_image_id = content["social_media_image"]["id"]
-        social_media_image = Image.objects.create(
-            title=content["social_media_image"]["title"],
-            file=get_test_image_file(),
-        )
-
-        record_keeper = importers.RecordKeeper()
-        record_keeper.record_image_relation(foreign_image_id, image.id)
-        record_keeper.record_image_relation(
-            foreign_social_media_image_id, social_media_image.id)
-
-        class_ = ArticlePage
-
-        page = ArticlePage.create_page(
-            content_copy, class_, record_keeper=record_keeper)
-
+    def check_article_and_footer_fields(self, page, content, record_keeper):
         self.assertEqual(page.title, content["title"])
         self.assertEqual(page.subtitle, content["subtitle"])
         self.assertEqual(page.commenting_state, content["commenting_state"])
@@ -136,6 +107,38 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
             record_keeper.related_sections[page.id],
             [content["related_sections"][0]["section"]["id"],
              content["related_sections"][1]["section"]["id"]])
+
+    def test_article_importable(self):
+        content = constants.ARTICLE_PAGE_RESPONSE
+        content_copy = dict(content)
+
+        # Validate Assumptions
+        #   The images have already been imported
+        #   The record keeper has mapped the relationship
+
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        foreign_social_media_image_id = content["social_media_image"]["id"]
+        social_media_image = Image.objects.create(
+            title=content["social_media_image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        record_keeper = importers.RecordKeeper()
+        record_keeper.record_image_relation(foreign_image_id, image.id)
+        record_keeper.record_image_relation(
+            foreign_social_media_image_id, social_media_image.id)
+
+        class_ = ArticlePage
+
+        page = ArticlePage.create_page(
+            content_copy, class_, record_keeper=record_keeper)
+
+        self.check_article_and_footer_fields(page, content, record_keeper)
 
     def test_section_importable(self):
         content = constants.SECTION_PAGE_RESPONSE
