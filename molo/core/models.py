@@ -43,6 +43,7 @@ from molo.core.utils import (
     separate_fields,
     add_json_dump,
     add_list_of_things,
+    attach_image_function,
 )
 
 
@@ -262,6 +263,8 @@ class ImportableMixin(object):
         add_tags = add_list_of_things("tags")
         add_metadata_tags = add_list_of_things("metadata_tags")
 
+        attach_image = attach_image_function("image")
+
         fields, nested_fields = separate_fields(content)
 
         foreign_id = content.pop('id')
@@ -277,6 +280,8 @@ class ImportableMixin(object):
         add_article_body(nested_fields, page)
         add_tags(nested_fields, page)
         add_metadata_tags(nested_fields, page)
+
+        attach_image(nested_fields, page, record_keeper)
 
         return page
 

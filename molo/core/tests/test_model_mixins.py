@@ -1,16 +1,19 @@
 from django.test import TestCase
 
+from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+
 from molo.core.models import (
     ArticlePage,
     Tag,
 )
 from molo.core.api.tests import constants
+from molo.core.api import importers
 from molo.core.tests.base import MoloTestCaseMixin
 
 
 class TestImportableMixin(MoloTestCaseMixin, TestCase):
     def setUp(self):
-        pass
+        self.mk_main()
 
     def test_tag_importable(self):
         content = constants.TAG_PAGE_RESPONSE
@@ -25,9 +28,24 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
     def test_article_importable(self):
         content = constants.ARTICLE_PAGE_RESPONSE
         content_copy = dict(content)
+
+        # Validate Assumptions
+        #   The images have already been imported
+        #   The record keeper has mapped the relationship
+
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        record_keeper = importers.RecordKeeper()
+        record_keeper.record_image_relation(foreign_image_id, image.id)
+
         class_ = ArticlePage
 
-        page = ArticlePage.create_page(content_copy, class_)
+        page = ArticlePage.create_page(
+            content_copy, class_, record_keeper=record_keeper)
 
         self.assertEqual(page.title, content["title"])
         self.assertEqual(page.subtitle, content["subtitle"])
@@ -78,3 +96,7 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
                          len(content['metadata_tags']))
         for metadata_tag in page.metadata_tags.all():
             self.assertTrue(metadata_tag.name in content["metadata_tags"])
+
+        # Check that image has been added
+        self.assertTrue(page.image)
+        self.assertEqual(page.image.title, content["image"]["title"])
