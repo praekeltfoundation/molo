@@ -364,7 +364,7 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
             Image.objects.last().id)
 
 
-class TestLanguageSectionImporter(MoloTestCaseMixin, TestCase):
+class TestLanguageImporter(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.fake_base_url = "http://localhost:8000"
         self.mk_main()
