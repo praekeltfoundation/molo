@@ -9,10 +9,16 @@ import distutils.dir_util
 
 from PIL import Image as PILImage
 from StringIO import StringIO
+
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
 from wagtail.wagtailcore.utils import cautious_slugify
 from wagtail.wagtailcore.models import Page
+from wagtail.wagtailimages.models import Image
+
 from molo.core.api.constants import KEYS_TO_EXCLUDE
+from molo.core.api.errors import ReferenceUnimportedContent
 
 
 def create_new_article_relations(old_main, copied_main):
@@ -211,3 +217,37 @@ def add_list_of_things(field):
             for item in nested_fields[field]:
                 attr.add(item)
     return _add_list_of_things
+
+
+def attach_image_function(field):
+    '''
+    Returns a function that attaches an image to page if it exists
+
+    Currenlty assumes that images have already been imported and info
+    has been stored in record_keeper
+    '''
+    def _attach_image(nested_fields, page, record_keeper=None):
+        if (field in nested_fields) and nested_fields[field]:
+            foreign_image_id = nested_fields[field]["id"]
+            # Handle the following
+            # record keeper may not exist
+            # record keeper may not have image ref
+            if record_keeper:
+                try:
+                    local_image_id = record_keeper.get_local_image(
+                        foreign_image_id)
+                    local_image = Image.objects.get(id=local_image_id)
+                    setattr(page, field, local_image)
+                except ObjectDoesNotExist:
+                    raise Exception(
+                        ("executing attach_image: local image referenced"
+                         "in record_keeper does not actually exist."))
+                except ReferenceUnimportedContent:
+                    Exception(
+                        ("case: 'import image if not imported yet' "
+                         "not yet implemented"))
+            else:
+                raise Exception(
+                    ("case: 'attach_image without record_keeper' "
+                     "not yet implemented"))
+    return _attach_image
