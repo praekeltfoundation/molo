@@ -39,8 +39,16 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
             file=get_test_image_file(),
         )
 
+        foreign_social_media_image_id = content["social_media_image"]["id"]
+        social_media_image = Image.objects.create(
+            title=content["social_media_image"]["title"],
+            file=get_test_image_file(),
+        )
+
         record_keeper = importers.RecordKeeper()
         record_keeper.record_image_relation(foreign_image_id, image.id)
+        record_keeper.record_image_relation(
+            foreign_social_media_image_id, social_media_image.id)
 
         class_ = ArticlePage
 
@@ -100,3 +108,7 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         # Check that image has been added
         self.assertTrue(page.image)
         self.assertEqual(page.image.title, content["image"]["title"])
+        # Check that social media file has been added
+        self.assertTrue(page.social_media_image)
+        self.assertEqual(page.social_media_image.title,
+                         content["social_media_image"]["title"])

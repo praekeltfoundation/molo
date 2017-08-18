@@ -264,6 +264,8 @@ class ImportableMixin(object):
         add_metadata_tags = add_list_of_things("metadata_tags")
 
         attach_image = attach_image_function("image")
+        attach_social_media_image = attach_image_function(
+            "social_media_image")
 
         fields, nested_fields = separate_fields(content)
 
@@ -282,6 +284,7 @@ class ImportableMixin(object):
         add_metadata_tags(nested_fields, page)
 
         attach_image(nested_fields, page, record_keeper)
+        attach_social_media_image(nested_fields, page, record_keeper)
 
         return page
 
