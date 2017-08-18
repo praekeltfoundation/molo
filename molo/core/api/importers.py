@@ -24,6 +24,7 @@ from molo.core.models import (
     PageTranslation,
     ArticlePageTags,
     SectionPageTags,
+    ImportableMixin,
 )
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
@@ -550,177 +551,47 @@ class LanguageImporter(BaseImporter):
                 language_setting=language_setting)
 
 
-class SiteImporter(object):
+class ContentImporter(BaseImporter):
+    def __init__(self, site_pk, base_url, record_keeper=None):
+        super(ContentImporter, self).__init__(site_pk, base_url,
+                                              record_keeper=record_keeper)
 
-    def __init__(self, site_pk, base_url='', logs=[]):
-        if base_url[-1] == '/':
-            self.base_url = base_url[:-1]
-        else:
-            self.base_url = base_url
+    def attach_page(self, parent, content):
+        page_type = content["meta"]["type"].split(".")[-1]
+        class_ = eval(page_type)
+        content_copy = dict(content)
 
-        self.api_url = self.base_url + '/api/v2/'
-        self.image_url = "{}images/".format(self.api_url)
-        self.site_pk = site_pk
-        self.language_setting, created = Languages.objects.get_or_create(
-            site_id=self.site_pk)
-        self.logs = logs
-        self.content = None
-        # maps foreign IDs to local page IDs
-        self.id_map = {}
-        # maps foreign image IDs to local IDs
-        self.image_map = {}
-        # maps local id to list of foreign section page ids
-        self.related_sections = {}
-        # maps local id to list of foreign page ids
-        self.recommended_articles = {}
-        # maps local pages to list of foreign reaction question IDs
-        self.reaction_questions = {}
-        # maps local pages to list of foreign nav_tag IDs
-        self.nav_tags = {}
-        # maps local pages to list of foreign section_tag IDs
-        self.section_tags = {}
-        # maps local banner page id to foreign linked page id
-        self.banner_page_links = {}
-
-        self.add_article_body = add_json_dump("body")
-        self.add_section_time = add_json_dump("time")
-
-        self.add_tags = add_list_of_things("tags")
-        self.add_metadata_tags = add_list_of_things("metadata_tags")
-
-        self.attach_image = attach_image("image", self.image_map)
-        self.attach_social_media_image = attach_image("social_media_image",
-                                                      self.image_map)
-        self.attach_banner_image = attach_image("banner", self.image_map)
-
-    def get_language_ids(self):
-        language_url = "{}{}/".format(self.api_url, "languages")
-        response = requests.get(language_url)
-
-        language_ids = []
-        # TODO: handle broken case
-        for language in json.loads(response.content)["items"]:
-            language_ids.append(language["id"])
-        return language_ids
-
-    def copy_site_languages(self):
-        self.log("Copying Site Languages")
-        language_foreign_ids = self.get_language_ids()
-        language_setting, created = Languages.objects.get_or_create(
-            site_id=self.site_pk)
-        for foreign_id in language_foreign_ids:
-            language_url = "{}{}/{}/".format(self.api_url,
-                                             "languages",
-                                             foreign_id)
-            response = requests.get(language_url)
-            content = json.loads(response.content)
-
-            # TODO: review whether this works with Multi-site
-            # TODO: handle case where Main lang is not first
-            sle, created = SiteLanguageRelation.objects.get_or_create(
-                locale=content['locale'],
-                is_active=content['is_active'],
-                language_setting=language_setting)
-
-    def import_images(self):
-        '''
-        Fetches images from site
-
-        Attempts to avoid duplicates by matching image titles
-        if a match is found it refers to local instance instead
-        if it is not, the image is fetched, created and referenced
-        '''
-        self.log("Importing Images")
-        images = list_of_objects_from_api(self.image_url)
-
-        if not images:
+        if not issubclass(class_, ImportableMixin):
+            # TODO: log this
             return None
 
-        # store info about local images in order to match
-        # with imported images
-        local_image_hashes = {}
-        image_width = {}
-        image_height = {}
+        # TODO: make a copy of the record_keeper class
 
-        for local_image in Image.objects.all():
-            local_image_hashes[get_image_hash(local_image)] = local_image
+        try:
+            page = class_.create_page(
+                content_copy, class_, record_keeper=self.record_keeper)
+        except Exception as e:
+            # avoid side-effects of adding the page
+            # TODO: restore copy of record Keeper class
+            # TODO: Log exceptions surface from creating page
+            return None
 
-            if local_image.width in image_width:
-                image_width[local_image.width].append(local_image)
-            else:
-                image_width[local_image.width] = [local_image]
+        try:
+            parent.add_child(instance=page)
+            parent.save_revision().publish()
+            page.save_revision().publish()
+        except Exception as e:
+            # TODO: log failed page save and details
+            return None
 
-            if local_image.height in image_height:
-                image_height[local_image.height].append(local_image)
-            else:
-                image_height[local_image.height] = [local_image]
-
-        # iterate through foreign images
-        for image in images:
-            image_detail_url = "{}{}/".format(self.image_url, image["id"])
-            img_response = requests.get(image_detail_url)
-            img_info = json.loads(img_response.content)
-
-            if img_info["image_hash"] is None:
-                raise ValueError('image hash should not be none')
-
-            # check if a replica exists
-            if img_info["width"] in image_width:
-                possible_matches = image_width[img_info["width"]]
-                if img_info["height"] in image_height:
-                    possible_matches = list(
-                        set(image_height[img_info["height"]] +
-                            possible_matches))
-                    if (img_info["image_hash"] in local_image_hashes and
-                        local_image_hashes[img_info["image_hash"]] in
-                            possible_matches):
-                        result = local_image_hashes[img_info["image_hash"]]
-
-                        # use the local title of the image
-                        self.image_map[image["id"]] = result.id
-
-                        action_context = {
-                            "Foreign Image ID": img_info["id"],
-                            "Foreign Image Hash": img_info["image_hash"],
-                            "Local Image ID": result.id,
-                            "Local Image Hash": get_image_hash(result),
-                        }
-                        self.log(self.create_action_message(
-                            'found image match',
-                            context=action_context))
-                        continue
-
-            new_image = self.fetch_and_create_image(
-                img_info['image_url'],
-                img_info["title"])
-            self.image_map[image["id"]] = new_image.id
-
-            action_context = {
-                "Foreign image ID": img_info["id"],
-                "New image ID": new_image.id,
-            }
-            self.log(
-                self.create_action_message(
-                    'imported new image',
-                    context=action_context))
-
-    def fetch_and_create_image(self, relative_url, image_title):
-        '''
-        fetches, creates and return image object
-        '''
-        # TODO: handle image unavailable
-        image_media_url = "{}{}".format(self.base_url, relative_url)
-        image_file = requests.get(image_media_url)
-        local_image = Image(
-            title=image_title,
-            file=ImageFile(
-                BytesIO(image_file.content), name=image_title
-            )
+        self.record_keeper.record_page_relation(
+            content["id"],
+            page.id
         )
-        local_image.save()
-        return local_image
+        # TODO: Log successful import
+        return page
 
-    def create_translated_content(self, local_main_lang_page,
+    def attach_translated_content(self, local_main_lang_page,
                                   content, locale):
         '''
         Wrapper for  create_content
@@ -730,187 +601,51 @@ class SiteImporter(object):
         newly created Page
         Note: we get the parent from the main language page
         '''
-        page = self.create_page(local_main_lang_page.get_parent(), content)
-
-        language = SiteLanguageRelation.objects.get(
-            language_setting=self.language_setting, locale=locale)
-        language_relation = page.languages.first()
-        language_relation.language = language
-        language_relation.save()
-        page.save_revision().publish()
-        PageTranslation.objects.get_or_create(
-            page=local_main_lang_page,
-            translated_page=page)
-        return page
-
-    def create_page(self, parent, content):
-        fields, nested_fields = separate_fields(content)
-
-        # handle the unwanted fields
-        foreign_id = content.pop('id')
-        # ignore when article was last revised
-        if 'latest_revision_created_at' in content:
-            content.pop('latest_revision_created_at')
-
-        page = None
-        if content["meta"]["type"] == "core.SectionPage":
-            page = SectionPage(**fields)
-        elif content["meta"]["type"] == "core.ArticlePage":
-            page = ArticlePage(**fields)
-        elif content["meta"]["type"] == "core.FooterPage":
-            page = FooterPage(**fields)
-        elif content["meta"]["type"] == "core.BannerPage":
-            page = BannerPage(**fields)
-        elif content["meta"]["type"] == "core.Tag":
-            page = Tag(**fields)
-        else:
-            self.id_map[foreign_id] = None
-            self.log(
-                ("Foreign Page with ID: {} and "
-                 "Type: {} was not imported").format(
-                     content["id"], content["meta"]["type"]))
+        try:
+            page = self.attach_page(
+                local_main_lang_page.get_parent(),
+                content)
+        except:
+            # TODO: log this
             return None
 
-        parent.add_child(instance=page)
-
-        # TODO: handle live/published
-        # Need to review this line:
-        #   handle drafts and 'not live' content
-        parent.save_revision().publish()
-
-        self.id_map[foreign_id] = page.id
-
-        self.record_section_tags(nested_fields, page.id)
-        self.record_nav_tags(nested_fields, page.id)
-        self.record_reaction_questions(nested_fields, page.id)
-        self.record_recommended_articles(nested_fields, page.id)
-        self.record_related_sections(nested_fields, page.id)
-        self.record_banner_page_link(nested_fields, page.id)
-
-        self.add_article_body(nested_fields, page)
-        self.add_section_time(nested_fields, page)
-
-        self.add_tags(nested_fields, page)
-        self.add_metadata_tags(nested_fields, page)
-
-        self.attach_image(nested_fields, page)
-        self.attach_social_media_image(nested_fields, page)
-        self.attach_banner_image(nested_fields, page)
-
-        # note that unpublished pages will be published
-        page.save_revision().publish()
+        try:
+            # create the translation object for page
+            language = SiteLanguageRelation.objects.get(
+                language_setting=self.language_setting,
+                locale=locale)
+            language_relation = page.languages.first()
+            language_relation.language = language
+            language_relation.save()
+            PageTranslation.objects.get_or_create(
+                page=local_main_lang_page,
+                translated_page=page)
+        except:
+            # TODO: log that creating translation failed
+            # TODO: log that page is now being deleted
+            page.delete()
         return page
 
-    def create_recommended_articles(self):
-        # iterate through articles with recomended articles
-        for article_id, foreign_rec_article_id_list in self.recommended_articles.iteritems():  # noqa
-
-            main_article = ArticlePage.objects.get(id=article_id)
-            for foreign_rec_article_id in foreign_rec_article_id_list:
-                local_version_page_id = self.id_map[foreign_rec_article_id]
-                rec_article = ArticlePage.objects.get(id=local_version_page_id)
-
-                ArticlePageRecommendedSections(
-                    page=main_article,
-                    recommended_article=rec_article
-                ).save()
-
-    def create_related_sections(self):
-        # iterate through articles with related sections
-        for article_id, foreign_rel_section_id_list in self.related_sections.iteritems():  # noqa
-
-            main_article = ArticlePage.objects.get(id=article_id)
-            for foreign_rel_section_id in foreign_rel_section_id_list:
-                local_version_page_id = self.id_map[foreign_rel_section_id]
-                rel_section = SectionPage.objects.get(id=local_version_page_id)
-
-                ArticlePageRelatedSections(
-                    page=main_article,
-                    section=rel_section
-                ).save()
-
-    def create_nav_tag_relationships(self):
-        for page_id, foreign_tags_id_list in self.nav_tags.iteritems():
-            page = Page.objects.get(id=page_id).specific
-            for foreign_tag_id in foreign_tags_id_list:
-                local_tag_id = self.id_map[foreign_tag_id]
-                tag = Tag.objects.get(id=local_tag_id)
-
-                ArticlePageTags(
-                    page=page,
-                    tag=tag
-                ).save()
-
-    def create_section_tag_relationship(self):
-        for page_id, foreign_tags_id_list in self.section_tags.iteritems():
-            page = Page.objects.get(id=page_id).specific
-            for foreign_tag_id in foreign_tags_id_list:
-                local_tag_id = self.id_map[foreign_tag_id]
-                tag = Tag.objects.get(id=local_tag_id)
-
-                SectionPageTags(
-                    page=page,
-                    tag=tag
-                ).save()
-
-    def create_banner_page_links(self):
-        for banner_page_id, linked_page_foreign_id in self.banner_page_links.iteritems():  # noqa
-            banner = BannerPage.objects.get(id=banner_page_id)
-            local_id = self.id_map[linked_page_foreign_id]
-            linked_page = Page.objects.get(id=local_id).specific
-            banner.banner_link_page = linked_page
-            banner.save_revision().publish()
-
-    def get_foreign_page_id_from_type(self, page_type):
+    def copy_page_with_children(self, foreign_id, parent_id):
         '''
-        Get the foreign page id based on type
-
-        Only works for index pages
-        '''
-        response = requests.get("{}pages/?type={}".format(
-            self.api_url, page_type))
-        content = json.loads(response.content)
-        return content["items"][0]["id"]
-
-    def copy_children(self, foreign_id, existing_node):
-        '''
-        Initiates copying of tree, with existing_node acting as root
+        Recusively copies over pages, their translations, and child pages
         '''
         url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
 
-        response = requests.get(url)
-        content = json.loads(response.content)
-
-        main_language_child_ids = content["meta"]["main_language_children"]
-        for main_language_child_id in main_language_child_ids:
-                self.copy_page_and_children(foreign_id=main_language_child_id,
-                                            parent_id=existing_node.id)
-
-    def copy_page_and_children(self, foreign_id, parent_id):
-        '''
-        Recusively copies over pages, their translations and child pages
-        '''
-        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
-
-        # TODO handle connection errors
+        # TODO: create a robust wrapper around this functionality
         response = requests.get(url)
         try:
             content = json.loads(response.content)
         except Exception as e:
-            context = {
-                "foreign page url": url,
-            }
-            self.log(self.create_error_message(
-                "fetch page data", context=context, error=e))
             return None
 
         parent = Page.objects.get(id=parent_id).specific
         page = None
         try:
-            page = self.create_page(parent, content)
+            page = self.attach_page(parent, content)
         except Exception as e:
-            self.log(
-                self.create_error_message("create page", error=e))
+            # TODO: log this
+            return None
 
         if page:
             # create translations
@@ -918,16 +653,16 @@ class SiteImporter(object):
                 for translation_obj in content["meta"]["translations"]:
                     _url = "{}/api/v2/pages/{}/".format(self.base_url,
                                                         translation_obj["id"])
+                    # TODO: create a robust wrapper around this functionality
                     _response = requests.get(_url)
                     if _response.content:
                         _content = json.loads(_response.content)
 
-                        self.create_translated_content(
+                        self.attach_translated_content(
                             page, _content, translation_obj["locale"])
                     else:
-                        self.log(self.create_error_message(
-                            "fetch translated page",
-                            foreign_id=translation_obj["id"]))
+                        # TODO: log this
+                        pass
 
             main_language_child_ids = content["meta"]["main_language_children"]
 
@@ -938,36 +673,17 @@ class SiteImporter(object):
                         foreign_id=main_language_child_id,
                         parent_id=page.id)
 
-    def log(self, message):
-        if settings.DEBUG:
-            print message
-        self.logs.append(message)
+    def copy_with_children(self, foreign_id, existing_node):
+        '''
+        Initiates copying of tree, with existing_node acting as root
+        '''
+        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
 
-    def create_error_message(
-            self, action, error=None, foreign_id=None, context={}):
-        error_message = "ERROR: failed to '{}'".format(action)
-        if error:
-            error_message += "\n| Error Type: {}".format(type(error))
-            error_message += "\n| Error Detail: {}".format(error)
-        if foreign_id:
-            error_message += "\n| Foreign ID: {}".format(foreign_id)
-        for key, item in context.iteritems():
-            error_message += "\n| {}: {}".format(key, item)
-        error_message += "\n-----------------------"
-        return error_message
+        # TODO: create a robust wrapper around this functionality
+        response = requests.get(url)
+        content = json.loads(response.content)
 
-    def create_action_message(self, action, context={}):
-        message = "ACTION: Succesfully '{}'".format(action)
-        for key, item in context.iteritems():
-            message += "\n| {}: {}".format(key, item)
-        message += "\n-----------------------"
-        return message
-
-
-class ContentImporter(BaseImporter):
-    def __init__(self, site_pk, base_url, record_keeper=None):
-        super(ContentImporter, self).__init__(site_pk, base_url,
-                                              record_keeper=record_keeper)
-
-    def attach_page(self, content):
-        pass
+        main_language_child_ids = content["meta"]["main_language_children"]
+        for main_language_child_id in main_language_child_ids:
+                self.copy_page_and_children(foreign_id=main_language_child_id,
+                                            parent_id=existing_node.id)
