@@ -259,7 +259,7 @@ class ImportableMixin(object):
     @classmethod
     def create_page(self, content, class_, record_keeper=None):
         add_article_body = add_json_dump("body")
-        add_article_body = add_json_dump("time")
+        add_section_time = add_json_dump("time")
 
         add_tags = add_list_of_things("tags")
         add_metadata_tags = add_list_of_things("metadata_tags")
@@ -282,6 +282,7 @@ class ImportableMixin(object):
 
         # Handle content in nested_fields
         add_article_body(nested_fields, page)
+        add_section_time(nested_fields, page)
         add_tags(nested_fields, page)
         add_metadata_tags(nested_fields, page)
 
