@@ -14,6 +14,7 @@ from wagtail.wagtailcore.utils import cautious_slugify
 from wagtail.wagtailcore.models import Page
 from molo.core.api.constants import KEYS_TO_EXCLUDE
 
+
 def create_new_article_relations(old_main, copied_main):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
         ArticlePageReactionQuestions, ReactionQuestion, \
@@ -193,6 +194,7 @@ def separate_fields(fields):
                 nested_fields.update({k: v})
 
     return flat_fields, nested_fields
+
 
 def add_json_dump(field):
     def _add_json_dump(nested_fields, page):

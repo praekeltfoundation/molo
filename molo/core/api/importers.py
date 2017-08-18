@@ -26,7 +26,7 @@ from molo.core.models import (
     SectionPageTags,
 )
 from molo.core.api.constants import (
-    API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
+    API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
 )
 from molo.core.api.errors import (
     RecordOverwriteError,
@@ -63,9 +63,6 @@ def get_image(base_url, image_id):
     )
     image.save()
     return image
-
-
-
 
 
 def list_of_objects_from_api(url):
@@ -124,8 +121,6 @@ def record_foreign_key(field, record_keeper, id_key="id"):
         if ((field in nested_fields) and nested_fields[field]):
             record_keeper[page_id] = nested_fields[field][id_key]
     return _record_foreign_key
-
-
 
 
 def attach_image(field, image_map):

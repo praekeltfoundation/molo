@@ -265,6 +265,8 @@ class ImportableMixin(object):
         fields, nested_fields = separate_fields(content)
 
         foreign_id = content.pop('id')
+        # TODO: use foreign_id properly
+        type(foreign_id)
 
         # remove unwanted fields
         if 'latest_revision_created_at' in content:

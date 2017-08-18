@@ -1,5 +1,3 @@
-from dateutil import parser
-
 from django.test import TestCase
 
 from molo.core.models import (
@@ -48,7 +46,7 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
                          content["feature_as_topic_of_the_day"])
 
         self.assertEqual(page.commenting_open_time,
-                        content["commenting_open_time"])
+                         content["commenting_open_time"])
         self.assertEqual(page.commenting_close_time,
                          content["commenting_close_time"])
         self.assertEqual(page.featured_in_latest_start_date,
