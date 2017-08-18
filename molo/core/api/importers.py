@@ -326,17 +326,6 @@ def record_relation(record):
     return _record_relation
 
 
-def get_related_item(record):
-    def get_item(foreign_page_id):
-        if foreign_page_id in record:
-            return record[foreign_page_id]
-        else:
-            raise ReferenceUnimportedContent(
-                "ReferenceUnimportedContent",
-                None)
-    return get_item
-
-
 class RecordKeeper(object):
     def __init__(self):
         # maps foreign IDs to local IDs
@@ -358,9 +347,6 @@ class RecordKeeper(object):
         self.record_page_relation = record_relation(self.id_map)
         self.record_image_relation = record_relation(self.image_map)
 
-        self.get_local_page = get_related_item(self.id_map)
-        self.get_local_image = get_related_item(self.image_map)
-
         self.record_recommended_articles = record_foreign_relation(
             "recommended_articles", "recommended_article",
             self.recommended_articles)
@@ -380,6 +366,22 @@ class RecordKeeper(object):
         self.record_banner_page_link = record_foreign_key(
             "banner_link_page",
             self.banner_page_links)
+
+    def get_local_page(self, foreign_page_id):
+        if foreign_page_id in self.id_map:
+            return self.id_map[foreign_page_id]
+        else:
+            raise ReferenceUnimportedContent(
+                "ReferenceUnimportedContent",
+                None)
+
+    def get_local_image(self, foreign_page_id):
+        if foreign_page_id in self.image_map:
+            return self.image_map[foreign_page_id]
+        else:
+            raise ReferenceUnimportedContent(
+                "ReferenceUnimportedContent",
+                None)
 
 
 class BaseImporter(object):
@@ -551,10 +553,48 @@ class LanguageImporter(BaseImporter):
                 language_setting=language_setting)
 
 
+
+
 class ContentImporter(BaseImporter):
+    def recreate_relationship(self, class_, attribute_name):
+        def func():
+            print("record_keeper.recommended_articles")
+            print(self.record_keeper.recommended_articles)
+            for local_page_id, foreign_page_id_list in self.record_keeper.recommended_articles.iteritems():  # noqa
+                print("local_page_id, foreign_page_id_list")
+                print(local_page_id, foreign_page_id_list)
+                local_page = Page.objects.get(id=local_page_id).specific
+                print('local_page.id')
+                print(local_page.id)
+                for foreign_page_id in foreign_page_id_list:
+                    print('foreign_page_id')
+                    print(foreign_page_id)
+                    try:
+                        print('self.record_keeper.id_map')
+                        print(self.record_keeper.id_map)
+                        local_version_page_id = self.record_keeper.get_local_page(foreign_page_id)    # noqa
+                        foreign_page = Page.objects.get(id=local_version_page_id).specific
+                        thing = class_(page=local_page)
+                        setattr(thing, attribute_name, foreign_page)
+                        thing.save()
+                    except ReferenceUnimportedContent as e:
+                        print("Something is wrong")
+                        print(e)
+                        pass
+        return func
+
     def __init__(self, site_pk, base_url, record_keeper=None):
         super(ContentImporter, self).__init__(site_pk, base_url,
                                               record_keeper=record_keeper)
+        self.create_recommended_articles = self.recreate_relationship(
+            ArticlePageRecommendedSections,
+            'recommended_article',
+        )
+        # self.create_related_sections
+        # self.create_nav_tag_relationships
+        # self.create_section_tag_relationship
+
+        # self.create_banner_page_links
 
     def get_foreign_page_id_from_type(self, page_type):
         '''
@@ -605,7 +645,7 @@ class ContentImporter(BaseImporter):
     def attach_translated_content(self, local_main_lang_page,
                                   content, locale):
         '''
-        Wrapper for  create_content
+        Wrapper for  attach_page
 
         Creates the content
         Then attaches a language relation from the main language page to the
@@ -698,3 +738,6 @@ class ContentImporter(BaseImporter):
         for main_language_child_id in main_language_child_ids:
                 self.copy_page_and_children(foreign_id=main_language_child_id,
                                             parent_id=existing_node.id)
+
+    def restore_relationships(self):
+        pass
