@@ -117,3 +117,21 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         self.assertTrue(page.id in record_keeper.nav_tags)
         self.assertEqual(record_keeper.nav_tags[page.id],
                          [content["nav_tags"][0]["tag"]["id"], ])
+
+        self.assertTrue(page.id in record_keeper.recommended_articles)
+        self.assertEqual(
+            record_keeper.recommended_articles[page.id],
+            [content["recommended_articles"][0]["recommended_article"]["id"],
+             content["recommended_articles"][1]["recommended_article"]["id"]])
+
+        self.assertTrue(page.id in record_keeper.reaction_questions)
+        self.assertEqual(
+            record_keeper.reaction_questions[page.id],
+            [content["reaction_questions"][0]["reaction_question"]["id"],
+             content["reaction_questions"][1]["reaction_question"]["id"]])
+
+        self.assertTrue(page.id in record_keeper.related_sections)
+        self.assertEqual(
+            record_keeper.related_sections[page.id],
+            [content["related_sections"][0]["section"]["id"],
+             content["related_sections"][1]["section"]["id"]])

@@ -290,6 +290,9 @@ class ImportableMixin(object):
         # Handle relationships in nested_fields
         if record_keeper:
             record_keeper.record_nav_tags(nested_fields, page.id)
+            record_keeper.record_recommended_articles(nested_fields, page.id)
+            record_keeper.record_reaction_questions(nested_fields, page.id)
+            record_keeper.record_related_sections(nested_fields, page.id)
         return page
 
 
