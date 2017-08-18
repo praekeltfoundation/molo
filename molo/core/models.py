@@ -259,6 +259,7 @@ class ImportableMixin(object):
     @classmethod
     def create_page(self, content, class_, record_keeper=None):
         add_article_body = add_json_dump("body")
+        add_article_body = add_json_dump("time")
 
         add_tags = add_list_of_things("tags")
         add_metadata_tags = add_list_of_things("metadata_tags")
@@ -293,6 +294,8 @@ class ImportableMixin(object):
             record_keeper.record_recommended_articles(nested_fields, page.id)
             record_keeper.record_reaction_questions(nested_fields, page.id)
             record_keeper.record_related_sections(nested_fields, page.id)
+            record_keeper.record_section_tags(nested_fields, page.id)
+
         return page
 
 
@@ -857,7 +860,8 @@ SectionIndexPage.content_panels = [
 ]
 
 
-class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
+class SectionPage(ImportableMixin, CommentedPageMixin,
+                  TranslatablePageMixin, Page):
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(

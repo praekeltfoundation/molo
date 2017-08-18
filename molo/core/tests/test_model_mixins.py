@@ -4,6 +4,7 @@ from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 from molo.core.models import (
     ArticlePage,
+    SectionPage,
     Tag,
 )
 from molo.core.api.tests import constants
@@ -135,3 +136,64 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
             record_keeper.related_sections[page.id],
             [content["related_sections"][0]["section"]["id"],
              content["related_sections"][1]["section"]["id"]])
+
+    def test_section_importable(self):
+        content = constants.SECTION_PAGE_RESPONSE
+        content_copy = dict(content)
+
+        # Validate Assumptions
+        #   The images have already been imported
+        #   The record keeper has mapped the relationship
+
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        record_keeper = importers.RecordKeeper()
+        record_keeper.record_image_relation(foreign_image_id, image.id)
+
+        class_ = SectionPage
+
+        page = SectionPage.create_page(
+            content_copy, class_, record_keeper=record_keeper)
+
+        self.assertEqual(page.title, content["title"])
+        self.assertEqual(page.description, content["description"])
+        self.assertEqual(page.extra_style_hints,
+                         content["extra_style_hints"])
+        self.assertEqual(page.commenting_state, content["commenting_state"])
+        self.assertEqual(page.monday_rotation, content["monday_rotation"])
+        self.assertEqual(page.tuesday_rotation, content["tuesday_rotation"])
+        self.assertEqual(page.wednesday_rotation,
+                         content["wednesday_rotation"])
+        self.assertEqual(page.thursday_rotation,
+                         content["thursday_rotation"])
+        self.assertEqual(page.friday_rotation, content["friday_rotation"])
+        self.assertEqual(page.saturday_rotation,
+                         content["saturday_rotation"])
+        self.assertEqual(page.sunday_rotation, content["sunday_rotation"])
+
+        self.assertEqual(page.commenting_open_time,
+                         content["commenting_open_time"])
+        self.assertEqual(page.commenting_close_time,
+                         content["commenting_close_time"])
+        self.assertEqual(page.content_rotation_start_date,
+                         content["content_rotation_start_date"])
+        self.assertEqual(page.content_rotation_end_date,
+                         content["content_rotation_end_date"])
+
+        # NESTED FIELDS
+        self.assertTrue(hasattr(page.time, "stream_data"))
+        self.assertEqual(page.time.stream_data, content["time"])
+
+        # Check that image has been added
+        self.assertTrue(page.image)
+        self.assertEqual(page.image.title, content["image"]["title"])
+
+        # Check that foreign relationships have been created
+        self.assertTrue(page.id in record_keeper.section_tags)
+        self.assertEqual(record_keeper.section_tags[page.id],
+                         [content["section_tags"][0]["tag"]["id"],
+                          content["section_tags"][1]["tag"]["id"]])
