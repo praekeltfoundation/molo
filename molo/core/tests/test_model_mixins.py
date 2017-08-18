@@ -6,6 +6,7 @@ from molo.core.models import (
     ArticlePage,
     SectionPage,
     Tag,
+    FooterPage,
 )
 from molo.core.api.tests import constants
 from molo.core.api import importers
@@ -200,3 +201,35 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         self.assertEqual(record_keeper.section_tags[page.id],
                          [content["section_tags"][0]["tag"]["id"],
                           content["section_tags"][1]["tag"]["id"]])
+
+    def test_footer_importable(self):
+        content = constants.ARTICLE_PAGE_RESPONSE
+        content_copy = dict(content)
+
+        # Validate Assumptions
+        #   The images have already been imported
+        #   The record keeper has mapped the relationship
+
+        foreign_image_id = content["image"]["id"]
+        image = Image.objects.create(
+            title=content["image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        foreign_social_media_image_id = content["social_media_image"]["id"]
+        social_media_image = Image.objects.create(
+            title=content["social_media_image"]["title"],
+            file=get_test_image_file(),
+        )
+
+        record_keeper = importers.RecordKeeper()
+        record_keeper.record_image_relation(foreign_image_id, image.id)
+        record_keeper.record_image_relation(
+            foreign_social_media_image_id, social_media_image.id)
+
+        class_ = FooterPage
+
+        page = FooterPage.create_page(
+            content_copy, class_, record_keeper=record_keeper)
+
+        self.check_article_and_footer_fields(page, content, record_keeper)
