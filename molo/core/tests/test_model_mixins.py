@@ -67,3 +67,16 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
                          content["promote_date"])
         self.assertEqual(page.demote_date,
                          content["demote_date"])
+
+        # NESTED FIELDS
+        self.assertTrue(hasattr(page.body, "stream_data"))
+        self.assertEqual(page.body.stream_data, content['body'])
+
+        self.assertEqual(page.tags.count(), len(content['tags']))
+        for tag in page.tags.all():
+            self.assertTrue(tag.name in content["tags"])
+
+        self.assertEqual(page.metadata_tags.count(),
+                         len(content['metadata_tags']))
+        for metadata_tag in page.metadata_tags.all():
+            self.assertTrue(metadata_tag.name in content["metadata_tags"])
