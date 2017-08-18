@@ -556,6 +556,17 @@ class ContentImporter(BaseImporter):
         super(ContentImporter, self).__init__(site_pk, base_url,
                                               record_keeper=record_keeper)
 
+    def get_foreign_page_id_from_type(self, page_type):
+        '''
+        Get the foreign page id based on type
+
+        Only works for index pages
+        '''
+        response = requests.get("{}pages/?type={}".format(
+            self.api_url, page_type))
+        content = json.loads(response.content)
+        return content["items"][0]["id"]
+
     def attach_page(self, parent, content):
         page_type = content["meta"]["type"].split(".")[-1]
         class_ = eval(page_type)
