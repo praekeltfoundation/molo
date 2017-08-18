@@ -39,7 +39,11 @@ from molo.core import constants
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
-from molo.core.utils import separate_fields
+from molo.core.utils import (
+    separate_fields,
+    add_json_dump,
+    add_list_of_things,
+)
 
 
 class BaseReadOnlyPanel(EditHandler):
@@ -253,6 +257,11 @@ class SiteSettings(BaseSetting):
 class ImportableMixin(object):
     @classmethod
     def create_page(self, content, class_, record_keeper=None):
+        add_article_body = add_json_dump("body")
+
+        add_tags = add_list_of_things("tags")
+        add_metadata_tags = add_list_of_things("metadata_tags")
+
         fields, nested_fields = separate_fields(content)
 
         foreign_id = content.pop('id')
@@ -262,6 +271,10 @@ class ImportableMixin(object):
             content.pop('latest_revision_created_at')
 
         page = class_(**fields)
+
+        add_article_body(nested_fields, page)
+        add_tags(nested_fields, page)
+        add_metadata_tags(nested_fields, page)
 
         return page
 
