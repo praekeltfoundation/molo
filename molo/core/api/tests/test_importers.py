@@ -604,16 +604,43 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
         self.assertEqual(recomendation.recommended_article.specific,
                          article_rec)
 
+    def test_create_related_sections(self):
+        section_main = self.mk_section(
+            self.section_index, title="Parent Test Section 1",
+        )
+        section_rel = self.mk_section(
+            self.section_index, title="Parent Test Section 1",
+        )
+        # create articles
+        self.mk_article(section_main)
+        article = ArticlePage.objects.first()
+
+        # update map_id
+        # attach imaginary foreign IDs to sections, to fake import data
+        self.record_keeper.id_map = {111: section_main.id, 222: section_rel.id}
+        # refer copied page to foreign id of related section
+        self.record_keeper.related_sections[article.id] = [222]
+
+        self.assertEqual(ArticlePageRelatedSections.objects.count(), 0)
+        self.importer.create_related_sections()
+        self.assertEqual(ArticlePageRelatedSections.objects.count(), 1)
+        relation = ArticlePageRelatedSections.objects.first()
+        self.assertEqual(relation.page.specific, article)
+        self.assertEqual(relation.section.specific,
+                         section_rel)
+
+
 class TestRecordKeeper(TestCase):
     def setUp(self):
         self.record_keeper = importers.RecordKeeper()
 
     def test_record_keeper_record_local_id(self):
         self.record_keeper.record_page_relation(1, 2)
-        self.assertEqual(self.record_keeper.id_map[1], 2)
+        self.assertEqual(
+            self.record_keeper.foreign_local_map["page_map"][1], 2)
 
     def test_record_keeper_record_local_id_exception(self):
-        self.record_keeper.id_map[1] = 2
+        self.record_keeper.foreign_local_map["page_map"][1] = 2
         with pytest.raises(RecordOverwriteError) as exception_info:
             self.record_keeper.record_page_relation(1, 6)
         self.assertEqual(
@@ -621,7 +648,7 @@ class TestRecordKeeper(TestCase):
             "RecordOverwriteError")
 
     def test_record_keeper_get_local_id(self):
-        self.record_keeper.id_map[1] = 2
+        self.record_keeper.record_page_relation(1, 2)
         self.assertEqual(
             self.record_keeper.get_local_page(1), 2)
 

@@ -316,72 +316,116 @@ class SectionPageImporter(PageImporter):
             self.process_child_section(section_page["id"], parent)
 
 
-def record_relation(record):
-    def _record_relation(foreign_page_id, local_page_id):
-            if (foreign_page_id in record and
-                    record[foreign_page_id] != local_page_id):
-                raise RecordOverwriteError("RecordOverwriteError", None)
-            else:
-                record[foreign_page_id] = local_page_id
-    return _record_relation
-
-
 class RecordKeeper(object):
     def __init__(self):
         # maps foreign IDs to local IDs
         # used when a new item is created
-        self.id_map = {}
-        self.image_map = {}
+        self.foreign_local_map = {
+            "page_map": {},
+            "image_map": {},
+        }
 
         # maps local id to list of foreign page ids
         # used when a foreign item is referenced
-        self.related_sections = {}
-        self.recommended_articles = {}
-        self.reaction_questions = {}
-        self.nav_tags = {}
-        self.section_tags = {}
+        self.foreign_to_many_foreign_map = {
+            "recommended_articles": {},
+            "related_sections": {},
+            "nav_tags": {},
+            "section_tags": {},
+            "reaction_questions": {},
+        }
 
         # maps local page to foreign id
-        self.banner_page_links = {}
+        self.foreign_to_foreign_map = {
+            "banner_link_page": {}
+        }
 
-        self.record_page_relation = record_relation(self.id_map)
-        self.record_image_relation = record_relation(self.image_map)
+    def record_relation(self, id_map_key, foreign_page_id, local_page_id):
+        record = self.foreign_local_map[id_map_key]
+        if (foreign_page_id in record and
+                record[foreign_page_id] != local_page_id):
+            raise RecordOverwriteError("RecordOverwriteError", None)
+        else:
+            record[foreign_page_id] = local_page_id
 
-        self.record_recommended_articles = record_foreign_relation(
-            "recommended_articles", "recommended_article",
-            self.recommended_articles)
-        self.record_section_tags = record_foreign_relation(
-            "section_tags", "tag",
-            self.section_tags)
-        self.record_nav_tags = record_foreign_relation(
-            "nav_tags", "tag",
-            self.nav_tags)
-        self.record_reaction_questions = record_foreign_relation(
-            "reaction_questions", "reaction_question",
-            self.reaction_questions)
-        self.record_related_sections = record_foreign_relation(
-            "related_sections", "section",
-            self.related_sections)
+    def get_local(self, id_map_key, foreign_page_id):
+        record = self.foreign_local_map[id_map_key]
+        if foreign_page_id in record:
+            return record[foreign_page_id]
+        else:
+            raise ReferenceUnimportedContent(
+                "ReferenceUnimportedContent",
+                None)
 
-        self.record_banner_page_link = record_foreign_key(
-            "banner_link_page",
-            self.banner_page_links)
+    def record_foreign_relations(self, field, related_item_key, id_map_key,
+                                 nested_fields, page_id):
+        record_keeper = self.foreign_to_many_foreign_map[id_map_key]
+        if ((field in nested_fields) and nested_fields[field]):
+            relationship_object_list = nested_fields[field]
+
+            # Assumption: this item is only processed once
+            # TODO: create override checks
+            record_keeper[page_id] = []
+
+            for relationship_object in relationship_object_list:
+                if related_item_key in relationship_object:
+                    related_item = relationship_object[related_item_key]
+                    if "id" in related_item:
+                        foreign_id = related_item["id"]
+                        record_keeper[page_id].append(foreign_id)
+                    else:
+                        raise Exception(
+                            ("key of 'id' does not exist in related_item"
+                             " of type: {}").format(related_item_key))
+                else:
+                    raise Exception(
+                        ("key of '{}' does not exist in nested_field"
+                         " of type: {}").format(related_item_key, field))
+
+    def record_page_relation(self, foreign_page_id, local_page_id):
+        self.record_relation("page_map", foreign_page_id, local_page_id)
+
+    def record_image_relation(self, foreign_page_id, local_page_id):
+        self.record_relation("image_map", foreign_page_id, local_page_id)
 
     def get_local_page(self, foreign_page_id):
-        if foreign_page_id in self.id_map:
-            return self.id_map[foreign_page_id]
-        else:
-            raise ReferenceUnimportedContent(
-                "ReferenceUnimportedContent",
-                None)
+        return self.get_local("page_map", foreign_page_id)
 
     def get_local_image(self, foreign_page_id):
-        if foreign_page_id in self.image_map:
-            return self.image_map[foreign_page_id]
-        else:
-            raise ReferenceUnimportedContent(
-                "ReferenceUnimportedContent",
-                None)
+        return self.get_local("image_map", foreign_page_id)
+
+    def record_recommended_articles(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "recommended_articles", "recommended_article",
+            "recommended_articles", nested_fields, page_id)
+
+    def record_related_sections(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "related_sections", "section",
+            "related_sections", nested_fields, page_id)
+
+    def record_section_tags(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "section_tags", "tag",
+            "section_tags", nested_fields, page_id)
+
+    def record_nav_tags(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "nav_tags", "tag",
+            "nav_tags", nested_fields, page_id)
+
+    def record_reaction_questions(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "reaction_questions", "reaction_question",
+            "reaction_questions", nested_fields, page_id)
+
+    def record_banner_page_link(self, nested_fields, page_id):
+        field = "banner_link_page"
+        id_map_key = "banner_link_page"
+        record_keeper = self.foreign_to_foreign_map[id_map_key]
+        if ((field in nested_fields) and nested_fields[field]):
+            relationship_object = nested_fields[field]
+            record_keeper[page_id] = relationship_object["id"]
 
 
 class BaseImporter(object):
@@ -556,29 +600,19 @@ class LanguageImporter(BaseImporter):
 
 
 class ContentImporter(BaseImporter):
-    def recreate_relationship(self, class_, attribute_name):
+    def recreate_relationship(self, class_, attribute_name, record):
         def func():
-            print("record_keeper.recommended_articles")
-            print(self.record_keeper.recommended_articles)
-            for local_page_id, foreign_page_id_list in self.record_keeper.recommended_articles.iteritems():  # noqa
-                print("local_page_id, foreign_page_id_list")
-                print(local_page_id, foreign_page_id_list)
+            iterable = getattr(self.record_keeper, record)
+            for local_page_id, foreign_page_id_list in  iteritems():  # noqa
                 local_page = Page.objects.get(id=local_page_id).specific
-                print('local_page.id')
-                print(local_page.id)
                 for foreign_page_id in foreign_page_id_list:
-                    print('foreign_page_id')
-                    print(foreign_page_id)
                     try:
-                        print('self.record_keeper.id_map')
-                        print(self.record_keeper.id_map)
                         local_version_page_id = self.record_keeper.get_local_page(foreign_page_id)    # noqa
                         foreign_page = Page.objects.get(id=local_version_page_id).specific
                         thing = class_(page=local_page)
                         setattr(thing, attribute_name, foreign_page)
                         thing.save()
                     except ReferenceUnimportedContent as e:
-                        print("Something is wrong")
                         print(e)
                         pass
         return func
@@ -589,12 +623,22 @@ class ContentImporter(BaseImporter):
         self.create_recommended_articles = self.recreate_relationship(
             ArticlePageRecommendedSections,
             'recommended_article',
+            'recommended_articles',
         )
-        # self.create_related_sections
-        # self.create_nav_tag_relationships
-        # self.create_section_tag_relationship
-
-        # self.create_banner_page_links
+        self.create_related_sections = self.recreate_relationship(
+            ArticlePageRelatedSections,
+            'section',
+            'related_sections',
+            'record_nav_tags',
+        )
+        self.create_nav_tag_relationships = self.recreate_relationship(
+            ArticlePageTags,
+            'tag',
+        )
+        self.create_section_tag_relationship = self.recreate_relationship(
+            ArticlePageTags,
+            'tag',
+        )
 
     def get_foreign_page_id_from_type(self, page_type):
         '''
@@ -738,6 +782,14 @@ class ContentImporter(BaseImporter):
         for main_language_child_id in main_language_child_ids:
                 self.copy_page_and_children(foreign_id=main_language_child_id,
                                             parent_id=existing_node.id)
+
+    def create_banner_page_links(self):
+        for banner_page_id, linked_page_foreign_id in self.record_keeper.banner_page_links.iteritems():  # noqa
+            banner = BannerPage.objects.get(id=banner_page_id)
+            local_id = self.record_keeper.get_local_page(linked_page_foreign_id)
+            linked_page = Page.objects.get(id=local_id).specific
+            banner.banner_link_page = linked_page
+            banner.save_revision().publish()
 
     def restore_relationships(self):
         pass
