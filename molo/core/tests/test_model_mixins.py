@@ -88,28 +88,36 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
                          content["social_media_image"]["title"])
 
         # Check that foreign relationships have been created
-        self.assertTrue(content["id"] in record_keeper.foreign_to_many_foreign_map["nav_tags"])
-        self.assertEqual(record_keeper.foreign_to_many_foreign_map["nav_tags"][content["id"]],
+        self.assertTrue(content["id"] in
+                        record_keeper.foreign_to_many_foreign_map["nav_tags"])
+        self.assertEqual((record_keeper.foreign_to_many_foreign_map["nav_tags"]
+                          [content["id"]]),
                          [content["nav_tags"][0]["tag"]["id"], ])
 
-        self.assertTrue(content["id"] in
+        self.assertTrue(
+            content["id"] in
             record_keeper.foreign_to_many_foreign_map["recommended_articles"])
         self.assertEqual(
-            record_keeper.foreign_to_many_foreign_map["recommended_articles"][content["id"]],
+            (record_keeper.foreign_to_many_foreign_map["recommended_articles"]
+                [content["id"]]),
             [content["recommended_articles"][0]["recommended_article"]["id"],
              content["recommended_articles"][1]["recommended_article"]["id"]])
 
-        self.assertTrue(content["id"] in
+        self.assertTrue(
+            content["id"] in
             record_keeper.foreign_to_many_foreign_map["reaction_questions"])
         self.assertEqual(
-            record_keeper.foreign_to_many_foreign_map["reaction_questions"][content["id"]],
+            (record_keeper.foreign_to_many_foreign_map["reaction_questions"]
+                [content["id"]]),
             [content["reaction_questions"][0]["reaction_question"]["id"],
              content["reaction_questions"][1]["reaction_question"]["id"]])
 
-        self.assertTrue(content["id"] in
+        self.assertTrue(
+            content["id"] in
             record_keeper.foreign_to_many_foreign_map["related_sections"])
         self.assertEqual(
-            record_keeper.foreign_to_many_foreign_map["related_sections"][content["id"]],
+            (record_keeper.foreign_to_many_foreign_map["related_sections"]
+                [content["id"]]),
             [content["related_sections"][0]["section"]["id"],
              content["related_sections"][1]["section"]["id"]])
 
@@ -202,10 +210,14 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
 
         # Check that foreign relationships have been created
         print(record_keeper.foreign_to_many_foreign_map["section_tags"])
-        self.assertTrue(content["id"] in record_keeper.foreign_to_many_foreign_map["section_tags"])
-        self.assertEqual(record_keeper.foreign_to_many_foreign_map["section_tags"][content["id"]],
-                         [content["section_tags"][0]["tag"]["id"],
-                          content["section_tags"][1]["tag"]["id"]])
+        self.assertTrue(
+            content["id"] in
+            record_keeper.foreign_to_many_foreign_map["section_tags"])
+        self.assertEqual(
+            (record_keeper.foreign_to_many_foreign_map["section_tags"]
+                [content["id"]]),
+            [content["section_tags"][0]["tag"]["id"],
+             content["section_tags"][1]["tag"]["id"]])
 
     def test_footer_importable(self):
         content = constants.ARTICLE_PAGE_RESPONSE
@@ -266,7 +278,8 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
 
         # check that banner link has been created
         self.assertEqual(
-            record_keeper.foreign_to_foreign_map["banner_link_page"][content["id"]],
+            (record_keeper.foreign_to_foreign_map["banner_link_page"]
+                [content["id"]]),
             content["banner_link_page"]["id"])
 
         # check that banner image has been attached

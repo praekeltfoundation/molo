@@ -16,9 +16,7 @@ from molo.core.models import (
     SiteLanguageRelation,
     ArticlePage,
     SectionPage,
-    FooterPage,
     BannerPage,
-    Tag,
     ArticlePageRecommendedSections,
     ArticlePageRelatedSections,
     PageTranslation,
@@ -36,12 +34,9 @@ from molo.core.api.errors import (
 from molo.core.utils import (
     get_image_hash,
     separate_fields,
-    add_json_dump,
-    add_list_of_things,
 )
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
 
 
 # functions used to find images
@@ -597,8 +592,6 @@ class LanguageImporter(BaseImporter):
                 language_setting=language_setting)
 
 
-
-
 class ContentImporter(BaseImporter):
     def recreate_relationships(self, class_, attribute_name, key):
 
@@ -612,8 +605,10 @@ class ContentImporter(BaseImporter):
 
             for foreign_page_id in foreign_page_id_list:
                 try:
-                    local_version_page_id = self.record_keeper.get_local_page(foreign_page_id)    # noqa
-                    foreign_page = Page.objects.get(id=local_version_page_id).specific
+                    local_version_page_id = (self.record_keeper
+                                             .get_local_page(foreign_page_id))
+                    foreign_page = Page.objects.get(
+                        id=local_version_page_id).specific
                     realtionship_object = class_(page=local_page)
                     setattr(realtionship_object, attribute_name, foreign_page)
                     realtionship_object.save()
@@ -630,18 +625,21 @@ class ContentImporter(BaseImporter):
             'recommended_article',
             'recommended_articles',
         )
+
     def create_related_sections(self):
         self.recreate_relationships(
             ArticlePageRelatedSections,
             'section',
             'related_sections',
         )
+
     def create_nav_tag_relationships(self):
         self.recreate_relationships(
             ArticlePageTags,
             'tag',
             'nav_tags'
         )
+
     def create_section_tag_relationship(self):
         self.recreate_relationships(
             SectionPageTags,
@@ -685,6 +683,7 @@ class ContentImporter(BaseImporter):
             parent.save_revision().publish()
             page.save_revision().publish()
         except Exception as e:
+            print(e)
             # TODO: log failed page save and details
             return None
 
@@ -748,6 +747,7 @@ class ContentImporter(BaseImporter):
         try:
             page = self.attach_page(parent, content)
         except Exception as e:
+            print(e)
             # TODO: log this
             return None
 
@@ -795,7 +795,8 @@ class ContentImporter(BaseImporter):
     def create_banner_page_links(self):
         for banner_page_id, linked_page_foreign_id in self.record_keeper.banner_page_links.iteritems():  # noqa
             banner = BannerPage.objects.get(id=banner_page_id)
-            local_id = self.record_keeper.get_local_page(linked_page_foreign_id)
+            local_id = self.record_keeper.get_local_page(
+                linked_page_foreign_id)
             linked_page = Page.objects.get(id=local_id).specific
             banner.banner_link_page = linked_page
             banner.save_revision().publish()

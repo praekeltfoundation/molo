@@ -17,14 +17,9 @@ from molo.core.api.tests import constants, utils
 from molo.core.models import (
     ArticlePage,
     SectionPage,
-    FooterPage,
-    BannerPage,
-    Tag,
     ArticlePageRecommendedSections,
     ArticlePageRelatedSections,
     SiteLanguageRelation,
-    ArticlePageTags,
-    SectionPageTags,
 )
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.utils import get_image_hash
@@ -33,8 +28,6 @@ import responses
 
 from wagtail.wagtailcore.models import Site
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
-
-from dateutil import parser
 
 
 class ArticleImportTestCase(MoloTestCaseMixin, TestCase):
@@ -421,7 +414,6 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
             record_keeper=self.record_keeper)
 
     def test_attach_page(self):
-        parent = self.section_index
         content = constants.SECTION_PAGE_RESPONSE
         content_copy = dict(content)
 
@@ -586,9 +578,11 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
 
         # update map_id
         # attach imaginary foreign IDs to articles, to fake import data
-        self.record_keeper.foreign_local_map["page_map"] = {111: article_main.id, 222: article_rec.id}
+        self.record_keeper.foreign_local_map["page_map"] = {
+            111: article_main.id, 222: article_rec.id}
+
         # refer copied page to foreign id of recomended article
-        self.record_keeper.foreign_to_many_foreign_map["recommended_articles"][111] = [222]
+        self.record_keeper.foreign_to_many_foreign_map["recommended_articles"][111] = [222]  # noqa
 
         self.assertEqual(ArticlePageRecommendedSections.objects.count(), 0)
 
@@ -612,7 +606,7 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
             self.section_index, title="Parent Test Section 1",
         )
         # create articles
-        [parent_section, related_section]  = self.mk_sections(section_main)
+        [parent_section, related_section] = self.mk_sections(section_main)
         article = self.mk_article(parent_section)
 
         # update map_id
@@ -622,7 +616,7 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
             222: section_rel.id,
             333: article.id}
         # refer copied page to foreign id of related section
-        self.record_keeper.foreign_to_many_foreign_map["related_sections"][333] = [222]
+        self.record_keeper.foreign_to_many_foreign_map["related_sections"][333] = [222]  # noqa
 
         self.assertEqual(ArticlePageRelatedSections.objects.count(), 0)
         self.importer.create_related_sections()
