@@ -26,7 +26,12 @@ from molo.core.models import (
     FooterIndexPage,
     TagIndexPage,
 )
-from molo.core.api.importers import SiteImporter
+from molo.core.api.importers import (
+    RecordKeeper,
+    LanguageImporter,
+    ImageImporter,
+    ContentImporter,
+)
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
@@ -320,52 +325,60 @@ def copy_sections_index(
 
 @task(ignore_result=True)
 def import_site(root_url, site_pk, user_pk):
-    logs = []
     user = User.objects.get(pk=user_pk) if user_pk else None
+    record_keeper = RecordKeeper()
     site = Site.objects.get(pk=site_pk)
+
+    language_importer = LanguageImporter(
+        site.pk, root_url, record_keeper=record_keeper)
+    image_importer = ImageImporter(
+        site.pk, root_url, record_keeper=record_keeper)
+    content_importer = ContentImporter(
+        site.pk, root_url, record_keeper=record_keeper)
+
     try:
-        importer = SiteImporter(site_pk, root_url, logs=logs)
         # get languages
-        importer.copy_site_languages()
-        # get images
-        importer.import_images()
+        language_importer.copy_site_languages()
+
+        image_importer.import_images()
 
         # copy_content SectionIndexPage
-        importer.log("Importing Section and Article Pages")
         section_index_page = SectionIndexPage.objects.descendant_of(
             site.root_page).first()
-        foreign_section_index_page_id = importer.get_foreign_page_id_from_type(
+        foreign_section_index_page_id = content_importer.get_foreign_page_id_from_type(  # noqa
             "core.SectionIndexPage")
-        importer.copy_children(foreign_id=foreign_section_index_page_id,
-                               existing_node=section_index_page)
+        content_importer.copy_children(
+            foreign_id=foreign_section_index_page_id,
+            existing_node=section_index_page)
 
         # copy_content Banner Pages
-        importer.log("Importing Banner Pages")
         banner_index_page = BannerIndexPage.objects.descendant_of(
             site.root_page).first()
-        foreign_banner_index_page_id = importer.get_foreign_page_id_from_type(
+        foreign_banner_index_page_id = content_importer.get_foreign_page_id_from_type(  # noqa
             "core.BannerIndexPage")
-        importer.copy_children(foreign_id=foreign_banner_index_page_id,
-                               existing_node=banner_index_page)
+        content_importer.copy_children(
+            foreign_id=foreign_banner_index_page_id,
+            existing_node=banner_index_page)
 
-        importer.log("Importing Footer Pages")
         # copy_content Footer Pages
         footer_index_page = FooterIndexPage.objects.descendant_of(
             site.root_page).first()
-        foreign_footer_index_page_id = importer.get_foreign_page_id_from_type(
+        foreign_footer_index_page_id = content_importer.get_foreign_page_id_from_type(  # noqa
             "core.FooterIndexPage")
-        importer.copy_children(foreign_id=foreign_footer_index_page_id,
-                               existing_node=footer_index_page)
+        content_importer.copy_children(
+            foreign_id=foreign_footer_index_page_id,
+            existing_node=footer_index_page)
 
         # copy_content TagIndexPage
-        importer.log("Importing Tag Navigation Pages")
         tag_index_page = TagIndexPage.objects.descendant_of(
             site.root_page).first()
-        foreign_tag_index_page_id = importer.get_foreign_page_id_from_type(
+        foreign_tag_index_page_id = content_importer.get_foreign_page_id_from_type(  # noqa
             "core.TagIndexPage")
-        importer.copy_children(foreign_id=foreign_tag_index_page_id,
-                               existing_node=tag_index_page)
+        content_importer.copy_children(
+            foreign_id=foreign_tag_index_page_id,
+            existing_node=tag_index_page)
 
+        '''
         importer.log("Creating Recommended Articles")
         importer.create_recommended_articles()
 
@@ -380,13 +393,13 @@ def import_site(root_url, site_pk, user_pk):
 
         importer.log("Creating Banner Page Links")
         importer.create_banner_page_links()
+        '''
 
         # send email
         send_copy_email(user.email, {
             'name': (user.get_full_name() or user.username) if user else None,
             'source': root_url,
             'to': site.root_url,
-            'logs': logs,
         })
     except Exception, e:
         logging.error(e, exc_info=True)
@@ -394,5 +407,4 @@ def import_site(root_url, site_pk, user_pk):
             'name': (user.get_full_name() or user.username) if user else None,
             'source': root_url,
             'to': site.root_url,
-            'logs': logs,
         })
