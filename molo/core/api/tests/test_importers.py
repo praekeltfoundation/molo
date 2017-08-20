@@ -586,9 +586,9 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
 
         # update map_id
         # attach imaginary foreign IDs to articles, to fake import data
-        self.record_keeper.id_map = {111: article_main.id, 222: article_rec.id}
+        self.record_keeper.foreign_local_map["page_map"] = {111: article_main.id, 222: article_rec.id}
         # refer copied page to foreign id of recomended article
-        self.record_keeper.recommended_articles[article_main.id] = [222]
+        self.record_keeper.foreign_to_many_foreign_map["recommended_articles"][111] = [222]
 
         self.assertEqual(ArticlePageRecommendedSections.objects.count(), 0)
 
@@ -612,14 +612,17 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
             self.section_index, title="Parent Test Section 1",
         )
         # create articles
-        self.mk_article(section_main)
-        article = ArticlePage.objects.first()
+        [parent_section, related_section]  = self.mk_sections(section_main)
+        article = self.mk_article(parent_section)
 
         # update map_id
         # attach imaginary foreign IDs to sections, to fake import data
-        self.record_keeper.id_map = {111: section_main.id, 222: section_rel.id}
+        self.record_keeper.foreign_local_map["page_map"] = {
+            111: section_main.id,
+            222: section_rel.id,
+            333: article.id}
         # refer copied page to foreign id of related section
-        self.record_keeper.related_sections[article.id] = [222]
+        self.record_keeper.foreign_to_many_foreign_map["related_sections"][333] = [222]
 
         self.assertEqual(ArticlePageRelatedSections.objects.count(), 0)
         self.importer.create_related_sections()

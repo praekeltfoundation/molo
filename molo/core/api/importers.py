@@ -600,44 +600,53 @@ class LanguageImporter(BaseImporter):
 
 
 class ContentImporter(BaseImporter):
-    def recreate_relationship(self, class_, attribute_name, record):
-        def func():
-            iterable = getattr(self.record_keeper, record)
-            for local_page_id, foreign_page_id_list in  iteritems():  # noqa
-                local_page = Page.objects.get(id=local_page_id).specific
-                for foreign_page_id in foreign_page_id_list:
-                    try:
-                        local_version_page_id = self.record_keeper.get_local_page(foreign_page_id)    # noqa
-                        foreign_page = Page.objects.get(id=local_version_page_id).specific
-                        thing = class_(page=local_page)
-                        setattr(thing, attribute_name, foreign_page)
-                        thing.save()
-                    except ReferenceUnimportedContent as e:
-                        print(e)
-                        pass
-        return func
+    def recreate_relationships(self, class_, attribute_name, key):
+
+        iterable = self.record_keeper.foreign_to_many_foreign_map[key]
+        for foreign_page_id, foreign_page_id_list in iterable.iteritems():
+
+            # Assumption: local page has been indexed and exists
+            # TODO: handle case where it doesn't exist
+            local_page_id = self.record_keeper.get_local_page(foreign_page_id)
+            local_page = Page.objects.get(id=local_page_id).specific
+
+            for foreign_page_id in foreign_page_id_list:
+                try:
+                    local_version_page_id = self.record_keeper.get_local_page(foreign_page_id)    # noqa
+                    foreign_page = Page.objects.get(id=local_version_page_id).specific
+                    realtionship_object = class_(page=local_page)
+                    setattr(realtionship_object, attribute_name, foreign_page)
+                    realtionship_object.save()
+                except ReferenceUnimportedContent as e:
+                    print(e)
 
     def __init__(self, site_pk, base_url, record_keeper=None):
         super(ContentImporter, self).__init__(site_pk, base_url,
                                               record_keeper=record_keeper)
-        self.create_recommended_articles = self.recreate_relationship(
+
+    def create_recommended_articles(self):
+        self.recreate_relationships(
             ArticlePageRecommendedSections,
             'recommended_article',
             'recommended_articles',
         )
-        self.create_related_sections = self.recreate_relationship(
+    def create_related_sections(self):
+        self.recreate_relationships(
             ArticlePageRelatedSections,
             'section',
             'related_sections',
-            'record_nav_tags',
         )
-        self.create_nav_tag_relationships = self.recreate_relationship(
+    def create_nav_tag_relationships(self):
+        self.recreate_relationships(
             ArticlePageTags,
             'tag',
+            'nav_tags'
         )
-        self.create_section_tag_relationship = self.recreate_relationship(
-            ArticlePageTags,
+    def create_section_tag_relationship(self):
+        self.recreate_relationships(
+            SectionPageTags,
             'tag',
+            'section_tags'
         )
 
     def get_foreign_page_id_from_type(self, page_type):
