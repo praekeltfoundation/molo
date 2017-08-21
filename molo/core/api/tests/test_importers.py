@@ -20,6 +20,9 @@ from molo.core.models import (
     ArticlePageRecommendedSections,
     ArticlePageRelatedSections,
     SiteLanguageRelation,
+    ArticlePageTags,
+    SectionPageTags,
+    BannerPage,
 )
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.utils import get_image_hash
@@ -625,6 +628,64 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
         self.assertEqual(relation.page.specific, article)
         self.assertEqual(relation.section.specific,
                          section_rel)
+
+    def test_create_nav_tag_relationships(self):
+        '''
+        Check creation of ArticlePageTags, which are called nav_tags in model
+        '''
+        section = self.mk_section(
+            self.section_index, title="Parent Test Section 1",
+        )
+        article = self.mk_article(section)
+
+        # create tag
+        [tag_1, tag_2] = self.mk_tags(self.tag_index, count=2)
+
+        # update map_id
+        # attach imaginary foreign IDs to sections, to fake import data
+        self.record_keeper.foreign_local_map["page_map"] = {
+            111: tag_1.id, 222: tag_2.id, 333: article.id}
+        self.record_keeper.foreign_to_many_foreign_map["nav_tags"][333] = [111, 222]  # noqa
+
+        self.assertEqual(ArticlePageTags.objects.count(), 0)
+        self.importer.create_nav_tag_relationships()
+        self.assertEqual(ArticlePageTags.objects.count(), 2)
+
+        [relation_1, relation_2] = list(ArticlePageTags.objects.all())
+
+        self.assertEqual(relation_1.page.specific, article)
+        self.assertEqual(relation_1.tag.specific,
+                         tag_1)
+
+        self.assertEqual(relation_2.page.specific, article)
+        self.assertEqual(relation_2.tag.specific,
+                         tag_2)
+
+    def test_create_section_tag_relationships(self):
+        section = self.mk_section(self.section_index)
+
+        # create tag
+        [tag_1, tag_2] = self.mk_tags(self.tag_index, count=2)
+
+        # update map_id
+        # attach imaginary foreign IDs to sections, to fake import data
+        self.record_keeper.foreign_local_map["page_map"] = {
+            111: tag_1.id, 222: tag_2.id, 333: section.id}
+        self.record_keeper.foreign_to_many_foreign_map["section_tags"][333] = [111, 222]  # noqa
+
+        self.assertEqual(SectionPageTags.objects.count(), 0)
+        self.importer.create_section_tag_relationship()
+        self.assertEqual(SectionPageTags.objects.count(), 2)
+
+        [relation_1, relation_2] = list(SectionPageTags.objects.all())
+
+        self.assertEqual(relation_1.page.specific, section)
+        self.assertEqual(relation_1.tag.specific,
+                         tag_1)
+
+        self.assertEqual(relation_2.page.specific, section)
+        self.assertEqual(relation_2.tag.specific,
+                         tag_2)
 
     def test_create_banner_page_links(self):
         banner = self.mk_banner(parent=self.banner_index)
