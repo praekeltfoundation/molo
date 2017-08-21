@@ -16,7 +16,6 @@ from molo.core.models import (
     SiteLanguageRelation,
     ArticlePage,
     SectionPage,
-    BannerPage,
     ArticlePageRecommendedSections,
     ArticlePageRelatedSections,
     PageTranslation,
@@ -593,8 +592,14 @@ class LanguageImporter(BaseImporter):
 
 
 class ContentImporter(BaseImporter):
-    def recreate_relationships(self, class_, attribute_name, key):
+    def __init__(self, site_pk, base_url, record_keeper=None):
+        super(ContentImporter, self).__init__(site_pk, base_url,
+                                              record_keeper=record_keeper)
 
+    def recreate_relationships(self, class_, attribute_name, key):
+        '''
+        Recreates one-to-many relationship
+        '''
         iterable = self.record_keeper.foreign_to_many_foreign_map[key]
         for foreign_page_id, foreign_page_id_list in iterable.iteritems():
 
@@ -615,9 +620,28 @@ class ContentImporter(BaseImporter):
                 except ReferenceUnimportedContent as e:
                     print(e)
 
-    def __init__(self, site_pk, base_url, record_keeper=None):
-        super(ContentImporter, self).__init__(site_pk, base_url,
-                                              record_keeper=record_keeper)
+    def recreate_relationship(self, attribute_name, key):
+        '''
+        Recreates one-to-one relationship
+        '''
+        iterator = self.record_keeper.foreign_to_foreign_map["banner_link_page"].iteritems()  # noqa
+        for foreign_page_id, linked_page_foreign_id in iterator:
+            # get local banner page
+            local_page_id = self.record_keeper.get_local_page(foreign_page_id)
+            local_page = Page.objects.get(id=local_page_id).specific
+
+            # get local linked page
+            local_id = self.record_keeper.get_local_page(
+                linked_page_foreign_id)
+            linked_page = Page.objects.get(id=local_id).specific
+
+            # link the two together
+            setattr(local_page, attribute_name, linked_page)
+            # TODO: review publishing and saving revisions
+            local_page.save_revision().publish()
+
+    def create_banner_page_links(self):
+        self.recreate_relationship("banner_link_page", "banner_link_page")
 
     def create_recommended_articles(self):
         self.recreate_relationships(
@@ -791,15 +815,6 @@ class ContentImporter(BaseImporter):
         for main_language_child_id in main_language_child_ids:
                 self.copy_page_and_children(foreign_id=main_language_child_id,
                                             parent_id=existing_node.id)
-
-    def create_banner_page_links(self):
-        for banner_page_id, linked_page_foreign_id in self.record_keeper.banner_page_links.iteritems():  # noqa
-            banner = BannerPage.objects.get(id=banner_page_id)
-            local_id = self.record_keeper.get_local_page(
-                linked_page_foreign_id)
-            linked_page = Page.objects.get(id=local_id).specific
-            banner.banner_link_page = linked_page
-            banner.save_revision().publish()
 
     def restore_relationships(self):
         pass

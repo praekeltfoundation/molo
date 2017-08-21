@@ -626,6 +626,22 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
         self.assertEqual(relation.section.specific,
                          section_rel)
 
+    def test_create_banner_page_links(self):
+        banner = self.mk_banner(parent=self.banner_index)
+        section = self.mk_section(parent=self.section_index)
+        # fake the banner page data
+        self.record_keeper.foreign_local_map["page_map"] = {
+            111: section.id, 222: banner.id}
+        self.record_keeper.foreign_to_foreign_map["banner_link_page"][222] = 111   # noqa
+
+        self.assertFalse(banner.banner_link_page)
+
+        self.importer.create_banner_page_links()
+
+        banner = BannerPage.objects.get(id=banner.id)
+        self.assertTrue(banner.banner_link_page)
+        self.assertEqual(banner.banner_link_page.specific, section)
+
 
 class TestRecordKeeper(TestCase):
     def setUp(self):
