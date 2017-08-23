@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+5.9.4
+~~~~~
+- Bug Fix: Ensure load_tags_for_article only returns tags for article Pages
+- Remove content_import tests
+
 5.9.3
 ~~~~~
 - Temporarily removed API import from sidebar
