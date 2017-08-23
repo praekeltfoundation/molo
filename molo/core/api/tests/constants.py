@@ -1575,3 +1575,29 @@ NESTED_ARTICLE_RESPONSE = {
     "nav_tags": [],
     "recommended_articles": []
 }
+
+NESTED_FIELD_NAV_TAG_WITH_NONE = {
+    "nav_tags": [
+        {
+            "id": 10,
+            "meta": {
+                "type": "core.ArticlePageTags"
+            },
+            "tag": None
+        },
+        {
+            "id": 11,
+            "meta": {
+                "type": "core.ArticlePageTags"
+            },
+            "tag": {
+                "id": 28170,
+                "meta": {
+                    "type": "core.Tag",
+                    "detail_url": "http://qa.tuneme.seed.p16n.org/api/v2/pages/28170/"  # noqa
+                },
+                "title": "18"
+            }
+        }
+    ]
+}

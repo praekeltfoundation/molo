@@ -732,3 +732,15 @@ class TestRecordKeeper(TestCase):
         self.assertEqual(
             exception_info.value.__str__(),
             "ReferenceUnimportedContent")
+
+    def test_record_nav_tags_with_none(self):
+        '''
+        wagtail allows pages to be created without a link page
+        Test that this case does not cause an error and
+        '''
+        nested_fields = constants.NESTED_FIELD_NAV_TAG_WITH_NONE
+        fake_page_id = 99
+
+        self.record_keeper.record_nav_tags(nested_fields, fake_page_id)
+
+        self.assertTrue(True)

@@ -364,6 +364,8 @@ class RecordKeeper(object):
             for relationship_object in relationship_object_list:
                 if related_item_key in relationship_object:
                     related_item = relationship_object[related_item_key]
+                    if not related_item:
+                        continue
                     if "id" in related_item:
                         foreign_id = related_item["id"]
                         record_keeper[page_id].append(foreign_id)
