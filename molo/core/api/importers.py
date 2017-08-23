@@ -498,13 +498,23 @@ class ImageImporter(BaseImporter):
 
         Input: foreign image ID
 
+        Output: (Image: imported image, Dict: info about import)
+
         Attempts to avoid duplicates by matching image titles.
         If a match is found it refers to local instance instead.
         If it is not, the image is fetched, created and referenced.
         '''
         image_detail_url = "{}{}/".format(self.image_url, image_id)
-        img_response = requests.get(image_detail_url)
-        img_info = json.loads(img_response.content)
+
+        try:
+            img_response = requests.get(image_detail_url)
+            img_info = json.loads(img_response.content)
+        except Exception as e:
+            error_context = {
+                "image detail url": image_detail_url,
+                "exception": e,
+            }
+            raise ImageInfoFetchFailed(error_context)
 
         if img_info["image_hash"] is None:
             raise ValueError('image hash should not be none')
@@ -514,56 +524,93 @@ class ImageImporter(BaseImporter):
             img_info["width"],
             img_info["height"],
             img_info["image_hash"])
+
         if local_image:
-            # update record keeper
-            if self.record_keeper:
-                self.record_keeper.record_image_relation(
-                    img_info["id"],
-                    local_image.id)
-            # TODO: update logs
-            return local_image
+            context = {
+                "local_version_existed": True,
+                "url": img_info['image_url'],
+                "foreign_title": img_info["title"].encode('utf-8'),
+            }
+            return (local_image, context)
         else:
             # use the local title of the image
             new_image = self.fetch_and_create_image(
                 img_info['image_url'],
-                img_info["title"])
-
-            # update record keeper
-            if self.record_keeper:
-                self.record_keeper.record_image_relation(
-                    img_info["id"],
-                    new_image.id)
-            # TODO: update logs
-            return new_image
+                img_info["title"].encode('utf-8'))
+            context = {
+                "local_version_existed": False,
+                "url": img_info['image_url'],
+                "foreign_title": img_info["title"].encode('utf-8'),
+            }
+            return (new_image, context)
 
     def import_images(self):
         '''
         Fetches all images from site
+
+        Handles Errors in creation process
+        Updates record_keeper
+        Logs the result of each attempt to create an image
         '''
-        images = list_of_objects_from_api(self.image_url)
+        self.log("Importing Images")
+        try:
+            images = list_of_objects_from_api(self.image_url)
+        except Exception as e:
+            raise ImageInfoFetchFailed(
+                "Something went wrong fetching list of images")
 
         if not images:
             return None
 
         # iterate through foreign images
         for image_summary in images:
-            self.import_image(image_summary["id"])
+            self.log("Importing Image", depth=1)
+            try:
+                (image, context) = self.import_image(image_summary["id"])
+                # update record keeper
+                if self.record_keeper:
+                    self.record_keeper.record_image_relation(
+                        image_summary["id"],
+                        image.id)
+                # log success
+                self.log("SUCCESS: Importing Image",
+                         context=context,
+                         depth=1)
+            except ImageInfoFetchFailed as e:
+                self.log("Error: Importing Images", e, depth=1)
+            except ImageCreationFailed as e:
+                self.log("Error: Importing Images", e.message, depth=1)
+            except Exception as e:
+                context = {
+                    "exception": e,
+                    "foreign_image_id": image_summary["id"],
+                }
+                self.log("Error: Importing Images", context, depth=1)
 
     def fetch_and_create_image(self, relative_url, image_title):
         '''
         fetches, creates and return image object
         '''
         # TODO: handle image unavailable
-        image_media_url = "{}{}".format(self.base_url, relative_url)
-        image_file = requests.get(image_media_url)
-        local_image = Image(
-            title=image_title,
-            file=ImageFile(
-                BytesIO(image_file.content), name=image_title
+        try:
+            image_media_url = "{}{}".format(self.base_url, relative_url)
+            image_file = requests.get(image_media_url)
+            local_image = Image(
+                title=image_title,
+                file=ImageFile(
+                    BytesIO(image_file.content), name=image_title
+                )
             )
-        )
-        local_image.save()
-        return local_image
+            local_image.save()
+            return local_image
+        except UnicodeEncodeError as e:
+            raise ReferenceUnimportedContent("ohai")
+        except Exception as e:
+            context = {
+                "exception": e,
+                "image_media_url": image_media_url,
+            }
+            raise ImageCreationFailed(context)
 
 
 class LanguageImporter(BaseImporter):
