@@ -2,9 +2,10 @@
 import pytest
 from django.test import TestCase, RequestFactory
 from molo.core.models import (
-    Main, SiteLanguageRelation, Languages, BannerPage)
+    Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags)
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.templatetags.core_tags import get_parent, bannerpages
+from molo.core.templatetags.core_tags import ( get_parent, bannerpages,
+    load_tags_for_article)
 
 
 @pytest.mark.django_db
@@ -135,4 +136,24 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         self.assertEquals(get_parent(
             {'locale_code': 'fr', 'request': request}, self.yourmind),
+            None)
+
+    def test_load_tags_for_article(self):
+        request = self.factory.get('/')
+        request.site = self.site
+        article1 = self.mk_article(self.yourmind, title='article 1')
+
+        tag = self.mk_tag(parent=self.tag_index)
+        ArticlePageTags.objects.create(page=article1, tag=tag)
+        self.assertEquals(load_tags_for_article(
+            {
+                'locale_code': 'en',
+                'request': request
+            }, article1)[0],
+            tag)
+        self.assertEquals(load_tags_for_article(
+            {
+                'locale_code': 'en',
+                'request': request
+            }, self.yourmind),
             None)
