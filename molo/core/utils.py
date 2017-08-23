@@ -3,8 +3,11 @@ import shutil
 import zipfile
 import re
 import tempfile
+import imagehash
 import distutils.dir_util
 
+from PIL import Image as PILImage
+from StringIO import StringIO
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
 from wagtail.wagtailcore.models import Page
@@ -157,3 +160,13 @@ def update_media_file(upload_file):
         temp_file.close()
         if os.path.exists(temp_directory):
             shutil.rmtree(temp_directory)
+
+
+def get_image_hash(image):
+    '''
+    Returns an image hash of a Wagtail Image
+    '''
+    with open(image.file.path, 'r') as file:
+        image_in_memory = StringIO(file.read())
+        pil_image = PILImage.open(image_in_memory)
+        return imagehash.average_hash(pil_image).__str__()

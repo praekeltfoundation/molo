@@ -1,6 +1,39 @@
 CHANGE LOG
 ==========
 
+5.9.4
+~~~~~
+- Bug Fix: Ensure load_tags_for_article only returns tags for article Pages
+- Remove content_import tests
+
+5.9.3
+~~~~~
+- Temporarily removed API import from sidebar
+
+5.9.2
+~~~~~
+- Mote Update: Mote files updated to flexible accept applications style directory
+
+5.9.1
+~~~~~
+- Bug Fix: Revert accidental travis setup change
+
+5.9.0
+~~~~~
+- New Feature: API that exposes content via the `/api/v2/` url
+- New Feature: Import some site content to a new site via the newly created API. Imports the following content:
+  - Site languages
+  - Images
+  - Sections
+  - Articles
+  - Tags
+  - Banners Pages
+  - Footer Pages
+
+5.8.2
+~~~~~
+- Fix the responsive styling for Admin dashboard
+
 5.8.1
 ~~~~~
 - Fix the styling for Admin dashboard

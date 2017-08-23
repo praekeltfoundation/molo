@@ -12,10 +12,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% compress css %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/{{ ENV }}/styles.css">
-    <!--Write  a comment-->
   {% endcompress %}
 </head>
-<body>
+<body class="iframe-container">
     {% render_element element %}
 </body>
 </html>

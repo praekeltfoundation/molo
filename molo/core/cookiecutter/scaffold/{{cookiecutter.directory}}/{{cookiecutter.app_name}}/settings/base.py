@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.wagtailsitemaps',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
+    'wagtail.api.v2',
 
     'mptt',
     'djcelery',
@@ -294,6 +295,10 @@ LOCALE_PATHS = [
 STATIC_ROOT = join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
 COMPRESS_ENABLED = True
+
+STATICFILES_DIRS = [
+    join(PROJECT_ROOT, "{{cookiecutter.app_name}}/{{ STATIC_URL }}css/{{ ENV }}"),
+]
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',

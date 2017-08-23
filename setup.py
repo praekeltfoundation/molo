@@ -29,7 +29,7 @@ install_requires = [
     'elastic-git',
     'markdown',
     'molo.profiles<6.0.0,>=5.0.0',
-    'mote-prk==0.3.1',
+    'mote-prk==0.2.1',
     'raven==5.0.0',
     'redis',
     'requests',
@@ -39,6 +39,7 @@ install_requires = [
     'unicore.content',
     'wagtail>=1.9,<1.10',
     'wagtailmedia==0.1.3',
+    'imagehash',
 ]
 
 setup(name='molo.core',
