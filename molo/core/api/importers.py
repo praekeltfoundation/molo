@@ -11,18 +11,7 @@ from django.core.files.images import ImageFile
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
-from molo.core.models import (
-    Languages,
-    SiteLanguageRelation,
-    ArticlePage,
-    SectionPage,
-    ArticlePageRecommendedSections,
-    ArticlePageRelatedSections,
-    PageTranslation,
-    ArticlePageTags,
-    SectionPageTags,
-    ImportableMixin,
-)
+from molo.core.models import *  # noqa
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
 )
