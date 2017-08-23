@@ -378,22 +378,20 @@ def import_site(root_url, site_pk, user_pk):
             foreign_id=foreign_tag_index_page_id,
             existing_node=tag_index_page)
 
-        '''
-        importer.log("Creating Recommended Articles")
-        importer.create_recommended_articles()
+        print("Creating Recommended Articles")
+        content_importer.create_recommended_articles()
 
-        importer.log("Creating Related Sections")
-        importer.create_related_sections()
+        print("Creating Related Sections")
+        content_importer.create_related_sections()
 
-        importer.log("Creating Nav Tag Relationships")
-        importer.create_nav_tag_relationships()
+        print("Creating Nav Tag Relationships")
+        content_importer.create_nav_tag_relationships()
 
-        importer.log("Creating Section Tag Relationships")
-        importer.create_section_tag_relationship()
+        print("Creating Section Tag Relationships")
+        content_importer.create_section_tag_relationship()
 
-        importer.log("Creating Banner Page Links")
-        importer.create_banner_page_links()
-        '''
+        print("Creating Banner Page Links")
+        content_importer.create_banner_page_links()
 
         # send email
         send_copy_email(user.email, {
