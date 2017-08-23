@@ -5,6 +5,7 @@ import math
 import json
 import requests
 from io import BytesIO
+from termcolor import colored
 
 from django.core.files.images import ImageFile
 
@@ -25,6 +26,7 @@ from molo.core.utils import (
 )
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 
 # functions used to find images
@@ -428,6 +430,26 @@ class BaseImporter(object):
             return base_url[:-1]
         else:
             return base_url
+
+    def log(self, message, context=None, depth=0):
+        error_flag = 'error' in message.lower()
+
+        log_item = "{}>> {}".format(depth * "\t", message)
+        if context:
+            for key, item in context.iteritems():
+                if key == "exception":
+                    log_item += "\n{}| {}: {}".format(depth * "\t", "ex_type",
+                                                      type(item))
+                    log_item += "\n{}| {}: {}".format(depth * "\t", key, item)
+                else:
+                    log_item += (
+                        "\n{}| {}: {}".format(depth * "\t", key, item))
+            log_item += "\n{}----".format(depth * "\t")
+        if settings.DEBUG:
+            if error_flag:
+                print colored(log_item, 'red')
+            else:
+                print colored(log_item, 'green')
 
 
 class ImageImporter(BaseImporter):
