@@ -734,6 +734,7 @@ class ContentImporter(BaseImporter):
 
         Only works for index pages
         '''
+        # TODO: log this
         response = requests.get("{}pages/?type={}".format(
             self.api_url, page_type))
         content = json.loads(response.content)
@@ -745,8 +746,12 @@ class ContentImporter(BaseImporter):
         content_copy = dict(content)
 
         if not issubclass(class_, ImportableMixin):
-            # TODO: log this
-            return None
+            error_context = {
+                "message": "WARNING: Page does not inherit ImportableMixin",
+                "page type": page_type,
+                "class_": str(class_),
+                "outcome": "cannot import page or its descendants"}
+            raise PageNotImportable(error_context)
 
         # TODO: make a copy of the record_keeper class
 
@@ -756,23 +761,31 @@ class ContentImporter(BaseImporter):
         except Exception as e:
             # avoid side-effects of adding the page
             # TODO: restore copy of record Keeper class
-            # TODO: Log exceptions surface from creating page
-            return None
+            error_context = {
+                "message": "ERROR: Creating Page",
+                "exception": e,
+                "content": content,
+                "outcome": "cannot import page or its descendants"}
+            raise ImportedContentInvalid(error_context)
 
         try:
             parent.add_child(instance=page)
             parent.save_revision().publish()
             page.save_revision().publish()
         except Exception as e:
-            print(e)
-            # TODO: log failed page save and details
-            return None
+            error_context = {
+                "message": "ERROR: Saving Page",
+                "exception": e,
+                "outcome": "page and its descendants will not be imported"}
+            raise ImportedPageNotSavable(error_context)
 
         self.record_keeper.record_page_relation(
             content["id"],
             page.id
         )
-        # TODO: Log successful import
+        # TODO: raise to calling function
+        # self.log("SUCCESS: Page imported", {
+        #         "parent title": parent.title, "page title": page.title})
         return page
 
     def attach_translated_content(self, local_main_lang_page,
@@ -810,27 +823,49 @@ class ContentImporter(BaseImporter):
             page.delete()
         return page
 
-    def copy_page_and_children(self, foreign_id, parent_id):
+    def copy_page_and_children(self, foreign_id, parent_id, depth=0):
         '''
         Recusively copies over pages, their translations, and child pages
         '''
         url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
 
-        # TODO: create a robust wrapper around this functionality
-        response = requests.get(url)
+        self.log("Requesting Data", {"url": url}, depth)
         try:
+            # TODO: create a robust wrapper around this functionality
+            response = requests.get(url)
             content = json.loads(response.content)
         except Exception as e:
+            self.log("ERROR: Requesting Data - abandoning copy",
+                     {"url": url, "exception": e}, depth)
             return None
 
         parent = Page.objects.get(id=parent_id).specific
         page = None
         try:
+            self.log("Create Page", {"url": url}, depth)
             page = self.attach_page(parent, content)
-        except Exception as e:
-            print(e)
-            # TODO: log this
+            if page:
+                self.log("SUCCESS: Create Page",
+                         {"url": url,
+                          "page title": page.title.encode('utf-8')},
+                         depth)
+        except PageNotImportable as e:
+            message = e.message.pop("message")
+            self.log(message, e.message.pop("message"))
             return None
+
+        '''
+        except Exception as e:
+            context = {
+                "exception": e,
+                "url": url,
+                "parent title": parent.title,
+                "foreign_page": content["title"].encode('utf-8'),
+            }
+            self.log(
+                "ERROR: Create Page - abandon page and children creation",
+                context, depth)
+        '''
 
         if page:
             # create translations
@@ -840,14 +875,18 @@ class ContentImporter(BaseImporter):
                                                         translation_obj["id"])
                     # TODO: create a robust wrapper around this functionality
                     _response = requests.get(_url)
+                    self.log(
+                        "Getting translated content",
+                        {"url": _url}, depth)
                     if _response.content:
                         _content = json.loads(_response.content)
 
                         self.attach_translated_content(
                             page, _content, translation_obj["locale"])
                     else:
-                        # TODO: log this
-                        pass
+                        self.log(
+                            "ERROR: Getting translated content",
+                            {"url": _url}, depth)
 
             main_language_child_ids = content["meta"]["main_language_children"]
 
@@ -856,22 +895,30 @@ class ContentImporter(BaseImporter):
                 for main_language_child_id in main_language_child_ids:
                     self.copy_page_and_children(
                         foreign_id=main_language_child_id,
-                        parent_id=page.id)
+                        parent_id=page.id, depth=depth + 1)
 
     def copy_children(self, foreign_id, existing_node):
         '''
         Initiates copying of tree, with existing_node acting as root
         '''
         url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
+        self.log("Copying Children",
+                 {"existing node type": str(type(existing_node))})
 
         # TODO: create a robust wrapper around this functionality
-        response = requests.get(url)
-        content = json.loads(response.content)
+        try:
+            self.log("Requesting Data", {"url": url})
+            response = requests.get(url)
+            content = json.loads(response.content)
+            self.log("Data Fetched Successfully", {"url": url})
 
-        main_language_child_ids = content["meta"]["main_language_children"]
-        for main_language_child_id in main_language_child_ids:
-                self.copy_page_and_children(foreign_id=main_language_child_id,
-                                            parent_id=existing_node.id)
+            main_language_child_ids = content["meta"]["main_language_children"]
+            for main_language_child_id in main_language_child_ids:
+                    self.copy_page_and_children(
+                        foreign_id=main_language_child_id,
+                        parent_id=existing_node.id, depth=1)
+        except Exception as e:
+            self.log("ERROR: Copying Children", {"url": url, "exception": e})
 
     def restore_relationships(self):
         pass
