@@ -4,8 +4,8 @@ from django.test import TestCase, RequestFactory
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags)
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.templatetags.core_tags import ( get_parent, bannerpages,
-    load_tags_for_article)
+from molo.core.templatetags.core_tags import (
+    get_parent, bannerpages, load_tags_for_article)
 
 
 @pytest.mark.django_db
