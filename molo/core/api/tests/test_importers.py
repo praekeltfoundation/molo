@@ -703,6 +703,46 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
         self.assertTrue(banner.banner_link_page)
         self.assertEqual(banner.banner_link_page.specific, section)
 
+    def test_recreate_article_body(self):
+        # assumptions
+
+        # image reference in body has been imported
+        # page reference in body has been imported
+        # article created without body
+        # record_keeper has this ^ info
+
+        section = self.mk_section(self.section_index)
+        article = self.mk_article(section)
+        article.body = None
+        article.save()
+        article_id = article.id
+
+        self.assertFalse(article.body)
+
+        body = constants.ARTICLE_PAGE_RESPONSE_STREAM_FIELDS["body"]
+
+        self.record_keeper.foreign_local_map["page_map"] = {
+            48: section.id,  # page linked to in article body
+            999: article.id  # article page with body
+        }
+
+        foreign_image_id = 297
+        image = Image.objects.create(
+            title="fake_image",
+            file=get_test_image_file(),
+        )
+
+        self.record_keeper.foreign_local_map["image_map"] = {foreign_image_id: image.id}
+
+        self.record_keeper.article_bodies = {999: body}
+
+        self.importer.recreate_article_body()
+
+        updated_article = ArticlePage.objects.get(id=article_id)
+
+        self.assertTrue(updated_article)
+        self.assertTrue(updated_article.body)
+        # TODO: check each field individually
 
 class TestRecordKeeper(TestCase):
     def setUp(self):

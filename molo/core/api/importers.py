@@ -322,6 +322,9 @@ class RecordKeeper(object):
             "banner_link_page": {}
         }
 
+        # maps foreign ID to article body blob
+        self.article_bodies = {}
+
     def record_relation(self, id_map_key, foreign_page_id, local_page_id):
         record = self.foreign_local_map[id_map_key]
         if (foreign_page_id in record and
@@ -728,6 +731,37 @@ class ContentImporter(BaseImporter):
             'section_tags'
         )
 
+    def recreate_article_body(self):
+        '''
+        Handles case where article body contained page or image.
+
+        Assumes all articles and images have been created.
+        '''
+        for foreign_id, body in self.record_keeper.article_bodies.iteritems():
+            try:
+                local_page_id = self.record_keeper.get_local_page(foreign_id)
+                page = Page.objects.get(id=local_page_id).specific
+
+                # iterate through the body
+                new_body = []
+                for item in body:
+                    if not item['value']:
+                        continue
+                    if item['type'] == 'page':
+                        new_page_id = self.record_keeper.get_local_page(item['value'])
+                        item['value'] = new_page_id
+                    elif item['type'] == 'image':
+                        new_image_id = self.record_keeper.get_local_image(item['value'])
+                        item['value'] = new_image_id
+
+                    new_body.append(item)
+
+                setattr(page, 'body', json.dumps(new_body))
+                page.save_revision().publish()
+
+            except Exception as e:
+                raise
+
     def get_foreign_page_id_from_type(self, page_type):
         '''
         Get the foreign page id based on type
@@ -893,9 +927,12 @@ class ContentImporter(BaseImporter):
             # recursively iterate through child nodes
             if main_language_child_ids:
                 for main_language_child_id in main_language_child_ids:
-                    self.copy_page_and_children(
-                        foreign_id=main_language_child_id,
-                        parent_id=page.id, depth=depth + 1)
+                    try:
+                        self.copy_page_and_children(
+                            foreign_id=main_language_child_id,
+                            parent_id=page.id, depth=depth + 1)
+                    except Exception as e:
+                        self.log("ERROR: Copying Children", {"url": url, "exception": e})
 
     def copy_children(self, foreign_id, existing_node):
         '''

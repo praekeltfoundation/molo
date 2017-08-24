@@ -393,6 +393,9 @@ def import_site(root_url, site_pk, user_pk):
         print("Creating Banner Page Links")
         content_importer.create_banner_page_links()
 
+        print("Recreate Article Body")
+        content_importer.recreate_article_body()
+
         # send email
         send_copy_email(user.email, {
             'name': (user.get_full_name() or user.username) if user else None,

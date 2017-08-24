@@ -210,6 +210,27 @@ def add_json_dump(field):
     return _add_json_dump
 
 
+def add_stream_fields(nested_fields, page):
+    if (('body' in nested_fields) and nested_fields['body']):
+        article_body = nested_fields['body']
+
+        # iterate through stream field, checking for page
+        page_flag = False
+        for stream_field in article_body:
+            if 'type' in stream_field and stream_field['type']:
+                # pass
+                if (stream_field['type'] == 'page' or
+                        stream_field['type'] == 'image'):
+                    page_flag = True
+                    break
+
+        # if page link exists, do not attach body, instead return it
+        if page_flag:
+            return nested_fields['body']
+        else:
+            setattr(page, 'body', json.dumps(nested_fields['body']))
+    return None
+
 def add_list_of_things(field):
     def _add_list_of_things(nested_fields, page):
         if (field in nested_fields) and nested_fields[field]:

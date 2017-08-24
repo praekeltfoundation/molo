@@ -556,6 +556,94 @@ ARTICLE_PAGE_RESPONSE = {
     ]
 }
 
+ARTICLE_PAGE_RESPONSE_STREAM_FIELDS = {
+    "id": 92,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:9000/api/v2/pages/92/",
+        "html_url": "http://localhost:9000/sections/test-section/article-all-stream-fields/",
+        "slug": "article-all-stream-fields",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-23T08:56:14.263738Z",
+        "parent": {
+            "id": 11,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:9000/api/v2/pages/11/",
+                "html_url": "http://localhost:9000/sections/test-section/"
+            },
+            "title": "Test Section"
+        },
+        "children": None,
+        "translations": [],
+        "main_language_children": None
+    },
+    "title": "ARTICLE WITH ALL THE STREAM FIELDS",
+    "subtitle": "",
+    "body": [
+        {
+            "type": "heading",
+            "value": "test heading"
+        },
+        {
+            "type": "paragraph",
+            "value": "test paragraph"
+        },
+        {
+            "type": "image",
+            "value": 297
+        },
+        {
+            "type": "list",
+            "value": [
+                "list item 1",
+                "list item 2",
+                "list item 3"
+            ]
+        },
+        {
+            "type": "numbered_list",
+            "value": [
+                "numbered list 1",
+                "numbered list 2",
+                "numbered list 3"
+            ]
+        },
+        {
+            "type": "page",
+            "value": 48
+        }
+    ],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-08-23T08:57:13.824364Z",
+    "image": None,
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": []
+}
+
 
 SECTION_PAGE_RESPONSE = {
     "id": 11,

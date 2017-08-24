@@ -44,6 +44,7 @@ from molo.core.utils import (
     add_json_dump,
     add_list_of_things,
     attach_image_function,
+    add_stream_fields,
 )
 
 
@@ -258,7 +259,6 @@ class SiteSettings(BaseSetting):
 class ImportableMixin(object):
     @classmethod
     def create_page(self, content, class_, record_keeper=None):
-        add_article_body = add_json_dump("body")
         add_section_time = add_json_dump("time")
 
         add_tags = add_list_of_things("tags")
@@ -282,7 +282,11 @@ class ImportableMixin(object):
         page = class_(**fields)
 
         # Handle content in nested_fields
-        add_article_body(nested_fields, page)
+        body = add_stream_fields(nested_fields, page)
+        # body has not been added as it contains reference to pages
+        if body:
+            record_keeper.article_bodies[foreign_id] = body
+
         add_section_time(nested_fields, page)
         add_tags(nested_fields, page)
         add_metadata_tags(nested_fields, page)

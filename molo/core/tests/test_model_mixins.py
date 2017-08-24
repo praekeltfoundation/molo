@@ -153,6 +153,25 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
 
         self.check_article_and_footer_fields(page, content, record_keeper)
 
+    def test_article_body_not_importable(self):
+        content = constants.ARTICLE_PAGE_RESPONSE_STREAM_FIELDS
+        content_copy = dict(content)
+
+        record_keeper = importers.RecordKeeper()
+
+        class_ = ArticlePage
+
+        page = ArticlePage.create_page(
+            content_copy, class_, record_keeper=record_keeper)
+
+        self.assertEqual(page.title, content["title"])
+        self.assertFalse(page.body)
+
+        self.assertTrue(content["id"] in record_keeper.article_bodies)
+        self.assertEqual(
+            record_keeper.article_bodies[content["id"]],
+            content["body"])
+
     def test_section_importable(self):
         content = constants.SECTION_PAGE_RESPONSE
         content_copy = dict(content)
