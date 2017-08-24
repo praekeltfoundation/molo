@@ -762,7 +762,13 @@ class ContentImporter(BaseImporter):
                 page.save_revision().publish()
 
             except Exception as e:
-                raise
+                self.log("Error: recreating article body",
+                         {
+                             "exception": e,
+                             "foreign_id": foreign_id,
+                             "body": body,
+                         },
+                         depth=1)
 
     def get_foreign_page_id_from_type(self, page_type):
         '''
