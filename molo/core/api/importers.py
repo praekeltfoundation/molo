@@ -336,7 +336,7 @@ class RecordKeeper(object):
             return record[foreign_page_id]
         else:
             raise ReferenceUnimportedContent(
-                "ReferenceUnimportedContent",
+                "Unimported content foreign ID: {}".format(foreign_page_id),
                 None)
 
     def record_foreign_relations(self, field, related_item_key, id_map_key,
