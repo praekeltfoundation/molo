@@ -231,6 +231,7 @@ def add_stream_fields(nested_fields, page):
             setattr(page, 'body', json.dumps(nested_fields['body']))
     return None
 
+
 def add_list_of_things(field):
     def _add_list_of_things(nested_fields, page):
         if (field in nested_fields) and nested_fields[field]:

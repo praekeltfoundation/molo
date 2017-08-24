@@ -561,7 +561,7 @@ ARTICLE_PAGE_RESPONSE_STREAM_FIELDS = {
     "meta": {
         "type": "core.ArticlePage",
         "detail_url": "http://localhost:9000/api/v2/pages/92/",
-        "html_url": "http://localhost:9000/sections/test-section/article-all-stream-fields/",
+        "html_url": "http://localhost:9000/sections/test-section/article-all-stream-fields/",  # noqa
         "slug": "article-all-stream-fields",
         "show_in_menus": False,
         "seo_title": "",

@@ -748,10 +748,12 @@ class ContentImporter(BaseImporter):
                     if not item['value']:
                         continue
                     if item['type'] == 'page':
-                        new_page_id = self.record_keeper.get_local_page(item['value'])
+                        new_page_id = self.record_keeper.get_local_page(
+                            item['value'])
                         item['value'] = new_page_id
                     elif item['type'] == 'image':
-                        new_image_id = self.record_keeper.get_local_image(item['value'])
+                        new_image_id = self.record_keeper.get_local_image(
+                            item['value'])
                         item['value'] = new_image_id
 
                     new_body.append(item)
@@ -915,7 +917,8 @@ class ContentImporter(BaseImporter):
                     if _response.content:
                         _content = json.loads(_response.content)
 
-                        if "locale" in translation_obj and translation_obj["locale"]:
+                        if ("locale" in translation_obj and
+                                translation_obj["locale"]):
                             self.attach_translated_content(
                                 page, _content, translation_obj["locale"])
                         else:
@@ -937,7 +940,8 @@ class ContentImporter(BaseImporter):
                             foreign_id=main_language_child_id,
                             parent_id=page.id, depth=depth + 1)
                     except Exception as e:
-                        self.log("ERROR: Copying Children", {"url": url, "exception": e})
+                        self.log("ERROR: Copying Children",
+                                 {"url": url, "exception": e})
 
     def copy_children(self, foreign_id, existing_node):
         '''

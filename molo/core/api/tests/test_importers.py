@@ -732,7 +732,8 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
             file=get_test_image_file(),
         )
 
-        self.record_keeper.foreign_local_map["image_map"] = {foreign_image_id: image.id}
+        self.record_keeper.foreign_local_map["image_map"] = {
+            foreign_image_id: image.id}
 
         self.record_keeper.article_bodies = {999: body}
 
@@ -743,6 +744,7 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
         self.assertTrue(updated_article)
         self.assertTrue(updated_article.body)
         # TODO: check each field individually
+
 
 class TestRecordKeeper(TestCase):
     def setUp(self):
