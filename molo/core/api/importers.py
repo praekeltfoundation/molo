@@ -915,8 +915,13 @@ class ContentImporter(BaseImporter):
                     if _response.content:
                         _content = json.loads(_response.content)
 
-                        self.attach_translated_content(
-                            page, _content, translation_obj["locale"])
+                        if "locale" in translation_obj and translation_obj["locale"]:
+                            self.attach_translated_content(
+                                page, _content, translation_obj["locale"])
+                        else:
+                            self.log(
+                                "ERROR: locale is null",
+                                {"url": _url, }, depth)
                     else:
                         self.log(
                             "ERROR: Getting translated content",
