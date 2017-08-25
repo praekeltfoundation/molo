@@ -3,16 +3,21 @@ import shutil
 import zipfile
 import re
 import tempfile
+import imagehash
 import distutils.dir_util
 
+from PIL import Image as PILImage
+from StringIO import StringIO
 from django.conf import settings
 from wagtail.wagtailcore.utils import cautious_slugify
+from wagtail.wagtailcore.models import Page
 
 
 def create_new_article_relations(old_main, copied_main):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
         ArticlePageReactionQuestions, ReactionQuestion, \
-        ArticlePageRecommendedSections, ArticlePageRelatedSections, SectionPage
+        ArticlePageRecommendedSections, ArticlePageRelatedSections, \
+        SectionPage, BannerPage
     if old_main and copied_main:
         if copied_main.get_descendants().count() >= \
                 old_main.get_descendants().count():
@@ -61,9 +66,20 @@ def create_new_article_relations(old_main, copied_main):
                         relation.section = new_related_section
                         relation.save()
 
+                # replace old article banner relations with new articles
+                for banner in BannerPage.objects.descendant_of(copied_main):
+                    old_page = Page.objects.get(
+                        pk=banner.banner_link_page.pk)
+                    if old_page:
+                        new_article = Page.objects.descendant_of(
+                            copied_main).get(slug=old_page.slug)
+                        banner.banner_link_page = new_article
+                        banner.save()
+
 
 def get_locale_code(language_code=None):
     return (language_code or settings.LANGUAGE_CODE).replace('_', '-')
+
 
 RE_NUMERICAL_SUFFIX = re.compile(r'^[\w-]*-(\d+)+$')
 
@@ -144,3 +160,13 @@ def update_media_file(upload_file):
         temp_file.close()
         if os.path.exists(temp_directory):
             shutil.rmtree(temp_directory)
+
+
+def get_image_hash(image):
+    '''
+    Returns an image hash of a Wagtail Image
+    '''
+    with open(image.file.path, 'r') as file:
+        image_in_memory = StringIO(file.read())
+        pil_image = PILImage.open(image_in_memory)
+        return imagehash.average_hash(pil_image).__str__()

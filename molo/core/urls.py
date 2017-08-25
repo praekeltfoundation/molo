@@ -1,12 +1,22 @@
 from django.conf.urls import patterns, include, url
+from django.views.decorators.cache import never_cache
 
+from wagtail.utils.urlpatterns import decorate_urlpatterns
+from wagtail.wagtailimages.views.serve import ServeView
+
+from .api.urls import api_router
 from .views import (
     search, TagsListView, ReactionQuestionChoiceView,
-    ReactionQuestionChoiceFeedbackView)
+    ReactionQuestionChoiceFeedbackView, publish)
 
 
 urlpatterns = patterns(
     '',
+    url(
+        r'^images/([^/]*)/(\d*)/([^/]*)/[^/]*$',
+        ServeView.as_view(),
+        name='wagtailimages_serve'
+    ),
     url(r'^search/$', search, name='search'),
     url(
         r'^locale/(?P<locale>[\w\-\_]+)/$',
@@ -53,6 +63,14 @@ urlpatterns = patterns(
         name='reaction-feedback'),
     url(r'^import/', include(
         'molo.core.content_import.urls', namespace='content_import')),
+
+    url(r'^api/', include(
+        'molo.core.api.urls', namespace='molo_api')),
+
+    url(r'^api/v2/', include(
+        decorate_urlpatterns(api_router.get_urlpatterns(), never_cache),
+        namespace=api_router.url_namespace
+    )),
     url(
         r'^versions/$',
         'molo.core.views.versions',
@@ -63,4 +81,5 @@ urlpatterns = patterns(
         TagsListView.as_view(),
         name='tags_list'
     ),
+    url(r'^(\d+)/publish/$', publish, name='publish'),
 )

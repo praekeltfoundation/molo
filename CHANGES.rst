@@ -1,6 +1,79 @@
 CHANGE LOG
 ==========
 
+5.10.0
+~~~~~
+- add support for youtube links in MoloMedia
+
+5.9.5
+~~~~~
+- fix admin layout styling bugs
+- fix api locale field in translation when language has been deleted
+
+5.9.4
+~~~~~
+- Bug Fix: Ensure load_tags_for_article only returns tags for article Pages
+- Remove content_import tests
+
+5.9.3
+~~~~~
+- Temporarily removed API import from sidebar
+
+5.9.2
+~~~~~
+- Mote Update: Mote files updated to flexible accept applications style directory
+
+5.9.1
+~~~~~
+- Bug Fix: Revert accidental travis setup change
+
+5.9.0
+~~~~~
+- New Feature: API that exposes content via the `/api/v2/` url
+- New Feature: Import some site content to a new site via the newly created API. Imports the following content:
+  - Site languages
+  - Images
+  - Sections
+  - Articles
+  - Tags
+  - Banners Pages
+  - Footer Pages
+
+5.8.2
+~~~~~
+- Fix the responsive styling for Admin dashboard
+
+5.8.1
+~~~~~
+- Fix the styling for Admin dashboard
+
+5.8.0
+~~~~~
+- Add Admin View menu with the Article View to the CMS
+
+5.7.0
+~~~~~
+- Deprecate use of search backends in Molo. Use wagatailsearch instead.
+
+5.6.0
+~~~~~
+- New Feature: Add Article Publish action to shortcuts
+
+5.5.2
+~~~~~
+- Bug fix: ensure that the old article exist in create_new_article_relations
+- Bug fix: use full path for GA tracking
+
+5.5.1
+~~~~~
+- Add get_effective_banner
+- Run node tests in node_js Travis environment
+- Fix npm module caching
+- Run against latest Node LTS release
+- Allow first priority of articles on homepage to go to latest articles when tag navigation is enabled
+- Bug fix: make sure the delete button is not shown in drop down menus on cms
+- Bug fix: only allow voting to shown for main language page for reaction questions in cms
+
 5.5.0
 ~~~~~
 - Remove PyPy Travis builds

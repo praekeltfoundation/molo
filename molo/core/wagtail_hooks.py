@@ -1,7 +1,9 @@
 from django.conf.urls import url
 
-from molo.core.admin import ReactionQuestionsModelAdmin, \
-    ReactionQuestionsSummaryModelAdmin
+from molo.core.admin import (
+    ReactionQuestionsModelAdmin, ReactionQuestionsSummaryModelAdmin,
+    AdminViewGroup
+)
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
 from molo.core.models import LanguageRelation, PageTranslation, Languages
@@ -18,11 +20,13 @@ from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
-from wagtail.wagtailadmin.widgets import ButtonWithDropdownFromHook
+from wagtail.wagtailadmin.widgets import Button, ButtonWithDropdownFromHook
 from wagtail.contrib.modeladmin.options import modeladmin_register
 from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
 from . import views
+
+from molo.core.api import urls as molo_api_urls
 
 
 @hooks.register('register_admin_urls')
@@ -66,6 +70,7 @@ def register_article_question_results_admin_view_url():
 
 
 modeladmin_register(ReactionQuestionsSummaryModelAdmin)
+modeladmin_register(AdminViewGroup)
 
 
 @hooks.register('construct_explorer_page_queryset')
@@ -125,6 +130,12 @@ def register_import_menu_item():
     )
 
 
+# API admin
+@hooks.register("register_admin_urls")
+def add_import_view():
+    return molo_api_urls.urlpatterns
+
+
 class LanguageSummaryItem(SummaryItem):
     order = 500
     template = 'wagtail/site_languages_summary.html'
@@ -161,7 +172,9 @@ def hide_menu_items_if_no_language(request, menu_items):
     if not Languages.for_site(request.site).languages.all().exists():
         menu_items[:] = [
             item for item in menu_items if (
-                item.name == 'settings' or item.name == 'import-content')]
+                item.name == 'settings' or
+                item.name == 'import-content' or
+                item.name == 'api')]
 
 
 @hooks.register('construct_main_menu')
@@ -231,8 +244,18 @@ def new_page_listing_buttons(page, page_perms, is_parent=False):
     else:
         for b in original_buttons:
             if (hasattr(b, 'attrs') and
-                    b.attrs.get('title').lower() != 'delete this page'):
+                    'delete' not in b.attrs.get('title').lower()):
                     yield b
+
+    if not page_perms.can_unpublish():
+        yield Button(
+            _('Publish'),
+            urlresolvers.reverse('publish', args=(page.id,)),
+            attrs={'title': _("Publish page '{title}'").format(
+                title=page.get_admin_display_title()
+            )},
+            priority=40
+        )
 
 
 @hooks.register('insert_global_admin_css')

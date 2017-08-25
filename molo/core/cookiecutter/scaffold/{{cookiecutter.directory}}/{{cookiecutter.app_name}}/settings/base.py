@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.wagtailsitemaps',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
+    'wagtail.api.v2',
 
     'mptt',
     'djcelery',
@@ -295,6 +296,10 @@ STATIC_ROOT = join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
 COMPRESS_ENABLED = True
 
+STATICFILES_DIRS = [
+    join(PROJECT_ROOT, "{{cookiecutter.app_name}}/{{ STATIC_URL }}css/{{ ENV }}"),
+]
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -303,7 +308,7 @@ STATICFILES_FINDERS = [
 
 MEDIA_ROOT = join(PROJECT_ROOT, 'media')
 MEDIA_URL = '/media/'
-
+WAGTAILMEDIA_MEDIA_MODEL = 'core.MoloMedia'
 
 # Django compressor settings
 # http://django-compressor.readthedocs.org/en/latest/settings/

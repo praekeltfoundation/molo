@@ -414,7 +414,8 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
 
 @register.simple_tag(takes_context=True)
 def get_tag_articles(
-        context, section_count=1, tag_count=4, sec_articles_count=4):
+        context, section_count=1, tag_count=4, sec_articles_count=4,
+        latest_article_count=3):
 
     request = context['request']
     locale = context.get('locale_code')
@@ -423,6 +424,31 @@ def get_tag_articles(
     data = {}
     tags_list = []
     sections_list = []
+    latest_articles = []
+    # get x amount of articles featured in latest
+    # ordered by featured in latest promote date
+    all_latest_articles = ArticlePage.objects.descendant_of(
+        request.site.root_page).filter(
+        languages__language__is_main_language=True,
+        featured_in_latest=True).exact_type(ArticlePage).exclude(
+            pk__in=exclude_pks).order_by('-featured_in_latest_start_date')
+    if all_latest_articles:
+        all_translated_latest_articles = get_pages(
+            context, all_latest_articles, locale)
+        if all_translated_latest_articles:
+            if len(all_translated_latest_articles) >= latest_article_count:
+                latest_articles = all_translated_latest_articles[
+                    :latest_article_count]
+                exclude_pks += [p.pk for p in latest_articles]
+            else:
+                latest_articles = all_translated_latest_articles
+                exclude_pks += [p.pk for p in latest_articles]
+        elif len(all_latest_articles) >= latest_article_count:
+            latest_articles = all_latest_articles[:latest_article_count]
+            exclude_pks += [p.pk for p in latest_articles]
+        else:
+            latest_articles = all_latest_articles
+            exclude_pks += [p.pk for p in latest_articles]
 
     # Featured Section/s
     sections = request.site.root_page.specific.sections()
@@ -471,7 +497,7 @@ def get_tag_articles(
 
     # Latest Articles
     data.update({
-        'latest_articles': get_pages(
+        'latest_articles': latest_articles + get_pages(
             context, ArticlePage.objects.descendant_of(
                 request.site.root_page).filter(
                 languages__language__is_main_language=True).exact_type(
@@ -483,18 +509,19 @@ def get_tag_articles(
 
 @register.assignment_tag(takes_context=True)
 def load_tags_for_article(context, article):
-    locale = context.get('locale_code')
-    request = context['request']
-    tags = [
-        article_tag.tag.pk for article_tag in
-        article.specific.get_main_language_page().nav_tags.all()
-        if article_tag.tag]
-    if tags and request.site:
-        qs = Tag.objects.descendant_of(
-            request.site.root_page).live().filter(pk__in=tags)
-    else:
-        return []
-    return get_pages(context, qs, locale)
+    if article.specific.__class__ == ArticlePage:
+        locale = context.get('locale_code')
+        request = context['request']
+        tags = [
+            article_tag.tag.pk for article_tag in
+            article.specific.get_main_language_page().nav_tags.all()
+            if article_tag.tag]
+        if tags and request.site:
+            qs = Tag.objects.descendant_of(
+                request.site.root_page).live().filter(pk__in=tags)
+        else:
+            return []
+        return get_pages(context, qs, locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -516,8 +543,11 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
         question = question.get_main_language_page().specific
+        article = ArticlePage.objects.get(pk=article_pk)
+        if hasattr(article, 'get_main_language_page'):
+            article = article.get_main_language_page()
         return not question.has_user_submitted_reaction_response(
-            request, question.pk, article_pk)
+            request, question.pk, article.pk)
 
 
 @register.assignment_tag(takes_context=True)
