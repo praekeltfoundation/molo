@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.10.0
+~~~~~
+- add support for youtube links in MoloMedia
+
 5.9.5
 ~~~~~
 - fix admin layout styling bugs
