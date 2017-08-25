@@ -32,9 +32,9 @@ from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.models import PageManager
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
-
-from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
-    SocialMediaLinkBlock
+from wagtailmedia.blocks import AbstractMediaChooserBlock
+from wagtailmedia.models import AbstractMedia
+from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
 from molo.core import constants
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
@@ -251,6 +251,48 @@ class SiteSettings(BaseSetting):
 
 class PreventDeleteMixin(object):
     hide_delete_button = True
+
+
+class MoloMedia(AbstractMedia):
+    youtube_link = models.CharField(max_length=512, null=True, blank=True)
+
+    admin_form_fields = (
+        'title',
+        'file',
+        'collection',
+        'duration',
+        'width',
+        'height',
+        'thumbnail',
+        'tags',
+        'youtube_link',
+    )
+
+
+class MoloMediaBlock(AbstractMediaChooserBlock):
+    def render_basic(self, value, context):
+        if not value:
+            return ''
+
+        if value.type == 'video':
+            player_code = '''
+            <div>
+                <video width="320" height="240" controls>
+                    <source src="{0}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            '''
+        else:
+            player_code = '''
+            <div>
+                <audio controls>
+                    <source src="{0}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            '''
+        return format_html(player_code, value.file.url)
 
 
 class CommentedPageMixin(object):
@@ -1085,7 +1127,7 @@ class ArticlePage(CommentedPageMixin,
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
-        ('media', MultimediaBlock()),
+        ('media', MoloMediaBlock(icon='media'),)
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
