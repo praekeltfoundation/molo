@@ -58,6 +58,10 @@ class PageTranslationsField(serializers.Field):
     versions of the page, including the main lanugage page. It will
     exclude the original page id from the list.
 
+    Edge case: a translated version of a page may subsequenly have its
+    language deleted, leaving the page. In this case, the locale field
+    will display None.
+
     Example:
     "translations": [
         {
@@ -89,9 +93,15 @@ class PageTranslationsField(serializers.Field):
                          if page_relation.translated_page.id != page.id])
 
             for translated_page in pages:
+                locale = None
+                try:
+                    locale = translated_page.languages.get().language.locale
+                except:
+                    pass
+
                 items.append({
                     "id": translated_page.id,
-                    "locale": translated_page.languages.get().language.locale
+                    "locale": locale
                 })
             return items
         else:
