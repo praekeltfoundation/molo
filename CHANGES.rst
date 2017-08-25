@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+5.9.5
+~~~~~
+- fix admin layout styling bugs
+- fix api locale field in translation when language has been deleted
+
 5.9.4
 ~~~~~
 - Bug Fix: Ensure load_tags_for_article only returns tags for article Pages
