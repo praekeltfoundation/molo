@@ -18,6 +18,13 @@
           <source src={{block.value.file.url}} type="video/mp4">
           Your browser does not support the video tag.
       </video>
+    {% elif block.value.type == 'audio'%}
+      <div>
+          <audio controls><source src={{block.value.file.url}}
+            type="audio/mpeg">Click here to download
+            <a href={{block.value.file.url}}>{{block.value.title}}</a>
+          </audio>
+      </div>
     {% elif block.block_type == 'numbered_list' %}
       <ol class="ordered-list">
       {% for item in block.value %}
