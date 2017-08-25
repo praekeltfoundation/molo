@@ -136,15 +136,6 @@ def add_import_view():
     return molo_api_urls.urlpatterns
 
 
-@hooks.register('register_admin_menu_item')
-def register_api_menu_item():
-    return MenuItem(
-        _('API'),
-        urlresolvers.reverse('site-import'),
-        classnames='icon icon-download',
-    )
-
-
 class LanguageSummaryItem(SummaryItem):
     order = 500
     template = 'wagtail/site_languages_summary.html'

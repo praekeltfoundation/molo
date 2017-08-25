@@ -28,11 +28,14 @@
   color: #f7a11a;
   display: inline-block;
   font-size: 13px;
-    &:after {
-      color: #ddd;
-      content: "|";
-      padding: 0 3px;
-    }
+  &:after {
+    color: #ddd;
+    content: "|";
+    padding: 0 3px;
+  }
+  &:last-child:after {
+    content: "";
+  }
 }
 .language-list__anchor--standard {
   color: #f7a11a;
