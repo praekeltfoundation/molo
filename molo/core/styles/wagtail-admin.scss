@@ -10,7 +10,6 @@ WAGTAIL ADMIN
 @import "wagtail-admin/modules/_m-filter";
 @import "wagtail-admin/modules/_m-results";
 .content-wrapper {
-  //Start Pagination
   .pagination {padding: 0 15px;}
   .pagination.col9 {
     width: 100%;
@@ -18,13 +17,10 @@ WAGTAIL ADMIN
     ul {padding: 0 45px;}
   }
 }
-
 //COMMENT TABLE CONTENT
 .submit-row .button {
   margin: 0 0 8px 0;
 }
-
-//640px
 @media screen and (min-width: 50em) {
   //Left Sidebar
   .nav-wrapper {
@@ -44,5 +40,6 @@ WAGTAIL ADMIN
 @media screen and (min-width: 90em) {
   .wrapper {
     max-width: 100%;
+    padding-left: 12.6% !important;
   }
 }
