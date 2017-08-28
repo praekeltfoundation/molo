@@ -769,11 +769,12 @@ class TestRecordKeeper(TestCase):
             self.record_keeper.get_local_page(1), 2)
 
     def test_record_keeper_get_local_id_exception(self):
+        fake_id = 1
         with pytest.raises(ReferenceUnimportedContent) as exception_info:
-            self.record_keeper.get_local_page(1)
+            self.record_keeper.get_local_page(fake_id)
         self.assertEqual(
             exception_info.value.__str__(),
-            "ReferenceUnimportedContent")
+            "Unimported content foreign ID: {}".format(fake_id))
 
     def test_record_nav_tags_with_none(self):
         '''
