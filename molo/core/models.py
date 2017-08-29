@@ -946,7 +946,8 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         "tuesday_rotation", "wednesday_rotation", "thursday_rotation",
         "friday_rotation", "saturday_rotation", "sunday_rotation",
         "content_rotation_start_date", "content_rotation_end_date",
-        "section_tags",
+        "section_tags", "enable_next_section", "enable_recommended_section",
+        "go_live_at", "expire_at", "expired"
     ]
 
     @classmethod
@@ -1282,6 +1283,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         "social_media_image", "social_media_description",
         "social_media_title", "reaction_questions",
         "nav_tags", "recommended_articles", "related_sections",
+        "go_live_at", "expire_at", "expired"
     ]
 
     @classmethod

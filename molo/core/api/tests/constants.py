@@ -553,7 +553,10 @@ ARTICLE_PAGE_RESPONSE = {
                 "title": "Article to Import 1"
             }
         }
-    ]
+    ],
+    "go_live_at": "2017-08-01T13:23:00Z",
+    "expire_at": "2017-08-31T13:23:00Z",
+    "expired": False,
 }
 
 ARTICLE_PAGE_RESPONSE_STREAM_FIELDS = {
@@ -755,7 +758,12 @@ SECTION_PAGE_RESPONSE = {
                 "title": "NAV TAG 1"
             }
         }
-    ]
+    ],
+    "enable_next_section": True,
+    "enable_recommended_section": True,
+    "go_live_at": "2017-08-09T16:05:00Z",
+    "expire_at": "2017-08-26T16:05:00Z",
+    "expired": False
 }
 
 BANNER_SITE_RESPONSE = {
