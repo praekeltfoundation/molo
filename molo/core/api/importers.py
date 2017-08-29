@@ -535,9 +535,10 @@ class ImageImporter(BaseImporter):
 
         Output: (Image: imported image, Dict: info about import)
 
-        Attempts to avoid duplicates by matching image titles.
-        If a match is found it refers to local instance instead.
-        If it is not, the image is fetched, created and referenced.
+        Attempts to avoid duplicates by matching image dimensions
+        and hashes. If a match is found it refers to local instance
+        instead. If it is not, the image is fetched, created and
+        referenced.
         '''
         image_detail_url = "{}{}/".format(self.image_url, image_id)
 
