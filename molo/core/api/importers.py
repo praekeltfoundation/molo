@@ -94,10 +94,10 @@ def record_foreign_relation(field, key, record_keeper, id_key="id"):
                     if thing[key][id_key]:
                         record_keeper[page_id].append(thing[key][id_key])
                     else:
-                        print(
+                        raise Exception(
                             "key of: {} does not exist in thing[]".format(key))
                 else:
-                    print("key of: {} does not exist".format(key))
+                    raise Exception("key of: {} does not exist".format(key))
     return record_relationship
 
 
