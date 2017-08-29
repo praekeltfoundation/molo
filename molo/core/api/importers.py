@@ -25,6 +25,11 @@ from molo.core.utils import (
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
+# constants for importer log
+ACTION = "action"
+SUCCESS = "success"
+ERROR = "error"
+WARNING = "warning"
 
 # functions used to find images
 def get_image_attributes(base_url, image_id):
@@ -431,7 +436,7 @@ class BaseImporter(object):
         else:
             return base_url
 
-    def log(self, message, context=None, depth=0):
+    def log(self, log_type, message, context=None, depth=0):
         error_flag = 'error' in message.lower()
 
         log_item = "{}>> {}".format(depth * "\t", message)
@@ -446,7 +451,7 @@ class BaseImporter(object):
                         "\n{}| {}: {}".format(depth * "\t", key, item))
             log_item += "\n{}----".format(depth * "\t")
         if settings.DEBUG:
-            if error_flag:
+            if log_type == ERROR:
                 print colored(log_item, 'red')
             else:
                 print colored(log_item, 'green')
@@ -600,7 +605,7 @@ class ImageImporter(BaseImporter):
         Updates record_keeper
         Logs the result of each attempt to create an image
         '''
-        self.log("Importing Images")
+        self.log(ACTION, "Importing Images")
         try:
             images = list_of_objects_from_api(self.image_url)
         except Exception as e:
@@ -612,23 +617,23 @@ class ImageImporter(BaseImporter):
 
         # iterate through foreign images
         for image_summary in images:
-            self.log("Importing Image", depth=1)
+            self.log(ACTION, "Importing Image", depth=1)
             try:
                 (image, context) = self.import_image(image_summary["id"])
                 # log success
-                self.log("SUCCESS: Importing Image",
+                self.log(SUCCESS, "Importing Image",
                          context=context,
                          depth=1)
             except ImageInfoFetchFailed as e:
-                self.log("Error: Importing Images", e, depth=1)
+                self.log(ERROR, "Importing Images", e, depth=1)
             except ImageCreationFailed as e:
-                self.log("Error: Importing Images", e.message, depth=1)
+                self.log(ERROR, "Importing Images", e.message, depth=1)
             except Exception as e:
                 context = {
                     "exception": e,
                     "foreign_image_id": image_summary["id"],
                 }
-                self.log("Error: Importing Images", context, depth=1)
+                self.log(ERROR, "Importing Images", context, depth=1)
 
 
 class LanguageImporter(BaseImporter):
@@ -777,7 +782,7 @@ class ContentImporter(BaseImporter):
                 page.save_revision().publish()
 
             except Exception as e:
-                self.log("Error: recreating article body",
+                self.log(ERROR, "recreating article body",
                          {
                              "exception": e,
                              "foreign_id": foreign_id,
@@ -841,7 +846,7 @@ class ContentImporter(BaseImporter):
             page.id
         )
         # TODO: raise to calling function
-        # self.log("SUCCESS: Page imported", {
+        # self.log(SUCCESS, "Page imported", {
         #         "parent title": parent.title, "page title": page.title})
         return page
 
@@ -886,29 +891,29 @@ class ContentImporter(BaseImporter):
         '''
         url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
 
-        self.log("Requesting Data", {"url": url}, depth)
+        self.log(ACTION, "Requesting Data", {"url": url}, depth)
         try:
             # TODO: create a robust wrapper around this functionality
             response = requests.get(url)
             content = json.loads(response.content)
         except Exception as e:
-            self.log("ERROR: Requesting Data - abandoning copy",
+            self.log(ERROR, "Requesting Data - abandoning copy",
                      {"url": url, "exception": e}, depth)
             return None
 
         parent = Page.objects.get(id=parent_id).specific
         page = None
         try:
-            self.log("Create Page", {"url": url}, depth)
+            self.log(ACTION, "Create Page", {"url": url}, depth)
             page = self.attach_page(parent, content)
             if page:
-                self.log("SUCCESS: Create Page",
+                self.log(SUCCESS, "Create Page",
                          {"url": url,
                           "page title": page.title.encode('utf-8')},
                          depth)
         except PageNotImportable as e:
             message = e.message.pop("message")
-            self.log(message, e.message.pop("message"))
+            self.log(ERROR, message, e.message.pop("message"), depth)
             return None
 
         '''
@@ -920,7 +925,7 @@ class ContentImporter(BaseImporter):
                 "foreign_page": content["title"].encode('utf-8'),
             }
             self.log(
-                "ERROR: Create Page - abandon page and children creation",
+                ERROR, "Create Page - abandon page and children creation",
                 context, depth)
         '''
 
@@ -933,6 +938,7 @@ class ContentImporter(BaseImporter):
                     # TODO: create a robust wrapper around this functionality
                     _response = requests.get(_url)
                     self.log(
+                        ACTION,
                         "Getting translated content",
                         {"url": _url}, depth)
                     if _response.content:
@@ -944,11 +950,13 @@ class ContentImporter(BaseImporter):
                                 page, _content, translation_obj["locale"])
                         else:
                             self.log(
-                                "ERROR: locale is null",
+                                ERROR,
+                                "locale is null",
                                 {"url": _url, }, depth)
                     else:
                         self.log(
-                            "ERROR: Getting translated content",
+                            ERROR,
+                            "Getting translated content",
                             {"url": _url}, depth)
 
             main_language_child_ids = content["meta"]["main_language_children"]
@@ -961,7 +969,7 @@ class ContentImporter(BaseImporter):
                             foreign_id=main_language_child_id,
                             parent_id=page.id, depth=depth + 1)
                     except Exception as e:
-                        self.log("ERROR: Copying Children",
+                        self.log(ERROR, "Copying Children",
                                  {"url": url, "exception": e})
 
     def copy_children(self, foreign_id, existing_node):
@@ -969,15 +977,17 @@ class ContentImporter(BaseImporter):
         Initiates copying of tree, with existing_node acting as root
         '''
         url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
-        self.log("Copying Children",
-                 {"existing node type": str(type(existing_node))})
+        self.log(
+            ACTION,
+            "Copying Children",
+            {"existing node type": str(type(existing_node))})
 
         # TODO: create a robust wrapper around this functionality
         try:
-            self.log("Requesting Data", {"url": url})
+            self.log(ACTION, "Requesting Data", {"url": url})
             response = requests.get(url)
             content = json.loads(response.content)
-            self.log("Data Fetched Successfully", {"url": url})
+            self.log(SUCCESS, "Data Fetched Successfully", {"url": url})
 
             main_language_child_ids = content["meta"]["main_language_children"]
             for main_language_child_id in main_language_child_ids:
@@ -985,7 +995,7 @@ class ContentImporter(BaseImporter):
                         foreign_id=main_language_child_id,
                         parent_id=existing_node.id, depth=1)
         except Exception as e:
-            self.log("ERROR: Copying Children", {"url": url, "exception": e})
+            self.log(ERROR, "Copying Children", {"url": url, "exception": e})
 
     def restore_relationships(self):
         pass
