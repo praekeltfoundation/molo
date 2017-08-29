@@ -495,6 +495,38 @@ class ImageImporter(BaseImporter):
                         return matching_image
         return None
 
+    def fetch_and_create_image(self, relative_url, image_title):
+        '''
+        fetches, creates image object
+
+        returns tuple with Image object and context dictionary containing
+        request URL
+
+        TODO: handle hosting media on AWS as well
+        this assumes we are self-hosting media content
+        '''
+
+        image_media_url = "{}{}".format(self.base_url, relative_url)
+        context = {
+            "requested_url": image_media_url,
+            "foreign_title": image_title.encode('utf-8'),
+        }
+        try:
+            image_file = requests.get(image_media_url)
+            local_image = Image(
+                title=image_title,
+                file=ImageFile(
+                    BytesIO(image_file.content), name=image_title
+                )
+            )
+            local_image.save()
+            return (local_image, context)
+        except Exception as e:
+            context.update({
+                "exception": e,
+            })
+            raise ImageCreationFailed(context, None)
+
     def import_image(self, image_id):
         '''
         Imports and returns image
@@ -536,15 +568,13 @@ class ImageImporter(BaseImporter):
             }
             return (local_image, context)
         else:
-            # use the local title of the image
-            new_image = self.fetch_and_create_image(
+            # new_image, context = self.fetch_and_create_image(
+            new_image, context = self.fetch_and_create_image(
                 img_info['image_url'],
                 img_info["title"].encode('utf-8'))
-            context = {
+            context.update({
                 "local_version_existed": False,
-                "url": img_info['image_url'],
-                "foreign_title": img_info["title"].encode('utf-8'),
-            }
+            })
             return (new_image, context)
 
     def import_images(self):
@@ -590,30 +620,6 @@ class ImageImporter(BaseImporter):
                 }
                 self.log("Error: Importing Images", context, depth=1)
 
-    def fetch_and_create_image(self, relative_url, image_title):
-        '''
-        fetches, creates and return image object
-        '''
-        # TODO: handle image unavailable
-        try:
-            image_media_url = "{}{}".format(self.base_url, relative_url)
-            image_file = requests.get(image_media_url)
-            local_image = Image(
-                title=image_title,
-                file=ImageFile(
-                    BytesIO(image_file.content), name=image_title
-                )
-            )
-            local_image.save()
-            return local_image
-        except UnicodeEncodeError as e:
-            raise ReferenceUnimportedContent("ohai")
-        except Exception as e:
-            context = {
-                "exception": e,
-                "image_media_url": image_media_url,
-            }
-            raise ImageCreationFailed(context)
 
 
 class LanguageImporter(BaseImporter):
