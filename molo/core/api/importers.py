@@ -31,6 +31,7 @@ SUCCESS = "success"
 ERROR = "error"
 WARNING = "warning"
 
+
 # functions used to find images
 def get_image_attributes(base_url, image_id):
     image_attrs = requests.get(
@@ -421,7 +422,7 @@ class RecordKeeper(object):
 
 
 class BaseImporter(object):
-    def __init__(self, site_pk, base_url, record_keeper=None):
+    def __init__(self, site_pk, base_url, record_keeper=None, logger=None):
         # TODO: handle case where base_url is not valid
         self.base_url = self.format_base_url(base_url)
         self.api_url = '{}/api/v2/'.format(self.base_url)
@@ -429,6 +430,7 @@ class BaseImporter(object):
         self.language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
         self.record_keeper = record_keeper
+        self.logger = logger
 
     def format_base_url(self, base_url):
         if base_url[-1] == '/':
@@ -437,30 +439,15 @@ class BaseImporter(object):
             return base_url
 
     def log(self, log_type, message, context=None, depth=0):
-        error_flag = 'error' in message.lower()
-
-        log_item = "{}>> {}".format(depth * "\t", message)
-        if context:
-            for key, item in context.iteritems():
-                if key == "exception":
-                    log_item += "\n{}| {}: {}".format(depth * "\t", "ex_type",
-                                                      type(item))
-                    log_item += "\n{}| {}: {}".format(depth * "\t", key, item)
-                else:
-                    log_item += (
-                        "\n{}| {}: {}".format(depth * "\t", key, item))
-            log_item += "\n{}----".format(depth * "\t")
-        if settings.DEBUG:
-            if log_type == ERROR:
-                print colored(log_item, 'red')
-            else:
-                print colored(log_item, 'green')
+        if self.logger:
+            self.logger.log(log_type, message, context, depth)
 
 
 class ImageImporter(BaseImporter):
-    def __init__(self, site_pk, base_url, record_keeper=None):
+    def __init__(self, site_pk, base_url, record_keeper=None, logger=None):
         super(ImageImporter, self).__init__(site_pk, base_url,
-                                            record_keeper=record_keeper)
+                                            record_keeper=record_keeper,
+                                            logger=logger)
         self.image_url = "{}images/".format(self.api_url)
         self.image_hashes = {}
         self.image_widths = {}
@@ -637,9 +624,10 @@ class ImageImporter(BaseImporter):
 
 
 class LanguageImporter(BaseImporter):
-    def __init__(self, site_pk, base_url, record_keeper=None):
+    def __init__(self, site_pk, base_url, record_keeper=None, logger=None):
         super(LanguageImporter, self).__init__(site_pk, base_url,
-                                               record_keeper=record_keeper)
+                                               record_keeper=record_keeper,
+                                               logger=logger)
         self.language_url = "{}languages/".format(self.api_url)
 
     def get_language_ids(self):
@@ -672,9 +660,10 @@ class LanguageImporter(BaseImporter):
 
 
 class ContentImporter(BaseImporter):
-    def __init__(self, site_pk, base_url, record_keeper=None):
+    def __init__(self, site_pk, base_url, record_keeper=None, logger=None):
         super(ContentImporter, self).__init__(site_pk, base_url,
-                                              record_keeper=record_keeper)
+                                              record_keeper=record_keeper,
+                                              logger=logger)
 
     def recreate_relationships(self, class_, attribute_name, key):
         '''
@@ -809,7 +798,7 @@ class ContentImporter(BaseImporter):
 
         if not issubclass(class_, ImportableMixin):
             error_context = {
-                "message": "WARNING: Page does not inherit ImportableMixin",
+                "message": "Page does not inherit ImportableMixin",
                 "page type": page_type,
                 "class_": str(class_),
                 "outcome": "cannot import page or its descendants"}
@@ -913,7 +902,7 @@ class ContentImporter(BaseImporter):
                          depth)
         except PageNotImportable as e:
             message = e.message.pop("message")
-            self.log(ERROR, message, e.message.pop("message"), depth)
+            self.log(WARNING, message, e.message.pop("message"), depth)
             return None
 
         '''
@@ -999,3 +988,57 @@ class ContentImporter(BaseImporter):
 
     def restore_relationships(self):
         pass
+
+
+class Logger(object):
+    def __init__(self):
+        self.record = []
+
+    def format_message(self, log_type, message, context, depth=0):
+        log_item = "{}>> {}:{}".format(depth * "\t", log_type, message)
+        if context:
+            for key, item in context.iteritems():
+                if key == "exception":
+                    log_item += "\n{}| {}: {}".format(depth * "\t", "ex_type",
+                                                      type(item))
+                    log_item += "\n{}| {}: {}".format(depth * "\t", key, item)
+                else:
+                    log_item += (
+                        "\n{}| {}: {}".format(depth * "\t", key, item))
+            log_item += "\n{}----".format(depth * "\t")
+        return log_item
+
+    def get_email_logs(self):
+        '''
+        Returns a string representation of logs.
+
+        Only displays errors and warnings in the email logs
+        to avoid being verbose
+        '''
+        message = ""
+        for log in self.record:
+            if log["log_type"] in [ERROR, WARNING]:
+                log_type = log["log_type"]
+                message = log["message"]
+                context = log["context"]
+                message += self.format_message(log_type, message, context)
+        return message
+
+    def log(self, log_type, message, context=None, depth=0):
+        if settings.DEBUG:
+            log_message = self.format_message(
+                log_type, message, context, depth=depth)
+            if log_type == ERROR:
+                print colored(log_message, 'red')
+            elif log_type == SUCCESS:
+                print colored(log_message, 'green')
+            elif log_type == WARNING:
+                print colored(log_message, 'yellow')
+            elif log_type == ACTION:
+                print colored(log_message, 'blue')
+
+        self.record.append({
+            "log_type": log_type,
+            "message": message,
+            "context": context,
+        })

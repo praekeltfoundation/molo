@@ -808,3 +808,59 @@ class TestRecordKeeper(TestCase):
         self.record_keeper.record_nav_tags(nested_fields, fake_page_id)
 
         self.assertTrue(True)
+
+
+class TestLogger(TestCase):
+    def setUp(self):
+        self.logger = importers.Logger()
+
+    def test_log(self):
+        log_type = importers.ACTION
+        message = "testing"
+        context = {
+            "foo": "bar",
+            "baz": "bonk",
+        }
+
+        self.logger.log(log_type, message, context)
+
+        expected = {
+            "log_type": log_type,
+            "message": message,
+            "context": context,
+        }
+
+        self.assertEqual(self.logger.record[0], expected)
+
+    def test_get_email_logs(self):
+        stored_log = {
+            "log_type": importers.ERROR,
+            "message": "testing - error",
+            "context": {
+                "foo": "bar",
+                "baz": "bonk",
+            },
+        }
+        self.logger.record.append(stored_log)
+
+        result = self.logger.get_email_logs()
+
+        # test that content is in the log, not formatting
+        self.assertTrue(importers.ERROR in result)
+        self.assertTrue(stored_log["message"] in result)
+        self.assertTrue(stored_log["context"]["foo"] in result)
+
+    def test_get_email_logs_only_errors_warnings(self):
+        stored_log = {
+            "log_type": importers.ACTION,
+            "message": "testing",
+            "context": {
+                "foo": "bar",
+                "baz": "bonk",
+            },
+        }
+        self.logger.record.append(stored_log)
+
+        result = self.logger.get_email_logs()
+
+        self.assertEqual(result, "")
