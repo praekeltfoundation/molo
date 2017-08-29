@@ -169,7 +169,7 @@ class TestBaseImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(base_importer.base_url, self.fake_base_url[:-1])
 
 
-class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
+class TestImageImporter(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.fake_base_url = "http://localhost:8000"
         self.mk_main()
@@ -244,13 +244,17 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
                 content_type='image/jpeg',
                 stream=True
             )
-        result = self.importer.fetch_and_create_image(
+        result, context = self.importer.fetch_and_create_image(
             relative_url,
             image_title)
 
         self.assertEqual(type(result), Image)
         self.assertEqual(result.title, image_title)
         self.assertEqual(Image.objects.count(), 1)
+
+        self.assertEqual(
+            context["requested_url"],
+            "{}{}".format(self.importer.base_url, relative_url))
 
     @responses.activate
     def test_import_image_raise_exception(self):
@@ -270,10 +274,11 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
     @responses.activate
     @patch("molo.core.api.importers.ImageImporter.fetch_and_create_image",
            side_effect=utils.mocked_fetch_and_create_image)
-    def test_import_image(self, mock_fetch_and_create_image):
+    def test_import_image__(self, mock_fetch_and_create_image):
         image_url = '{}/api/v2/images/'.format(self.fake_base_url)
         foreign_image_id = constants.IMAGE_DETAIL_2["id"]
         image_detail_url_2 = "{}{}/".format(image_url, foreign_image_id)
+        image_file_location = constants.IMAGE_DETAIL_2["image_url"]
 
         responses.add(
             responses.GET, image_detail_url_2,
@@ -281,15 +286,18 @@ class TestImageSectionImporter(MoloTestCaseMixin, TestCase):
 
         self.assertEqual(Image.objects.count(), 0)
 
-        local_image = self.importer.import_image(
+        new_image, context = self.importer.import_image(
             constants.IMAGE_DETAIL_2["id"])
 
         self.assertEqual(Image.objects.count(), 1)
+        self.assertEqual(
+            new_image.title,
+            constants.IMAGE_DETAIL_2["title"])
 
         # check that record has been created
         self.assertEqual(
-            self.record_keeper.get_local_image(foreign_image_id),
-            local_image.id)
+            context['requested_url'],
+            "{}{}".format(self.fake_base_url, image_file_location))
 
     @responses.activate
     def test_import_image_avoid_duplicates(self):
