@@ -627,7 +627,6 @@ class ImageImporter(BaseImporter):
                 self.log("Error: Importing Images", context, depth=1)
 
 
-
 class LanguageImporter(BaseImporter):
     def __init__(self, site_pk, base_url, record_keeper=None):
         super(LanguageImporter, self).__init__(site_pk, base_url,
