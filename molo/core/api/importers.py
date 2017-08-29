@@ -567,12 +567,22 @@ class ImageImporter(BaseImporter):
                 "url": img_info['image_url'],
                 "foreign_title": img_info["title"].encode('utf-8'),
             }
+            # update record keeper
+            if self.record_keeper:
+                self.record_keeper.record_image_relation(
+                    image_id,
+                    local_image.id)
             return (local_image, context)
         else:
             # new_image, context = self.fetch_and_create_image(
             new_image, context = self.fetch_and_create_image(
                 img_info['image_url'],
                 img_info["title"].encode('utf-8'))
+            # update record keeper
+            if self.record_keeper:
+                self.record_keeper.record_image_relation(
+                    image_id,
+                    new_image.id)
             context.update({
                 "local_version_existed": False,
             })
@@ -601,11 +611,6 @@ class ImageImporter(BaseImporter):
             self.log("Importing Image", depth=1)
             try:
                 (image, context) = self.import_image(image_summary["id"])
-                # update record keeper
-                if self.record_keeper:
-                    self.record_keeper.record_image_relation(
-                        image_summary["id"],
-                        image.id)
                 # log success
                 self.log("SUCCESS: Importing Image",
                          context=context,
