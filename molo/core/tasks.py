@@ -31,6 +31,7 @@ from molo.core.api.importers import (
     LanguageImporter,
     ImageImporter,
     ContentImporter,
+    Logger,
 )
 from django.utils import timezone
 
@@ -327,14 +328,21 @@ def copy_sections_index(
 def import_site(root_url, site_pk, user_pk):
     user = User.objects.get(pk=user_pk) if user_pk else None
     record_keeper = RecordKeeper()
+    logger = Logger()
     site = Site.objects.get(pk=site_pk)
 
     language_importer = LanguageImporter(
-        site.pk, root_url, record_keeper=record_keeper)
+        site.pk, root_url,
+        record_keeper=record_keeper,
+        logger=logger)
     image_importer = ImageImporter(
-        site.pk, root_url, record_keeper=record_keeper)
+        site.pk, root_url,
+        record_keeper=record_keeper,
+        logger=logger)
     content_importer = ContentImporter(
-        site.pk, root_url, record_keeper=record_keeper)
+        site.pk, root_url,
+        record_keeper=record_keeper,
+        logger=logger)
 
     try:
         # get languages
@@ -401,6 +409,7 @@ def import_site(root_url, site_pk, user_pk):
             'name': (user.get_full_name() or user.username) if user else None,
             'source': root_url,
             'to': site.root_url,
+            'logs': logger.get_email_logs(),
         })
     except Exception, e:
         logging.error(e, exc_info=True)
@@ -408,4 +417,5 @@ def import_site(root_url, site_pk, user_pk):
             'name': (user.get_full_name() or user.username) if user else None,
             'source': root_url,
             'to': site.root_url,
+            'logs': logger.get_email_logs(),
         })
