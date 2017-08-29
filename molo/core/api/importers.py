@@ -529,11 +529,14 @@ class ImageImporter(BaseImporter):
 
     def import_image(self, image_id):
         '''
-        Imports and returns image
+        Imports and returns tuple with image and context dict
 
         Input: foreign image ID
 
         Output: (Image: imported image, Dict: info about import)
+
+        Side effects: If Importer object has a record_keeper, it
+        will update the record of foreign to local images.
 
         Attempts to avoid duplicates by matching image dimensions
         and hashes. If a match is found it refers to local instance
@@ -564,7 +567,8 @@ class ImageImporter(BaseImporter):
         if local_image:
             context = {
                 "local_version_existed": True,
-                "url": img_info['image_url'],
+                "url": "{}{}".format(self.base_url,
+                                     img_info['image_url']),
                 "foreign_title": img_info["title"].encode('utf-8'),
             }
             # update record keeper

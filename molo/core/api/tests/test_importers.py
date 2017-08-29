@@ -274,7 +274,7 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
     @responses.activate
     @patch("molo.core.api.importers.ImageImporter.fetch_and_create_image",
            side_effect=utils.mocked_fetch_and_create_image)
-    def test_import_image__(self, mock_fetch_and_create_image):
+    def test_import_image(self, mock_fetch_and_create_image):
         image_url = '{}/api/v2/images/'.format(self.fake_base_url)
         foreign_image_id = constants.IMAGE_DETAIL_2["id"]
         image_detail_url_2 = "{}{}/".format(image_url, foreign_image_id)
@@ -294,6 +294,9 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
             new_image.title,
             constants.IMAGE_DETAIL_2["title"])
 
+        # Check returned context
+        self.assertFalse(context["local_version_existed"])
+
         # check that record has been created
         self.assertEqual(
             context['requested_url'],
@@ -304,6 +307,7 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
         image_url = '{}/api/v2/images/'.format(self.fake_base_url)
         foreign_image_id = constants.IMAGE_DETAIL_1["id"]
         image_detail_url_1 = "{}{}/".format(image_url, foreign_image_id)
+        image_file_location = constants.IMAGE_DETAIL_1["image_url"]
 
         responses.add(
             responses.GET, image_detail_url_1,
@@ -318,10 +322,19 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
         self.importer.get_image_details()
         self.assertEqual(Image.objects.count(), 1)
 
-        local_image = self.importer.import_image(
+        local_image, context = self.importer.import_image(
             constants.IMAGE_DETAIL_1["id"])
 
         self.assertEqual(Image.objects.count(), 1)
+
+        # Check context
+        self.assertTrue(context["local_version_existed"])
+        self.assertEqual(
+            context["url"],
+            "{}{}".format(self.fake_base_url, image_file_location))
+        self.assertEqual(
+            context["foreign_title"],
+            constants.IMAGE_DETAIL_1["title"])
 
         # check logs
         self.assertEqual(
