@@ -1002,7 +1002,7 @@ class Logger(object):
         self.record = []
 
     def format_message(self, log_type, message, context, depth=0):
-        log_item = "{}>> {}:{}".format(depth * "\t", log_type, message)
+        log_item = "{}>> {}: {}".format(depth * "\t", log_type, message)
         if context:
             for key, item in context.iteritems():
                 if key == "exception":
@@ -1012,7 +1012,7 @@ class Logger(object):
                 else:
                     log_item += (
                         "\n{}| {}: {}".format(depth * "\t", key, item))
-            log_item += "\n{}----".format(depth * "\t")
+            log_item += "\n{}----\n".format(depth * "\t")
         return log_item
 
     def get_email_logs(self):
@@ -1025,17 +1025,14 @@ class Logger(object):
         message = ""
         for log in self.record:
             if log["log_type"] in [ERROR, WARNING]:
-                log_type = log["log_type"]
-                message = log["message"]
-                context = log["context"]
-                message += self.format_message(log_type, message, context)
+                message += self.format_message(**log)
+
         return message
 
     def log(self, log_type, message, context=None, depth=0):
         if settings.DEBUG:
             log_message = self.format_message(
                 log_type, message, context, depth=depth)
-            print(log_message)
 
         self.record.append({
             "log_type": log_type,

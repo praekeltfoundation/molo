@@ -814,52 +814,65 @@ class TestLogger(TestCase):
     def setUp(self):
         self.logger = importers.Logger()
 
+        self.action_log_args = {
+            "log_type": importers.ACTION,
+            "message": "action_log_args",
+            "context": {
+                "foo": "bar",
+                "baz": "bonk",
+            },
+        }
+
+        self.error_log_args = {
+            "log_type": importers.ERROR,
+            "message": "error_log_args",
+            "context": {
+                "noo": "boo",
+                "can": "haz",
+            },
+        }
+
+        self.warning_log_args = {
+            "log_type": importers.WARNING,
+            "message": "warning_log_args",
+            "context": {
+                "blu": "red",
+                "grn": "ylw",
+            },
+        }
+
     def test_log(self):
-        log_type = importers.ACTION
-        message = "testing"
-        context = {
-            "foo": "bar",
-            "baz": "bonk",
-        }
 
-        self.logger.log(log_type, message, context)
+        self.logger.log(**self.action_log_args)
 
-        expected = {
-            "log_type": log_type,
-            "message": message,
-            "context": context,
-        }
+        self.assertEqual(self.logger.record[0], self.action_log_args)
 
-        self.assertEqual(self.logger.record[0], expected)
+        self.logger.log(**self.error_log_args)
+
+        self.assertEqual(self.logger.record[0], self.action_log_args)
+        self.assertEqual(self.logger.record[1], self.error_log_args)
+
 
     def test_get_email_logs(self):
-        stored_log = {
-            "log_type": importers.ERROR,
-            "message": "testing - error",
-            "context": {
-                "foo": "bar",
-                "baz": "bonk",
-            },
-        }
-        self.logger.record.append(stored_log)
-
+        self.logger.record.append(self.error_log_args)
         result = self.logger.get_email_logs()
 
-        # test that content is in the log, not formatting
+        # Note that content, not formatting, is being tested
         self.assertTrue(importers.ERROR in result)
-        self.assertTrue(stored_log["message"] in result)
-        self.assertTrue(stored_log["context"]["foo"] in result)
+        self.assertTrue(self.error_log_args["message"] in result)
+        self.assertTrue(self.error_log_args["context"]["noo"] in result)
+
+        self.logger.record.append(self.warning_log_args)
+        result = self.logger.get_email_logs()
+
+        self.assertTrue(importers.WARNING in result)
+        self.assertTrue(self.warning_log_args["message"] in result)
+        self.assertTrue(self.warning_log_args["context"]["blu"] in result)
+
+        self.assertTrue(False)
 
     def test_get_email_logs_only_errors_warnings(self):
-        stored_log = {
-            "log_type": importers.ACTION,
-            "message": "testing",
-            "context": {
-                "foo": "bar",
-                "baz": "bonk",
-            },
-        }
-        self.logger.record.append(stored_log)
+        self.logger.record.append(self.action_log_args)
 
         result = self.logger.get_email_logs()
 
