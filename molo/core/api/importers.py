@@ -507,7 +507,8 @@ class ImageImporter(BaseImporter):
             local_image = Image(
                 title=image_title,
                 file=ImageFile(
-                    BytesIO(image_file.content), name=image_title
+                    BytesIO(image_file.content),
+                    name=image_title
                 )
             )
             local_image.save()
@@ -687,7 +688,7 @@ class ContentImporter(BaseImporter):
                 except Exception as e:
                     context = {
                         "exception": e,
-                        "function_schema": "recreate_relationships(class, attribute_name, key)"
+                        "function_schema": "recreate_relationships(class, attribute_name, key)",
                         "attribute_name": str(attribute_name),
                         "key": str(key),
                         "class": str(class_),
