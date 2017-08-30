@@ -676,10 +676,10 @@ class ContentImporter(BaseImporter):
             local_page_id = self.record_keeper.get_local_page(foreign_page_id)
             local_page = Page.objects.get(id=local_page_id).specific
 
-            for foreign_page_id in foreign_page_id_list:
+            for _foreign_page_id in foreign_page_id_list:
                 try:
                     local_version_page_id = (self.record_keeper
-                                             .get_local_page(foreign_page_id))
+                                             .get_local_page(_foreign_page_id))
                     foreign_page = Page.objects.get(
                         id=local_version_page_id).specific
                     realtionship_object = class_(page=local_page)
