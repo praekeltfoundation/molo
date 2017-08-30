@@ -569,7 +569,6 @@ class ImageImporter(BaseImporter):
                     local_image.id)
             return (local_image, context)
         else:
-            # new_image, context = self.fetch_and_create_image(
             new_image, context = self.fetch_and_create_image(
                 img_info['image_url'],
                 img_info["title"].encode('utf-8'))
