@@ -685,8 +685,16 @@ class ContentImporter(BaseImporter):
                     realtionship_object = class_(page=local_page)
                     setattr(realtionship_object, attribute_name, foreign_page)
                     realtionship_object.save()
-                except ReferenceUnimportedContent as e:
-                    print(e)
+                except Exception as e:
+                    context = {
+                        "exception": e,
+                        "function_schema": "recreate_relationships(class, attribute_name, key)"
+                        "attribute_name": str(attribute_name),
+                        "key": str(key),
+                        "class": str(class_),
+                        "foreign_page_id": str(foreign_page_id),
+                    }
+                    self.log(ERROR, "recreating relationships", context=context)
 
     def recreate_relationship(self, attribute_name, key):
         '''
