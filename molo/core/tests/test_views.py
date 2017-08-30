@@ -22,7 +22,7 @@ from molo.core.models import (
     ArticlePageRecommendedSections, ArticlePageRelatedSections, Main,
     BannerIndexPage, SectionIndexPage, FooterIndexPage, Languages,
     SiteLanguageRelation, Tag, ArticlePageTags, ReactionQuestion,
-    ArticlePageReactionQuestions, BannerPage)
+    ArticlePageReactionQuestions, BannerPage, MoloMedia)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -35,7 +35,6 @@ from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site, Page
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
-from wagtailmedia.models import Media
 
 
 @pytest.mark.django_db
@@ -1280,10 +1279,8 @@ class MultimediaViewTest(TestCase, MoloTestCaseMixin):
     def add_media(self, media_type):
         fake_file = ContentFile(b("media"))
         fake_file.name = 'media.mp3'
-        self.media = Media.objects.create(title="Test Media",
-                                          file=fake_file,
-                                          duration=100,
-                                          type=media_type)
+        self.media = MoloMedia.objects.create(
+            title="Test Media", file=fake_file, duration=100, type=media_type)
 
         self.article_page.body = json.dumps([{
             'type': 'media',
@@ -1297,22 +1294,21 @@ class MultimediaViewTest(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections-main-1/your-mind/test-article/')
         self.assertContains(
             response,
-            '''<div><audio controls><source src="{0}"
-            type="audio/mpeg">Click here to download
-            <a href="{0}">{1}</a></audio></div>'''
+            '<div><audio controls><source src="{0}"'
+            'type="audio/mpeg">Click here to download'
+            '<a href="{0}">{1}</a></audio></div>'
             .format(self.media.file.url, self.media.title),
             html=True)
 
     def test_video_media(self):
         self.add_media('video')
-        response = self.client.get('/sections-main-1/your-mind/test-article/')
+        response = self.client.get(self.article_page.url)
         self.assertContains(
             response,
-            '''<div><video width="320" height="240" controls>
-            <source src="{0}" type="video/mp4">Click here to download
-            <a href="{0}">{1}</a></video></div>'''
-            .format(self.media.file.url, self.media.title),
-            html=True)
+            '<video width="320" height="240" controls>'
+            '<source src=' + self.media.file.url + ' type="video/mp4">'
+            'Your browser does not support the video tag.'
+            '</video>', html=True)
 
 
 class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):
