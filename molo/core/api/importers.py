@@ -500,7 +500,7 @@ class ImageImporter(BaseImporter):
         image_media_url = "{}{}".format(self.base_url, relative_url)
         context = {
             "requested_url": image_media_url,
-            "foreign_title": image_title.encode('utf-8'),
+            "foreign_title": image_title,
         }
         try:
             image_file = requests.get(image_media_url)
