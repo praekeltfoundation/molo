@@ -5,7 +5,6 @@ import math
 import json
 import requests
 from io import BytesIO
-from termcolor import colored
 
 from django.core.files.images import ImageFile
 
@@ -1028,14 +1027,7 @@ class Logger(object):
         if settings.DEBUG:
             log_message = self.format_message(
                 log_type, message, context, depth=depth)
-            if log_type == ERROR:
-                print colored(log_message, 'red')
-            elif log_type == SUCCESS:
-                print colored(log_message, 'green')
-            elif log_type == WARNING:
-                print colored(log_message, 'yellow')
-            elif log_type == ACTION:
-                print colored(log_message, 'blue')
+            print(log_message)
 
         self.record.append({
             "log_type": log_type,

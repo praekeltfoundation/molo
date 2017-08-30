@@ -40,7 +40,6 @@ install_requires = [
     'wagtail>=1.9,<1.10',
     'wagtailmedia==0.1.3',
     'imagehash',
-    'termcolor',
 ]
 
 setup(name='molo.core',
