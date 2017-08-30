@@ -228,7 +228,6 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         self.assertEqual(page.image.title, content["image"]["title"])
 
         # Check that foreign relationships have been created
-        print(record_keeper.foreign_to_many_foreign_map["section_tags"])
         self.assertTrue(
             content["id"] in
             record_keeper.foreign_to_many_foreign_map["section_tags"])
