@@ -265,7 +265,7 @@ def attach_image_function(field):
                         ("executing attach_image: local image referenced"
                          "in record_keeper does not actually exist."))
                 except ReferenceUnimportedContent:
-                    Exception(
+                    raise Exception(
                         ("case: 'import image if not imported yet' "
                          "not yet implemented"))
             else:
