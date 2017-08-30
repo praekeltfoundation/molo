@@ -553,7 +553,98 @@ ARTICLE_PAGE_RESPONSE = {
                 "title": "Article to Import 1"
             }
         }
-    ]
+    ],
+    "go_live_at": "2017-08-01T13:23:00Z",
+    "expire_at": "2017-08-31T13:23:00Z",
+    "expired": False,
+}
+
+ARTICLE_PAGE_RESPONSE_STREAM_FIELDS = {
+    "id": 92,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:9000/api/v2/pages/92/",
+        "html_url": "http://localhost:9000/sections/test-section/article-all-stream-fields/",  # noqa
+        "slug": "article-all-stream-fields",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-23T08:56:14.263738Z",
+        "parent": {
+            "id": 11,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:9000/api/v2/pages/11/",
+                "html_url": "http://localhost:9000/sections/test-section/"
+            },
+            "title": "Test Section"
+        },
+        "children": None,
+        "translations": [],
+        "main_language_children": None
+    },
+    "title": "ARTICLE WITH ALL THE STREAM FIELDS",
+    "subtitle": "",
+    "body": [
+        {
+            "type": "heading",
+            "value": "test heading"
+        },
+        {
+            "type": "paragraph",
+            "value": "test paragraph"
+        },
+        {
+            "type": "image",
+            "value": 297
+        },
+        {
+            "type": "list",
+            "value": [
+                "list item 1",
+                "list item 2",
+                "list item 3"
+            ]
+        },
+        {
+            "type": "numbered_list",
+            "value": [
+                "numbered list 1",
+                "numbered list 2",
+                "numbered list 3"
+            ]
+        },
+        {
+            "type": "page",
+            "value": 48
+        }
+    ],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-08-23T08:57:13.824364Z",
+    "image": None,
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": []
 }
 
 
@@ -667,7 +758,12 @@ SECTION_PAGE_RESPONSE = {
                 "title": "NAV TAG 1"
             }
         }
-    ]
+    ],
+    "enable_next_section": True,
+    "enable_recommended_section": True,
+    "go_live_at": "2017-08-09T16:05:00Z",
+    "expire_at": "2017-08-26T16:05:00Z",
+    "expired": False
 }
 
 BANNER_SITE_RESPONSE = {
@@ -792,6 +888,22 @@ IMAGE_DETAIL_2 = {
     "file": "http://localhost:8000/media/original_images/uYh_80lp8.png",
     "image_url": "/media/images/uYh_80lp8.original.jpg",
     "image_hash": '3f7ffffffee00000'
+}
+
+IMAGE_DETAIL_1_NO_HASH = {
+    "id": 97,
+    "meta": {
+        "type": "wagtailimages.Image",
+        "detail_url": "http://localhost:8000/api/v2/images/97/",
+        "tags": []
+    },
+    "title": "GAO_A4qQsiM.jpg",
+    "width": 640,
+    "height": 480,
+    "filename": "GAO_A4qQsiM.jpg",
+    "file": "http://localhost:8000/media/original_images/GAO_A4qQsiM.jpg",
+    "image_url": "/media/images/GAO_A4qQsiM.original.jpg",
+    "image_hash": None
 }
 
 ARTICLE_PAGE_RESPONSE_MAIN_LANG = {
@@ -1558,4 +1670,30 @@ NESTED_ARTICLE_RESPONSE = {
     "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": []
+}
+
+NESTED_FIELD_NAV_TAG_WITH_NONE = {
+    "nav_tags": [
+        {
+            "id": 10,
+            "meta": {
+                "type": "core.ArticlePageTags"
+            },
+            "tag": None
+        },
+        {
+            "id": 11,
+            "meta": {
+                "type": "core.ArticlePageTags"
+            },
+            "tag": {
+                "id": 28170,
+                "meta": {
+                    "type": "core.Tag",
+                    "detail_url": "http://qa.tuneme.seed.p16n.org/api/v2/pages/28170/"  # noqa
+                },
+                "title": "18"
+            }
+        }
+    ]
 }

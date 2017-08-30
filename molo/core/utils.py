@@ -4,13 +4,21 @@ import zipfile
 import re
 import tempfile
 import imagehash
+import json
 import distutils.dir_util
 
 from PIL import Image as PILImage
 from StringIO import StringIO
+
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
 from wagtail.wagtailcore.utils import cautious_slugify
 from wagtail.wagtailcore.models import Page
+from wagtail.wagtailimages.models import Image
+
+from molo.core.api.constants import KEYS_TO_EXCLUDE
+from molo.core.api.errors import ReferenceUnimportedContent
 
 
 def create_new_article_relations(old_main, copied_main):
@@ -170,3 +178,98 @@ def get_image_hash(image):
         image_in_memory = StringIO(file.read())
         pil_image = PILImage.open(image_in_memory)
         return imagehash.average_hash(pil_image).__str__()
+
+
+def separate_fields(fields):
+    """
+    Non-foreign key fields can be mapped to new article instances
+    directly. Foreign key fields require a bit more work.
+    This method returns a tuple, of the same format:
+    (flat fields, nested fields)
+    """
+    flat_fields = {}
+    nested_fields = {}
+
+    # exclude "id" and "meta" elements
+    for k, v in fields.items():
+        # TODO: remove dependence on KEYS_TO_INCLUDE
+        if k not in KEYS_TO_EXCLUDE:
+            if type(v) not in [type({}), type([])]:
+                flat_fields.update({k: v})
+            else:
+                nested_fields.update({k: v})
+
+    return flat_fields, nested_fields
+
+
+def add_json_dump(field):
+    def _add_json_dump(nested_fields, page):
+        if ((field in nested_fields) and
+                nested_fields[field]):
+            setattr(page, field, json.dumps(nested_fields[field]))
+    return _add_json_dump
+
+
+def add_stream_fields(nested_fields, page):
+    if (('body' in nested_fields) and nested_fields['body']):
+        article_body = nested_fields['body']
+
+        # iterate through stream field, checking for page
+        page_flag = False
+        for stream_field in article_body:
+            if 'type' in stream_field and stream_field['type']:
+                # pass
+                if (stream_field['type'] == 'page' or
+                        stream_field['type'] == 'image'):
+                    page_flag = True
+                    break
+
+        # if page link exists, do not attach body, instead return it
+        if page_flag:
+            return nested_fields['body']
+        else:
+            setattr(page, 'body', json.dumps(nested_fields['body']))
+    return None
+
+
+def add_list_of_things(field):
+    def _add_list_of_things(nested_fields, page):
+        if (field in nested_fields) and nested_fields[field]:
+            attr = getattr(page, field)
+            for item in nested_fields[field]:
+                attr.add(item)
+    return _add_list_of_things
+
+
+def attach_image_function(field):
+    '''
+    Returns a function that attaches an image to page if it exists
+
+    Currenlty assumes that images have already been imported and info
+    has been stored in record_keeper
+    '''
+    def _attach_image(nested_fields, page, record_keeper=None):
+        if (field in nested_fields) and nested_fields[field]:
+            foreign_image_id = nested_fields[field]["id"]
+            # Handle the following
+            # record keeper may not exist
+            # record keeper may not have image ref
+            if record_keeper:
+                try:
+                    local_image_id = record_keeper.get_local_image(
+                        foreign_image_id)
+                    local_image = Image.objects.get(id=local_image_id)
+                    setattr(page, field, local_image)
+                except ObjectDoesNotExist:
+                    raise Exception(
+                        ("executing attach_image: local image referenced"
+                         "in record_keeper does not actually exist."))
+                except ReferenceUnimportedContent:
+                    Exception(
+                        ("case: 'import image if not imported yet' "
+                         "not yet implemented"))
+            else:
+                raise Exception(
+                    ("case: 'attach_image without record_keeper' "
+                     "not yet implemented"))
+    return _attach_image

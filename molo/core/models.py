@@ -39,6 +39,13 @@ from molo.core import constants
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
+from molo.core.utils import (
+    separate_fields,
+    add_json_dump,
+    add_list_of_things,
+    attach_image_function,
+    add_stream_fields,
+)
 
 
 class BaseReadOnlyPanel(EditHandler):
@@ -247,6 +254,58 @@ class SiteSettings(BaseSetting):
             heading="Article Tag Settings"
         )
     ]
+
+
+class ImportableMixin(object):
+    @classmethod
+    def create_page(self, content, class_, record_keeper=None):
+        add_section_time = add_json_dump("time")
+
+        add_tags = add_list_of_things("tags")
+        add_metadata_tags = add_list_of_things("metadata_tags")
+
+        attach_image = attach_image_function("image")
+        attach_social_media_image = attach_image_function(
+            "social_media_image")
+        attach_banner_image = attach_image_function("banner")
+
+        fields, nested_fields = separate_fields(content)
+
+        foreign_id = content.pop('id')
+        # TODO: use foreign_id properly
+        type(foreign_id)
+
+        # remove unwanted fields
+        if 'latest_revision_created_at' in content:
+            content.pop('latest_revision_created_at')
+
+        page = class_(**fields)
+
+        # Handle content in nested_fields
+        body = add_stream_fields(nested_fields, page)
+        # body has not been added as it contains reference to pages
+        if body:
+            record_keeper.article_bodies[foreign_id] = body
+
+        add_section_time(nested_fields, page)
+        add_tags(nested_fields, page)
+        add_metadata_tags(nested_fields, page)
+
+        attach_image(nested_fields, page, record_keeper)
+        attach_social_media_image(nested_fields, page, record_keeper)
+        attach_banner_image(nested_fields, page, record_keeper)
+
+        # Handle relationships in nested_fields
+        if record_keeper:
+            record_keeper.record_nav_tags(nested_fields, foreign_id)
+            record_keeper.record_recommended_articles(
+                nested_fields, foreign_id)
+            record_keeper.record_reaction_questions(nested_fields, foreign_id)
+            record_keeper.record_related_sections(nested_fields, foreign_id)
+            record_keeper.record_section_tags(nested_fields, foreign_id)
+            record_keeper.record_banner_page_link(nested_fields, foreign_id)
+
+        return page
 
 
 class PreventDeleteMixin(object):
@@ -512,7 +571,7 @@ class ReactionQuestionResponse(models.Model):
         request.session.modified = True
 
 
-class Tag(TranslatablePageMixin, Page):
+class Tag(TranslatablePageMixin, Page, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
 
@@ -528,7 +587,7 @@ Tag.promote_panels = [
 ]
 
 
-class BannerIndexPage(Page, PreventDeleteMixin):
+class BannerIndexPage(Page, PreventDeleteMixin, ImportableMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
 
@@ -539,7 +598,7 @@ class BannerIndexPage(Page, PreventDeleteMixin):
         super(BannerIndexPage, self).copy(*args, **kwargs)
 
 
-class BannerPage(TranslatablePageMixin, Page):
+class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
     parent_page_types = ['core.BannerIndexPage']
     subpage_types = []
 
@@ -810,7 +869,8 @@ SectionIndexPage.content_panels = [
 ]
 
 
-class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
+class SectionPage(ImportableMixin, CommentedPageMixin,
+                  TranslatablePageMixin, Page):
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
@@ -886,7 +946,8 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         "tuesday_rotation", "wednesday_rotation", "thursday_rotation",
         "friday_rotation", "saturday_rotation", "sunday_rotation",
         "content_rotation_start_date", "content_rotation_end_date",
-        "section_tags",
+        "section_tags", "enable_next_section", "enable_recommended_section",
+        "go_live_at", "expire_at", "expired"
     ]
 
     @classmethod
@@ -1034,7 +1095,7 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(CommentedPageMixin,
+class ArticlePage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, PageEffectiveImageMixin, Page):
     parent_page_types = ['core.SectionPage']
 
@@ -1222,6 +1283,7 @@ class ArticlePage(CommentedPageMixin,
         "social_media_image", "social_media_description",
         "social_media_title", "reaction_questions",
         "nav_tags", "recommended_articles", "related_sections",
+        "go_live_at", "expire_at", "expired"
     ]
 
     @classmethod

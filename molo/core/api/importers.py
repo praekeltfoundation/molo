@@ -11,27 +11,24 @@ from django.core.files.images import ImageFile
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
-from molo.core.models import (
-    Languages,
-    SiteLanguageRelation,
-    ArticlePage,
-    SectionPage,
-    FooterPage,
-    BannerPage,
-    Tag,
-    ArticlePageRecommendedSections,
-    ArticlePageRelatedSections,
-    PageTranslation,
-    ArticlePageTags,
-    SectionPageTags,
-)
+from molo.core.models import *  # noqa
 from molo.core.api.constants import (
-    API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT, KEYS_TO_EXCLUDE,
+    API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
 )
-from molo.core.utils import get_image_hash
+from molo.core.api.errors import *  # noqa
+from molo.core.utils import (
+    get_image_hash,
+    separate_fields,
+)
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+
+# constants for importer log
+ACTION = "action"
+SUCCESS = "success"
+ERROR = "error"
+WARNING = "warning"
 
 
 # functions used to find images
@@ -54,27 +51,6 @@ def get_image(base_url, image_id):
     )
     image.save()
     return image
-
-
-def separate_fields(fields):
-    """
-    Non-foreign key fields can be mapped to new article instances
-    directly. Foreign key fields require a bit more work.
-    This method returns a tuple, of the same format:
-    (flat fields, nested fields)
-    """
-    flat_fields = {}
-    nested_fields = {}
-
-    # exclude "id" and "meta" elements
-    for k, v in fields.items():
-        if k not in KEYS_TO_EXCLUDE:
-            if type(v) not in [type({}), type([])]:
-                flat_fields.update({k: v})
-            else:
-                nested_fields.update({k: v})
-
-    return flat_fields, nested_fields
 
 
 def list_of_objects_from_api(url):
@@ -117,9 +93,10 @@ def record_foreign_relation(field, key, record_keeper, id_key="id"):
                     if thing[key][id_key]:
                         record_keeper[page_id].append(thing[key][id_key])
                     else:
-                        print("key of: {} does not exist in thing[]".format(key))
+                        raise Exception(
+                            "key of: {} does not exist in thing[]".format(key))
                 else:
-                    print("key of: {} does not exist".format(key))
+                    raise Exception("key of: {} does not exist".format(key))
     return record_relationship
 
 
@@ -132,23 +109,6 @@ def record_foreign_key(field, record_keeper, id_key="id"):
         if ((field in nested_fields) and nested_fields[field]):
             record_keeper[page_id] = nested_fields[field][id_key]
     return _record_foreign_key
-
-
-def add_json_dump(field):
-    def _add_json_dump(nested_fields, page):
-        if ((field in nested_fields) and
-                nested_fields[field]):
-            setattr(page, field, json.dumps(nested_fields[field]))
-    return _add_json_dump
-
-
-def add_list_of_things(field):
-    def _add_list_of_things(nested_fields, page):
-        if (field in nested_fields) and nested_fields[field]:
-            attr = getattr(page, field)
-            for item in nested_fields[field]:
-                attr.add(item)
-    return _add_list_of_things
 
 
 def attach_image(field, image_map):
@@ -343,334 +303,480 @@ class SectionPageImporter(PageImporter):
             self.process_child_section(section_page["id"], parent)
 
 
-class SiteImporter(object):
+class RecordKeeper(object):
+    def __init__(self):
+        # maps foreign IDs to local IDs
+        # used when a new item is created
+        self.foreign_local_map = {
+            "page_map": {},
+            "image_map": {},
+        }
 
-    def __init__(self, site_pk, base_url='', logs=[]):
-        if base_url[-1] == '/':
-            self.base_url = base_url[:-1]
+        # maps local id to list of foreign page ids
+        # used when a foreign item is referenced
+        self.foreign_to_many_foreign_map = {
+            "recommended_articles": {},
+            "related_sections": {},
+            "nav_tags": {},
+            "section_tags": {},
+            "reaction_questions": {},
+        }
+
+        # maps local page to foreign id
+        self.foreign_to_foreign_map = {
+            "banner_link_page": {}
+        }
+
+        # maps foreign ID to article body blob
+        self.article_bodies = {}
+
+    def record_relation(self, id_map_key, foreign_page_id, local_page_id):
+        record = self.foreign_local_map[id_map_key]
+        if (foreign_page_id in record and
+                record[foreign_page_id] != local_page_id):
+            raise RecordOverwriteError("RecordOverwriteError", None)
         else:
-            self.base_url = base_url
+            record[foreign_page_id] = local_page_id
 
-        self.api_url = self.base_url + '/api/v2/'
-        self.image_url = "{}images/".format(self.api_url)
+    def get_local(self, id_map_key, foreign_page_id):
+        record = self.foreign_local_map[id_map_key]
+        if foreign_page_id in record:
+            return record[foreign_page_id]
+        else:
+            raise ReferenceUnimportedContent(
+                "Unimported content foreign ID: {}".format(foreign_page_id),
+                None)
+
+    def record_foreign_relations(self, field, related_item_key, id_map_key,
+                                 nested_fields, page_id):
+        record_keeper = self.foreign_to_many_foreign_map[id_map_key]
+        if ((field in nested_fields) and nested_fields[field]):
+            relationship_object_list = nested_fields[field]
+
+            # Assumption: this item is only processed once
+            # TODO: create override checks
+            record_keeper[page_id] = []
+
+            for relationship_object in relationship_object_list:
+                if related_item_key in relationship_object:
+                    related_item = relationship_object[related_item_key]
+                    if not related_item:
+                        continue
+                    if "id" in related_item:
+                        foreign_id = related_item["id"]
+                        record_keeper[page_id].append(foreign_id)
+                    else:
+                        raise Exception(
+                            ("key of 'id' does not exist in related_item"
+                             " of type: {}").format(related_item_key))
+                else:
+                    raise Exception(
+                        ("key of '{}' does not exist in nested_field"
+                         " of type: {}").format(related_item_key, field))
+
+    def record_page_relation(self, foreign_page_id, local_page_id):
+        self.record_relation("page_map", foreign_page_id, local_page_id)
+
+    def record_image_relation(self, foreign_page_id, local_page_id):
+        self.record_relation("image_map", foreign_page_id, local_page_id)
+
+    def get_local_page(self, foreign_page_id):
+        return self.get_local("page_map", foreign_page_id)
+
+    def get_local_image(self, foreign_page_id):
+        return self.get_local("image_map", foreign_page_id)
+
+    def record_recommended_articles(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "recommended_articles", "recommended_article",
+            "recommended_articles", nested_fields, page_id)
+
+    def record_related_sections(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "related_sections", "section",
+            "related_sections", nested_fields, page_id)
+
+    def record_section_tags(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "section_tags", "tag",
+            "section_tags", nested_fields, page_id)
+
+    def record_nav_tags(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "nav_tags", "tag",
+            "nav_tags", nested_fields, page_id)
+
+    def record_reaction_questions(self, nested_fields, page_id):
+        self.record_foreign_relations(
+            "reaction_questions", "reaction_question",
+            "reaction_questions", nested_fields, page_id)
+
+    def record_banner_page_link(self, nested_fields, page_id):
+        field = "banner_link_page"
+        id_map_key = "banner_link_page"
+        record_keeper = self.foreign_to_foreign_map[id_map_key]
+        if ((field in nested_fields) and nested_fields[field]):
+            relationship_object = nested_fields[field]
+            record_keeper[page_id] = relationship_object["id"]
+
+
+class BaseImporter(object):
+    def __init__(self, site_pk, base_url, record_keeper=None, logger=None):
+        # TODO: handle case where base_url is not valid
+        self.base_url = self.format_base_url(base_url)
+        self.api_url = '{}/api/v2/'.format(self.base_url)
         self.site_pk = site_pk
         self.language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
-        self.logs = logs
-        self.content = None
-        # maps foreign IDs to local page IDs
-        self.id_map = {}
-        # maps foreign image IDs to local IDs
-        self.image_map = {}
-        # maps local id to list of foreign section page ids
-        self.related_sections = {}
-        # maps local id to list of foreign page ids
-        self.recommended_articles = {}
-        # maps local pages to list of foreign reaction question IDs
-        self.reaction_questions = {}
-        # maps local pages to list of foreign nav_tag IDs
-        self.nav_tags = {}
-        # maps local pages to list of foreign section_tag IDs
-        self.section_tags = {}
-        # maps local banner page id to foreign linked page id
-        self.banner_page_links = {}
+        self.record_keeper = record_keeper
+        self.logger = logger
 
-        self.record_recommended_articles = record_foreign_relation(
-            "recommended_articles", "recommended_article",
-            self.recommended_articles)
-        self.record_section_tags = record_foreign_relation(
-            "section_tags", "tag",
-            self.section_tags)
-        self.record_nav_tags = record_foreign_relation(
-            "nav_tags", "tag",
-            self.nav_tags)
-        self.record_reaction_questions = record_foreign_relation(
-            "reaction_questions", "reaction_question",
-            self.reaction_questions)
-        self.record_related_sections = record_foreign_relation(
-            "related_sections", "section",
-            self.related_sections)
-        self.record_banner_page_link = record_foreign_key(
-            "banner_link_page",
-            self.banner_page_links)
+    def format_base_url(self, base_url):
+        if base_url[-1] == '/':
+            return base_url[:-1]
+        else:
+            return base_url
 
-        self.add_article_body = add_json_dump("body")
-        self.add_section_time = add_json_dump("time")
+    def log(self, log_type, message, context=None, depth=0):
+        if self.logger:
+            self.logger.log(log_type, message, context, depth)
 
-        self.add_tags = add_list_of_things("tags")
-        self.add_metadata_tags = add_list_of_things("metadata_tags")
 
-        self.attach_image = attach_image("image", self.image_map)
-        self.attach_social_media_image = attach_image("social_media_image",
-                                                      self.image_map)
-        self.attach_banner_image = attach_image("banner", self.image_map)
+class ImageImporter(BaseImporter):
+    def __init__(self, site_pk, base_url, record_keeper=None, logger=None):
+        super(ImageImporter, self).__init__(site_pk, base_url,
+                                            record_keeper=record_keeper,
+                                            logger=logger)
+        self.image_url = "{}images/".format(self.api_url)
+        self.image_hashes = {}
+        self.image_widths = {}
+        self.image_heights = {}
+        self.get_image_details()
+
+    def get_image_details(self):
+        '''
+        Create a reference of site images by hash, width and height
+        '''
+        if Image.objects.count() == 0:
+            return None
+
+        for local_image in Image.objects.all():
+            self.image_hashes[get_image_hash(local_image)] = local_image
+
+            if local_image.width in self.image_widths:
+                self.image_widths[local_image.width].append(local_image)
+            else:
+                self.image_widths[local_image.width] = [local_image]
+
+            if local_image.height in self.image_heights:
+                self.image_heights[local_image.height].append(local_image)
+            else:
+                self.image_heights[local_image.height] = [local_image]
+
+    def get_replica_image(self, width, height, img_hash):
+        if width in self.image_widths:
+                possible_matches = self.image_widths[width]
+                if height in self.image_heights:
+                    possible_matches = list(
+                        set(self.image_heights[height] +
+                            possible_matches))
+                    if (img_hash in self.image_hashes and
+                            self.image_hashes[img_hash] in possible_matches):
+                        matching_image = self.image_hashes[img_hash]
+                        return matching_image
+        return None
+
+    def fetch_and_create_image(self, relative_url, image_title):
+        '''
+        fetches, creates image object
+
+        returns tuple with Image object and context dictionary containing
+        request URL
+
+        TODO: handle hosting media on AWS as well
+        this assumes we are self-hosting media content
+        '''
+
+        image_media_url = "{}{}".format(self.base_url, relative_url)
+        context = {
+            "requested_url": image_media_url,
+            "foreign_title": image_title.encode('utf-8'),
+        }
+        try:
+            image_file = requests.get(image_media_url)
+            local_image = Image(
+                title=image_title,
+                file=ImageFile(
+                    BytesIO(image_file.content), name=image_title
+                )
+            )
+            local_image.save()
+            return (local_image, context)
+        except Exception as e:
+            context.update({
+                "exception": e,
+            })
+            raise ImageCreationFailed(context, None)
+
+    def import_image(self, image_id):
+        '''
+        Imports and returns tuple with image and context dict
+
+        Input: foreign image ID
+
+        Output: (Image: imported image, Dict: info about import)
+
+        Side effects: If Importer object has a record_keeper, it
+        will update the record of foreign to local images.
+
+        Attempts to avoid duplicates by matching image dimensions
+        and hashes. If a match is found it refers to local instance
+        instead. If it is not, the image is fetched, created and
+        referenced.
+        '''
+        image_detail_url = "{}{}/".format(self.image_url, image_id)
+
+        try:
+            img_response = requests.get(image_detail_url)
+            img_info = json.loads(img_response.content)
+        except Exception as e:
+            error_context = {
+                "image detail url": image_detail_url,
+                "exception": e,
+            }
+            raise ImageInfoFetchFailed(error_context)
+
+        if img_info["image_hash"] is None:
+            raise ValueError('image hash should not be none')
+
+        # check if a replica exists
+        local_image = self.get_replica_image(
+            img_info["width"],
+            img_info["height"],
+            img_info["image_hash"])
+
+        if local_image:
+            context = {
+                "local_version_existed": True,
+                "url": "{}{}".format(self.base_url,
+                                     img_info['image_url']),
+                "foreign_title": img_info["title"].encode('utf-8'),
+            }
+            # update record keeper
+            if self.record_keeper:
+                self.record_keeper.record_image_relation(
+                    image_id,
+                    local_image.id)
+            return (local_image, context)
+        else:
+            # new_image, context = self.fetch_and_create_image(
+            new_image, context = self.fetch_and_create_image(
+                img_info['image_url'],
+                img_info["title"].encode('utf-8'))
+            # update record keeper
+            if self.record_keeper:
+                self.record_keeper.record_image_relation(
+                    image_id,
+                    new_image.id)
+            context.update({
+                "local_version_existed": False,
+            })
+            return (new_image, context)
+
+    def import_images(self):
+        '''
+        Fetches all images from site
+
+        Handles Errors in creation process
+        Updates record_keeper
+        Logs the result of each attempt to create an image
+        '''
+        self.log(ACTION, "Importing Images")
+        try:
+            images = list_of_objects_from_api(self.image_url)
+        except Exception as e:
+            raise ImageInfoFetchFailed(
+                "Something went wrong fetching list of images")
+
+        if not images:
+            return None
+
+        # iterate through foreign images
+        for image_summary in images:
+            self.log(ACTION, "Importing Image", depth=1)
+            try:
+                (image, context) = self.import_image(image_summary["id"])
+                # log success
+                self.log(SUCCESS, "Importing Image",
+                         context=context,
+                         depth=1)
+            except ImageInfoFetchFailed as e:
+                self.log(ERROR, "Importing Images", e, depth=1)
+            except ImageCreationFailed as e:
+                self.log(ERROR, "Importing Images", e.message, depth=1)
+            except Exception as e:
+                context = {
+                    "exception": e,
+                    "foreign_image_id": image_summary["id"],
+                }
+                self.log(ERROR, "Importing Images", context, depth=1)
+
+
+class LanguageImporter(BaseImporter):
+    def __init__(self, site_pk, base_url, record_keeper=None, logger=None):
+        super(LanguageImporter, self).__init__(site_pk, base_url,
+                                               record_keeper=record_keeper,
+                                               logger=logger)
+        self.language_url = "{}languages/".format(self.api_url)
 
     def get_language_ids(self):
-        language_url = "{}{}/".format(self.api_url, "languages")
-        response = requests.get(language_url)
+        '''
+        Return list of foreign language IDs from API language endpoint
+
+        TODO: add in validation before creating languages
+        '''
+        languages = list_of_objects_from_api(self.language_url)
 
         language_ids = []
-        # TODO: handle broken case
-        for language in json.loads(response.content)["items"]:
+        for language in languages:
             language_ids.append(language["id"])
         return language_ids
 
     def copy_site_languages(self):
-        self.log("Copying Site Languages")
         language_foreign_ids = self.get_language_ids()
         language_setting, created = Languages.objects.get_or_create(
             site_id=self.site_pk)
         for foreign_id in language_foreign_ids:
-            language_url = "{}{}/{}/".format(self.api_url,
-                                             "languages",
-                                             foreign_id)
+            language_url = "{}{}/".format(self.language_url,
+                                          foreign_id)
             response = requests.get(language_url)
             content = json.loads(response.content)
 
-            # TODO: review whether this works with Multi-site
-            # TODO: handle case where Main lang is not first
             sle, created = SiteLanguageRelation.objects.get_or_create(
                 locale=content['locale'],
                 is_active=content['is_active'],
                 language_setting=language_setting)
 
-    def import_images(self):
+
+class ContentImporter(BaseImporter):
+    def __init__(self, site_pk, base_url, record_keeper=None, logger=None):
+        super(ContentImporter, self).__init__(site_pk, base_url,
+                                              record_keeper=record_keeper,
+                                              logger=logger)
+
+    def recreate_relationships(self, class_, attribute_name, key):
         '''
-        Fetches images from site
-
-        Attempts to avoid duplicates by matching image titles
-        if a match is found it refers to local instance instead
-        if it is not, the image is fetched, created and referenced
+        Recreates one-to-many relationship
         '''
-        self.log("Importing Images")
-        images = list_of_objects_from_api(self.image_url)
+        iterable = self.record_keeper.foreign_to_many_foreign_map[key]
+        for foreign_page_id, foreign_page_id_list in iterable.iteritems():
 
-        if not images:
-            return None
+            # Assumption: local page has been indexed and exists
+            # TODO: handle case where it doesn't exist
+            local_page_id = self.record_keeper.get_local_page(foreign_page_id)
+            local_page = Page.objects.get(id=local_page_id).specific
 
-        # store info about local images in order to match
-        # with imported images
-        local_image_hashes = {}
-        image_width = {}
-        image_height = {}
+            for foreign_page_id in foreign_page_id_list:
+                try:
+                    local_version_page_id = (self.record_keeper
+                                             .get_local_page(foreign_page_id))
+                    foreign_page = Page.objects.get(
+                        id=local_version_page_id).specific
+                    realtionship_object = class_(page=local_page)
+                    setattr(realtionship_object, attribute_name, foreign_page)
+                    realtionship_object.save()
+                except ReferenceUnimportedContent as e:
+                    print(e)
 
-        for local_image in Image.objects.all():
-            local_image_hashes[get_image_hash(local_image)] = local_image
-
-            if local_image.width in image_width:
-                image_width[local_image.width].append(local_image)
-            else:
-                image_width[local_image.width] = [local_image]
-
-            if local_image.height in image_height:
-                image_height[local_image.height].append(local_image)
-            else:
-                image_height[local_image.height] = [local_image]
-
-        # iterate through foreign images
-        for image in images:
-            image_detail_url = "{}{}/".format(self.image_url, image["id"])
-            img_response = requests.get(image_detail_url)
-            img_info = json.loads(img_response.content)
-
-            if img_info["image_hash"] is None:
-                raise ValueError('image hash should not be none')
-
-            # check if a replica exists
-            if img_info["width"] in image_width:
-                possible_matches = image_width[img_info["width"]]
-                if img_info["height"] in image_height:
-                    possible_matches = list(
-                        set(image_height[img_info["height"]] +
-                            possible_matches))
-                    if (img_info["image_hash"] in local_image_hashes and
-                        local_image_hashes[img_info["image_hash"]] in possible_matches):
-                        result = local_image_hashes[img_info["image_hash"]]
-
-                        # use the local title of the image
-                        self.image_map[image["id"]] = result.id
-
-                        action_context = {
-                            "Foreign Image ID": img_info["id"],
-                            "Foreign Image Hash": img_info["image_hash"],
-                            "Local Image ID": result.id,
-                            "Local Image Hash": get_image_hash(result),
-                        }
-                        self.log(self.create_action_message(
-                            'found image match',
-                            context=action_context))
-                        continue
-
-            new_image = self.fetch_and_create_image(
-                img_info['image_url'],
-                img_info["title"])
-            self.image_map[image["id"]] = new_image.id
-
-            action_context = {
-                "Foreign image ID": img_info["id"],
-                "New image ID": new_image.id,
-            }
-            self.log(
-                self.create_action_message(
-                    'imported new image',
-                    context=action_context))
-
-    def fetch_and_create_image(self, relative_url, image_title):
+    def recreate_relationship(self, attribute_name, key):
         '''
-        fetches, creates and return image object
+        Recreates one-to-one relationship
         '''
-        # TODO: handle image unavailable
-        image_media_url = "{}{}".format(self.base_url, relative_url)
-        image_file = requests.get(image_media_url)
-        local_image = Image(
-            title=image_title,
-            file=ImageFile(
-                BytesIO(image_file.content), name=image_title
-            )
-        )
-        local_image.save()
-        return local_image
+        iterator = self.record_keeper.foreign_to_foreign_map["banner_link_page"].iteritems()  # noqa
+        for foreign_page_id, linked_page_foreign_id in iterator:
+            # get local banner page
+            local_page_id = self.record_keeper.get_local_page(foreign_page_id)
+            local_page = Page.objects.get(id=local_page_id).specific
 
-    def create_translated_content(self, local_main_lang_page,
-                                  content, locale):
-        '''
-        Wrapper for  create_content
+            # get local linked page
+            local_id = self.record_keeper.get_local_page(
+                linked_page_foreign_id)
+            linked_page = Page.objects.get(id=local_id).specific
 
-        Creates the content
-        Then attaches a language relation from the main language page to the
-        newly created Page
-        Note: we get the parent from the main language page
-        '''
-        page = self.create_page(local_main_lang_page.get_parent(), content)
-
-        language = SiteLanguageRelation.objects.get(
-            language_setting=self.language_setting, locale=locale)
-        language_relation = page.languages.first()
-        language_relation.language = language
-        language_relation.save()
-        page.save_revision().publish()
-        PageTranslation.objects.get_or_create(
-            page=local_main_lang_page,
-            translated_page=page)
-        return page
-
-    def create_page(self, parent, content):
-        fields, nested_fields = separate_fields(content)
-
-        # handle the unwanted fields
-        foreign_id = content.pop('id')
-        # ignore when article was last revised
-        if 'latest_revision_created_at' in content:
-            content.pop('latest_revision_created_at')
-
-        page = None
-        if content["meta"]["type"] == "core.SectionPage":
-            page = SectionPage(**fields)
-        elif content["meta"]["type"] == "core.ArticlePage":
-            page = ArticlePage(**fields)
-        elif content["meta"]["type"] == "core.FooterPage":
-            page = FooterPage(**fields)
-        elif content["meta"]["type"] == "core.BannerPage":
-            page = BannerPage(**fields)
-        elif content["meta"]["type"] == "core.Tag":
-            page = Tag(**fields)
-        else:
-            self.id_map[foreign_id] = None
-            self.log(
-                ("Foreign Page with ID: {} and "
-                 "Type: {} was not imported").format(
-                     content["id"], content["meta"]["type"]))
-            return None
-
-        parent.add_child(instance=page)
-
-        # TODO: handle live/published
-        # Need to review this line:
-        #   handle drafts and 'not live' content
-        parent.save_revision().publish()
-
-        self.id_map[foreign_id] = page.id
-
-        self.record_section_tags(nested_fields, page.id)
-        self.record_nav_tags(nested_fields, page.id)
-        self.record_reaction_questions(nested_fields, page.id)
-        self.record_recommended_articles(nested_fields, page.id)
-        self.record_related_sections(nested_fields, page.id)
-        self.record_banner_page_link(nested_fields, page.id)
-
-        self.add_article_body(nested_fields, page)
-        self.add_section_time(nested_fields, page)
-
-        self.add_tags(nested_fields, page)
-        self.add_metadata_tags(nested_fields, page)
-
-        self.attach_image(nested_fields, page)
-        self.attach_social_media_image(nested_fields, page)
-        self.attach_banner_image(nested_fields, page)
-
-        # note that unpublished pages will be published
-        page.save_revision().publish()
-        return page
-
-    def create_recommended_articles(self):
-        # iterate through articles with recomended articles
-        for article_id, foreign_rec_article_id_list in self.recommended_articles.iteritems():  # noqa
-
-            main_article = ArticlePage.objects.get(id=article_id)
-            for foreign_rec_article_id in foreign_rec_article_id_list:
-                local_version_page_id = self.id_map[foreign_rec_article_id]
-                rec_article = ArticlePage.objects.get(id=local_version_page_id)
-
-                ArticlePageRecommendedSections(
-                    page=main_article,
-                    recommended_article=rec_article
-                ).save()
-
-    def create_related_sections(self):
-        # iterate through articles with related sections
-        for article_id, foreign_rel_section_id_list in self.related_sections.iteritems():  # noqa
-
-            main_article = ArticlePage.objects.get(id=article_id)
-            for foreign_rel_section_id in foreign_rel_section_id_list:
-                local_version_page_id = self.id_map[foreign_rel_section_id]
-                rel_section = SectionPage.objects.get(id=local_version_page_id)
-
-                ArticlePageRelatedSections(
-                    page=main_article,
-                    section=rel_section
-                ).save()
-
-    def create_nav_tag_relationships(self):
-        for page_id, foreign_tags_id_list in self.nav_tags.iteritems():
-            page = Page.objects.get(id=page_id).specific
-            for foreign_tag_id in foreign_tags_id_list:
-                local_tag_id = self.id_map[foreign_tag_id]
-                tag = Tag.objects.get(id=local_tag_id)
-
-                ArticlePageTags(
-                    page=page,
-                    tag=tag
-                ).save()
-
-    def create_section_tag_relationship(self):
-        for page_id, foreign_tags_id_list in self.section_tags.iteritems():
-            page = Page.objects.get(id=page_id).specific
-            for foreign_tag_id in foreign_tags_id_list:
-                local_tag_id = self.id_map[foreign_tag_id]
-                tag = Tag.objects.get(id=local_tag_id)
-
-                SectionPageTags(
-                    page=page,
-                    tag=tag
-                ).save()
+            # link the two together
+            setattr(local_page, attribute_name, linked_page)
+            # TODO: review publishing and saving revisions
+            local_page.save_revision().publish()
 
     def create_banner_page_links(self):
-        for banner_page_id, linked_page_foreign_id in self.banner_page_links.iteritems():  # noqa
-            banner = BannerPage.objects.get(id=banner_page_id)
-            local_id = self.id_map[linked_page_foreign_id]
-            linked_page = Page.objects.get(id=local_id).specific
-            banner.banner_link_page = linked_page
-            banner.save_revision().publish()
+        self.recreate_relationship("banner_link_page", "banner_link_page")
+
+    def create_recommended_articles(self):
+        self.recreate_relationships(
+            ArticlePageRecommendedSections,
+            'recommended_article',
+            'recommended_articles',
+        )
+
+    def create_related_sections(self):
+        self.recreate_relationships(
+            ArticlePageRelatedSections,
+            'section',
+            'related_sections',
+        )
+
+    def create_nav_tag_relationships(self):
+        self.recreate_relationships(
+            ArticlePageTags,
+            'tag',
+            'nav_tags'
+        )
+
+    def create_section_tag_relationship(self):
+        self.recreate_relationships(
+            SectionPageTags,
+            'tag',
+            'section_tags'
+        )
+
+    def recreate_article_body(self):
+        '''
+        Handles case where article body contained page or image.
+
+        Assumes all articles and images have been created.
+        '''
+        for foreign_id, body in self.record_keeper.article_bodies.iteritems():
+            try:
+                local_page_id = self.record_keeper.get_local_page(foreign_id)
+                page = Page.objects.get(id=local_page_id).specific
+
+                # iterate through the body
+                new_body = []
+                for item in body:
+                    if not item['value']:
+                        continue
+                    if item['type'] == 'page':
+                        new_page_id = self.record_keeper.get_local_page(
+                            item['value'])
+                        item['value'] = new_page_id
+                    elif item['type'] == 'image':
+                        new_image_id = self.record_keeper.get_local_image(
+                            item['value'])
+                        item['value'] = new_image_id
+
+                    new_body.append(item)
+
+                setattr(page, 'body', json.dumps(new_body))
+                page.save_revision().publish()
+
+            except Exception as e:
+                self.log(ERROR, "recreating article body",
+                         {
+                             "exception": e,
+                             "foreign_id": foreign_id,
+                             "body": body,
+                         },
+                         depth=1)
 
     def get_foreign_page_id_from_type(self, page_type):
         '''
@@ -678,50 +784,138 @@ class SiteImporter(object):
 
         Only works for index pages
         '''
+        # TODO: log this
         response = requests.get("{}pages/?type={}".format(
             self.api_url, page_type))
         content = json.loads(response.content)
         return content["items"][0]["id"]
 
-    def copy_children(self, foreign_id, existing_node):
-        '''
-        Initiates copying of tree, with existing_node acting as root
-        '''
-        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
+    def attach_page(self, parent, content):
+        page_type = content["meta"]["type"].split(".")[-1]
+        class_ = eval(page_type)
+        content_copy = dict(content)
 
-        response = requests.get(url)
-        content = json.loads(response.content)
+        if not issubclass(class_, ImportableMixin):
+            error_context = {
+                "message": "Page does not inherit ImportableMixin",
+                "page type": page_type,
+                "class_": str(class_),
+                "outcome": "cannot import page or its descendants"}
+            raise PageNotImportable(error_context)
 
-        main_language_child_ids = content["meta"]["main_language_children"]
-        for main_language_child_id in main_language_child_ids:
-                self.copy_page_and_children(foreign_id=main_language_child_id,
-                                            parent_id=existing_node.id)
+        # TODO: make a copy of the record_keeper class
 
-    def copy_page_and_children(self, foreign_id, parent_id):
-        '''
-        Recusively copies over pages, their translations and child pages
-        '''
-        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
-
-        # TODO handle connection errors
-        response = requests.get(url)
         try:
+            page = class_.create_page(
+                content_copy, class_, record_keeper=self.record_keeper)
+        except Exception as e:
+            # avoid side-effects of adding the page
+            # TODO: restore copy of record Keeper class
+            error_context = {
+                "message": "ERROR: Creating Page",
+                "exception": e,
+                "content": content,
+                "outcome": "cannot import page or its descendants"}
+            raise ImportedContentInvalid(error_context)
+
+        try:
+            parent.add_child(instance=page)
+            parent.save_revision().publish()
+            page.save_revision().publish()
+        except Exception as e:
+            error_context = {
+                "message": "ERROR: Saving Page",
+                "exception": e,
+                "outcome": "page and its descendants will not be imported"}
+            raise ImportedPageNotSavable(error_context)
+
+        self.record_keeper.record_page_relation(
+            content["id"],
+            page.id
+        )
+        # TODO: raise to calling function
+        # self.log(SUCCESS, "Page imported", {
+        #         "parent title": parent.title, "page title": page.title})
+        return page
+
+    def attach_translated_content(self, local_main_lang_page,
+                                  content, locale):
+        '''
+        Wrapper for  attach_page
+
+        Creates the content
+        Then attaches a language relation from the main language page to the
+        newly created Page
+        Note: we get the parent from the main language page
+        '''
+        try:
+            page = self.attach_page(
+                local_main_lang_page.get_parent(),
+                content)
+        except:
+            # TODO: log this
+            return None
+
+        try:
+            # create the translation object for page
+            language = SiteLanguageRelation.objects.get(
+                language_setting=self.language_setting,
+                locale=locale)
+            language_relation = page.languages.first()
+            language_relation.language = language
+            language_relation.save()
+            PageTranslation.objects.get_or_create(
+                page=local_main_lang_page,
+                translated_page=page)
+        except:
+            # TODO: log that creating translation failed
+            # TODO: log that page is now being deleted
+            page.delete()
+        return page
+
+    def copy_page_and_children(self, foreign_id, parent_id, depth=0):
+        '''
+        Recusively copies over pages, their translations, and child pages
+        '''
+        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
+
+        self.log(ACTION, "Requesting Data", {"url": url}, depth)
+        try:
+            # TODO: create a robust wrapper around this functionality
+            response = requests.get(url)
             content = json.loads(response.content)
         except Exception as e:
-            context = {
-                "foreign page url":url,
-            }
-            self.log(self.create_error_message(
-                "fetch page data", context=context, error=e))
+            self.log(ERROR, "Requesting Data - abandoning copy",
+                     {"url": url, "exception": e}, depth)
             return None
 
         parent = Page.objects.get(id=parent_id).specific
         page = None
         try:
-            page = self.create_page(parent, content)
+            self.log(ACTION, "Create Page", {"url": url}, depth)
+            page = self.attach_page(parent, content)
+            if page:
+                self.log(SUCCESS, "Create Page",
+                         {"url": url,
+                          "page title": page.title.encode('utf-8')},
+                         depth)
+        except PageNotImportable as e:
+            message = e.message.pop("message")
+            self.log(WARNING, message, e.message.pop("message"), depth)
+            return None
+
+        '''
         except Exception as e:
+            context = {
+                "exception": e,
+                "url": url,
+                "parent title": parent.title,
+                "foreign_page": content["title"].encode('utf-8'),
+            }
             self.log(
-                self.create_error_message("create page", error=e))
+                ERROR, "Create Page - abandon page and children creation",
+                context, depth)
+        '''
 
         if page:
             # create translations
@@ -729,46 +923,114 @@ class SiteImporter(object):
                 for translation_obj in content["meta"]["translations"]:
                     _url = "{}/api/v2/pages/{}/".format(self.base_url,
                                                         translation_obj["id"])
+                    # TODO: create a robust wrapper around this functionality
                     _response = requests.get(_url)
+                    self.log(
+                        ACTION,
+                        "Getting translated content",
+                        {"url": _url}, depth)
                     if _response.content:
                         _content = json.loads(_response.content)
 
-                        self.create_translated_content(
-                            page, _content, translation_obj["locale"])
+                        if ("locale" in translation_obj and
+                                translation_obj["locale"]):
+                            self.attach_translated_content(
+                                page, _content, translation_obj["locale"])
+                        else:
+                            self.log(
+                                ERROR,
+                                "locale is null",
+                                {"url": _url, }, depth)
                     else:
-                        self.log(self.create_error_message(
-                            "fetch translated page",
-                            foreign_id=translation_obj["id"]))
+                        self.log(
+                            ERROR,
+                            "Getting translated content",
+                            {"url": _url}, depth)
 
             main_language_child_ids = content["meta"]["main_language_children"]
 
             # recursively iterate through child nodes
             if main_language_child_ids:
                 for main_language_child_id in main_language_child_ids:
-                    self.copy_page_and_children(foreign_id=main_language_child_id,
-                                                parent_id=page.id)
+                    try:
+                        self.copy_page_and_children(
+                            foreign_id=main_language_child_id,
+                            parent_id=page.id, depth=depth + 1)
+                    except Exception as e:
+                        self.log(ERROR, "Copying Children",
+                                 {"url": url, "exception": e})
 
-    def log(self, message):
-        if settings.DEBUG:
-            print message
-        self.logs.append(message)
+    def copy_children(self, foreign_id, existing_node):
+        '''
+        Initiates copying of tree, with existing_node acting as root
+        '''
+        url = "{}/api/v2/pages/{}/".format(self.base_url, foreign_id)
+        self.log(
+            ACTION,
+            "Copying Children",
+            {"existing node type": str(type(existing_node))})
 
-    def create_error_message(self, action, error=None, foreign_id=None, context = {}):
-        error_message = "ERROR: failed to '{}'".format(action)
-        if error:
-            error_message += "\n| Error Type: {}".format(type(error))
-            error_message += "\n| Error Detail: {}".format(error)
-        if foreign_id:
-            error_message += "\n| Foreign ID: {}".format(foreign_id)
-        for key, item in context.iteritems():
-            error_message += "\n| {}: {}".format(key, item)
-        error_message += "\n-----------------------"
-        return error_message
+        # TODO: create a robust wrapper around this functionality
+        try:
+            self.log(ACTION, "Requesting Data", {"url": url})
+            response = requests.get(url)
+            content = json.loads(response.content)
+            self.log(SUCCESS, "Data Fetched Successfully", {"url": url})
 
-    def create_action_message(self, action, context = {}):
-        message = "ACTION: Succesfully '{}'".format(action)
-        for key, item in context.iteritems():
-            message += "\n| {}: {}".format(key, item)
-        message += "\n-----------------------"
+            main_language_child_ids = content["meta"]["main_language_children"]
+            for main_language_child_id in main_language_child_ids:
+                    self.copy_page_and_children(
+                        foreign_id=main_language_child_id,
+                        parent_id=existing_node.id, depth=1)
+        except Exception as e:
+            self.log(ERROR, "Copying Children", {"url": url, "exception": e})
+
+    def restore_relationships(self):
+        pass
+
+
+class Logger(object):
+    def __init__(self):
+        self.record = []
+
+    def format_message(self, log_type, message, context, depth=0):
+        log_item = "{}>> {}:{}".format(depth * "\t", log_type, message)
+        if context:
+            for key, item in context.iteritems():
+                if key == "exception":
+                    log_item += "\n{}| {}: {}".format(depth * "\t", "ex_type",
+                                                      type(item))
+                    log_item += "\n{}| {}: {}".format(depth * "\t", key, item)
+                else:
+                    log_item += (
+                        "\n{}| {}: {}".format(depth * "\t", key, item))
+            log_item += "\n{}----".format(depth * "\t")
+        return log_item
+
+    def get_email_logs(self):
+        '''
+        Returns a string representation of logs.
+
+        Only displays errors and warnings in the email logs
+        to avoid being verbose
+        '''
+        message = ""
+        for log in self.record:
+            if log["log_type"] in [ERROR, WARNING]:
+                log_type = log["log_type"]
+                message = log["message"]
+                context = log["context"]
+                message += self.format_message(log_type, message, context)
         return message
 
+    def log(self, log_type, message, context=None, depth=0):
+        if settings.DEBUG:
+            log_message = self.format_message(
+                log_type, message, context, depth=depth)
+            print(log_message)
+
+        self.record.append({
+            "log_type": log_type,
+            "message": message,
+            "context": context,
+        })
