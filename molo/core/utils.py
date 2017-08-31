@@ -202,12 +202,10 @@ def separate_fields(fields):
     return flat_fields, nested_fields
 
 
-def add_json_dump(field):
-    def _add_json_dump(nested_fields, page):
-        if ((field in nested_fields) and
-                nested_fields[field]):
-            setattr(page, field, json.dumps(nested_fields[field]))
-    return _add_json_dump
+def add_json_dump(field, nested_fields, page):
+    if ((field in nested_fields) and
+            nested_fields[field]):
+        setattr(page, field, json.dumps(nested_fields[field]))
 
 
 def add_stream_fields(nested_fields, page):
@@ -232,44 +230,40 @@ def add_stream_fields(nested_fields, page):
     return None
 
 
-def add_list_of_things(field):
-    def _add_list_of_things(nested_fields, page):
-        if (field in nested_fields) and nested_fields[field]:
-            attr = getattr(page, field)
-            for item in nested_fields[field]:
-                attr.add(item)
-    return _add_list_of_things
+def add_list_of_things(field, nested_fields, page):
+    if (field in nested_fields) and nested_fields[field]:
+        attr = getattr(page, field)
+        for item in nested_fields[field]:
+            attr.add(item)
 
 
-def attach_image_function(field):
+def attach_image(field, nested_fields, page, record_keeper=None):
     '''
     Returns a function that attaches an image to page if it exists
 
     Currenlty assumes that images have already been imported and info
     has been stored in record_keeper
     '''
-    def _attach_image(nested_fields, page, record_keeper=None):
-        if (field in nested_fields) and nested_fields[field]:
-            foreign_image_id = nested_fields[field]["id"]
-            # Handle the following
-            # record keeper may not exist
-            # record keeper may not have image ref
-            if record_keeper:
-                try:
-                    local_image_id = record_keeper.get_local_image(
-                        foreign_image_id)
-                    local_image = Image.objects.get(id=local_image_id)
-                    setattr(page, field, local_image)
-                except ObjectDoesNotExist:
-                    raise Exception(
-                        ("executing attach_image: local image referenced"
-                         "in record_keeper does not actually exist."))
-                except ReferenceUnimportedContent:
-                    raise Exception(
-                        ("case: 'import image if not imported yet' "
-                         "not yet implemented"))
-            else:
+    if (field in nested_fields) and nested_fields[field]:
+        foreign_image_id = nested_fields[field]["id"]
+        # Handle the following
+        # record keeper may not exist
+        # record keeper may not have image ref
+        if record_keeper:
+            try:
+                local_image_id = record_keeper.get_local_image(
+                    foreign_image_id)
+                local_image = Image.objects.get(id=local_image_id)
+                setattr(page, field, local_image)
+            except ObjectDoesNotExist:
                 raise Exception(
-                    ("case: 'attach_image without record_keeper' "
-                     "not yet implemented"))
-    return _attach_image
+                    ("executing attach_image: local image referenced"
+                        "in record_keeper does not actually exist."))
+            except ReferenceUnimportedContent:
+                raise Exception(
+                    ("case: 'import image if not imported yet' "
+                        "not yet implemented"))
+        else:
+            raise Exception(
+                ("case: 'attach_image without record_keeper' "
+                    "not yet implemented"))

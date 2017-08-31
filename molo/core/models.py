@@ -44,7 +44,7 @@ from molo.core.utils import (
     separate_fields,
     add_json_dump,
     add_list_of_things,
-    attach_image_function,
+    attach_image,
     add_stream_fields,
 )
 
@@ -259,22 +259,18 @@ class SiteSettings(BaseSetting):
 
 class ImportableMixin(object):
     @classmethod
-    def create_page(self, content, class_, record_keeper=None):
-        add_section_time = add_json_dump("time")
+    def create_page(self, content, class_, record_keeper=None, logger=None):
+        '''
+        Robust as possible
 
-        add_tags = add_list_of_things("tags")
-        add_metadata_tags = add_list_of_things("metadata_tags")
-
-        attach_image = attach_image_function("image")
-        attach_social_media_image = attach_image_function(
-            "social_media_image")
-        attach_banner_image = attach_image_function("banner")
-
+        Attempts to create the page
+        If any of the functions used to attach content to the page
+        fail, keep going, keep a record of those errors in a context dict
+        return the page and the context dict in a tuple
+        '''
         fields, nested_fields = separate_fields(content)
 
         foreign_id = content.pop('id')
-        # TODO: use foreign_id properly
-        type(foreign_id)
 
         # remove unwanted fields
         if 'latest_revision_created_at' in content:
@@ -282,29 +278,51 @@ class ImportableMixin(object):
 
         page = class_(**fields)
 
+        # create functions to attach attributes
+        function_args_mapping = (
+            (add_json_dump, ("time", nested_fields, page)),  # add_section_time
+            (add_list_of_things, ("tags", nested_fields, page)),  # add_tags
+            (add_list_of_things, ("metadata_tags", nested_fields, page)),  # add_metadata_tags
+
+            (attach_image, ("image", nested_fields, page, record_keeper)),  # attach_image
+            (attach_image, ("social_media_image", nested_fields, page, record_keeper)),  # attach_social_media_image
+            (attach_image, ("banner", nested_fields, page, record_keeper)),  # attach_banner_image
+        )
+
+        for mapping in function_field_args_mapping:
+            function = mapping[0]
+            _args = mapping[1]
+            try:
+                function(*_args)
+            except Exception as e:
+                raise
+                logger.log(
+                    ERROR,
+                    "Failed to create page content",
+                    {
+                        "foreign_page_id": foreign_id,
+                        "exception": e,
+                    })
+
         # Handle content in nested_fields
         body = add_stream_fields(nested_fields, page)
         # body has not been added as it contains reference to pages
         if body:
             record_keeper.article_bodies[foreign_id] = body
 
-        add_section_time(nested_fields, page)
-        add_tags(nested_fields, page)
-        add_metadata_tags(nested_fields, page)
-
-        attach_image(nested_fields, page, record_keeper)
-        attach_social_media_image(nested_fields, page, record_keeper)
-        attach_banner_image(nested_fields, page, record_keeper)
-
         # Handle relationships in nested_fields
         if record_keeper:
-            record_keeper.record_nav_tags(nested_fields, foreign_id)
-            record_keeper.record_recommended_articles(
-                nested_fields, foreign_id)
-            record_keeper.record_reaction_questions(nested_fields, foreign_id)
-            record_keeper.record_related_sections(nested_fields, foreign_id)
-            record_keeper.record_section_tags(nested_fields, foreign_id)
-            record_keeper.record_banner_page_link(nested_fields, foreign_id)
+            record_relation_functions = [
+                record_keeper.record_nav_tags,
+                record_keeper.record_recommended_articles,
+                record_keeper.record_reaction_questions,
+                record_keeper.record_related_sections,
+                record_keeper.record_section_tags,
+                record_keeper.record_banner_page_link,
+            ]
+
+            for fn in record_relation_functions:
+                fn(nested_fields, foreign_id)
 
         return page
 
