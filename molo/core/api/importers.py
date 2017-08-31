@@ -368,11 +368,13 @@ class RecordKeeper(object):
                         else:
                             raise ImportedContentInvalid(
                                 ("key of 'id' does not exist in related_item"
-                                " of type: {}").format(related_item_key), None)
+                                 " of type: {}").format(related_item_key),
+                                None)
                     else:
                         raise ImportedContentInvalid(
                             ("key of '{}' does not exist in nested_field"
-                             " of type: {}").format(related_item_key, field), None)
+                             " of type: {}").format(related_item_key, field),
+                            None)
                 except ImportedContentInvalid as e:
                     raise
                 except Exception as e:
@@ -703,13 +705,15 @@ class ContentImporter(BaseImporter):
                 except Exception as e:
                     context = {
                         "exception": e,
-                        "function_schema": "recreate_relationships(class, attribute_name, key)",
+                        "function_schema": ("recreate_relationships"
+                                            "(class, attribute_name, key)"),
                         "attribute_name": str(attribute_name),
                         "key": str(key),
                         "class": str(class_),
                         "foreign_page_id": str(foreign_page_id),
                     }
-                    self.log(ERROR, "recreating relationships", context=context)
+                    self.log(ERROR, "recreating relationships",
+                             context=context)
 
     def recreate_relationship(self, attribute_name, key):
         '''
@@ -1050,6 +1054,7 @@ class Logger(object):
         if settings.DEBUG:
             log_message = self.format_message(
                 log_type, message, context, depth=depth)
+            print(log_message)
 
         self.record.append({
             "log_type": log_type,

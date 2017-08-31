@@ -280,16 +280,23 @@ class ImportableMixin(object):
 
         # create functions to attach attributes
         function_args_mapping = (
-            (add_json_dump, ("time", nested_fields, page)),  # add_section_time
-            (add_list_of_things, ("tags", nested_fields, page)),  # add_tags
-            (add_list_of_things, ("metadata_tags", nested_fields, page)),  # add_metadata_tags
+            # add_section_time
+            (add_json_dump, ("time", nested_fields, page)),
+            # add_tags
+            (add_list_of_things, ("tags", nested_fields, page)),
+            # add_metadata_tags
+            (add_list_of_things, ("metadata_tags", nested_fields, page)),
 
-            (attach_image, ("image", nested_fields, page, record_keeper)),  # attach_image
-            (attach_image, ("social_media_image", nested_fields, page, record_keeper)),  # attach_social_media_image
-            (attach_image, ("banner", nested_fields, page, record_keeper)),  # attach_banner_image
+            # attach_image
+            (attach_image, ("image", nested_fields, page, record_keeper)),
+            # attach_social_media_image
+            (attach_image, ("social_media_image", nested_fields,
+                            page, record_keeper)),
+            # attach_banner_image
+            (attach_image, ("banner", nested_fields, page, record_keeper)),
         )
 
-        for mapping in function_field_args_mapping:
+        for mapping in function_args_mapping:
             function = mapping[0]
             _args = mapping[1]
             try:
@@ -303,7 +310,6 @@ class ImportableMixin(object):
                         "foreign_page_id": foreign_id,
                         "exception": e,
                         "function": function.__name__,
-                        "function_field": field,
                     })
 
         # Handle content in nested_fields
@@ -328,14 +334,13 @@ class ImportableMixin(object):
                     function(nested_fields, foreign_id)
                 except Exception as e:
                     logger.log(
-                    ERROR,
-                    "Failed to record content",
-                    {
-                        "foreign_page_id": foreign_id,
-                        "exception": e,
-                        "function": function.__name__,
-                        "function_field": field,
-                    })
+                        ERROR,
+                        "Failed to record content",
+                        {
+                            "foreign_page_id": foreign_id,
+                            "exception": e,
+                            "function": function.__name__,
+                        })
 
         return page
 

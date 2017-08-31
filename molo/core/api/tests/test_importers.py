@@ -830,7 +830,8 @@ class TestRecordKeeper(TestCase):
         }
 
         with pytest.raises(ImportedContentInvalid) as exception_info:
-            self.record_keeper.record_recommended_articles(nested_fields, fake_page_id)
+            self.record_keeper.record_recommended_articles(
+                nested_fields, fake_page_id)
         self.assertEqual(
             exception_info.value.__str__(),
             ("key of 'id' does not exist in related_item of"
@@ -857,7 +858,8 @@ class TestRecordKeeper(TestCase):
         }
 
         with pytest.raises(ImportedContentInvalid) as exception_info:
-            self.record_keeper.record_recommended_articles(nested_fields, fake_page_id)
+            self.record_keeper.record_recommended_articles(nested_fields,
+                                                           fake_page_id)
         self.assertEqual(
             exception_info.value.__str__(),
             ("key of 'recommended_article' does not exist in "
@@ -906,7 +908,6 @@ class TestLogger(TestCase):
 
         self.assertEqual(self.logger.record[0], self.action_log_args)
         self.assertEqual(self.logger.record[1], self.error_log_args)
-
 
     def test_get_email_logs(self):
         self.logger.record.append(self.error_log_args)

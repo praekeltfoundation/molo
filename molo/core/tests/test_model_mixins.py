@@ -1,3 +1,5 @@
+import pytest
+
 from django.test import TestCase
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -12,7 +14,6 @@ from molo.core.models import (
 from molo.core.api.tests import constants
 from molo.core.api import importers
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.api.errors import ReferenceUnimportedContent
 
 
 class TestImportableMixin(MoloTestCaseMixin, TestCase):
@@ -318,6 +319,8 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
 
         class_ = ArticlePage
 
-        # with pytest.raises(Exception) as exception_info:
-        page = ArticlePage.create_page(
-            content_copy, class_, record_keeper=record_keeper)
+        with pytest.raises(Exception) as exception_info:
+            ArticlePage.create_page(
+                content_copy, class_, record_keeper=record_keeper)
+
+        self.assertTrue(exception_info)

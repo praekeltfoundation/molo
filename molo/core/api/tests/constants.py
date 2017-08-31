@@ -1703,7 +1703,7 @@ ARTICLE_WITH_ONLY_IMAGE_RESPONSE = {
     "meta": {
         "type": "core.ArticlePage",
         "detail_url": "http://localhost:9000/api/v2/pages/93/",
-        "html_url": "http://localhost:9000/sections/test-section/bare-article/",
+        "html_url": "http://localhost:9000/sections/test-section/bare-article/",  # noqa
         "slug": "bare-article",
         "show_in_menus": False,
         "seo_title": "",
