@@ -12,6 +12,7 @@ from molo.core.api import importers
 from molo.core.api.errors import (
     RecordOverwriteError,
     ReferenceUnimportedContent,
+    ImportedContentInvalid,
 )
 from molo.core.api.tests import constants, utils
 from molo.core.models import (
@@ -808,6 +809,60 @@ class TestRecordKeeper(TestCase):
         self.record_keeper.record_nav_tags(nested_fields, fake_page_id)
 
         self.assertTrue(True)
+
+    def test_record_keeper_throws_content_error(self):
+        fake_page_id = 9999
+        nested_fields = {
+            "recommended_articles": [{
+                "id": 1,
+                "meta": {
+                    "type": "core.ArticlePageRecommendedSections"
+                },
+                "recommended_article": {
+                    "i_d": 27,
+                    "meta": {
+                        "type": "core.ArticlePage",
+                        "detail_url": "http://localhost:8000/api/v2/pages/27/"
+                    },
+                    "title": "Article that is nested"
+                }
+            }],
+        }
+
+        with pytest.raises(ImportedContentInvalid) as exception_info:
+            self.record_keeper.record_recommended_articles(nested_fields, fake_page_id)
+        self.assertEqual(
+            exception_info.value.__str__(),
+            ("key of 'id' does not exist in related_item of"
+             " type: recommended_article")
+        )
+
+    def test_record_keeper_throws_content_error2(self):
+        fake_page_id = 9999
+        nested_fields = {
+            "recommended_articles": [{
+                "id": 1,
+                "meta": {
+                    "type": "core.ArticlePageRecommendedSections"
+                },
+                "REKKOMMENDED_ARTICLE": {  # corrupted field
+                    "id": 27,
+                    "meta": {
+                        "type": "core.ArticlePage",
+                        "detail_url": "http://localhost:8000/api/v2/pages/27/"
+                    },
+                    "title": "Article that is nested"
+                }
+            }],
+        }
+
+        with pytest.raises(ImportedContentInvalid) as exception_info:
+            self.record_keeper.record_recommended_articles(nested_fields, fake_page_id)
+        self.assertEqual(
+            exception_info.value.__str__(),
+            ("key of 'recommended_article' does not exist in "
+             "nested_field of type: recommended_articles")
+        )
 
 
 class TestLogger(TestCase):

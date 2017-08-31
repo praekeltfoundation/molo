@@ -347,7 +347,7 @@ class RecordKeeper(object):
                 None)
 
     def record_foreign_relations(self, field, related_item_key, id_map_key,
-                                 nested_fields, page_id):
+                                 nested_fields, page_id, logger=None):
         record_keeper = self.foreign_to_many_foreign_map[id_map_key]
         if ((field in nested_fields) and nested_fields[field]):
             relationship_object_list = nested_fields[field]
@@ -357,21 +357,37 @@ class RecordKeeper(object):
             record_keeper[page_id] = []
 
             for relationship_object in relationship_object_list:
-                if related_item_key in relationship_object:
-                    related_item = relationship_object[related_item_key]
-                    if not related_item:
-                        continue
-                    if "id" in related_item:
-                        foreign_id = related_item["id"]
-                        record_keeper[page_id].append(foreign_id)
+                try:
+                    if related_item_key in relationship_object:
+                        related_item = relationship_object[related_item_key]
+                        if not related_item:
+                            continue
+                        if "id" in related_item:
+                            foreign_id = related_item["id"]
+                            record_keeper[page_id].append(foreign_id)
+                        else:
+                            raise ImportedContentInvalid(
+                                ("key of 'id' does not exist in related_item"
+                                " of type: {}").format(related_item_key), None)
                     else:
-                        raise Exception(
-                            ("key of 'id' does not exist in related_item"
-                             " of type: {}").format(related_item_key))
-                else:
-                    raise Exception(
-                        ("key of '{}' does not exist in nested_field"
-                         " of type: {}").format(related_item_key, field))
+                        raise ImportedContentInvalid(
+                            ("key of '{}' does not exist in nested_field"
+                             " of type: {}").format(related_item_key, field), None)
+                except ImportedContentInvalid as e:
+                    raise
+                except Exception as e:
+                    if logger:
+                        logger.log(
+                            ERROR,
+                            "record_foreign_relations error",
+                            {
+                                "exception": e,
+                                "field": field,
+                                "related_item_key": related_item_key,
+                                "id_map_key": id_map_key,
+                                "foreign_page_id": page_id,
+                            })
+                    continue
 
     def record_page_relation(self, foreign_page_id, local_page_id):
         self.record_relation("page_map", foreign_page_id, local_page_id)
@@ -385,32 +401,32 @@ class RecordKeeper(object):
     def get_local_image(self, foreign_page_id):
         return self.get_local("image_map", foreign_page_id)
 
-    def record_recommended_articles(self, nested_fields, page_id):
+    def record_recommended_articles(self, nested_fields, page_id, logger=None):
         self.record_foreign_relations(
             "recommended_articles", "recommended_article",
-            "recommended_articles", nested_fields, page_id)
+            "recommended_articles", nested_fields, page_id, logger=logger)
 
-    def record_related_sections(self, nested_fields, page_id):
+    def record_related_sections(self, nested_fields, page_id, logger=None):
         self.record_foreign_relations(
             "related_sections", "section",
-            "related_sections", nested_fields, page_id)
+            "related_sections", nested_fields, page_id, logger=logger)
 
-    def record_section_tags(self, nested_fields, page_id):
+    def record_section_tags(self, nested_fields, page_id, logger=None):
         self.record_foreign_relations(
             "section_tags", "tag",
-            "section_tags", nested_fields, page_id)
+            "section_tags", nested_fields, page_id, logger=logger)
 
-    def record_nav_tags(self, nested_fields, page_id):
+    def record_nav_tags(self, nested_fields, page_id, logger=None):
         self.record_foreign_relations(
             "nav_tags", "tag",
-            "nav_tags", nested_fields, page_id)
+            "nav_tags", nested_fields, page_id, logger=logger)
 
-    def record_reaction_questions(self, nested_fields, page_id):
+    def record_reaction_questions(self, nested_fields, page_id, logger=None):
         self.record_foreign_relations(
             "reaction_questions", "reaction_question",
-            "reaction_questions", nested_fields, page_id)
+            "reaction_questions", nested_fields, page_id, logger=logger)
 
-    def record_banner_page_link(self, nested_fields, page_id):
+    def record_banner_page_link(self, nested_fields, page_id, logger=None):
         field = "banner_link_page"
         id_map_key = "banner_link_page"
         record_keeper = self.foreign_to_foreign_map[id_map_key]

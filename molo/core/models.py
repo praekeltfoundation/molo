@@ -302,6 +302,8 @@ class ImportableMixin(object):
                     {
                         "foreign_page_id": foreign_id,
                         "exception": e,
+                        "function": function.__name__,
+                        "function_field": field,
                     })
 
         # Handle content in nested_fields
@@ -321,8 +323,19 @@ class ImportableMixin(object):
                 record_keeper.record_banner_page_link,
             ]
 
-            for fn in record_relation_functions:
-                fn(nested_fields, foreign_id)
+            for function in record_relation_functions:
+                try:
+                    function(nested_fields, foreign_id)
+                except Exception as e:
+                    logger.log(
+                    ERROR,
+                    "Failed to record content",
+                    {
+                        "foreign_page_id": foreign_id,
+                        "exception": e,
+                        "function": function.__name__,
+                        "function_field": field,
+                    })
 
         return page
 
