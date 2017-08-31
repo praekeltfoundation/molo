@@ -41,7 +41,7 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         self.assertEquals(ImageInfo.objects.count(), 0)
         self.assertEquals(Image.objects.count(), 1)
 
-        # add image image info to image with no image info
+        # add image info to image with no image info
         image_info = ImageInfo.objects.create(image=image)
 
         self.assertEquals(ImageInfo.objects.count(), 1)
