@@ -26,7 +26,8 @@ def convert_media_to_molo_media(apps, schema_editor):
             title=media.title, file=media.file, duration=media.duration,
             type=media.type, width=media.width,
             height=media.height, thumbnail=media.thumbnail)
-
+        media.file = None
+        media.save()
         for article in ArticlePage.objects.all():
             for block in article.body:
                 if block.block_type is 'media' and block.value is media.id:
