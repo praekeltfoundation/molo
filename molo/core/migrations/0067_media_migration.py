@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 from django.core.management.sql import emit_post_migrate_signal
+from molo.core.models import MoloMedia, ArticlePage
+from wagtailmedia.models import Media
 
 
 def convert_media_to_molo_media(apps, schema_editor):
@@ -17,9 +19,6 @@ def convert_media_to_molo_media(apps, schema_editor):
             emit_post_migrate_signal(2, False, 'default', db_alias)
         except TypeError:  # Django < 1.8
             emit_post_migrate_signal([], 2, False, 'default', db_alias)
-
-    from molo.core.models import MoloMedia, ArticlePage
-    from wagtailmedia.models import Media
 
     for media in Media.objects.all():
         new_media = MoloMedia.objects.create(
