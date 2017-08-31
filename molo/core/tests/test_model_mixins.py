@@ -12,6 +12,7 @@ from molo.core.models import (
 from molo.core.api.tests import constants
 from molo.core.api import importers
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.api.errors import ReferenceUnimportedContent
 
 
 class TestImportableMixin(MoloTestCaseMixin, TestCase):
@@ -304,3 +305,19 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         self.assertTrue(page.banner)
         self.assertEqual(page.banner, image)
         self.assertEqual(page.banner.title, content["banner"]["title"])
+
+    def test_image_not_imported_throws_error(self):
+        content = constants.ARTICLE_WITH_ONLY_IMAGE_RESPONSE
+        content_copy = dict(content)
+
+        # Break the assumptions that the images have already
+        # been imported thus the record keeper has mapped
+        # the relationship
+
+        record_keeper = importers.RecordKeeper()
+
+        class_ = ArticlePage
+
+        # with pytest.raises(Exception) as exception_info:
+        page = ArticlePage.create_page(
+            content_copy, class_, record_keeper=record_keeper)

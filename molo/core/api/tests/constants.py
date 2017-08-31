@@ -1697,3 +1697,68 @@ NESTED_FIELD_NAV_TAG_WITH_NONE = {
         }
     ]
 }
+
+ARTICLE_WITH_ONLY_IMAGE_RESPONSE = {
+    "id": 93,
+    "meta": {
+        "type": "core.ArticlePage",
+        "detail_url": "http://localhost:9000/api/v2/pages/93/",
+        "html_url": "http://localhost:9000/sections/test-section/bare-article/",
+        "slug": "bare-article",
+        "show_in_menus": False,
+        "seo_title": "",
+        "search_description": "",
+        "first_published_at": "2017-08-30T12:45:06.398516Z",
+        "parent": {
+            "id": 11,
+            "meta": {
+                "type": "core.SectionPage",
+                "detail_url": "http://localhost:9000/api/v2/pages/11/",
+                "html_url": "http://localhost:9000/sections/test-section/"
+            },
+            "title": "Test Section"
+        },
+        "children": None,
+        "translations": [],
+        "main_language_children": None
+    },
+    "title": "Bare Article",
+    "subtitle": "",
+    "body": [],
+    "tags": [],
+    "commenting_state": None,
+    "commenting_open_time": None,
+    "commenting_close_time": None,
+    "social_media_title": "",
+    "social_media_description": "",
+    "social_media_image": None,
+    "related_sections": [],
+    "featured_in_latest": False,
+    "featured_in_latest_start_date": None,
+    "featured_in_latest_end_date": None,
+    "featured_in_section": False,
+    "featured_in_section_start_date": None,
+    "featured_in_section_end_date": None,
+    "featured_in_homepage": False,
+    "featured_in_homepage_start_date": None,
+    "featured_in_homepage_end_date": None,
+    "feature_as_topic_of_the_day": False,
+    "promote_date": None,
+    "demote_date": None,
+    "metadata_tags": [],
+    "latest_revision_created_at": "2017-08-30T12:45:06.378020Z",
+    "image": {
+        "id": 297,
+        "meta": {
+            "type": "wagtailimages.Image",
+            "detail_url": "http://localhost:9000/api/v2/images/297/"
+        },
+        "title": "and it's more than just attraction."
+    },
+    "reaction_questions": [],
+    "nav_tags": [],
+    "recommended_articles": [],
+    "go_live_at": None,
+    "expire_at": None,
+    "expired": False
+}
