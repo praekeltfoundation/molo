@@ -822,7 +822,8 @@ class ContentImporter(BaseImporter):
                 "message": "ERROR: Creating Page",
                 "exception": e,
                 "content": content,
-                "outcome": "cannot import page or its descendants"}
+                "outcome": "cannot import page or its descendants",
+                "foreign_page_id": content["id"]}
             raise ImportedContentInvalid(error_context)
 
         try:
@@ -833,7 +834,8 @@ class ContentImporter(BaseImporter):
             error_context = {
                 "message": "ERROR: Saving Page",
                 "exception": e,
-                "outcome": "page and its descendants will not be imported"}
+                "outcome": "page and its descendants will not be imported",
+                "foreign_page_id": content["id"]}
             raise ImportedPageNotSavable(error_context)
 
         self.record_keeper.record_page_relation(
