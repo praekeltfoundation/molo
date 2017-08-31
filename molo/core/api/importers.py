@@ -13,7 +13,12 @@ from wagtail.wagtailimages.models import Image
 
 from molo.core.models import *  # noqa
 from molo.core.api.constants import (
-    API_IMAGES_ENDPOINT, API_PAGES_ENDPOINT
+    API_IMAGES_ENDPOINT,
+    API_PAGES_ENDPOINT,
+    ACTION,
+    SUCCESS,
+    ERROR,
+    WARNING,
 )
 from molo.core.api.errors import *  # noqa
 from molo.core.utils import (
@@ -23,12 +28,6 @@ from molo.core.utils import (
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-
-# constants for importer log
-ACTION = "action"
-SUCCESS = "success"
-ERROR = "error"
-WARNING = "warning"
 
 
 # functions used to find images
