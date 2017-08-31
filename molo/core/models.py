@@ -1,3 +1,5 @@
+import imagehash
+
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from wagtail.wagtailadmin.edit_handlers import EditHandler
@@ -14,11 +16,13 @@ from django.db.models.signals import (
     pre_delete, post_delete, pre_save, post_save)
 from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
+from StringIO import StringIO
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 from modelcluster.models import ClusterableModel
+from PIL import Image as PILImage
 
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.wagtailcore.models import Page, Orderable, Site
@@ -31,6 +35,7 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.models import PageManager
 from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.wagtailimages.models import Image
 from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.models import AbstractMedia
@@ -255,6 +260,34 @@ class SiteSettings(BaseSetting):
             heading="Article Tag Settings"
         )
     ]
+
+
+class ImageInfo(models.Model):
+    image_hash = models.CharField(max_length=256, null=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='image_info'
+    )
+
+    def set_image_hash(self):
+        '''
+        Sets an image hash of a Wagtail Image
+        '''
+        with open(self.image.file.path, 'r') as file:
+            image_in_memory = StringIO(file.read())
+            pil_image = PILImage.open(image_in_memory)
+            self.image_hash = imagehash.average_hash(pil_image).__str__()
+            self.save()
+
+
+@receiver(
+    post_save, sender=Image, dispatch_uid="create_image_info")
+def create_image_info(sender, instance, **kwargs):
+    info = ImageInfo.objects.create(image=instance)
+    info.set_image_hash()
 
 
 class ImportableMixin(object):
