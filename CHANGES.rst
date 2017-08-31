@@ -1,6 +1,12 @@
 CHANGE LOG
 ==========
 
+5.11.0
+~~~~~
+- added Migration for converting Media to MoloMedia
+- added feature in homepage for MoloMedia
+- fixed admin layout
+
 5.10.0
 ~~~~~
 - add support for youtube links in MoloMedia
