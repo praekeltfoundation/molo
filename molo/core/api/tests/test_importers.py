@@ -925,8 +925,6 @@ class TestLogger(TestCase):
         self.assertTrue(self.warning_log_args["message"] in result)
         self.assertTrue(self.warning_log_args["context"]["blu"] in result)
 
-        self.assertTrue(False)
-
     def test_get_email_logs_only_errors_warnings(self):
         self.logger.record.append(self.action_log_args)
 
