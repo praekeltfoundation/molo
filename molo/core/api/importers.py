@@ -793,7 +793,7 @@ class ContentImporter(BaseImporter):
                 "content": content,
                 "outcome": "cannot import page or its descendants",
                 "foreign_page_id": content["id"]}
-            raise ImportedContentInvalid(error_context)
+            raise ImportedContentInvalid(error_context, None)
 
         try:
             parent.add_child(instance=page)
