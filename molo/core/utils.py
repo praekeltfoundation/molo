@@ -18,7 +18,6 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
 from molo.core.api.constants import KEYS_TO_EXCLUDE
-from molo.core.api.errors import ReferenceUnimportedContent
 
 
 def create_new_article_relations(old_main, copied_main):

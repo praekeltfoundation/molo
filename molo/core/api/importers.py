@@ -26,7 +26,6 @@ from molo.core.utils import (
     separate_fields,
 )
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
 

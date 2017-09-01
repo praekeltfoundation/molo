@@ -1,5 +1,3 @@
-import pytest
-
 from django.test import TestCase
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
@@ -320,7 +318,6 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         logger = importers.Logger()
 
         class_ = ArticlePage
-
 
         ArticlePage.create_page(
             content_copy, class_,
