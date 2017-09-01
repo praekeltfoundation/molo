@@ -325,15 +325,15 @@ class ImportableMixin(object):
             try:
                 function(*_args)
             except Exception as e:
-                raise
-                logger.log(
-                    ERROR,
-                    "Failed to create page content",
-                    {
-                        "foreign_page_id": foreign_id,
-                        "exception": e,
-                        "function": function.__name__,
-                    })
+                if logger:
+                    logger.log(
+                        ERROR,
+                        "Failed to create page content",
+                        {
+                            "foreign_page_id": foreign_id,
+                            "exception": e,
+                            "function": function.__name__,
+                        })
 
         # Handle content in nested_fields
         body = add_stream_fields(nested_fields, page)
@@ -356,14 +356,15 @@ class ImportableMixin(object):
                 try:
                     function(nested_fields, foreign_id)
                 except Exception as e:
-                    logger.log(
-                        ERROR,
-                        "Failed to record content",
-                        {
-                            "foreign_page_id": foreign_id,
-                            "exception": e,
-                            "function": function.__name__,
-                        })
+                    if logger:
+                        logger.log(
+                            ERROR,
+                            "Failed to record content",
+                            {
+                                "foreign_page_id": foreign_id,
+                                "exception": e,
+                                "function": function.__name__,
+                            })
 
         return page
 

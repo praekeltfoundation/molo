@@ -126,7 +126,7 @@ def fake_article_page_response(**kwargs):
 
     Pass in kwargs to suppress certain elements
     '''
-    response = ARTICLE_PAGE_RESPONSE
+    response = dict(ARTICLE_PAGE_RESPONSE)
     response.update(kwargs)
     return response
 
@@ -138,6 +138,6 @@ def fake_section_page_response(**kwargs):
 
     Pass in kwargs to suppress certain elements
     '''
-    response = SECTION_PAGE_RESPONSE
+    response = dict(SECTION_PAGE_RESPONSE)
     response.update(kwargs)
     return response
