@@ -31,6 +31,7 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.models import PageManager
 from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.wagtailimages.models import Image
 from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.models import AbstractMedia
@@ -46,6 +47,7 @@ from molo.core.utils import (
     add_list_of_things,
     attach_image,
     add_stream_fields,
+    get_image_hash
 )
 
 
@@ -255,6 +257,27 @@ class SiteSettings(BaseSetting):
             heading="Article Tag Settings"
         )
     ]
+
+
+class ImageInfo(models.Model):
+    image_hash = models.CharField(max_length=256, null=True)
+    image = models.OneToOneField(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='image_info'
+    )
+
+    def save(self, *args, **kwargs):
+        self.image_hash = get_image_hash(self.image)
+        super(ImageInfo, self).save(*args, **kwargs)
+
+
+@receiver(
+    post_save, sender=Image, dispatch_uid="create_image_info")
+def create_image_info(sender, instance, **kwargs):
+    ImageInfo.objects.create(image=instance)
 
 
 class ImportableMixin(object):
