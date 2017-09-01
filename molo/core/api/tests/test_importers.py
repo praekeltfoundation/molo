@@ -434,12 +434,14 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
         self.fake_base_url = "http://localhost:8000"
         self.mk_main()
         self.record_keeper = importers.RecordKeeper()
+        self.logger = importers.Logger()
         self.importer = importers.ContentImporter(
             self.site.pk, self.fake_base_url,
-            record_keeper=self.record_keeper)
+            record_keeper=self.record_keeper,
+            logger=self.logger)
 
     def test_attach_page(self):
-        content = constants.SECTION_PAGE_RESPONSE
+        content = utils.fake_section_page_response(image=None)
         content_copy = dict(content)
 
         result = self.importer.attach_page(
@@ -447,6 +449,9 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
             content_copy)
 
         self.assertTrue(isinstance(result, SectionPage))
+        # an empty logger means no errors were created
+        # during page creation
+        self.assertEqual(self.logger.record, [])
         self.assertEqual(
             self.section_index.get_children()[0].title,
             content["title"])
