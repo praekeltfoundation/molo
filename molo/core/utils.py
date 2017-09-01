@@ -256,14 +256,13 @@ def attach_image(field, nested_fields, page, record_keeper=None):
                 local_image = Image.objects.get(id=local_image_id)
                 setattr(page, field, local_image)
             except ObjectDoesNotExist:
-                raise Exception(
+                raise ObjectDoesNotExist(
                     ("executing attach_image: local image referenced"
-                        "in record_keeper does not actually exist."))
-            except ReferenceUnimportedContent:
-                raise Exception(
-                    ("case: 'import image if not imported yet' "
-                        "not yet implemented"))
+                     "in record_keeper does not actually exist."),
+                    None)
+            except Exception:
+                raise
         else:
             raise Exception(
-                ("case: 'attach_image without record_keeper' "
-                    "not yet implemented"))
+                ("Attempted to attach image without record_keeper. "
+                 "This functionality is not yet implemented"))

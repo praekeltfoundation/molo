@@ -782,7 +782,8 @@ class ContentImporter(BaseImporter):
 
         try:
             page = class_.create_page(
-                content_copy, class_, record_keeper=self.record_keeper)
+                content_copy, class_, record_keeper=self.record_keeper,
+                logger=self.logger)
         except Exception as e:
             # avoid side-effects of adding the page
             # TODO: restore copy of record Keeper class

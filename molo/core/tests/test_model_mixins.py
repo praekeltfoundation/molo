@@ -11,6 +11,7 @@ from molo.core.models import (
     FooterPage,
     BannerPage,
 )
+from molo.core.api.constants import ERROR
 from molo.core.api.tests import constants
 from molo.core.api import importers
 from molo.core.tests.base import MoloTestCaseMixin
@@ -307,7 +308,7 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         self.assertEqual(page.banner, image)
         self.assertEqual(page.banner.title, content["banner"]["title"])
 
-    def test_image_not_imported_throws_error(self):
+    def test_image_not_imported_logs_error(self):
         content = constants.ARTICLE_WITH_ONLY_IMAGE_RESPONSE
         content_copy = dict(content)
 
@@ -316,11 +317,16 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         # the relationship
 
         record_keeper = importers.RecordKeeper()
+        logger = importers.Logger()
 
         class_ = ArticlePage
 
-        with pytest.raises(Exception) as exception_info:
-            ArticlePage.create_page(
-                content_copy, class_, record_keeper=record_keeper)
 
-        self.assertTrue(exception_info)
+        ArticlePage.create_page(
+            content_copy, class_,
+            record_keeper=record_keeper,
+            logger=logger)
+
+        self.assertTrue(len(logger.record), 1)
+        error_log = logger.record[0]
+        self.assertEqual(error_log["log_type"], ERROR)
