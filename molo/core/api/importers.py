@@ -78,58 +78,6 @@ def list_of_objects_from_api(url):
         return items
 
 
-def record_foreign_relation(field, key, record_keeper, id_key="id"):
-    '''
-    returns a function with the attributes necessary to
-    correctly reference the necessary objects, to correctly record
-    the relationship between a page and its foreign foreign-key pages
-    '''
-    def record_relationship(nested_fields, page_id):
-        if ((field in nested_fields) and nested_fields[field]):
-            record_keeper[page_id] = []
-            for thing in nested_fields[field]:
-                if thing[key]:
-                    if thing[key][id_key]:
-                        record_keeper[page_id].append(thing[key][id_key])
-                    else:
-                        raise Exception(
-                            "key of: {} does not exist in thing[]".format(key))
-                else:
-                    raise Exception("key of: {} does not exist".format(key))
-    return record_relationship
-
-
-def record_foreign_key(field, record_keeper, id_key="id"):
-    '''
-    returns a function with the attributes necessary to replicate
-    a foreign key relation
-    '''
-    def _record_foreign_key(nested_fields, page_id):
-        if ((field in nested_fields) and nested_fields[field]):
-            record_keeper[page_id] = nested_fields[field][id_key]
-    return _record_foreign_key
-
-
-def attach_image(field, image_map):
-    '''
-    Returns a function that attaches an image to page if it exists
-
-    Assumes that images have already been imported
-    otherwise will fail silently
-    '''
-    def _attach_image(nested_fields, page):
-        if (field in nested_fields) and nested_fields[field]:
-            foreign_image_id = nested_fields[field]["id"]
-            try:
-                local_image_id = image_map[foreign_image_id]
-                local_image = Image.objects.get(id=local_image_id)
-                setattr(page, field, local_image)
-            except (KeyError, ObjectDoesNotExist):
-                # TODO: log when page is not found
-                pass
-    return _attach_image
-
-
 class PageImporter(object):
 
     def __init__(self, base_url=None, content=None, content_type=None):
