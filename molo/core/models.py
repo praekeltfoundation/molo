@@ -265,7 +265,6 @@ class ImageInfo(models.Model):
         'wagtailimages.Image',
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
         related_name='image_info'
     )
 
