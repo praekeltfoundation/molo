@@ -21,10 +21,15 @@ def convert_media_to_molo_media(apps, schema_editor):
             emit_post_migrate_signal([], 2, False, 'default', db_alias)
 
     for media in Media.objects.all():
-        new_media = MoloMedia.objects.create(
+        if media.type == 'video':
+            new_media = MoloMedia.objects.create(
             title=media.title, file=media.file, duration=media.duration,
-            type=media.type, width=media.width,
-            height=media.height, thumbnail=media.thumbnail)
+            type=media.type, width=media.width, height=media.height,
+            thumbnail=media.thumbnail)
+        else:
+            new_media = MoloMedia.objects.create(
+            title=media.title, file=media.file, duration=media.duration,
+            type=media.type)
         media.file = None
         media.save()
         for article in ArticlePage.objects.all():
@@ -37,7 +42,7 @@ def convert_media_to_molo_media(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0066_add_custom_media_model'),
+        ('core', '0067_promote_homepage_media'),
         ('wagtailmedia', '0003_copy_media_permissions_to_collections'),
     ]
 
