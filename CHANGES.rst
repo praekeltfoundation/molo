@@ -1,8 +1,13 @@
 CHANGE LOG
 ==========
 
+5.12.0
+~~~~~
+- added Migration for converting Media to MoloMedia (FIXED)
+
 5.11.0
 ~~~~~
+- DO NOT ADD THIS RELEASE (Migration Faulty)
 - added Migration for converting Media to MoloMedia
 - added feature in homepage for MoloMedia
 - fixed admin layout
