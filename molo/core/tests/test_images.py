@@ -7,6 +7,7 @@ from molo.core.tests.base import MoloTestCaseMixin
 
 
 class TestImportableMixin(MoloTestCaseMixin, TestCase):
+class TestImageInfoObject(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.mk_main()
 
@@ -50,3 +51,15 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
         # check image hash in image info is correct
         self.assertEquals(image_info.image_hash, '0000000000000000')
         self.assertEquals(image_info.image, image)
+
+    def test_attaching_image_info_save_image_twice(self):
+        # creates the image which includes saving the image
+        image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+        self.assertEquals(ImageInfo.objects.count(), 1)
+        image.save()
+        # confirm that we're not creating an ImageInfo
+        # object each time
+        self.assertEquals(ImageInfo.objects.count(), 1)
