@@ -63,3 +63,16 @@ class TestImageInfoObject(MoloTestCaseMixin, TestCase):
         # confirm that we're not creating an ImageInfo
         # object each time
         self.assertEquals(ImageInfo.objects.count(), 1)
+
+    def test_image_info_deleted_with_image(self):
+        image = Image.objects.create(
+            title="Test image",
+            file=get_test_image_file(),
+        )
+        self.assertEquals(Image.objects.count(), 1)
+        self.assertEquals(ImageInfo.objects.count(), 1)
+
+        image.delete()
+
+        self.assertEquals(Image.objects.count(), 0)
+        self.assertEquals(ImageInfo.objects.count(), 0)
