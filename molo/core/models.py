@@ -375,6 +375,7 @@ class PreventDeleteMixin(object):
 
 class MoloMedia(AbstractMedia):
     youtube_link = models.CharField(max_length=512, null=True, blank=True)
+    feature_in_homepage = models.BooleanField(default=False)
 
     admin_form_fields = (
         'title',
@@ -386,6 +387,7 @@ class MoloMedia(AbstractMedia):
         'thumbnail',
         'tags',
         'youtube_link',
+        'feature_in_homepage',
     )
 
 

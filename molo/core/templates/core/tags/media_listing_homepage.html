@@ -1,0 +1,27 @@
+{% load core_tags media_tags wagtailembeds_tags i18n %}
+
+{% block homepage_media %}
+{% for media in media %}
+  {% if media.youtube_link %}
+    <div class="responsive-object">
+      {% embed media.youtube_link %}
+    </div>
+    <button>
+    <a href={{media.file.url}} download>{% trans "Click to Download!" %}</a>
+    </button>
+    <a href={{media.youtube_link}}>{% trans "Click to watch on youtube!" %}</a>
+  {% elif media.type == 'video'%}
+    <video width="320" height="240" controls>
+        <source src={{media.file.url}} type="video/mp4">
+        {% trans "Your browser does not support the video tag." %}
+    </video>
+  {% elif media.type == 'audio'%}
+    <div>
+        <audio controls><source src={{media.file.url}}
+          type="audio/mpeg">{% trans "Click here to download" %}
+          <a href={{media.file.url}}>{{media.title}}</a>
+        </audio>
+    </div>
+  {% endif %}
+{% endfor%}
+{% endblock %}
