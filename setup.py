@@ -39,7 +39,7 @@ install_requires = [
     'unicore.content',
     'wagtail>=1.9,<1.10',
     'wagtailmedia==0.1.3',
-    'imagehash',
+    'ImageHash==3.4',
 ]
 
 setup(name='molo.core',
