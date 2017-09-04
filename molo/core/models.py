@@ -277,7 +277,8 @@ class ImageInfo(models.Model):
 @receiver(
     post_save, sender=Image, dispatch_uid="create_image_info")
 def create_image_info(sender, instance, **kwargs):
-    ImageInfo.objects.create(image=instance)
+    if not hasattr(instance, 'image_info'):
+        ImageInfo.objects.create(image=instance)
 
 
 class ImportableMixin(object):
