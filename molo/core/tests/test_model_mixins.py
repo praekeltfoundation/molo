@@ -28,6 +28,11 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
 
         self.assertEqual(type(tag), Tag)
         self.assertEqual(tag.title, content["title"])
+        self.assertEqual(tag.title, content["title"])
+        self.assertEqual(tag.feature_in_homepage, content["feature_in_homepage"])
+        self.assertEqual(tag.go_live_at, content["go_live_at"])
+        self.assertEqual(tag.expire_at, content["expire_at"])
+        self.assertEqual(tag.expired, content["expired"])
 
     def check_article_and_footer_fields(self, page, content, record_keeper):
         self.assertEqual(page.title, content["title"])

@@ -1105,7 +1105,10 @@ TAG_PAGE_RESPONSE = {
         "main_language_children": None
     },
     "title": "NAV TAG 1",
-    "feature_in_homepage": False
+    "feature_in_homepage": False,
+    "go_live_at": "2017-09-01T16:48:00Z",
+    "expire_at": "2017-09-19T16:48:00Z",
+    "expired": False
 }
 
 SECTION_PAGE_RESPONSE_FRENCH = {

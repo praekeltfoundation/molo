@@ -682,7 +682,10 @@ class Tag(TranslatablePageMixin, Page, ImportableMixin):
 
     feature_in_homepage = models.BooleanField(default=False)
 
-    api_fields = ["id", "title", "feature_in_homepage"]
+    api_fields = [
+        "id", "title", "feature_in_homepage", "go_live_at",
+        "expire_at", "expired"
+    ]
 
 Tag.promote_panels = [
     FieldPanel('feature_in_homepage'),
