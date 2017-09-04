@@ -5,7 +5,8 @@ quite a bit of mocking.
 """
 import os
 import pytest
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase, override_settings
 from mock import patch
 
 from molo.core.api import importers
@@ -170,6 +171,9 @@ class TestBaseImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(base_importer.base_url, self.fake_base_url[:-1])
 
 
+@override_settings(MEDIA_ROOT=os.path.join(settings.PROJECT_ROOT, 'media'))
+@override_settings(
+    DEFAULT_FILE_STORAGE='django.core.files.storage.FileSystemStorage')
 class TestImageImporter(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.fake_base_url = "http://localhost:8000"
