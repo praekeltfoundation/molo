@@ -172,11 +172,31 @@ def update_media_file(upload_file):
 def get_image_hash(image):
     '''
     Returns an image hash of a Wagtail Image
+
+    Handles case where default django storage is used
+    as well as images stored on AWS S3
     '''
-    with open(image.file.path, 'r') as file:
-        image_in_memory = StringIO(file.read())
+    if not image.file:
+        return None
+
+    # image is stored on s3
+    if settings.DEFAULT_FILE_STORAGE == 'storages.backends.s3boto.S3BotoStorage':  # noqa
+        s3_file = image.file._get_file()
+        image_in_memory = StringIO(s3_file.read())
         pil_image = PILImage.open(image_in_memory)
         return imagehash.average_hash(pil_image).__str__()
+    # image is stored locally
+    elif settings.DEFAULT_FILE_STORAGE == 'django.core.files.storage.FileSystemStorage':  # noqa
+        with open(image.file.path, 'r') as file:
+            image_in_memory = StringIO(file.read())
+            pil_image = PILImage.open(image_in_memory)
+            return imagehash.average_hash(pil_image).__str__()
+    else:
+        raise NotImplementedError(
+            ("settings.DEFAULT_FILE_STORAGE of {} not handled "
+             "in get_image_hash function").format(
+                settings.DEFAULT_FILE_STORAGE),
+            None)
 
 
 def separate_fields(fields):
