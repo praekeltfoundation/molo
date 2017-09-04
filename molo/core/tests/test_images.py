@@ -1,4 +1,7 @@
-from django.test import TestCase
+from os.path import join
+
+from django.test import TestCase, override_settings
+from django.conf import settings
 
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
@@ -6,7 +9,9 @@ from molo.core.models import ImageInfo
 from molo.core.tests.base import MoloTestCaseMixin
 
 
-class TestImportableMixin(MoloTestCaseMixin, TestCase):
+@override_settings(MEDIA_ROOT=join(settings.PROJECT_ROOT, 'media'))
+@override_settings(
+    DEFAULT_FILE_STORAGE='django.core.files.storage.FileSystemStorage')
 class TestImageInfoObject(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.mk_main()
