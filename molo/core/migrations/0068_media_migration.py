@@ -21,13 +21,15 @@ def convert_media_to_molo_media(apps, schema_editor):
             emit_post_migrate_signal([], 2, False, 'default', db_alias)
 
     for media in Media.objects.all():
-        new_media = MoloMedia.objects.create(
+        if media.type == 'video':
+            new_media = MoloMedia.objects.create(
+            title=media.title, file=media.file, duration=media.duration,
+            type=media.type, width=media.width, height=media.height,
+            thumbnail=media.thumbnail)
+        else:
+            new_media = MoloMedia.objects.create(
             title=media.title, file=media.file, duration=media.duration,
             type=media.type)
-        if media.type = 'video':
-            new_media.update(
-                width=media.width, height=media.height,
-                thumbnail=media.thumbnail)
         media.file = None
         media.save()
         for article in ArticlePage.objects.all():
