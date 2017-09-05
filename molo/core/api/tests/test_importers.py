@@ -239,18 +239,19 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
     @responses.activate
     def test_fetch_and_create_image_new_image(self):
         image_title = "test_title.png"
-        relative_url = "/media/images/SIbomiWV1AQ.original.jpg"
+        url = "{}/media/images/SIbomiWV1AQ.original.jpg".format(
+            self.fake_base_url)
         test_file_path = os.getcwd() + '/molo/core/api/tests/test_image.png'
 
         with open(test_file_path, 'rb') as img1:
             responses.add(
-                responses.GET, '{}{}'.format(self.fake_base_url, relative_url),
+                responses.GET, url,
                 body=img1.read(), status=200,
                 content_type='image/jpeg',
                 stream=True
             )
         result, context = self.importer.fetch_and_create_image(
-            relative_url,
+            url,
             image_title)
 
         self.assertEqual(type(result), Image)
@@ -258,8 +259,8 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(Image.objects.count(), 1)
 
         self.assertEqual(
-            context["requested_url"],
-            "{}{}".format(self.importer.base_url, relative_url))
+            context["file_url"],
+            url)
 
     @responses.activate
     def test_import_image_raise_exception(self):
@@ -304,7 +305,7 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
 
         # check that record has been created
         self.assertEqual(
-            context['requested_url'],
+            context['file_url'],
             "{}{}".format(self.fake_base_url, image_file_location))
 
     @responses.activate
@@ -335,7 +336,7 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
         # Check context
         self.assertTrue(context["local_version_existed"])
         self.assertEqual(
-            context["url"],
+            context["file_url"],
             "{}{}".format(self.fake_base_url, image_file_location))
         self.assertEqual(
             context["foreign_title"],
