@@ -955,10 +955,13 @@ class ContentImporter(BaseImporter):
             self.log(SUCCESS, "Data Fetched Successfully", {"url": url})
 
             main_language_child_ids = content["meta"]["main_language_children"]
-            for main_language_child_id in main_language_child_ids:
-                    self.copy_page_and_children(
-                        foreign_id=main_language_child_id,
-                        parent_id=existing_node.id, depth=1)
+            if main_language_child_ids:
+                for main_language_child_id in main_language_child_ids:
+                        self.copy_page_and_children(
+                            foreign_id=main_language_child_id,
+                            parent_id=existing_node.id, depth=1)
+            else:
+                self.log(SUCCESS, "No children to copy")
         except Exception as e:
             self.log(ERROR, "Copying Children", {"url": url, "exception": e})
 
