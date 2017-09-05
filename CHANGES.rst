@@ -1,6 +1,28 @@
 CHANGE LOG
 ==========
 
+5.13.0
+~~~~~
+- refactored importing of site content via api
+- created ImageInfo model to store image hashes
+- bug fixes in api endpoints
+- bug fixes in site importing
+
+5.12.0
+~~~~~
+- added Migration for converting Media to MoloMedia (FIXED)
+
+5.11.0
+~~~~~
+- DO NOT ADD THIS RELEASE (Migration Faulty)
+- added Migration for converting Media to MoloMedia
+- added feature in homepage for MoloMedia
+- fixed admin layout
+
+5.10.0
+~~~~~
+- add support for youtube links in MoloMedia
+
 5.9.5
 ~~~~~
 - fix admin layout styling bugs

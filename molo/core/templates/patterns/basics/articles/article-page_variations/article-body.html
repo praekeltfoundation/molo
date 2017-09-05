@@ -1,10 +1,30 @@
-{% load wagtailcore_tags wagtailimages_tags core_tags  %}
+{% load wagtailcore_tags wagtailimages_tags core_tags wagtailembeds_tags  %}
 <article class="{{articletype}}">
   {% for block in self.body %}
     {% if block.block_type == 'heading' %}
       <h3 class="heading heading--large">{{ block.value }}</h3>
     {% elif block.block_type == 'image' %}
       {% image block.value width-320 %}
+    {% elif block.value.youtube_link %}
+    <div class="responsive-object">
+      {% embed block.value.youtube_link %}
+    </div>
+      <button>
+      <a href={{block.value.file.url}} download>Click to Download!</a>
+      </button>
+      <a href={{block.value.youtube_link}}>Click to watch on youtube!</a>
+    {% elif block.value.type == 'video'%}
+      <video width="320" height="240" controls>
+          <source src={{block.value.file.url}} type="video/mp4">
+          Your browser does not support the video tag.
+      </video>
+    {% elif block.value.type == 'audio'%}
+      <div>
+          <audio controls><source src={{block.value.file.url}}
+            type="audio/mpeg">Click here to download
+            <a href={{block.value.file.url}}>{{block.value.title}}</a>
+          </audio>
+      </div>
     {% elif block.block_type == 'numbered_list' %}
       <ol class="ordered-list">
       {% for item in block.value %}

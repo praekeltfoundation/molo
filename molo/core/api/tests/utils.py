@@ -107,10 +107,16 @@ def mocked_requests_get(url, *args, **kwargs):
 
 
 def mocked_fetch_and_create_image(relative_url, image_title):
-    return Image.objects.create(
+    image = Image.objects.create(
         title=image_title,
         file=get_test_image_file(),
     )
+    image_media_url = "http://localhost:8000{}".format(relative_url)
+    context = {
+        "requested_url": image_media_url,
+        "foreign_title": image_title.encode('utf-8'),
+    }
+    return (image, context)
 
 
 def fake_article_page_response(**kwargs):
@@ -120,7 +126,7 @@ def fake_article_page_response(**kwargs):
 
     Pass in kwargs to suppress certain elements
     '''
-    response = ARTICLE_PAGE_RESPONSE
+    response = dict(ARTICLE_PAGE_RESPONSE)
     response.update(kwargs)
     return response
 
@@ -132,6 +138,6 @@ def fake_section_page_response(**kwargs):
 
     Pass in kwargs to suppress certain elements
     '''
-    response = SECTION_PAGE_RESPONSE
+    response = dict(SECTION_PAGE_RESPONSE)
     response.update(kwargs)
     return response

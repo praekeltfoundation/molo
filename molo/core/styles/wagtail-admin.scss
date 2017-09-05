@@ -22,7 +22,6 @@ WAGTAIL ADMIN
   margin: 0 0 8px 0;
 }
 @media screen and (min-width: 50em) {
-  //Left Sidebar
   .nav-wrapper {
     min-width: 12.6%;
     max-width: 180px;
@@ -38,8 +37,13 @@ WAGTAIL ADMIN
   }
 }
 @media screen and (min-width: 90em) {
+  body.login.ready .wrapper {
+    padding-left: 100px !important;
+  }
+  body.ready .wrapper {
+    padding-left: 12.8% !important;
+  }
   .wrapper {
     max-width: 100%;
-    padding-left: 12.6% !important;
   }
 }

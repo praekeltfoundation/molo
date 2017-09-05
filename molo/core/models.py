@@ -31,14 +31,24 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.models import PageManager
 from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.wagtailimages.models import Image
 from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
-
-from molo.core.blocks import MarkDownBlock, MultimediaBlock, \
-    SocialMediaLinkBlock
+from wagtailmedia.blocks import AbstractMediaChooserBlock
+from wagtailmedia.models import AbstractMedia
+from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
 from molo.core import constants
+from molo.core.api.constants import ERROR
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
+from molo.core.utils import (
+    separate_fields,
+    add_json_dump,
+    add_list_of_things,
+    attach_image,
+    add_stream_fields,
+    get_image_hash
+)
 
 
 class BaseReadOnlyPanel(EditHandler):
@@ -249,8 +259,162 @@ class SiteSettings(BaseSetting):
     ]
 
 
+class ImageInfo(models.Model):
+    image_hash = models.CharField(max_length=256, null=True)
+    image = models.OneToOneField(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        related_name='image_info'
+    )
+
+    def save(self, *args, **kwargs):
+        self.image_hash = get_image_hash(self.image)
+        super(ImageInfo, self).save(*args, **kwargs)
+
+
+@receiver(
+    post_save, sender=Image, dispatch_uid="create_image_info")
+def create_image_info(sender, instance, **kwargs):
+    if not hasattr(instance, 'image_info'):
+        ImageInfo.objects.create(image=instance)
+
+
+class ImportableMixin(object):
+    @classmethod
+    def create_page(self, content, class_, record_keeper=None, logger=None):
+        '''
+        Robust as possible
+
+        Attempts to create the page
+        If any of the functions used to attach content to the page
+        fail, keep going, keep a record of those errors in a context dict
+        return the page and the context dict in a tuple
+        '''
+        fields, nested_fields = separate_fields(content)
+
+        foreign_id = content.pop('id')
+
+        # remove unwanted fields
+        if 'latest_revision_created_at' in content:
+            content.pop('latest_revision_created_at')
+
+        page = class_(**fields)
+
+        # create functions to attach attributes
+        function_args_mapping = (
+            # add_section_time
+            (add_json_dump, ("time", nested_fields, page)),
+            # add_tags
+            (add_list_of_things, ("tags", nested_fields, page)),
+            # add_metadata_tags
+            (add_list_of_things, ("metadata_tags", nested_fields, page)),
+
+            # attach_image
+            (attach_image, ("image", nested_fields, page, record_keeper)),
+            # attach_social_media_image
+            (attach_image, ("social_media_image", nested_fields,
+                            page, record_keeper)),
+            # attach_banner_image
+            (attach_image, ("banner", nested_fields, page, record_keeper)),
+        )
+
+        for mapping in function_args_mapping:
+            function = mapping[0]
+            _args = mapping[1]
+            try:
+                function(*_args)
+            except Exception as e:
+                if logger:
+                    logger.log(
+                        ERROR,
+                        "Failed to create page content",
+                        {
+                            "foreign_page_id": foreign_id,
+                            "exception": e,
+                            "function": function.__name__,
+                        })
+
+        # Handle content in nested_fields
+        body = add_stream_fields(nested_fields, page)
+        # body has not been added as it contains reference to pages
+        if body:
+            record_keeper.article_bodies[foreign_id] = body
+
+        # Handle relationships in nested_fields
+        if record_keeper:
+            record_relation_functions = [
+                record_keeper.record_nav_tags,
+                record_keeper.record_recommended_articles,
+                record_keeper.record_reaction_questions,
+                record_keeper.record_related_sections,
+                record_keeper.record_section_tags,
+                record_keeper.record_banner_page_link,
+            ]
+
+            for function in record_relation_functions:
+                try:
+                    function(nested_fields, foreign_id)
+                except Exception as e:
+                    if logger:
+                        logger.log(
+                            ERROR,
+                            "Failed to record content",
+                            {
+                                "foreign_page_id": foreign_id,
+                                "exception": e,
+                                "function": function.__name__,
+                            })
+
+        return page
+
+
 class PreventDeleteMixin(object):
     hide_delete_button = True
+
+
+class MoloMedia(AbstractMedia):
+    youtube_link = models.CharField(max_length=512, null=True, blank=True)
+    feature_in_homepage = models.BooleanField(default=False)
+
+    admin_form_fields = (
+        'title',
+        'file',
+        'collection',
+        'duration',
+        'width',
+        'height',
+        'thumbnail',
+        'tags',
+        'youtube_link',
+        'feature_in_homepage',
+    )
+
+
+class MoloMediaBlock(AbstractMediaChooserBlock):
+    def render_basic(self, value, context):
+        if not value:
+            return ''
+
+        if value.type == 'video':
+            player_code = '''
+            <div>
+                <video width="320" height="240" controls>
+                    <source src="{0}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            '''
+        else:
+            player_code = '''
+            <div>
+                <audio controls>
+                    <source src="{0}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            '''
+        return format_html(player_code, value.file.url)
 
 
 class CommentedPageMixin(object):
@@ -512,13 +676,16 @@ class ReactionQuestionResponse(models.Model):
         request.session.modified = True
 
 
-class Tag(TranslatablePageMixin, Page):
+class Tag(TranslatablePageMixin, Page, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
 
     feature_in_homepage = models.BooleanField(default=False)
 
-    api_fields = ["id", "title", "feature_in_homepage"]
+    api_fields = [
+        "id", "title", "feature_in_homepage", "go_live_at",
+        "expire_at", "expired"
+    ]
 
 Tag.promote_panels = [
     FieldPanel('feature_in_homepage'),
@@ -528,7 +695,7 @@ Tag.promote_panels = [
 ]
 
 
-class BannerIndexPage(Page, PreventDeleteMixin):
+class BannerIndexPage(Page, PreventDeleteMixin, ImportableMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
 
@@ -539,7 +706,7 @@ class BannerIndexPage(Page, PreventDeleteMixin):
         super(BannerIndexPage, self).copy(*args, **kwargs)
 
 
-class BannerPage(TranslatablePageMixin, Page):
+class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
     parent_page_types = ['core.BannerIndexPage']
     subpage_types = []
 
@@ -810,7 +977,8 @@ SectionIndexPage.content_panels = [
 ]
 
 
-class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
+class SectionPage(ImportableMixin, CommentedPageMixin,
+                  TranslatablePageMixin, Page):
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
@@ -886,7 +1054,8 @@ class SectionPage(CommentedPageMixin, TranslatablePageMixin, Page):
         "tuesday_rotation", "wednesday_rotation", "thursday_rotation",
         "friday_rotation", "saturday_rotation", "sunday_rotation",
         "content_rotation_start_date", "content_rotation_end_date",
-        "section_tags",
+        "section_tags", "enable_next_section", "enable_recommended_section",
+        "go_live_at", "expire_at", "expired"
     ]
 
     @classmethod
@@ -1034,7 +1203,7 @@ class ArticlePageMetaDataTag(TaggedItemBase):
         'core.ArticlePage', related_name='metadata_tagged_items')
 
 
-class ArticlePage(CommentedPageMixin,
+class ArticlePage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, PageEffectiveImageMixin, Page):
     parent_page_types = ['core.SectionPage']
 
@@ -1085,7 +1254,7 @@ class ArticlePage(CommentedPageMixin,
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
-        ('media', MultimediaBlock()),
+        ('media', MoloMediaBlock(icon='media'),)
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
@@ -1222,6 +1391,7 @@ class ArticlePage(CommentedPageMixin,
         "social_media_image", "social_media_description",
         "social_media_title", "reaction_questions",
         "nav_tags", "recommended_articles", "related_sections",
+        "go_live_at", "expire_at", "expired"
     ]
 
     @classmethod
