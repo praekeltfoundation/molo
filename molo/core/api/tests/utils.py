@@ -106,14 +106,13 @@ def mocked_requests_get(url, *args, **kwargs):
     return MockResponse({}, 404)
 
 
-def mocked_fetch_and_create_image(relative_url, image_title):
+def mocked_fetch_and_create_image(url, image_title):
     image = Image.objects.create(
         title=image_title,
         file=get_test_image_file(),
     )
-    image_media_url = "http://localhost:8000{}".format(relative_url)
     context = {
-        "requested_url": image_media_url,
+        "file_url": url,
         "foreign_title": image_title.encode('utf-8'),
     }
     return (image, context)
