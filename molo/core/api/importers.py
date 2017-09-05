@@ -460,7 +460,7 @@ class ImageImporter(BaseImporter):
         '''
 
         context = {
-            "requested_url": url,
+            "file_url": url,
             "foreign_title": image_title,
         }
         try:
@@ -517,11 +517,19 @@ class ImageImporter(BaseImporter):
             img_info["height"],
             img_info["image_hash"])
 
+        file_url = img_info['image_url']
+
+        # handle when image_url is relative
+        # assumes that image import means local storage
+        if img_info['image_url'][0] == '/':
+            file_url = "{}{}".format(
+                self.base_url, img_info['image_url'])
+
         if local_image:
             context = {
                 "local_version_existed": True,
-                "url": "{}{}".format(self.base_url,
-                                     img_info['image_url']),
+                "file_url": file_url,
+                "image_detail_url": image_detail_url,
                 "foreign_title": img_info["title"].encode('utf-8'),
             }
             # update record keeper
@@ -531,16 +539,8 @@ class ImageImporter(BaseImporter):
                     local_image.id)
             return (local_image, context)
         else:
-            url = img_info['image_url']
-
-            # handle when image_url is relative
-            # assumes that image import means local storage
-            if img_info['image_url'][0] == '/':
-                url = image_media_url = "{}{}".format(
-                    self.base_url, relative_url)
-
             new_image, context = self.fetch_and_create_image(
-                url,
+                file_url,
                 img_info["title"].encode('utf-8'))
             # update record keeper
             if self.record_keeper:
