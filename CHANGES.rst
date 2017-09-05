@@ -1,6 +1,13 @@
 CHANGE LOG
 ==========
 
+5.13.0
+~~~~~
+- refactored importing of site content via api
+- created ImageInfo model to store image hashes
+- bug fixes in api endpoints
+- bug fixes in site importing
+
 5.12.0
 ~~~~~
 - added Migration for converting Media to MoloMedia (FIXED)
