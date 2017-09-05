@@ -451,24 +451,20 @@ class ImageImporter(BaseImporter):
                         return matching_image
         return None
 
-    def fetch_and_create_image(self, relative_url, image_title):
+    def fetch_and_create_image(self, url, image_title):
         '''
         fetches, creates image object
 
         returns tuple with Image object and context dictionary containing
         request URL
-
-        TODO: handle hosting media on AWS as well
-        this assumes we are self-hosting media content
         '''
 
-        image_media_url = "{}{}".format(self.base_url, relative_url)
         context = {
-            "requested_url": image_media_url,
+            "requested_url": url,
             "foreign_title": image_title,
         }
         try:
-            image_file = requests.get(image_media_url)
+            image_file = requests.get(url)
             local_image = Image(
                 title=image_title,
                 file=ImageFile(
@@ -535,8 +531,16 @@ class ImageImporter(BaseImporter):
                     local_image.id)
             return (local_image, context)
         else:
+            url = img_info['image_url']
+
+            # handle when image_url is relative
+            # assumes that image import means local storage
+            if img_info['image_url'][0] == '/':
+                url = image_media_url = "{}{}".format(
+                    self.base_url, relative_url)
+
             new_image, context = self.fetch_and_create_image(
-                img_info['image_url'],
+                url,
                 img_info["title"].encode('utf-8'))
             # update record keeper
             if self.record_keeper:
