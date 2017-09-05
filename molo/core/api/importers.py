@@ -451,24 +451,20 @@ class ImageImporter(BaseImporter):
                         return matching_image
         return None
 
-    def fetch_and_create_image(self, relative_url, image_title):
+    def fetch_and_create_image(self, url, image_title):
         '''
         fetches, creates image object
 
         returns tuple with Image object and context dictionary containing
         request URL
-
-        TODO: handle hosting media on AWS as well
-        this assumes we are self-hosting media content
         '''
 
-        image_media_url = "{}{}".format(self.base_url, relative_url)
         context = {
-            "requested_url": image_media_url,
+            "file_url": url,
             "foreign_title": image_title,
         }
         try:
-            image_file = requests.get(image_media_url)
+            image_file = requests.get(url)
             local_image = Image(
                 title=image_title,
                 file=ImageFile(
@@ -521,11 +517,19 @@ class ImageImporter(BaseImporter):
             img_info["height"],
             img_info["image_hash"])
 
+        file_url = img_info['image_url']
+
+        # handle when image_url is relative
+        # assumes that image import means local storage
+        if img_info['image_url'][0] == '/':
+            file_url = "{}{}".format(
+                self.base_url, img_info['image_url'])
+
         if local_image:
             context = {
                 "local_version_existed": True,
-                "url": "{}{}".format(self.base_url,
-                                     img_info['image_url']),
+                "file_url": file_url,
+                "image_detail_url": image_detail_url,
                 "foreign_title": img_info["title"].encode('utf-8'),
             }
             # update record keeper
@@ -536,7 +540,7 @@ class ImageImporter(BaseImporter):
             return (local_image, context)
         else:
             new_image, context = self.fetch_and_create_image(
-                img_info['image_url'],
+                file_url,
                 img_info["title"].encode('utf-8'))
             # update record keeper
             if self.record_keeper:

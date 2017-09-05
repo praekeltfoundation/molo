@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+5.13.1
+~~~~~
+- fix image import bug which did not handle absolute URLs (i.e. storage on S3)
+
 5.13.0
 ~~~~~
 - refactored importing of site content via api
