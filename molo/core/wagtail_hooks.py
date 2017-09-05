@@ -136,6 +136,15 @@ def add_import_view():
     return molo_api_urls.urlpatterns
 
 
+@hooks.register('register_admin_menu_item')
+def register_api_menu_item():
+    return MenuItem(
+        _('API'),
+        urlresolvers.reverse('site-import'),
+        classnames='icon icon-download',
+    )
+
+
 class LanguageSummaryItem(SummaryItem):
     order = 500
     template = 'wagtail/site_languages_summary.html'
@@ -184,6 +193,15 @@ def hide_import_content_if_not_uc_user(request, menu_items):
             groups__name='Universal Core Importers').exists():
         menu_items[:] = [
             item for item in menu_items if item.name != 'import-content']
+
+
+@hooks.register('construct_main_menu')
+def hide_site_import_if_not_in_importer_group(request, menu_items):
+    if not User.objects.filter(
+            pk=request.user.pk,
+            groups__name='Site Importers').exists():
+        menu_items[:] = [
+            item for item in menu_items if item.name != 'api']
 
 
 @hooks.register('construct_main_menu')
