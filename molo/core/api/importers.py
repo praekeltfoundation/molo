@@ -21,10 +21,7 @@ from molo.core.api.constants import (
     WARNING,
 )
 from molo.core.api.errors import *  # noqa
-from molo.core.utils import (
-    get_image_hash,
-    separate_fields,
-)
+from molo.core.utils import separate_fields
 
 from django.conf import settings
 
@@ -425,7 +422,11 @@ class ImageImporter(BaseImporter):
             return None
 
         for local_image in Image.objects.all():
-            self.image_hashes[get_image_hash(local_image)] = local_image
+            if not hasattr(local_image, 'image_info'):
+                ImageInfo.objects.create(image=local_image)
+                local_image.refresh_from_db()
+
+            self.image_hashes[local_image.image_info.image_hash] = local_image
 
             if local_image.width in self.image_widths:
                 self.image_widths[local_image.width].append(local_image)
