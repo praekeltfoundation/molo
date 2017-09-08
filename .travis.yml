@@ -26,9 +26,8 @@ matrix:
     - sudo: required
       services: docker
       env:
-        global:
-          - REGISTRY_USER=praekeltorgdeploy
-          - REGISTRY_PASS=todo
+        - REGISTRY_USER=praekeltorgdeploy
+        - secure: "XWu9BQRvElBq0riHKc+R9b9h0cLdHL8V7K1QN1QOst6B0/Ack1lJt2vwn52uze7e+ERPJGjSfAVmaCG8hMJGZrvntAizpPaSDHlJy+jrZM2cQ2E2g0oqifD4/r1kY43LGu5+JTOQIYaQq4l1ixZMAnn5fq336DHP1FXLOhN8clKv6nSzOx8ad8cJlrzHWuHvn6VrMsuFfIybJjobGkzDN4jU+oJzlOq6vkKDDvimpk1+M8t2Td0fR3pRQZp4Nha8qJFc0FyZMjj24gkaWFcotzsxTTM5Qr4tGMkp+NM8tWe6OAMa3p97bfuHlN2pOK6LwhAYV8KJABTHifx/oaOkeSguiYpHpPMA1+/miEa+6b6zK1tVqT1BWxXn0HJDukHY6sa7wmpO4wCnkWqxebeOgGCqxY93VB+plQo5DNEpcZT6yCI8Tb6WQ2X6yxXt4bWE0lSooXS8pYghDh3l9eLOYwQgfbNyBWYclchViwpCLZjYzJ/Qs7qwB6H3yNrzRZtHUb9hs8SK4W2tiniNR52hUMdnxw1od8MhzUipJygLYIXCk9NlXafyUFDH+SZv19yBk5z+bZ5uNuZaUVnr0K67/TxdGgoYhkJCRQc4bkVykMem4W5FLSq3HlgxeLoyBkApERo78hUzldQIB7e67ktyfxNJVIKL1LHqHrIgmdODCGo="
       install:
         - git clone -b dev-image https://github.com/praekeltfoundation/docker-molo-bootstrap.git docker
       before_script:
