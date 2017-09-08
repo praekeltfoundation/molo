@@ -37,7 +37,7 @@ matrix:
         - docker pull "$cache_from" || true
       script:
         - python setup.py bdist_wheel && cp -r dist docker
-        - docker build --pull --cache-from "$cache_from" -t "$image" docker
+        - docker build --pull --cache-from "$cache_from" -t "$image" -f docker/dev.dockerfile docker
         - docker build --cache-from "$cache_from" -t "$image:onbuild" docker/onbuild
       before_deploy:
         - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
