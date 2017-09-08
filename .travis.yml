@@ -49,6 +49,11 @@ matrix:
         on:
           branch: develop
 
+      # Clear unused build steps
+      cache:
+      before_install: []
+      after_success: []
+
 services:
   - elasticsearch
   - redis-server
