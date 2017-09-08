@@ -4,6 +4,7 @@ language: python
 matrix:
   include:
     - python: '2.7'
+
     # Include a separate job for the node tests
     - language: node_js
       node_js: '6' # LTS version
@@ -20,6 +21,33 @@ matrix:
       services: []
       deploy: []
       after_success: []
+
+    # Docker dev image
+    - sudo: required
+      services: docker
+      env:
+        global:
+          - REGISTRY_USER=praekeltorgdeploy
+          - REGISTRY_PASS=todo
+      install:
+        - git clone -b dev-image https://github.com/praekeltfoundation/docker-molo-bootstrap.git docker
+      before_script:
+        - image="$(awk '$1 == "FROM" { print $2; exit }' docker/onbuild/Dockerfile)"
+        - cache_from="${image}:develop-onbuild"
+        - docker pull "$cache_from" || true
+      script:
+        - python setup.py bdist_wheel && cp -r dist docker
+        - docker build --pull --cache-from "$cache_from" -t "$image" docker
+        - docker build --cache-from "$cache_from" -t "$image:onbuild" docker/onbuild
+      before_deploy:
+        - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
+        - pip install docker-ci-deploy==0.3.0
+        - version="$(git rev-parse --short HEAD)"
+      deploy:
+        provider: script
+        script: dcd -t develop -V "$version" -L "$image" && dcd -t develop-onbuild -V "$version" -L "$image:onbuild"
+        on:
+          branch: develop
 
 services:
   - elasticsearch
