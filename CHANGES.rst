@@ -1,6 +1,3 @@
-CHANGE LOG
-==========
-
 5.13.1
 ~~~~~~
 - fix image import bug which did not handle absolute URLs (i.e. storage on S3)
@@ -230,6 +227,22 @@ CHANGE LOG
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
 
+4.x
+~~~
+
+Main Features::
+
+- Upgraded to Wagtail 1.8
+- Added upload/download functionality for zipped media files
+- Next and Recommended articles in articles
+
+Backwards incompatible changes::
+
+- Deprecatad use of ``wagtailmodeladmin``: ``wagtailmodeladmin`` package has been replaced by ``wagtail.contrib.modeladmin``
+- ``wagtailmodeladmin_register`` function is replaced by ``modeladmin_register``
+- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
+- ``search_fields`` now uses a list instead of a tuple
+
 4.4.13
 ~~~~~~
 - Insure content demotion happens for each section individually
@@ -311,24 +324,8 @@ CHANGE LOG
 - added multi-language next and recommended article feature
 
 4.1.0
-~~~~~~
+~~~~~
 - Add sitemap - include translations
-
-4.x
----
-
-Main Features::
-
-- Upgraded to Wagtail 1.8
-- Added upload/download functionality for zipped media files
-- Next and Recommended articles in articles
-
-Backwards incompatible changes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Deprecatad use of ``wagtailmodeladmin``: ``wagtailmodeladmin`` package has been replaced by ``wagtail.contrib.modeladmin``
-- ``wagtailmodeladmin_register`` function is replaced by ``modeladmin_register``
-- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
-- ``search_fields`` now uses a list instead of a tuple
 
 4.0.2
 ~~~~~
@@ -347,7 +344,7 @@ Backwards incompatible changes
 - added edit permission for Main page to moderator and editor groups
 
 3.x
----
+~~~
 
 Major revamp to the way we handle Multi Language on Molo and a bunch of new features
 
@@ -366,8 +363,8 @@ Main features::
 - Add ability to show a highlighted term in the results
 - Implement custom error page for CSRF error
 
-Backwards incompatible changes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Backwards incompatible changes::
+
 - Deprecated use of ``LanguagePage``: use ``SiteLanguage`` for multi-language support
 - Deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
 - Deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
