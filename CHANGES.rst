@@ -1,6 +1,91 @@
 CHANGE LOG
 ==========
 
+5.13.1
+~~~~~
+- fix image import bug which did not handle absolute URLs (i.e. storage on S3)
+
+5.13.0
+~~~~~
+- refactored importing of site content via api
+- created ImageInfo model to store image hashes
+- bug fixes in api endpoints
+- bug fixes in site importing
+
+5.12.0
+~~~~~
+- added Migration for converting Media to MoloMedia (FIXED)
+
+5.11.0
+~~~~~
+- DO NOT ADD THIS RELEASE (Migration Faulty)
+- added Migration for converting Media to MoloMedia
+- added feature in homepage for MoloMedia
+- fixed admin layout
+
+5.10.0
+~~~~~
+- add support for youtube links in MoloMedia
+
+5.9.5
+~~~~~
+- fix admin layout styling bugs
+- fix api locale field in translation when language has been deleted
+
+5.9.4
+~~~~~
+- Bug Fix: Ensure load_tags_for_article only returns tags for article Pages
+- Remove content_import tests
+
+5.9.3
+~~~~~
+- Temporarily removed API import from sidebar
+
+5.9.2
+~~~~~
+- Mote Update: Mote files updated to flexible accept applications style directory
+
+5.9.1
+~~~~~
+- Bug Fix: Revert accidental travis setup change
+
+5.9.0
+~~~~~
+- New Feature: API that exposes content via the `/api/v2/` url
+- New Feature: Import some site content to a new site via the newly created API. Imports the following content:
+  - Site languages
+  - Images
+  - Sections
+  - Articles
+  - Tags
+  - Banners Pages
+  - Footer Pages
+
+5.8.2
+~~~~~
+- Fix the responsive styling for Admin dashboard
+
+5.8.1
+~~~~~
+- Fix the styling for Admin dashboard
+
+5.8.0
+~~~~~
+- Add Admin View menu with the Article View to the CMS
+
+5.7.0
+~~~~~
+- Deprecate use of search backends in Molo. Use wagatailsearch instead.
+
+5.6.0
+~~~~~
+- New Feature: Add Article Publish action to shortcuts
+
+5.5.2
+~~~~~
+- Bug fix: ensure that the old article exist in create_new_article_relations
+- Bug fix: use full path for GA tracking
+
 5.5.1
 ~~~~~
 - Add get_effective_banner
@@ -178,6 +263,10 @@ CHANGE LOG
 ~~~~~
 - consolidate minute tasks into 1 call
 
+4.4.5
+~~~~~
+- consolidate minute tasks into 1 call
+
 4.4.4
 ~~~~~
 - Fixed bug for previewing pages
@@ -198,8 +287,8 @@ CHANGE LOG
 4.4.0
 ~~~~~
 - Content rotation enhancement:
-  - Only promote pages that are exact type of ArticlePage
-  - Only demote an article if there is more than two promoted articles
+- Only promote pages that are exact type of ArticlePage
+- Only demote an article if there is more than two promoted articles
 
 4.3.3
 ~~~~~

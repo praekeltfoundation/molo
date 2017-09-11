@@ -1,0 +1,90 @@
+header {
+  .search-form {
+    float: none;
+    display: inline-block;
+    vertical-align: middle;
+    padding: 5px 10px 5px 25px;
+    margin: 0;
+  }
+}
+.heading__icon {
+  display: inline-block;
+}
+.download__cta {
+  float: right;
+}
+.filter {
+  padding: 10px 0 0;
+  &__label {
+    padding: 0;
+  }
+  ul,
+  &-list {
+    padding: 0;
+    display: inline-block;
+    &__item,li {
+      list-style: none;
+    }
+  }
+  form {
+    display: inline-block;
+  }
+  input {
+    padding: 0.5em 1.2em;
+  }
+}
+
+
+//Content Wrapper Filter
+.content-wrapper .changelist-filter {
+  padding: 0;
+  display: inline-block; //Override incorrect Bootstap
+  width: 100%;
+  h2, h3, ul, #date_range_filter {
+    padding: 0 15px;
+  }
+}
+
+@media screen and (min-width: 781px) {
+  //Filter
+  .content-wrapper {
+    .filter__label {
+      padding: 5px 0;
+    }
+
+    .changelist-filter {
+      display: inline-block; //Override incorrect Bootstap
+      float: none;
+      width: 100%;
+      ul, #date_range_filter {
+        width: 80%;
+        padding: 0 10% 0 5px;
+      }
+      li {
+        padding: 2px 0 0;
+      }
+    }
+  }
+}
+//640px or 800px Undo Styles
+@media screen and (min-width: 50em) {
+  //Filter
+  .content-wrapper .changelist-filter {
+    ul, #date_range_filter {
+      width: auto;
+    }
+  }
+}
+@media screen and (min-width: 1200px) {
+  //Filter
+  .content-wrapper .changelist-filter {
+    width: auto;
+    float: right;
+    margin: 0 15px 0 5px;
+    width: 18%; // This is getting overriden
+    h2, h3, ul, #date_range_filter {
+      margin: 0;
+      padding: 0 5px 0 5px;
+    }
+  }
+}

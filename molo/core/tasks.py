@@ -15,10 +15,28 @@ from django.contrib.auth.models import User
 from molo.core.content_import import api
 from molo.core.utils import create_new_article_relations
 from molo.core.models import (
-    ArticlePage, Main, SectionIndexPage, SectionPage, Languages, SiteSettings)
+    Site,
+    ArticlePage,
+    Main,
+    SectionIndexPage,
+    SectionPage,
+    Languages,
+    SiteSettings,
+    BannerIndexPage,
+    FooterIndexPage,
+    TagIndexPage,
+)
+from molo.core.api.importers import (
+    RecordKeeper,
+    LanguageImporter,
+    ImageImporter,
+    ContentImporter,
+    Logger,
+)
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
+
 
 IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"
 VALIDATE_EMAIL_TEMPLATE = "content_import/validate_email.html"
@@ -303,4 +321,101 @@ def copy_sections_index(
             'name': (user.get_full_name() or user.username) if user else None,
             'source': section_index.get_parent().title,
             'to': to.title
+        })
+
+
+@task(ignore_result=True)
+def import_site(root_url, site_pk, user_pk):
+    user = User.objects.get(pk=user_pk) if user_pk else None
+    record_keeper = RecordKeeper()
+    logger = Logger()
+    site = Site.objects.get(pk=site_pk)
+
+    language_importer = LanguageImporter(
+        site.pk, root_url,
+        record_keeper=record_keeper,
+        logger=logger)
+    image_importer = ImageImporter(
+        site.pk, root_url,
+        record_keeper=record_keeper,
+        logger=logger)
+    content_importer = ContentImporter(
+        site.pk, root_url,
+        record_keeper=record_keeper,
+        logger=logger)
+
+    try:
+        # get languages
+        language_importer.copy_site_languages()
+
+        image_importer.import_images()
+
+        # copy_content SectionIndexPage
+        section_index_page = SectionIndexPage.objects.descendant_of(
+            site.root_page).first()
+        foreign_section_index_page_id = content_importer.get_foreign_page_id_from_type(  # noqa
+            "core.SectionIndexPage")
+        content_importer.copy_children(
+            foreign_id=foreign_section_index_page_id,
+            existing_node=section_index_page)
+
+        # copy_content Banner Pages
+        banner_index_page = BannerIndexPage.objects.descendant_of(
+            site.root_page).first()
+        foreign_banner_index_page_id = content_importer.get_foreign_page_id_from_type(  # noqa
+            "core.BannerIndexPage")
+        content_importer.copy_children(
+            foreign_id=foreign_banner_index_page_id,
+            existing_node=banner_index_page)
+
+        # copy_content Footer Pages
+        footer_index_page = FooterIndexPage.objects.descendant_of(
+            site.root_page).first()
+        foreign_footer_index_page_id = content_importer.get_foreign_page_id_from_type(  # noqa
+            "core.FooterIndexPage")
+        content_importer.copy_children(
+            foreign_id=foreign_footer_index_page_id,
+            existing_node=footer_index_page)
+
+        # copy_content TagIndexPage
+        tag_index_page = TagIndexPage.objects.descendant_of(
+            site.root_page).first()
+        foreign_tag_index_page_id = content_importer.get_foreign_page_id_from_type(  # noqa
+            "core.TagIndexPage")
+        content_importer.copy_children(
+            foreign_id=foreign_tag_index_page_id,
+            existing_node=tag_index_page)
+
+        print("Creating Recommended Articles")
+        content_importer.create_recommended_articles()
+
+        print("Creating Related Sections")
+        content_importer.create_related_sections()
+
+        print("Creating Nav Tag Relationships")
+        content_importer.create_nav_tag_relationships()
+
+        print("Creating Section Tag Relationships")
+        content_importer.create_section_tag_relationship()
+
+        print("Creating Banner Page Links")
+        content_importer.create_banner_page_links()
+
+        print("Recreate Article Body")
+        content_importer.recreate_article_body()
+
+        # send email
+        send_copy_email(user.email, {
+            'name': (user.get_full_name() or user.username) if user else None,
+            'source': root_url,
+            'to': site.root_url,
+            'logs': logger.get_email_logs(),
+        })
+    except Exception, e:
+        logging.error(e, exc_info=True)
+        send_copy_failed_email(user.email, {
+            'name': (user.get_full_name() or user.username) if user else None,
+            'source': root_url,
+            'to': site.root_url,
+            'logs': logger.get_email_logs(),
         })

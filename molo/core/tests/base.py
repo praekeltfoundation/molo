@@ -10,7 +10,7 @@ from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
                               BannerIndexPage, TagIndexPage, Tag,
                               ReactionQuestionIndexPage,
                               ArticlePageReactionQuestions, ReactionQuestion,
-                              ReactionQuestionChoice)
+                              ReactionQuestionChoice, BannerPage)
 from molo.core.utils import generate_slug
 
 
@@ -143,6 +143,23 @@ class MoloTestCaseMixin(object):
         tag.save_revision().publish()
         return tag
 
+    def mk_tags(self, parent, count=2, **kwargs):
+        tags = []
+        for i in range(count):
+            data = {}
+            data.update({
+                'title': 'Test Tag {}'.format(i),
+            })
+            data.update(kwargs)
+            data.update({
+                'slug': generate_slug(data['title'])
+            })
+            tag = Tag(**data)
+            parent.add_child(instance=tag)
+            tag.save_revision().publish()
+            tags.append(tag)
+        return tags
+
     def mk_reaction_question(self, parent, article, **kwargs):
         data = {}
         data.update({
@@ -208,11 +225,31 @@ class MoloTestCaseMixin(object):
             articles.append(article)
         return articles
 
+    def mk_banners(self, parent, count=2, **kwargs):
+        banners = []
+        for i in range(count):
+            data = {}
+            data.update({
+                'title': 'Test Banner {}'.format(i),
+            })
+            data.update(kwargs)
+            data.update({
+                'slug': generate_slug(data['title'])
+            })
+            banner = BannerPage(**data)
+            parent.add_child(instance=banner)
+            banner.save_revision().publish()
+            banners.append(banner)
+        return banners
+
     def mk_section(self, parent, **kwargs):
         return self.mk_sections(parent, count=1, **kwargs)[0]
 
     def mk_article(self, parent, **kwargs):
         return self.mk_articles(parent, count=1, **kwargs)[0]
+
+    def mk_banner(self, parent, **kwargs):
+        return self.mk_banners(parent, count=1, **kwargs)[0]
 
     def mk_translation(self, source, language, translation):
         language_relation = translation.languages.first()

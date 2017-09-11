@@ -22,7 +22,7 @@ from molo.core.models import (
     ArticlePageRecommendedSections, ArticlePageRelatedSections, Main,
     BannerIndexPage, SectionIndexPage, FooterIndexPage, Languages,
     SiteLanguageRelation, Tag, ArticlePageTags, ReactionQuestion,
-    ArticlePageReactionQuestions, BannerPage)
+    ArticlePageReactionQuestions, BannerPage, MoloMedia)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -35,7 +35,6 @@ from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site, Page
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
-from wagtailmedia.models import Media
 
 
 @pytest.mark.django_db
@@ -141,6 +140,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             title='banner', slug='banner', banner_link_page=article)
         self.banner_index.add_child(instance=banner)
         banner.save_revision().publish()
+        banner2 = BannerPage(
+            title='banner2', slug='banner2', banner_link_page=self.yourmind)
+        self.banner_index.add_child(instance=banner2)
+        banner2.save_revision().publish()
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -177,6 +180,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_banner = BannerPage.objects.descendant_of(main3).get(
             slug=banner.slug)
         self.assertEqual(new_banner.banner_link_page.pk, new_article.pk)
+        new_banner2 = BannerPage.objects.descendant_of(main3).get(
+            slug=banner2.slug)
+        self.assertEqual(new_banner2.banner_link_page.pk, new_section.pk)
         self.assertEqual(ArticlePageTags.objects.get(
             page=new_article).tag.pk, new_tag.pk)
         self.assertEqual(ArticlePageReactionQuestions.objects.get(
@@ -1174,6 +1180,83 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
 
+    def test_publish_view(self):
+        """
+        This tests that the publish view responds with an publish confirm page
+        """
+
+        self.user = self.login()
+        article = self.mk_article(self.yourmind)
+
+        response = self.client.get(reverse('publish', args=[article.id]))
+
+        # Check that the user received an publish confirm page
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            'wagtailadmin/pages/confirm_publish.html'
+        )
+
+    def test_publish_view_invalid_page_id(self):
+        """
+        This tests that the publish view returns an error
+        if the page id is invalid.
+        """
+        # Get unpublish page
+        response = self.client.get(reverse('publish', args=(12345, )))
+
+        # Check that the user received a 404 response
+        self.assertEqual(response.status_code, 404)
+
+    def test_publish_does_not_contain_descendants_view(self):
+        """
+        This tests that the publish view responds with an publish confirm page
+        that does not contain the form field 'include_descendants'
+        """
+        self.user = self.login()
+        article = self.mk_article(self.yourmind)
+
+        response = self.client.get(reverse('publish', args=(article.id, )))
+
+        # Check that the user received an unpublish confirm page
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            'wagtailadmin/pages/confirm_publish.html'
+        )
+        # Check the form does not contain the checkbox field
+        # include_descendants
+        self.assertNotContains(
+            response,
+            '<input id="id_include_descendants" name="include_descendants"'
+        )
+
+    def test_publish_include_descendants_view(self):
+        """
+        This tests that the publish view responds with an publish confirm page
+        that contains the form field 'include_descendants'
+        """
+        self.user = self.login()
+        self.article = self.mk_article(self.yourmind)
+        self.article.unpublish()
+        self.article2 = self.mk_article(self.yourmind)
+        self.article2.unpublish()
+
+        response = self.client.get(
+            reverse('publish', args=(self.yourmind.id, ))
+        )
+        # Check that the user received an unpublish confirm page
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            'wagtailadmin/pages/confirm_publish.html'
+        )
+        # Check the form contains the checkbox field include_descendants
+        self.assertContains(
+            response,
+            '<input id="id_include_descendants" name="include_descendants"'
+        )
+
 
 class MultimediaViewTest(TestCase, MoloTestCaseMixin):
 
@@ -1196,10 +1279,8 @@ class MultimediaViewTest(TestCase, MoloTestCaseMixin):
     def add_media(self, media_type):
         fake_file = ContentFile(b("media"))
         fake_file.name = 'media.mp3'
-        self.media = Media.objects.create(title="Test Media",
-                                          file=fake_file,
-                                          duration=100,
-                                          type=media_type)
+        self.media = MoloMedia.objects.create(
+            title="Test Media", file=fake_file, duration=100, type=media_type)
 
         self.article_page.body = json.dumps([{
             'type': 'media',
@@ -1213,22 +1294,21 @@ class MultimediaViewTest(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections-main-1/your-mind/test-article/')
         self.assertContains(
             response,
-            '''<div><audio controls><source src="{0}"
-            type="audio/mpeg">Click here to download
-            <a href="{0}">{1}</a></audio></div>'''
+            '<div><audio controls><source src="{0}"'
+            'type="audio/mpeg">Click here to download'
+            '<a href="{0}">{1}</a></audio></div>'
             .format(self.media.file.url, self.media.title),
             html=True)
 
     def test_video_media(self):
         self.add_media('video')
-        response = self.client.get('/sections-main-1/your-mind/test-article/')
+        response = self.client.get(self.article_page.url)
         self.assertContains(
             response,
-            '''<div><video width="320" height="240" controls>
-            <source src="{0}" type="video/mp4">Click here to download
-            <a href="{0}">{1}</a></video></div>'''
-            .format(self.media.file.url, self.media.title),
-            html=True)
+            '<video width="320" height="240" controls>'
+            '<source src=' + self.media.file.url + ' type="video/mp4">'
+            'Your browser does not support the video tag.'
+            '</video>', html=True)
 
 
 class TestArticlePageRelatedSections(TestCase, MoloTestCaseMixin):

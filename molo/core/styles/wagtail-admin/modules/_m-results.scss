@@ -1,0 +1,81 @@
+//Content Wrapper Results
+/**
+NOTE: Difference in Tables classes:
+      .result-list.col9 and .result_list.col9
+*/
+.content-wrapper {
+  border: none;
+  .result_list.col9,
+  .result-list.col9  {
+    cursor: pointer;
+    padding: 0;
+    overflow: auto;
+    display: inline-block;
+    overflow: scroll;
+
+    //Table
+    table.listing,
+    .listing.full-width {
+    margin-bottom: 2em;
+      th {
+        &:first-child {
+          padding: 5px 0 5px 10px;
+        }
+      }
+      td {
+        padding: 5px 10px;
+        vertical-align: baseline;
+        &:first-child {
+          padding: 5px 0 5px 10px;
+        }
+        img {
+          vertical-align: text-top;
+        }
+      }
+    }
+  }
+}
+@media screen and (min-width: 781px) {
+  .content-wrapper {
+    width: 87.3%;
+    .result_list.col9,
+    .result-list.col9 {
+      width: 100%;
+      overflow-x: scroll;
+      overflow-y: hidden;
+    }
+  }
+}
+
+@media screen and (min-width: 50em)  {
+  .content-wrapper {
+    .result_list.col9,
+    .result-list.col9 {
+      float: left;
+    }
+  }
+}
+@media screen and (min-width: 1200px) {
+  //Content
+  .content-wrapper {
+    .result_list.col9,
+    .result-list.col9 {
+      width: 80%;
+      //Table
+      table.listing,
+      .listing.full-width {
+        th {
+          &:first-child {
+            padding: 5px 0 5px 10px;
+          }
+        }
+        td {
+          padding: 5px 10px;
+          &:first-child {
+            padding: 5px 0 5px 10px;
+          }
+        }
+      }
+    }
+  }
+}

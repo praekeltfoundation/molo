@@ -39,6 +39,9 @@ install_requires = [
     'unicore.content',
     'wagtail>=1.9,<1.10',
     'wagtailmedia==0.1.3',
+    'ImageHash==3.4',
+    'boto==2.48.0',
+    'django-storages==1.6.3',
 ]
 
 setup(name='molo.core',
