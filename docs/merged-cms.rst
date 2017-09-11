@@ -7,7 +7,7 @@ Merged CMS
 
 Molo allows you to manage more than one site in a single CMS using wagtail's multi-site functionality.
 
-.. image:: multi_site.png
+.. image:: ../_static/images/multi_site.png
 
 Sharing a database
 ------------------
