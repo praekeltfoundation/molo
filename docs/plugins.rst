@@ -27,7 +27,6 @@ Existing Plugins
 ----------------
 
 The following plugins are available to extend the core features of Molo.
-Please see :ref:`Installing plugins <installing-plugins>` for installation details.
 
 .. _molo-profiles:
 
@@ -61,8 +60,6 @@ Main features:
     - Comment reporting by users to allow for community moderation
         - `COMMENTS_FLAG_THRESHHOLD` allows for comments to be automatically removed if they have been reported by multiple users
 
-.. _molo-yourwords
-
 molo.yourwords
 ~~~~~~~~~~~~~~
 
@@ -75,8 +72,6 @@ Main features:
     - Downloading competition entries as a CSV
     - Ability to shortlist entries
     - Converting winning entries to Articles
-
-.. _molo-polls
 
 molo.polls
 ~~~~~~~~~~
@@ -93,8 +88,6 @@ Main features:
     - Exporting polls results as a CSV (currently in dev)
 
 .. _`Comments Framework`: http://django-contrib-comments.readthedocs.org
-
-.. _molo-usermetadata
 
 molo.usermetadata
 ~~~~~~~~~~~~~~~~~
