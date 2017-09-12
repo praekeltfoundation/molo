@@ -4,18 +4,24 @@ Plugins
 Installing Plugins
 ------------------
 
-Molo plugings are normal python modules and can be installed using pip::
+Molo plugins are normal python modules and can be installed using pip.
+
+If you didn't include the app during the scaffolding step using
+``molo scaffold myapp --include=molo.profiles ^profiles/`` and you wish to add it manually,
+complete the following steps:
+
+Install the plugin using pip::
 
     $ pip install molo.profiles
 
-Next, you'll need to add the new plugin to your ``INSTALLED_APPS`` in your ``myapp/settings/base.py`` (if you did't include it during the scaffolding step using ``molo scaffold myapp --include=molo.profiles ^profiles/``)::
+Add the new plugin to your ``INSTALLED_APPS`` in your ``myapp/settings/base.py``::
 
     INSTALLED_APPS = (
         ...
         'molo.profiles',
     )
 
-Next, you'll need to add the new plugin urls to your ``myapp/urls.py`` (if you didn't include it during the scaffolding step using ``molo scaffold myapp --include=molo.profiles ^profiles/``)::
+Then add the new plugin urls to your ``myapp/urls.py``::
 
     url(r'^polls/', include('polls.urls', namespace='molo.polls')),
 
@@ -58,7 +64,7 @@ Main features:
     - Commenting on article pages
     - Moderation of comments using django-admin
     - Comment reporting by users to allow for community moderation
-        - `COMMENTS_FLAG_THRESHHOLD` allows for comments to be automatically removed if they have been reported by multiple users
+    - ``COMMENTS_FLAG_THRESHHOLD`` allows for comments to be automatically removed if they have been reported by multiple users
 
 molo.yourwords
 ~~~~~~~~~~~~~~
@@ -96,7 +102,9 @@ molo.usermetadata
 ``Github``: https://github.com/praekelt/molo.usermetadata
 
 
-User meta data allows one to create persona pages so that when a user visits a site for the first time, they are able to choose a persona, or choose to skip this. This does not require the user to log in.
+User meta data allows one to create persona pages so that when a user visits a site for the first time,
+they are able to choose a persona, or choose to skip this.
+This does not require the user to log in.
 
 Main features:
     - Creating and publishing persona pages to be displayed when the user visits the site for the first time

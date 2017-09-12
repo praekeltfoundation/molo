@@ -75,16 +75,14 @@ For convenience, here's the full scaffold command for the current plugins::
         --require=molo.commenting --include=molo.commenting ^commenting/ \
         --require=molo.yourwords --include=molo.yourwords ^yourwords/
 
-.. note:: ``molo.profiles`` is a requirement of molo core and is therefor automatically installed when molo is installed.
+.. note:: ``molo.profiles`` is a requirement of molo core and is therefore automatically installed when molo is installed.
 
 Molo, Django & settings files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-What you have now is a standard Django application set up for normal
-development like outlined in the Django documentation. The only main difference
-is that your settings are Python modules found in the
-``settings/dev.py`` and ``settings/production.py`` files in your applications
-folder. Both of these inherit settings from ``settings/base.py``.
+You now have a standard Django application set up for normal development.
+The only difference is that your settings are Python modules found in the ``settings/dev.py`` and ``settings/production.py`` files in your applications folder.
+Both of these inherit settings from ``settings/base.py``.
 
 To create your own custom settings add a ``local.py`` file in the ``settings``
 folder. The ``settings/dev.py`` will automatically include those settings

@@ -65,9 +65,9 @@ The ``topic_of_the_day`` tag will return the article that has been promoted as t
   topic_of_the_day(context)
 
 The ``get_tag_articles`` tag is a bit more complex. It returns all the content you can have on your homepage.
-It takes in a section_count. This is the amount of section you want appearing on your homepage. It takes in a tag_count.
+It takes in a ``section_count``. This is the amount of section you want appearing on your homepage. It takes in a ``tag_count``.
 This is the amount of articles you want appearing under each tag that has been promoted to the homepage.
-It takes in a sec_articles_count. This is the amount of articles you want appearing under each section, as well
+It takes in a ``sec_articles_count``. This is the amount of articles you want appearing under each section, as well
 as a latest article count. This is the amount of articles featured in latest that will have preference in placement.
 This will return all the content rendered on the homepage, excluding banners and footers. It is done in such a way that no
 articles on the homepage are repeated::
@@ -83,8 +83,8 @@ Content for Section Pages
 ``get_tags_for_section``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Returns the tags that are shown in a section (amount specified by tag_count)
-with the articles for that tag (amount specific by tag_article_count)::
+Returns the tags that are shown in a section (amount specified by ``tag_count``)
+with the articles for that tag (amount specific by ``tag_article_count``)::
 
   get_tags_for_section(context, section, tag_count=2, tag_article_count=4)
 
@@ -105,14 +105,14 @@ Returns the breadcrumb for the current page if the current page is not the homep
 ``load_child_articles_for_section``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Returns articles that are children of a specific section page (amount specified by count)::
+Returns articles that are children of a specific section page (amount specified by ``count``)::
 
   load_child_articles_for_section(context, section, count=5)
 
 ``load_descendant_articles_for_section``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Returns articles that are descendants of a specific section page (amount specified by count).
+Returns articles that are descendants of a specific section page (amount specified by ``count``).
 It is possible to specify whether these articles have to be featured in the homepage, section or latest::
 
   load_descendant_articles_for_section(
@@ -173,7 +173,7 @@ Returns all the choice that are live for a reaction question::
 ``load_tags_for_article``
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Returns all the tags that have been attached to this article int he CMS::
+Returns all the tags that have been attached to this article in the CMS::
 
   load_tags_for_article(context, article)
 
@@ -190,7 +190,7 @@ Content for Tag Pages
 ``get_articles_for_tag``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Returns all the articles that have been linked to a specific tag:
+Returns all the articles that have been linked to a specific tag::
 
     get_articles_for_tag(context, tag)
 

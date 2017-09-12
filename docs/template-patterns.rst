@@ -4,19 +4,18 @@ Template Patterns
 Praekelt Molo Design System
 ---------------------------
 
-Molo design system a living document of visual design components, elements markups,
+Molo design system a living document of visual design components and element markups,
 which provides a set of reusable patterns that can be combined to make a cohesive website.
 It documents the visual language, such as header styles and color palettes, used to create the site.
-This way, it’s a one-stop place for the entire teams to reference when discussing new site designs and iterations.
+It's purpose is as a one-stop place for the entire team to reference when discussing new site designs and iterations.
 
-The design system will make it easy to build/scaffold custom Molo mobisites from our Python
-Django Molo Framework with a consistent look and feel using predefined Molo Core patterns
-and features - without reverse engineering our styles. The Design System and Molo Core serve
-as a single source of truth for our Frontend Templates stack, to help us establish cohesive user experience,
-common taxonomy, enforce a modular approach and good quality code on mobile site applications.
+The design system will make it easy to build/scaffold custom Molo mobi-sites from our Molo Framework with a
+consistent look and feel using predefined Molo Core patterns and features - without reverse engineering our styles.
+The Design System and Molo Core serve as a single source of truth for our Frontend Templates stack,
+to help us establish cohesive user experience, a common taxonomy, enforce a modular approach and
+good quality code on mobile site applications.
 
 Mote is a container that renders pattern libraries being built by  _`Praekelt.com`: http://www.praekelt.com/
-
 
 Website Components
 
@@ -33,7 +32,6 @@ These are the Molo sites:
 * _`Babycenter`: http://southafrica.babycenter.io/
 * _`IoGT (Internet of Good Things)`: http://za.goodinternet.org/
 
-
 Front-end Project Setup
 -----------------------
 
@@ -45,7 +43,6 @@ MARKUP & CSS - SMACSS,BEM for single responsibility principle
 BEM is a naming convention of markup and CSS classes sticking to single responsibility principle and organising e.g.
 
   .. image:: ./_static/images/bem-markup.png
-
 
 SMACSS is the categorization of CSS in a logical and layered fashion broken down into 5 categories: Base, layout, module, state and theme.
 Each category can either be a folder, or file which contains CSS.
