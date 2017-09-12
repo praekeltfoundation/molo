@@ -69,3 +69,11 @@ def convert_articles(apps, schema_editor):
         stream_block = article.body.stream_block
         article.body = StreamValue(stream_block, stream_data, is_lazy=True)
         article.save()
+
+
+class Command(BaseCommand):
+    help = ("Iterates through all articles in the database and moves any "
+            "articles at the end of a StreamField to Recommended Articles.")
+
+    def handle(self, **options):
+        convert_articles()
