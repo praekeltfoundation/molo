@@ -6,8 +6,9 @@ Molo consists of a core structure onto which new feature plugins can be added. T
 Core Features
 -------------
 
-- Banners
-    - Image banners on the home page that can be linked to any page on the site
+
+- Multiple Languages
+    - Molo allows you to offer you content in multiple languages using the TranslatablePageMixin
 - Sections (and subsections)
     - Content sections that allows structuring of content on the site
 - Articles
@@ -19,6 +20,8 @@ Core Features
     - Tags are words or hashtags that can be added to articles and can be used to navigate through a site.
 - Reaction Questions
     - Questions that have set responses that a user can choose from. These are added to articles to get a response for a specific article.
+- Banners
+    - Image banners on the home page that can be linked to any page on the site
 - Search
     - The ability to search for any content on the site
     - The ability to show a highlighted term in the results
@@ -49,7 +52,7 @@ Core Features
         1. Title field is always displayed: if the term appears in this field, it will be highlighted.
         2. Display highlighted term in subtitle or body. If the term appears in the title only, display the original content of the subtitle field.
 
-        You need to update the `search_results.html` page with the following code::
+        You need to update the ``search_results.html`` page with the following code::
 
             {% for page in search_results %}
               {% with parent_section=page.get_parent_section ancestor=page.get_parent_section.get_ancestors.last %}
@@ -79,6 +82,3 @@ Core Features
               {% endwith %}
             {% endfor %}
 
-
-- Multiple Languages
-    - Molo allows you to offer you content in multiple languages using the TranslatablePageMixin
