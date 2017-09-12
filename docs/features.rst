@@ -26,6 +26,7 @@ Core Features
     - The ability to search for any content on the site
     - The ability to show a highlighted term in the results
     - Support for both Elastichsearch 1.x & 2.x
+    - Search term highlighting using Elasticsearch Backend
 
 .. note:: Search highlighting is only supported by the Elasticsearch backend.
 
