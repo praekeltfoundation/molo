@@ -8,7 +8,7 @@ Scaffold a site using Molo
 --------------------------
 
 The goal of Molo is to provide a solid base of proven, stable packages that
-help Praekelt Foundation and partners to deliver on project scope::
+help Praekelt.org and partners to deliver on project scope::
 
    $ molo scaffold myapp
    $ cd myapp/
