@@ -66,6 +66,18 @@ Main features:
     - Comment reporting by users to allow for community moderation
     - ``COMMENTS_FLAG_THRESHHOLD`` allows for comments to be automatically removed if they have been reported by multiple users
 
+molo.surveys
+~~~~~~~~~~~~
+
+``Github``: https://github.com/praekelt/molo.surveys/
+
+Surveys allows for user feedback on content.
+
+Main Features:
+    - Multiple Questions of various types
+    - Multi-page surveys
+    - Direct and Linked surveys
+
 molo.yourwords
 ~~~~~~~~~~~~~~
 
