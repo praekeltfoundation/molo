@@ -40,6 +40,7 @@ The ``section_listing_homepage`` tag will return all the sections with articles 
 The ``latest_listing_homepage`` tag will return all the articles that are featured in latest section on the homepage::
 
     latest_listing_homepage(context)
+
 The ``bannerpages`` tag will return all the banners that are live::
 
     bannerpages(context)
