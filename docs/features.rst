@@ -1,6 +1,3 @@
-.. _plugins:
-.. _template-tags:
-
 Features
 ========
 

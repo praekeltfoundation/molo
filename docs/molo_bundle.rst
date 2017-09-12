@@ -1,6 +1,3 @@
-.. _molo_bundle:
-.. _template-tags:
-
 What is bundled with Molo?
 ==========================
 

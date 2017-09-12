@@ -1,7 +1,3 @@
-.. _multiple-languages:
-.. _merged-cms:
-.. _template-tags:
-
 Multiple Languages
 ==================
 

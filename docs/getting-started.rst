@@ -1,7 +1,3 @@
-.. _getting-started:
-.. _molo_bundle:
-
-
 Getting Started
 ===============
 

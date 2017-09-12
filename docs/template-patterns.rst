@@ -1,5 +1,3 @@
-.. _template-patterns:
-
 Template Patterns
 =================
 

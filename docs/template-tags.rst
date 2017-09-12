@@ -1,5 +1,3 @@
-.. _template-tags:
-
 Template Tags
 =============
 

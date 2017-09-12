@@ -1,7 +1,3 @@
-.. _merged-cms:
-.. _molo_bundle:
-.. _template-tags:
-
 Merged CMS
 ==========
 
