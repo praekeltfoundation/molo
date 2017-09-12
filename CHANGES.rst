@@ -1,30 +1,27 @@
-CHANGE LOG
-==========
-
 5.13.1
-~~~~~
+~~~~~~
 - fix image import bug which did not handle absolute URLs (i.e. storage on S3)
 
 5.13.0
-~~~~~
+~~~~~~
 - refactored importing of site content via api
 - created ImageInfo model to store image hashes
 - bug fixes in api endpoints
 - bug fixes in site importing
 
 5.12.0
-~~~~~
+~~~~~~
 - added Migration for converting Media to MoloMedia (FIXED)
 
 5.11.0
-~~~~~
+~~~~~~
 - DO NOT ADD THIS RELEASE (Migration Faulty)
 - added Migration for converting Media to MoloMedia
 - added feature in homepage for MoloMedia
 - fixed admin layout
 
 5.10.0
-~~~~~
+~~~~~~
 - add support for youtube links in MoloMedia
 
 5.9.5
@@ -230,6 +227,22 @@ CHANGE LOG
 - Added authentication backend for linking users to sites
 - Added middleware for site redirect
 
+4.x
+~~~
+
+Main Features::
+
+- Upgraded to Wagtail 1.8
+- Added upload/download functionality for zipped media files
+- Next and Recommended articles in articles
+
+Backwards incompatible changes::
+
+- Deprecatad use of ``wagtailmodeladmin``: ``wagtailmodeladmin`` package has been replaced by ``wagtail.contrib.modeladmin``
+- ``wagtailmodeladmin_register`` function is replaced by ``modeladmin_register``
+- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
+- ``search_fields`` now uses a list instead of a tuple
+
 4.4.13
 ~~~~~~
 - Insure content demotion happens for each section individually
@@ -243,7 +256,7 @@ CHANGE LOG
 - Fixed content import to return all data and not just default 10
 
 4.4.10
-~~~~~
+~~~~~~
 - Fixed recommended article ordering in templatetag logic
 
 4.4.9
@@ -311,35 +324,19 @@ CHANGE LOG
 - added multi-language next and recommended article feature
 
 4.1.0
-~~~~~~
+~~~~~
 - Add sitemap - include translations
 
-4.x
----
-
-Main Features::
-
-- Upgraded to Wagtail 1.8
-- Added upload/download functionality for zipped media files
-- Next and Recommended articles in articles
-
-Backwards incompatible changes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Deprecatad use of ``wagtailmodeladmin``: ``wagtailmodeladmin`` package has been replaced by ``wagtail.contrib.modeladmin``
-- ``wagtailmodeladmin_register`` function is replaced by ``modeladmin_register``
-- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
-- ``search_fields`` now uses a list instead of a tuple
-
 4.0.2
-~~~~~~
+~~~~~
 - Fixed template overrides for django-admin templates
 
 4.0.1
-~~~~~~
+~~~~~
 - Added upload/download functionality for zipped media files
 
 4.0.0
-~~~~~~
+~~~~~
 
 - upgraded wagtial to 1.8
 - removed external dependency on wagtailmodeladmin to use internal wagtailadmin feature
@@ -347,7 +344,7 @@ Backwards incompatible changes
 - added edit permission for Main page to moderator and editor groups
 
 3.x
----
+~~~
 
 Major revamp to the way we handle Multi Language on Molo and a bunch of new features
 
@@ -366,8 +363,8 @@ Main features::
 - Add ability to show a highlighted term in the results
 - Implement custom error page for CSRF error
 
-Backwards incompatible changes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Backwards incompatible changes::
+
 - Deprecated use of ``LanguagePage``: use ``SiteLanguage`` for multi-language support
 - Deprecated use of ``Main`` : all pages are now children of their index page (e.g. Section Pages are now children of Section Index Page)
 - Deprecated use of ``Section.featured_articles``: use the template tag ``{% load_descendant_articles_for_section section featured_in_section=True %}``
@@ -454,29 +451,30 @@ Backwards incompatible changes
 - (bug) search URL was defined using the wrong regex (it broke Service Directory plugin)
 
 3.12.0
-~~~~~
+~~~~~~
 
 - Implement custom error page for CSRF error
 
 3.11.2
-~~~~~
+~~~~~~
 
 - Remove automatic opening of comments when an article is promoted to Topic of the Day
 
 3.11.1
-~~~~~
+~~~~~~
 
 - Exclude future-dated Topic of the Day articles from Latest articles list
 
 3.11.0
-~~~~~
+~~~~~~
 
 - Add Support for both Elastichsearch 1.x & 2.x
 - Add ability to show a highlighted term in the results
+
 Note: Search highlighting is only supported by the Elasticsearch backend.
 
 3.10.0
-~~~~~
+~~~~~~
 
 - Add Topic of the Day functionality
 
