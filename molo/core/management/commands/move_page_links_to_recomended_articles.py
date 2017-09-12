@@ -1,28 +1,20 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.core.management.base import BaseCommand
-from molo.core.models import ArticlePage
-
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-from django.db import migrations
 import logging
 
-ArticlePage = apps.get_model("core", "ArticlePage")
-StreamValue = apps.get_model("wagtailcore.blocks", "StreamValue")
-ObjectDoesNotExist = apps.get_model(
-    "django.core.exceptions",
-    "ObjectDoesNotExist")
+from django.core.exceptions import ObjectDoesNotExist
+from wagtail.wagtailcore.blocks import StreamValue
+from molo.core.models import (
+    ArticlePage,
+    ArticlePageRecommendedSections,
+)
 
 def create_recomended_articles(apps, main_article, article_list):
     '''
     Creates recommended article objects from article_list
     and _prepends_ to existing recommended articles.
     '''
-    ArticlePageRecommendedSections = apps.get_model(
-        "core",
-        "ArticlePageRecommendedSections")
 
     existing_recommended_articles = [
         ra.recommended_article.specific
