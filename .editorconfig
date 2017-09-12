@@ -1,0 +1,15 @@
+# EditorConfig: http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*]
+# Default Charset
+charset = utf-8
+
+# Set tab style and size
+indent_style = space
+indent_size = 4
+
+# Trim any trailing whitespace
+trim_trailing_whitespace = true
