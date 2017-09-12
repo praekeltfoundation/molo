@@ -10,15 +10,18 @@ from molo.core.models import (
     ArticlePageRecommendedSections,
 )
 
-def create_recomended_articles(apps, main_article, article_list):
+
+def create_recomended_articles(main_article, article_list):
     '''
     Creates recommended article objects from article_list
     and _prepends_ to existing recommended articles.
     '''
 
+    # store existing recommended articles
     existing_recommended_articles = [
         ra.recommended_article.specific
         for ra in main_article.recommended_articles.all()]
+    # delete existing recommended articles
     ArticlePageRecommendedSections.objects.filter(page=main_article).delete()
 
     for hyperlinked_article in article_list:
@@ -34,12 +37,10 @@ def create_recomended_articles(apps, main_article, article_list):
                 recommended_article=article).save()
 
 
-def convert_articles(apps, schema_editor):
+def convert_articles():
     '''
     Derived from https://github.com/wagtail/wagtail/issues/2110
     '''
-
-
     articles = ArticlePage.objects.all()
 
     for article in articles:
@@ -49,19 +50,19 @@ def convert_articles(apps, schema_editor):
             if block['type'] == 'page':
                 try:
                     linked_articles.append(ArticlePage.objects.get(
-                                    id=block['value']))
+                                           id=block['value']))
                 except ObjectDoesNotExist:
                     logging.error(
                         ("[ERROR]: ArticlePage {0} with id {1} has "
                          "link to deleted article").format(
-                         str(article.title),
-                         str(article.id)))
+                            str(article.title),
+                            str(article.id)))
             else:
                 # add block to new stream_data
                 stream_data.append(block)
 
         if linked_articles:
-            create_recomended_articles(apps, article, linked_articles)
+            create_recomended_articles(article, linked_articles)
             parent = article.get_parent().specific
             parent.enable_recommended_section = True
             parent.save()
