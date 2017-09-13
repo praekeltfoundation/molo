@@ -92,31 +92,22 @@ def convert_articles():
     articles = ArticlePage.objects.all()
 
     for article in articles:
-        stream_data = []
-        linked_articles = []
-        for block in article.body.stream_data:
-            if block['type'] == 'page':
-                try:
-                    linked_articles.append(ArticlePage.objects.get(
-                                           id=block['value']))
-                except ObjectDoesNotExist:
-                    logging.error(
-                        ("[ERROR]: ArticlePage {0} with id {1} has "
-                         "link to deleted article").format(
-                            str(article.title),
-                            str(article.id)))
-            else:
-                # add block to new stream_data
-                stream_data.append(block)
+        (remaining_blocks, linked_article_blocks) = seperate_end_page_links(
+            article.body.stream_data)
 
-        if linked_articles:
+        if linked_article_blocks:
+            linked_article_ids = get_page_ids_from_page_blocks(
+                linked_article_blocks)
+            linked_articles = get_pages_from_id_list(linked_article_ids)
             create_recomended_articles(article, linked_articles)
             parent = article.get_parent().specific
             parent.enable_recommended_section = True
             parent.save()
 
         stream_block = article.body.stream_block
-        article.body = StreamValue(stream_block, stream_data, is_lazy=True)
+        article.body = StreamValue(stream_block,
+                                   remaining_blocks,
+                                   is_lazy=True)
         article.save()
 
 
