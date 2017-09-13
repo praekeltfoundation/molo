@@ -7,6 +7,8 @@ from molo.core.models import ArticlePageRecommendedSections
 from molo.core.management.commands.move_page_links_to_recomended_articles import (  # noqa
     convert_articles,
     seperate_end_page_links,
+    get_page_ids_from_page_blocks,
+    get_pages_from_id_list,
 )
 
 
@@ -70,7 +72,7 @@ class TestCommands(MoloTestCaseMixin, TestCase):
         self.assertEqual(rec_art.recommended_article.specific,
                          self.linked_article)
 
-    def test_convert_article_body_____(self):
+    def test_convert_article_body(self):
         '''
         Test the existing recommended articles are preserved
         '''
@@ -124,7 +126,7 @@ class TestCommands(MoloTestCaseMixin, TestCase):
         self.assert_recommended_article_equal(rec_art, rec_art1)
 
 
-class TestCommandUtils(TestCase):
+class TestCommandUtils(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.other_block_1 = fake_paragraph_stream_block()
         self.page_block_1 = fake_page_stream_block(1)
@@ -136,7 +138,7 @@ class TestCommandUtils(TestCase):
             self.page_block_1,
         ]
 
-        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)
+        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)  # noqa
 
         self.assertEqual(remaining_blocks, [self.other_block_1])
         self.assertEqual(end_article_page_blocks, [self.page_block_1])
@@ -147,7 +149,7 @@ class TestCommandUtils(TestCase):
             self.other_block_1,
         ]
 
-        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)
+        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)  # noqa
 
         self.assertEqual(remaining_blocks, test_stream)
         self.assertEqual(end_article_page_blocks, [])
@@ -159,10 +161,44 @@ class TestCommandUtils(TestCase):
             self.page_block_2,
         ]
 
-        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)
+        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)  # noqa
 
         self.assertEqual(remaining_blocks, [self.other_block_1])
         self.assertEqual(
             end_article_page_blocks,
             [self.page_block_1,
-            self.page_block_2,])
+             self.page_block_2])
+
+    def test_get_page_ids_from_page_blocks(self):
+        test_stream = [
+            fake_page_stream_block(1),
+            fake_page_stream_block(2),
+            fake_page_stream_block(3),
+        ]
+
+        result = get_page_ids_from_page_blocks(test_stream)
+
+        self.assertEqual(result, [1, 2, 3])
+
+    def test_get_page_ids_from_page_blocks_empty_list(self):
+        test_stream = []
+
+        result = get_page_ids_from_page_blocks(test_stream)
+
+        self.assertEqual(result, [])
+
+    def test_get_pages_from_id_list(self):
+        self.mk_main()
+        [art1, art2, art3] = self.mk_articles(self.section_index, count=3)
+        id_list = [art1.id, art2.id, art3.id]
+
+        result = get_pages_from_id_list(id_list)
+
+        self.assertEqual(result, [art1, art2, art3])
+
+    def test_get_pages_from_id_list_empty_list(self):
+        id_list = []
+
+        result = get_pages_from_id_list(id_list)
+
+        self.assertEquals(result, [])

@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
+from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.blocks import StreamValue
 from molo.core.models import (
     ArticlePage,
@@ -55,6 +56,33 @@ def seperate_end_page_links(stream_data):
             break
 
     return (stream_data_copy, end_page_links)
+
+
+def get_page_ids_from_page_blocks(block_list):
+    '''
+    extracts ids from list of page blocks
+    '''
+    id_list = []
+    for block in block_list:
+        id_list.append(block['value'])
+    return id_list
+
+
+def get_pages_from_id_list(id_list):
+    '''
+    Accepts: list of ids
+    Returns: list of specific page objects
+    '''
+    page_list = []
+    for id_ in id_list:
+        try:
+            page_list.append(
+                Page.objects.get(id=id_).specific)
+        except ObjectDoesNotExist:
+            logging.error(
+                "Attempted to fetch non-existent"
+                " page with id of {}".format(id_))
+    return page_list
 
 
 def convert_articles():
