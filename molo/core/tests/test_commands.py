@@ -4,7 +4,10 @@ from django.test import TestCase
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import ArticlePageRecommendedSections
-from molo.core.management.commands.move_page_links_to_recomended_articles import convert_articles  # noqa
+from molo.core.management.commands.move_page_links_to_recomended_articles import (  # noqa
+    convert_articles,
+    seperate_end_page_links,
+)
 
 
 def fake_page_stream_block(id_):
@@ -14,7 +17,7 @@ def fake_page_stream_block(id_):
     }
 
 
-def fake_pragraph_stream_block():
+def fake_paragraph_stream_block():
     return {
         "type": "paragraph",
         "value": "paragraph content"
@@ -119,3 +122,47 @@ class TestCommands(MoloTestCaseMixin, TestCase):
 
         [rec_art] = self.main_article.recommended_articles.all()
         self.assert_recommended_article_equal(rec_art, rec_art1)
+
+
+class TestCommandUtils(TestCase):
+    def setUp(self):
+        self.other_block_1 = fake_paragraph_stream_block()
+        self.page_block_1 = fake_page_stream_block(1)
+        self.page_block_2 = fake_page_stream_block(2)
+
+    def test_seperate_end_page_links_1(self):
+        test_stream = [
+            self.other_block_1,
+            self.page_block_1,
+        ]
+
+        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)
+
+        self.assertEqual(remaining_blocks, [self.other_block_1])
+        self.assertEqual(end_article_page_blocks, [self.page_block_1])
+
+    def test_seperate_end_page_links_2(self):
+        test_stream = [
+            self.page_block_1,
+            self.other_block_1,
+        ]
+
+        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)
+
+        self.assertEqual(remaining_blocks, test_stream)
+        self.assertEqual(end_article_page_blocks, [])
+
+    def test_seperate_end_page_links_3(self):
+        test_stream = [
+            self.other_block_1,
+            self.page_block_1,
+            self.page_block_2,
+        ]
+
+        (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)
+
+        self.assertEqual(remaining_blocks, [self.other_block_1])
+        self.assertEqual(
+            end_article_page_blocks,
+            [self.page_block_1,
+            self.page_block_2,])

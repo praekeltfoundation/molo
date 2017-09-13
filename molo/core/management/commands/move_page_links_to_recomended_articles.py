@@ -37,6 +37,26 @@ def create_recomended_articles(main_article, article_list):
                 recommended_article=article).save()
 
 
+def seperate_end_page_links(stream_data):
+    '''
+    This method ensure that only the final page links
+    are created as articles
+
+    returns tuple of 2 lists: remaining body and final articles
+    '''
+    stream_data_copy = list(stream_data)
+    end_page_links = []
+
+    for block in stream_data_copy[::-1]:
+        if block['type'] == 'page':
+            end_page_links.insert(0, block)
+            stream_data_copy.pop()
+        else:
+            break
+
+    return (stream_data_copy, end_page_links)
+
+
 def convert_articles():
     '''
     Derived from https://github.com/wagtail/wagtail/issues/2110
