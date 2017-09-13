@@ -5,7 +5,7 @@ from django.test import TestCase
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import ArticlePageRecommendedSections
 from molo.core.management.commands.move_page_links_to_recomended_articles import (  # noqa
-    convert_articles,
+    move_page_links_to_recommended_articles,
     seperate_end_page_links,
     get_page_ids_from_page_blocks,
     get_pages_from_id_list,
@@ -53,14 +53,14 @@ class TestCommands(MoloTestCaseMixin, TestCase):
         self.assertEqual(ra1.recommended_article.specific,
                          ra2.recommended_article.specific)
 
-    def test_convert_articles(self):
+    def test_move_page_links_to_recommended_articles(self):
 
         self.assertEqual(self.main_article.body.stream_data, self.body)
         self.assertEqual(
             ArticlePageRecommendedSections.objects.count(), 0
         )
 
-        convert_articles()
+        move_page_links_to_recommended_articles()
 
         self.main_article.refresh_from_db()
         self.assertEqual(self.main_article.body.stream_data, [])
@@ -89,7 +89,7 @@ class TestCommands(MoloTestCaseMixin, TestCase):
             recommended_article=linked_article_2)
         self.assertEqual(ArticlePageRecommendedSections.objects.count(), 2)
 
-        convert_articles()
+        move_page_links_to_recommended_articles()
 
         self.main_article.refresh_from_db()
         self.assertEqual(self.main_article.body.stream_data, [])
@@ -117,7 +117,7 @@ class TestCommands(MoloTestCaseMixin, TestCase):
         self.assertEqual(
             ArticlePageRecommendedSections.objects.count(), 1)
 
-        convert_articles()
+        move_page_links_to_recommended_articles()
 
         self.assertEqual(
             ArticlePageRecommendedSections.objects.count(), 1)

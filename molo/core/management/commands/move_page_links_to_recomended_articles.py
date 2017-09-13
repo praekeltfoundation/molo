@@ -85,7 +85,7 @@ def get_pages_from_id_list(id_list):
     return page_list
 
 
-def convert_articles():
+def move_page_links_to_recommended_articles():
     '''
     Derived from https://github.com/wagtail/wagtail/issues/2110
     '''
@@ -116,4 +116,4 @@ class Command(BaseCommand):
             "articles at the end of a StreamField to Recommended Articles.")
 
     def handle(self, **options):
-        convert_articles()
+        move_page_links_to_recommended_articles()
