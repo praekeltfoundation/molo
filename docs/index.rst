@@ -20,11 +20,13 @@ Contents
 
    installation
    getting-started
-   plugins
+   molo_bundle
    features
    multiple-languages
+   merged-cms
    template-tags
    template-patterns
+   plugins
    release-notes
 
 .. _`Django`: https://www.djangoproject.com/

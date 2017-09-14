@@ -52,8 +52,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Molo'
-copyright = u'2015, Praekelt Foundation'
-author = u'Praekelt Foundation'
+copyright = u'2017, Praekelt.org'
+author = u'Praekelt.org'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -229,7 +229,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   (master_doc, 'Molo.tex', u'Molo Documentation',
-   u'Praekelt Foundation', 'manual'),
+   u'Praekelt.org', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
