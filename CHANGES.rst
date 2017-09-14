@@ -1,3 +1,9 @@
+5.14.0
+~~~~~~
+- updated documentation for multi-site functionality
+- add utilities to convert embedded page stream blocks in Recommended Articles
+- exposed utilities via command ``move_page_links_to_recomended_articles``
+
 5.13.1
 ~~~~~~
 - fix image import bug which did not handle absolute URLs (i.e. storage on S3)
