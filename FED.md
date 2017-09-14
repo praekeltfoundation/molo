@@ -133,10 +133,16 @@ FED
   OUTPUT FILE PATH: /static/css/dev with sourcemaps /maps
                     /static/css/prd
 
+  Linting - Enforce editor configs and coding standard rules
+  # EditorConfig: http://EditorConfig.org
+  Sass Lint
+  https://www.npmjs.com/package/sass-lint
+  http://sasstools.github.io/make-sass-lint-config/
+  https://github.com/sasstools/sass-lint/blob/master/docs/rules/class-name-format.md
 
   CSS / BEM Linting
   https://github.com/postcss/postcss-bem-linter
-  - Enforce coding standard rules
+  https://github.com/simonsmith/stylelint-selector-bem-pattern
 
 
   COMPRESSION / AUTOMATION
