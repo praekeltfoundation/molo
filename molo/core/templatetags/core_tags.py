@@ -686,6 +686,10 @@ def get_recommended_articles(context, article):
     # the following allows us to order the results of the querystring
     pk_list = recommended_articles.values_list(
         'recommended_article__pk', flat=True)
+
+    if not pk_list:
+        return []
+
     preserved = Case(
         *[When(pk=pk, then=pos) for pos, pk in enumerate(pk_list)])
     articles = ArticlePage.objects.filter(pk__in=pk_list).order_by(preserved)
