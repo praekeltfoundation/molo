@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from wagtail.wagtailadmin.edit_handlers import EditHandler
@@ -452,7 +453,20 @@ class LanguageRelation(models.Model):
 
 
 class TranslatablePageMixinNotRoutable(object):
+    def get_translation_for_cache_key(self, locale, site, is_live):
+        return "get_translation_for_%s_%s_%s_%s_%s" % (
+            self.pk, locale, site, is_live,
+            self.latest_revision_created_at.isoformat())
+
     def get_translation_for(self, locale, site, is_live=True):
+        cache_key = self.get_translation_for_cache_key(locale, site, is_live)
+        trans_pk = cache.get(cache_key)
+
+        # TODO: consider pickling page object. Be careful about page size in
+        # memory
+        if trans_pk:
+            return Page.objects.get(pk=trans_pk).specific
+
         language_setting = Languages.for_site(site)
         language = language_setting.languages.filter(
             locale=locale).first()
@@ -462,6 +476,7 @@ class TranslatablePageMixinNotRoutable(object):
 
         main_language_page = self.get_main_language_page()
         if language.is_main_language and not self == main_language_page:
+            cache.set(cache_key, main_language_page.pk, None)
             return main_language_page
 
         translated = None
@@ -475,6 +490,8 @@ class TranslatablePageMixinNotRoutable(object):
                 translated = t.translated_page.languages.filter(
                     language__locale=locale).first().page.specific
                 break
+        if translated:
+            cache.set(cache_key, translated.pk, None)
         return translated
 
     def get_main_language_page(self):
