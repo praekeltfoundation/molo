@@ -522,10 +522,17 @@ def get_tag_articles(
 
 @register.assignment_tag(takes_context=True)
 def load_tags_for_article(context, article):
+    if not article.specific.__class__ == ArticlePage:
+        return None
 
-    if article.specific.__class__ == ArticlePage:
-        locale = context.get('locale_code')
-        request = context['request']
+    locale = context.get('locale_code')
+    request = context['request']
+
+    cache_key = "load_tags_for_article_{}_{}_{}".format(
+        locale, request.site, article.pk)
+    tags_pks = cache.get(cache_key)
+
+    if not tags_pks:
         tags = [
             article_tag.tag.pk for article_tag in
             article.specific.get_main_language_page().nav_tags.all()
@@ -533,9 +540,14 @@ def load_tags_for_article(context, article):
         if tags and request.site:
             qs = Tag.objects.descendant_of(
                 request.site.root_page).live().filter(pk__in=tags)
+            tags_pks = qs.values_list("pk", flat=True)
+            cache.set(cache_key, tags_pks, 300)
         else:
             return []
-        return get_pages(context, qs, locale)
+
+    qs = Tag.objects.descendant_of(
+        request.site.root_page).live().filter(pk__in=tags_pks)
+    return get_pages(context, qs, locale)
 
 
 @register.assignment_tag(takes_context=True)
