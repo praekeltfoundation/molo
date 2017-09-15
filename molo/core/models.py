@@ -36,6 +36,8 @@ from wagtail.wagtailimages.models import Image
 from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.models import AbstractMedia
+from wagtail.wagtailcore.signals import page_unpublished
+
 from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
 from molo.core import constants
 from molo.core.api.constants import ERROR
@@ -459,6 +461,13 @@ class TranslatablePageMixinNotRoutable(object):
             self.latest_revision_created_at.isoformat())
 
     def get_translation_for(self, locale, site, is_live=True):
+        language_setting = Languages.for_site(site)
+        language = language_setting.languages.filter(
+            locale=locale).first()
+
+        if not language:
+            return None
+
         cache_key = self.get_translation_for_cache_key(locale, site, is_live)
         trans_pk = cache.get(cache_key)
 
@@ -466,13 +475,6 @@ class TranslatablePageMixinNotRoutable(object):
         # memory
         if trans_pk:
             return Page.objects.get(pk=trans_pk).specific
-
-        language_setting = Languages.for_site(site)
-        language = language_setting.languages.filter(
-            locale=locale).first()
-
-        if not language:
-            return None
 
         main_language_page = self.get_main_language_page()
         if language.is_main_language and not self == main_language_page:
@@ -605,6 +607,25 @@ class TranslatablePageMixinNotRoutable(object):
 
         return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)
+
+
+def clear_translation_cache(sender, instance, **kwargs):
+    if isinstance(instance, TranslatablePageMixin):
+        site = instance.get_site()
+        for lang in Languages.for_site(site).languages.all():
+            cache.delete(instance.get_translation_for_cache_key(
+                lang.locale, site, True))
+            cache.delete(instance.get_translation_for_cache_key(
+                lang.locale, site, False))
+
+            # clear cache for main language page too
+            parent = instance.get_main_language_page()
+            cache.delete(parent.get_translation_for_cache_key(
+                lang.locale, site, True))
+            cache.delete(parent.get_translation_for_cache_key(
+                lang.locale, site, False))
+
+page_unpublished.connect(clear_translation_cache)
 
 
 class TranslatablePageMixin(
