@@ -5,8 +5,7 @@ from rest_framework import serializers
 from wagtail.api.v2.serializers import PageSerializer
 from wagtail.wagtailimages.api.v2.serializers import ImageSerializer
 
-from molo.core.models import TranslatablePageMixinNotRoutable
-from molo.core.utils import get_image_hash
+from molo.core.models import TranslatablePageMixinNotRoutable, ImageInfo
 
 
 class PageChildrenField(serializers.Field):
@@ -134,7 +133,12 @@ class ImageFileHashField(serializers.Field):
         return instance
 
     def to_representation(self, image):
-        return get_image_hash(image)
+        if not hasattr(image, 'image_info'):
+            ImageInfo.objects.create(image=image)
+
+        image.refresh_from_db()
+
+        return image.image_info.image_hash
 
 
 class MoloImageSerializer(ImageSerializer):

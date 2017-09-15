@@ -5,7 +5,7 @@ from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
-    get_parent, bannerpages, load_tags_for_article)
+    get_parent, bannerpages, load_tags_for_article, get_recommended_articles)
 
 
 @pytest.mark.django_db
@@ -157,3 +157,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
                 'request': request
             }, self.yourmind),
             None)
+
+    def test_get_recommended_articles(self):
+        request = self.factory.get('/')
+        request.site = self.site
+        article1 = self.mk_article(self.yourmind, title='article 1')
+
+        self.assertEquals(get_recommended_articles(
+            {'locale_code': 'en', 'request': request}, article1),
+            [])

@@ -1,6 +1,3 @@
-.. _getting-started:
-.. _template-tags:
-
 Getting Started
 ===============
 
@@ -11,7 +8,7 @@ Scaffold a site using Molo
 --------------------------
 
 The goal of Molo is to provide a solid base of proven, stable packages that
-help Praekelt Foundation and partners to deliver on project scope::
+help Praekelt.org and partners to deliver on project scope::
 
    $ molo scaffold myapp
    $ cd myapp/
@@ -78,14 +75,14 @@ For convenience, here's the full scaffold command for the current plugins::
         --require=molo.commenting --include=molo.commenting ^commenting/ \
         --require=molo.yourwords --include=molo.yourwords ^yourwords/
 
+.. note:: ``molo.profiles`` is a requirement of molo core and is therefore automatically installed when molo is installed.
+
 Molo, Django & settings files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-What you have now is a standard Django application set up for normal
-development like outlined in the Django documentation. The only main difference
-is that your settings are Python modules found in the
-``settings/dev.py`` and ``settings/production.py`` files in your applications
-folder. Both of these inherit settings from ``settings/base.py``.
+You now have a standard Django application set up for normal development.
+The only difference is that your settings are Python modules found in the ``settings/dev.py`` and ``settings/production.py`` files in your applications folder.
+Both of these inherit settings from ``settings/base.py``.
 
 To create your own custom settings add a ``local.py`` file in the ``settings``
 folder. The ``settings/dev.py`` will automatically include those settings
@@ -130,33 +127,6 @@ Running your tests for Django works as you would expect::
 
    $ ./manage.py test
 
-What is bundled with Molo?
---------------------------
-
-1. `Wagtail CMS`_
-2. Basic feature phone template set.
-3. Basic models for the following tree structure:
-
-   1. A site has a main language, and the option of one or more additional languages.
-    - All content has to initially be created in the main language. Thereafter translations can be made for that content.
-    - Translations for content cannot exist for additional languages if it does not first exist for the main language.
-    - The first language added will be the main language, any other languages added after will be additional languages.
-    .. image:: view_languages.png
-   2. Once a main language has been created, a main page will be created as well. A main page consists of index pages.
-    - Index pages exist for each content type.
-    - All section pages are grouped into the 'Sections' index page.
-    - All banners are grouped into the 'Banners' index page.
-    .. image:: indexes.png
-   3. Once a section is made, articles can then be added to that section.
-    - Articles only exist as a child of a section page.
-    - Articles are composed from one or more blocks.
-    - Blocks can be headings, paragraphs, images, lists or links to other pages.
-    .. image:: article_blocks.png
-   4. Content such as sections or articles are displayed in their main language. Their translation in any additional language added is shown below the content. If one would like to edit the Spanish version of 'Staying Healthy', one would click on 'SPANISH', and then edit.
-    .. image:: translation.png
-   5. A Settings tab that includes Site Settings. Site Settings is where the logo, google analytics and various other settings are set.
-    .. image:: site_settings.png
-
 
 Testing the Molo scaffolding tool
 ---------------------------------
@@ -176,4 +146,3 @@ And then run the full test suite with::
 Pull requests are expected to follow Praekelt's `Ways Of Working`_.
 
 .. _`Ways of Working`: http://ways-of-working.rtfd.org
-.. _`Wagtail CMS`: http://wagtail.io

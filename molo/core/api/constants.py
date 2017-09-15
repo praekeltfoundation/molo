@@ -1,5 +1,11 @@
 from collections import namedtuple
 
+# constants for importer log
+ACTION = "ACTION"
+SUCCESS = "SUCCESS"
+ERROR = "ERROR"
+WARNING = "WARNING"
+
 CONTENT_TYPES = [
     ("core.ArticlePage", "Article"),
     ("core.SectionPage", "Section"),
