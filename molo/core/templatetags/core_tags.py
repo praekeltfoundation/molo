@@ -367,22 +367,19 @@ def get_next_tag(context, tag):
     current_tag = tag.get_main_language_page()
     qs = Tag.objects.descendant_of(request.site.root_page).filter(
         languages__language__is_main_language=True).live()
-    if qs:
+    if qs.exists():
         tags = list(qs)
-        if len(tags) > 1:
-            if not (len(tags) == tags.index(current_tag) + 1):
-                next_tag = tags[tags.index(current_tag) + 1]
-            else:
-                next_tag = tags[0]
-
-            if next_tag.get_translation_for(
-                    locale_code, context['request'].site):
-                return next_tag.get_translation_for(
-                    locale_code, context['request'].site)
-            else:
-                return next_tag
+        if not (len(tags) == tags.index(current_tag) + 1):
+            next_tag = tags[tags.index(current_tag) + 1]
         else:
-            return None
+            next_tag = tags[0]
+
+        if next_tag.get_translation_for(
+                locale_code, context['request'].site):
+            return next_tag.get_translation_for(
+                locale_code, context['request'].site)
+        else:
+            return next_tag
 
 
 @register.assignment_tag(takes_context=True)
