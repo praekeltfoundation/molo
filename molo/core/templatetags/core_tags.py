@@ -1,5 +1,6 @@
 from itertools import chain
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.cache import cache
 from django import template
 from django.utils.safestring import mark_safe
 from django.db.models import Case, When
@@ -13,10 +14,21 @@ from molo.core.models import (
 register = template.Library()
 
 
+def get_language(site, locale):
+    language_cache_key = 'get_pages_language_%s_%s' % (site, locale)
+    language = cache.get(language_cache_key)
+    if not language:
+        language = Languages.for_site(site).languages.filter(
+            locale=locale).first()
+        cache.set(language_cache_key, language, None)
+    return language
+
+
 def get_pages(context, qs, locale):
     request = context['request']
-    language = Languages.for_site(request.site).languages.filter(
-        locale=locale).first()
+
+    language = get_language(request.site, locale)
+
     site_settings = SiteSettings.for_site(request.site)
     if site_settings.show_only_translated_pages:
         if language and language.is_main_language:
@@ -72,10 +84,10 @@ def load_sections(context):
 @register.assignment_tag(takes_context=True)
 def get_translation(context, page):
     locale_code = context.get('locale_code')
-    if page.get_translation_for(locale_code, context['request'].site):
-        return page.get_translation_for(locale_code, context['request'].site)
-    else:
-        return page
+    translation = page.get_translation_for(
+        locale_code, context['request'].site)
+
+    return translation or page
 
 
 @register.assignment_tag(takes_context=True)
@@ -292,6 +304,9 @@ def load_child_articles_for_section(context, section, count=5):
     '''
     locale = context.get('locale_code')
     main_language_page = section.get_main_language_page()
+
+    # TODO: Consider caching the pks of these articles using a timestamp on
+    # section as the key so tha twe don't always do these joins
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(languages__language__is_main_language=True)
     related_articles = ArticlePage.objects.filter(
@@ -509,6 +524,7 @@ def get_tag_articles(
 
 @register.assignment_tag(takes_context=True)
 def load_tags_for_article(context, article):
+
     if article.specific.__class__ == ArticlePage:
         locale = context.get('locale_code')
         request = context['request']
