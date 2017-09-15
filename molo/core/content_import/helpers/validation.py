@@ -103,6 +103,7 @@ class ContentImportValidation(object):
             for p in pages:
                 if p.source and not self.validate_source_exists(
                         Page, p.source, main):
+                    print p, p.uuid, p.source, locale, main
                     self.errors.append({
                         'type': 'page_source_not_exists',
                         'details': {

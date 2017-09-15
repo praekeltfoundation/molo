@@ -38,7 +38,7 @@ from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 
 @pytest.mark.django_db
-@override_settings(GOOGLE_ANALYTICS={})
+@override_settings(GOOGLE_ANALYTICS=None)
 class TestPages(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
