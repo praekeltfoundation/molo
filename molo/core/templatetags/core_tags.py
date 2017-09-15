@@ -428,6 +428,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
 def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
         latest_article_count=3):
+    # TODO: consider caching this tag - these queries are too expensive
 
     request = context['request']
     locale = context.get('locale_code')
