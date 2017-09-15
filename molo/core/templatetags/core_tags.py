@@ -15,7 +15,7 @@ register = template.Library()
 
 
 def get_language(site, locale):
-    language_cache_key = 'get_pages_language_%s_%s' % (site, locale)
+    language_cache_key = 'get_pages_language_{}_{}'.format(site, locale)
     language = cache.get(language_cache_key)
     if not language:
         language = Languages.for_site(site).languages.filter(
