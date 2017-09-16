@@ -254,6 +254,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         tag = self.mk_tag(parent=self.tag_index)
         ArticlePageTags.objects.create(page=article, tag=tag)
+        article.save_revision().publish()
 
         response = self.client.get(article.url)
         self.assertNotContains(response, 'old tag')

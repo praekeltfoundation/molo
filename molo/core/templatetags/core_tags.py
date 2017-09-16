@@ -528,8 +528,9 @@ def load_tags_for_article(context, article):
     locale = context.get('locale_code')
     request = context['request']
 
-    cache_key = "load_tags_for_article_{}_{}_{}".format(
-        locale, request.site, article.pk)
+    cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
+        locale, request.site, article.pk,
+        article.latest_revision_created_at.isoformat())
     tags_pks = cache.get(cache_key)
 
     if not tags_pks:
