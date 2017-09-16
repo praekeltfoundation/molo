@@ -15,7 +15,7 @@ register = template.Library()
 
 
 def get_language(site, locale):
-    language_cache_key = 'get_pages_language_{}_{}'.format(site, locale)
+    language_cache_key = 'get_pages_language_{}_{}'.format(site.pk, locale)
     language = cache.get(language_cache_key)
     if not language:
         language = Languages.for_site(site).languages.filter(
@@ -529,7 +529,7 @@ def load_tags_for_article(context, article):
     request = context['request']
 
     cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
-        locale, request.site, article.pk,
+        locale, request.site.pk, article.pk,
         article.latest_revision_created_at.isoformat())
     tags_pks = cache.get(cache_key)
 

@@ -457,7 +457,7 @@ class LanguageRelation(models.Model):
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
         return "get_translation_for_{}_{}_{}_{}_{}".format(
-            self.pk, locale, site, is_live,
+            self.pk, locale, site.pk, is_live,
             self.latest_revision_created_at.isoformat())
 
     def get_translation_for(self, locale, site, is_live=True):
