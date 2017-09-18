@@ -457,17 +457,10 @@ class LanguageRelation(models.Model):
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
         return "get_translation_for_{}_{}_{}_{}_{}".format(
-            self.pk, locale, site, is_live,
+            self.pk, locale, site.pk, is_live,
             self.latest_revision_created_at.isoformat())
 
     def get_translation_for(self, locale, site, is_live=True):
-        language_setting = Languages.for_site(site)
-        language = language_setting.languages.filter(
-            locale=locale).first()
-
-        if not language:
-            return None
-
         cache_key = self.get_translation_for_cache_key(locale, site, is_live)
         trans_pk = cache.get(cache_key)
 
@@ -475,6 +468,13 @@ class TranslatablePageMixinNotRoutable(object):
         # memory
         if trans_pk:
             return Page.objects.get(pk=trans_pk).specific
+
+        language_setting = Languages.for_site(site)
+        language = language_setting.languages.filter(
+            locale=locale).first()
+
+        if not language:
+            return None
 
         main_language_page = self.get_main_language_page()
         if language.is_main_language and not self == main_language_page:
@@ -1121,6 +1121,13 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         return main.sites_rooted_here.all().first()
 
     def get_effective_extra_style_hints(self):
+        cache_key = "effective_extra_style_hints_{}_{}".format(
+            self.pk, self.latest_revision_created_at.isoformat())
+        style = cache.get(cache_key)
+
+        if style is not None:
+            return style
+
         if self.extra_style_hints:
             return self.extra_style_hints
 
@@ -1138,11 +1145,15 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         if language_rel and main_lang.pk == language_rel.language.pk:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
             if parent_section:
-                return parent_section.get_effective_extra_style_hints()
+                style = parent_section.get_effective_extra_style_hints()
+                cache.set(cache_key, style, 300)
+                return style
             return ''
         else:
             page = self.get_main_language_page()
-            return page.specific.get_effective_extra_style_hints()
+            style = page.specific.get_effective_extra_style_hints()
+            cache.set(cache_key, style, 300)
+            return style
 
     def get_effective_image(self):
         if self.image:
