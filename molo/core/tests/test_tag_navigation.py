@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
@@ -11,8 +11,6 @@ from molo.core.tasks import promote_articles
 from itertools import chain
 
 
-@override_settings(CACHES={'default': {
-    'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}})
 class TestTags(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.mk_main()
