@@ -392,22 +392,22 @@ def import_site(root_url, site_pk, user_pk):
             foreign_id=foreign_tag_index_page_id,
             existing_node=tag_index_page)
 
-        print("Creating Recommended Articles")
+        logger.log(ACTION, "Creating Recommended Articles")
         content_importer.create_recommended_articles()
 
-        print("Creating Related Sections")
+        logger.log(ACTION, "Creating Related Sections")
         content_importer.create_related_sections()
 
-        print("Creating Nav Tag Relationships")
+        logger.log(ACTION, "Creating Nav Tag Relationships")
         content_importer.create_nav_tag_relationships()
 
-        print("Creating Section Tag Relationships")
+        logger.log(ACTION, "Creating Section Tag Relationships")
         content_importer.create_section_tag_relationship()
 
-        print("Creating Banner Page Links")
+        logger.log(ACTION, "Creating Banner Page Links")
         content_importer.create_banner_page_links()
 
-        print("Recreate Article Body")
+        logger.log(ACTION, "Recreating Article Body")
         content_importer.recreate_article_body()
 
         # create CSV
