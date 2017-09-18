@@ -5,8 +5,7 @@ from rest_framework import serializers
 from wagtail.api.v2.serializers import PageSerializer
 from wagtail.wagtailimages.api.v2.serializers import ImageSerializer
 
-from molo.core.models import TranslatablePageMixinNotRoutable
-from molo.core.utils import get_image_hash
+from molo.core.models import TranslatablePageMixinNotRoutable, ImageInfo
 
 
 class PageChildrenField(serializers.Field):
@@ -58,6 +57,10 @@ class PageTranslationsField(serializers.Field):
     versions of the page, including the main lanugage page. It will
     exclude the original page id from the list.
 
+    Edge case: a translated version of a page may subsequenly have its
+    language deleted, leaving the page. In this case, the locale field
+    will display None.
+
     Example:
     "translations": [
         {
@@ -89,9 +92,15 @@ class PageTranslationsField(serializers.Field):
                          if page_relation.translated_page.id != page.id])
 
             for translated_page in pages:
+                locale = None
+                try:
+                    locale = translated_page.languages.get().language.locale
+                except:
+                    pass
+
                 items.append({
                     "id": translated_page.id,
-                    "locale": translated_page.languages.get().language.locale
+                    "locale": locale
                 })
             return items
         else:
@@ -124,7 +133,12 @@ class ImageFileHashField(serializers.Field):
         return instance
 
     def to_representation(self, image):
-        return get_image_hash(image)
+        if not hasattr(image, 'image_info'):
+            ImageInfo.objects.create(image=image)
+
+        image.refresh_from_db()
+
+        return image.image_info.image_hash
 
 
 class MoloImageSerializer(ImageSerializer):

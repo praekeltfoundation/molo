@@ -4,13 +4,20 @@ import zipfile
 import re
 import tempfile
 import imagehash
+import json
 import distutils.dir_util
 
 from PIL import Image as PILImage
 from StringIO import StringIO
+
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
 from wagtail.wagtailcore.utils import cautious_slugify
 from wagtail.wagtailcore.models import Page
+from wagtail.wagtailimages.models import Image
+
+from molo.core.api.constants import KEYS_TO_EXCLUDE
 
 
 def create_new_article_relations(old_main, copied_main):
@@ -165,8 +172,116 @@ def update_media_file(upload_file):
 def get_image_hash(image):
     '''
     Returns an image hash of a Wagtail Image
+
+    Handles case where default django storage is used
+    as well as images stored on AWS S3
     '''
-    with open(image.file.path, 'r') as file:
-        image_in_memory = StringIO(file.read())
+    if not image.file:
+        return None
+
+    # image is stored on s3
+    if settings.DEFAULT_FILE_STORAGE == 'storages.backends.s3boto.S3BotoStorage':  # noqa
+        s3_file = image.file._get_file()
+        image_in_memory = StringIO(s3_file.read())
         pil_image = PILImage.open(image_in_memory)
         return imagehash.average_hash(pil_image).__str__()
+    # image is stored locally
+    elif settings.DEFAULT_FILE_STORAGE == 'django.core.files.storage.FileSystemStorage':  # noqa
+        with open(image.file.path, 'r') as file:
+            image_in_memory = StringIO(file.read())
+            pil_image = PILImage.open(image_in_memory)
+            return imagehash.average_hash(pil_image).__str__()
+    else:
+        raise NotImplementedError(
+            ("settings.DEFAULT_FILE_STORAGE of {} not handled "
+             "in get_image_hash function").format(
+                settings.DEFAULT_FILE_STORAGE),
+            None)
+
+
+def separate_fields(fields):
+    """
+    Non-foreign key fields can be mapped to new article instances
+    directly. Foreign key fields require a bit more work.
+    This method returns a tuple, of the same format:
+    (flat fields, nested fields)
+    """
+    flat_fields = {}
+    nested_fields = {}
+
+    # exclude "id" and "meta" elements
+    for k, v in fields.items():
+        # TODO: remove dependence on KEYS_TO_INCLUDE
+        if k not in KEYS_TO_EXCLUDE:
+            if type(v) not in [type({}), type([])]:
+                flat_fields.update({k: v})
+            else:
+                nested_fields.update({k: v})
+
+    return flat_fields, nested_fields
+
+
+def add_json_dump(field, nested_fields, page):
+    if ((field in nested_fields) and
+            nested_fields[field]):
+        setattr(page, field, json.dumps(nested_fields[field]))
+
+
+def add_stream_fields(nested_fields, page):
+    if (('body' in nested_fields) and nested_fields['body']):
+        article_body = nested_fields['body']
+
+        # iterate through stream field, checking for page
+        page_flag = False
+        for stream_field in article_body:
+            if 'type' in stream_field and stream_field['type']:
+                # pass
+                if (stream_field['type'] == 'page' or
+                        stream_field['type'] == 'image'):
+                    page_flag = True
+                    break
+
+        # if page link exists, do not attach body, instead return it
+        if page_flag:
+            return nested_fields['body']
+        else:
+            setattr(page, 'body', json.dumps(nested_fields['body']))
+    return None
+
+
+def add_list_of_things(field, nested_fields, page):
+    if (field in nested_fields) and nested_fields[field]:
+        attr = getattr(page, field)
+        for item in nested_fields[field]:
+            attr.add(item)
+
+
+def attach_image(field, nested_fields, page, record_keeper=None):
+    '''
+    Returns a function that attaches an image to page if it exists
+
+    Currenlty assumes that images have already been imported and info
+    has been stored in record_keeper
+    '''
+    if (field in nested_fields) and nested_fields[field]:
+        foreign_image_id = nested_fields[field]["id"]
+        # Handle the following
+        # record keeper may not exist
+        # record keeper may not have image ref
+        if record_keeper:
+            try:
+                local_image_id = record_keeper.get_local_image(
+                    foreign_image_id)
+                local_image = Image.objects.get(id=local_image_id)
+                setattr(page, field, local_image)
+            except ObjectDoesNotExist:
+                raise ObjectDoesNotExist(
+                    ("executing attach_image: local image referenced"
+                     "in record_keeper does not actually exist."),
+                    None)
+            except Exception:
+                raise
+        else:
+            raise Exception(
+                ("Attempted to attach image without record_keeper. "
+                 "This functionality is not yet implemented"))
