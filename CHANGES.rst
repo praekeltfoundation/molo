@@ -1,3 +1,13 @@
+5.16.0
+~~~~~~
+- add CSV mapping foreing page IDs to local IDs, to success email when site has been imported
+
+5.15.0
+~~~~~~
+- add management command to add tag to article
+- add management command to set promotion date on article
+- add caching to improve performance
+
 5.14.0
 ~~~~~~
 - updated documentation for multi-site functionality

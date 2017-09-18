@@ -111,3 +111,4 @@ node_modules/
 /testapp/
 
 .vscode/
+.test_repos/
