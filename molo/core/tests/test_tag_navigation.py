@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
@@ -11,6 +11,8 @@ from molo.core.tasks import promote_articles
 from itertools import chain
 
 
+@override_settings(CACHES={'default': {
+    'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}})
 class TestTags(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.mk_main()
@@ -367,3 +369,126 @@ class TestTags(MoloTestCaseMixin, TestCase):
             list(response.context["object_list"]),
             [first_article, second_article]
         )
+
+
+class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
+    def setUp(self):
+        self.mk_main()
+        main = Main.objects.all().first()
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='en',
+            is_active=True)
+
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='fr',
+            is_active=True)
+
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+        self.yourbody = self.mk_section(
+            self.section_index, title='Your body')
+        self.yourmind_sub = self.mk_section(
+            self.yourmind, title='Your mind subsection')
+
+        self.yourmind_fr = self.mk_section_translation(
+            self.yourmind, self.french, title='Your mind in french')
+        self.yourmind_sub_fr = self.mk_section_translation(
+            self.yourmind_sub, self.french,
+            title='Your mind subsection in french')
+
+        self.site_settings = SiteSettings.for_site(main.get_site())
+        self.site_settings.enable_clickable_tags = True
+        self.site_settings.enable_tag_navigation = True
+        self.site_settings.save()
+
+    def test_caching_of_navigation_data(self):
+        articles = self.mk_articles(self.yourmind, count=20)
+        for p in articles:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        tag1 = self.mk_tag(parent=self.tag_index, feature_in_homepage=True)
+        tag2 = self.mk_tag(
+            parent=self.tag_index, title='Test Tag 2',
+            feature_in_homepage=True)
+        tag3 = self.mk_tag(parent=self.tag_index, title='Not Promoted Tag 1')
+        self.mk_tag(parent=self.tag_index, title='Not Promoted Tag 2')
+
+        self.mk_tag_translation(
+            tag1, self.french, title=tag1.title + ' in french',)
+        self.mk_tag_translation(
+            tag2, self.french, title=tag2.title + ' in french',)
+        self.mk_tag_translation(
+            tag3, self.french, title=tag3.title + ' in french',)
+
+        for article in articles[:10]:
+            ArticlePageTags.objects.create(page=article, tag=tag1)
+        for article in articles[10:]:
+            ArticlePageTags.objects.create(page=article, tag=tag2)
+
+        other_articles = self.mk_articles(self.yourbody, count=5)
+        for p in other_articles:
+            self.mk_article_translation(
+                p, self.french, title=p.title + ' in french')
+
+        for article in other_articles:
+            ArticlePageTags.objects.create(page=article, tag=tag3)
+
+        # first loading will prime the cache
+        with self.assertNumQueries(261):
+            response = self.client.get('/')
+            data = response.context['tag_nav_data']
+            self.assertEquals(len(data['latest_articles']), 17)
+            self.assertEquals(len(data['tags_list']), 2)
+            self.assertEquals(len(data['tags_list'][0][1]), 4)
+            self.assertEquals(len(data['tags_list'][1][1]), 4)
+
+        # second loading will use cache
+        with self.assertNumQueries(189):
+            response = self.client.get('/')
+            data = response.context['tag_nav_data']
+            self.assertEquals(len(data['latest_articles']), 17)
+            self.assertEquals(len(data['tags_list']), 2)
+            self.assertEquals(len(data['tags_list'][0][1]), 4)
+            self.assertEquals(len(data['tags_list'][1][1]), 4)
+
+        # third loading will use cache (same as second loading)
+        with self.assertNumQueries(189):
+            response = self.client.get('/')
+            data = response.context['tag_nav_data']
+            self.assertEquals(len(data['latest_articles']), 17)
+            self.assertEquals(len(data['tags_list']), 2)
+            self.assertEquals(len(data['tags_list'][0][1]), 4)
+            self.assertEquals(len(data['tags_list'][1][1]), 4)
+
+        # change language to french
+        self.client.get('/locale/fr/')
+
+        # first loading will prime the cache
+        with self.assertNumQueries(602):
+            response = self.client.get('/')
+            data = response.context['tag_nav_data']
+            self.assertEquals(len(data['latest_articles']), 17)
+            self.assertEquals(len(data['tags_list']), 2)
+            self.assertEquals(len(data['tags_list'][0][1]), 4)
+            self.assertEquals(len(data['tags_list'][1][1]), 4)
+
+        # second loading will use cache
+        with self.assertNumQueries(333):
+            response = self.client.get('/')
+            data = response.context['tag_nav_data']
+            self.assertEquals(len(data['latest_articles']), 17)
+            self.assertEquals(len(data['tags_list']), 2)
+            self.assertEquals(len(data['tags_list'][0][1]), 4)
+            self.assertEquals(len(data['tags_list'][1][1]), 4)
+
+        # third loading will use cache (same as second loading)
+        with self.assertNumQueries(333):
+            response = self.client.get('/')
+            data = response.context['tag_nav_data']
+            self.assertEquals(len(data['latest_articles']), 17)
+            self.assertEquals(len(data['tags_list']), 2)
+            self.assertEquals(len(data['tags_list'][0][1]), 4)
+            self.assertEquals(len(data['tags_list'][1][1]), 4)

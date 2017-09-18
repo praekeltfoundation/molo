@@ -11,6 +11,7 @@ from molo.core.models import (
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
     ReactionQuestionChoice)
 
+
 register = template.Library()
 
 
@@ -336,7 +337,7 @@ def load_child_articles_for_section(context, section, count=5):
 
 
 def get_articles_for_tags_with_translations(
-        request, tag, exclude_list, locale, context, exclude_pks):
+        request, tag, locale, context, exclude_pks):
 
     pks = [article_tag.page.pk for article_tag in
            ArticlePageTags.objects.filter(tag=tag)]
@@ -408,8 +409,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
             request.site.root_page).live().filter(pk__in=tags)
         for tag in qs:
             tag_articles = get_articles_for_tags_with_translations(
-                request, tag, exclude_pks, locale, context,
-                exclude_pks)
+                request, tag, locale, context, exclude_pks)
             if len(tag_articles) > tag_article_count:
                 tag_articles = tag_articles[:tag_article_count]
             exclude_pks += [p.pk for p in tag_articles]
@@ -429,95 +429,12 @@ def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
         latest_article_count=3):
     # TODO: consider caching this tag - these queries are too expensive
+    from molo.core.tag_navigation import TagNavigation
+    tag_navigation = TagNavigation(
+        context, section_count, tag_count, sec_articles_count,
+        latest_article_count)
 
-    request = context['request']
-    locale = context.get('locale_code')
-
-    exclude_pks = []
-    data = {}
-    tags_list = []
-    sections_list = []
-    latest_articles = []
-    # get x amount of articles featured in latest
-    # ordered by featured in latest promote date
-    all_latest_articles = ArticlePage.objects.descendant_of(
-        request.site.root_page).filter(
-        languages__language__is_main_language=True,
-        featured_in_latest=True).exact_type(ArticlePage).exclude(
-            pk__in=exclude_pks).order_by('-featured_in_latest_start_date')
-    if all_latest_articles:
-        all_translated_latest_articles = get_pages(
-            context, all_latest_articles, locale)
-        if all_translated_latest_articles:
-            if len(all_translated_latest_articles) >= latest_article_count:
-                latest_articles = all_translated_latest_articles[
-                    :latest_article_count]
-                exclude_pks += [p.pk for p in latest_articles]
-            else:
-                latest_articles = all_translated_latest_articles
-                exclude_pks += [p.pk for p in latest_articles]
-        elif len(all_latest_articles) >= latest_article_count:
-            latest_articles = all_latest_articles[:latest_article_count]
-            exclude_pks += [p.pk for p in latest_articles]
-        else:
-            latest_articles = all_latest_articles
-            exclude_pks += [p.pk for p in latest_articles]
-
-    # Featured Section/s
-    sections = request.site.root_page.specific.sections()
-    for section in sections[:section_count]:
-        sec_articles = ArticlePage.objects.descendant_of(section).filter(
-            languages__language__is_main_language=True,
-            featured_in_homepage=True).order_by(
-                '-featured_in_homepage_start_date').exclude(
-                pk__in=exclude_pks)
-        exclude_pks += [p.pk for p in sec_articles[:sec_articles_count]]
-        section = SectionPage.objects.filter(pk=section.pk)
-        section_for_locale = get_pages(context, section, locale)
-        if section_for_locale:
-            section = section_for_locale[0]
-        sec_articles_for_locale = get_pages(context, sec_articles, locale)
-        if sec_articles_for_locale and len(
-                sec_articles_for_locale) > sec_articles_count:
-            sec_articles_for_locale = sec_articles_for_locale[
-                :sec_articles_count]
-        if section_for_locale:
-            sections_list.append((
-                section,
-                sec_articles_for_locale))
-    data.update({'sections': sections_list})
-
-    # Featured Tag/s
-    tag_qs = Tag.objects.descendant_of(request.site.root_page).filter(
-        feature_in_homepage=True).live()
-    for tag in tag_qs:
-        tag_articles = get_articles_for_tags_with_translations(
-            request, tag, exclude_pks, locale,
-            context, exclude_pks)
-        if tag_articles and len(tag_articles) > tag_count:
-            tag_articles = tag_articles[:tag_count]
-        exclude_pks += [p.pk for p in tag_articles]
-        tag_for_locale = get_pages(context, tag_qs.filter(pk=tag.pk), locale)
-        if tag_for_locale:
-            tags_list.append((
-                tag_for_locale[0],
-                tag_articles))
-        else:
-            tags_list.append((
-                tag,
-                tag_articles))
-    data.update({'tags_list': tags_list})
-
-    # Latest Articles
-    data.update({
-        'latest_articles': latest_articles + get_pages(
-            context, ArticlePage.objects.descendant_of(
-                request.site.root_page).filter(
-                languages__language__is_main_language=True).exact_type(
-                    ArticlePage).exclude(pk__in=exclude_pks).order_by(
-                        '-featured_in_latest'), locale)})
-
-    return data
+    return tag_navigation.get_data()
 
 
 @register.assignment_tag(takes_context=True)

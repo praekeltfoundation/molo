@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (SiteSettings, Main, Languages,
@@ -8,6 +8,8 @@ from molo.core.models import (SiteSettings, Main, Languages,
 from molo.core.tasks import promote_articles
 
 
+@override_settings(CACHES={'default': {
+    'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}})
 class TestTags(MoloTestCaseMixin, TestCase):
     def setUp(self):
         self.mk_main()

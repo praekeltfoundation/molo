@@ -3,7 +3,7 @@ import pytest
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from wagtail.wagtailcore.models import Site
 
@@ -184,6 +184,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '<span>2</span>English Pages')
         self.assertContains(response, '<span>2</span>French Pages')
 
+    @override_settings(CACHES={'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}})
     def test_site_exists_if_no_iems_translated_for_translated_only(self):
         site_settings = SiteSettings.for_site(self.main.get_site())
         site_settings.enable_tag_navigation = True
@@ -208,6 +210,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertEquals(response.status_code, 200)
 
+    @override_settings(CACHES={'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}})
     def test_that_only_translated_sections_show_with_tag_navigation(self):
         site_settings = SiteSettings.for_site(self.main.get_site())
         site_settings.enable_tag_navigation = True
