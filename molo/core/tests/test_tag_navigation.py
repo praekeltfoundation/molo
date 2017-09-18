@@ -437,7 +437,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
             ArticlePageTags.objects.create(page=article, tag=tag3)
 
         # first loading will prime the cache
-        with self.assertNumQueries(261):
+        with self.assertNumQueries(259):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 17)
@@ -467,7 +467,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
         self.client.get('/locale/fr/')
 
         # first loading will prime the cache
-        with self.assertNumQueries(602):
+        with self.assertNumQueries(600):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 17)
