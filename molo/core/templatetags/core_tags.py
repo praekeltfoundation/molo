@@ -25,7 +25,7 @@ def get_language(site, locale):
     return language
 
 
-def get_pages(context, qs, locale):
+def get_pages(context, qs, locale, exclude_pks=[]):
     request = context['request']
 
     language = get_language(request.site, locale)
@@ -38,7 +38,7 @@ def get_pages(context, qs, locale):
             pages = []
             for a in qs:
                 translation = a.get_translation_for(locale, request.site)
-                if translation:
+                if translation and translation.pk not in exclude_pks:
                     pages.append(translation)
             return pages
     else:
@@ -48,7 +48,7 @@ def get_pages(context, qs, locale):
             pages = []
             for a in qs:
                 translation = a.get_translation_for(locale, request.site)
-                if translation:
+                if translation and translation.pk not in exclude_pks:
                     pages.append(translation)
                 elif a.live:
                     pages.append(a)

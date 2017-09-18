@@ -22,9 +22,10 @@ class TagNavigation(object):
         self.all_translated_latest_articles = []
 
     def get_cache_prefix(self):
-        return "tag_navigation_{}_{}_{}_{}_{}".format(
+        return "tag_navigation_{}_{}_{}_{}_{}_{}".format(
             self.section_count, self.tag_count, self.sec_articles_count,
-            self.latest_article_count, self.locale)
+            self.latest_article_count, self.locale,
+            self.request.site.root_page.specific.last_modified_at.isoformat())
 
     def get_featured_latest_articles_cache_key(self):
         return "{}_featured_latest_articles".format(
@@ -122,14 +123,12 @@ class TagNavigation(object):
         cache_key = self.get_featured_latest_articles_cache_key()
         featured_latest_articles_pk = cache.get(cache_key)
         if featured_latest_articles_pk:
-            featured_latest_articles = ArticlePage.objects\
+            return ArticlePage.objects\
                 .descendant_of(self.request.site.root_page)\
                 .filter(pk__in=featured_latest_articles_pk)\
                 .order_by('-featured_in_latest_start_date')\
                 .exact_type(ArticlePage)\
                 .live()
-            return get_pages(
-                self.context, featured_latest_articles, self.locale)
 
     def get_cached_sections_list(self):
         cache_key = self.get_sections_list_cache_key()
@@ -144,12 +143,10 @@ class TagNavigation(object):
     def get_data(self):
         data = {}
 
-        latest_articles = self.get_cached_featured_latest_articles()
-        if not latest_articles:
+        latest_articles_cache = self.get_cached_featured_latest_articles()
+        latest_articles = latest_articles_cache
+        if latest_articles_cache is None:
             latest_articles = self.get_featured_latest_articles()
-            cache.set(
-                self.get_featured_latest_articles_cache_key(),
-                [article.pk for article in latest_articles], 300)
 
         # Featured Section/s
         sections_list = self.get_cached_sections_list()
@@ -168,18 +165,22 @@ class TagNavigation(object):
         data.update({'tags_list': tags_list})
 
         # Latest Articles
-        remainder_articles_qs = ArticlePage.objects\
-            .descendant_of(self.request.site.root_page)\
-            .filter(languages__language__is_main_language=True)\
-            .exact_type(ArticlePage)\
-            .exclude(pk__in=self.exclude_pks)\
-            .exclude(translations__translated_page__pk__in=self.exclude_pks)\
-            .order_by('-featured_in_latest')
+        if latest_articles_cache is None:
+            remainder_articles_qs = ArticlePage.objects\
+                .descendant_of(self.request.site.root_page)\
+                .filter(languages__language__is_main_language=True)\
+                .exact_type(ArticlePage)\
+                .exclude(pk__in=self.exclude_pks)\
+                .order_by('-featured_in_latest').live()
 
-        remainder_articles_translated = get_pages(
-            self.context, remainder_articles_qs, self.locale)
+            remainder_articles_translated = get_pages(
+                self.context, remainder_articles_qs, self.locale,
+                self.exclude_pks)
 
-        data.update({
-            'latest_articles':
-                latest_articles + remainder_articles_translated})
+            latest_articles += remainder_articles_translated
+            cache.set(
+                self.get_featured_latest_articles_cache_key(),
+                [article.pk for article in latest_articles], 300)
+
+        data.update({'latest_articles': latest_articles})
         return data

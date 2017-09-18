@@ -612,6 +612,7 @@ class TranslatablePageMixinNotRoutable(object):
 def clear_translation_cache(sender, instance, **kwargs):
     if isinstance(instance, TranslatablePageMixin):
         site = instance.get_site()
+        site.root_page.specific.save()  # update last_modified_timestamp
         for lang in Languages.for_site(site).languages.all():
             cache.delete(instance.get_translation_for_cache_key(
                 lang.locale, site, True))
@@ -791,6 +792,9 @@ index_pages_after_copy = Signal(providing_args=["instance"])
 
 class Main(CommentedPageMixin, Page):
     subpage_types = []
+
+    last_modified_at = models.DateTimeField(
+        auto_now=True, null=True, blank=True)
 
     def bannerpages(self):
         index_page = BannerIndexPage.objects.child_of(self).live().first()
