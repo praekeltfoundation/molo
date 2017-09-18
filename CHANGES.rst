@@ -1,3 +1,7 @@
+5.16.1
+~~~~~~
+- Add more caching to improve performance
+
 5.16.0
 ~~~~~~
 - add CSV mapping foreing page IDs to local IDs, to success email when site has been imported
