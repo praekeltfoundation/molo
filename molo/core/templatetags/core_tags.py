@@ -428,8 +428,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
 def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
         latest_article_count=3):
-    # TODO: consider caching this tag - these queries are too expensive
-    from molo.core.tag_navigation import TagNavigation
+    from molo.core.tag_navigation import TagNavigation  # avoid cyclic ref
     tag_navigation = TagNavigation(
         context, section_count, tag_count, sec_articles_count,
         latest_article_count)
