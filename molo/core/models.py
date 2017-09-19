@@ -36,7 +36,7 @@ from wagtail.wagtailimages.models import Image
 from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.models import AbstractMedia
-from wagtail.wagtailcore.signals import page_unpublished
+from wagtail.wagtailcore.signals import page_unpublished, page_published
 
 from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
 from molo.core import constants
@@ -627,6 +627,7 @@ def clear_translation_cache(sender, instance, **kwargs):
                 lang.locale, site, False))
 
 page_unpublished.connect(clear_translation_cache)
+page_published.connect(clear_translation_cache)
 
 
 class TranslatablePageMixin(

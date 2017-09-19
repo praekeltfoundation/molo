@@ -35,6 +35,10 @@ class TagNavigation(object):
         return "{}_sections_list".format(
             self.get_cache_prefix())
 
+    def get_tags_article_list_cache_key(self):
+        return "{}_tags_article_list".format(
+            self.get_cache_prefix())
+
     def get_featured_latest_articles(self):
         latest_articles = []
         # get x amount of articles featured in latest
@@ -70,6 +74,18 @@ class TagNavigation(object):
                 self.exclude_pks += [p.pk for p in latest_articles]
         return latest_articles
 
+    def get_cached_featured_latest_articles(self):
+        cache_key = self.get_featured_latest_articles_cache_key()
+        featured_latest_articles_pk = cache.get(cache_key)
+        if featured_latest_articles_pk:
+            self.exclude_pks = featured_latest_articles_pk
+            return ArticlePage.objects\
+                .descendant_of(self.request.site.root_page)\
+                .filter(pk__in=featured_latest_articles_pk)\
+                .order_by('-featured_in_latest_start_date')\
+                .exact_type(ArticlePage)\
+                .live()
+
     def get_sections_articles_list(self):
         sections_list = []
         sections = self.request.site.root_page.specific.sections()
@@ -100,6 +116,16 @@ class TagNavigation(object):
 
         return sections_list
 
+    def get_cached_sections_list(self):
+        cache_key = self.get_sections_list_cache_key()
+        sections_list_cache = cache.get(cache_key)
+        if sections_list_cache:
+            return [
+                (SectionPage.objects.get(pk=section_pk),
+                 ArticlePage.objects.filter(pk__in=articles_pk).order_by(
+                    '-featured_in_homepage_start_date').live())
+                for section_pk, articles_pk in sections_list_cache]
+
     def get_tags_article_list(self):
         tags_list = []
         tag_qs = Tag.objects.descendant_of(self.request.site.root_page).filter(
@@ -119,26 +145,15 @@ class TagNavigation(object):
                 tags_list.append((tag, tag_articles))
         return tags_list
 
-    def get_cached_featured_latest_articles(self):
-        cache_key = self.get_featured_latest_articles_cache_key()
-        featured_latest_articles_pk = cache.get(cache_key)
-        if featured_latest_articles_pk:
-            return ArticlePage.objects\
-                .descendant_of(self.request.site.root_page)\
-                .filter(pk__in=featured_latest_articles_pk)\
-                .order_by('-featured_in_latest_start_date')\
-                .exact_type(ArticlePage)\
-                .live()
-
-    def get_cached_sections_list(self):
-        cache_key = self.get_sections_list_cache_key()
-        sections_list_cache = cache.get(cache_key)
-        if sections_list_cache:
+    def get_cached_tags_article_list(self):
+        cache_key = self.get_tags_article_list_cache_key()
+        tags_article_list_cache = cache.get(cache_key)
+        if tags_article_list_cache:
             return [
-                (SectionPage.objects.get(pk=section_pk),
+                (Tag.objects.get(pk=tag_pk),
                  ArticlePage.objects.filter(pk__in=articles_pk).order_by(
                     '-featured_in_homepage_start_date').live())
-                for section_pk, articles_pk in sections_list_cache]
+                for tag_pk, articles_pk in tags_article_list_cache]
 
     def get_data(self):
         data = {}
@@ -161,7 +176,15 @@ class TagNavigation(object):
         data.update({'sections': sections_list})
 
         # Featured Tag/s
-        tags_list = self.get_tags_article_list()
+        tags_list = self.get_cached_tags_article_list()
+        if not tags_list:
+            tags_list = self.get_tags_article_list()
+            cache.set(
+                self.get_tags_article_list_cache_key(),
+                [(tag.pk, [article.pk for article in articles])
+                 for tag, articles in tags_list],
+                300)
+
         data.update({'tags_list': tags_list})
 
         # Latest Articles

@@ -436,7 +436,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
             ArticlePageTags.objects.create(page=article, tag=tag3)
 
         # first loading will prime the cache
-        with self.assertNumQueries(259):
+        with self.assertNumQueries(260):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 17)
@@ -445,7 +445,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
             self.assertEquals(len(data['tags_list'][1][1]), 4)
 
         # second loading will use cache
-        with self.assertNumQueries(187):
+        with self.assertNumQueries(160):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 17)
@@ -454,7 +454,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
             self.assertEquals(len(data['tags_list'][1][1]), 4)
 
         # third loading will use cache (same as second loading)
-        with self.assertNumQueries(187):
+        with self.assertNumQueries(160):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 17)
@@ -475,7 +475,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
             self.assertEquals(len(data['tags_list'][1][1]), 4)
 
         # second loading will use cache
-        with self.assertNumQueries(297):
+        with self.assertNumQueries(226):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 17)
@@ -484,7 +484,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
             self.assertEquals(len(data['tags_list'][1][1]), 4)
 
         # third loading will use cache (same as second loading)
-        with self.assertNumQueries(297):
+        with self.assertNumQueries(226):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 17)
@@ -505,7 +505,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
             self.assertEquals(len(data['tags_list'][1][1]), 4)
 
         # second loading will use cache
-        with self.assertNumQueries(299):
+        with self.assertNumQueries(226):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 16)
@@ -514,7 +514,7 @@ class TestTagNavigationWithCache(MoloTestCaseMixin, TestCase):
             self.assertEquals(len(data['tags_list'][1][1]), 4)
 
         # third loading will use cache (same as second loading)
-        with self.assertNumQueries(299):
+        with self.assertNumQueries(226):
             response = self.client.get('/')
             data = response.context['tag_nav_data']
             self.assertEquals(len(data['latest_articles']), 16)
