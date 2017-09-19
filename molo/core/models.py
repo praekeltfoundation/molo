@@ -195,6 +195,33 @@ class SiteSettings(BaseSetting):
         help_text='Enable tag navigation. When this is true, the clickable '
                   'tag functionality will be overriden'
     )
+    enable_service_directory = models.BooleanField(
+        default=False, verbose_name='Enable service directory'
+    )
+    service_directory_api_base_url = models.CharField(
+        verbose_name=_('service directory base url'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    service_directory_api_username = models.CharField(
+        verbose_name=_('service directory username'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    service_directory_api_password = models.CharField(
+        verbose_name=_('service directory password'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    google_places_api_server_key = models.CharField(
+        verbose_name=_('google places server key'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
 
     panels = [
         ImageChooserPanel('logo'),
@@ -258,6 +285,16 @@ class SiteSettings(BaseSetting):
                 FieldPanel('enable_tag_navigation'),
             ],
             heading="Article Tag Settings"
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('enable_service_directory'),
+                FieldPanel('service_directory_api_base_url'),
+                FieldPanel('service_directory_api_username'),
+                FieldPanel('service_directory_api_password'),
+                FieldPanel('google_places_api_server_key'),
+            ],
+            heading="Service Directory API Settings"
         )
     ]
 
