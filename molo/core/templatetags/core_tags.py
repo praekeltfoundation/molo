@@ -642,7 +642,7 @@ def handle_markdown(value):
     'core/tags/social_media_footer.html',
     takes_context=True
 )
-def social_media_footer(context):
+def social_media_footer(context, obj):
     request = context['request']
     locale = context.get('locale_code')
     social_media = SiteSettings.for_site(request.site).\
@@ -652,6 +652,7 @@ def social_media_footer(context):
         'social_media': social_media,
         'request': context['request'],
         'locale_code': locale,
+        'page': obj,
     }
 
 
@@ -659,7 +660,7 @@ def social_media_footer(context):
     'core/tags/social_media_article.html',
     takes_context=True
 )
-def social_media_article(context):
+def social_media_article(context, obj):
     request = context['request']
     locale = context.get('locale_code')
     site_settings = SiteSettings.for_site(request.site)
@@ -679,6 +680,7 @@ def social_media_article(context):
         'twitter': twitter,
         'request': context['request'],
         'locale_code': locale,
+        'page': obj,
     }
 
 
