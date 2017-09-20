@@ -24,8 +24,6 @@ from molo.core.api.constants import (
 from molo.core.api.errors import *  # noqa
 from molo.core.utils import separate_fields
 
-from django.conf import settings
-
 
 # functions used to find images
 def get_image_attributes(base_url, image_id):
