@@ -1,3 +1,8 @@
+5.17.0
+~~~~~~
+- Allow adding service directory api settings in CMS
+- Used logging for the api import process
+
 5.16.1
 ~~~~~~
 - Add more caching to improve performance

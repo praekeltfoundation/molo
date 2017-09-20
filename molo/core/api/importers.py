@@ -4,6 +4,7 @@ Various importers for the different content types
 import math
 import json
 import requests
+import logging
 from io import BytesIO
 
 from django.core.files.images import ImageFile
@@ -22,8 +23,6 @@ from molo.core.api.constants import (
 )
 from molo.core.api.errors import *  # noqa
 from molo.core.utils import separate_fields
-
-from django.conf import settings
 
 
 # functions used to find images
@@ -421,11 +420,12 @@ class ImageImporter(BaseImporter):
         if Image.objects.count() == 0:
             return None
 
+        total = Image.objects.count()
+        count = 1
         for local_image in Image.objects.all():
             if not hasattr(local_image, 'image_info'):
                 ImageInfo.objects.create(image=local_image)
                 local_image.refresh_from_db()
-
             self.image_hashes[local_image.image_info.image_hash] = local_image
 
             if local_image.width in self.image_widths:
@@ -437,6 +437,8 @@ class ImageImporter(BaseImporter):
                 self.image_heights[local_image.height].append(local_image)
             else:
                 self.image_heights[local_image.height] = [local_image]
+            logging.debug("{}/{} images processed".format(count, total))
+            count += 1
 
     def get_replica_image(self, width, height, img_hash):
         if width in self.image_widths:
@@ -1007,10 +1009,9 @@ class Logger(object):
         return message
 
     def log(self, log_type, message, context=None, depth=0):
-        if settings.DEBUG:
-            log_message = self.format_message(
-                log_type, message, context, depth=depth)
-            print(log_message)
+        log_message = self.format_message(
+            log_type, message, context, depth=depth)
+        logging.debug(log_message)
 
         self.record.append({
             "log_type": log_type,
