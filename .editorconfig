@@ -7,14 +7,10 @@ root = true
 [*]
 # Unix-style newlines with a newline ending every file
 end_of_line = lf
-#insert_final_newline = true
 
 [*.{js,py}]
 # Default Charset
 charset = utf-8
-
-#Add Pythong editor configurations
-#[*.py]
 
 # Set tab style and size
 indent_style = space
