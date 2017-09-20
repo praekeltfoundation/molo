@@ -642,24 +642,25 @@ def handle_markdown(value):
     'core/tags/social_media_footer.html',
     takes_context=True
 )
-def social_media_footer(context):
+def social_media_footer(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
     social_media = SiteSettings.for_site(request.site).\
         social_media_links_on_footer_page
 
-    return {
+    data = {
         'social_media': social_media,
         'request': context['request'],
         'locale_code': locale,
     }
+    return data.update({'page': page}) if page else data
 
 
 @register.inclusion_tag(
     'core/tags/social_media_article.html',
     takes_context=True
 )
-def social_media_article(context):
+def social_media_article(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
     site_settings = SiteSettings.for_site(request.site)
@@ -674,12 +675,13 @@ def social_media_article(context):
     else:
         twitter = False
 
-    return {
+    data = {
         'facebook': facebook,
         'twitter': twitter,
         'request': context['request'],
         'locale_code': locale,
     }
+    return data.update({'page': page}) if page else data
 
 
 @register.assignment_tag(takes_context=True)
