@@ -48,29 +48,29 @@ def get_image(base_url, image_id):
 
 
 def list_of_objects_from_api(url):
-        '''
-        API only serves 20 pages by default
-        This fetches info on all of items and return them as a list
+    '''
+    API only serves 20 pages by default
+    This fetches info on all of items and return them as a list
 
-        Assumption: limit of API is not less than 20
-        '''
-        response = requests.get(url)
+    Assumption: limit of API is not less than 20
+    '''
+    response = requests.get(url)
 
-        content = json.loads(response.content)
-        count = content["meta"]["total_count"]
+    content = json.loads(response.content)
+    count = content["meta"]["total_count"]
 
-        if count <= 20:
-            return content["items"]
-        else:
-            items = [] + content["items"]
-            num_requests = int(math.ceil(count // 20))
+    if count <= 20:
+        return content["items"]
+    else:
+        items = [] + content["items"]
+        num_requests = int(math.ceil(count // 20))
 
-            for i in range(1, num_requests + 1):
-                paginated_url = "{}?limit=20&offset={}".format(
-                    url, str(i * 20))
-                paginated_response = requests.get(paginated_url)
-                items = items + json.loads(paginated_response.content)["items"]
-        return items
+        for i in range(1, num_requests + 1):
+            paginated_url = "{}?limit=20&offset={}".format(
+                url, str(i * 20))
+            paginated_response = requests.get(paginated_url)
+            items = items + json.loads(paginated_response.content)["items"]
+    return items
 
 
 class PageImporter(object):
