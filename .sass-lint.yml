@@ -46,7 +46,7 @@ rules:
   # Name Formats
   class-name-format:
       - 1
-      - convention: 'strictbem'
+      - convention: 'hyphenatedbem'
         convention-explanation: 'Classes must adhere to non strict BEM CSS naming convention by Nicolas Gallagher. See: https://csswizardry.com/2013/01/mindbemding-getting-your-head-round-bem-syntax/'
   function-name-format: 1
   id-name-format: 0

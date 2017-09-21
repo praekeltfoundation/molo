@@ -83,7 +83,14 @@ FED
   -  We use SMACSS, BEM methodologies
 
   BEM
+
+  strictbem
   https://en.bem.info/methodology/quick-start/
+
+  hyphenatedbem
+  https://csswizardry.com/2013/01/mindbemding-getting-your-head-round-bem-syntax/
+
+
   http://getbem.com/introduction/
 
   BEM Naming Convention
@@ -99,6 +106,7 @@ FED
 
   SMACSS
   https://smacss.com/book/
+  https://webuild.envato.com/blog/how-to-scale-and-maintain-legacy-css-with-sass-and-smacss/
 
   E.G. variables / colors.scss
     $de_york - #2A9B58;

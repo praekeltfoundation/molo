@@ -3,6 +3,7 @@
 var gulp              =   require('gulp'),
     sass              =   require('gulp-sass'),
     sassLint          =   require('gulp-sass-lint'),
+    sassGlob          =   require('gulp-sass-glob');
     cleanCSSMinify    =   require('gulp-clean-css'),
     watch             =   require('gulp-watch'),
     rename            =   require('gulp-rename'),
@@ -29,6 +30,7 @@ function styles(env) {
       .pipe(sourcemaps.init());
     s = s
     .pipe(sass().on('error', sass.logError))
+    .pipe(sassGlob())
     .pipe(cleanCSSMinify())
     .pipe(sassLint())
     .pipe(sassLint.format())
