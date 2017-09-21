@@ -174,11 +174,23 @@ def get_image_hash(image):
     '''
     Returns an MD5 hash of the image file
 
-    Handles images stored locally and AWS
+    Handles images stored locally and on AWS
+
+    I know this code is ugly.
+    Please don't ask.
+    The rabbit hole is deep.
     '''
     md5 = hashlib.md5()
     try:
+        for chunk in image.file.chunks():
+            md5.update(chunk)
+        return md5.hexdigest()
+    # this should only occur in tests
+    except ValueError:
+        # see link below for why we try not to use .open()
+        # https://docs.djangoproject.com/en/1.9/ref/files/uploads/#django.core.files.uploadedfile.UploadedFile.chunks  # noqa
         image.file.open()
+
         for chunk in image.file.chunks():
             md5.update(chunk)
         return md5.hexdigest()
