@@ -1,3 +1,7 @@
+5.17.2
+~~~~~~
+- Bug fix: remove update from social_media template tag
+
 5.17.1
 ~~~~~~
 - Allow passing obj to social_media template tag
