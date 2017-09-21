@@ -322,7 +322,7 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
         # create 'duplicate' image with same name
         Image.objects.create(
             title='local image',
-            file=get_test_image_file(constants.IMAGE_DETAIL_1["id"]),
+            file=get_test_image_file(),
         )
         # NOTE: images must be re-referenced once added
         self.importer.get_image_details()
