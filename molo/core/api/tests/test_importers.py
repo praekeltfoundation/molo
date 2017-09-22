@@ -216,7 +216,6 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
             title='local image',
             file=get_test_image_file(),
         )
-        local_image_hash = get_image_hash(local_image)
         self.importer.get_image_details()
 
         replica_image = self.importer.get_replica_image('wrong_hash')
