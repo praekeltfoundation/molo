@@ -338,6 +338,53 @@ WAGTAIL_SITE_NAME = "base"
 #     },
 # }
 
+# Explicitly declare our settings for logging
+# This allows us to have custom logic for
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'import_console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
+        },
+        'py.warnings': {
+            'handlers': ['console'],
+        },
+        'import_logger': {
+            'handlers': ['import_console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
+
+
 SITE_NAME = environ.get('SITE_NAME', "{{cookiecutter.app_name}}")
 WAGTAIL_SITE_NAME = SITE_NAME
 
