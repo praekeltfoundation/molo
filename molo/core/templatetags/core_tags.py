@@ -652,8 +652,9 @@ def social_media_footer(context, page=None):
         'social_media': social_media,
         'request': context['request'],
         'locale_code': locale,
+        'page': page,
     }
-    return data.update({'page': page}) if page else data
+    return data
 
 
 @register.inclusion_tag(
@@ -680,8 +681,9 @@ def social_media_article(context, page=None):
         'twitter': twitter,
         'request': context['request'],
         'locale_code': locale,
+        'page': page,
     }
-    return data.update({'page': page}) if page else data
+    return data
 
 
 @register.assignment_tag(takes_context=True)
