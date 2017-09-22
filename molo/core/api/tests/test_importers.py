@@ -212,7 +212,7 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(replica_image, local_image)
 
     def test_get_replica_image_returns_none(self):
-        local_image = Image.objects.create(
+        Image.objects.create(
             title='local image',
             file=get_test_image_file(),
         )
