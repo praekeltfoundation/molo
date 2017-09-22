@@ -1,3 +1,25 @@
+5.18.0
+~~~~~~
+- Update image hashing function
+- Update log settings to accomodate api logs
+
+5.17.2
+~~~~~~
+- Bug fix: remove update from social_media template tag
+
+5.17.1
+~~~~~~
+- Allow passing obj to social_media template tag
+
+5.17.0
+~~~~~~
+- Allow adding service directory api settings in CMS
+- Used logging for the api import process
+
+5.16.1
+~~~~~~
+- Add more caching to improve performance
+
 5.16.0
 ~~~~~~
 - add CSV mapping foreing page IDs to local IDs, to success email when site has been imported
