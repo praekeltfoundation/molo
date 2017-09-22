@@ -48,29 +48,29 @@ def get_image(base_url, image_id):
 
 
 def list_of_objects_from_api(url):
-        '''
-        API only serves 20 pages by default
-        This fetches info on all of items and return them as a list
+    '''
+    API only serves 20 pages by default
+    This fetches info on all of items and return them as a list
 
-        Assumption: limit of API is not less than 20
-        '''
-        response = requests.get(url)
+    Assumption: limit of API is not less than 20
+    '''
+    response = requests.get(url)
 
-        content = json.loads(response.content)
-        count = content["meta"]["total_count"]
+    content = json.loads(response.content)
+    count = content["meta"]["total_count"]
 
-        if count <= 20:
-            return content["items"]
-        else:
-            items = [] + content["items"]
-            num_requests = int(math.ceil(count // 20))
+    if count <= 20:
+        return content["items"]
+    else:
+        items = [] + content["items"]
+        num_requests = int(math.ceil(count // 20))
 
-            for i in range(1, num_requests + 1):
-                paginated_url = "{}?limit=20&offset={}".format(
-                    url, str(i * 20))
-                paginated_response = requests.get(paginated_url)
-                items = items + json.loads(paginated_response.content)["items"]
-        return items
+        for i in range(1, num_requests + 1):
+            paginated_url = "{}?limit=20&offset={}".format(
+                url, str(i * 20))
+            paginated_response = requests.get(paginated_url)
+            items = items + json.loads(paginated_response.content)["items"]
+    return items
 
 
 class PageImporter(object):
@@ -409,13 +409,14 @@ class ImageImporter(BaseImporter):
                                             logger=logger)
         self.image_url = "{}images/".format(self.api_url)
         self.image_hashes = {}
-        self.image_widths = {}
-        self.image_heights = {}
         self.get_image_details()
 
     def get_image_details(self):
         '''
-        Create a reference of site images by hash, width and height
+        Create a reference of site images by hash
+
+        If there are duplicate images, only store the first
+        and create warnings for other images
         '''
         if Image.objects.count() == 0:
             return None
@@ -426,31 +427,24 @@ class ImageImporter(BaseImporter):
             if not hasattr(local_image, 'image_info'):
                 ImageInfo.objects.create(image=local_image)
                 local_image.refresh_from_db()
-            self.image_hashes[local_image.image_info.image_hash] = local_image
 
-            if local_image.width in self.image_widths:
-                self.image_widths[local_image.width].append(local_image)
-            else:
-                self.image_widths[local_image.width] = [local_image]
+            hash_ = local_image.image_info.image_hash
 
-            if local_image.height in self.image_heights:
-                self.image_heights[local_image.height].append(local_image)
+            if hash_ in self.image_hashes:
+                self.log(WARNING, "Image found with matching hash", context={
+                    "composite hash": hash_,
+                    "hashed image ID": self.image_hashes[hash_].id,
+                    "matching image ID": local_image.id,
+                })
             else:
-                self.image_heights[local_image.height] = [local_image]
-            logging.debug("{}/{} images processed".format(count, total))
+                self.image_hashes[hash_] = local_image
+
+            self.log(ACTION, "{}/{} images processed".format(count, total))
             count += 1
 
-    def get_replica_image(self, width, height, img_hash):
-        if width in self.image_widths:
-                possible_matches = self.image_widths[width]
-                if height in self.image_heights:
-                    possible_matches = list(
-                        set(self.image_heights[height] +
-                            possible_matches))
-                    if (img_hash in self.image_hashes and
-                            self.image_hashes[img_hash] in possible_matches):
-                        matching_image = self.image_hashes[img_hash]
-                        return matching_image
+    def get_replica_image(self, img_hash):
+        if img_hash in self.image_hashes:
+            return self.image_hashes[img_hash]
         return None
 
     def fetch_and_create_image(self, url, image_title):
@@ -515,8 +509,6 @@ class ImageImporter(BaseImporter):
 
         # check if a replica exists
         local_image = self.get_replica_image(
-            img_info["width"],
-            img_info["height"],
             img_info["image_hash"])
 
         file_url = img_info['image_url']
@@ -964,9 +956,9 @@ class ContentImporter(BaseImporter):
             main_language_child_ids = content["meta"]["main_language_children"]
             if main_language_child_ids:
                 for main_language_child_id in main_language_child_ids:
-                        self.copy_page_and_children(
-                            foreign_id=main_language_child_id,
-                            parent_id=existing_node.id, depth=1)
+                    self.copy_page_and_children(
+                        foreign_id=main_language_child_id,
+                        parent_id=existing_node.id, depth=1)
             else:
                 self.log(SUCCESS, "No children to copy")
         except Exception as e:
@@ -1011,7 +1003,9 @@ class Logger(object):
     def log(self, log_type, message, context=None, depth=0):
         log_message = self.format_message(
             log_type, message, context, depth=depth)
-        logging.debug(log_message)
+
+        logger = logging.getLogger('import_logger')
+        logger.debug(log_message)
 
         self.record.append({
             "log_type": log_type,

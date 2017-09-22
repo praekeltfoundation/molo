@@ -198,10 +198,6 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
                                            self.fake_base_url)
 
         self.assertEqual(importer.image_hashes[local_image_hash], local_image)
-        self.assertEqual(
-            importer.image_widths[local_image.width], [local_image])
-        self.assertEqual(
-            importer.image_heights[local_image.height], [local_image])
 
     def test_get_replica_image_returns_match(self):
         local_image = Image.objects.create(
@@ -212,28 +208,17 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
         self.assertEqual(Image.objects.count(), 1)
         self.importer.get_image_details()
 
-        replica_image = self.importer.get_replica_image(
-            local_image.width, local_image.height, local_image_hash)
+        replica_image = self.importer.get_replica_image(local_image_hash)
         self.assertEqual(replica_image, local_image)
 
     def test_get_replica_image_returns_none(self):
-        local_image = Image.objects.create(
+        Image.objects.create(
             title='local image',
             file=get_test_image_file(),
         )
-        local_image_hash = get_image_hash(local_image)
         self.importer.get_image_details()
 
-        replica_image = self.importer.get_replica_image(
-            local_image.width + 1, local_image.height, local_image_hash)
-        self.assertTrue(replica_image is None)
-
-        replica_image = self.importer.get_replica_image(
-            local_image.width, local_image.height + 1, local_image_hash)
-        self.assertTrue(replica_image is None)
-
-        replica_image = self.importer.get_replica_image(
-            local_image.width, local_image.height, 'fake_hash')
+        replica_image = self.importer.get_replica_image('wrong_hash')
         self.assertTrue(replica_image is None)
 
     @responses.activate
@@ -322,7 +307,7 @@ class TestImageImporter(MoloTestCaseMixin, TestCase):
         # create 'duplicate' image with same name
         Image.objects.create(
             title='local image',
-            file=get_test_image_file(constants.IMAGE_DETAIL_1["id"]),
+            file=get_test_image_file(),
         )
         # NOTE: images must be re-referenced once added
         self.importer.get_image_details()
