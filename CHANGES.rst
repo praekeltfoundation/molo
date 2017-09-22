@@ -1,3 +1,8 @@
+5.18.0
+~~~~~~
+- Update image hashing function
+- Update log settings to accomodate api logs
+
 5.17.2
 ~~~~~~
 - Bug fix: remove update from social_media template tag
