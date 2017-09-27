@@ -1,3 +1,7 @@
+5.18.1
+~~~~~~
+- Fix duplicate ImageInfo creation when image is saved
+
 5.18.0
 ~~~~~~
 - Update image hashing function
