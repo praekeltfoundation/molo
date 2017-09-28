@@ -3,8 +3,10 @@
 var gulp              =   require('gulp'),
     sass              =   require('gulp-sass'),
     sassLint          =   require('gulp-sass-lint'),
-    sassGlob          =   require('gulp-sass-glob');
+    sassGlob          =   require('gulp-sass-glob'),
     cleanCSSMinify    =   require('gulp-clean-css'),
+    autoprefixer      =   require('gulp-autoprefixer'),
+    bless             =   require('gulp-bless'),
     watch             =   require('gulp-watch'),
     rename            =   require('gulp-rename'),
     gzip              =   require('gulp-gzip'),
@@ -12,7 +14,7 @@ var gulp              =   require('gulp'),
     sourcemaps        =   require('gulp-sourcemaps'),
     livereload        =   require('gulp-livereload'),
     minify            =   require('gulp-minify'),
-
+    pixrem            =   require('gulp-pixrem'),
     sassPaths = [
         'molo/core/styles/core-style/styles.s+(a|c)ss',
         'molo/core/styles/mote/mote.s+(a|c)ss'
@@ -25,16 +27,27 @@ var gulp              =   require('gulp'),
 function styles(env) {
   var s = gulp.src(sassPaths);
   var isDev = env === 'dev';
+  console.log("argv env param:",isDev);
   if (isDev)
     s = s
       .pipe(sourcemaps.init());
     s = s
     .pipe(sass().on('error', sass.logError))
     .pipe(sassGlob())
+    .pipe(bless())
     .pipe(cleanCSSMinify())
-    .pipe(sassLint())
-    .pipe(sassLint.format())
-    .pipe(sassLint.failOnError())
+    //.pipe(sassLint())
+    //.pipe(sassLint.format())
+    //.pipe(sassLint.failOnError())
+    .pipe(autoprefixer({
+        browsers: [
+            'ie >= 8',
+            'android >= 2.3',
+            'iOS >= 6',
+            '> 0%'
+        ]
+    }))
+    .pipe(pixrem());
     if (isDev)
     s = s
       .pipe(sourcemaps.write('/maps'));
@@ -53,6 +66,7 @@ gulp.task('styles:dev', function() {
 gulp.task('stylesAdmin', function() {
   gulp.src('molo/core/styles/wagtail-admin.scss')
       .pipe(sass().on('error', sass.logError))
+      .pipe(sassGlob())
       .pipe(cleanCSSMinify())
       .pipe(gulp.dest('molo/core/static/css/'))
       .pipe(notify({ message: 'Styles task complete: Wagtail Admin' }));

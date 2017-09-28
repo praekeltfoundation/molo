@@ -152,6 +152,11 @@ FED
   https://github.com/postcss/postcss-bem-linter
   https://github.com/simonsmith/stylelint-selector-bem-pattern
 
+  TESTING
+  ------------
+  Map out your scraper website workflow 
+  https://github.com/segmentio/nightmare
+  https://segment.com/blog/ui-testing-with-nightmare/
 
   COMPRESSION / AUTOMATION
   -------------------------
