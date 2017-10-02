@@ -98,7 +98,6 @@ class SiteSettings(BaseSetting):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
     ga_tag_manager = models.CharField(
         verbose_name=_('Local GA Tag Manager'),
         max_length=255,
@@ -118,6 +117,14 @@ class SiteSettings(BaseSetting):
             " to view analytics on more than one site globally")
     )
 
+    fb_analytics_app_id = models.CharField(
+        verbose_name=_('Facebook Analytics App ID'),
+        max_length=25,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The tracking ID to be used to view Facebook Analytics")
+    )
     local_ga_tracking_code = models.CharField(
         verbose_name=_('Local GA Tracking Code'),
         max_length=255,
@@ -230,6 +237,12 @@ class SiteSettings(BaseSetting):
                 FieldPanel('show_only_translated_pages'),
             ],
             heading="Multi Language",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('fb_analytics_app_id'),
+            ],
+            heading="Facebook Analytics Settings",
         ),
         MultiFieldPanel(
             [
