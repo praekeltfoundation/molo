@@ -1,6 +1,7 @@
 'use strict';
 
 var gulp              =   require('gulp'),
+    glob              =   require('glob'),
     sass              =   require('gulp-sass'),
     sassLint          =   require('gulp-sass-lint'),
     sassGlob          =   require('gulp-sass-glob'),
@@ -15,6 +16,9 @@ var gulp              =   require('gulp'),
     livereload        =   require('gulp-livereload'),
     minify            =   require('gulp-minify'),
     pixrem            =   require('gulp-pixrem'),
+    svgmin            =   require('gulp-svgmin'),
+    del               =   require('del'),
+    grunticon         =   require('grunticon-lib'),
     sassPaths = [
         'molo/core/styles/core-style/styles.s+(a|c)ss',
         'molo/core/styles/mote/mote.s+(a|c)ss'
@@ -22,7 +26,9 @@ var gulp              =   require('gulp'),
     sassDest = {
          prd: 'molo/core/static/css/prd',
          dev: 'molo/core/static/css/dev'
-    };
+    },
+    iconsPath = 'molo/core/static/images',
+    iconsDest = 'molo/core/static/images/generated-icons';
 
 function styles(env) {
   var s = gulp.src(sassPaths);
@@ -36,9 +42,9 @@ function styles(env) {
     .pipe(sassGlob())
     .pipe(bless())
     .pipe(cleanCSSMinify())
-    //.pipe(sassLint())
-    //.pipe(sassLint.format())
-    //.pipe(sassLint.failOnError())
+    .pipe(sassLint())
+    .pipe(sassLint.format())
+    .pipe(sassLint.failOnError())
     .pipe(autoprefixer({
         browsers: [
             'ie >= 8',
@@ -86,6 +92,37 @@ gulp.task('compress', function() {
         },
     }))
     .pipe(gulp.dest('molo/core/static/js/'))
+});
+
+//Icons
+
+gulp.task('clean-generated-icons', function() {
+    return del(iconsPath + '/svgs');
+});
+gulp.task('crush-svgs', ['clean-generated-icons'], function () {
+    return gulp.src(iconsPath + '/icons/*.svg')
+        .pipe(svgmin({
+          js2svg: {
+                pretty: true
+            }
+        }))
+        .pipe(gulp.dest(iconsPath + '/svgs'));
+});
+gulp.task('clean-icons', function() {
+    return del(iconsDest);
+});
+gulp.task('icons', ['clean-icons', 'crush-svgs'], function(done) {
+    var icons = glob.sync(iconsPath + '/svgs/*.*'); //Get array of files from glob pattern
+    var options = {
+      enhanceSVG: true,
+      dynamicColorOnly: true,
+      colors: {
+        white: '#ffffff',
+        black: '#000000'
+      }
+    };
+    var iconsTask = new grunticon(icons, iconsDest, options);
+    iconsTask.process(done);
 });
 
 gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
