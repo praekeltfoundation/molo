@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from wagtail.wagtailadmin.edit_handlers import EditHandler
@@ -35,6 +36,8 @@ from wagtail.wagtailimages.models import Image
 from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.models import AbstractMedia
+from wagtail.wagtailcore.signals import page_unpublished
+
 from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
 from molo.core import constants
 from molo.core.api.constants import ERROR
@@ -95,7 +98,6 @@ class SiteSettings(BaseSetting):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
     ga_tag_manager = models.CharField(
         verbose_name=_('Local GA Tag Manager'),
         max_length=255,
@@ -115,6 +117,14 @@ class SiteSettings(BaseSetting):
             " to view analytics on more than one site globally")
     )
 
+    fb_analytics_app_id = models.CharField(
+        verbose_name=_('Facebook Analytics App ID'),
+        max_length=25,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The tracking ID to be used to view Facebook Analytics")
+    )
     local_ga_tracking_code = models.CharField(
         verbose_name=_('Local GA Tracking Code'),
         max_length=255,
@@ -192,6 +202,33 @@ class SiteSettings(BaseSetting):
         help_text='Enable tag navigation. When this is true, the clickable '
                   'tag functionality will be overriden'
     )
+    enable_service_directory = models.BooleanField(
+        default=False, verbose_name='Enable service directory'
+    )
+    service_directory_api_base_url = models.CharField(
+        verbose_name=_('service directory base url'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    service_directory_api_username = models.CharField(
+        verbose_name=_('service directory username'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    service_directory_api_password = models.CharField(
+        verbose_name=_('service directory password'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    google_places_api_server_key = models.CharField(
+        verbose_name=_('google places server key'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
 
     panels = [
         ImageChooserPanel('logo'),
@@ -200,6 +237,12 @@ class SiteSettings(BaseSetting):
                 FieldPanel('show_only_translated_pages'),
             ],
             heading="Multi Language",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('fb_analytics_app_id'),
+            ],
+            heading="Facebook Analytics Settings",
         ),
         MultiFieldPanel(
             [
@@ -255,6 +298,16 @@ class SiteSettings(BaseSetting):
                 FieldPanel('enable_tag_navigation'),
             ],
             heading="Article Tag Settings"
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('enable_service_directory'),
+                FieldPanel('service_directory_api_base_url'),
+                FieldPanel('service_directory_api_username'),
+                FieldPanel('service_directory_api_password'),
+                FieldPanel('google_places_api_server_key'),
+            ],
+            heading="Service Directory API Settings"
         )
     ]
 
@@ -276,8 +329,7 @@ class ImageInfo(models.Model):
 @receiver(
     post_save, sender=Image, dispatch_uid="create_image_info")
 def create_image_info(sender, instance, **kwargs):
-    if not hasattr(instance, 'image_info'):
-        ImageInfo.objects.create(image=instance)
+    ImageInfo.objects.get_or_create(image=instance)
 
 
 class ImportableMixin(object):
@@ -452,7 +504,20 @@ class LanguageRelation(models.Model):
 
 
 class TranslatablePageMixinNotRoutable(object):
+    def get_translation_for_cache_key(self, locale, site, is_live):
+        return "get_translation_for_{}_{}_{}_{}_{}".format(
+            self.pk, locale, site.pk, is_live,
+            self.latest_revision_created_at.isoformat())
+
     def get_translation_for(self, locale, site, is_live=True):
+        cache_key = self.get_translation_for_cache_key(locale, site, is_live)
+        trans_pk = cache.get(cache_key)
+
+        # TODO: consider pickling page object. Be careful about page size in
+        # memory
+        if trans_pk:
+            return Page.objects.get(pk=trans_pk).specific
+
         language_setting = Languages.for_site(site)
         language = language_setting.languages.filter(
             locale=locale).first()
@@ -462,6 +527,7 @@ class TranslatablePageMixinNotRoutable(object):
 
         main_language_page = self.get_main_language_page()
         if language.is_main_language and not self == main_language_page:
+            cache.set(cache_key, main_language_page.pk, None)
             return main_language_page
 
         translated = None
@@ -475,6 +541,8 @@ class TranslatablePageMixinNotRoutable(object):
                 translated = t.translated_page.languages.filter(
                     language__locale=locale).first().page.specific
                 break
+        if translated:
+            cache.set(cache_key, translated.pk, None)
         return translated
 
     def get_main_language_page(self):
@@ -590,6 +658,26 @@ class TranslatablePageMixinNotRoutable(object):
             request, *args, **kwargs)
 
 
+def clear_translation_cache(sender, instance, **kwargs):
+    if isinstance(instance, TranslatablePageMixin):
+        site = instance.get_site()
+        for lang in Languages.for_site(site).languages.all():
+            cache.delete(instance.get_translation_for_cache_key(
+                lang.locale, site, True))
+            cache.delete(instance.get_translation_for_cache_key(
+                lang.locale, site, False))
+
+            # clear cache for main language page too
+            parent = instance.get_main_language_page()
+            cache.delete(parent.get_translation_for_cache_key(
+                lang.locale, site, True))
+            cache.delete(parent.get_translation_for_cache_key(
+                lang.locale, site, False))
+
+
+page_unpublished.connect(clear_translation_cache)
+
+
 class TranslatablePageMixin(
         TranslatablePageMixinNotRoutable, RoutablePageMixin):
     pass
@@ -686,6 +774,7 @@ class Tag(TranslatablePageMixin, Page, ImportableMixin):
         "id", "title", "feature_in_homepage", "go_live_at",
         "expire_at", "expired"
     ]
+
 
 Tag.promote_panels = [
     FieldPanel('feature_in_homepage'),
@@ -1083,6 +1172,13 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         return main.sites_rooted_here.all().first()
 
     def get_effective_extra_style_hints(self):
+        cache_key = "effective_extra_style_hints_{}_{}".format(
+            self.pk, self.latest_revision_created_at.isoformat())
+        style = cache.get(cache_key)
+
+        if style is not None:
+            return style
+
         if self.extra_style_hints:
             return self.extra_style_hints
 
@@ -1100,11 +1196,15 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         if language_rel and main_lang.pk == language_rel.language.pk:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
             if parent_section:
-                return parent_section.get_effective_extra_style_hints()
+                style = parent_section.get_effective_extra_style_hints()
+                cache.set(cache_key, style, 300)
+                return style
             return ''
         else:
             page = self.get_main_language_page()
-            return page.specific.get_effective_extra_style_hints()
+            style = page.specific.get_effective_extra_style_hints()
+            cache.set(cache_key, style, 300)
+            return style
 
     def get_effective_image(self):
         if self.image:

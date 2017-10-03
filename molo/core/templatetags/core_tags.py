@@ -1,5 +1,6 @@
 from itertools import chain
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.cache import cache
 from django import template
 from django.utils.safestring import mark_safe
 from django.db.models import Case, When
@@ -13,10 +14,21 @@ from molo.core.models import (
 register = template.Library()
 
 
+def get_language(site, locale):
+    language_cache_key = 'get_pages_language_{}_{}'.format(site.pk, locale)
+    language = cache.get(language_cache_key)
+    if not language:
+        language = Languages.for_site(site).languages.filter(
+            locale=locale).first()
+        cache.set(language_cache_key, language, None)
+    return language
+
+
 def get_pages(context, qs, locale):
     request = context['request']
-    language = Languages.for_site(request.site).languages.filter(
-        locale=locale).first()
+
+    language = get_language(request.site, locale)
+
     site_settings = SiteSettings.for_site(request.site)
     if site_settings.show_only_translated_pages:
         if language and language.is_main_language:
@@ -72,10 +84,10 @@ def load_sections(context):
 @register.assignment_tag(takes_context=True)
 def get_translation(context, page):
     locale_code = context.get('locale_code')
-    if page.get_translation_for(locale_code, context['request'].site):
-        return page.get_translation_for(locale_code, context['request'].site)
-    else:
-        return page
+    translation = page.get_translation_for(
+        locale_code, context['request'].site)
+
+    return translation or page
 
 
 @register.assignment_tag(takes_context=True)
@@ -292,6 +304,9 @@ def load_child_articles_for_section(context, section, count=5):
     '''
     locale = context.get('locale_code')
     main_language_page = section.get_main_language_page()
+
+    # TODO: Consider caching the pks of these articles using a timestamp on
+    # section as the key so tha twe don't always do these joins
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(languages__language__is_main_language=True)
     related_articles = ArticlePage.objects.filter(
@@ -352,22 +367,19 @@ def get_next_tag(context, tag):
     current_tag = tag.get_main_language_page()
     qs = Tag.objects.descendant_of(request.site.root_page).filter(
         languages__language__is_main_language=True).live()
-    if qs:
+    if qs.exists():
         tags = list(qs)
-        if len(tags) > 1:
-            if not (len(tags) == tags.index(current_tag) + 1):
-                next_tag = tags[tags.index(current_tag) + 1]
-            else:
-                next_tag = tags[0]
-
-            if next_tag.get_translation_for(
-                    locale_code, context['request'].site):
-                return next_tag.get_translation_for(
-                    locale_code, context['request'].site)
-            else:
-                return next_tag
+        if not (len(tags) == tags.index(current_tag) + 1):
+            next_tag = tags[tags.index(current_tag) + 1]
         else:
-            return None
+            next_tag = tags[0]
+
+        if next_tag.get_translation_for(
+                locale_code, context['request'].site):
+            return next_tag.get_translation_for(
+                locale_code, context['request'].site)
+        else:
+            return next_tag
 
 
 @register.assignment_tag(takes_context=True)
@@ -416,6 +428,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
 def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
         latest_article_count=3):
+    # TODO: consider caching this tag - these queries are too expensive
 
     request = context['request']
     locale = context.get('locale_code')
@@ -509,9 +522,18 @@ def get_tag_articles(
 
 @register.assignment_tag(takes_context=True)
 def load_tags_for_article(context, article):
-    if article.specific.__class__ == ArticlePage:
-        locale = context.get('locale_code')
-        request = context['request']
+    if not article.specific.__class__ == ArticlePage:
+        return None
+
+    locale = context.get('locale_code')
+    request = context['request']
+
+    cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
+        locale, request.site.pk, article.pk,
+        article.latest_revision_created_at.isoformat())
+    tags_pks = cache.get(cache_key)
+
+    if not tags_pks:
         tags = [
             article_tag.tag.pk for article_tag in
             article.specific.get_main_language_page().nav_tags.all()
@@ -519,9 +541,14 @@ def load_tags_for_article(context, article):
         if tags and request.site:
             qs = Tag.objects.descendant_of(
                 request.site.root_page).live().filter(pk__in=tags)
+            tags_pks = qs.values_list("pk", flat=True)
+            cache.set(cache_key, tags_pks, 300)
         else:
             return []
-        return get_pages(context, qs, locale)
+
+    qs = Tag.objects.descendant_of(
+        request.site.root_page).live().filter(pk__in=tags_pks)
+    return get_pages(context, qs, locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -615,24 +642,26 @@ def handle_markdown(value):
     'core/tags/social_media_footer.html',
     takes_context=True
 )
-def social_media_footer(context):
+def social_media_footer(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
     social_media = SiteSettings.for_site(request.site).\
         social_media_links_on_footer_page
 
-    return {
+    data = {
         'social_media': social_media,
         'request': context['request'],
         'locale_code': locale,
+        'page': page,
     }
+    return data
 
 
 @register.inclusion_tag(
     'core/tags/social_media_article.html',
     takes_context=True
 )
-def social_media_article(context):
+def social_media_article(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
     site_settings = SiteSettings.for_site(request.site)
@@ -647,12 +676,14 @@ def social_media_article(context):
     else:
         twitter = False
 
-    return {
+    data = {
         'facebook': facebook,
         'twitter': twitter,
         'request': context['request'],
         'locale_code': locale,
+        'page': page,
     }
+    return data
 
 
 @register.assignment_tag(takes_context=True)
@@ -686,6 +717,10 @@ def get_recommended_articles(context, article):
     # the following allows us to order the results of the querystring
     pk_list = recommended_articles.values_list(
         'recommended_article__pk', flat=True)
+
+    if not pk_list:
+        return []
+
     preserved = Case(
         *[When(pk=pk, then=pos) for pos, pk in enumerate(pk_list)])
     articles = ArticlePage.objects.filter(pk__in=pk_list).order_by(preserved)

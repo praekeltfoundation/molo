@@ -3,7 +3,6 @@
 {% load google_analytics_tags %}
 {% get_settings %}
 
-
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -52,6 +51,9 @@
   <body class="{% block body_class %}{% endblock %}" {% if LANGUAGE_CODE|language_bidi == True %}dir="rtl"{% endif %}>
     {% block google_analytics %}
       {% include "patterns/components/ga_tag_manager.html" %}
+    {% endblock %}
+    {% block facebook_analytics %}
+      {% include "core/facebook_analytics.html" %}
     {% endblock %}
 
     {% wagtailuserbar %}
