@@ -1,3 +1,7 @@
+5.19.0
+~~~~~~
+- Add Facebook Analytics in Site Settings
+
 5.18.1
 ~~~~~~
 - Fix duplicate ImageInfo creation when image is saved
