@@ -4,6 +4,7 @@ import zipfile
 import re
 import tempfile
 import imagehash
+import hashlib
 import json
 import distutils.dir_util
 
@@ -171,8 +172,38 @@ def update_media_file(upload_file):
 
 def get_image_hash(image):
     '''
-    Returns an image hash of a Wagtail Image
+    Returns an MD5 hash of the image file
 
+    Handles images stored locally and on AWS
+
+    I know this code is ugly.
+    Please don't ask.
+    The rabbit hole is deep.
+    '''
+    md5 = hashlib.md5()
+    try:
+        for chunk in image.file.chunks():
+            md5.update(chunk)
+        return md5.hexdigest()
+    # this should only occur in tests
+    except ValueError:
+        # see link below for why we try not to use .open()
+        # https://docs.djangoproject.com/en/1.9/ref/files/uploads/#django.core.files.uploadedfile.UploadedFile.chunks  # noqa
+        image.file.open()
+
+        for chunk in image.file.chunks():
+            md5.update(chunk)
+        return md5.hexdigest()
+    finally:
+        image.file.close()
+
+
+def get_image_impression_hash(image):
+    '''
+    Returns an image impression hash of a Wagtail Image.
+
+    For more info on impressions hashes see:
+    https://www.safaribooksonline.com/blog/2013/11/26/image-hashing-with-python/  # noqa
     Handles case where default django storage is used
     as well as images stored on AWS S3
     '''

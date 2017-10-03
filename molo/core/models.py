@@ -98,7 +98,6 @@ class SiteSettings(BaseSetting):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
     ga_tag_manager = models.CharField(
         verbose_name=_('Local GA Tag Manager'),
         max_length=255,
@@ -118,6 +117,14 @@ class SiteSettings(BaseSetting):
             " to view analytics on more than one site globally")
     )
 
+    fb_analytics_app_id = models.CharField(
+        verbose_name=_('Facebook Analytics App ID'),
+        max_length=25,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The tracking ID to be used to view Facebook Analytics")
+    )
     local_ga_tracking_code = models.CharField(
         verbose_name=_('Local GA Tracking Code'),
         max_length=255,
@@ -233,6 +240,12 @@ class SiteSettings(BaseSetting):
         ),
         MultiFieldPanel(
             [
+                FieldPanel('fb_analytics_app_id'),
+            ],
+            heading="Facebook Analytics Settings",
+        ),
+        MultiFieldPanel(
+            [
                 FieldPanel('ga_tag_manager'),
                 FieldPanel('global_ga_tag_manager'),
             ],
@@ -316,8 +329,7 @@ class ImageInfo(models.Model):
 @receiver(
     post_save, sender=Image, dispatch_uid="create_image_info")
 def create_image_info(sender, instance, **kwargs):
-    if not hasattr(instance, 'image_info'):
-        ImageInfo.objects.create(image=instance)
+    ImageInfo.objects.get_or_create(image=instance)
 
 
 class ImportableMixin(object):
@@ -662,6 +674,7 @@ def clear_translation_cache(sender, instance, **kwargs):
             cache.delete(parent.get_translation_for_cache_key(
                 lang.locale, site, False))
 
+
 page_unpublished.connect(clear_translation_cache)
 
 
@@ -761,6 +774,7 @@ class Tag(TranslatablePageMixin, Page, ImportableMixin):
         "id", "title", "feature_in_homepage", "go_live_at",
         "expire_at", "expired"
     ]
+
 
 Tag.promote_panels = [
     FieldPanel('feature_in_homepage'),

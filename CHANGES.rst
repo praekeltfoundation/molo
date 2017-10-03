@@ -1,3 +1,23 @@
+5.20.0
+~~~~~~
+- only allow access to sites if the user has permissions for that site
+Note:
+- once upgrading to this version, superusers need to give non-superusers users permissions to access their relevant sites
+- This release would need molo.profile 5.4.1
+
+5.19.0
+~~~~~~
+- Add Facebook Analytics in Site Settings
+
+5.18.1
+~~~~~~
+- Fix duplicate ImageInfo creation when image is saved
+
+5.18.0
+~~~~~~
+- Update image hashing function
+- Update log settings to accomodate api logs
+
 5.17.2
 ~~~~~~
 - Bug fix: remove update from social_media template tag

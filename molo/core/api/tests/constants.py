@@ -1,3 +1,5 @@
+from molo.core.tests.constants import TEST_IMAGE_HASH
+
 AVAILABLE_ARTICLES = {
     "meta": {
         "total_count": 3
@@ -871,7 +873,7 @@ IMAGE_DETAIL_1 = {
     "filename": "GAO_A4qQsiM.jpg",
     "file": "http://localhost:8000/media/original_images/GAO_A4qQsiM.jpg",
     "image_url": "/media/images/GAO_A4qQsiM.original.jpg",
-    "image_hash": '0000000000000000'
+    "image_hash": TEST_IMAGE_HASH
 }
 
 IMAGE_DETAIL_2 = {
