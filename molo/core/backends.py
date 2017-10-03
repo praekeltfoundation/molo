@@ -49,7 +49,7 @@ class MoloCASBackend(CASBackend):
                 if wagtail_login_only_group and not user.groups.exists():
                     user.groups.add(wagtail_login_only_group)
 
-                elif not request.user.profile.admin_sites.filter(
+                elif not user.profile.admin_sites.filter(
                         pk=request.site.pk).exists():
                     return None
 
