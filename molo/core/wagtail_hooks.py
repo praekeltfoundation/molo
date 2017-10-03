@@ -204,14 +204,27 @@ def hide_site_import_if_not_in_importer_group(request, menu_items):
             item for item in menu_items if item.name != 'api']
 
 
+@hooks.register('construct_explorer_page_queryset')
+def show_pages_only_if_user_has_access(parent_page, pages, request):
+    if not (request.user.is_superuser or
+            request.user.profile.admin_sites.filter(
+                pk=request.site.pk).exists()):
+        return pages.none()
+    return pages
+
+
 @hooks.register('construct_main_menu')
 def show_explorer_only_to_users_have_access(request, menu_items):
     if (request.user.is_superuser or
-        User.objects.filter(pk=request.user.pk, groups__name__in=[
-            'Moderator', 'Editor']).exists()):
+        (User.objects.filter(pk=request.user.pk, groups__name__in=[
+            'Moderators', 'Editors', 'Wagtail Login Only']).exists() and
+         request.user.profile.admin_sites.filter(
+            pk=request.site.pk).exists())):
         return menu_items
-    if User.objects.filter(pk=request.user.pk, groups__name__in=[
-            'Comment Moderator', 'Expert', 'Wagtail Login Only']).exists():
+    if (User.objects.filter(pk=request.user.pk, groups__name__in=[
+            'Comment Moderator', 'Expert', 'Wagtail Login Only']).exists() and
+            request.user.profile.admin_sites.filter(
+                pk=request.site.pk).exists()):
         menu_items[:] = [
             item for item in menu_items if item.name != 'explorer']
 
