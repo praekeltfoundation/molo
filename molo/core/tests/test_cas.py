@@ -36,7 +36,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
-        self.mk_main2()
+
         moderators_group = Group.objects.create(name='Moderators')
         Group.objects.create(name='Wagtail Login Only')
         # Create group permissions
@@ -90,7 +90,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True',
              'is_admin': 'True', 'email': 'root@example.com'},
             None)
-
         response = self.client.get(
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
@@ -120,6 +119,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
     @patch('cas.CASClientV2.verify_ticket')
     def test_user_only_able_to_login_to_sites_where_it_has_permissions_to(
             self, mock_verify):
+        self.mk_main2()
         service = ('http%3A%2F%2Ftestserver'
                    '%2Fadmin%2Flogin%2F%3Fnext%3D%252Fadmin%252F')
 
