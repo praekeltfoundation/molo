@@ -5,6 +5,7 @@ from django.conf.urls import patterns, url, include
 from django.contrib.contenttypes.models import ContentType
 
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.models import Main
 from molo.core.urls import urlpatterns
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtailcore import urls as wagtail_urls
@@ -35,7 +36,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
-
+        self.mk_main2()
         moderators_group = Group.objects.create(name='Moderators')
         Group.objects.create(name='Wagtail Login Only')
         # Create group permissions
@@ -115,6 +116,51 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             follow=True)
 
         self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
+
+    @patch('cas.CASClientV2.verify_ticket')
+    def test_user_only_able_to_login_to_sites_where_it_has_permissions_to(
+            self, mock_verify):
+        service = ('http%3A%2F%2Ftestserver'
+                   '%2Fadmin%2Flogin%2F%3Fnext%3D%252Fadmin%252F')
+
+        mock_verify.return_value = (
+            'test@example.com',
+            {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True',
+             'is_admin': 'False'},
+            None)
+
+        response = self.client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+
+        self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
+        response = self.client.get('/admin/logout/', follow=True)
+        response = self.client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+        self.assertContains(
+            response, 'You do not have permssion to access this site.',
+            status_code=403)
+        user = User.objects.get(username='test@example.com')
+        user.profile.admin_sites.add(Main.objects.first().get_site())
+        response = self.client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+
+        self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
+        response = self.client.get('/admin/logout/', follow=True)
+        client = Client(HTTP_HOST=Main.objects.last().get_site().hostname)
+        response = client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+        self.assertContains(
+            response, 'You do not have permssion to access this site.',
+            status_code=403)
+
 
     @patch('cas.CASClientV2.verify_ticket')
     def test_failed_login(self, mock_verify):
