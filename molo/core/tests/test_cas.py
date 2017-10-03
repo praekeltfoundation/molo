@@ -161,7 +161,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             response, 'You do not have permssion to access this site.',
             status_code=403)
 
-
     @patch('cas.CASClientV2.verify_ticket')
     def test_failed_login(self, mock_verify):
         service = ('http%3A%2F%2Ftestserver'
