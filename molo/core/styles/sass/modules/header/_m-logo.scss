@@ -17,16 +17,17 @@
       max-width: 150px;
     }
   }
-}
-.logo--left {
-  text-align: left;
-  padding: 0 10px 0 0;
-}
-.logo--right {
-  float: right;
-}
-.logo--center {
-  text-align: center;
-  display: block;
-  margin: 0 auto;
+
+  &--left {
+    text-align: left;
+    padding: 0 10px 0 0;
+  }
+  &--right {
+    float: right;
+  }
+  &--center {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+  }
 }

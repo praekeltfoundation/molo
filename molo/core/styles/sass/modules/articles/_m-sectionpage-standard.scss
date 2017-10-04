@@ -1,10 +1,12 @@
-.promoted-article__section-title {
-  padding: 0;
-}
-.promoted-article-list__publish-date {
-  padding: 10px 0;
-  font-style: italic;
-  color: #ccc;
-  font-weight: bold;
-  font-size: 14px;
+.promoted-article {
+    &__section-title {
+      padding: 0;
+    }
+    &-list__publish-date {
+      padding: 10px 0;
+      font-style: italic;
+      color: #ccc;
+      font-weight: bold;
+      font-size: 14px;
+    }
 }

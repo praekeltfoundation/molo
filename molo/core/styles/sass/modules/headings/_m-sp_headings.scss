@@ -1,8 +1,15 @@
 .heading {
+    &--large {
+      font-size: $font-xx-large;
+    }
   &__square {
     background-color: #d3d3d3;
     text-align: center;
     padding: 15px 8px 35px;
+    @include divider-bottom-1;
+    *:first-child {
+      @include underline(skewed, 10px);
+    }
     *:first-child {
       font-size: $font-xx-large;
       text-transform: uppercase;
@@ -11,12 +18,16 @@
   }
   &__component {
     text-align: center;
-    margin: 0 10px;
-    padding-top: 15px;
+    @include underline(zig-zag, 10px);
+    margin: 0 8px 28px;
+    padding-top: 30px;
     *:first-child {
       font-size: $font-x-large;
       text-transform: uppercase;
       color: $gunmetal;
+    }
+    & h1:before {
+      content: "#";
     }
   }
   &__subheading {
@@ -66,7 +77,6 @@
     }
   }
 
-  //Links
   &__subheading-alt {
     margin: 8px;
     *:first-child {
@@ -81,23 +91,6 @@
     content: "#";
   }
 }
-
-.heading--large {
-  font-size: $font-xx-large;
-}
-.article-tag-page .heading__component h1:before {
+.article-tag-page h1:before {
   content: "#";
-}
-
-.heading__square {
-  @include divider-bottom-1;
-  background-color: #d3d3d3;
-  *:first-child {
-    @include underline(skewed, 10px);
-  }
-}
-.heading__component {
-  @include underline(zig-zag, 10px);
-  margin: 0 8px 28px;
-  padding-top: 30px;
 }

@@ -3,15 +3,16 @@
 }
 .header {
   position: relative;
+  $block: unquote("#{&}");
   &__search {
-    .header__search-input,
-    .header__search-input + * {
+    #{$block}__search-input,
+    #{$block}__search-input + * {
       display: none;
     }
-    .header__search-input:checked + * {
+    #{$block}__search-input:checked + * {
       display: block;
     }
-    .header__search-bar {
+    #{$block}__search-bar {
       position: relative;
       display: block;
     }

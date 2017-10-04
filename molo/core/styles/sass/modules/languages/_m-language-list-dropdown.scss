@@ -2,6 +2,7 @@ $string: 's';
 .language {
     $block: unquote("#{&}");
     &-select {
+        padding: 5px 15px;
         #{$block}-list {
             &--dropdown {
               padding: 0;
@@ -30,7 +31,7 @@ $string: 's';
               }
             }
         }
-    padding: 5px 15px;
+
         &__change-label {
           display: inline-block;
           cursor: pointer;
