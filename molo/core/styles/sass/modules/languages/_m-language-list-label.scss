@@ -1,4 +1,6 @@
-.language {
+$string: 's';
+.language,
+.language#{$string} {
     &-list {
         &--with-label__title {
           font-size: 16px;

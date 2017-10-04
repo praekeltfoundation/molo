@@ -1,31 +1,33 @@
-.language {
+$string: 's';
+$enhanced: 'standard-center';
+.language, .language#{$string} {
     &-list {
-        &--standard-center {
-          text-align: center;
-        }
-        &__anchor-standard-center {
-          color: #5a5d5e;
-          font-size: 16px;
-        }
-    }
-    &__item {
-        &--standard-center {
-          color: #5a5d5e;
-          display: inline-block;
-          font-size: 16px;
-          margin: 0;
-          &:after {
-            color: #ddd;
-            content: "|";
-            padding: 0 3px;
-            display: inline-block;
-          }
-          &:last-child {
-            &:after {
-              content: " ";
-              display: none;
+        &--#{$enhanced} { text-align: center; }
+        &__item {
+            &--#{$enhanced}  {
+              color: #5a5d5e;
+              display: inline-block;
+              font-size: 16px;
+              margin: 0;
+              &:after {
+                color: #ddd;
+                content: "|";
+                padding: 0 3px;
+                display: inline-block;
+              }
+              &:last-child {
+                &:after {
+                  content: " ";
+                  display: none;
+                }
+              }
             }
-          }
+        }
+        &__anchor {
+            &--#{$enhanced} {
+              color: #5a5d5e;
+              font-size: 16px;
+            }
         }
     }
 }

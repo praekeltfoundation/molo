@@ -1,4 +1,6 @@
-.language {
+$string: 's';
+.language,
+.language#{$string} {
     &-list {
         $block: unquote("#{&}");
         &--text-decorated-center {

@@ -1,37 +1,25 @@
 $string: 's';
-.language {
+$enhanced: 'dropdown';
+.language, .language#{$string} {
     $block: unquote("#{&}");
+    &-current {
+      padding: 10px 15px 0 5px;
+      display: inline-block;
+      &__label {
+        font-weight: bold;
+        &:after { content: ":"; }
+      }
+      &__selected { display: inline-block; }
+    }
     &-select {
         padding: 5px 15px;
-        #{$block}-list {
-            &--dropdown {
-              padding: 0;
-            }
-            &__item--dropdown {
-              display: block;
-              text-align: right;
-              padding: 5px 0;
-            }
-            &__anchor-dropdown {
-              display: block;
-              &:after {
-                padding: 0 0 0 5px;
-                @media screen and (min-width: 320px) {
-                  content: ">";
-                }
-                @media screen and (min-width: 490px) {
-                  content: "❯";
-                }
-              }
-              .is-active {
-                text-decoration: underline;
-                &:after {
-                  text-decoration: none;
-                }
-              }
-            }
+        &__toggle-input {
+            visibility: hidden;
+            position: absolute;
+            display: none;
+            &:not(checked) ~ .language-select { display: none; }
+            &:checked ~ .language-select { display: block; }
         }
-
         &__change-label {
           display: inline-block;
           cursor: pointer;
@@ -39,31 +27,35 @@ $string: 's';
           padding: 10px;
           font-size: 13px;
         }
-        &__toggle {
-            &-input {
-              visibility: hidden;
-              position: absolute;
-              display: none;
-            }
-            &-input:not(checked) ~ .language-select {
-                display: none;
-            }
-            &-input:checked ~ .language-select {
-                display: block;
-            }
-        }
-    }
 
-    &#{$string} {
-        &-current {
-          padding: 10px 15px 0 5px;
-          display: inline-block;
-          &__label {
-            font-weight: bold;
-            &:after {
-              content: ":";
+        .language-list, .languages-list {
+            &--#{$enhanced} { padding: 0;}
+            &__item {
+                &--#{$enhanced} {
+                  display: block;
+                  text-align: right;
+                  padding: 5px 0;
+                }
             }
-          }
+            &__anchor {
+                color: #5a5d5e;
+                &--#{$enhanced} {
+                  display: block;
+                  &:after {
+                    padding: 0 0 0 5px;
+                    @media screen and (min-width: 320px) {
+                      content: ">"; }
+                    @media screen and (min-width: 490px) {
+                      content: "❯";  }
+                  }
+                  .is-active {
+                    text-decoration: underline;
+                    &:after {
+                      text-decoration: none;
+                    }
+                  }
+                }
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-.language {
+$string: 's';
+.language,
+.language#{$string} {
     &-select {
         &__change-icon {
           vertical-align: middle;
