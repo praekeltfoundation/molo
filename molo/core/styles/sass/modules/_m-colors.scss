@@ -11,11 +11,10 @@
   margin:0 0 35px 5px;
   text-align: center;
   min-width: 100px;
-}
-
-.color-chip__name {
-  text-transform: capitalize;
-}
-.color-chip__color {
-  font-weight: 400;
+  &__name {
+    text-transform: capitalize;
+  }
+  &__color {
+    font-weight: 400;
+  }
 }

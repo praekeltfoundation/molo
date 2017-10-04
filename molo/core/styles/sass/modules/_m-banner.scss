@@ -1,8 +1,9 @@
-
-.banner__item-link {
-  display: block;
-}
-.banner__item {
-  max-width: 640px;
-  width: 100%;
+.banner {
+    &__item-link {
+      display: block;
+    }
+    &__item {
+      max-width: 640px;
+      width: 100%;
+    }
 }

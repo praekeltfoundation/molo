@@ -2,8 +2,8 @@
 
 @import "_base";
 @import "layout/*";
-@import "modules/*";
+@import "modules/**/*";
 
 @media screen and (min-width: 320px) {
-  @import "state/*";
+  @import "state/**/*";
 }
