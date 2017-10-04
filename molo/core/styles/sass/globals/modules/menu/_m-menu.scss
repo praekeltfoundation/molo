@@ -3,6 +3,9 @@
   padding: 0 5px;
   display: inline-block;
   position: relative;
+  &--search-icon {
+    padding: 10px 0;
+  }
   &__item {
     display: inline-block;
     border: none;
@@ -15,8 +18,5 @@
     text-transform: uppercase;
     font-weight: bold;
     font-size: 13px;
-  }
-  &--search-icon {
-    padding: 10px 0;
   }
 }

@@ -20,8 +20,10 @@
           }
         }
     }
-    &__anchor-profile-icon {
-      vertical-align: middle;
-      font-size: 16px;
+    &__anchor {
+        &--profile-icon {
+          vertical-align: middle;
+          font-size: 16px;
+        }
     }
 }

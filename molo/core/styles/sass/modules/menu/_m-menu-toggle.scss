@@ -8,19 +8,18 @@
 }
 
 .search {
-    &-toggling__button {
-      visibility: hidden;
-      position: absolute;
-    }
-    &-toggling__button:not(checked) ~ .search--toggling {
-        display: none;
-    }
-    &-toggling__button:checked ~ .search--toggling {
-        display: block;
-    }
-
     &--toggling {
       display: none;
       padding: 15px 0 0 0; //NOTE: This only modify pattern-group inside a component
+    }
+    &-toggling__button {
+      visibility: hidden;
+      position: absolute;
+      &:not(checked) ~ .search--toggling {
+          display: none;
+      }
+      &:checked ~ .search--toggling {
+          display: block;
+      }
     }
 }

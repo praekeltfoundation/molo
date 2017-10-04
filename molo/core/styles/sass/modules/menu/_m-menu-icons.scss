@@ -1,7 +1,5 @@
-#search,
-#profile,
-#profile_register,
-#menu  {
+#search, #profile,
+#profile_register, #menu  {
   .menu-list__anchor {
     width: 21px;
     height: 21px;
@@ -11,8 +9,7 @@
     }
   }
 }
-#menu_icon,
-#search_icon,
+#menu_icon, #search_icon,
 #profile_icon {
   padding: 0;
   display: inline-block;
@@ -21,22 +18,19 @@
   }
 }
 
-#menu_icon,
-#menu > .menu-list__anchor {
+#menu_icon, #menu > .menu-list__anchor {
   @media screen and (min-width: 320px) {
     background:  url('/static/images/icons/menu.svg') no-repeat 0 0 / auto 100%;
   }
 }
 
-#search_icon,
-#search > .menu-list__anchor {
+#search_icon, #search > .menu-list__anchor {
   @media screen and (min-width: 320px) {
     background:  url('/static/images/icons/search.svg') no-repeat 0 0 / auto 100%;
   }
 }
 
-#profile_icon,
-#profile_register > .menu-list__anchor {
+#profile_icon, #profile_register > .menu-list__anchor {
   @media screen and (min-width: 320px) {
     background:  url('/static/images/icons/user.svg') no-repeat 0 0 / auto 100%;
   }
