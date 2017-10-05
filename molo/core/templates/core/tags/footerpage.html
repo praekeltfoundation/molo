@@ -1,5 +1,6 @@
 {% block footer %}
 {% if footers %}
-  {% include "patterns/components/footer/footer-menu.html" %}
+<!--This should pull Footer List -->
+  {% include "patterns/basics/navigation/footer-menu/footer-menu_list.html"  with sizeType="small" %}
 {% endif %}
 {% endblock %}
