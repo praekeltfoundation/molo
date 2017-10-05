@@ -1,5 +1,8 @@
 {% load i18n %}
 {% if languages|length > 1 %}
+<!--
+    Make Language list with no piped separator 
+-->
 <div class="languages languages--fixed-header">
   <ul class="language-list language-list--standard-center">
   {% for language in languages %}

@@ -1,5 +1,13 @@
 {% block languages %}
   {% load i18n %}
+  <!--
+      Make Language list with no piped separator
+      Add dynamic type: E.g.
+      Standard - with no pipe separator
+      Piped - with pipe separator
+      Font-size
+      Color
+  -->
   {% if languages|length > 1 %}
   <div class="languages">
     <ul class="language-list language-list--standard-{{alignment}}">
