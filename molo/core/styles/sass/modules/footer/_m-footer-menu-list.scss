@@ -1,0 +1,32 @@
+.footer {
+    &-menu-list {
+        &__item {
+          display: block;
+          border: none;
+          color: #5a5d5e;
+          padding: 5px;
+          font-size: 13px;
+        }
+        &__anchor {
+          color: #5a5d5e;
+        }
+
+    }
+}
+
+.navigation-footer {
+    .nav-list {
+        &__item {
+            display: block;
+            &--nav-footer {
+                display: block;
+            }
+        }
+        &__anchor {
+            color: $tiber;
+            &--nav-footer {
+                color: $tiber;
+            }
+        }
+    }
+}
