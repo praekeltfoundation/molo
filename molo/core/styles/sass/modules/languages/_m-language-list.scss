@@ -4,7 +4,6 @@ $alignment: ('right', 'center', 'left');
     background-color: #f0f0f0; //Adding color?
     width: 100%;
     &-list {
-        $block: unquote("#{&}");
         list-style-type: none;
         margin: 0;
         padding: 10px 15px;
