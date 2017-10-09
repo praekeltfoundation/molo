@@ -17,6 +17,15 @@
   }
 }
 
+@mixin enhancedPos($alignmentMap) {
+    @for $item from 0 to length($alignmentMap) {
+        $thisAlign: unquote(nth($alignmentMap, $item+1));
+        &-#{$thisAlign} {
+            text-align: $thisAlign;
+        }
+    }
+}
+
 @mixin float-clear($value) {
   float: $value;
   clear: $value;

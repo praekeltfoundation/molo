@@ -2,31 +2,33 @@
     &-list {
         &--horizontal {
           margin: 0 auto;
+          @include enhancedPos($alignment);
         }
-        &-center {
-          text-align: center;
-        }
-        &__item--horizontal  {
-          display: inline-block;
-          border: none;
-          color: #07292F;
-          padding: 5px 0;
-          font-size: 12px;
 
-          &:first-child,
-          &:last-child {
-            &:after {
-              display: none;
+        &__item {
+            &--horizontal  {
+              display: inline-block;
+              border: none;
+              color: #07292F;
+              padding: 5px 0;
+              font-size: 12px;
+              &:after {
+                color: #07292F;
+                content: "|";
+                padding: 0 3px;
+              }
+              &:last-child {
+                &:after {
+                  display: none;
+                }
+              }
             }
-          }
-          &:after {
-            color: #07292F;
-            content: "|";
-            padding: 0 3px;
-          }
         }
-        &__anchor--horizontal {
-          text-transform: capitalize;
+
+        &__anchor {
+            &--horizontal {
+              text-transform: capitalize;
+            }
         }
     }
 }

@@ -4,9 +4,6 @@
 @import "layout/*";
 @import "modules/**/*";
 
-@import "globals/modules/menu/_m-menu";
-@import "globals/modules/menu/_m-menu-profile_icon";
-
 @media screen and (min-width: 320px) {
   @import "state/**/*";
 }

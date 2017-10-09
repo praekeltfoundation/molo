@@ -6,6 +6,11 @@ $font-small             :       16px;
 $font-x-small           :       14px;
 $font-xx-small          :       12px;
 
+$alignment: (
+    'right',
+    'center',
+    'left'
+);
 $scale: (
     alpha               :       12,
     beta                :       14,

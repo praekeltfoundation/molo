@@ -1,5 +1,5 @@
 $string: 's';
-$alignment: ('right', 'center', 'left');
+
 .language, .language#{$string} {
     background-color: #f0f0f0; //Adding color?
     width: 100%;
@@ -10,12 +10,7 @@ $alignment: ('right', 'center', 'left');
         &--standard {
           display: block;
           border-bottom: 1px solid #DDDDDD;
-          @for $item from 0 to length($alignment) {
-              $thisAlign: unquote(nth($alignment, $item+1));
-              &-#{$thisAlign} {
-                  text-align: $thisAlign;
-              }
-          }
+          @include enhancedPos($alignment);
         }
 
         &__item {
