@@ -361,7 +361,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<a href="/locale/en/?next=/?" class="language-list__anchor '
-            'language-list__anchor-with-label is-active">English</a>',
+            'language-list__anchor--with-label is-active">English</a>',
             html=True)
         self.assertContains(
             response, '<a href="/locale/fr/')
@@ -375,7 +375,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response,
             '<a href="/locale/en/?next=/?" class="language-list__anchor '
-            'language-list__anchor-with-label is-active">English</a>',
+            'language-list__anchor--with-label is-active">English</a>',
             html=True)
         self.assertContains(
             response, '<a href="/locale/es/')
