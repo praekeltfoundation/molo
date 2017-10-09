@@ -1,3 +1,13 @@
+.navigation {
+  padding: 10px 0 0;
+  .heading {
+    margin: 10px;
+  }
+  &__anchor {
+    color: #000;
+  }
+}
+
 .nav {
     &-list {
       margin: 0;
@@ -20,14 +30,4 @@
         }
       }
     }
-}
-
-.navigation {
-  padding: 10px 0;
-  .heading {
-    margin: 10px;
-  }
-  &__anchor {
-    color: #000;
-  }
 }

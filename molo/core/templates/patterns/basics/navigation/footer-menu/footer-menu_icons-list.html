@@ -1,31 +1,18 @@
-<!-- Footer Navigation - IoGT Examples -->
-{% load wagtailcore_tags  core_tags i18n %}
-
-{% block section_menu %}
-<div class="navigation">
-{% load_sections as sections %}
-  {% block logo %}
-    {% include "patterns/basics/images/logo.html" with class="left"%}
-  {% endblock %}
-  <ul class="nav-list nav-list--vertical">
-    <li class="nav-list__item nav-list__item--vertical">
-      <a href="/" class="nav-list__anchor nav-list__anchor--vertical">
-        {% trans "Home" %}
-      </a>
-      <span class="nav-list__anchor-desc nav-list__anchor-desc--vertical">{{section.description}}</span>
-    </li>
-
-    {% for section in sections %}
-      <li class="nav-list__item nav-list__item--vertical">
-        <a href="{% pageurl section %}" class="nav-list__anchor nav-list__anchor--vertical">
-          {{section.title}}
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+<div class="navigation-footer">
+  <ul class="nav-list nav-list--with-icon">
+      {% for footer in footers %}
+      <li class="nav-list__item nav-list__item--with-icon">
+        <a href="{% pageurl footer %}" class="nav-list__anchor nav-list__anchor--with-icon">
+            {% if footer.image %}
+            <div class="nav-list__thumbnail">
+              {% image footer.image width-40 class="nav-list__thumbnail-icon" %}
+            </div>
+            {% endif %}
+            <span class="nav-list__anchor--with-icon-title">{{footer.title}}</span>
         </a>
-        <span class="nav-list__anchor-desc nav-list__anchor-desc--vertical">{{section.description}}</span>
+        <span class="nav-list__desc nav-list__desc--with-icon">{{footer.subtitle}}</span>
       </li>
       {% endfor %}
-      <li class="nav-list__item nav-list__item--vertical">
-          {% include "patterns/basics/images/logo.html" with class="left"%}
-      </li>
   </ul>
 </div>
-{% endblock %}

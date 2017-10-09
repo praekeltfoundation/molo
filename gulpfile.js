@@ -41,9 +41,6 @@ function styles(env) {
     .pipe(sass().on('error', sass.logError))
     .pipe(bless())
     .pipe(cleanCSSMinify())
-    //.pipe(sassLint())
-    //.pipe(sassLint.format())
-    //.pipe(sassLint.failOnError())
     .pipe(autoprefixer({
         browsers: [
             'ie >= 8',
