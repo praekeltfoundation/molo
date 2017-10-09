@@ -329,7 +329,11 @@ class ImageInfo(models.Model):
 @receiver(
     post_save, sender=Image, dispatch_uid="create_image_info")
 def create_image_info(sender, instance, **kwargs):
-    ImageInfo.objects.get_or_create(image=instance)
+    image_info, created = ImageInfo.objects.get_or_create(image=instance)
+    # ensure that image info is updated, in the event that an
+    # image is changed e.g. file is changed, prompting change in hash
+    if not created:
+        image_info.save()
 
 
 class ImportableMixin(object):
