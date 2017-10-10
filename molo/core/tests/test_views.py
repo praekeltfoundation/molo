@@ -360,7 +360,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/locale/en/?next=/?" class="language-list__anchor '
+            '<a href="/locale/en/?next=/" class="language-list__anchor '
             'language-list__anchor-with-label is-active">English</a>',
             html=True)
         self.assertContains(
@@ -374,7 +374,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = client.get(self.site2.root_url)
         self.assertContains(
             response,
-            '<a href="/locale/en/?next=/?" class="language-list__anchor '
+            '<a href="/locale/en/?next=/" class="language-list__anchor '
             'language-list__anchor-with-label is-active">English</a>',
             html=True)
         self.assertContains(
@@ -899,13 +899,13 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertRedirects(
             response,
             'http://main-1.localhost:8000/sections'
-            '-main-1/your-mind-in-french/?')
+            '-main-1/your-mind-in-french/')
 
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
         self.assertRedirects(
             response,
             'http://main-1.localhost:8000/sections-main-1/your-mind/'
-            'test-page-0-in-french/?')
+            'test-page-0-in-french/')
 
         # redirect from translation to main language should also work
         response = self.client.get('/locale/en/')
@@ -913,14 +913,14 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections-main-1/your-mind-in-french/')
         self.assertRedirects(
             response,
-            'http://main-1.localhost:8000/sections-main-1/your-mind/?')
+            'http://main-1.localhost:8000/sections-main-1/your-mind/')
 
         response = self.client.get('/sections-main-1/your-mind/'
                                    'test-page-0-in-french/')
         self.assertRedirects(
             response,
             'http://main-1.localhost:8000/sections-main-1/your-mind/test-pag'
-            'e-0/?')
+            'e-0/')
 
         # unpublished translation will not result in a redirect
         self.yourmind_fr.unpublish()
