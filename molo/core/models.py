@@ -651,12 +651,8 @@ class TranslatablePageMixinNotRoutable(object):
         if main_lang.locale == locale_code:
             translation = parent
 
-        path_components = [
-            component for component in request.path.split('/') if component]
-        if path_components and path_components[-1] != 'noredirect' and \
-                translation and language_rel.language.locale != locale_code:
-            return redirect(
-                '%s?%s' % (translation.url, request.GET.urlencode()))
+        if translation and language_rel.language.locale != locale_code:
+            return redirect(translation.url)
 
         return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)
