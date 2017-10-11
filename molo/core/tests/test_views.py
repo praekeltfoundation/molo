@@ -1129,8 +1129,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '&larr;')
 
     def test_pagination_for_translated_articles_in_sections(self):
-        en_articles = self.mk_articles(self.yourmind, count=12)
-        self.mk_articles(self.yourmind, count=3)
+        en_articles = self.mk_articles(self.yourmind, count=15)
 
         for p in en_articles:
             self.mk_article_translation(
