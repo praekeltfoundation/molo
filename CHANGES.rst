@@ -1,3 +1,9 @@
+5.21.0
+~~~~~~
+- Update the project setup. See PR#477 for more details
+- Fix Image Hashing update bug
+- Fix errant ? in URLs
+
 5.20.0
 ~~~~~~
 - only allow access to sites if the user has permissions for that site
