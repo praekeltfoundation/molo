@@ -82,3 +82,27 @@ class TestImageInfoObject(MoloTestCaseMixin, TestCase):
 
         self.assertEquals(Image.objects.count(), 0)
         self.assertEquals(ImageInfo.objects.count(), 0)
+
+    def test_image_info_updated_on_file_change(self):
+        file_1 = get_test_image_file(colour='black', size=(100, 100))
+        file_2 = get_test_image_file(colour='white', size=(80, 80))
+
+        image = Image.objects.create(
+            title="Test image",
+            file=file_1,
+        )
+
+        id_ = image.id
+        original_hash = image.image_info.image_hash
+
+        image.file = file_2
+        image.save()
+
+        updated_image = Image.objects.get(id=id_)
+
+        new_hash = updated_image.image_info.image_hash
+
+        self.assertNotEqual(
+            original_hash,
+            new_hash
+        )
