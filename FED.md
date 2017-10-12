@@ -83,7 +83,14 @@ FED
   -  We use SMACSS, BEM methodologies
 
   BEM
+
+  strictbem
   https://en.bem.info/methodology/quick-start/
+
+  hyphenatedbem
+  https://csswizardry.com/2013/01/mindbemding-getting-your-head-round-bem-syntax/
+
+
   http://getbem.com/introduction/
 
   BEM Naming Convention
@@ -99,6 +106,7 @@ FED
 
   SMACSS
   https://smacss.com/book/
+  https://webuild.envato.com/blog/how-to-scale-and-maintain-legacy-css-with-sass-and-smacss/
 
   E.G. variables / colors.scss
     $de_york - #2A9B58;
@@ -133,11 +141,22 @@ FED
   OUTPUT FILE PATH: /static/css/dev with sourcemaps /maps
                     /static/css/prd
 
+  Linting - Enforce editor configs and coding standard rules
+  # EditorConfig: http://EditorConfig.org
+  Sass Lint
+  https://www.npmjs.com/package/sass-lint
+  http://sasstools.github.io/make-sass-lint-config/
+  https://github.com/sasstools/sass-lint/blob/master/docs/rules/class-name-format.md
 
   CSS / BEM Linting
   https://github.com/postcss/postcss-bem-linter
-  - Enforce coding standard rules
+  https://github.com/simonsmith/stylelint-selector-bem-pattern
 
+  TESTING
+  ------------
+  Map out your scraper website workflow 
+  https://github.com/segmentio/nightmare
+  https://segment.com/blog/ui-testing-with-nightmare/
 
   COMPRESSION / AUTOMATION
   -------------------------

@@ -46,8 +46,13 @@ class MoloCASBackend(CASBackend):
             else:
                 wagtail_login_only_group = Group.objects.filter(
                     name='Wagtail Login Only').first()
-                if wagtail_login_only_group:
+                if wagtail_login_only_group and not user.groups.exists():
                     user.groups.add(wagtail_login_only_group)
+
+                elif not user.profile.admin_sites.filter(
+                        pk=request.site.pk).exists():
+                    return None
+
                 """
                 TODO: Handle case where Moderator group does not exist.
                 We need to log this or find ways of notifying users that
