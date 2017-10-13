@@ -1,4 +1,5 @@
 from os import environ
+import re
 import json
 import pytest
 import responses
@@ -326,20 +327,33 @@ class TestPages(TestCase, MoloTestCaseMixin):
             title='Footer Page in french')
 
         response = self.client.get('/')
-        self.assertContains(response, 'Footer Page')
-        self.assertContains(
-            response,
-            '<a href="/footers-main-1/footer-page/">Footer Page</a>',
-            html=True)
-        self.assertNotContains(
-            response,
-            '<a href="/%s/">Footer Page in french</a>' % footer_french.slug,
-            html=True)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertTrue(soup.findAll(
+            'a',
+            string=re.compile(self.footer.title),
+            attrs={'href': '/footers-main-1/footer-page/'}
+        ))
+
+        self.assertFalse(soup.findAll(
+            'a',
+            string=re.compile(footer_french.title),
+        ))
 
         response = self.client.get(
             '/sections-main-1/your-mind/your-mind-subsection/')
-        self.assertContains(response, 'Footer Page')
-        self.assertNotContains(response, 'Footer Page in french')
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertTrue(soup.findAll(
+            'a',
+            string=re.compile(self.footer.title),
+            attrs={'href': '/footers-main-1/footer-page/'}
+        ))
+
+        self.assertFalse(soup.findAll(
+            'a',
+            string=re.compile(footer_french.title),
+        ))
 
     def test_section_listing(self):
         self.mk_articles(
