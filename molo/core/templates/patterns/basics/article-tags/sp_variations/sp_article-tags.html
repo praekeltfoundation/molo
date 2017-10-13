@@ -4,7 +4,7 @@
   {% for tag in tags %}
     {% if tag %}
       <li class="tag-cloud__item">
-        <a href="{% url 'tags_list' tag %}" class="tag-cloud__anchor">
+        <a href="{% url 'tags_list' tag.slug %}" class="tag-cloud__anchor">
             {{tag.title}}
         </a>
       </li>
