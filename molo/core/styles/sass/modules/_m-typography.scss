@@ -1,0 +1,7 @@
+.heading--xx-large  {@include heading-scale($heading-xx-large);}
+.heading--x-large   {@include heading-scale($heading-x-large);}
+.heading--large     {@include heading-scale($heading-large);}
+.heading--medium    {font-size: $font-medium;}
+.heading--small     {font-size: $font-small;}
+.heading--x-small   {font-size: $font-x-small;}
+.heading--xx-small  {font-size: $font-xx-small;}

@@ -1,0 +1,15 @@
+.navigation-footer {
+    .nav-list {
+        &__item {
+            &--nav-footer {
+                display: block;
+            }
+        }
+        &__anchor {
+            color: $tiber;
+            &--nav-footer {
+                color: $tiber;
+            }
+        }
+    }
+}

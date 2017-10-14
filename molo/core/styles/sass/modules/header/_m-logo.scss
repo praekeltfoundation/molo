@@ -1,0 +1,33 @@
+.logo {
+  margin: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  display: inline-block;
+  @media screen and (min-width: 320px) {
+    padding: 0 10px;
+  }
+  &:hover {
+    text-decoration: none;
+  }
+  img {
+    vertical-align: middle;
+    width: 100%;
+    @media screen and (min-width: 240px) {
+      width: auto;
+      max-width: 150px;
+    }
+  }
+
+  &--left {
+    text-align: left;
+    padding: 0 10px 0 0;
+  }
+  &--right {
+    float: right;
+  }
+  &--center {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+  }
+}

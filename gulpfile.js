@@ -20,8 +20,8 @@ var gulp              =   require('gulp'),
     del               =   require('del'),
     grunticon         =   require('grunticon-lib'),
     sassPaths = [
-        'molo/core/styles/core-style/styles.s+(a|c)ss',
-        'molo/core/styles/mote/mote.s+(a|c)ss'
+        'molo/core/styles/sass/styles.s+(a|c)ss',
+        'molo/core/styles/mote.customize/mote.s+(a|c)ss'
     ],
     sassDest = {
          prd: 'molo/core/static/css/prd',
@@ -33,18 +33,14 @@ var gulp              =   require('gulp'),
 function styles(env) {
   var s = gulp.src(sassPaths);
   var isDev = env === 'dev';
-  console.log("argv env param:",isDev);
   if (isDev)
     s = s
       .pipe(sourcemaps.init());
     s = s
-    .pipe(sass().on('error', sass.logError))
     .pipe(sassGlob())
+    .pipe(sass().on('error', sass.logError))
     .pipe(bless())
     .pipe(cleanCSSMinify())
-    .pipe(sassLint())
-    .pipe(sassLint.format())
-    .pipe(sassLint.failOnError())
     .pipe(autoprefixer({
         browsers: [
             'ie >= 8',
@@ -70,9 +66,9 @@ gulp.task('styles:dev', function() {
 
 //Wagtail Admin CSS override - must be on root static
 gulp.task('stylesAdmin', function() {
-  gulp.src('molo/core/styles/wagtail-admin.scss')
-      .pipe(sass().on('error', sass.logError))
+  gulp.src('molo/core/styles/wagtail-admin/admin.s+(a|c)ss')
       .pipe(sassGlob())
+      .pipe(sass().on('error', sass.logError))
       .pipe(cleanCSSMinify())
       .pipe(gulp.dest('molo/core/static/css/'))
       .pipe(notify({ message: 'Styles task complete: Wagtail Admin' }));

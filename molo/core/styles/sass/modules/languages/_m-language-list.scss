@@ -1,0 +1,49 @@
+$string: 's';
+
+.language, .language#{$string} {
+    background-color: #f0f0f0; //Adding color?
+    width: 100%;
+    &-list {
+        list-style-type: none;
+        margin: 0;
+        padding: 10px 15px;
+        &--standard {
+          display: block;
+          border-bottom: 1px solid #DDDDDD;
+          @include enhancedPos($alignment);
+        }
+
+        &__item {
+            &--standard {
+                color: #5a5d5e;
+                display: inline-block;
+                font-size: 16px;
+                margin: 0;
+                &:after {
+                  color: #ddd;
+                  content: "|";
+                  padding: 0 3px;
+                  display: inline-block;
+                }
+                &:last-child:after {
+                    content: " ";
+                    display: none;
+                }
+            }
+        }
+
+        &__anchor {
+            color: #f7a11a;
+            &--standard {
+              color: #5a5d5e;
+              font-size: 16px;
+            }
+            .is-active {
+                color: #5a5d5e;
+                text-decoration: underline;
+            }
+            &:hover {color: #00b8ae;}
+
+        }
+    }
+}

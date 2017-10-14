@@ -1,0 +1,7 @@
+.header {
+  overflow: auto;
+  padding: 0 0 10px;
+  @media screen and (min-width: 320px)  {
+    padding: 10px 5px;
+  }
+}

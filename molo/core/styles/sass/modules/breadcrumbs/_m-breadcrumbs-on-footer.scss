@@ -1,0 +1,33 @@
+.breadcrumbs {
+    &--footer {
+      font-size: 14px;
+    }
+}
+
+.footer {
+    &-breadcrumbs-list {
+      list-style: none;
+      padding: 0 15px;
+      margin: 0;
+      &__item {
+        display: inline-block;
+        &:after {
+          content: " / ";
+          color: #BCC1C3;
+          margin: 0 2px 0 5px;
+          font-weight: 700;
+        }
+        &:last-child:after {
+          content: " ";
+          display: inline-block;
+        }
+      }
+      &__anchor {
+        color: #017AF5;
+        text-transform: capitalize;
+        @media screen and (min-width: 320px) {
+          text-decoration: none;
+        }
+      }
+    }
+}

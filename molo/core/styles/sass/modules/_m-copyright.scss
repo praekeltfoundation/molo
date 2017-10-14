@@ -1,0 +1,17 @@
+
+.copyright {
+  padding: 20px 0 0;
+  &__footer-copy {
+    font-size: 12px;
+    padding: 10px 15px 10px;
+    margin: 0;
+  }
+  &__website-name {
+    font-weight: bold;
+    &:after {
+      content: "|";
+      font-size: 10px;
+      padding: 0 5px;
+    }
+  }
+}

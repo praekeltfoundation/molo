@@ -1,0 +1,24 @@
+#header {
+  background-color: #d3d3d3;
+}
+.header {
+  position: relative;
+  $block: unquote("#{&}");
+  &__search {
+    #{$block}__search-input,
+    #{$block}__search-input + * {
+      display: none;
+    }
+    #{$block}__search-input:checked + * {
+      display: block;
+    }
+    #{$block}__search-bar {
+      position: relative;
+      display: block;
+    }
+    .call-to-action__item--with-icon,
+    .call-to-action__nav-item--with-icon {
+      color: #fff;
+    }
+  }
+}

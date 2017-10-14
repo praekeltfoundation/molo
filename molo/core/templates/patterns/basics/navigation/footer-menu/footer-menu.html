@@ -1,0 +1,12 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+<div class="navigation-footer">
+    <ul class="nav-list nav-list--standard nav-list--standard-{{class}}">
+    {% for footer in footers %}
+     <li class="nav-list__item nav-list__item--standard">
+      <a href="{% pageurl footer %}" class="nav-list__anchor nav-list__anchor--standard">
+        {{footer.title}}
+      </a>
+    </li>
+    {% endfor %}
+    </ul>
+</div>
