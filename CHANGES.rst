@@ -1,3 +1,7 @@
+5.21.1
+~~~~~~
+- Continued update to front end setup. See PR#465 for more details
+
 5.21.0
 ~~~~~~
 - Update the project setup. See PR#477 for more details
