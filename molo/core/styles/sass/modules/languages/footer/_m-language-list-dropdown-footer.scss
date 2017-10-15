@@ -1,0 +1,17 @@
+$string: 's';
+$enhanced: 'dropdown';
+.language, .language#{$string} {
+    &-select {
+        &__change-icon {
+          vertical-align: middle;
+          padding: 0 130px 0 0;
+          @media screen and (min-with: 320px) {
+            padding: 0 130px 0 0;
+          }
+        }
+        &__change-label-footer {
+          width: 94%;
+          text-align: right;
+        }
+    }
+}

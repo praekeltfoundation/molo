@@ -10,9 +10,9 @@ describe('Public Pages', function(){
     nightmare = new Nightmare()
   })
 
-  describe('/ (Home Page)',() => {
+  describe('/ (Home Page)', () => {
     it('should load without error', done => {
-      //Ypur actual testing urls will be `http://localhost"port/path`
+      //Your actual testing urls will be `http://localhost"port/path`
       nightmare.goto('http://localhost:8000/')
       .end()
       .then(function(result) {

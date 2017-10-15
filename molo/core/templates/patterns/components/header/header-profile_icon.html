@@ -5,5 +5,5 @@
   </div>
 </div>
 {% if self.get_verbose_name|slugify  == "main" %}
-    {% include "patterns/basics/languages/language-list-text_decorated.html" with position="footer" %}
+    {% include "patterns/basics/languages/language-list.html" with alignment="left" %}
 {% endif %}

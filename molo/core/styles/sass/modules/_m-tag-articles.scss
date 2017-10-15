@@ -1,0 +1,21 @@
+//MOTE STYLE
+.article-tag {
+  background: transparent;
+  padding: 0 15px;
+  &-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  &__item {
+    display: inline-block;
+  }
+  &__title {
+    font-size: $font-small;
+    background: transparent;
+    padding: 0;
+  }
+  &__title:after {
+    content: ":";
+  }
+}

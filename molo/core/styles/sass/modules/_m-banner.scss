@@ -1,0 +1,9 @@
+.banner {
+    &__item-link {
+      display: block;
+    }
+    &__item {
+      max-width: 640px;
+      width: 100%;
+    }
+}

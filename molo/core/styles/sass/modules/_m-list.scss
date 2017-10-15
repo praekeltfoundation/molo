@@ -1,0 +1,12 @@
+.unordered-list {
+  &__item {
+    padding: 5px 15px 5px 0;
+  }
+}
+
+.ordered-list {
+  list-style: decimal;
+  &__item {
+    padding: 5px 15px 5px 0;
+  }
+}

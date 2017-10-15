@@ -1,0 +1,34 @@
+.section-listing {
+    &__column {
+        &-content {
+          position: relative;
+        }
+        &-icon-title {
+         font-weight: bold;
+         position: relative;
+        }
+        &-icon-title-hero {
+          padding: 10px 15px;
+          @media screen and (min-width: 320px) {
+            position: absolute;
+            bottom: 5px;
+          }
+        }
+        &-icon-image {
+          display: inline-block;
+          padding: 0 5px;
+          vertical-align: middle;
+          @media screen and (min-width: 320px) {
+            position: absolute;
+            right: 5px;
+            bottom: 10px;
+          }
+        }
+        &-icon-image-hero {
+          @media screen and (min-width: 320px) {
+            right: -220px;
+            top: 7px;
+          }
+        }
+    }
+}
