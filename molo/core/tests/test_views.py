@@ -1921,12 +1921,11 @@ class TestModerationActions(TestCase, MoloTestCaseMixin):
         self.assertTrue(
             article_site1.revisions.first().submitted_for_moderation)
         self.revision = article_site1.get_latest_revision()
-        # Post
+
         response = self.client.post(reverse(
             'wagtailadmin_pages:approve_moderation',
             args=(self.revision.id,)))
 
-        # Check that the user was redirected to the dashboard
         self.assertRedirects(response, reverse('wagtailadmin_home'))
         article_site1.refresh_from_db()
         self.assertTrue(article_site1.live)
@@ -1945,12 +1944,11 @@ class TestModerationActions(TestCase, MoloTestCaseMixin):
         self.assertTrue(
             article_site2.revisions.first().submitted_for_moderation)
         self.revision = article_site2.get_latest_revision()
-        # Post
+
         response = self.client.post(reverse(
             'wagtailadmin_pages:approve_moderation',
             args=(self.revision.id,)))
 
-        # Check that the user was redirected to the dashboard
         self.assertRedirects(response, reverse('wagtailadmin_home'))
         article_site2.refresh_from_db()
         self.assertTrue(article_site2.live)
