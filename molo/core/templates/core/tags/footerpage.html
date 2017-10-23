@@ -1,5 +1,8 @@
+{% load wagtailcore_tags core_tags %}
+
 {% block footer %}
+{% social_media_footer %}
 {% if footers %}
-  {% include "patterns/components/footer/footer-menu.html" %}
+  {% include "patterns/basics/navigation/footer-menu/footer-menu.html" %}
 {% endif %}
 {% endblock %}

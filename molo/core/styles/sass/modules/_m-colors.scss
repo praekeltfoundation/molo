@@ -1,0 +1,20 @@
+.color-chip {
+  display: inline-block;;
+  border-top-width: 30px;
+  border-top-style: solid;
+  border-bottom-width: 0;
+  border-bottom-style: solid;
+  background-color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 16px;
+  margin:0 0 35px 5px;
+  text-align: center;
+  min-width: 100px;
+  &__name {
+    text-transform: capitalize;
+  }
+  &__color {
+    font-weight: 400;
+  }
+}

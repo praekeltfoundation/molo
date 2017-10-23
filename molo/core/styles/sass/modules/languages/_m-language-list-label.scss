@@ -1,0 +1,37 @@
+$string: 's';
+.language, .language#{$string} {
+    &-list {
+        &--with-label__title {
+          font-size: 16px;
+          padding: 0 10px 0 0;
+          &:after {
+            content: ":";
+          }
+        }
+        &__item--with-label {
+          font-size: 13px;
+          display: inline-block;
+          padding: 3px;
+          margin: 0;
+          &:first-child {
+            &:hover {
+              background: none;
+              color: #000;
+            }
+          }
+          &:hover {
+            background: gray;
+            color: #fff;
+            border-radius: 3px;
+          }
+        }
+        &__anchor-with-label {
+          font-size: 13px;
+          &:hover {
+            background: gray;
+            color: #fff;
+            border-radius: 3px;
+          }
+        }
+    }
+}

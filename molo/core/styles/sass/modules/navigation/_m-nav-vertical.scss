@@ -1,0 +1,36 @@
+.nav-list {
+    &--vertical {
+      margin: 0;
+      padding: 0;
+    }
+    &__item {
+        &--vertical  {
+          border-bottom: 1px solid #B0B9BB;
+          padding: 10px 15px 15px;
+        }
+    }
+    &__anchor {
+        &--vertical {
+          display: block;
+          &:after {
+            @media only screen and (min-width: 320px) {
+              content: ">";
+            }
+            @media only screen and (min-width: 490px) {
+              content: "❯";
+            }
+            display: inline-block;
+            float: right;
+          }
+        }
+        &-desc {
+            &--vertical {
+              color: #727172;
+              display: block;
+              text-transform: initial;
+              font-weight: normal;
+              padding: 10px 0 0;
+            }
+        }
+    }
+}

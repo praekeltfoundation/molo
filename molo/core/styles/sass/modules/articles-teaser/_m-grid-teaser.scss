@@ -1,0 +1,24 @@
+.grid-teaser {
+  overflow: auto;
+  &-list  {
+    display: block;
+    overflow: auto;
+    padding: 0 10px;
+    &__item {
+      list-style-type: none;
+      padding: 10px 0;
+      float: left;
+    }
+  }
+  &__thumbnail-link {
+    display: block;
+    text-align: center;
+  }
+  &__title,
+  .grid-teaser__subtitle {
+    text-align: center;
+  }
+  &__title-link {
+    color: gray;
+  }
+}

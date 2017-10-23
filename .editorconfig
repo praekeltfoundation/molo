@@ -1,0 +1,20 @@
+# EditorConfig: http://EditorConfig.org
+#https://atom.io/packages/editorconfig
+
+# top-most EditorConfig file
+root = true
+
+[*]
+# Unix-style newlines with a newline ending every file
+end_of_line = lf
+
+[*.{js,py}]
+# Default Charset
+charset = utf-8
+
+# Set tab style and size
+indent_style = space
+indent_size = 2
+
+# Trim any trailing whitespace
+trim_trailing_whitespace = true

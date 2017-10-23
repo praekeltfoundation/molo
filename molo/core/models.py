@@ -329,7 +329,11 @@ class ImageInfo(models.Model):
 @receiver(
     post_save, sender=Image, dispatch_uid="create_image_info")
 def create_image_info(sender, instance, **kwargs):
-    ImageInfo.objects.get_or_create(image=instance)
+    image_info, created = ImageInfo.objects.get_or_create(image=instance)
+    # ensure that image info is updated, in the event that an
+    # image is changed e.g. file is changed, prompting change in hash
+    if not created:
+        image_info.save()
 
 
 class ImportableMixin(object):
@@ -647,12 +651,12 @@ class TranslatablePageMixinNotRoutable(object):
         if main_lang.locale == locale_code:
             translation = parent
 
-        path_components = [
-            component for component in request.path.split('/') if component]
-        if path_components and path_components[-1] != 'noredirect' and \
-                translation and language_rel.language.locale != locale_code:
-            return redirect(
-                '%s?%s' % (translation.url, request.GET.urlencode()))
+        if translation and language_rel.language.locale != locale_code:
+            if request.GET.urlencode():
+                return redirect("{}?{}".format(translation.url,
+                                               request.GET.urlencode()))
+            else:
+                return redirect(translation.url)
 
         return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)

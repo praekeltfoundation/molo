@@ -1,0 +1,18 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags i18n %}
+<div class="navigation-footer">
+  <ul class="nav-list nav-list--with-icon">
+      {% for footer in footers %}
+      <li class="nav-list__item nav-list__item--with-icon">
+        <a href="{% pageurl footer %}" class="nav-list__anchor nav-list__anchor--with-icon">
+            {% if footer.image %}
+            <div class="nav-list__thumbnail">
+              {% image footer.image width-40 class="nav-list__thumbnail-icon" %}
+            </div>
+            {% endif %}
+            <span class="nav-list__anchor--with-icon-title">{{footer.title}}</span>
+        </a>
+        <span class="nav-list__desc nav-list__desc--with-icon">{{footer.subtitle}}</span>
+      </li>
+      {% endfor %}
+  </ul>
+</div>

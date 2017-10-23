@@ -1,0 +1,24 @@
+{% block languages %}
+  {% load i18n %}
+  <!--
+      Make Language list with no piped separator
+      Add dynamic type: E.g.
+      Standard - with no pipe separator
+      Piped - with pipe separator
+      Font-size
+      Color
+  -->
+  {% if languages|length > 1 %}
+  <div class="languages">
+    <ul class="language-list language-list--standard-{{alignment}}">
+      {% for language in languages %}
+      <li class="language-list__item language-list__item--standard">
+        <a href="{% url 'locale_set' language.locale %}?next={{request.path}}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="language-list__anchor language-list__anchor--standard-{{alignment}}{% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">
+          {{language.locale|language_name_local}}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+{% endblock %}

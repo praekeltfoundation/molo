@@ -1,0 +1,59 @@
+.promoted-article {
+    &-list {
+        $block: unquote("#{&}");
+        &__desc--column-icon {
+          padding: 0;
+        }
+        &__item {
+            &--column-icon {
+              position: relative;
+              margin: 0 0 10px;
+              &-icon-hero {
+                  width: auto;
+                  padding: 0;
+                  @media screen and (min-width: 320px) {
+                    @include float-clear(none);
+                  }
+                  #{$block}__column-icon-heading {
+                      padding: 5px 15px;
+                  }
+                  #{$block}__desc--column-icon {
+                    padding: 0 15px;
+                  }
+                  #{$block}__image {
+                    width: 100%;
+                    height: auto;
+                    @media screen and (min-width: 320px) {
+                      width: auto;
+                      height: auto;
+                    }
+                  }
+              }
+              &:first-child {
+                  width: auto;
+                  padding: 0;
+                  @media screen and (min-width: 320px) {
+                    @include float-clear(none);
+                  }
+              }
+
+              &:nth-child(even) {
+                padding: 0 10px;
+                @media screen and (min-width: 320px) {
+                  padding: 0 10px 0 0;
+                  width: 45%;
+                  @include float-clear(right);
+                }
+              }
+              &:nth-child(odd) {
+                padding: 0 10px;
+                @media screen and (min-width: 320px) {
+                  padding: 0 0 0 10px;
+                  width: 46%;
+                  @include float-clear(left);
+                }
+              }
+            }
+        }
+    }
+}

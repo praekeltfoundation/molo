@@ -1,0 +1,38 @@
+{% load wagtailcore_tags wagtailimages_tags core_tags wagtailembeds_tags i18n  %}
+<article>
+{% for block in self.body %}
+  {% if block.block_type == 'heading' %}
+    <h3 class="heading heading--large">{{ block.value }}</h3>
+  {% elif block.block_type == 'image' %}
+    {% image block.value width-320 %}
+  {% elif block.block_type == 'numbered_list' %}
+    <ol class="ordered-list">
+    {% for item in block.value %}
+      <li class="ordered-list__item">{{ item|handle_markdown }}</li>
+    {% endfor %}
+    </ol>
+  {% elif block.block_type == 'list' %}
+    <ul class="unordered-list">
+    {% for item in block.value %}
+      <li class="unordered-list__item">{{ item|handle_markdown }}</li>
+    {% endfor %}
+  </ul>
+  {% elif block.block_type = 'page' %}
+  {% load_tags_for_article block.value as navigation_tags %}
+  <div class="featured-articles {% if navigation_tags%}featured-articles--tags{% endif %}">
+      <a href="{% pageurl block.value %}" class="featured-articles__nav-item">{{ block.value }}</a>
+      {% if settings.core.SiteSettings.enable_tag_navigation %}
+        {% if navigation_tags %}
+          <div class="article-list__item--age-tag featured-articles--age-tag">
+            {% for tag in navigation_tags  %}
+                <span>?{{ tag }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endif %}
+  </div>
+  {% else %}
+    ==>{{ block }}
+  {% endif %}
+ {% endfor %}
+</article>

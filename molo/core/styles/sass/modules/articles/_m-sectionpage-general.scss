@@ -1,0 +1,19 @@
+.promoted-article {
+    &__title-general {
+      font-size: 18px;
+      color: #000;
+      @include heading-scale($heading-large);
+    }
+
+    &-list__item-general {
+      border-bottom: 1px solid #e4e4e4;
+      padding: 10px 15px 20px;
+      .promoted-article-list__image {
+        padding: 0 15px;
+        @media screen and (min-width: 320px) {
+          float: left;
+          padding: 5px 15px 10px 15px;
+        }
+      }
+    }
+}

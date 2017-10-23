@@ -1,3 +1,17 @@
+5.21.2
+~~~~~~
+- Bug fix: exclude pages that are submitted for moderation from MultiSiteRedirect
+
+5.21.1
+~~~~~~
+- Continued update to front end setup. See PR#465 for more details
+
+5.21.0
+~~~~~~
+- Update the project setup. See PR#477 for more details
+- Fix Image Hashing update bug
+- Fix errant ? in URLs
+
 5.20.0
 ~~~~~~
 - only allow access to sites if the user has permissions for that site
