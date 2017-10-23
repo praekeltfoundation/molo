@@ -1880,7 +1880,6 @@ class TestModerationActions(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.client = Client()
-        # Creates Main language
         self.mk_main()
         self.main = Main.objects.all().first()
         self.english = SiteLanguageRelation.objects.create(
@@ -1904,107 +1903,110 @@ class TestModerationActions(TestCase, MoloTestCaseMixin):
         self.yourmind2 = self.mk_section(
             self.section_index2, title='Your mind')
 
-    def test_approve_moderation(self):
         superuser = User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
 
-        article_site1 = ArticlePage(
+        self.article_site1 = ArticlePage(
             title="Article 1 in site 1",
             slug="article-1-in-site-1",
             live=False,
         )
-        self.yourmind.add_child(instance=article_site1)
-        article_site1.save_revision(
+        self.yourmind.add_child(instance=self.article_site1)
+        self.article_site1.save_revision(
             user=superuser, submitted_for_moderation=True)
-        self.assertFalse(article_site1.live)
-        self.assertTrue(
-            article_site1.revisions.first().submitted_for_moderation)
-        self.revision = article_site1.get_latest_revision()
 
-        response = self.client.post(reverse(
-            'wagtailadmin_pages:approve_moderation',
-            args=(self.revision.id,)))
-
-        self.assertRedirects(response, reverse('wagtailadmin_home'))
-        article_site1.refresh_from_db()
-        self.assertTrue(article_site1.live)
-        self.assertTrue(ArticlePage.objects.descendant_of(self.main).get(
-            slug=article_site1.slug))
-
-        article_site2 = ArticlePage(
+        self.article_site2 = ArticlePage(
             title="Article 1 in site 2",
             slug="article-1-in-site-2",
             live=False,
         )
-        self.yourmind2.add_child(instance=article_site2)
-        article_site2.save_revision(
+        self.yourmind2.add_child(instance=self.article_site2)
+        self.article_site2.save_revision(
             user=superuser, submitted_for_moderation=True)
-        self.assertFalse(article_site2.live)
-        self.assertTrue(
-            article_site2.revisions.first().submitted_for_moderation)
-        self.revision = article_site2.get_latest_revision()
 
-        response = self.client.post(reverse(
-            'wagtailadmin_pages:approve_moderation',
-            args=(self.revision.id,)))
-
-        self.assertRedirects(response, reverse('wagtailadmin_home'))
-        article_site2.refresh_from_db()
-        self.assertTrue(article_site2.live)
-        self.assertTrue(ArticlePage.objects.descendant_of(self.main2).get(
-            slug=article_site2.slug))
-
-    def test_reject_moderation(self):
-        superuser = User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
-        article2_site1 = ArticlePage(
+        self.article2_site1 = ArticlePage(
             title="Article 2 in site 1",
             slug="article-2-in-site-1",
             live=False,
         )
-        self.yourmind.add_child(instance=article2_site1)
-        article2_site1.save_revision(
+        self.yourmind.add_child(instance=self.article2_site1)
+        self.article2_site1.save_revision(
             user=superuser, submitted_for_moderation=True)
-        self.assertFalse(article2_site1.live)
-        self.assertTrue(
-            article2_site1.revisions.first().submitted_for_moderation)
-        self.revision = article2_site1.get_latest_revision()
 
-        response = self.client.post(reverse(
-            'wagtailadmin_pages:reject_moderation',
-            args=(self.revision.id, )))
-
-        self.assertRedirects(response, reverse('wagtailadmin_home'))
-        article2_site1.refresh_from_db()
-        self.assertFalse(article2_site1.live)
-        self.assertFalse(
-            article2_site1.revisions.first().submitted_for_moderation)
-        self.assertTrue(ArticlePage.objects.descendant_of(self.main).get(
-            slug=article2_site1.slug))
-
-        article2_site2 = ArticlePage(
+        self.article2_site2 = ArticlePage(
             title="Article 2 in site 2",
             slug="article-2-in-site-2",
             live=False,
         )
-        self.yourmind2.add_child(instance=article2_site2)
-        article2_site2.save_revision(
+        self.yourmind2.add_child(instance=self.article2_site2)
+        self.article2_site2.save_revision(
             user=superuser, submitted_for_moderation=True)
-        self.assertFalse(article2_site2.live)
+
+    def test_approve_moderation(self):
+        self.client.login(username='testuser', password='password')
+
+        self.assertFalse(self.article_site1.live)
         self.assertTrue(
-            article2_site2.revisions.first().submitted_for_moderation)
-        self.revision = article2_site2.get_latest_revision()
+            self.article_site1.revisions.first().submitted_for_moderation)
+        revision = self.article_site1.get_latest_revision()
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:approve_moderation',
+            args=(revision.id,)))
+
+        self.assertRedirects(response, reverse('wagtailadmin_home'))
+        self.article_site1.refresh_from_db()
+        self.assertTrue(self.article_site1.live)
+        self.assertTrue(ArticlePage.objects.descendant_of(self.main).get(
+            slug=self.article_site1.slug))
+
+        self.assertFalse(self.article_site2.live)
+        self.assertTrue(
+            self.article_site2.revisions.first().submitted_for_moderation)
+        revision = self.article_site2.get_latest_revision()
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:approve_moderation',
+            args=(revision.id,)))
+
+        self.assertRedirects(response, reverse('wagtailadmin_home'))
+        self.article_site2.refresh_from_db()
+        self.assertTrue(self.article_site2.live)
+        self.assertTrue(ArticlePage.objects.descendant_of(self.main2).get(
+            slug=self.article_site2.slug))
+
+    def test_reject_moderation(self):
+        self.client.login(username='testuser', password='password')
+        self.assertFalse(self.article2_site1.live)
+        self.assertTrue(
+            self.article2_site1.revisions.first().submitted_for_moderation)
+        revision = self.article2_site1.get_latest_revision()
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:reject_moderation',
-            args=(self.revision.id, )))
+            args=(revision.id, )))
 
         self.assertRedirects(response, reverse('wagtailadmin_home'))
-        article2_site2.refresh_from_db()
-        self.assertFalse(article2_site2.live)
+        self.article2_site1.refresh_from_db()
+        self.assertFalse(self.article2_site1.live)
         self.assertFalse(
-            article2_site2.revisions.first().submitted_for_moderation)
+            self.article2_site1.revisions.first().submitted_for_moderation)
+        self.assertTrue(ArticlePage.objects.descendant_of(self.main).get(
+            slug=self.article2_site1.slug))
+
+        self.assertFalse(self.article2_site2.live)
+        self.assertTrue(
+            self.article2_site2.revisions.first().submitted_for_moderation)
+        revision = self.article2_site2.get_latest_revision()
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:reject_moderation',
+            args=(revision.id, )))
+
+        self.assertRedirects(response, reverse('wagtailadmin_home'))
+        self.article2_site2.refresh_from_db()
+        self.assertFalse(self.article2_site2.live)
+        self.assertFalse(
+            self.article2_site2.revisions.first().submitted_for_moderation)
         self.assertTrue(ArticlePage.objects.descendant_of(self.main2).get(
-            slug=article2_site2.slug))
+            slug=self.article2_site2.slug))
