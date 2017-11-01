@@ -1,7 +1,5 @@
 from django.conf.urls import patterns, include, url
-from django.views.decorators.cache import never_cache
 
-from wagtail.utils.urlpatterns import decorate_urlpatterns
 from wagtail.wagtailimages.views.serve import ServeView
 
 from .views import (
