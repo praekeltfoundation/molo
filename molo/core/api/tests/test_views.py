@@ -1,6 +1,5 @@
 import requests
 from mock import patch
-import json
 
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
@@ -211,52 +210,3 @@ class SectionParentChooserTestCase(APIMoloTestCase):
             response["Location"],
             reverse("molo_api:section-parent-chooser")
         )
-
-
-class LanguageEndpointTestCase(APIMoloTestCase):
-    def test_language_list_view(self):
-
-        api_client = Client()
-        url = "/api/v2/languages/"
-        response = api_client.get(url)
-
-        self.assertEqual(response.status_code, 200)
-        obj = json.loads(response.content)['items']
-
-        self.assertEqual(len(obj), 1)
-
-        self.french = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(self.main.get_site()),
-            locale='fr',
-            is_active=True)
-
-        response = api_client.get(url)
-        obj = json.loads(response.content)['items']
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(obj), 2)
-
-    def test_language_detail_view(self):
-        self.french = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(self.main.get_site()),
-            locale='fr',
-            is_active=True)
-
-        api_client = Client()
-        url = "/api/v2/languages/"
-
-        response = api_client.get("{}{}/".format(url, self.english.id))
-        self.assertEqual(response.status_code, 200)
-        obj = json.loads(response.content)
-
-        self.assertEqual(obj['locale'], 'en')
-        self.assertEqual(obj['is_main_language'], True)
-        self.assertEqual(obj['is_active'], True)
-
-        response = api_client.get("{}{}/".format(url, self.french.id))
-        self.assertEqual(response.status_code, 200)
-        obj = json.loads(response.content)
-
-        self.assertEqual(obj['locale'], 'fr')
-        self.assertEqual(obj['is_main_language'], False)
-        self.assertEqual(obj['is_active'], True)
