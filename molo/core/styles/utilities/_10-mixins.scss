@@ -107,3 +107,24 @@
   filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='#{$image-path}', sizingMethod='crop');
   -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='#{$image-path}', sizingMethod='crop')";
 }
+
+// Vanilla notify
+@mixin vn-border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+@mixin vn-opacity($vn-value){
+  $vn-IEValue: $vn-value*100;
+  opacity: $vn-value;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity="+$vn-IEValue+")";
+  filter: alpha(opacity=$vn-IEValue);
+}
+
+@mixin vn-transform($vn-deg) {
+  -webkit-transform: rotate($vn-deg);
+  -moz-transform: rotate($vn-deg);
+  transform: rotate($vn-deg);
+}

@@ -229,7 +229,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
             result = format_html(
                 '<a href="{}">{}</a>'.format(
                     reverse("wagtailadmin_pages:edit", args=[obj.id]),
-                    truncatechars(display_value.upper(), 30)
+                    display_value.upper()
                 )
             )
             return result
