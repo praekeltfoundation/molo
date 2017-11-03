@@ -66,7 +66,7 @@ gulp.task('styles:dev', function() {
 
 //Wagtail Admin CSS override - must be on root static
 gulp.task('stylesAdmin', function() {
-  gulp.src('molo/core/styles/wagtail-admin/admin.s+(a|c)ss')
+  gulp.src('molo/core/styles/wagtail-admin/wagtail-admin.s+(a|c)ss')
       .pipe(sassGlob())
       .pipe(sass().on('error', sass.logError))
       .pipe(cleanCSSMinify())
