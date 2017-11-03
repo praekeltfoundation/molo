@@ -24,10 +24,12 @@ NOTE: Difference in Tables classes:
         overflow-y: hidden;
         overflow-x: scroll;
     }
+    
     .content__tbody {
         height: 100vh;
         width: 100%;
-        overflow: auto;
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
     table.content__results-table,
     table.listing,
