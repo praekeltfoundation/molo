@@ -5,18 +5,51 @@ NOTE: Difference in Tables classes:
 */
 .content-wrapper {
   border: none;
+  //Start Update
+  header.hasform {
+      position: fixed;
+      min-width: 100%;
+      z-index: 9999;
+  }
+  .content__results-table-wrapper {
+      //overflow: scroll;
+      //height: 80vh;
+  }
+  table.content__results-table {
+      width: 100%;
+      margin: 73px 0 0;
+      table-layout: auto;
+      tbody, thead {
+          display: block;
+      }
+      thead {
+          //position: fixed;
+      }
+      tbody {
+          position: relative;
+          height: 100%;
+      }
+  }
+  //End Update
+
   .result_list.col9,
   .result-list.col9  {
     cursor: pointer;
     padding: 0;
     overflow: auto;
     display: inline-block;
-    overflow: scroll;
 
     //Table
+    table.content__results-table,
     table.listing,
     .listing.full-width {
     margin-bottom: 2em;
+        tr:first-child {
+            border-top: none;
+        }
+        th, td {
+            border-collapse:collapse;
+        }
       th {
         &:first-child {
           padding: 5px 0 5px 10px;
@@ -41,8 +74,6 @@ NOTE: Difference in Tables classes:
     .result_list.col9,
     .result-list.col9 {
       width: 100%;
-      overflow-x: scroll;
-      overflow-y: hidden;
     }
   }
 }
@@ -62,6 +93,7 @@ NOTE: Difference in Tables classes:
     .result-list.col9 {
       width: 80%;
       //Table
+      table.content__results-table,
       table.listing,
       .listing.full-width {
         th {
