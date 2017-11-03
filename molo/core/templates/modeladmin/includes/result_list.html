@@ -5,7 +5,7 @@
         <thead>
             <tr>
                 {% for header in result_headers %}
-                <th scope="col" {{ header.class_attrib }} >
+                <th class="" scope="col" {{ header.class_attrib }} >
                     {% if header.sortable %}<a href="{{ header.url_primary }}" id="sortId-{{ header.sort_priority }}" class="icon {% if header.ascending %}icon-arrow-up-after {% else %}icon-arrow-down-after{% endif %}">{% endif %}
                     {{ header.text|capfirst }}
                     {% if header.sortable %}</a>{% endif %}
@@ -13,12 +13,16 @@
                {% endfor %}
            </tr>
         </thead>
-        <tbody>
-        {% for result in results %}
-            {% result_row_display forloop.counter0 %}
-        {% endfor %}
-    </tbody>
     </table>
+    <div class="content__tbody">
+        <table class="listing full-width content__results-table">
+            <tbody>
+                {% for result in results %}
+                    {% result_row_display forloop.counter0 %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% else %}
     <div class="nice-padding no-search-results">
