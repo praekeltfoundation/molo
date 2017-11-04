@@ -5,33 +5,33 @@ NOTE: Difference in Tables classes:
 */
 .content-wrapper {
   border: none;
+  overflow: hidden;
   header.hasform {
       position: fixed;
       min-width: 100%;
       z-index: 9999;
   }
-
   .result_list.col9,
   .result-list.col9  {
     cursor: pointer;
     padding: 0;
     display: inline-block;
-    overflow: hidden;
     .content__results-table-wrapper {
         width: 100%;
         height: 100vh;
         position: relative;
-        overflow-y: hidden;
+        //overflow-y: hidden; Hide when body scroll is on
         overflow-x: scroll;
     }
+
     table.content__results-table,
     table.listing,
     .listing.full-width {
         margin-bottom: 2em;
         width: 100%;
         margin: 73px 0 0;
-        border-collapse: collapse;
         display: block;
+        border-collapse: collapse;
         table-layout:fixed;
         tr {
             width: 100%;

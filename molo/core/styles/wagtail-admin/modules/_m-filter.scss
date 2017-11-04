@@ -66,7 +66,7 @@ header {
     }
   }
 }
-//640px or 800px Undo Styles
+
 @media screen and (min-width: 50em) {
   //Filter
   .content-wrapper .changelist-filter {
@@ -79,7 +79,7 @@ header {
   //Filter
   .content-wrapper .changelist-filter {
     width: auto;
-    float: right;
+    float: left;
     margin: 75px 15px 0 5px;
     width: 18%; // This is getting overriden
     h2, h3, ul, #date_range_filter {
