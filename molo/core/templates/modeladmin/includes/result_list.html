@@ -1,30 +1,24 @@
 {% load i18n modeladmin_tags static %}
 {% if results %}
 <div class="content__results-table-wrapper">
-    <div class="content__thead">
-        <table class="listing full-width content__results-table">
-            <thead>
-                <tr>
-                    {% for header in result_headers %}
-                    <th class="" scope="col" {{ header.class_attrib }} >
-                        {% if header.sortable %}<a href="{{ header.url_primary }}" id="sortId-{{ header.sort_priority }}" class="icon {% if header.ascending %}icon-arrow-up-after {% else %}icon-arrow-down-after{% endif %}">{% endif %}
-                        {{ header.text|capfirst }}
-                        {% if header.sortable %}</a>{% endif %}
-                   </th>
-                   {% endfor %}
-               </tr>
-            </thead>
-        </table>
-    </div>
-    <div class="content__tbody">
-        <table class="listing full-width content__results-table">
-            <tbody>
-                {% for result in results %}
-                    {% result_row_display forloop.counter0 %}
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <table class="listing full-width content__results-table">
+        <thead>
+            <tr>
+                {% for header in result_headers %}
+                <th class="" scope="col" {{ header.class_attrib }} >
+                    {% if header.sortable %}<a href="{{ header.url_primary }}" id="sortId-{{ header.sort_priority }}" class="icon {% if header.ascending %}icon-arrow-up-after {% else %}icon-arrow-down-after{% endif %}">{% endif %}
+                    {{ header.text|capfirst }}
+                    {% if header.sortable %}</a>{% endif %}
+               </th>
+               {% endfor %}
+           </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+                {% result_row_display forloop.counter0 %}
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% else %}
     <div class="nice-padding no-search-results">

@@ -5,8 +5,6 @@ NOTE: Difference in Tables classes:
 */
 .content-wrapper {
   border: none;
-
-  //Start Update
   header.hasform {
       position: fixed;
       min-width: 100%;
@@ -18,18 +16,13 @@ NOTE: Difference in Tables classes:
     cursor: pointer;
     padding: 0;
     display: inline-block;
+    overflow: auto;
     .content__results-table-wrapper {
-        width: 100%; //Check value as per mediaQuery
-        height: 100%;
+        width: 100%;
+        height: 100vh;
+        position: relative;
         overflow-y: hidden;
         overflow-x: scroll;
-    }
-    
-    .content__tbody {
-        height: 100vh;
-        width: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
     }
     table.content__results-table,
     table.listing,
@@ -39,25 +32,30 @@ NOTE: Difference in Tables classes:
         margin: 73px 0 0;
         border-collapse: collapse;
         display: block;
+        table-layout:fixed;
         tr {
             width: 100%;
             &:first-child {
                 border-top: none;
             }
         }
-        th {
-            &:first-child {
-              padding: 5px 0 5px 10px;
+        thead {
+            th {
+                &:first-child {
+                  padding: 5px 0 5px 10px;
+                }
             }
         }
-        td {
-        padding: 5px 10px;
-        vertical-align: baseline;
-            &:first-child {
-              padding: 5px 0 5px 10px;
-            }
-            img {
-              vertical-align: text-top;
+        tbody {
+            td {
+                padding: 5px 10px;
+                vertical-align: baseline;
+                    &:first-child {
+                      padding: 5px 0 5px 10px;
+                    }
+                    img {
+                      vertical-align: text-top;
+                    }
             }
         }
     }
