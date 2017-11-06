@@ -1,6 +1,7 @@
 
 .vnotify-container {
   position: fixed;
+  z-index: 99999;
 
   &.vn-top-right {
     right: $vn-container-right;
