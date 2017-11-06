@@ -20,7 +20,7 @@ NOTE: Difference in Tables classes:
         width: 100%;
         height: 100vh;
         position: relative;
-        //overflow-y: hidden; Hide when body scroll is on
+        overflow-y: hidden; //Disable scroll for the entire table
         overflow-x: scroll;
     }
 
@@ -29,9 +29,8 @@ NOTE: Difference in Tables classes:
     .listing.full-width {
         margin-bottom: 2em;
         width: 100%;
-        margin: 73px 0 0;
+        margin: 75px 0 0;
         display: block;
-        border-collapse: collapse;
         table-layout:fixed;
         tr {
             width: 100%;
@@ -41,12 +40,15 @@ NOTE: Difference in Tables classes:
         }
         thead {
             th {
+                white-space: nowrap;
                 &:first-child {
                   padding: 5px 0 5px 10px;
                 }
             }
         }
         tbody {
+            overflow-y: scroll;
+            overflow-x: hidden;
             td {
                 padding: 5px 10px;
                 vertical-align: baseline;
@@ -84,7 +86,7 @@ NOTE: Difference in Tables classes:
   .content-wrapper {
     .result_list.col9,
     .result-list.col9 {
-      width: 81%;
+      width: 80%;
       //Table
       table.content__results-table,
       table.listing,

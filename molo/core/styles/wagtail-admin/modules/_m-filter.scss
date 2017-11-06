@@ -80,8 +80,8 @@ header {
   .content-wrapper .changelist-filter {
     width: auto;
     float: left;
-    margin: 75px 5px 0 5px;
-    width: 18%; // This is getting overriden
+    margin: 75px 0 0;
+    width: 20%; // This is getting overriden
     h2, h3, ul, #date_range_filter {
       margin: 0;
       padding: 0 5px 0 5px;

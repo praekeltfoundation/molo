@@ -44,5 +44,11 @@
             visibleDuration: 5000
         });
     }
+    $(document).ready(function() {
+        $('.content__results-table').DataTable( {
+            "scrollY": 200,
+            "scrollX": true
+        } );
+    } );
     </script>
 {% endblock %}

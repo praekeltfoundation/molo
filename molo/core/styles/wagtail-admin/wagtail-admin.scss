@@ -5,9 +5,6 @@ WAGTAIL ADMIN
 @import "../utilities/*";
 @import "modules/*";
 
-body.ready {
-    overflow: hidden;
-}
 .wrapper {
   width: 100%;
 }
