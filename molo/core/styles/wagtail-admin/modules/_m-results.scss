@@ -31,7 +31,7 @@ NOTE: Difference in Tables classes:
         width: 100%;
         height: 100vh;
         position: relative;
-        overflow-y: hidden; //Disable scroll for the entire table
+        overflow-y: hidden;
         overflow-x: scroll;
     }
     table.content__results-table {
@@ -39,11 +39,6 @@ NOTE: Difference in Tables classes:
         width: 100%;
         thead, tbody {
             text-align: center;
-            //display: block;
-        }
-        tr {
-            //display: contents;
-
         }
     }
 
@@ -102,7 +97,6 @@ NOTE: Difference in Tables classes:
   }
 }
 @media screen and (min-width: 1200px) {
-  //Content
   .content-wrapper {
     .result_list.col9,
     .result-list.col9 {
