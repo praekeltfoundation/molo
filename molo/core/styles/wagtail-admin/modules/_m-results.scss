@@ -8,6 +8,11 @@ NOTE: Difference in Tables classes:
   position: fixed;
   width: auto;
   border: none;
+  display: none;
+}
+::-webkit-scrollbar {
+    border-top-left-radius: 5px !important;
+    border-bottom-left-radius: 5px !important;
 }
 .content-wrapper {
   border: none;
@@ -29,12 +34,16 @@ NOTE: Difference in Tables classes:
         overflow-y: hidden; //Disable scroll for the entire table
         overflow-x: scroll;
     }
-
     table.content__results-table {
-        margin: 6.8em 0 0;
+        margin: 6.6em 0 0;
         width: 100%;
-        thead, tbody, tr {
-            display: block;
+        thead, tbody {
+            text-align: center;
+            //display: block;
+        }
+        tr {
+            //display: contents;
+
         }
     }
 

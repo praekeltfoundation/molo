@@ -1,6 +1,6 @@
 {% load i18n modeladmin_tags static %}
 {% if results %}
-<div class="content__results-table-wrapper">
+<div id="content_results_table" class="content__results-table-wrapper">
     <table id="fixed_thead" class="listing full-width content__results-table fixed">
         <thead>
             <tr>
@@ -14,7 +14,7 @@
            </tr>
         </thead>
     </table>
-    <table class="listing full-width content__results-table">
+    <table id="flowing_tbody" class="listing full-width content__results-table">
         <thead>
             <tr>
                 {% for header in result_headers %}
@@ -45,23 +45,24 @@
     <script type="text/javascript">
     (function() {
         'use strict';
-
         window.addEventListener('scroll', function(){
             var scrollPosition = window.scrollY,
-                scrollAmount = this.y - window.pageYOffset,
-                fixedTableHead = document.getElementById('fixed_thead');
-                console.log(scrollPosition);
-                console.log('Scroll amount', scrollAmount);
+                fixedTableHead = document.getElementById('fixed_thead'),
+                generalTableBody = document.getElementById('flowing_tbody'),
+                resultsWrapper = document.getElementById('content_results_table');
 
              if (scrollPosition > 0 && window.innerWidth > 35 ) {
                  fixedTableHead.style.display = "block";
+                 resultsWrapper.style.overflowX = "hidden";
+                 resultsWrapper.style.height = "100%";
+                 generalTableBody.style.height = "100%";
             } else {
                 fixedTableHead.style.display = "none";
+                resultsWrapper.style.overflowX = "scroll";
+                resultsWrapper.style.height = "100vh";
+                generalTableBody.style.height = "100vh";
             }
-
-            this.y = window.pageYOffset;
         });
-
     })();
 
     //VANILLA NOTIFY
