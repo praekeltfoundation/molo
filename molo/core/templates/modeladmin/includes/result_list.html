@@ -55,7 +55,10 @@
 
              if (scrollPosition > 0 && window.innerWidth > 35 ) {
                  fixedTableHead.style.display = "block";
+            } else {
+                fixedTableHead.style.display = "none";
             }
+
             this.y = window.pageYOffset;
         });
 
