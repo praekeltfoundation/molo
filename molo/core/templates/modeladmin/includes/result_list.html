@@ -45,6 +45,7 @@
     <script type="text/javascript">
     (function() {
         'use strict';
+        document.getElementsByTagName("header")[0].classList.add('fixed-header');
         window.addEventListener('scroll', function(){
             var scrollPosition = window.scrollY,
                 fixedTableHead = document.getElementById('fixed_thead'),
@@ -56,27 +57,31 @@
                  resultsWrapper.style.overflowX = "hidden";
                  resultsWrapper.style.height = "100%";
                  generalTableBody.style.height = "100%";
+                 generalTableBody.firstElementChild.style.visibility = "hidden";
             } else {
                 fixedTableHead.style.display = "none";
                 resultsWrapper.style.overflowX = "scroll";
                 resultsWrapper.style.height = "100vh";
                 generalTableBody.style.height = "100vh";
+                generalTableBody.firstElementChild.style.visibility = "visible";
             }
         });
         //VANILLA NOTIFY
         var sortItem = document.getElementById("sortId-1");
         var sortDir;
-        if (sortItem.classList.contains("icon-arrow-down-after")) {
-            sortDir = "Ascending";
-        } else if (sortItem.classList.contains("icon-arrow-up-after")) {
-            sortDir = "Descending";
-        }
-        if (sortItem !== null) {
-          vNotify.info({
-                title: "Sort Filter:",
-                text: sortItem.innerHTML + " - " + sortDir,
-                visibleDuration: 5000
-            });
+        if (sortItem) {
+          if (sortItem.classList.contains("icon-arrow-down-after")) {
+              sortDir = "Ascending";
+          } else if (sortItem.classList.contains("icon-arrow-up-after")) {
+              sortDir = "Descending";
+          }
+          if (sortItem !== null) {
+            vNotify.info({
+                  title: "Sort Filter:",
+                  text: sortItem.innerHTML + " - " + sortDir,
+                  visibleDuration: 5000
+              });
+          }
         }
     })();
     </script>
