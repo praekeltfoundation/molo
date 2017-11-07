@@ -144,7 +144,8 @@ class MoloGoogleAnalyticsMiddleware(object):
 class MultiSiteRedirectToHomepage(object):
 
     def process_request(self, request):
-        if request.path.startswith('/admin/pages/'):
+        if request.path.startswith('/admin/pages/') and \
+                not request.path.startswith('/admin/pages/moderation/'):
             current_site = Site.find_for_request(request)
             func, args, kwargs = resolve(request.path)
             if args:

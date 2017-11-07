@@ -1,0 +1,102 @@
+
+.vnotify-container {
+  position: fixed;
+  z-index: 99999;
+
+  &.vn-top-right {
+    right: $vn-container-right;
+    top: $vn-container-top;
+  }
+
+  &.vn-top-left {
+    top: $vn-container-top;
+    left: $vn-container-left;
+  }
+
+  &.vn-bottom-right {
+    bottom: $vn-container-bottom;
+    right: $vn-container-right;
+  }
+
+  &.vn-bottom-left {
+    bottom: $vn-container-bottom;
+    left: $vn-container-left;
+  }
+
+  &.vn-center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .vn-close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    width: $vn-close-size;
+    height: $vn-close-size;
+    padding: 2px;
+    cursor: pointer;
+
+    &:before, &:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      top: 50%;
+      height: 2px;
+      background: #fff;
+    }
+
+    &:before {
+      @include vn-transform(45deg);
+    }
+
+    &:after {
+      @include vn-transform(-45deg);
+    }
+  }
+}
+
+.vnotify-item {
+  width: 20.5em;
+  padding: 15px;
+  position: relative;
+  @include vn-border-radius($vn-border-radius);
+  margin-bottom: 15px;
+  @include vn-opacity($vn-opacity);
+
+  &:hover {
+    opacity: $vn-hover-opacity;
+  }
+}
+
+.vnotify-title {
+  font-weight: bold;
+}
+
+.vnotify {
+  &-info {
+    background: $purple;
+    color: #fff;
+  }
+
+  &-success {
+    background: $eucalyptus;
+    color: #fff;
+  }
+
+  &-error {
+    background: $cardinal;
+    color: #fff;
+  }
+
+  &-warning {
+    background: $jaffa;
+    color: #000;
+  }
+
+  &-notify {
+    background: $santas_gray;
+    color: #000;
+  }
+}

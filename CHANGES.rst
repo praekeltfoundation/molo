@@ -1,3 +1,11 @@
+5.21.3
+~~~~~~
+- Admin View FED updates
+
+5.21.2
+~~~~~~
+- Bug fix: exclude pages that are submitted for moderation from MultiSiteRedirect
+
 5.21.1
 ~~~~~~
 - Continued update to front end setup. See PR#465 for more details
