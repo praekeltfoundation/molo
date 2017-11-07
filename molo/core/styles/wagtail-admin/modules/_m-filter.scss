@@ -38,11 +38,12 @@ header {
 //Content Wrapper Filter
 .content-wrapper .changelist-filter {
   padding: 0;
-  display: inline-block; 
+  display: inline-block;
   width: 100%;
   h2, h3, ul, #date_range_filter {
     padding: 0 15px;
   }
+  h2 { line-height: 30px; }
 }
 
 @media screen and (min-width: 781px) {
@@ -77,7 +78,7 @@ header {
   .content-wrapper .changelist-filter {
     width: auto;
     float: left;
-    margin: 6.5em 0 0;
+    margin: 6.6em 0 0;
     width: 20%;
     h2, h3, ul, #date_range_filter {
       margin: 0;
