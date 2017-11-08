@@ -48,7 +48,6 @@
         document.getElementsByTagName("header")[0].classList.add('fixed-header');
         window.addEventListener('scroll', function(){
             var scrollPosition = window.scrollY,
-                scrollAmount = this.y - window.pageYOffset,
                 fixedTableHead = document.getElementById('fixed_thead'),
                 generalTableBody = document.getElementById('flowing_tbody'),
                 resultsWrapper = document.getElementById('content_results_table');
@@ -66,10 +65,6 @@
                 generalTableBody.style.height = "100vh";
                 generalTableBody.firstElementChild.style.visibility = "visible";
             }
-
-            //if(scrollAmount > 0 && scrollPosition > generalTableBody.marginTop && window.innerWidth > 320 ){
-            //});
-            this.y = window.pageYOffset;
         });
         //VANILLA NOTIFY
         var sortItem = document.getElementById("sortId-1");
