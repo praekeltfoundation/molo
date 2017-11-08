@@ -6,7 +6,7 @@ WAGTAIL ADMIN
 @import "modules/*";
 
 body {
-    font-size: 12.8px !important;
+    //font-size: 12.8px !important;
 }
 .wrapper {
   width: 100%;
@@ -24,16 +24,20 @@ body {
   margin: 0 0 8px 0;
 }
 @media screen and (min-width: 50em) {
-    body.login .wrapper {
+    /*body.login .wrapper {
         width: 99%;
         padding: 0 1% !important;
+    }*/
+    .wrapper,
+    body.nav-open .wrapper {
+        padding-left: 181px;
     }
       .nav-wrapper {
         min-width: 12.6%;
-        max-width: 180px;
+        max-width: 181px;
         .inner {
           min-width: 12.6%;
-          max-width: 180px;
+          max-width: 181px;
         }
       }
       .content-wrapper {
@@ -43,9 +47,9 @@ body {
       }
 }
 @media screen and (min-width: 90em) {
-  body.ready .wrapper {
+  /*body.ready .wrapper {
     padding-left: 12.8% !important;
-  }
+}*/
   .wrapper {
     max-width: 100%;
   }

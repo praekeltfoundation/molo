@@ -1,24 +1,3 @@
-  .nav-main .menu-item {
-    a {
-    padding: .8em 0.8em .8em 2.5em;
-    white-space: normal;
-    &:before {
-      position: absolute;
-      left: 0.5em;
-    }
-  }
-
-  .nav-submenu .menu-item {
-    a {
-      padding-left: 3.5em;
-      &:before {
-        position: inherit;
-        left: 0;
-      }
-    }
-  }
-}
-
 .content-wrapper .changelist-filter {
   input[type=submit],
   input[type=reset],

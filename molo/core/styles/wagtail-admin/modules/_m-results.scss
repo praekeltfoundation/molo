@@ -5,12 +5,12 @@ NOTE: Difference in Tables classes:
 */
 .fixed {
     background: #fafafa;
-  top: 0;
-  position: fixed;
-  width: auto;
-  border: none;
-  display: none;
-  will-change: contents;
+    top: 0;
+    position: fixed;
+    width: auto;
+    border: none;
+    display: none;
+    will-change: contents;
 }
 ::-webkit-scrollbar {
     border-top-right-radius: 5px !important;
@@ -18,7 +18,7 @@ NOTE: Difference in Tables classes:
 }
 .content-wrapper {
   border: none;
-  overflow: hidden;
+  //overflow: hidden;
   header.fixed-header {
       position: fixed;
       min-width: 100%;
