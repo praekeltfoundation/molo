@@ -14,7 +14,7 @@ NOTE: Difference in Tables classes:
 }
 .content-wrapper {
   border: none;
-  
+
   ::-webkit-scrollbar {
       border-top-left-radius: 5px !important;
       border-bottom-left-radius: 5px !important;
@@ -26,7 +26,7 @@ NOTE: Difference in Tables classes:
   header.fixed-header {
       position: fixed;
       min-width: 100%;
-      z-index: 9999;
+      z-index: 99; //Pay attention?
   }
   .result_list.col9,
   .result-list.col9  {
@@ -47,7 +47,7 @@ NOTE: Difference in Tables classes:
         margin: 6.7em 0 0;
         width: 100%;
         thead, tbody {
-            text-align: center;
+            text-align: left;
         }
     }
 
@@ -76,7 +76,6 @@ NOTE: Difference in Tables classes:
         -webkit-overflow-scrolling: touch;
         -ms-overflow-style: none;
         td {
-            vertical-align: middle;
             &:first-child {
                 padding-left: 10px;
             }
