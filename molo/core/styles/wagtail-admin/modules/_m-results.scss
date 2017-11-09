@@ -12,13 +12,17 @@ NOTE: Difference in Tables classes:
     display: none;
     will-change: contents;
 }
-::-webkit-scrollbar {
-    border-top-right-radius: 5px !important;
-    border-bottom-right-radius: 5px !important;
-}
 .content-wrapper {
   border: none;
-  //overflow: hidden;
+  
+  ::-webkit-scrollbar {
+      border-top-left-radius: 5px !important;
+      border-bottom-left-radius: 5px !important;
+  }
+  ::-webkit-scrollbar-thumb {
+      border-radius: 5px !important;
+  }
+
   header.fixed-header {
       position: fixed;
       min-width: 100%;

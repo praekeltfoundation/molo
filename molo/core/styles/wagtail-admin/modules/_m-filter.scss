@@ -69,6 +69,7 @@ header {
 
 @media screen and (min-width: 50em) {
   .content-wrapper .changelist-filter {
+      margin: 6.4em 0 0;
     ul, #date_range_filter {
       width: auto;
     }
@@ -78,7 +79,6 @@ header {
   .content-wrapper .changelist-filter {
     width: auto;
     float: left;
-    margin: 6.6em 0 0;
     width: 20%;
     z-index: 9999;
     h2, h3, ul, #date_range_filter {

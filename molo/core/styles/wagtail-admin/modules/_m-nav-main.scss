@@ -1,30 +1,29 @@
-@media screen and (min-width: 50em) {
-    .nav-wrapper {
-        .inner {}
-    }
+.nav-wrapper {
+    .inner {
+    @media screen and (min-width: 50em) {
+        .nav-main {
+            margin-bottom: 35% !important;
+            .menu-item a {
+                white-space: normal;
+                word-break: keep-all;
+                overflow-wrap: break-word;
+                padding: 0.8em 0 0.8em 0.8em;
+                &:before {
+                    float: left;
+                    min-height: 35px;
+                }
+            }
+        }
 
-}
-.nav-main {
-    margin-bottom: 35% !important;
-    .menu-item a {
-        padding: .8em 0.8em .8em 2.5em;
-        white-space: normal;
-        overflow-wrap: break-word;
-        &:before {
-            //position: absolute;
-            ///left: 0.5em;
-            float: left;
-            min-height: 35px;
+        .nav-submenu {
+            .menu-item a {
+                padding-left: 3.5em;
+                &:before {
+                  position: inherit;
+                  left: 0;
+                }
+            }
+        }
         }
     }
 }
-
-/*.nav-submenu {
-    .menu-item a {
-        padding-left: 3.5em;
-        &:before {
-          position: inherit;
-          left: 0;
-        }
-    }
-}*/
