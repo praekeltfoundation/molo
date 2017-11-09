@@ -1,0 +1,31 @@
+.nav-wrapper {
+    .inner {
+    @media screen and (min-width: 50em) {
+        .nav-main {
+            margin-bottom: 35% !important;
+            .menu-item a {
+                white-space: normal;
+                word-break: keep-all;
+                overflow-wrap: break-word;
+                padding: 0.8em 0 0.8em 0.8em;
+                &:before {
+                    clear: both;
+                    float: left;
+                    min-height: 35px;
+                }
+            }
+        }
+
+        .nav-submenu {
+            z-index: 99999;
+            .menu-item a {
+                padding-left: 3.5em;
+                &:before {
+                  position: inherit;
+                  left: 0;
+                }
+            }
+        }
+        }
+    }
+}
