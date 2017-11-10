@@ -1,6 +1,6 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.Language_list as "language_list" %}
+{% mask element.json.data.Languages as "language_list" %}
 <div class="languages">
   <ul class="language-list language-list--standard">
     {% for item in language_list.languages %}
