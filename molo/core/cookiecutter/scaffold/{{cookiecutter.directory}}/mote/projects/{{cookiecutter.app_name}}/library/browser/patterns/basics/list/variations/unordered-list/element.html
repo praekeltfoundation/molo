@@ -1,0 +1,12 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.ListType as "bulletlist" %}
+  {% for item in bulletlist %}
+  <h2>{{ item.text }}</h2>
+  <ul class="unordered-list">
+    {% for listItem in item.listContent %}
+      <li class="unordered-list__item">{{ listItem.list }}</li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+{% endraw %}

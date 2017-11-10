@@ -1,0 +1,15 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.Breadcrumb as "breadcrumb" %}
+<div class="breadcrumbs breadcrumbs--footer">
+  <ul class="breadcrumbs-list-with-bg">
+  {% for item in breadcrumb.breadcrumb_links %}
+    <li class="breadcrumbs-list-with-bg__item">
+      <a href="{{ item.src }}" class="breadcrumbs-list-with-bg__anchor is-active">
+        {{ item.title }}
+      </a>
+    </li>
+  {% endfor %}
+  </ul>
+</div>
+{% endraw %}

@@ -1,0 +1,9 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.BaseTeaserThumbnail as "thumbnail" %}
+{% if thumbnail.img %}
+<a href="#" class="{{ thumbnail.modifiers }}-teaser__thumbnail-link">
+  <img alt="{{ thumbnail.img.alt }}" src="{{ thumbnail.img.src }}" class="{{ thumbnail.modifiers }}-teaser__thumbnail" />
+</a>
+{% endif %}
+{% endraw %}

@@ -1,0 +1,6 @@
+Button:
+  attr:
+    tag: a
+    href: "#"
+  text: Call to action
+  modifiers: text

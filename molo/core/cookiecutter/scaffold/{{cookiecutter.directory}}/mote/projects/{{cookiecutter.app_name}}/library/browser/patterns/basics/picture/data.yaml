@@ -10,12 +10,12 @@ sources:
             dimensions: 400w 200h
     - srcsets:
         -
-            src: foo@200.png
+            src: '/static/images/dummy/base-teaser-thumbnail_1x.png'
             dimensions: 200w 100h
         -
-            src: foo@400.png
+            src: '/static/images/dummy/base-teaser-thumbnail_1x.png'
             dimensions: 400w 200h
 img:
     tag: img
     attrs:
-        src: foo.png
+        src: '/static/images/dummy/base-teaser-thumbnail_1x.png'

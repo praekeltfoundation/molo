@@ -1,7 +1,7 @@
 srcset:
     -
-        src: foo@200.jpeg
+        src: 'static/images/dummy/base-teaser-thumbnail_1x.png'
         dimensions: 200w 100h
     -
-        src: foo@800.jpeg
+        src: 'static/images/dummy/default-article-image.png'
         dimensions: 800w 400h

@@ -1,0 +1,5 @@
+BaseTeaserThumbnail:
+  modifiers: base
+  img:
+    src: "/static/images/teaser-thumbnail.jpg"
+    alt: Base Teaser Thumbnail

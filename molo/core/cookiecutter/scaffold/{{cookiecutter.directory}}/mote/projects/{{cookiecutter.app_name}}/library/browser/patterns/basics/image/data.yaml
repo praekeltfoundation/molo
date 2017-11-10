@@ -1,2 +1,2 @@
 attrs:
-    src: foo.png
+    src: 'static/images/dummy/logo.png'

@@ -3,5 +3,5 @@ attrs:
     href: "#"
 children:
     text:
-        id: self.browser.atoms.text
+        id: self.browser.basics.text
         value: Button anchor text

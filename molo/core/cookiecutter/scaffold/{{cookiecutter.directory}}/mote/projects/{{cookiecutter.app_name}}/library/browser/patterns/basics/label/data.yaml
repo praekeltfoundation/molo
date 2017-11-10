@@ -1,5 +1,5 @@
 tag: label
 children:
     text:
-        id: self.browser.atoms.text
+        id: self.browser.basics.text
         value: Label text

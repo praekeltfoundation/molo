@@ -1,0 +1,12 @@
+{% raw %}
+{% load mote_tags %}
+{% mask element.json.data.ListType as "list" %}
+  {% for item in list %}
+  <h2>{{ item.text }}</h2>
+  <ol class="ordered-list">
+    {% for listItem in item.listContent %}
+      <li class="ordered-list__item">{{ listItem.list }}</li>
+    {% endfor %}
+  </ol>
+  {% endfor %}
+{% endraw %}

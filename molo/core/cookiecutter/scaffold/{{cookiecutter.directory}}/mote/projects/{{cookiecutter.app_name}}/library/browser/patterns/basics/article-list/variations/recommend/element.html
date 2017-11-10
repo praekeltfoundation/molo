@@ -1,0 +1,21 @@
+{% raw %}
+{% load mote_tags i18n %}
+{% mask element.json.data.ArticleList as "article" %}
+  <div class="related-articles  related-articles--list-wrapper related-articles--{{article.modifiers}}">
+    <h4 class="heading related-article__title-heading related-article__title-heading{{article.modifiers}}">
+      More Information:
+    </h4>
+    <ul class="related-article-list related-article-list{{article.modifiers}}">
+      {% for list in  article.list%}
+      <li class="related-article-list__item">
+        <a href="/" class="call-to-action__item--text call-to-action__item--text-related-article featured-page-list__anchor">
+          {{list.text}}
+        </a>
+      </li>
+      {% endfor %}
+      <li class="related-article-list__item">
+        <a href="/" class="related-article-list__anchor related-article-list__anchor-more">{% trans "More" %}</a>
+      </li>
+    </ul>
+  </div>
+{% endraw %}

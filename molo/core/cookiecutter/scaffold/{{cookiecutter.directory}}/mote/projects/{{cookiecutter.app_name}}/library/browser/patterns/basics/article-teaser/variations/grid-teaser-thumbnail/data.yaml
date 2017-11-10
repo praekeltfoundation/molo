@@ -1,0 +1,5 @@
+GridTeaserThumbnail:
+  modifiers: grid
+  img:
+    src: "/static/images/teaser-thumbnail.jpg"
+    alt: Grid Teaser Thumbnail
