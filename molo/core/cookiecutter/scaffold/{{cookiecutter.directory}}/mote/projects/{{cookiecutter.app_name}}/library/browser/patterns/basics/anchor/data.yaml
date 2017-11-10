@@ -1,0 +1,7 @@
+tag: a
+children:
+    text:
+        id: self.browser.basics.text
+        value: Anchor text one
+attrs:
+    href: "#"

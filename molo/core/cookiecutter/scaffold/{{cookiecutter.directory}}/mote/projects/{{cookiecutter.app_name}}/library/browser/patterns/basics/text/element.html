@@ -1,0 +1,9 @@
+{% raw %}
+{% load mote_tags %}
+
+<span
+{% if classes %}class="{% for v in classes.values %}{{ v }} {% endfor %}"{% endif %}
+    {% for k, v in attrs.items %} {{ k }}="{{ v }}" {% endfor %}>
+    {{ value }}
+</span>
+{% endraw %}

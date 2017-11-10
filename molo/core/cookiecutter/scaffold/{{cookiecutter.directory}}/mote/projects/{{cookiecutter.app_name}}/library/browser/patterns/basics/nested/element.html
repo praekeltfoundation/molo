@@ -1,0 +1,11 @@
+{% raw %}
+{% load mote_tags %}
+
+<{{tag}}
+{% if classes %}class="{% for v in classes.values %}{{ v }} {% endfor %}"{% endif %}
+    {% for k, v in attrs.items %} {{ k }}="{{ v }}" {% endfor %}>
+    {% for child in children.values %}
+        {% render child %}
+    {% endfor %}
+</{{tag}}>
+{% endraw %}

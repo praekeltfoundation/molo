@@ -1,0 +1,10 @@
+tag: tag
+children:
+    child:
+        id: self.browser.basics.null
+
+# attrs:
+#    data-foo: ""
+
+# classes:
+#   primary: myclass

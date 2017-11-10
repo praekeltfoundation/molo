@@ -1,0 +1,7 @@
+srcset:
+    -
+        src: foo@200.jpeg
+        dimensions: 200w 100h
+    -
+        src: foo@800.jpeg
+        dimensions: 800w 400h

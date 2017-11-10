@@ -1,9 +1,0 @@
-{
-    "Logo": {
-        "modifiers": "center",
-        "img": {
-          "src": "/static/img/sp-logo.png",
-          "alt": "Logo"
-        }
-    }
-}

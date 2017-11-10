@@ -1,0 +1,7 @@
+tag: a
+attrs:
+    href: "#"
+children:
+    text:
+        id: self.browser.atoms.text
+        value: Button anchor text

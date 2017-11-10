@@ -1,0 +1,25 @@
+{% raw %}
+{% load mote_tags %}
+
+<picture
+    {% if classes %}
+        class="{% for v in classes.values %}{{ v }} {% endfor %}"
+    {% endif %}
+    >
+    <!--[if IE 9><video style="display: none;"><![endif]-->
+    {% for source in sources %}
+        <source
+            srcset="
+                {% for di in source.srcsets %}
+                    {{ di.src }} {{ di.dimensions }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            "
+            {% for k, v in source.attrs.items %}
+                {{ k }}="{{ v }}"
+            {% endfor %}
+        />
+    {% endfor %}
+    <!--[if IE 9]></video><![endif]-->
+    {% render "self.browser.atoms.inline" img %}
+</picture>
+{% endraw %}

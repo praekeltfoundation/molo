@@ -1,0 +1,5 @@
+tag: button
+children:
+    text:
+        id: self.browser.atoms.text
+        value: Button text

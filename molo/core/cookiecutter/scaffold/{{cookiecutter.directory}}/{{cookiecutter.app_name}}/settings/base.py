@@ -317,6 +317,7 @@ COMPRESS_PRECOMPILERS = [
     ('text/x-scss', 'django_libsass.SassCompiler'),
 ]
 
+MOTE = {'project': lambda request: '{{cookiecutter.app_name}}'}
 
 # Wagtail settings
 LOGIN_URL = 'wagtailadmin_login'

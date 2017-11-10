@@ -1,0 +1,15 @@
+{% raw %}
+<img {% if classes %}class="{% for v in classes.values %}{{ v }} {% endfor %}"{% endif %}
+    {% if srcset %}
+        srcset="
+            {% for di in srcset %}
+                {{ di.src }} {{ di.dimensions }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            "
+    {% endif %}
+
+    {% for k, v in attrs.items %}
+        {{ k }}="{{ v }}"
+    {% endfor %}
+/>
+{% endraw %}

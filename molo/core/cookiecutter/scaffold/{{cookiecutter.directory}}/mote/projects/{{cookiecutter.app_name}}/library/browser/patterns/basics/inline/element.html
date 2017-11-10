@@ -1,0 +1,3 @@
+{% raw %}
+<{{tag}} {% if classes %}class="{% for v in classes.values %}{{ v }} {% endfor %}"{% endif %} {% for k, v in attrs.items %} {{ k }}="{{ v }}" {% endfor %} />
+{% endraw %}
