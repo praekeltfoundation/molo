@@ -61,8 +61,6 @@ urlpatterns = patterns(
         '(?P<question_id>\d+)/(?P<choice_slug>[0-9A-Za-z_\-]+)/feedback/$',
         ReactionQuestionChoiceFeedbackView.as_view(),
         name='reaction-feedback'),
-    url(r'^import/', include(
-        'molo.core.content_import.urls', namespace='content_import')),
 
     url(r'^api/', include(
         'molo.core.api.urls', namespace='molo_api')),
