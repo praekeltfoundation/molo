@@ -126,11 +126,15 @@ def import_categories_for_child_language(repo, category, lang, index):
                 page=main_lang_page,
                 translated_page=translated_section)
         except SectionPage.DoesNotExist:
-            print "couldn't find", category.source, (
-                SectionPage.objects.all().values('uuid'))
+            print("couldn't find {0} {1}".format(
+                category.source,
+                SectionPage.objects.all().values('uuid'),
+            ))
     else:
-        print "no source found for: ", category.source, (
-            SectionPage.objects.all().values('uuid'))
+        print("no source found for: {0} {1}".format(
+            category.source,
+            SectionPage.objects.all().values('uuid'),
+        ))
 
 
 def import_all_categories(repo, lang, index):
@@ -212,9 +216,10 @@ def import_page_content(repo, p, lang, stray_index):
                 section = SectionPage.objects.get(uuid=p.primary_category)
                 page = get_or_create_from_model(ArticlePage, p, section)
             except SectionPage.DoesNotExist:
-                print "couldn't find primary category ", \
-                    p.primary_category, \
-                    SectionPage.objects.all().values('uuid')
+                print("couldn't find primary category {0} {1}".format(
+                    p.primary_category,
+                    SectionPage.objects.all().values('uuid'),
+                ))
                 return None
         else:
             # special case for articles with no primary category
@@ -232,8 +237,10 @@ def import_page_content(repo, p, lang, stray_index):
                 page=main_instance,
                 translated_page=page)
         except ArticlePage.DoesNotExist:
-            print "No source found for: ", p.source, (
-                ArticlePage.objects.all().values('uuid'))
+            print("No source found for: {0} {1}".format(
+                p.source,
+                ArticlePage.objects.all().values('uuid'),
+            ))
             return None
 
     page.subtitle = p.description
@@ -269,4 +276,4 @@ def update_pages_with_linked_page_field(repo, locale):
                          u'value': ArticlePage.objects.get(uuid=lp).pk})
                     page.save_revision().publish()
                 except ArticlePage.DoesNotExist:
-                    print 'Linked page does not exist %s' % lp
+                    print('Linked page does not exist {0}'.format(lp))
