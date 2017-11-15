@@ -1,8 +1,7 @@
 from mock import patch
-from django.test import TestCase, Client, override_settings
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import Main
 from django.contrib.auth.models import Group, Permission
