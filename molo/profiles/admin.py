@@ -185,7 +185,7 @@ class MultiSiteUserResource(ModelResource):
         try:
             return [(x.question.title, x.answer)
                     for x in user.profile.securityanswer_set.all()]
-        except: # noqa
+        except:  # noqa
             return None
 
     def export(self, queryset=None, *args, **kwargs):
