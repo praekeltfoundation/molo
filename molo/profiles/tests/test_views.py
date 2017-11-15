@@ -1522,7 +1522,6 @@ class ProfilePasswordChangeViewTest(TestCase, MoloTestCaseMixin):
                 'new_password': '1234',
                 'confirm_password': '1234',
             })
-        print response
         self.assertEquals(response['location'], '/profiles/view/myprofile/')
         # Avoid cache by loading from db
         user = User.objects.get(pk=self.user.pk)

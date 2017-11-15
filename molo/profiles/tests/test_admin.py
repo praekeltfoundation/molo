@@ -13,25 +13,6 @@ from molo.profiles.models import (
     SecurityQuestion, SecurityAnswer, SecurityQuestionIndexPage, UserProfile)
 from molo.profiles.admin import MultiSiteUserResource
 
-from django.conf.urls import RegexURLPattern, RegexURLResolver
-from django.core import urlresolvers
-urls = urlresolvers.get_resolver()
-
-
-def if_none(value):
-    if value:
-        return value
-    return ''
-
-
-def print_urls(urls, parent_pattern=None):
-    for url in urls.url_patterns:
-        if isinstance(url, RegexURLResolver):
-            print_urls(url, if_none(parent_pattern) + url.regex.pattern)
-        elif isinstance(url, RegexURLPattern):
-            print url.__dict__
-            print if_none(parent_pattern) + url.regex.pattern
-
 
 class PermissionsTestCase(TestCase, MoloTestCaseMixin):
     def setUp(self):
@@ -259,7 +240,6 @@ class ImportExportTestCase(TestCase, MoloTestCaseMixin):
             'username': 'newuser',
             'password': 'newuser',
         })
-        print  'milton -->', print_urls(urls)
         self.assertRedirects(response, '/')
 
         client = Client(HTTP_HOST=self.site2.hostname)

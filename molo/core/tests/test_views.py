@@ -439,7 +439,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         promote_articles()
 
         response = self.client.get('/')
-        print response
         self.assertContains(
             response,
             '<a href="/sections-main-1/your-mind/"'

@@ -31,7 +31,6 @@ class MoloModelBackend(ModelBackend):
 class MoloCASBackend(CASBackend):
 
     def authenticate(self, request, ticket, service):
-        print 'in here though'
         user = super(
             MoloCASBackend, self).authenticate(request, ticket, service)
         if user is None:
