@@ -1,7 +1,9 @@
 -e .
 flake8==2.6.2
-pytest==2.9.2
+pytest==3.0.0
 pytest-cov
+pytest-xdist
 pytest-django==2.9.1
 responses
 python-dateutil
+beautifulsoup4
