@@ -25,17 +25,47 @@ from wagtail.wagtailcore.models import Site
 
 from bs4 import BeautifulSoup
 
+from django.contrib import admin
+from wagtail.wagtailadmin import urls as wagtailadmin_urls
+from wagtail.wagtailcore import urls as wagtail_urls
+
+
 urlpatterns = [
-    url(r'', include('testapp.urls')),
-    url(r'^profiles/',
-        include('molo.profiles.urls',
-                namespace='molo.profiles',
-                app_name='molo.profiles')),
+    url(r'^django-admin/', include(admin.site.urls)),
+    url(r'^admin/', include(wagtailadmin_urls)),
+    url(r'', include('molo.core.urls')),
+    url(r'^profiles/', include(
+        'molo.profiles.urls',
+        namespace='molo.profiles', app_name='molo.profiles')),
+    url('^', include('django.contrib.auth.urls')),
+    url(r'', include(wagtail_urls)),
+]
+
+DEFAULT_MIDDLEWARE_CLASSES = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'molo.core.middleware.ForceDefaultLanguageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'wagtail.wagtailcore.middleware.SiteMiddleware',
+    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+
+    'molo.core.middleware.AdminLocaleMiddleware',
+    'molo.core.middleware.NoScriptGASessionMiddleware',
+
+    'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
+    'molo.core.middleware.MultiSiteRedirectToHomepage',
 ]
 
 
 @override_settings(
     ROOT_URLCONF='molo.profiles.tests.test_views', LOGIN_URL='/login/')
+@override_settings(ENABLE_SSO=False)
+@override_settings(MIDDLEWARE_CLASSES=DEFAULT_MIDDLEWARE_CLASSES)
 class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
