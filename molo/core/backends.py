@@ -13,6 +13,7 @@ class MoloModelBackend(ModelBackend):
 
     def authenticate(
             self, request, username=None, password=None, *args, **kwargs):
+
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
         try:
@@ -29,9 +30,10 @@ class MoloModelBackend(ModelBackend):
 
 class MoloCASBackend(CASBackend):
 
-    def authenticate(self, ticket, service, request):
+    def authenticate(self, request, ticket, service):
+        print 'in here though'
         user = super(
-            MoloCASBackend, self).authenticate(ticket, service, request)
+            MoloCASBackend, self).authenticate(request, ticket, service)
         if user is None:
             return None
 
