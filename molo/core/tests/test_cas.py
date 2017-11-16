@@ -1,35 +1,11 @@
 from mock import patch
-from django.test import TestCase, Client, override_settings
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from django.conf.urls import patterns, url, include
 from django.contrib.contenttypes.models import ContentType
-
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import Main
-from molo.core.urls import urlpatterns
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtailcore import urls as wagtail_urls
 from django.contrib.auth.models import Group, Permission
 from wagtail.wagtailcore.models import GroupPagePermission
-
-urlpatterns += patterns(
-    '',
-    url(
-        r'^profiles/login/$',
-        'django.contrib.auth.views.login',
-        name='auth_login'),
-    url(
-        r'^profiles/logout/$',
-        'django.contrib.auth.views.logout',
-        name='auth_logout'),
-    url('^', include('django.contrib.auth.urls')),
-    url(r'^admin/', include(wagtailadmin_urls)),
-    url(r'^profiles/',
-        include('molo.profiles.urls',
-                namespace='molo.profiles',
-                app_name='molo.profiles')),
-    url(r'', include(wagtail_urls)),
-)
 
 
 class CASTestCase(TestCase, MoloTestCaseMixin):
@@ -232,13 +208,11 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             response.request.get('QUERY_STRING'),
             'service=http%3A%2F%2Ftestserver%2F')
 
-    @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
     def test_normal_profiles_login_works_when_cas_enabled(self):
         client = Client()
         response = client.get('/profiles/login/')
         self.assertEquals(response.status_code, 200)
 
-    @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
     def test_normal_profiles_logout_works_when_cas_enabled(self):
         client = Client()
         User.objects.create_user(
