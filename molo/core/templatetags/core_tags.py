@@ -72,12 +72,10 @@ def load_tags(context):
 def load_sections(context):
     request = context['request']
     locale = context.get('locale_code')
-
     if request.site:
         qs = request.site.root_page.specific.sections()
     else:
         qs = []
-
     return get_pages(context, qs, locale)
 
 
@@ -104,7 +102,6 @@ def get_parent(context, page):
 )
 def section_listing_homepage(context):
     locale_code = context.get('locale_code')
-
     return {
         'sections': load_sections(context),
         'request': context['request'],
@@ -139,7 +136,6 @@ def latest_listing_homepage(context, num_count=5):
             .latest_articles()
     else:
         articles = []
-
     return {
         'articles': get_pages(context, articles, locale)[:num_count],
         'request': context['request'],
@@ -159,7 +155,7 @@ def topic_of_the_day(context):
         articles = request.site.root_page.specific \
             .topic_of_the_day()
     else:
-        articles = ArticlePage.objects.None()
+        articles = ArticlePage.objects.none()
 
     return {
         'articles': get_pages(context, articles, locale),

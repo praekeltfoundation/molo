@@ -141,10 +141,6 @@ def add_translation(request, page_id, locale):
         reverse('wagtailadmin_pages:edit', args=[translation.id]))
 
 
-def import_from_git(request):
-    return render(request, 'wagtail/import_from_git.html')
-
-
 def versions(request):
     comparison_url = "https://github.com/praekelt/%s/compare/%s...%s"
     plugins_info = []

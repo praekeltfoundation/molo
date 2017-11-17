@@ -14,7 +14,6 @@ from django.template.loader import render_to_string
 from django.core import management
 from django.contrib.auth.models import User
 
-from molo.core.content_import import api
 from molo.core.utils import create_new_article_relations
 from molo.core.models import (
     Site,
@@ -253,36 +252,6 @@ def send_copy_failed_email(to_email, context):
     body = render_to_string(COPY_FAILED_EMAIL_TEMPLATE, context)
     email_message = EmailMessage(subject, body, from_email, [to_email])
     email_message.send()
-
-
-@task(ignore_result=True)
-def import_content(data, locales, username, email, host):
-    repos = api.get_repos(data)
-    result = api.validate_content(repos, locales)
-
-    if not result['errors']:
-        api.import_content(repos, locales)
-
-    send_import_email(email, {
-        'name': username,
-        'host': host,
-        'errors': result['errors'],
-        'warnings': result['warnings']
-    })
-
-
-@task(ignore_result=True)
-def validate_content(data, locales, username, email, host):
-    repos = api.get_repos(data)
-    result = api.validate_content(repos, locales)
-
-    send_import_email(email, {
-        'name': username,
-        'host': host,
-        'type': 'import_failure',
-        'errors': result['errors'],
-        'warnings': result['warnings']
-    })
 
 
 @task(ignore_result=True)

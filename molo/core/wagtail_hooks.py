@@ -24,9 +24,8 @@ from wagtail.wagtailadmin.widgets import Button, ButtonWithDropdownFromHook
 from wagtail.contrib.modeladmin.options import modeladmin_register
 from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
-from . import views
-
 from molo.core.api import urls as molo_api_urls
+from molo.core import views as views
 
 
 @hooks.register('register_admin_urls')
@@ -34,17 +33,8 @@ def urlconf_translations():
     return [
         url(
             r'^translations/add/(?P<page_id>\d+)/(?P<locale>[\w\-\_]+)/$',
-            'molo.core.views.add_translation',
+            views.add_translation,
             name='add_translation'),
-    ]
-
-
-@hooks.register('register_admin_urls')
-def register_admin_urls():
-    return [
-        url(r'^import-git/$',
-            views.import_from_git,
-            name='import-from-git'),
     ]
 
 
@@ -121,15 +111,6 @@ def copy_translation_pages(request, page, new_page):
             translated_page=new_translation)
 
 
-@hooks.register('register_admin_menu_item')
-def register_import_menu_item():
-    return MenuItem(
-        _('Import content'),
-        urlresolvers.reverse('import-from-git'),
-        classnames='icon icon-download',
-    )
-
-
 # API admin
 @hooks.register("register_admin_urls")
 def add_import_view():
@@ -182,17 +163,7 @@ def hide_menu_items_if_no_language(request, menu_items):
         menu_items[:] = [
             item for item in menu_items if (
                 item.name == 'settings' or
-                item.name == 'import-content' or
                 item.name == 'api')]
-
-
-@hooks.register('construct_main_menu')
-def hide_import_content_if_not_uc_user(request, menu_items):
-    if not User.objects.filter(
-            pk=request.user.pk,
-            groups__name='Universal Core Importers').exists():
-        menu_items[:] = [
-            item for item in menu_items if item.name != 'import-content']
 
 
 @hooks.register('construct_main_menu')

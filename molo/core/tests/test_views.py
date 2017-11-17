@@ -585,8 +585,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
-
-        self.assertContains(response, 'Latest')
+        self.assertNotContains(response, 'Latest')
+        self.assertContains(response, 'Dernière')
         self.assertContains(
             response,
             '<a href="/sections-main-1/your-mind/your-mind-subsection/'
