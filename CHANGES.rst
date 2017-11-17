@@ -1,5 +1,9 @@
 5.22.0
 ~~~~~~
+- Admin View FED bug fixes updates
+
+5.22.0
+~~~~~~
 - Remove UC content import
 
 5.21.4
