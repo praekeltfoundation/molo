@@ -1,3 +1,9 @@
+6.0.0
+~~~~~~
+- Upgraded to Django 1.10, No longer supporting Django 1.9
+- Upgraded to Wagtail 1.10
+- Profiles plugin now exists within Molo Core
+
 5.21.2
 ~~~~~~
 - Bug fix: exclude pages that are submitted for moderation from MultiSiteRedirect
