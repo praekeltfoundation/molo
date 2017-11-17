@@ -1,11 +1,14 @@
 # coding=utf-8
 import pytest
 from django.test import TestCase, RequestFactory
+from mock import patch
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
-    get_parent, bannerpages, load_tags_for_article, get_recommended_articles)
+    get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
+    topic_of_the_day,
+)
 
 
 @pytest.mark.django_db
@@ -166,3 +169,19 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEquals(get_recommended_articles(
             {'locale_code': 'en', 'request': request}, article1),
             [])
+
+    @patch('molo.core.templatetags.core_tags.get_pages')
+    def test_topic_of_the_day_empty_queryset_if_no_site(self, get_pages_mock):
+        request = self.factory.get('/')
+        request.site = None
+        context = {'request': request, 'locale_code': 'en'}
+        get_pages_mock.return_value = []
+
+        self.assertEquals(
+            topic_of_the_day(context),
+            {
+                'articles': [],
+                'request': request,
+                'locale_code': 'en',
+            }
+        )

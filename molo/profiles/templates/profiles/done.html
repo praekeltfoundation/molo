@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n static core_tags wagtailsettings_tags wagtailcore_tags %}
+{% get_settings %}
+
+{% block content %}
+<div class="profiles">
+  <h4 class="heading heading--subtitle">
+    {% trans "Thank you for joining!" %}
+  </h4>
+{% with profile_settings=settings.profiles.UserProfilesSettings %}
+
+  {% if profile_settings.activate_dob and not profile_settings.capture_dob_on_reg or profile_settings.activate_display_name and not profile_settings.capture_display_name_on_reg or profile_settings.activate_gender and not profile_settings.capture_gender_on_reg or profile_settings.activate_location and not profile_settings.capture_location_on_reg or profile_settings.activate_education_level and not profile_settings.capture_education_level_on_reg %}
+    <p class="profiles__description">{% trans "Let us know more about yourself to get access to exclusive content." %}</p>
+    <form method="post" action="{% url "molo.profiles:registration_done" %}" class="profiles__form">
+    {% csrf_token %}
+      {% if profile_settings.activate_dob and not profile_settings.capture_dob_on_reg %}
+      <fieldset>
+        <label for="date_of_birth">{% trans "SELECT DATE OF BIRTH" %}</label><br>
+        {{ form.date_of_birth.errors}}
+        {{ form.date_of_birth }}
+      </fieldset>
+      {% endif %}
+
+      {% if profile_settings.activate_display_name and not profile_settings.capture_display_name_on_reg %}
+      <fieldset>
+        <label for="alias">{% trans "DISPLAY NAME" %}</label><br>
+          {{ form.alias.errors }}
+          {{ form.alias }}
+          <span class="input-hint">{% trans "We value your online security, therefore we hide your username and allow you to comment and interact with the site with a display name." %}</span>
+      </fieldset>
+      {% endif %}
+
+      {% if profile_settings.activate_gender and not profile_settings.capture_gender_on_reg %}
+      <fieldset>
+        <label for="gender">{% trans "I IDENTIFY MY GENDER AS:" %}</label><br>
+        {{ form.gender.errors }}
+        {{ form.gender }}
+        <span class="input-hint">{% trans "Only you will see this" %}</span>
+      </fieldset>
+      {% endif %}
+
+      {% if profile_settings.activate_location and not profile_settings.capture_location_on_reg %}
+      <fieldset>
+        <label for="location">{% trans "WHERE DO YOU LIVE?" %}</label><br>
+        {{ form.location.errors }}
+        {{ form.location }}
+        <span class="input-hint">{% trans "Only you will see this" %}</span>
+      </fieldset>
+      {% endif %}
+
+      {% if profile_settings.activate_education_level and not profile_settings.capture_education_level_on_reg %}
+      <fieldset>
+        <label for="education_level">{% trans "WHAT IS YOUR HIGHEST LEVEL OF EDUCATION?" %}</label><br>
+       {{ form.education_level.errors }}
+       {{ form.education_level }}
+       <span class="input-hint">{% trans "Only you will see this" %}</span>
+      </fieldset>
+      {% endif %}
+    <input type="submit" value="{% trans "Save" %}" />
+    </form>
+  {% endif %}
+{% endwith %}
+  <a href="/">{% trans "Home Page" %}</a>
+  <a href="{% url "molo.profiles:view_my_profile" %}">{% trans "Profile" %}</a>
+</div>
+{% endblock %}

@@ -176,6 +176,9 @@ What is bundled with Molo?
    4. Articles are composed from one or more blocks.
    5. Blocks can be headings, paragraphs, images, lists or
       links to other pages.
+4. Molo Profiles: Provides code to help with User profiles in a project using the Molo code base.
+
+
 
 Testing the Molo scaffolding tool
 ---------------------------------

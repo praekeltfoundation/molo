@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'molo.profiles.backends.MoloProfilesModelBackend',
     'molo.core.backends.MoloModelBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
@@ -394,17 +395,9 @@ WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
 
 ENABLE_SSO = False
 
-UNICORE_DISTRIBUTE_API = 'http://localhost:6543'
-
 ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
 
 FROM_EMAIL = environ.get('FROM_EMAIL', "support@moloproject.org")
-CONTENT_IMPORT_SUBJECT = environ.get(
-    'CONTENT_IMPORT_SUBJECT', 'Molo Content Import')
-CONTENT_COPY_SUBJECT = environ.get(
-    'CONTENT_COPY_SUBJECT', 'Molo Content Copy')
-CONTENT_COPY_FAILED_SUBJECT = environ.get(
-    'CONTENT_COPY_FAILED_SUBJECT', 'Molo Content Copy Failed')
 
 # SMTP Settings
 EMAIL_HOST = environ.get('EMAIL_HOST', 'localhost')

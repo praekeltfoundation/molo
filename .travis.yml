@@ -34,6 +34,9 @@ install:
 script:
   - flake8 molo
   - molo scaffold testapp
+  - mkdir -p testapp/testapp/templates/registration/
+  - cp molo/profiles/test_templates/login.html testapp/testapp/templates/registration/
+  - cp local_test_settings.py testapp/testapp/settings/local.py
   - flake8 testapp
   - pip install -e testapp
   - py.test --cov

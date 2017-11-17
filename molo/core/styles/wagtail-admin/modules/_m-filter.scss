@@ -38,11 +38,12 @@ header {
 //Content Wrapper Filter
 .content-wrapper .changelist-filter {
   padding: 0;
-  display: inline-block; 
+  display: inline-block;
   width: 100%;
   h2, h3, ul, #date_range_filter {
     padding: 0 15px;
   }
+  h2 { line-height: 30px; }
 }
 
 @media screen and (min-width: 781px) {
@@ -68,6 +69,7 @@ header {
 
 @media screen and (min-width: 50em) {
   .content-wrapper .changelist-filter {
+      margin: 6.4em 0 0;
     ul, #date_range_filter {
       width: auto;
     }
@@ -77,8 +79,8 @@ header {
   .content-wrapper .changelist-filter {
     width: auto;
     float: left;
-    margin: 6.5em 0 0;
     width: 20%;
+    z-index: 9999;
     h2, h3, ul, #date_range_filter {
       margin: 0;
       padding: 0 5px 0 5px;

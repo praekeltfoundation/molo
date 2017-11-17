@@ -4,23 +4,29 @@ NOTE: Difference in Tables classes:
       .result-list.col9 and .result_list.col9
 */
 .fixed {
-  top: 0;
-  position: fixed;
-  width: auto;
-  border: none;
-  display: none;
-}
-::-webkit-scrollbar {
-    border-top-left-radius: 5px !important;
-    border-bottom-left-radius: 5px !important;
+    background: #fafafa;
+    top: 0;
+    position: fixed;
+    width: auto;
+    border: none;
+    display: none;
+    will-change: contents;
 }
 .content-wrapper {
   border: none;
-  overflow: hidden;
-  header.hasform {
+
+  ::-webkit-scrollbar {
+      border-top-left-radius: 5px !important;
+      border-bottom-left-radius: 5px !important;
+  }
+  ::-webkit-scrollbar-thumb {
+      border-radius: 5px !important;
+  }
+
+  header.fixed-header {
       position: fixed;
       min-width: 100%;
-      z-index: 9999;
+      z-index: 99;
   }
   .result_list.col9,
   .result-list.col9  {
@@ -33,12 +39,15 @@ NOTE: Difference in Tables classes:
         position: relative;
         overflow-y: hidden;
         overflow-x: scroll;
+        will-change:scroll-position;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: none;
     }
     table.content__results-table {
-        margin: 6.6em 0 0;
+        margin: 6.7em 0 0;
         width: 100%;
         thead, tbody {
-            text-align: center;
+            text-align: left;
         }
     }
 
@@ -53,7 +62,7 @@ NOTE: Difference in Tables classes:
         thead {
             th {
                 &:first-child {
-                  padding: 10px 0 5px 10px;
+                  padding: 0.6em 0 5px 10px;
                 }
             }
         }
@@ -63,16 +72,15 @@ NOTE: Difference in Tables classes:
         height: 100vh;
         overflow-y: scroll;
         overflow-x: hidden;
+        will-change:scroll-position;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: none;
         td {
             &:first-child {
                 padding-left: 10px;
             }
             img {
               vertical-align: text-top;
-            }
-            .actions > li {
-                float: none;
-                display: block;
             }
         }
     }
