@@ -1,37 +1,24 @@
 {% load i18n modeladmin_tags static %}
 {% if results %}
 <div id="content_results_table" class="content__results-table-wrapper">
-    <table id="fixed_thead" class="listing full-width content__results-table fixed">
-        <thead>
-            <tr>
-                {% for header in result_headers %}
-                <th class="" scope="col" {{ header.class_attrib }} >
-                    {% if header.sortable %}<a href="{{ header.url_primary }}" id="sortId-{{ header.sort_priority }}" class="icon {% if header.ascending %}icon-arrow-up-after {% else %}icon-arrow-down-after{% endif %}">{% endif %}
-                    {{ header.text|capfirst }}
-                    {% if header.sortable %}</a>{% endif %}
-               </th>
-               {% endfor %}
-           </tr>
-        </thead>
-    </table>
-    <table id="flowing_tbody" class="listing full-width content__results-table">
-        <thead>
-            <tr>
-                {% for header in result_headers %}
-                <th class="" scope="col" {{ header.class_attrib }} >
-                    {% if header.sortable %}<a href="{{ header.url_primary }}" id="sortId-{{ header.sort_priority }}" class="icon {% if header.ascending %}icon-arrow-up-after {% else %}icon-arrow-down-after{% endif %}">{% endif %}
-                    {{ header.text|capfirst }}
-                    {% if header.sortable %}</a>{% endif %}
-               </th>
-               {% endfor %}
-           </tr>
-        </thead>
-        <tbody class="content__tbody">
-            {% for result in results %}
-                {% result_row_display forloop.counter0 %}
-            {% endfor %}
-        </tbody>
-    </table>
+<table class="listing full-width">
+    <thead>
+        <tr>
+            {% for header in result_headers %}
+            <th scope="col" {{ header.class_attrib }} >
+                {% if header.sortable %}<a href="{{ header.url_primary }}" id="sortId-{{ header.sort_priority }}" class="icon {% if header.ascending %}icon-arrow-up-after {% else %}icon-arrow-down-after{% endif %}">{% endif %}
+                {{ header.text|capfirst }}
+                {% if header.sortable %}</a>{% endif %}
+           </th>
+           {% endfor %}
+       </tr>
+    </thead>
+    <tbody>
+    {% for result in results %}
+        {% result_row_display forloop.counter0 %}
+    {% endfor %}
+</tbody>
+</table>
 </div>
 {% else %}
     <div class="nice-padding no-search-results">
@@ -42,30 +29,12 @@
 {% block extra_css %}{% endblock %}
 {% block js %}
     <script src="{% static "js/vanilla-notify.min.js" %}"></script>
+    <script src="{% static "js/jquery.floatThead.min.js" %}"></script>
+    <link type="text/css" href="{% static "js/jquery.mCustomScrollbar.min.css" %}" rel="stylesheet"/>
+    <script src="{% static "js/jquery.mCustomScrollbar.concat.min.js" %}"></script>
     <script type="text/javascript">
     (function() {
         'use strict';
-        document.getElementsByTagName("header")[0].classList.add('fixed-header');
-        window.addEventListener('scroll', function(){
-            var scrollPosition = window.scrollY,
-                fixedTableHead = document.getElementById('fixed_thead'),
-                generalTableBody = document.getElementById('flowing_tbody'),
-                resultsWrapper = document.getElementById('content_results_table');
-
-             if (scrollPosition > 0 && window.innerWidth > 40 ) {
-                 fixedTableHead.style.display = "block";
-                 resultsWrapper.style.overflowX = "hidden";
-                 resultsWrapper.style.height = "100%";
-                 generalTableBody.style.height = "100%";
-                 generalTableBody.firstElementChild.style.visibility = "hidden";
-            } else {
-                fixedTableHead.style.display = "none";
-                resultsWrapper.style.overflowX = "scroll";
-                resultsWrapper.style.height = "100vh";
-                generalTableBody.style.height = "100vh";
-                generalTableBody.firstElementChild.style.visibility = "visible";
-            }
-        });
         //VANILLA NOTIFY
         var sortItem = document.getElementById("sortId-1");
         var sortDir;
@@ -83,6 +52,62 @@
               });
           }
         }
+        // Scrollbars
+        $("body").addClass("admin-view");
+        var resizeTimer;
+        var scroller = (function () {
+          var $windowHeight = $(window).height();
+          $(".result-list").mCustomScrollbar({
+            theme:"dark-thick",
+            axis:"yx",
+            setHeight: $windowHeight-130,
+            scrollEasing:"linear",
+            scrollInertia:300,
+            callbacks:{
+                whileScrolling:function(){
+                    $(".floatThead-container").css("left", this.mcs.left);
+                }
+            },
+          });
+          $(".changelist-filter-container").mCustomScrollbar({
+            theme:"dark-thick",
+            setHeight: $windowHeight-160,
+            scrollEasing:"linear",
+            scrollInertia:300,
+          });
+        });
+        var tableHead = (function () {
+          var $table = $("table.listing");
+          $table.floatThead({
+            zIndex:998,
+            responsiveContainer: function($table){
+               return $table.closest('.content__results-table-wrapper');
+           }
+          });
+        });
+
+        $(document).ready(function(){
+          if ($(window).width() < 700) {
+            tableHead();
+          } else {
+            scroller();
+            tableHead();
+          }
+        });
+        
+        $(window).on('resize', function() {
+          $(".result-list",".changelist-filter-container").mCustomScrollbar("destroy");
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(function() {
+            if ($(window).width() < 700) {
+              $("table.listing").floatThead('reflow');
+              $(".result-list").removeAttr("style");
+            } else {
+              scroller();
+              $("table.listing").floatThead('reflow');
+            }
+          }, 250);
+        });
     })();
     </script>
 {% endblock %}

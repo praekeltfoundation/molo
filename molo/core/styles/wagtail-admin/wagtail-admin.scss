@@ -9,9 +9,7 @@ html,body {
         border-radius: 0;
     }
 }
-.wrapper {
-  width: 100%;
-}
+
 .content-wrapper {
   .pagination {padding: 0 15px;}
   .pagination.col9 {
@@ -24,25 +22,7 @@ html,body {
 .submit-row .button {
   margin: 0 0 8px 0;
 }
-@media screen and (min-width: 50em) {
-    .wrapper,
-    body.nav-open .wrapper {
-        padding-left: 181px;
-    }
-      .nav-wrapper {
-        min-width: 12.6%;
-        max-width: 181px;
-        .inner {
-          min-width: 12.6%;
-          max-width: 181px;
-        }
-      }
-      .content-wrapper {
-        .pagination {
-          padding: 0;
-        }
-      }
-}
+
 @media screen and (min-width: 90em) {
   .wrapper {
     max-width: 100%;
