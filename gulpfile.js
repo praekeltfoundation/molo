@@ -76,7 +76,7 @@ gulp.task('stylesAdmin', function() {
 
 gulp.task('watch', function() {
     livereload.listen();
-    gulp.watch(['molo/styles/**/*.scss'],['styles']);
+    gulp.watch(['molo/core/styles/**/*.scss'],['styles']);
 });
 
 // Minify JS
