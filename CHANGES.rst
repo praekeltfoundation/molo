@@ -1,4 +1,8 @@
-5.22.0
+5.22.2
+~~~~~~
+- Fix Admin View scroller styles
+
+5.22.1
 ~~~~~~
 - Admin View FED bug fixes updates
 
