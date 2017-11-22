@@ -1575,6 +1575,10 @@ class ArticlePageLanguageProxy(ArticlePage):
 
     objects = ArticlePageLanguageManager()
 
+    @classmethod
+    def get_indexed_objects(cls):
+        return cls.objects.none()
+
 
 class SectionPageTags(Orderable):
     page = ParentalKey(SectionPage, related_name='section_tags')
