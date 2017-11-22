@@ -39,7 +39,7 @@ install_requires = [
     'six>=1.9',
     'ujson==1.35',
     'unicore.content',
-    'wagtail>=1.10,<1.11',
+    'wagtail>=1.13,<1.14',
     'wagtailmedia==0.1.3',
     'ImageHash==3.4',
     'boto==2.48.0',

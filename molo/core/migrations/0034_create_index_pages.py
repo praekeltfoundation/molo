@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 def create_banner_index(apps, schema_editor):
     from molo.core.models import BannerIndexPage, Main
-    main = Main.objects.all().first()
+    main = Main.objects.first()
 
     if main:
         banner_index = BannerIndexPage(title='Banners', slug='banners')
