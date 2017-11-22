@@ -1,3 +1,7 @@
+6.0.1-beta.1
+~~~~~~~~~~~~
+- Upgraded to Wagtail 1.13
+
 6.0.0
 ~~~~~~
 - Upgraded to Django 1.10, No longer supporting Django 1.9
