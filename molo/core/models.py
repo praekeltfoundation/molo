@@ -1577,6 +1577,13 @@ class ArticlePageLanguageProxy(ArticlePage):
 
     @classmethod
     def get_indexed_objects(cls):
+        '''
+        Wagtail's ElasticSearch indexing adds all instances of
+        a given model to the index which is causing duplicate
+        articles in the search result.
+        This get_indexed_objects method will exclude
+        ArticlePageLanguageProxy items to be indexed
+        '''
         return cls.objects.none()
 
 
