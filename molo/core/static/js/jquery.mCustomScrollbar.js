@@ -1467,9 +1467,20 @@ and dependencies (minified).
 					});
 				});
 			}
-			mCustomScrollBox.bind("mousewheel."+namespace,function(e,delta){
+      /* debouce added for smoother vertical+horizontal (yx) scrolling */
+      function debounce(fn, delay) {
+        var timer = null;
+        return function () {
+          var context = this, args = arguments;
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            fn.apply(context, args);
+          }, delay);
+        };
+      }
+			mCustomScrollBox.bind("mousewheel."+namespace,debounce(function(e,delta){
 				_onMousewheel(e,delta);
-			});
+			}, 10));///
 			function _onMousewheel(e,delta){
 				_stop($this);
 				if(_disableMousewheel($this,e.target)){return;} /* disables mouse-wheel when hovering specific elements */
@@ -1491,26 +1502,27 @@ and dependencies (minified).
 						draggerPos=mCSB_dragger[0][0].offsetTop,
 						limit=mCSB_dragger[0].parent().height()-mCSB_dragger[0].height(),
 						dlt=e.deltaY || delta;
-						
-				//extra condition for vertical+horizontal (yx) wheel scrolling
+				/* extra condition for vertical+horizontal (yx) wheel scrolling */
 				}else if(o.axis==="yx" || o.mouseWheel.axis==="yx"){
-					if(e.originalEvent.deltaX>0  || e.originalEvent.deltaX<0){
-  					var dir="x",
-  						px=[Math.round(deltaFactor*d.scrollRatio.x),parseInt(o.mouseWheel.scrollAmount)],
-  						amount=o.mouseWheel.scrollAmount!=="auto" ? px[1] : px[0]>=mCustomScrollBox.width() ? mCustomScrollBox.width()*0.9 : px[0],
-  						contentPos=Math.abs($("#mCSB_"+d.idx+"_container")[0].offsetLeft),
-  						draggerPos=mCSB_dragger[1][0].offsetLeft,
-  						limit=mCSB_dragger[1].parent().width()-mCSB_dragger[1].width(),
-  						dlt=e.deltaX || delta;
-  				}else if(e.originalEvent.deltaY>0  || e.originalEvent.deltaY<0){
-  					var dir="y",
-  						px=[Math.round(deltaFactor*d.scrollRatio.y),parseInt(o.mouseWheel.scrollAmount)],
-  						amount=o.mouseWheel.scrollAmount!=="auto" ? px[1] : px[0]>=mCustomScrollBox.height() ? mCustomScrollBox.height()*0.9 : px[0],
-  						contentPos=Math.abs($("#mCSB_"+d.idx+"_container")[0].offsetTop),
-  						draggerPos=mCSB_dragger[0][0].offsetTop,
-  						limit=mCSB_dragger[0].parent().height()-mCSB_dragger[0].height(),
-  						dlt=e.deltaY || delta;
-  				}
+  					if(Math.abs(e.originalEvent.wheelDeltaX) > Math.abs(e.originalEvent.wheelDeltaY)){
+              e.originalEvent.wheelDeltaX = 0;
+    					var dir="x",
+    						px=[Math.round(deltaFactor*d.scrollRatio.x),parseInt(o.mouseWheel.scrollAmount)],
+    						amount=o.mouseWheel.scrollAmount!=="auto" ? px[1] : px[0]>=mCustomScrollBox.width() ? mCustomScrollBox.width()*0.9 : px[0],
+    						contentPos=Math.abs($("#mCSB_"+d.idx+"_container")[0].offsetLeft),
+    						draggerPos=mCSB_dragger[1][0].offsetLeft,
+    						limit=mCSB_dragger[1].parent().width()-mCSB_dragger[1].width(),
+    						dlt=e.originalEvent.wheelDeltaX || delta;
+    				}else if(Math.abs(e.originalEvent.wheelDeltaY) > Math.abs(e.originalEvent.wheelDeltaX)){
+              e.originalEvent.wheelDeltaY = 0;
+    					var dir="y",
+    						px=[Math.round(deltaFactor*d.scrollRatio.y),parseInt(o.mouseWheel.scrollAmount)],
+    						amount=o.mouseWheel.scrollAmount!=="auto" ? px[1] : px[0]>=mCustomScrollBox.height() ? mCustomScrollBox.height()*0.9 : px[0],
+    						contentPos=Math.abs($("#mCSB_"+d.idx+"_container")[0].offsetTop),
+    						draggerPos=mCSB_dragger[0][0].offsetTop,
+    						limit=mCSB_dragger[0].parent().height()-mCSB_dragger[0].height(),
+    						dlt=e.originalEvent.wheelDeltaY || delta;
+    				}
         }
 				if((dir==="y" && !d.overflowed[0]) || (dir==="x" && !d.overflowed[1])){return;}
 				if(o.mouseWheel.invert || e.webkitDirectionInvertedFromDevice){dlt=-dlt;}
@@ -1519,9 +1531,9 @@ and dependencies (minified).
 					e.stopImmediatePropagation();
 					e.preventDefault();
 				}
-				if(e.deltaFactor<5 && !o.mouseWheel.normalizeDelta){
+				if(o.deltaFactor<5 && !o.mouseWheel.normalizeDelta){
 					//very low deltaFactor values mean some kind of delta acceleration (e.g. osx trackpad), so adjusting scrolling accordingly
-					amount=e.deltaFactor; dur=17;
+					amount=o.deltaFactor; dur=17;
 				}
 				_scrollTo($this,(contentPos-(dlt*amount)).toString(),{dir:dir,dur:dur});
 			}
