@@ -31,7 +31,7 @@
     <script src="{% static "js/vanilla-notify.min.js" %}"></script>
     <script src="{% static "js/jquery.floatThead.min.js" %}"></script>
     <link type="text/css" href="{% static "js/jquery.mCustomScrollbar.min.css" %}" rel="stylesheet"/>
-    <script src="{% static "js/jquery.mCustomScrollbar.concat.min.js" %}"></script>
+    <script src="{% static "js/jquery.mCustomScrollbar.min.js" %}"></script>
     <script type="text/javascript">
     (function() {
         'use strict';
@@ -54,15 +54,20 @@
         }
         // Scrollbars
         $("body").addClass("admin-view");
+        $(".result_list").addClass("result-list");
+        $(".changelist-filter").children().not('h2').wrapAll("<div class='changelist-filter-container'></div>");
         var resizeTimer;
         var scroller = (function () {
           var $windowHeight = $(window).height();
           $(".result-list").mCustomScrollbar({
-            theme:"dark-thick",
+            theme:"dark-2",
             axis:"yx",
-            setHeight: $windowHeight-130,
-            scrollEasing:"linear",
-            scrollInertia:300,
+            setHeight: $windowHeight-128,
+            scrollInertia:100,
+            mouseWheel:{ 
+              axis: "yx",
+              deltaFactor: 2,
+              },
             callbacks:{
                 whileScrolling:function(){
                     $(".floatThead-container").css("left", this.mcs.left);
@@ -70,10 +75,12 @@
             },
           });
           $(".changelist-filter-container").mCustomScrollbar({
-            theme:"dark-thick",
+            theme:"dark-2",
             setHeight: $windowHeight-160,
-            scrollEasing:"linear",
-            scrollInertia:300,
+            scrollInertia:100,
+            mouseWheel:{ 
+              deltaFactor: 3,
+              },
           });
         });
         var tableHead = (function () {

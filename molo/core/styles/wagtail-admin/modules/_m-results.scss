@@ -10,11 +10,46 @@ body.admin-view {
       .changelist-filter {
         position: relative;
         z-index: 999;
-        .mCSB_draggerContainer {
-          margin-top: 5px;
+      }
+      .mCSB_inside{
+        >.mCSB_container {
+        margin-right: 12px
         }
-        .mCSB_container {
-          margin-right: 10px;
+      }
+      .mCS-dark-2 {
+        &.mCSB_scrollTools {
+          bottom: 0;
+          .mCSB_dragger {
+            .mCSB_dragger_bar {
+              background-color: #333;
+              -webkit-border-radius: 0;
+              -moz-border-radius: 0;
+              border-radius: 0;
+              width: 10px;
+              margin-right: 0;
+            }
+          }
+          .mCSB_draggerRail {
+            background-color: #666;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            border-radius: 0;
+            width: 10px;
+            margin-right: 0;
+          }
+        }
+        &.mCSB_scrollTools_horizontal {
+          right: 10px;
+          .mCSB_dragger {
+            .mCSB_dragger_bar {
+              width: 100%;
+              height: 10px;
+            }
+          }
+          .mCSB_draggerRail {
+            width: 100%;
+            height: 10px;
+          }
         }
       }
       .content-wrapper {
@@ -26,16 +61,13 @@ body.admin-view {
         display: block;
         width: 100%;
         float: none;
-        .mCSB_scrollTools_vertical {
-          top: 35px;
-        }
       }
       .pagination {
         margin-top: 0;
       }
       .mCSB_container_wrapper {
-        margin-right: 15x;
         margin-bottom: 20px;
+          margin-right: 20px;
       }
       table {
         td,th {
