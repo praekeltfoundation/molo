@@ -1,3 +1,7 @@
+6.0.2-beta.1
+~~~~~~~~~~~~
+- Pulled latest changes from develop
+
 6.0.1-beta.1
 ~~~~~~~~~~~~
 - Upgraded to Wagtail 1.13
@@ -7,6 +11,20 @@
 - Upgraded to Django 1.10, No longer supporting Django 1.9
 - Upgraded to Wagtail 1.10
 - Profiles plugin now exists within Molo Core
+
+5.22.3
+~~~~~~
+- Exclude ArticlePageLanguageProxy from being indexed
+- Use strings for paths
+- Run part of the test suite on Python 3
+
+5.22.2
+~~~~~~
+- Fix Admin View scroller styles
+
+5.22.1
+~~~~~~
+- Admin View FED bug fixes updates
 
 5.22.0
 ~~~~~~
