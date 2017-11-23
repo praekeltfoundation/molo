@@ -1,3 +1,15 @@
+5.22.4
+~~~~~~
+- Admin View vertical scrolling touchpad bug fixed
+- Scroller added on other Admin Views
+- overlapping edit/delete controls fix on Admin View lists
+
+5.22.3
+~~~~~~
+- Exclude ArticlePageLanguageProxy from being indexed
+- Use strings for paths
+- Run part of the test suite on Python 3
+
 5.22.2
 ~~~~~~
 - Fix Admin View scroller styles

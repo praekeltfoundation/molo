@@ -17,6 +17,11 @@ html,body {
     p {padding: 15px 0 0;}
     ul {padding: 0 45px;}
   }
+  .listing {
+    &.full-width {
+      margin-bottom: 0;
+    }
+  }
 }
 //COMMENT TABLE CONTENT
 .submit-row .button {
