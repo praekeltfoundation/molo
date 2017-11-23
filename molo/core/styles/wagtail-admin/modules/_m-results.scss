@@ -7,10 +7,6 @@ body.admin-view {
         position: absolute;
         z-index: 1000
       }
-      .changelist-filter {
-        position: relative;
-        z-index: 999;
-      }
       .mCSB_inside{
         >.mCSB_container {
         margin-right: 12px
@@ -94,6 +90,6 @@ body.admin-view {
         padding-bottom: 50px;
       }
     }
-    
+
 
 }

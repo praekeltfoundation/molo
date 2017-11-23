@@ -45,6 +45,10 @@ header {
   }
   h2 { line-height: 30px; }
 }
+//Filter date popup
+.xdsoft_datetimepicker {
+    z-index: 9999;
+}
 
 @media screen and (min-width: 50em) {
   .content-wrapper .changelist-filter {
@@ -63,5 +67,11 @@ header {
       margin: 0;
       padding: 0 5px 0 5px;
     }
+  }
+
+  body.admin-view  {
+      .changelist-filter {
+        position: relative;
+      }
   }
 }
