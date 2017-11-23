@@ -225,12 +225,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     def tags_html(self, obj):
         if obj.tags_list():
             display_value = ", ".join(obj.tags_list())
-            result = format_html(
-                '<a href="{}">{}</a>'.format(
-                    reverse("wagtailadmin_pages:edit", args=[obj.id]),
-                    display_value.upper()
-                )
-            )
+            result = display_value.upper()
             return result
 
     tags_html.short_description = 'Tags'
