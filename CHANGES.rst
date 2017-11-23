@@ -1,3 +1,9 @@
+5.22.3
+~~~~~~
+- Exclude ArticlePageLanguageProxy from being indexed
+- Use strings for paths
+- Run part of the test suite on Python 3
+
 5.22.2
 ~~~~~~
 - Fix Admin View scroller styles
