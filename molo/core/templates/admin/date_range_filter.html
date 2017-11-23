@@ -3,15 +3,8 @@
   {% include "wagtailadmin/shared/datetimepicker_translations.html" %}
   <script type="text/javascript">
   $(function() {
-    $('#id_drf__submission_date__gte').datetimepicker({
-      timepicker: false,
-      format: 'Y-m-d',
-      i18n: {
-          lang: window.dateTimePickerTranslations
-      },
-      lang: 'lang'
-    });
-    $('#id_drf__submission_date__lte').datetimepicker({
+    console.log("hey");
+    $(".vDateField").datetimepicker({
       timepicker: false,
       format: 'Y-m-d',
       i18n: {
