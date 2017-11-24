@@ -30,8 +30,6 @@ matrix:
       after_success: []
   allow_failures:
     - python: '3.6'
-      env: TEST=molo_lint
-    - python: '3.6'
       env: TEST=build
 
 services:
