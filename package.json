@@ -7,7 +7,6 @@
   "devDependencies": {
     "del": "^3.0.0",
     "glob": "^7.1.2",
-    "grunticon-lib": "^1.2.3",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
     "gulp-bless": "^4.0.0",
