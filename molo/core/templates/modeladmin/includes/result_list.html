@@ -66,7 +66,8 @@
             scrollInertia:100,
             mouseWheel:{ 
               axis: "yx",
-              deltaFactor: 2,
+              deltaFactor: 1,
+              invert: true,
               },
             callbacks:{
                 whileScrolling:function(){
@@ -79,7 +80,8 @@
             setHeight: $windowHeight-160,
             scrollInertia:100,
             mouseWheel:{ 
-              deltaFactor: 3,
+              deltaFactor: 1,
+              invert: true,
               },
           });
         });

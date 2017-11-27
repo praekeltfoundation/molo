@@ -18,7 +18,7 @@ var gulp              =   require('gulp'),
     pixrem            =   require('gulp-pixrem'),
     svgmin            =   require('gulp-svgmin'),
     del               =   require('del'),
-    grunticon         =   require('grunticon-lib'),
+
     sassPaths = [
         'molo/core/styles/sass/styles.s+(a|c)ss',
         'molo/core/styles/mote.customize/mote.s+(a|c)ss'
@@ -117,8 +117,6 @@ gulp.task('icons', ['clean-icons', 'crush-svgs'], function(done) {
         black: '#000000'
       }
     };
-    var iconsTask = new grunticon(icons, iconsDest, options);
-    iconsTask.process(done);
 });
 
 gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
