@@ -51,6 +51,8 @@ body.admin-view {
       .content-wrapper {
         .changelist-filter h2 {
           line-height: 31px;
+          z-index: 999;
+          position: relative;
         }
       }
       .result-list {

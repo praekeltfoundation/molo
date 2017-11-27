@@ -3,10 +3,10 @@
   {% include "wagtailadmin/shared/datetimepicker_translations.html" %}
   <script type="text/javascript">
   $(function() {
-    console.log("hey");
     $(".vDateField").datetimepicker({
       timepicker: false,
       format: 'Y-m-d',
+      scrollInput:false,
       i18n: {
           lang: window.dateTimePickerTranslations
       },

@@ -1467,22 +1467,34 @@ and dependencies (minified).
 					});
 				});
 			}
-      /* debouce added for smoother vertical+horizontal (yx) scrolling */
-      function debounce(fn, delay) {
-        var timer = null;
-        return function () {
-          var context = this, args = arguments;
-          clearTimeout(timer);
-          timer = setTimeout(function () {
-            fn.apply(context, args);
-          }, delay);
-        };
-      }
-			mCustomScrollBox.bind("mousewheel."+namespace,debounce(function(e,delta){
+			/*  prevents left history scroll on osx */
+			function preventOsxBack(e) {
+				if (!navigator.userAgent.match(/Macintosh/)) {return;}
+				var is_chrome = navigator.userAgent.indexOf('Chrome') > -1;
+				var is_safari = navigator.userAgent.indexOf("Safari") > -1;
+				var is_firefox = navigator.userAgent.indexOf('Firefox') > -1;
+				if (is_chrome || is_safari || is_firefox) {
+					$(window).on('mousewheel.', function (e) {
+						var prevent_left, prevent_up;
+						prevent_left = e.originalEvent.deltaX < 0 && $(e.target).parents().filter(function() {
+							return $(this).scrollLeft() > 0;
+						}).length === 0;
+						prevent_up = e.originalEvent.deltaY > 0 && !$(e.target).parents().filter(function() {
+							return $(this).scrollTop() > 0;
+						}).length === 0;
+						if (prevent_left || prevent_up) {
+							e.preventDefault();
+						}
+					});
+				}
+			};
+			
+			mCustomScrollBox.bind("mousewheel."+namespace,function(e,delta){
 				_onMousewheel(e,delta);
-			}, 10));///
+			});///
 			function _onMousewheel(e,delta){
 				_stop($this);
+				preventOsxBack(e);
 				if(_disableMousewheel($this,e.target)){return;} /* disables mouse-wheel when hovering specific elements */
 				var deltaFactor=o.mouseWheel.deltaFactor!=="auto" ? parseInt(o.mouseWheel.deltaFactor) : (oldIE && e.deltaFactor<100) ? 100 : e.deltaFactor || 100,
 					dur=o.scrollInertia;
@@ -1493,7 +1505,7 @@ and dependencies (minified).
 						contentPos=Math.abs($("#mCSB_"+d.idx+"_container")[0].offsetLeft),
 						draggerPos=mCSB_dragger[1][0].offsetLeft,
 						limit=mCSB_dragger[1].parent().width()-mCSB_dragger[1].width(),
-						dlt=o.mouseWheel.axis==="y" ? (e.deltaY || delta) : e.deltaX;
+						dlt=o.mouseWheel.axis==="y" ? (e.originalEvent.deltaY || delta) : e.originalEvent.deltaX;
 				}else if(o.axis==="y" || o.mouseWheel.axis==="y"){
 					var dir="y",
 						px=[Math.round(deltaFactor*d.scrollRatio.y),parseInt(o.mouseWheel.scrollAmount)],
@@ -1501,27 +1513,27 @@ and dependencies (minified).
 						contentPos=Math.abs($("#mCSB_"+d.idx+"_container")[0].offsetTop),
 						draggerPos=mCSB_dragger[0][0].offsetTop,
 						limit=mCSB_dragger[0].parent().height()-mCSB_dragger[0].height(),
-						dlt=e.deltaY || delta;
+						dlt=e.originalEvent.deltaY || delta;
 				/* extra condition for vertical+horizontal (yx) wheel scrolling */
 				}else if(o.axis==="yx" || o.mouseWheel.axis==="yx"){
-  					if(Math.abs(e.originalEvent.wheelDeltaX) > Math.abs(e.originalEvent.wheelDeltaY)){
-              e.originalEvent.wheelDeltaX = 0;
+  					if(Math.abs(e.originalEvent.deltaX) > Math.abs(e.originalEvent.deltaY)){
+              e.originalEvent.deltaX = 0;
     					var dir="x",
     						px=[Math.round(deltaFactor*d.scrollRatio.x),parseInt(o.mouseWheel.scrollAmount)],
     						amount=o.mouseWheel.scrollAmount!=="auto" ? px[1] : px[0]>=mCustomScrollBox.width() ? mCustomScrollBox.width()*0.9 : px[0],
     						contentPos=Math.abs($("#mCSB_"+d.idx+"_container")[0].offsetLeft),
     						draggerPos=mCSB_dragger[1][0].offsetLeft,
     						limit=mCSB_dragger[1].parent().width()-mCSB_dragger[1].width(),
-    						dlt=e.originalEvent.wheelDeltaX || delta;
-    				}else if(Math.abs(e.originalEvent.wheelDeltaY) > Math.abs(e.originalEvent.wheelDeltaX)){
-              e.originalEvent.wheelDeltaY = 0;
+    						dlt=e.originalEvent.deltaX || delta;
+    				}else if(Math.abs(e.originalEvent.deltaY) > Math.abs(e.originalEvent.deltaX)){
+              e.originalEvent.deltaY = 0;
     					var dir="y",
     						px=[Math.round(deltaFactor*d.scrollRatio.y),parseInt(o.mouseWheel.scrollAmount)],
     						amount=o.mouseWheel.scrollAmount!=="auto" ? px[1] : px[0]>=mCustomScrollBox.height() ? mCustomScrollBox.height()*0.9 : px[0],
     						contentPos=Math.abs($("#mCSB_"+d.idx+"_container")[0].offsetTop),
     						draggerPos=mCSB_dragger[0][0].offsetTop,
     						limit=mCSB_dragger[0].parent().height()-mCSB_dragger[0].height(),
-    						dlt=e.originalEvent.wheelDeltaY || delta;
+    						dlt=e.originalEvent.deltaY || delta;
     				}
         }
 				if((dir==="y" && !d.overflowed[0]) || (dir==="x" && !d.overflowed[1])){return;}
