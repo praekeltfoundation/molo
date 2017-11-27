@@ -1,3 +1,7 @@
+5.22.5
+~~~~~~
+- Admin View scroller fixes
+
 5.22.4
 ~~~~~~
 - Admin View vertical scrolling touchpad bug fixed
