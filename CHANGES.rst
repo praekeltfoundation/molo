@@ -21,6 +21,16 @@
 - Upgraded to Wagtail 1.10
 - Profiles plugin now exists within Molo Core
 
+5.22.5
+~~~~~~
+- Admin View scroller fixes
+
+5.22.4
+~~~~~~
+- Admin View vertical scrolling touchpad bug fixed
+- Scroller added on other Admin Views
+- overlapping edit/delete controls fix on Admin View lists
+
 5.22.3
 ~~~~~~
 - Exclude ArticlePageLanguageProxy from being indexed
