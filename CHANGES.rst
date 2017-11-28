@@ -1,3 +1,7 @@
+6.0.3
+~~~~~
+- Update develop 6x with develop
+
 6.0.2
 ~~~~~
 - Eliminated the use of __latest__ in migration dependencies
