@@ -109,7 +109,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_site_redirect_if_no_languages(self):
         user = User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
-        self.mk_main2(title='main3', slug='main3', path=00010003)
+        self.mk_main2(title='main3', slug='main3', path='4099')
         main3_pk = Page.objects.get(title='main3').pk
         main3 = Main.objects.all().last()
         client = Client(HTTP_HOST=main3.get_site().hostname)
@@ -1847,20 +1847,20 @@ class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
         self.admin_user = User.objects.create_user(
             username='username', password='password', email='login@email.com')
 
-    def can_see_explorer(self, client):
+    def can_see_pages_menu(self, client):
         response = client.get('/admin/')
         self.assertEquals(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
-        self.assertTrue(soup.find('a', string='Explorer'))
+        self.assertTrue(soup.find('a', string='Pages'))
 
-    def test_superuser_explorer_access(self):
+    def test_superuser_pages_access(self):
         self.client.login(username='testuser', password='password')
 
-        self.can_see_explorer(self.client)
+        self.can_see_pages_menu(self.client)
 
         self.superuser.groups.set([self.expert_group])
 
-        self.can_see_explorer(self.client)
+        self.can_see_pages_menu(self.client)
 
     def test_wagtail_login_only_user_cannot_see_explorer(self):
         self.admin_user.groups.set([self.wagtail_login_only_group])

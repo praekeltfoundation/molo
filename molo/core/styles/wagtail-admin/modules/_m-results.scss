@@ -1,114 +1,97 @@
-//Content Wrapper Results
-/**
-NOTE: Difference in Tables classes:
-      .result-list.col9 and .result_list.col9
-*/
-.fixed {
-    background: #fafafa;
-    top: 0;
-    position: fixed;
-    width: auto;
-    border: none;
-    display: none;
-    will-change: contents;
-}
-.content-wrapper {
-  border: none;
 
-  ::-webkit-scrollbar {
-      border-top-left-radius: 5px !important;
-      border-bottom-left-radius: 5px !important;
-  }
-  ::-webkit-scrollbar-thumb {
-      border-radius: 5px !important;
-  }
-
-  header.fixed-header {
-      position: fixed;
-      min-width: 100%;
-      z-index: 99;
-  }
-  .result_list.col9,
-  .result-list.col9  {
-    cursor: pointer;
-    padding: 0;
-    display: inline-block;
-    .content__results-table-wrapper {
-        width: 100%;
-        height: 100vh;
-        position: relative;
-        overflow-y: hidden;
-        overflow-x: scroll;
-        will-change:scroll-position;
-        -webkit-overflow-scrolling: touch;
-        -ms-overflow-style: none;
-    }
-    table.content__results-table {
-        margin: 6.7em 0 0;
-        width: 100%;
-        thead, tbody {
-            text-align: left;
+body.admin-view {
+    @media screen and (min-width: 700px) {
+      overflow-x: hidden;
+      overflow-y: hidden;
+      .nav-wrapper {
+        position: absolute;
+        z-index: 1000
+      }
+      .mCSB_inside{
+        >.mCSB_container {
+        margin-right: 12px
         }
-    }
-
-    table.listing,
-    .listing.full-width {
-        tr {
+      }
+      .mCS-dark-2 {
+        &.mCSB_scrollTools {
+          bottom: 0;
+          .mCSB_dragger {
+            .mCSB_dragger_bar {
+              background-color: #333;
+              -webkit-border-radius: 0;
+              -moz-border-radius: 0;
+              border-radius: 0;
+              width: 10px;
+              margin-right: 0;
+            }
+          }
+          .mCSB_draggerRail {
+            background-color: #666;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            border-radius: 0;
+            width: 10px;
+            margin-right: 0;
+          }
+        }
+        &.mCSB_scrollTools_horizontal {
+          right: 10px;
+          .mCSB_dragger {
+            .mCSB_dragger_bar {
+              width: 100%;
+              height: 10px;
+            }
+          }
+          .mCSB_draggerRail {
             width: 100%;
-            &:first-child {
-                border-top: none;
-            }
+            height: 10px;
+          }
         }
-        thead {
-            th {
-                &:first-child {
-                  padding: 0.6em 0 5px 10px;
-                }
-            }
+      }
+      .content-wrapper {
+        .changelist-filter h2 {
+          line-height: 31px;
+          z-index: 999;
+          position: relative;
         }
-    }
-    .content__tbody {
+      }
+      .result-list {
+        display: block;
         width: 100%;
-        height: 100vh;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        will-change:scroll-position;
-        -webkit-overflow-scrolling: touch;
-        -ms-overflow-style: none;
-        td {
-            &:first-child {
-                padding-left: 10px;
-            }
-            img {
-              vertical-align: text-top;
-            }
+        float: none;
+      }
+      .pagination {
+        margin-top: 0;
+      }
+      .mCSB_container_wrapper {
+        margin-bottom: 20px;
+          margin-right: 20px;
+      }
+      table {
+        td,th {
+          &:first-child {
+            padding-left: 10px;
+          }
+          img {
+            vertical-align: text-top;
+          }
         }
+      }
     }
-  }
-}
-@media screen and (min-width: 781px) {
-  .content-wrapper {
-    width: 87.3%;
-    .result_list.col9,
-    .result-list.col9 {
-      width: 100%;
+    @media screen and (min-width: 50em) {
+      .result-list {
+        padding: 0;
+      }
+      .listing.full-width td:first-child, .listing.full-width th:first-child {
+        padding-left: 20px;
+      }
     }
-  }
-}
+    @media screen and (max-width: 700px) {
+      .content__results-table-wrapper {
+        overflow-y: hidden;
+        padding-bottom: 50px;
+      }
+    }
 
-@media screen and (min-width: 50em)  {
-  .content-wrapper {
-    .result_list.col9,
-    .result-list.col9 {
-      float: left;
-    }
-  }
-}
-@media screen and (min-width: 1200px) {
-  .content-wrapper {
-    .result_list.col9,
-    .result-list.col9 {
-      width: 80%;
-    }
-  }
+
 }

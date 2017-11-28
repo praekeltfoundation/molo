@@ -13,6 +13,11 @@
                     float: left;
                     min-height: 35px;
                 }
+                &.icon-spinner {
+                  &:before {
+                      min-height: 0;
+                  }
+                }
             }
         }
 
@@ -20,6 +25,7 @@
             z-index: 99999;
             .menu-item a {
                 padding-left: 3.5em;
+                padding-right: 1em;
                 &:before {
                   position: inherit;
                   left: 0;
