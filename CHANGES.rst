@@ -1,3 +1,7 @@
+6.0.2
+~~~~~
+- Eliminated the use of __latest__ in migration dependencies
+
 6.0.1
 ~~~~~
 - Upgraded to Wagtail 1.13
