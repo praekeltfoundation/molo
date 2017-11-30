@@ -4,12 +4,6 @@ WAGTAIL ADMIN
 */
 @import "../utilities/*";
 @import "modules/*";
-html,body {
-    ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
-        border-radius: 0;
-    }
-}
-
 .content-wrapper {
   .pagination {padding: 0 15px;}
   .pagination.col9 {

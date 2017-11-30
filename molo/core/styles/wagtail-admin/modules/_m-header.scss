@@ -1,0 +1,7 @@
+header {
+    @media screen and (min-width: 50em) {
+        .no-border, .tab-merged {
+            padding-bottom: 0;
+        }
+    }
+}
