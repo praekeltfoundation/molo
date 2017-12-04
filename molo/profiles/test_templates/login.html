@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1 class="heading heading--profiles">{% trans "Log in" %}</h1>
+
+<div class="call-to-action call-to-action--profile">
+	<h5 class="call-to-action__nav-item call-to-action__nav-item--challenge">{% trans "Not a member yet?" %}</h5>
+	<a href="{% url "molo.profiles:user_register" %}" class="call-to-action__nav-item call-to-action__nav-item--login">{% trans "Register" %}</a>
+</div>
+
+<h4 class="heading heading--subtitle">
+    Login by signing in below.
+</h4>
+<div class="profiles">
+	<form method="post" action="" class="profiles__form">
+	{% csrf_token %}
+	{% if form.errors %}
+		<span class="error">
+			{% trans "Your username and password do not match. Please try again." %}
+		</span>
+	{% endif %}
+
+	<fieldset>
+		<label for="id_username">{% trans "Username" %}</label>
+		{{form.username}}
+	</fieldset>
+
+	<fieldset>
+		<label for="id_password">{% trans "4-digit pin" %}</label>
+		{{form.password}}
+		<span class="input-hint">({% trans "Eg.: 2086" %})</span>
+	</fieldset>
+	<input type="submit" value="{% trans "Log in" %}">
+	<input type="hidden" name="next" value="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url "molo.profiles:login_success" %}{% endif %}" />
+	</form>
+	<a href="{% url "molo.profiles:forgot_password" %}" class="profiles__forgotten-password">{% trans "Forgotten your password?" %}</a>
+</div>
+
+{% endblock %}

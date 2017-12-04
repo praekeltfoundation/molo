@@ -25,6 +25,7 @@ from wagtail.contrib.modeladmin.options import modeladmin_register
 from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
 from molo.core.api import urls as molo_api_urls
+from molo.core import views as views
 
 
 @hooks.register('register_admin_urls')
@@ -32,7 +33,7 @@ def urlconf_translations():
     return [
         url(
             r'^translations/add/(?P<page_id>\d+)/(?P<locale>[\w\-\_]+)/$',
-            'molo.core.views.add_translation',
+            views.add_translation,
             name='add_translation'),
     ]
 
