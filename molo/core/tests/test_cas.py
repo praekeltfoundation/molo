@@ -1,34 +1,11 @@
 from mock import patch
-from django.test import TestCase, Client, override_settings
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from django.conf.urls import patterns, url, include
 from django.contrib.contenttypes.models import ContentType
-
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.urls import urlpatterns
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtailcore import urls as wagtail_urls
+from molo.core.models import Main
 from django.contrib.auth.models import Group, Permission
 from wagtail.wagtailcore.models import GroupPagePermission
-
-urlpatterns += patterns(
-    '',
-    url(
-        r'^profiles/login/$',
-        'django.contrib.auth.views.login',
-        name='auth_login'),
-    url(
-        r'^profiles/logout/$',
-        'django.contrib.auth.views.logout',
-        name='auth_logout'),
-    url('^', include('django.contrib.auth.urls')),
-    url(r'^admin/', include(wagtailadmin_urls)),
-    url(r'^profiles/',
-        include('molo.profiles.urls',
-                namespace='molo.profiles',
-                app_name='molo.profiles')),
-    url(r'', include(wagtail_urls)),
-)
 
 
 class CASTestCase(TestCase, MoloTestCaseMixin):
@@ -89,7 +66,6 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True',
              'is_admin': 'True', 'email': 'root@example.com'},
             None)
-
         response = self.client.get(
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
@@ -115,6 +91,51 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             follow=True)
 
         self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
+
+    @patch('cas.CASClientV2.verify_ticket')
+    def test_user_only_able_to_login_to_sites_where_it_has_permissions_to(
+            self, mock_verify):
+        self.mk_main2()
+        service = ('http%3A%2F%2Ftestserver'
+                   '%2Fadmin%2Flogin%2F%3Fnext%3D%252Fadmin%252F')
+
+        mock_verify.return_value = (
+            'test@example.com',
+            {'ticket': 'fake-ticket', 'service': service, 'has_perm': 'True',
+             'is_admin': 'False'},
+            None)
+
+        response = self.client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+
+        self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
+        response = self.client.get('/admin/logout/', follow=True)
+        response = self.client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+        self.assertContains(
+            response, 'You do not have permssion to access this site.',
+            status_code=403)
+        user = User.objects.get(username='test@example.com')
+        user.profile.admin_sites.add(Main.objects.first().get_site())
+        response = self.client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+
+        self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
+        response = self.client.get('/admin/logout/', follow=True)
+        client = Client(HTTP_HOST=Main.objects.last().get_site().hostname)
+        response = client.get(
+            '/admin/login/',
+            {'ticket': 'fake-ticket', 'next': '/admin/'},
+            follow=True)
+        self.assertContains(
+            response, 'You do not have permssion to access this site.',
+            status_code=403)
 
     @patch('cas.CASClientV2.verify_ticket')
     def test_failed_login(self, mock_verify):
@@ -187,13 +208,11 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             response.request.get('QUERY_STRING'),
             'service=http%3A%2F%2Ftestserver%2F')
 
-    @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
     def test_normal_profiles_login_works_when_cas_enabled(self):
         client = Client()
         response = client.get('/profiles/login/')
         self.assertEquals(response.status_code, 200)
 
-    @override_settings(ROOT_URLCONF='molo.core.tests.test_cas')
     def test_normal_profiles_logout_works_when_cas_enabled(self):
         client = Client()
         User.objects.create_user(

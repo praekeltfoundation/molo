@@ -1,10 +1,10 @@
 import uuid
+import django.utils.deprecation
 
 from bs4 import BeautifulSoup
 
 from django.http import HttpResponseForbidden
 from django.views.defaults import permission_denied
-
 from django_cas_ng.middleware import CASMiddleware
 from django_cas_ng.views import login as cas_login, logout as cas_logout
 from django.contrib.auth.views import login, logout
@@ -53,7 +53,7 @@ class MoloCASMiddleware(CASMiddleware):
             request, view_func, view_args, view_kwargs)
 
 
-class Custom403Middleware(object):
+class Custom403Middleware(django.utils.deprecation.MiddlewareMixin):
     """Catches 403 responses and raises 403 which allows for custom 403.html"""
     def process_response(self, request, response):
         storage = get_messages(request)
@@ -64,7 +64,7 @@ class Custom403Middleware(object):
         return response
 
 
-class ForceDefaultLanguageMiddleware(object):
+class ForceDefaultLanguageMiddleware(django.utils.deprecation.MiddlewareMixin):
     """
     Ignore Accept-Language HTTP headers
 
@@ -81,7 +81,7 @@ class ForceDefaultLanguageMiddleware(object):
             del request.META['HTTP_ACCEPT_LANGUAGE']
 
 
-class AdminLocaleMiddleware(object):
+class AdminLocaleMiddleware(django.utils.deprecation.MiddlewareMixin):
     """Ensures that the admin locale doesn't change with user selection"""
     def process_request(self, request):
         if request.path.startswith('/admin/') or \
@@ -89,7 +89,7 @@ class AdminLocaleMiddleware(object):
             activate(settings.ADMIN_LANGUAGE_CODE)
 
 
-class NoScriptGASessionMiddleware(object):
+class NoScriptGASessionMiddleware(django.utils.deprecation.MiddlewareMixin):
     """Store a unique session key for use with GTM"""
     def process_request(self, request):
         if 'MOLO_GA_SESSION_FOR_NOSCRIPT' not in request.session:
@@ -97,7 +97,7 @@ class NoScriptGASessionMiddleware(object):
                 'MOLO_GA_SESSION_FOR_NOSCRIPT'] = uuid.uuid4().hex
 
 
-class MoloGoogleAnalyticsMiddleware(object):
+class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
     """Uses GA IDs stored in Wagtail to track pageviews using celery"""
     def submit_tracking(self, account, request, response):
         try:
@@ -141,10 +141,11 @@ class MoloGoogleAnalyticsMiddleware(object):
         return response
 
 
-class MultiSiteRedirectToHomepage(object):
+class MultiSiteRedirectToHomepage(django.utils.deprecation.MiddlewareMixin):
 
     def process_request(self, request):
-        if request.path.startswith('/admin/pages/'):
+        if request.path.startswith('/admin/pages/') and \
+                not request.path.startswith('/admin/pages/moderation/'):
             current_site = Site.find_for_request(request)
             func, args, kwargs = resolve(request.path)
             if args:

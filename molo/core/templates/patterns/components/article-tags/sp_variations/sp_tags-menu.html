@@ -1,0 +1,12 @@
+{% load wagtailcore_tags core_tags i18n %}
+{% block tag_menu_homepage %}
+<div class="tag-cloud">
+  <div class="tag-cloud__icon"></div>
+  <div class="tag-cloud__container">
+    <div class="tag-cloud__heading">
+      <h4>{% trans "Read stories about"%}</h4>
+    </div>
+    {% include "patterns/basics/article-tags/sp_variations/sp_article-tags.html" %}
+  </div>
+</div>
+{% endblock %}

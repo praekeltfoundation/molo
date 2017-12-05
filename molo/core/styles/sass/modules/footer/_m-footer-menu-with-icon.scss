@@ -1,0 +1,55 @@
+.navigation-footer {
+    .nav-list {
+        &--with-icon {
+            padding: 0;
+            border-top: 2px solid #07292f;
+        }
+        &__item {
+            &--with-icon {
+                display: block;
+                border: none;
+                color: #5a5d5e;
+                font-size: 13px;
+                border-bottom: 1px solid #B0B9BB;
+                padding: 10px 15px 15px;
+                overflow: auto;
+            }
+        }
+        &__anchor {
+            &--with-icon {
+                color: #5a5d5e;
+                display: block;
+                &:after {
+                    display: inline-block;
+                    float: right;
+                    @media only screen and (min-width: 320px) {
+                        content: ">";
+                    }
+                    @media only screen and (min-width: 490px) {
+                        content: "❯";
+                    }
+                }
+                &-title {
+                    display: inline-block;
+                }
+            }
+        }
+
+        &__thumbnail {
+            display: inline-block;
+            height: auto;
+            float: left;
+            width: auto;
+            &-icon {
+                padding: 0 5px 0;
+                display: block;
+            }
+        }
+
+        &__desc {
+            &--with-icon {
+                display: none;
+            }
+        }
+    }
+}

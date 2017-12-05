@@ -1,0 +1,28 @@
+html, body  {
+  background-color: #b7b9bc;
+  margin: 0 auto;
+  max-width: 35em;
+  font-size: 16px;
+  font-family: $font-helvetica-neue;
+  position: relative;
+  @media (min-device-width: 320px) {
+    max-width: 20em;
+    font-family: $font-quicksand;
+  }
+}
+body {background-color: #fff;}
+body.iframe-container {background-color: #f5f3f5;}
+a {
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+h1,h2,h3,h4,h5,h6,p {
+  margin: 0;
+}
+ul,li,ol {
+  margin: 0;
+}

@@ -1,0 +1,29 @@
+.carousel-teaser {
+  overflow: auto;
+  &-list {
+    display: inline-block;
+    padding: 0 10px;
+  }
+  &__item {
+    list-style-type: none;
+    padding: 10px 0;
+  }
+  &__thumbnail {
+    margin: 0 auto;
+    text-align: center;
+    display: block;
+  }
+  &__thumbnail-link {
+    cursor: pointer;
+    outline: none;
+  }
+  &__title {
+    text-align: center;
+    &-link {
+      color: gray;
+    }
+  }
+  &__subtitle {
+    text-align: center;
+  }
+}

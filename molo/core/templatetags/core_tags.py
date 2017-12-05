@@ -15,7 +15,7 @@ register = template.Library()
 
 
 def get_language(site, locale):
-    language_cache_key = 'get_pages_language_{}_{}'.format(site, locale)
+    language_cache_key = 'get_pages_language_{}_{}'.format(site.pk, locale)
     language = cache.get(language_cache_key)
     if not language:
         language = Languages.for_site(site).languages.filter(
@@ -72,12 +72,10 @@ def load_tags(context):
 def load_sections(context):
     request = context['request']
     locale = context.get('locale_code')
-
     if request.site:
         qs = request.site.root_page.specific.sections()
     else:
         qs = []
-
     return get_pages(context, qs, locale)
 
 
@@ -104,7 +102,6 @@ def get_parent(context, page):
 )
 def section_listing_homepage(context):
     locale_code = context.get('locale_code')
-
     return {
         'sections': load_sections(context),
         'request': context['request'],
@@ -139,7 +136,6 @@ def latest_listing_homepage(context, num_count=5):
             .latest_articles()
     else:
         articles = []
-
     return {
         'articles': get_pages(context, articles, locale)[:num_count],
         'request': context['request'],
@@ -159,7 +155,7 @@ def topic_of_the_day(context):
         articles = request.site.root_page.specific \
             .topic_of_the_day()
     else:
-        articles = ArticlePage.objects.None()
+        articles = ArticlePage.objects.none()
 
     return {
         'articles': get_pages(context, articles, locale),
@@ -522,10 +518,18 @@ def get_tag_articles(
 
 @register.assignment_tag(takes_context=True)
 def load_tags_for_article(context, article):
+    if not article.specific.__class__ == ArticlePage:
+        return None
 
-    if article.specific.__class__ == ArticlePage:
-        locale = context.get('locale_code')
-        request = context['request']
+    locale = context.get('locale_code')
+    request = context['request']
+
+    cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
+        locale, request.site.pk, article.pk,
+        article.latest_revision_created_at.isoformat())
+    tags_pks = cache.get(cache_key)
+
+    if not tags_pks:
         tags = [
             article_tag.tag.pk for article_tag in
             article.specific.get_main_language_page().nav_tags.all()
@@ -533,9 +537,14 @@ def load_tags_for_article(context, article):
         if tags and request.site:
             qs = Tag.objects.descendant_of(
                 request.site.root_page).live().filter(pk__in=tags)
+            tags_pks = qs.values_list("pk", flat=True)
+            cache.set(cache_key, tags_pks, 300)
         else:
             return []
-        return get_pages(context, qs, locale)
+
+    qs = Tag.objects.descendant_of(
+        request.site.root_page).live().filter(pk__in=tags_pks)
+    return get_pages(context, qs, locale)
 
 
 @register.assignment_tag(takes_context=True)
@@ -629,24 +638,26 @@ def handle_markdown(value):
     'core/tags/social_media_footer.html',
     takes_context=True
 )
-def social_media_footer(context):
+def social_media_footer(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
     social_media = SiteSettings.for_site(request.site).\
         social_media_links_on_footer_page
 
-    return {
+    data = {
         'social_media': social_media,
         'request': context['request'],
         'locale_code': locale,
+        'page': page,
     }
+    return data
 
 
 @register.inclusion_tag(
     'core/tags/social_media_article.html',
     takes_context=True
 )
-def social_media_article(context):
+def social_media_article(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
     site_settings = SiteSettings.for_site(request.site)
@@ -661,12 +672,14 @@ def social_media_article(context):
     else:
         twitter = False
 
-    return {
+    data = {
         'facebook': facebook,
         'twitter': twitter,
         'request': context['request'],
         'locale_code': locale,
+        'page': page,
     }
+    return data
 
 
 @register.assignment_tag(takes_context=True)

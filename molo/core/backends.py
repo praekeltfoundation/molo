@@ -13,6 +13,7 @@ class MoloModelBackend(ModelBackend):
 
     def authenticate(
             self, request, username=None, password=None, *args, **kwargs):
+
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
         try:
@@ -29,9 +30,9 @@ class MoloModelBackend(ModelBackend):
 
 class MoloCASBackend(CASBackend):
 
-    def authenticate(self, ticket, service, request):
+    def authenticate(self, request, ticket, service):
         user = super(
-            MoloCASBackend, self).authenticate(ticket, service, request)
+            MoloCASBackend, self).authenticate(request, ticket, service)
         if user is None:
             return None
 
@@ -46,8 +47,13 @@ class MoloCASBackend(CASBackend):
             else:
                 wagtail_login_only_group = Group.objects.filter(
                     name='Wagtail Login Only').first()
-                if wagtail_login_only_group:
+                if wagtail_login_only_group and not user.groups.exists():
                     user.groups.add(wagtail_login_only_group)
+
+                elif not user.profile.admin_sites.filter(
+                        pk=request.site.pk).exists():
+                    return None
+
                 """
                 TODO: Handle case where Moderator group does not exist.
                 We need to log this or find ways of notifying users that

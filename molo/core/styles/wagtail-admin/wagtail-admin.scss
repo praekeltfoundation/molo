@@ -1,0 +1,29 @@
+/*
+CORE STYLE OVERIDES
+WAGTAIL ADMIN
+*/
+@import "../utilities/*";
+@import "modules/*";
+.content-wrapper {
+  .pagination {padding: 0 15px;}
+  .pagination.col9 {
+    width: 100%;
+    p {padding: 15px 0 0;}
+    ul {padding: 0 45px;}
+  }
+  .listing {
+    &.full-width {
+      margin-bottom: 0;
+    }
+  }
+}
+//COMMENT TABLE CONTENT
+.submit-row .button {
+  margin: 0 0 8px 0;
+}
+
+@media screen and (min-width: 90em) {
+  .wrapper {
+    max-width: 100%;
+  }
+}

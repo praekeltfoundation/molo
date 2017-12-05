@@ -1,6 +1,8 @@
+import csv
 import random
 import logging
 
+from io import BytesIO
 from datetime import datetime
 
 from celery import task
@@ -12,7 +14,6 @@ from django.template.loader import render_to_string
 from django.core import management
 from django.contrib.auth.models import User
 
-from molo.core.content_import import api
 from molo.core.utils import create_new_article_relations
 from molo.core.models import (
     Site,
@@ -33,6 +34,8 @@ from molo.core.api.importers import (
     ContentImporter,
     Logger,
 )
+from molo.core.api.constants import ACTION
+
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
@@ -230,12 +233,14 @@ def send_validate_email(to_email, context):
     email_message.send()
 
 
-def send_copy_email(to_email, context):
+def send_copy_email(to_email, context, csv=None):
     from_email = settings.FROM_EMAIL
     subject = settings.CONTENT_COPY_SUBJECT \
         if hasattr(settings, 'CONTENT_COPY_SUBJECT') else 'Molo Content Copy'
     body = render_to_string(COPY_EMAIL_TEMPLATE, context)
     email_message = EmailMessage(subject, body, from_email, [to_email])
+    if csv:
+        email_message.attach('file.csv', csv.getvalue(), 'text/csv')
     email_message.send()
 
 
@@ -247,36 +252,6 @@ def send_copy_failed_email(to_email, context):
     body = render_to_string(COPY_FAILED_EMAIL_TEMPLATE, context)
     email_message = EmailMessage(subject, body, from_email, [to_email])
     email_message.send()
-
-
-@task(ignore_result=True)
-def import_content(data, locales, username, email, host):
-    repos = api.get_repos(data)
-    result = api.validate_content(repos, locales)
-
-    if not result['errors']:
-        api.import_content(repos, locales)
-
-    send_import_email(email, {
-        'name': username,
-        'host': host,
-        'errors': result['errors'],
-        'warnings': result['warnings']
-    })
-
-
-@task(ignore_result=True)
-def validate_content(data, locales, username, email, host):
-    repos = api.get_repos(data)
-    result = api.validate_content(repos, locales)
-
-    send_import_email(email, {
-        'name': username,
-        'host': host,
-        'type': 'import_failure',
-        'errors': result['errors'],
-        'warnings': result['warnings']
-    })
 
 
 @task(ignore_result=True)
@@ -386,31 +361,47 @@ def import_site(root_url, site_pk, user_pk):
             foreign_id=foreign_tag_index_page_id,
             existing_node=tag_index_page)
 
-        print("Creating Recommended Articles")
+        logger.log(ACTION, "Creating Recommended Articles")
         content_importer.create_recommended_articles()
 
-        print("Creating Related Sections")
+        logger.log(ACTION, "Creating Related Sections")
         content_importer.create_related_sections()
 
-        print("Creating Nav Tag Relationships")
+        logger.log(ACTION, "Creating Nav Tag Relationships")
         content_importer.create_nav_tag_relationships()
 
-        print("Creating Section Tag Relationships")
+        logger.log(ACTION, "Creating Section Tag Relationships")
         content_importer.create_section_tag_relationship()
 
-        print("Creating Banner Page Links")
+        logger.log(ACTION, "Creating Banner Page Links")
         content_importer.create_banner_page_links()
 
-        print("Recreate Article Body")
+        logger.log(ACTION, "Recreating Article Body")
         content_importer.recreate_article_body()
 
+        # create CSV
+        foreign_local_map = record_keeper.foreign_local_map["page_map"]
+
+        csvfile = BytesIO()
+        writer = csv.writer(csvfile)
+
+        rows = [["foreign_id", "local_id"]]
+        for foreign_id, local_id in foreign_local_map.iteritems():
+            rows.append([foreign_id, local_id])
+
+        writer.writerows(rows)
+
         # send email
-        send_copy_email(user.email, {
-            'name': (user.get_full_name() or user.username) if user else None,
-            'source': root_url,
-            'to': site.root_url,
-            'logs': logger.get_email_logs(),
-        })
+        send_copy_email(
+            user.email,
+            {
+                'name': ((user.get_full_name() or user.username)
+                         if user else None),
+                'source': root_url,
+                'to': site.root_url,
+                'logs': logger.get_email_logs()
+            },
+            csv=csvfile)
     except Exception, e:
         logging.error(e, exc_info=True)
         send_copy_failed_email(user.email, {

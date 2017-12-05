@@ -98,7 +98,6 @@ class SiteSettings(BaseSetting):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
     ga_tag_manager = models.CharField(
         verbose_name=_('Local GA Tag Manager'),
         max_length=255,
@@ -118,6 +117,14 @@ class SiteSettings(BaseSetting):
             " to view analytics on more than one site globally")
     )
 
+    fb_analytics_app_id = models.CharField(
+        verbose_name=_('Facebook Analytics App ID'),
+        max_length=25,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The tracking ID to be used to view Facebook Analytics")
+    )
     local_ga_tracking_code = models.CharField(
         verbose_name=_('Local GA Tracking Code'),
         max_length=255,
@@ -195,6 +202,33 @@ class SiteSettings(BaseSetting):
         help_text='Enable tag navigation. When this is true, the clickable '
                   'tag functionality will be overriden'
     )
+    enable_service_directory = models.BooleanField(
+        default=False, verbose_name='Enable service directory'
+    )
+    service_directory_api_base_url = models.CharField(
+        verbose_name=_('service directory base url'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    service_directory_api_username = models.CharField(
+        verbose_name=_('service directory username'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    service_directory_api_password = models.CharField(
+        verbose_name=_('service directory password'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    google_places_api_server_key = models.CharField(
+        verbose_name=_('google places server key'),
+        max_length=255,
+        null=True,
+        blank=True,
+    )
 
     panels = [
         ImageChooserPanel('logo'),
@@ -203,6 +237,12 @@ class SiteSettings(BaseSetting):
                 FieldPanel('show_only_translated_pages'),
             ],
             heading="Multi Language",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('fb_analytics_app_id'),
+            ],
+            heading="Facebook Analytics Settings",
         ),
         MultiFieldPanel(
             [
@@ -258,6 +298,16 @@ class SiteSettings(BaseSetting):
                 FieldPanel('enable_tag_navigation'),
             ],
             heading="Article Tag Settings"
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('enable_service_directory'),
+                FieldPanel('service_directory_api_base_url'),
+                FieldPanel('service_directory_api_username'),
+                FieldPanel('service_directory_api_password'),
+                FieldPanel('google_places_api_server_key'),
+            ],
+            heading="Service Directory API Settings"
         )
     ]
 
@@ -279,8 +329,11 @@ class ImageInfo(models.Model):
 @receiver(
     post_save, sender=Image, dispatch_uid="create_image_info")
 def create_image_info(sender, instance, **kwargs):
-    if not hasattr(instance, 'image_info'):
-        ImageInfo.objects.create(image=instance)
+    image_info, created = ImageInfo.objects.get_or_create(image=instance)
+    # ensure that image info is updated, in the event that an
+    # image is changed e.g. file is changed, prompting change in hash
+    if not created:
+        image_info.save()
 
 
 class ImportableMixin(object):
@@ -457,17 +510,10 @@ class LanguageRelation(models.Model):
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
         return "get_translation_for_{}_{}_{}_{}_{}".format(
-            self.pk, locale, site, is_live,
+            self.pk, locale, site.pk, is_live,
             self.latest_revision_created_at.isoformat())
 
     def get_translation_for(self, locale, site, is_live=True):
-        language_setting = Languages.for_site(site)
-        language = language_setting.languages.filter(
-            locale=locale).first()
-
-        if not language:
-            return None
-
         cache_key = self.get_translation_for_cache_key(locale, site, is_live)
         trans_pk = cache.get(cache_key)
 
@@ -475,6 +521,13 @@ class TranslatablePageMixinNotRoutable(object):
         # memory
         if trans_pk:
             return Page.objects.get(pk=trans_pk).specific
+
+        language_setting = Languages.for_site(site)
+        language = language_setting.languages.filter(
+            locale=locale).first()
+
+        if not language:
+            return None
 
         main_language_page = self.get_main_language_page()
         if language.is_main_language and not self == main_language_page:
@@ -598,12 +651,12 @@ class TranslatablePageMixinNotRoutable(object):
         if main_lang.locale == locale_code:
             translation = parent
 
-        path_components = [
-            component for component in request.path.split('/') if component]
-        if path_components and path_components[-1] != 'noredirect' and \
-                translation and language_rel.language.locale != locale_code:
-            return redirect(
-                '%s?%s' % (translation.url, request.GET.urlencode()))
+        if translation and language_rel.language.locale != locale_code:
+            if request.GET.urlencode():
+                return redirect("{}?{}".format(translation.url,
+                                               request.GET.urlencode()))
+            else:
+                return redirect(translation.url)
 
         return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)
@@ -624,6 +677,7 @@ def clear_translation_cache(sender, instance, **kwargs):
                 lang.locale, site, True))
             cache.delete(parent.get_translation_for_cache_key(
                 lang.locale, site, False))
+
 
 page_unpublished.connect(clear_translation_cache)
 
@@ -724,6 +778,7 @@ class Tag(TranslatablePageMixin, Page, ImportableMixin):
         "id", "title", "feature_in_homepage", "go_live_at",
         "expire_at", "expired"
     ]
+
 
 Tag.promote_panels = [
     FieldPanel('feature_in_homepage'),
@@ -1121,6 +1176,13 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         return main.sites_rooted_here.all().first()
 
     def get_effective_extra_style_hints(self):
+        cache_key = "effective_extra_style_hints_{}_{}".format(
+            self.pk, self.latest_revision_created_at.isoformat())
+        style = cache.get(cache_key)
+
+        if style is not None:
+            return style
+
         if self.extra_style_hints:
             return self.extra_style_hints
 
@@ -1138,11 +1200,15 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         if language_rel and main_lang.pk == language_rel.language.pk:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
             if parent_section:
-                return parent_section.get_effective_extra_style_hints()
+                style = parent_section.get_effective_extra_style_hints()
+                cache.set(cache_key, style, 300)
+                return style
             return ''
         else:
             page = self.get_main_language_page()
-            return page.specific.get_effective_extra_style_hints()
+            style = page.specific.get_effective_extra_style_hints()
+            cache.set(cache_key, style, 300)
+            return style
 
     def get_effective_image(self):
         if self.image:
@@ -1508,6 +1574,17 @@ class ArticlePageLanguageProxy(ArticlePage):
         verbose_name_plural = _('Article View')
 
     objects = ArticlePageLanguageManager()
+
+    @classmethod
+    def get_indexed_objects(cls):
+        '''
+        Wagtail's ElasticSearch indexing adds all instances of
+        a given model to the index which is causing duplicate
+        articles in the search result.
+        This get_indexed_objects method will exclude
+        ArticlePageLanguageProxy items to be indexed
+        '''
+        return cls.objects.none()
 
 
 class SectionPageTags(Orderable):

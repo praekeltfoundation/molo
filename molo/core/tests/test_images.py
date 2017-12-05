@@ -7,6 +7,7 @@ from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 
 from molo.core.models import ImageInfo
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.tests.constants import TEST_IMAGE_HASH
 
 
 @override_settings(MEDIA_ROOT=join(settings.PROJECT_ROOT, 'media'))
@@ -31,7 +32,7 @@ class TestImageInfoObject(MoloTestCaseMixin, TestCase):
 
         # check image hash in image info is correct
         image_info = ImageInfo.objects.first()
-        self.assertEquals(image_info.image_hash, '0000000000000000')
+        self.assertEquals(image_info.image_hash, TEST_IMAGE_HASH)
         self.assertEquals(image_info.image, image)
 
     def test_attaching_image_info(self):
@@ -54,7 +55,7 @@ class TestImageInfoObject(MoloTestCaseMixin, TestCase):
 
         image_info.refresh_from_db()
         # check image hash in image info is correct
-        self.assertEquals(image_info.image_hash, '0000000000000000')
+        self.assertEquals(image_info.image_hash, TEST_IMAGE_HASH)
         self.assertEquals(image_info.image, image)
 
     def test_attaching_image_info_save_image_twice(self):
@@ -81,3 +82,27 @@ class TestImageInfoObject(MoloTestCaseMixin, TestCase):
 
         self.assertEquals(Image.objects.count(), 0)
         self.assertEquals(ImageInfo.objects.count(), 0)
+
+    def test_image_info_updated_on_file_change(self):
+        file_1 = get_test_image_file(colour='black', size=(100, 100))
+        file_2 = get_test_image_file(colour='white', size=(80, 80))
+
+        image = Image.objects.create(
+            title="Test image",
+            file=file_1,
+        )
+
+        id_ = image.id
+        original_hash = image.image_info.image_hash
+
+        image.file = file_2
+        image.save()
+
+        updated_image = Image.objects.get(id=id_)
+
+        new_hash = updated_image.image_info.image_hash
+
+        self.assertNotEqual(
+            original_hash,
+            new_hash
+        )

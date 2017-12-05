@@ -1,0 +1,68 @@
+$string: 's';
+$enhanced: 'dropdown';
+.language, .language#{$string} {
+    $block: unquote("#{&}");
+    &-current {
+      padding: 10px 15px 0 5px;
+      display: inline-block;
+      &__label {
+        font-weight: bold;
+        &:after { content: ":"; }
+      }
+      &__selected { display: inline-block; }
+    }
+    &-select {
+        padding: 5px 15px;
+        &__toggle-input {
+            visibility: hidden;
+            position: absolute;
+            display: none;
+            &:not(checked) ~ .language-select { display: none; }
+            &:checked ~ .language-select { display: block; }
+        }
+        &__change-label {
+          display: inline-block;
+          cursor: pointer;
+          text-decoration: underline;
+          padding: 10px;
+          font-size: 13px;
+        }
+
+        //There stylesheets are orderd alphabetically - Cascase is not inforced.
+        //Add one layer of parent dependency div to enforce it.
+        .language-list {
+            &--#{$enhanced} {
+                padding: 0;
+            }
+
+            &__item {
+                &--#{$enhanced} {
+                  display: block;
+                  text-align: right;
+                  padding: 5px 0;
+                }
+            }
+
+            &__anchor {
+                color: #5a5d5e;
+                &--#{$enhanced} {
+                  display: block;
+                  color: #5a5d5e;
+                  &:after {
+                    padding: 0 0 0 5px;
+                    @media screen and (min-width: 320px) {
+                      content: ">"; }
+                    @media screen and (min-width: 490px) {
+                      content: "❯";  }
+                  }
+                  .is-active {
+                    text-decoration: underline;
+                    &:after {
+                      text-decoration: none;
+                    }
+                  }
+                }
+            }
+        }
+    }
+}

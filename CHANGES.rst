@@ -1,4 +1,131 @@
-5.14.0
+6.1.0
+~~~~~
+- Official release of Molo 6
+- No longer supporting Django 1.9, see upgrade considerations
+  https://docs.djangoproject.com/en/2.0/releases/1.10/
+- Upgraded to Wagtail 1.13x
+- Molo Profiles no longer exists as a separate plugin, it now exists within Molo core
+
+6.0.3
+~~~~~
+- Update develop 6x with develop
+
+6.0.2
+~~~~~
+- Eliminated the use of __latest__ in migration dependencies
+
+6.0.1
+~~~~~
+- Upgraded to Wagtail 1.13
+- Dropped support for Django 1.9x, Now supports Django 1.10x
+
+6.0.2-beta.1
+~~~~~~~~~~~~
+- Pulled latest changes from develop
+
+6.0.1-beta.1
+~~~~~~~~~~~~
+- Upgraded to Wagtail 1.13
+
+6.0.0
+~~~~~~
+- Upgraded to Django 1.10, No longer supporting Django 1.9
+- Upgraded to Wagtail 1.10
+- Profiles plugin now exists within Molo Core
+
+5.22.5
+~~~~~~
+- Admin View scroller fixes
+
+5.22.4
+~~~~~~
+- Admin View vertical scrolling touchpad bug fixed
+- Scroller added on other Admin Views
+- overlapping edit/delete controls fix on Admin View lists
+
+5.22.3
+~~~~~~
+- Exclude ArticlePageLanguageProxy from being indexed
+- Use strings for paths
+- Run part of the test suite on Python 3
+
+5.22.2
+~~~~~~
+- Fix Admin View scroller styles
+
+5.22.1
+~~~~~~
+- Admin View FED bug fixes updates
+
+5.22.0
+~~~~~~
+- Remove UC content import
+
+5.21.4
+~~~~~~
+- Wagtail style reverts and cleanup
+
+5.21.3
+~~~~~~
+- Admin View FED updates
+>>>>>>> 782c0cdd55db211b8dc80e3538ebeeb44cabb705
+
+5.21.2
+~~~~~~
+- Bug fix: exclude pages that are submitted for moderation from MultiSiteRedirect
+
+5.21.1
+~~~~~~
+- Continued update to front end setup. See PR#465 for more details
+
+5.21.0
+~~~~~~
+- Update the project setup. See PR#477 for more details
+- Fix Image Hashing update bug
+- Fix errant ? in URLs
+
+5.20.0
+~~~~~~
+- only allow access to sites if the user has permissions for that site
+Note:
+- once upgrading to this version, superusers need to give non-superusers users permissions to access their relevant sites
+- This release would need molo.profile 5.4.1
+
+5.19.0
+~~~~~~
+- Add Facebook Analytics in Site Settings
+
+5.18.1
+~~~~~~
+- Fix duplicate ImageInfo creation when image is saved
+
+5.18.0
+~~~~~~
+- Update image hashing function
+- Update log settings to accomodate api logs
+
+5.17.2
+~~~~~~
+- Bug fix: remove update from social_media template tag
+
+5.17.1
+~~~~~~
+- Allow passing obj to social_media template tag
+
+5.17.0
+~~~~~~
+- Allow adding service directory api settings in CMS
+- Used logging for the api import process
+
+5.16.1
+~~~~~~
+- Add more caching to improve performance
+
+5.16.0
+~~~~~~
+- add CSV mapping foreing page IDs to local IDs, to success email when site has been imported
+
+5.15.0
 ~~~~~~
 - add management command to add tag to article
 - add management command to set promotion date on article

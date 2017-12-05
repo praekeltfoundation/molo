@@ -1,0 +1,13 @@
+.promoted-article {
+    &-list {
+        &__item--theme-headings {
+            padding: 5px 0;
+            border-top-style: dotted;
+            border-top-width: 1px;
+            border-bottom: none;
+        }
+        &__desc-theme-headings {
+          padding: 10px 15px;
+        }
+    }
+}

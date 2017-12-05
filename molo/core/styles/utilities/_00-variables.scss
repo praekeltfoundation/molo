@@ -1,0 +1,63 @@
+$font-xx-large          :       32px;
+$font-x-large           :       24px;
+$font-large             :       22px;
+$font-medium            :       18px;
+$font-small             :       16px;
+$font-x-small           :       14px;
+$font-xx-small          :       12px;
+
+$alignment: (
+    'right',
+    'center',
+    'left'
+);
+$scale: (
+    alpha               :       12,
+    beta                :       14,
+    gamma               :       16,
+    delta               :       18,
+    eta                 :       22,
+    zeta                :       24,
+    omega               :       32
+);
+
+$breakpoint-x-small     :       240px;
+$breakpoint-small       :       320px;
+$breakpoint-medium      :       502px;
+$breakpoint-large       :       897px;
+
+$heading-xx-large: (
+  null                  :       17px,
+  $breakpoint-x-small   :       24px,
+  $breakpoint-small     :       32px
+);
+$heading-x-large: (
+  null                  :       16px,
+  $breakpoint-x-small   :       22px,
+  $breakpoint-small     :       24px
+);
+$heading-large: (
+  null                  :       14px,
+  $breakpoint-x-small   :       18px,
+  $breakpoint-small     :       22px
+);
+
+
+$sans-serif             :       Helvetica, Arial, sans-serif;
+$serif                  :       Times, serif;
+$font-open-sans         :       "Open Sans", $sans-serif;
+$font-helvetica-neue    :       "Helvetica Neue", $sans-serif;
+$font-quicksand         :       "Quicksand", $sans-serif;
+$font-roboto            :       "Roboto", $sans-serif;
+
+// Vanilla notify
+$vn-border-radius: 5px !default;
+$vn-container-top: 6px !default;
+$vn-container-bottom: 10px !default;
+$vn-container-left: 10px !default;
+$vn-container-right: 6px !default;
+
+$vn-close-size: 15px !default;
+
+$vn-opacity: 1;
+$vn-hover-opacity: .8;

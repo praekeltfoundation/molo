@@ -1,0 +1,102 @@
+.promoted-article {
+    $block: unquote("#{&}");
+    &__title {
+      padding: 0 15px 10px;
+      word-wrap: break-word;
+    }
+    &-list {
+        &__anchor {
+          color: gray;
+          font-weight: bold;
+          text-transform: capitalize;
+          @media screen and (min-width: 320px) {
+            text-decoration: none;
+          }
+        }
+        &__tagname {
+          color: blue;
+          font-weight: bold;
+        }
+        &-tag {
+            &__link {
+              color: #909497;
+            }
+
+            &__label {
+              display: inline-block;
+              color: #909497;
+              padding: 10px;
+              margin: 5px;
+              font-size: 14px;
+              cursor: pointer;
+              line-height: 1.5;
+              text-transform: uppercase;
+              font-weight: 400;
+              &:before {
+                content: "";
+                display: block;
+                color: #000;
+                width: 20px;
+                background: #000;
+                height: 2px;
+                margin-bottom: 8px;
+              }
+            }
+        }
+        &__item {
+            list-style-type: none;
+            display: block;
+            padding: 10px 0 20px;
+            &--hero {
+              #{$block}-list__anchor {
+                padding: 0;
+              }
+              #{$block}-list__image {
+                padding: 0;
+                @media screen and (min-width: 320px) {
+                  float: none;
+                }
+              }
+            }
+            &-standard {
+              border-bottom: 1px solid #e4e4e4;
+              .promoted-article-list__image {
+                padding: 0 15px;
+                @media screen and (min-width: 320px) {
+                  float: right;
+                  padding: 10px 15px 15px 15px;
+                }
+              }
+            }
+            &--label {
+              color: #A6ACAF;
+              text-transform: uppercase;
+              font-size: 14px;
+              padding: 0 0 15px;
+            }
+            &__desc {
+              padding: 0 15px;
+            }
+
+        }
+        &__image-semi-round {
+          border-radius: 5px;
+        }
+        &__image-round {
+          border-radius: 50%;
+        }
+        &__image-none {
+          border-radius: 0;
+        }
+    }
+}
+
+.promoted-page {
+    &-list__anchor {
+      color: #000;
+      display: block;
+      padding: 10px 15px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+}

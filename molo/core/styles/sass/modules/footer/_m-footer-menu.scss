@@ -1,0 +1,41 @@
+$enhanced: 'standard';;
+.navigation-footer {
+    $block: unquote("#{&}");
+    .nav-list {
+        &--#{$enhanced} {
+            @include enhancedPos($alignment);
+        }
+
+        &__item {
+            &--#{$enhanced} {
+                display: inline-block;
+                color: #5a5d5e;
+                font-size: 13px;
+                padding: 5px;
+            }
+        }
+        &__anchor {
+            &--#{$enhanced} {
+                color: #5a5d5e;
+                text-transform: capitalize;
+                text-decoration: underline;
+                &:hover {
+                    color: #a3a3a3;
+                }
+
+                //Does not apply here
+                &-big {
+                    font-size: 18px;
+                    color: #a3a3a3;
+                    text-transform: uppercase;
+                }
+                &-small {
+                    font-size: $font-xx-small;
+                    color: #747474;
+                    text-transform: capitalize;
+                }
+
+            }
+        }
+    }
+}

@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.template.defaultfilters import truncatechars
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from wagtail.contrib.modeladmin.options import (
@@ -226,12 +225,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     def tags_html(self, obj):
         if obj.tags_list():
             display_value = ", ".join(obj.tags_list())
-            result = format_html(
-                '<a href="{}">{}</a>'.format(
-                    reverse("wagtailadmin_pages:edit", args=[obj.id]),
-                    truncatechars(display_value.upper(), 30)
-                )
-            )
+            result = display_value.upper()
             return result
 
     tags_html.short_description = 'Tags'

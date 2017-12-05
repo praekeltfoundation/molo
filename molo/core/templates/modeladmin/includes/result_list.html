@@ -1,0 +1,122 @@
+{% load i18n modeladmin_tags static %}
+{% if results %}
+<div id="content_results_table" class="content__results-table-wrapper">
+<table class="listing full-width">
+    <thead>
+        <tr>
+            {% for header in result_headers %}
+            <th scope="col" {{ header.class_attrib }} >
+                {% if header.sortable %}<a href="{{ header.url_primary }}" id="sortId-{{ header.sort_priority }}" class="icon {% if header.ascending %}icon-arrow-up-after {% else %}icon-arrow-down-after{% endif %}">{% endif %}
+                {{ header.text|capfirst }}
+                {% if header.sortable %}</a>{% endif %}
+           </th>
+           {% endfor %}
+       </tr>
+    </thead>
+    <tbody>
+    {% for result in results %}
+        {% result_row_display forloop.counter0 %}
+    {% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+    <div class="nice-padding no-search-results">
+        <p>{% blocktrans %}Sorry, we didn't find an article with that name. Please try again.{% endblocktrans %}</p>
+    </div>
+{% endif %}
+
+{% block extra_css %}{% endblock %}
+{% block js %}
+    <script src="{% static "js/vanilla-notify.min.js" %}"></script>
+    <script src="{% static "js/jquery.floatThead.min.js" %}"></script>
+    <link type="text/css" href="{% static "js/jquery.mCustomScrollbar.min.css" %}" rel="stylesheet"/>
+    <script src="{% static "js/jquery.mCustomScrollbar.min.js" %}"></script>
+    <script type="text/javascript">
+    (function() {
+        'use strict';
+        //VANILLA NOTIFY
+        var sortItem = document.getElementById("sortId-1");
+        var sortDir;
+        if (sortItem) {
+          if (sortItem.classList.contains("icon-arrow-down-after")) {
+              sortDir = "Ascending";
+          } else if (sortItem.classList.contains("icon-arrow-up-after")) {
+              sortDir = "Descending";
+          }
+          if (sortItem !== null) {
+            vNotify.info({
+                  title: "Sort Filter:",
+                  text: sortItem.innerHTML + " - " + sortDir,
+                  visibleDuration: 5000
+              });
+          }
+        }
+        // Scrollbars
+        $("body").addClass("admin-view");
+        $(".result_list").addClass("result-list");
+        $(".changelist-filter").children().not('h2').wrapAll("<div class='changelist-filter-container'></div>");
+        var resizeTimer;
+        var scroller = (function () {
+          var $windowHeight = $(window).height();
+          $(".result-list").mCustomScrollbar({
+            theme:"dark-2",
+            axis:"yx",
+            setHeight: $windowHeight-128,
+            scrollInertia:100,
+            mouseWheel:{ 
+              axis: "yx",
+              deltaFactor: 1,
+              invert: true,
+              },
+            callbacks:{
+                whileScrolling:function(){
+                    $(".floatThead-container").css("left", this.mcs.left);
+                }
+            },
+          });
+          $(".changelist-filter-container").mCustomScrollbar({
+            theme:"dark-2",
+            setHeight: $windowHeight-160,
+            scrollInertia:100,
+            mouseWheel:{ 
+              deltaFactor: 1,
+              invert: true,
+              },
+          });
+        });
+        var tableHead = (function () {
+          var $table = $("table.listing");
+          $table.floatThead({
+            zIndex:998,
+            responsiveContainer: function($table){
+               return $table.closest('.content__results-table-wrapper');
+           }
+          });
+        });
+
+        $(document).ready(function(){
+          if ($(window).width() < 700) {
+            tableHead();
+          } else {
+            scroller();
+            tableHead();
+          }
+        });
+        
+        $(window).on('resize', function() {
+          $(".result-list",".changelist-filter-container").mCustomScrollbar("destroy");
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(function() {
+            if ($(window).width() < 700) {
+              $("table.listing").floatThead('reflow');
+              $(".result-list").removeAttr("style");
+            } else {
+              scroller();
+              $("table.listing").floatThead('reflow');
+            }
+          }, 250);
+        });
+    })();
+    </script>
+{% endblock %}
