@@ -1,3 +1,11 @@
+6.1.0
+~~~~~
+- Official release of Molo 6
+- No longer supporting Django 1.9, see upgrade considerations
+  https://docs.djangoproject.com/en/2.0/releases/1.10/
+- Upgraded to Wagtail 1.13x
+- Molo Profiles no longer exists as a separate plugin, it now exists within Molo core
+
 6.0.3
 ~~~~~
 - Update develop 6x with develop
