@@ -1,9 +1,13 @@
 .banner {
+  text-align: center;
     &__item-link {
       display: block;
     }
     &__item {
       max-width: 640px;
       width: 100%;
+    }
+    h3,p,a {
+      padding: 5px;
     }
 }

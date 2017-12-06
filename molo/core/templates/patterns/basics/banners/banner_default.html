@@ -16,7 +16,17 @@
     	    {% else %}
     	       {% image bannerpage.banner width-320 %}
     	    {% endif %}
-      	{% endif %}
+      {% else %}
+          <h3>{{ bannerpage.title }}</h3>
+          {% if bannerpage.subtitle %}
+            <p>{{ bannerpage.subtitle }}</p>
+          {% endif %}
+          {% if bannerpage.banner_link_page %}
+    	       <a href="{% pageurl bannerpage.banner_link_page %}" class="banner__item-link">Click Here</a>
+    	    {% elif bannerpage.external_link %}
+    	       <a href="{{ bannerpage.external_link }}" class="banner__item-link">Click Here</a>
+    	    {% endif %}
+      {% endif %}
     </div>
   {% endfor%}
   {% endif %}

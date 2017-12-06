@@ -231,6 +231,7 @@ class MoloTestCaseMixin(object):
             data = {}
             data.update({
                 'title': 'Test Banner {}'.format(i),
+                'subtitle': 'Sample page description for %s' % (i, ),
             })
             data.update(kwargs)
             data.update({
