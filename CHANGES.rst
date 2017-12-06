@@ -1,3 +1,7 @@
+6.1.1
+~~~~~
+- Bug fix: Run wagtailcore migration 40 before molo core migration 34
+
 6.1.0
 ~~~~~
 - Official release of Molo 6
