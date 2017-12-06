@@ -22,7 +22,6 @@ from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
 from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
 from wagtail.wagtailsearch.models import Query
-from wagtail.wagtailadmin.views.pages import copy as wagtail_copy
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     PageTranslation, ArticlePage, Languages, SiteSettings, Tag,
@@ -31,6 +30,7 @@ from molo.core.models import (
 from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm, ReactionQuestionChoiceForm
+from molo.core.tasks import copy_to_all_task
 from django.views.generic import ListView
 
 from el_pagination.decorators import page_template
@@ -455,38 +455,9 @@ def copy_to_all_confirm(request, page_id):
 
 
 def copy_to_all(request, page_id):
-    from django.db.models import Q
-    from molo.core.models import Main
     page = get_object_or_404(Page, id=page_id).specific
     parent = page.get_parent()
-
-    # loop through all the mains except for the main the page exists in
-    excluded_main = Main.objects.ancestor_of(page).first()
-    for main in Main.objects.all().exclude(pk=excluded_main.pk):
-
-        # search for the parent page in the destination site
-        parent_query = Q(slug=parent.slug) | Q(title=parent.title)
-        destination_parent = Page.objects.descendant_of(main).filter(
-            parent_query)
-        if destination_parent.exists():
-            destination_parent = destination_parent.first()
-            # if it exists, check to make sure the page doesn't already exist
-            page_query = Q(slug=page.slug) | Q(title=page.title)
-            destination_page = Page.objects.descendant_of(
-                destination_parent).filter(page_query)
-            if not destination_page.exists():
-                request.POST['new_parent_page'] = destination_parent.pk
-                request.POST['new_title'] = page.title
-                request.POST['new_slug'] = page.slug
-                request.POST['copy_subpages'] = 'true'
-                request.POST['publish_copies'] = 'true'
-                wagtail_copy(request, page_id)
-                print 'copy done'
-            else:
-                print (page.title + ' already exists in ' + main.title)
-        else:
-            print (parent.title + ' does not exist in ' + main.title)
-
+    copy_to_all_task.delay(page, parent, request)
     next_url = get_valid_next_url_from_request(request)
     if next_url:
         return redirect(next_url)

@@ -13,6 +13,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.core import management
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from molo.core.utils import create_new_article_relations
 from molo.core.models import (
@@ -39,6 +40,7 @@ from molo.core.api.constants import ACTION
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
+from wagtail.wagtailadmin.views.pages import copy as wagtail_copy
 
 
 IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"
@@ -265,6 +267,36 @@ def molo_consolidated_minute_task():
     promote_articles()
     publish_scheduled_pages()
     clearsessions()
+
+
+@task(ignore_result=True)
+def copy_to_all_task(page, parent, request):
+    # loop through all the mains except for the main the page exists in
+    excluded_main = Main.objects.ancestor_of(page).first()
+    for main in Main.objects.all().exclude(pk=excluded_main.pk):
+
+        # search for the parent page in the destination site
+        parent_query = Q(slug=parent.slug) | Q(title=parent.title)
+        destination_parent = Page.objects.descendant_of(main).filter(
+            parent_query)
+        if destination_parent.exists():
+            destination_parent = destination_parent.first()
+            # if it exists, check to make sure the page doesn't already exist
+            page_query = Q(slug=page.slug) | Q(title=page.title)
+            destination_page = Page.objects.descendant_of(
+                destination_parent).filter(page_query)
+            if not destination_page.exists():
+                request.POST['new_parent_page'] = destination_parent.pk
+                request.POST['new_title'] = page.title
+                request.POST['new_slug'] = page.slug
+                request.POST['copy_subpages'] = 'true'
+                request.POST['publish_copies'] = 'true'
+                wagtail_copy(request, page.pk)
+                print 'copy done'
+            else:
+                print (page.title + ' already exists in ' + main.title)
+        else:
+            print (parent.title + ' does not exist in ' + main.title)
 
 
 @task(ignore_result=True)
