@@ -247,6 +247,28 @@ def new_page_listing_buttons(page, page_perms, is_parent=False):
         )
 
 
+@hooks.register('my_button_dropdown_hook')
+def add_copy_to_all_action_button(page, page_perms, is_parent=False):
+    """
+    This inherits the buttons from wagtail's page_listing_more_buttons
+    https://github.com/wagtail/wagtail/blob/stable/1.8.x/wagtail/wagtailadmin/wagtail_hooks.py#L94
+    (i.e. the buttons that are put in the original drop down menu)
+    This is done to avoid breakages should their hooks change in the future
+
+
+    It adds a copy to all action button
+    """
+
+    yield Button(
+        _('Copy to All Countries'),
+        urlresolvers.reverse('copy-to-all-confirm', args=(page.id,)),
+        attrs={'copy_to_all_confirm': _("Copy page '{title}'").format(
+            title=page.get_admin_display_title()
+        )},
+        priority=40
+    )
+
+
 @hooks.register('insert_global_admin_css')
 def global_admin_css():
     return format_html(

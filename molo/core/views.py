@@ -439,6 +439,55 @@ def get_valid_next_url_from_request(request):
     return next_url
 
 
+def copy_to_all_confirm(request, page_id):
+    page = get_object_or_404(Page, id=page_id).specific
+    next_url = get_valid_next_url_from_request(request)
+    if request.method == 'POST':
+        if next_url:
+            return redirect(next_url)
+        return redirect('wagtailadmin_explore', page.get_parent().id)
+
+    return render(request, 'wagtailadmin/pages/confirm_copy_to_all.html', {
+        'page': page,
+        'next': next_url,
+        'not_live_descendant_count': page.get_descendants().not_live().count()
+    })
+
+
+def copy_to_all(request, page_id):
+    from django.db.models import Q
+    from molo.core.models import Main
+    page = get_object_or_404(Page, id=page_id).specific
+    parent = page.get_parent()
+
+    # loop through all the mains except for the main the page exists in
+    excluded_main = Main.objects.ancestor_of(page).first()
+    for main in Main.objects.all().exclude(pk=excluded_main.pk):
+
+        # search for the parent page in the destination site
+        parent_query = Q(slug=parent.slug) | Q(title=parent.title)
+        destination_parent = Page.objects.descendant_of(main).filter(
+            parent_query)
+        if destination_parent.exists():
+            destination_parent = destination_parent.first()
+            # if it exists, check to make sure the page doesn't already exist
+            page_query = Q(slug=page.slug) | Q(title=page.title)
+            destination_page = Page.objects.descendant_of(
+                destination_parent).filter(page_query)
+            if not destination_page.exists():
+                page.copy(to=destination_parent)
+                print 'copy done'
+            else:
+                print (page.title + ' already exists in ' + main.title)
+        else:
+            print (parent.title + ' does not exist in ' + main.title)
+
+    next_url = get_valid_next_url_from_request(request)
+    if next_url:
+        return redirect(next_url)
+    return redirect('wagtailadmin_explore', page.get_parent().id)
+
+
 def publish(request, page_id):
     page = get_object_or_404(Page, id=page_id).specific
 
