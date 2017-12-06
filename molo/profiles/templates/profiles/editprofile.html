@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n wagtailsettings_tags %}
+{% get_settings %}
+
+{% block content %}
+<div class="profiles">
+	<form method="post" action="{% url "molo.profiles:edit_my_profile" %}" class="profiles__form">
+	{% csrf_token %}
+	{% if settings.profiles.UserProfilesSettings.activate_display_name %}
+    <fieldset>
+      <label for="alias">{% trans "Update your display name:" %}</label><br>
+      {{ form.alias.errors}}
+      {{ form.alias }}
+      <span class="input-hint">{% trans "We value your online security, therefore we hide your username and allow you to comment and interact with the site with a display name." %}</span>
+    </fieldset>
+    {% endif %}
+
+    {% if settings.profiles.UserProfilesSettings.activate_dob %}
+    <fieldset>
+      <label for="date_of_birth">{% trans "Update your date of birth:" %}</label><br>
+      {{ form.date_of_birth.errors}}
+      {{ form.date_of_birth }}
+    </fieldset>
+    {% endif %}
+ 
+    {% if settings.profiles.UserProfilesSettings.activate_gender %}
+    <fieldset>
+      <label for="gender">{% trans "Update your gender:" %}</label><br>
+      {{ form.gender.errors}}
+      {{ form.gender }}
+      <span class="input-hint">{% trans "Only you will see this" %}</span>
+    </fieldset>
+    {% endif %}
+
+    {% if settings.profiles.UserProfilesSettings.activate_location %}
+    <fieldset>
+      <label for="location">{% trans "Update where you live:" %}</label><br>
+      {{ form.location.errors}}
+      {{ form.location }}
+      <span class="input-hint">{% trans "Only you will see this" %}</span>
+    </fieldset>
+    {% endif %}
+
+    {% if settings.profiles.UserProfilesSettings.activate_education_level %}
+    <fieldset>
+      <label for="education_level">{% trans "Update your Education Level:" %}</label><br>
+      {{ form.education_level.errors}}
+      {{ form.education_level }}
+      <span class="input-hint">{% trans "Only you will see this" %}</span>
+    </fieldset>
+    {% endif %}
+
+	{% if settings.profiles.UserProfilesSettings.show_mobile_number_field and settings.profiles.UserProfilesSettings.country_code %}
+	<fieldset>
+		<label for="id_mobile_number">{% trans "Update your mobile number:" %}</label>
+		{{ form.mobile_number.errors }}
+		{{ form.mobile_number }}
+		<span class="input-hint">{% trans "(e.g. 0914556789)" %}</span>
+	</fieldset>
+	{% endif %}
+
+	{% if settings.profiles.UserProfilesSettings.show_email_field %}
+	<fieldset>
+		<label for="id_email">{% trans "Update your email address:" %}</label>
+		{{ form.email.errors }}
+		{{ form.email}}
+		<span class="input-hint">{% trans "(e.g. example@foo.com)" %}</span>
+	</fieldset>
+	{% endif %}
+	<input type="submit" value="{% trans "Save" %}">
+	</form>
+</div>
+{% endblock %}

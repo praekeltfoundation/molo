@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load i18n wagtailsettings_tags %}
+{% get_settings %}
+
+{% block content %}
+<h1 class="heading heading--profiles">{% trans "Hello " %}{{ user.profile.migrated_username|default:user.username }}</h1>
+<div class="profiles">
+    <fieldset>
+      <label>{% trans "As you type your name comment will appear as:" %}</label>
+      <p class="profile__alias">{{ user.profile.alias | default:" Anonymous " }}</p>
+    </fieldset>
+
+    <fieldset>
+      <label>{% trans "Date of Birth: " %}</label>
+      <p class="profile__dob">
+        {% if user.profile.date_of_birth %}
+          {{ user.profile.date_of_birth | date:"M d, Y" }}
+        {% else %}
+          {% trans " Not set." %}
+        {% endif %}
+      </p>
+    </fieldset>
+
+    {% if settings.profiles.UserProfilesSettings.show_mobile_number_field and settings.profiles.UserProfilesSettings.country_code %}
+        <fieldset>
+       <label for="id_mobile_number">{% trans "Mobile number:" %}</label>
+       <p class="profile__mobile-number">{{ user.profile.mobile_number | default:"Not set" }}</p>
+    </fieldset>
+    {% endif %}
+
+    {% if settings.profiles.UserProfilesSettings.activate_gender %}
+    <fieldset>
+      <label for="id_gender">{% trans "Gender:" %}</label>
+      <p class="profile__gender">{{ user.profile.gender | default:"Not set" }}</p>
+    </fieldset>
+    {% endif %}
+
+    {% if settings.profiles.UserProfilesSettings.activate_location %}
+  	<fieldset>
+  		<label for="id_location">{% trans "Location:" %}</label>
+  		<p class="profile__location">{{ user.profile.location | default:"Not set" }}</p>
+  	</fieldset>
+  	{% endif %}
+
+    {% if settings.profiles.UserProfilesSettings.activate_education_level %}
+    <fieldset>
+      <label for="education_level">{% trans "Education Level:" %}</label>
+      <p class="profile__leducation_level">{{ user.profile.education_level | default:"Not set" }}</p>
+    </fieldset>
+    {% endif %}
+
+  <fieldset>
+    {% if settings.profiles.UserProfilesSettings.show_email_field %}
+      <label>{% trans "Email Address:" %}</label>
+      <p class="profile__email">{{ user.email | default:"Not set" }}</p>
+    {% endif %}
+  </fieldset>
+  <div class="call-to-action call-to-action--profile call-to-action--view-profile">
+    <a href="{% url "molo.profiles:auth_logout" %}" class="call-to-action__nav-item call-to-action__nav-item--logout">{% trans "log out" %}</a>
+    <a href="{% url "molo.profiles:edit_my_profile" %}" class="call-to-action__nav-item call-to-action__nav-item--editprofile">{% trans "Edit My Profile" %}</a>
+    <a href="{% url "molo.profiles:profile_password_change" %}" class="call-to-action__nav-item call-to-action__nav-item--change-password">{% trans "Change My Password" %}</a>
+  </div>
+</div>
+{% endblock %}

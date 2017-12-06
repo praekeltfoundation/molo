@@ -1,3 +1,52 @@
+6.1.1
+~~~~~
+- Bug fix: Run wagtailcore migration 40 before molo core migration 34
+
+6.1.0
+~~~~~
+- Official release of Molo 6
+- No longer supporting Django 1.9, see upgrade considerations
+  https://docs.djangoproject.com/en/2.0/releases/1.10/
+- Upgraded to Wagtail 1.13x
+- Molo Profiles no longer exists as a separate plugin, it now exists within Molo core
+
+6.0.3
+~~~~~
+- Update develop 6x with develop
+
+6.0.2
+~~~~~
+- Eliminated the use of __latest__ in migration dependencies
+
+6.0.1
+~~~~~
+- Upgraded to Wagtail 1.13
+- Dropped support for Django 1.9x, Now supports Django 1.10x
+
+6.0.2-beta.1
+~~~~~~~~~~~~
+- Pulled latest changes from develop
+
+6.0.1-beta.1
+~~~~~~~~~~~~
+- Upgraded to Wagtail 1.13
+
+6.0.0
+~~~~~~
+- Upgraded to Django 1.10, No longer supporting Django 1.9
+- Upgraded to Wagtail 1.10
+- Profiles plugin now exists within Molo Core
+
+5.22.5
+~~~~~~
+- Admin View scroller fixes
+
+5.22.4
+~~~~~~
+- Admin View vertical scrolling touchpad bug fixed
+- Scroller added on other Admin Views
+- overlapping edit/delete controls fix on Admin View lists
+
 5.22.3
 ~~~~~~
 - Exclude ArticlePageLanguageProxy from being indexed
@@ -23,6 +72,7 @@
 5.21.3
 ~~~~~~
 - Admin View FED updates
+>>>>>>> 782c0cdd55db211b8dc80e3538ebeeb44cabb705
 
 5.21.2
 ~~~~~~

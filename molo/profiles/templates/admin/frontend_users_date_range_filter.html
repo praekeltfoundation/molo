@@ -1,0 +1,63 @@
+{% load i18n admin_static %}
+{% block extra_js %}
+    {% include "wagtailadmin/shared/datetimepicker_translations.html" %}
+
+    <script>
+        $(function() {
+            $('#id_drf__date_joined__gte').datetimepicker({
+                timepicker: false,
+                format: 'Y-m-d',
+                i18n: {
+                    lang: window.dateTimePickerTranslations
+                },
+                lang: 'lang'
+            });
+            $('#id_drf__date_joined__lte').datetimepicker({
+                timepicker: false,
+                format: 'Y-m-d',
+                i18n: {
+                    lang: window.dateTimePickerTranslations
+                },
+                lang: 'lang'
+            });
+            $("#resetbtn").click(function(){
+                $(':input','#date_range_filter').val("");
+            });
+        });
+    </script>
+{% endblock %}
+<h3>{% blocktrans with filter_title=title %} By {{ filter_title }} {% endblocktrans %}</h3>
+<style>
+    .calendarbox, .clockbox {
+        /* Make sure the calendar widget popover displays in front of the sidebar */
+        z-index: 1100;
+        margin-left: -16em !important;
+        margin-top: 9em !important;
+    }
+    .datetimeshortcuts {
+        /* Hide "|" symbol */
+        font-size: 0;
+    }
+    .datetimeshortcuts a:before{
+        /* Restore deleted spaces */
+        content: " ";
+    }
+    .datetimeshortcuts a{
+        /* Make text for "Today" a bit smaller so it appears on one line. */
+        font-size: 7pt;
+    }
+</style>
+{% with choices.0 as i %}
+<form id="date_range_filter" method="GET" action="">
+    {{ spec.form.media }}
+    {{ spec.form.as_p }}
+    <p class="submit-row">
+        {#create hidden inputs to preserve values from other filters and search field#}
+        {% for k, v in i.get_query.items %}
+                <input type="hidden" name="{{ k }}" value="{{ v }}">
+        {% endfor %}
+    <button class="button" type="submit">{% trans "Search" %}</button>
+    <button class="button" type="submit" id="resetbtn">{% trans "Clear" %}</button>
+    </p>
+</form>
+{% endwith %}

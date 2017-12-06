@@ -5,6 +5,9 @@ set -x # Output commands run to see them in the Travis interface
 
 function setup_testapp {
     molo scaffold testapp
+    mkdir -p testapp/testapp/templates/registration/
+    cp molo/profiles/test_templates/login.html testapp/testapp/templates/registration/
+    cp local_test_settings.py testapp/testapp/settings/local.py
 }
 
 if [ "$TEST" == "molo_lint" ]; then

@@ -9,6 +9,7 @@ include package.json
 recursive-include molo/core/static *
 recursive-include molo/core/styles *
 recursive-include molo/core/templates *
+recursive-include molo/profiles/templates *
 
 graft molo/core/cookiecutter
 

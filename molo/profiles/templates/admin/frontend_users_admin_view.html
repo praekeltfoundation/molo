@@ -22,15 +22,14 @@
                     </div>
                     {% block search %}{% search_form %}{% endblock %}
                 </div>
-                {% block header_extra %}
-                    {% if user_can_create %}
-                        <div class="right">
-                            <div class="addbutton">
-                                {% include 'modeladmin/includes/button.html' with button=view.button_helper.add_button %}
-                             </div>
-                         </div>
-                     {% endif %}
-                {% endblock %}
+                <div class="right">
+                  <form method="post" action="">
+                      {% csrf_token %}
+                      {% if user.is_superuser %}
+                        <button type="submit" class="button bicolor icon icon-download">{% trans "Email CSV" %}</button>
+                      {% endif %}
+                  </form>
+                 </div>
             </div>
         </header>
     {% endblock %}
@@ -43,10 +42,8 @@
                     {% block filters %}
                         {% if view.has_filters and all_count %}
                         <div class="changelist-filter col3">
-                          <h2>{% trans 'Filter' %}</h2>
-                          <div class="changelist-filter-container">
+                            <h2>{% trans 'Filter' %}</h2>
                             {% for spec in view.filter_specs %}{% admin_list_filter view spec %}{% endfor %}
-                        </div>
                         </div>
                         {% endif %}
                     {% endblock %}
@@ -91,5 +88,4 @@
             </div>
         </div>
     {% endblock %}
-
 {% endblock %}
