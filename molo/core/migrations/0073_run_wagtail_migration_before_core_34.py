@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     """
     def run_wagtail_migration_before_core_34(apps, schema_editor):
         db_alias = schema_editor.connection.alias
-        emit_pre_migrate_signal(2, False, db_alias)
+        emit_pre_migrate_signal(verbosity=2, interactive=False, db=db_alias)
 
     dependencies = [
         ('wagtailcore', '0040_page_draft_title'),
