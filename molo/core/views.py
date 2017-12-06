@@ -22,7 +22,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
 from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
 from wagtail.wagtailsearch.models import Query
-
+from wagtail.wagtailadmin.views.pages import copy as wagtail_copy
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     PageTranslation, ArticlePage, Languages, SiteSettings, Tag,
@@ -475,7 +475,12 @@ def copy_to_all(request, page_id):
             destination_page = Page.objects.descendant_of(
                 destination_parent).filter(page_query)
             if not destination_page.exists():
-                page.copy(to=destination_parent)
+                request.POST['new_parent_page'] = destination_parent.pk
+                request.POST['new_title'] = page.title
+                request.POST['new_slug'] = page.slug
+                request.POST['copy_subpages'] = 'true'
+                request.POST['publish_copies'] = 'true'
+                wagtail_copy(request, page_id)
                 print 'copy done'
             else:
                 print (page.title + ' already exists in ' + main.title)
