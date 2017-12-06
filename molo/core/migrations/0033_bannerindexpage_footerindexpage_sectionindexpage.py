@@ -8,7 +8,7 @@ import molo.core.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wagtailcore', '0032_add_bulk_delete_page_permission'),
+        ('wagtailcore', '0028_merge'),
         ('core', '0032_sitesettings_ga_tag_manager'),
     ]
 
