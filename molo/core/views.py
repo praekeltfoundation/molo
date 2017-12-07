@@ -456,8 +456,7 @@ def copy_to_all_confirm(request, page_id):
 
 def copy_to_all(request, page_id):
     page = get_object_or_404(Page, id=page_id).specific
-    parent = page.get_parent()
-    copy_to_all_task.delay(page, parent, request)
+    copy_to_all_task.delay(page.pk, request.user.pk, request.site.pk)
     next_url = get_valid_next_url_from_request(request)
     if next_url:
         return redirect(next_url)

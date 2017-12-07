@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from django.core import management
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 from molo.core.utils import create_new_article_relations
 from molo.core.models import (
@@ -40,7 +41,6 @@ from molo.core.api.constants import ACTION
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
-from wagtail.wagtailadmin.views.pages import copy as wagtail_copy
 
 
 IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"
@@ -270,11 +270,18 @@ def molo_consolidated_minute_task():
 
 
 @task(ignore_result=True)
-def copy_to_all_task(page, parent, request):
-    # loop through all the mains except for the main the page exists in
+def copy_to_all_task(page_id, user_id, site_pk):
+    # getting data needed
+    user = User.objects.get(pk=user_id)
+    site = Site.objects.get(pk=site_pk)
+    page = get_object_or_404(Page, id=page_id).specific
+    parent = page.get_parent()
     excluded_main = Main.objects.ancestor_of(page).first()
-    for main in Main.objects.all().exclude(pk=excluded_main.pk):
+    errors = []
+    new_page = None
 
+    # loop through all the mains except for the main the page exists in
+    for main in Main.objects.all().exclude(pk=excluded_main.pk):
         # search for the parent page in the destination site
         parent_query = Q(slug=parent.slug) | Q(title=parent.title)
         destination_parent = Page.objects.descendant_of(main).filter(
@@ -286,17 +293,32 @@ def copy_to_all_task(page, parent, request):
             destination_page = Page.objects.descendant_of(
                 destination_parent).filter(page_query)
             if not destination_page.exists():
-                request.POST['new_parent_page'] = destination_parent.pk
-                request.POST['new_title'] = page.title
-                request.POST['new_slug'] = page.slug
-                request.POST['copy_subpages'] = 'true'
-                request.POST['publish_copies'] = 'true'
-                wagtail_copy(request, page.pk)
-                print 'copy done'
+                new_page = page.copy(
+                    recursive='true',
+                    to=destination_parent,
+                    update_attrs={
+                        'title': page.title,
+                        'slug': page.slug,
+                    },
+                    keep_live='true',
+                    user=user,
+                )
             else:
-                print (page.title + ' already exists in ' + main.title)
+                errors.append(str(
+                    page.title + ' already exists in ' + main.title))
         else:
-            print (parent.title + ' does not exist in ' + main.title)
+            errors.append(str(
+                parent.title + ' does not exist in ' + main.title))
+    if new_page and new_page.depth < 3:
+        create_new_article_relations(page, new_page)
+    send_copy_email(
+        user.email,
+        {
+            'name': ((user.get_full_name() or user.username)
+                     if user else None),
+            'source': site,
+            'logs': errors
+        },)
 
 
 @task(ignore_result=True)
