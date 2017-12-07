@@ -17,6 +17,6 @@ def detect_freebasics(request):
     return {
         'is_via_freebasics':
             'Internet.org' in request.META.get('HTTP_VIA', '') or
-            'Chrome' in request.META.get('HTTP_USER_AGENT', '') or
+            'InternetOrgApp' in request.META.get('HTTP_USER_AGENT', '') or
             'true' in request.META.get('HTTP_X_IORG_FBS', '')
     }
