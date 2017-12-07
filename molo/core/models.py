@@ -823,8 +823,11 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    hide_on_freebasics = models.BooleanField(default=False,
+                                             verbose_name='Hide on Free'
+                                             ' Basics')
     api_fields = ["title", "subtitle", "banner", "banner_link_page",
-                  "external_link"]
+                  "external_link", "hide_on_freebasics"]
 
     def get_effective_banner(self):
         if self.banner:
@@ -840,7 +843,12 @@ BannerPage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    FieldPanel('external_link')
+    FieldPanel('external_link'),
+    MultiFieldPanel(
+        [
+            FieldPanel('hide_on_freebasics')
+        ],
+        heading="Free Basics visibility", ),
 ]
 
 # Signal for allowing plugins to create indexes

@@ -16,4 +16,11 @@ class Migration(migrations.Migration):
             name='subtitle',
             field=models.TextField(blank=True, null=True),
         ),
+
+        migrations.AddField(
+            model_name='bannerpage',
+            name='hide_on_freebasics',
+            field=models.BooleanField(default=False, verbose_name=b'Hide on'
+                                      'Free Basics'),
+        ),
     ]

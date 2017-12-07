@@ -3,31 +3,33 @@
 
   {% if bannerpages %}
   {% for bannerpage in bannerpages %}
-    <div class="banner">
-      {% if bannerpage.banner %}
-    	    {% if bannerpage.banner_link_page %}
-    	       <a href="{% pageurl bannerpage.banner_link_page %}" target="_top" class="banner__item-link">
-               {% image bannerpage.banner width-320 %}
-             </a>
-    	    {% elif bannerpage.external_link %}
-    	       <a href="{{ bannerpage.external_link }}" target="_blank" class="banner__item-link">
-               {% image bannerpage.banner width-320 %}
-             </a>
-    	    {% else %}
-    	       {% image bannerpage.banner width-320 %}
-    	    {% endif %}
-      {% else %}
-          <h3>{{ bannerpage.title }}</h3>
-          {% if bannerpage.subtitle %}
-            <p>{{ bannerpage.subtitle }}</p>
-          {% endif %}
-          {% if bannerpage.banner_link_page %}
-    	       <a href="{% pageurl bannerpage.banner_link_page %}" class="banner__item-link">Click Here</a>
-    	    {% elif bannerpage.external_link %}
-    	       <a href="{{ bannerpage.external_link }}" class="banner__item-link">Click Here</a>
-    	    {% endif %}
-      {% endif %}
-    </div>
+    {% if not bannerpage.hide_on_freebasics and not is_via_freebasics %}
+      <div class="banner">
+        {% if bannerpage.banner %}
+      	    {% if bannerpage.banner_link_page %}
+      	       <a href="{% pageurl bannerpage.banner_link_page %}" target="_top" class="banner__item-link">
+                 {% image bannerpage.banner width-320 %}
+               </a>
+      	    {% elif bannerpage.external_link %}
+      	       <a href="{{ bannerpage.external_link }}" target="_blank" class="banner__item-link">
+                 {% image bannerpage.banner width-320 %}
+               </a>
+      	    {% else %}
+      	       {% image bannerpage.banner width-320 %}
+      	    {% endif %}
+        {% else %}
+            <h3>{{ bannerpage.title }}</h3>
+            {% if bannerpage.subtitle %}
+              <p>{{ bannerpage.subtitle }}</p>
+            {% endif %}
+            {% if bannerpage.banner_link_page %}
+      	       <a href="{% pageurl bannerpage.banner_link_page %}" class="banner__item-link">Click Here</a>
+      	    {% elif bannerpage.external_link %}
+      	       <a href="{{ bannerpage.external_link }}" class="banner__item-link">Click Here</a>
+      	    {% endif %}
+        {% endif %}
+      </div>
+    {% endif %}
   {% endfor%}
   {% endif %}
 
