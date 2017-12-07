@@ -168,6 +168,7 @@ def topic_of_the_day(context):
 def bannerpages(context, position=None):
     request = context['request']
     locale = context.get('locale_code')
+    is_via_freebasics = context.get('is_via_freebasics')
 
     if request.site:
         pages = request.site.root_page.specific.bannerpages()
@@ -184,12 +185,14 @@ def bannerpages(context, position=None):
                 'bannerpages': [banners[position]],
                 'request': context['request'],
                 'locale_code': locale,
+                'is_via_freebasics': is_via_freebasics,
             }
         return None
     return {
         'bannerpages': get_pages(context, pages, locale),
         'request': context['request'],
         'locale_code': locale,
+        'is_via_freebasics': is_via_freebasics,
     }
 
 
