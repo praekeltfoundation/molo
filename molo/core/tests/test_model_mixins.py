@@ -299,7 +299,6 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
             content_copy, class_, record_keeper=record_keeper)
 
         self.assertEqual(page.title, content["title"])
-        self.assertEqual(page.subtitle, content["subtitle"])
         self.assertEqual(page.external_link, content["external_link"])
 
         # check that banner link has been created
