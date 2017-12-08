@@ -16,7 +16,6 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings, Client
 from django.utils import timezone
-from django.http import HttpRequest
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (
@@ -121,9 +120,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
             '/admin/login/?next=' + urllib.quote(admin_url, safe=''))
 
     def test_copy_langauges_for_translatable_pages_only(self):
-        request = HttpRequest()
         response = copy_translation_pages(
-            request, self.section_index, self.section_index2)
+            self.section_index, self.section_index2)
         self.assertEquals(response, 'Not translatable page')
 
     def test_able_to_copy_main(self):

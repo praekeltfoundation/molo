@@ -77,4 +77,10 @@ urlpatterns = [
         name='tags_list'
     ),
     url(r'^(\d+)/publish/$', views.publish, name='publish'),
+    url(
+        r'^(\d+)/copy_to_all_confirm/$',
+        views.copy_to_all_confirm, name='copy-to-all-confirm'),
+    url(
+        r'^(\d+)/copy_to_all/$',
+        views.copy_to_all, name='copy-to-all'),
 ]
