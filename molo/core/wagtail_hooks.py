@@ -6,7 +6,7 @@ from molo.core.admin import (
 )
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
-from molo.core.models import LanguageRelation, PageTranslation, Languages
+from molo.core.models import Languages
 from molo.core.utils import create_new_article_relations
 
 
