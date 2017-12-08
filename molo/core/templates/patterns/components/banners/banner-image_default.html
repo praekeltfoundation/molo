@@ -1,5 +1,13 @@
-
-{% load wagtailcore_tags wagtailimages_tags %}
-{% block banner %}
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
+{% if bannerpages %}
+  {% is_via_freebasics as is_via_freebasics %}
+  {% for bannerpage in bannerpages %}
+  {% if bannerpage.hide_on_freebasics %}
+    {% if not is_via_freebasics %}
+      {% include "patterns/basics/banners/banner_default.html" %}
+    {% endif %}
+  {% else %}
     {% include "patterns/basics/banners/banner_default.html" %}
-{% endblock %}
+  {% endif %}
+  {% endfor%}
+{% endif %}
