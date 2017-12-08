@@ -92,7 +92,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         article = self.mk_articles(self.yourmind, 1)[0]
         self.mk_article_translation(article, self.french)
         article2 = article.copy(to=self.yourmind2)
-        copy_translation_pages('', article, article2)
+        copy_translation_pages(article, article2)
         self.assertTrue(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(locale='fr').exists())

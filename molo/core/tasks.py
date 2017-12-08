@@ -13,8 +13,11 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.core import management
 from django.contrib.auth.models import User
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
-from molo.core.utils import create_new_article_relations
+from molo.core.utils import (
+    create_new_article_relations, copy_translation_pages)
 from molo.core.models import (
     Site,
     ArticlePage,
@@ -35,7 +38,6 @@ from molo.core.api.importers import (
     Logger,
 )
 from molo.core.api.constants import ACTION
-
 from django.utils import timezone
 
 from wagtail.wagtailcore.models import Page
@@ -265,6 +267,58 @@ def molo_consolidated_minute_task():
     promote_articles()
     publish_scheduled_pages()
     clearsessions()
+
+
+@task(ignore_result=True)
+def copy_to_all_task(page_id, user_id, site_pk):
+    # getting data needed
+    user = User.objects.get(pk=user_id)
+    site = Site.objects.get(pk=site_pk)
+    page = get_object_or_404(Page, id=page_id).specific
+    parent = page.get_parent()
+    excluded_main = Main.objects.ancestor_of(page).first()
+    errors = []
+
+    # loop through all the mains except for the main the page exists in
+    for main in Main.objects.all().exclude(pk=excluded_main.pk):
+        new_page = None
+        # search for the parent page in the destination site
+        destination_parent = Page.objects.descendant_of(main).filter(
+            Q(slug=parent.slug) | Q(title=parent.title))
+        if destination_parent.exists():
+            destination_parent = destination_parent.first()
+            # if it exists, check to make sure the page doesn't already exist
+            destination_page = Page.objects.descendant_of(
+                destination_parent).filter(
+                    Q(slug=page.slug) | Q(title=page.title))
+            if not destination_page.exists():
+                new_page = page.copy(
+                    recursive='true',
+                    to=destination_parent,
+                    update_attrs={
+                        'title': page.title,
+                        'slug': page.slug,
+                    },
+                    keep_live='true',
+                    user=user,
+                )
+                copy_translation_pages(page, new_page)
+                create_new_article_relations(page, new_page)
+            else:
+                errors.append(str(
+                    page.title + ' already exists in ' + main.title))
+        else:
+            errors.append(str(
+                parent.title + ' does not exist in ' + main.title))
+
+    send_copy_email(
+        user.email,
+        {
+            'name': ((user.get_full_name() or user.username)
+                     if user else None),
+            'source': site,
+            'logs': errors
+        },)
 
 
 @task(ignore_result=True)

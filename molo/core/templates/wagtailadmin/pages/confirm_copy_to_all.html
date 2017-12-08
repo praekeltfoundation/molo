@@ -1,0 +1,21 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Copy {{ title }}{% endblocktrans %}{% endblock %}
+{% block content %}
+    {% trans "Copy" as unpublish_str %}
+    {% include "wagtailadmin/shared/header.html" with title=unpublish_str subtitle=page.get_admin_display_title icon="doc-empty-inverse" %}
+
+    <div class="nice-padding">
+        <p>{% trans "Are you sure you want to this item and all its descendants to all countries within this CMS?" %}</p>
+        <form action="{% url 'copy-to-all' page.id %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <ul class="fields">
+                <li>
+                    <input type="submit" value="{% trans 'Yes, copy it' %}" class="button">
+                    <a href="{% if next %}{{ next }}{% else %}{% url 'wagtailadmin_explore' page.get_parent.id %}{% endif %}" class="button button-secondary">{% trans "No, don't copy it" %}</a>
+                </li>
+            </ul>
+        </form>
+    </div>
+{% endblock %}
