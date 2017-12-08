@@ -806,6 +806,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
     parent_page_types = ['core.BannerIndexPage']
     subpage_types = []
 
+    subtitle = models.TextField(null=True, blank=True)
     banner = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -825,7 +826,8 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
-    api_fields = ["banner", "banner_link_page", "external_link"]
+    api_fields = [
+        "title", "subtitle", "banner", "banner_link_page", "external_link"]
 
     def get_effective_banner(self):
         if self.banner:
@@ -838,6 +840,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
 
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
+    FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
     FieldPanel('external_link')
