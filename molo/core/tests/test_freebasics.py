@@ -7,7 +7,7 @@ from molo.core.models import SiteLanguageRelation, Main, Languages, MoloMedia
 from django.core.files.base import ContentFile
 
 
-class GemContextProcessorTest(TestCase, MoloTestCaseMixin):
+class FreebasicsHeadersTest(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.mk_main()
         self.client = Client()
@@ -36,7 +36,6 @@ class GemContextProcessorTest(TestCase, MoloTestCaseMixin):
 
         client = Client(HTTP_VIA='Internet.org')
         response = client.get('/sections-main-1/your-mind/test-page-0/')
-        print response
         self.assertNotContains(response, 'Click here to download')
 
         client = Client(HTTP_X_IORG_FBS='true',)
