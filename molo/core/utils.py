@@ -21,22 +21,57 @@ from wagtail.wagtailimages.models import Image
 from molo.core.api.constants import KEYS_TO_EXCLUDE
 
 
+def copy_translation_pages(page, new_page):
+    from molo.core.models import Languages, LanguageRelation, PageTranslation
+    # Only copy translations for TranslatablePageMixin
+    if not hasattr(page.specific, 'copy_language'):
+        return 'Not translatable page'
+
+    current_site = page.get_site()
+    destination_site = new_page.get_site()
+    if current_site is not destination_site and (page.depth > 2):
+        page.specific.copy_language(current_site, destination_site)
+    languages = Languages.for_site(destination_site).languages
+    if (languages.filter(is_main_language=True).exists() and
+            not new_page.languages.exists()):
+        LanguageRelation.objects.create(
+            page=new_page,
+            language=languages.filter(
+                is_main_language=True).first())
+
+    for translation in page.translations.all():
+        new_lang = translation.translated_page.specific.copy_language(
+            current_site, destination_site)
+        new_translation = translation.translated_page.copy(
+            to=new_page.get_parent())
+        new_l_rel, _ = LanguageRelation.objects.get_or_create(
+            page=new_translation)
+        new_l_rel.language = new_lang
+        new_l_rel.save()
+        PageTranslation.objects.create(
+            page=new_page,
+            translated_page=new_translation)
+
+
 def create_new_article_relations(old_main, copied_main):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
         ArticlePageReactionQuestions, ReactionQuestion, \
         ArticlePageRecommendedSections, ArticlePageRelatedSections, \
         SectionPage, BannerPage
+
     if old_main and copied_main:
         if copied_main.get_descendants().count() >= \
                 old_main.get_descendants().count():
-            for article in ArticlePage.objects.descendant_of(copied_main):
+            for article in ArticlePage.objects.descendant_of(
+                    copied_main.get_site().root_page):
 
                 # replace old tag with new tag in tag relations
                 tag_relations = ArticlePageTags.objects.filter(page=article)
                 for relation in tag_relations:
                     if relation.tag:
                         new_tag = Tag.objects.descendant_of(
-                            copied_main).filter(slug=relation.tag.slug).first()
+                            copied_main.get_site().root_page).filter(
+                                slug=relation.tag.slug).first()
                         relation.tag = new_tag
                         relation.save()
                 # replace old reaction question with new reaction question

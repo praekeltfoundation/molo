@@ -25,7 +25,8 @@ from wagtail.contrib.modeladmin.options import modeladmin_register
 from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
 from molo.core.api import urls as molo_api_urls
-from molo.core import views as views
+from molo.core import views
+from molo.core.utils import copy_translation_pages
 
 
 @hooks.register('register_admin_urls')
@@ -79,36 +80,8 @@ def add_new_tag_article_relations(request, page, new_page):
 
 
 @hooks.register('after_copy_page')
-def copy_translation_pages(request, page, new_page):
-
-    # Only copy translations for TranslatablePageMixin
-    if not hasattr(page.specific, 'copy_language'):
-        return 'Not translatable page'
-
-    current_site = page.get_site()
-    destination_site = new_page.get_site()
-    if current_site is not destination_site and (page.depth > 2):
-        page.specific.copy_language(current_site, destination_site)
-    languages = Languages.for_site(destination_site).languages
-    if (languages.filter(is_main_language=True).exists() and
-            not new_page.languages.exists()):
-        LanguageRelation.objects.create(
-            page=new_page,
-            language=languages.filter(
-                is_main_language=True).first())
-
-    for translation in page.translations.all():
-        new_lang = translation.translated_page.specific.copy_language(
-            current_site, destination_site)
-        new_translation = translation.translated_page.copy(
-            to=new_page.get_parent())
-        new_l_rel, _ = LanguageRelation.objects.get_or_create(
-            page=new_translation)
-        new_l_rel.language = new_lang
-        new_l_rel.save()
-        PageTranslation.objects.create(
-            page=new_page,
-            translated_page=new_translation)
+def copy_translation_pages_hook(request, page, new_page):
+    copy_translation_pages(page, new_page)
 
 
 # API admin

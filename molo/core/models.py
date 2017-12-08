@@ -602,10 +602,13 @@ class TranslatablePageMixinNotRoutable(object):
                 *args, **kwargs)
 
             if new_lang:
-                new_l_rel, _ = LanguageRelation.objects.get_or_create(
-                    page=page_copy)
-                new_l_rel.language = new_lang
-                new_l_rel.save()
+                if LanguageRelation.objects.filter(page=page_copy).exists():
+                    new_l_rel = LanguageRelation.objects.get(page=page_copy)
+                    new_l_rel.language = new_lang
+                    new_l_rel.save()
+                else:
+                    new_l_rel = LanguageRelation.objects.create(
+                        page=page_copy, language=new_lang)
 
             old_parent = self.get_main_language_page()
             if old_parent:
