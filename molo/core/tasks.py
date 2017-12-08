@@ -283,15 +283,14 @@ def copy_to_all_task(page_id, user_id, site_pk):
     for main in Main.objects.all().exclude(pk=excluded_main.pk):
         new_page = None
         # search for the parent page in the destination site
-        parent_query = Q(slug=parent.slug) | Q(title=parent.title)
         destination_parent = Page.objects.descendant_of(main).filter(
-            parent_query)
+            Q(slug=parent.slug) | Q(title=parent.title))
         if destination_parent.exists():
             destination_parent = destination_parent.first()
             # if it exists, check to make sure the page doesn't already exist
-            page_query = Q(slug=page.slug) | Q(title=page.title)
             destination_page = Page.objects.descendant_of(
-                destination_parent).filter(page_query)
+                destination_parent).filter(
+                    Q(slug=page.slug) | Q(title=page.title))
             if not destination_page.exists():
                 new_page = page.copy(
                     recursive='true',
