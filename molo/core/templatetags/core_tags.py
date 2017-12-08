@@ -656,6 +656,14 @@ def social_media_footer(context, page=None):
     return data
 
 
+@register.simple_tag(takes_context=True)
+def is_via_freebasics(context):
+    request = context['request']
+    return ('Internet.org' in request.META.get('HTTP_VIA', '') or
+            'InternetOrgApp' in request.META.get('HTTP_USER_AGENT', '') or
+            'true' in request.META.get('HTTP_X_IORG_FBS', ''))
+
+
 @register.inclusion_tag(
     'core/tags/social_media_article.html',
     takes_context=True

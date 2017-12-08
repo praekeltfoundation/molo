@@ -1,6 +1,5 @@
 import json
 from six import b
-from django.contrib.sites.models import Site
 from django.test import TestCase, Client
 
 from molo.core.tests.base import MoloTestCaseMixin
@@ -33,16 +32,17 @@ class GemContextProcessorTest(TestCase, MoloTestCaseMixin):
         self.article.save_revision().publish()
 
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
-        self.assertContains(response, 'Download Audio')
+        self.assertContains(response, 'Click here to download')
 
         client = Client(HTTP_VIA='Internet.org')
         response = client.get('/sections-main-1/your-mind/test-page-0/')
-        self.assertNotContains(response, 'Download Audio')
+        print response
+        self.assertNotContains(response, 'Click here to download')
 
         client = Client(HTTP_X_IORG_FBS='true',)
         response = client.get('/sections-main-1/your-mind/test-page-0/')
 
-        self.assertNotContains(response, 'Download Audio')
+        self.assertNotContains(response, 'Click here to download')
 
         client = Client(
             HTTP_USER_AGENT='Mozilla/5.0 (Linux; Android 5.1;'
@@ -51,7 +51,7 @@ class GemContextProcessorTest(TestCase, MoloTestCaseMixin):
             ' Mobile Safari/537[FBAN/InternetOrgApp; FBAV/7.0;]')
         response = client.get('/sections-main-1/your-mind/test-page-0/')
 
-        self.assertNotContains(response, 'Download Audio')
+        self.assertNotContains(response, 'Click here to download')
 
         client = Client(
             HTTP_VIA='Internet.org',
@@ -62,4 +62,4 @@ class GemContextProcessorTest(TestCase, MoloTestCaseMixin):
             ' Mobile Safari/537[FBAN/InternetOrgApp; FBAV/7.0;]')
         response = client.get('/sections-main-1/your-mind/test-page-0/')
 
-        self.assertNotContains(response, 'Download Audio')
+        self.assertNotContains(response, 'Click here to download')
