@@ -129,8 +129,6 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
 
         # now copy the yourmind section to all sites
         self.client.post(reverse('copy-to-all', args=(self.yourmind.id,)))
-        print SectionPage.objects.descendant_of(self.main3)
-        print translated_article.slug
 
         # it should copy the section, the translations, and all the child pages
         self.assertTrue(SectionPage.objects.descendant_of(
