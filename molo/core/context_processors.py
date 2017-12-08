@@ -11,12 +11,3 @@ def locale(request):
         'locale_code': locale_code,
         'languages': languages,
         'selected_language': languages.filter(locale=locale_code).first()}
-
-
-def detect_freebasics(request):
-    return {
-        'is_via_freebasics':
-            'Internet.org' in request.META.get('HTTP_VIA', '') or
-            'InternetOrgApp' in request.META.get('HTTP_USER_AGENT', '') or
-            'true' in request.META.get('HTTP_X_IORG_FBS', '')
-    }

@@ -1,5 +1,6 @@
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
 {% if bannerpages %}
+  {% is_via_freebasics as is_via_freebasics %}
   {% for bannerpage in bannerpages %}
   {% if bannerpage.hide_on_freebasics %}
     {% if not is_via_freebasics %}
@@ -10,4 +11,3 @@
   {% endif %}
   {% endfor%}
 {% endif %}
-
