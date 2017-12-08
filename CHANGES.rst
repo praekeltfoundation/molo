@@ -1,3 +1,7 @@
+6.1.5
+~~~~~
+- Bug Fix: Assign new article relations with copy to all
+
 6.1.4
 ~~~~~
 - Only return BannerPages in BannerPage tag and not any children of inheritance

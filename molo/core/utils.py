@@ -83,7 +83,7 @@ def create_new_article_relations(old_main, copied_main):
                 for relation in question_relations:
                     if relation.reaction_question:
                         new_question = ReactionQuestion.objects.descendant_of(
-                            copied_main).filter(
+                            copied_main.get_site().root_page).filter(
                                 slug=relation.reaction_question.slug).first()
                         relation.reaction_question = new_question
                         relation.save()
@@ -95,7 +95,7 @@ def create_new_article_relations(old_main, copied_main):
                     if relation.recommended_article:
                         new_recommended_article = \
                             ArticlePage.objects.descendant_of(
-                                copied_main).filter(
+                                copied_main.get_site().root_page).filter(
                                 slug=relation.recommended_article.slug).first()
                         relation.recommended_article = new_recommended_article
                         relation.save()
@@ -107,7 +107,7 @@ def create_new_article_relations(old_main, copied_main):
                     if relation.section:
                         new_related_section = \
                             SectionPage.objects.descendant_of(
-                                copied_main).filter(
+                                copied_main.get_site().root_page).filter(
                                 slug=relation.section.slug).first()
                         relation.section = new_related_section
                         relation.save()
@@ -118,7 +118,8 @@ def create_new_article_relations(old_main, copied_main):
                         pk=banner.banner_link_page.pk)
                     if old_page:
                         new_article = Page.objects.descendant_of(
-                            copied_main).get(slug=old_page.slug)
+                            copied_main.get_site().root_page).get(
+                            slug=old_page.slug)
                         banner.banner_link_page = new_article
                         banner.save()
 
