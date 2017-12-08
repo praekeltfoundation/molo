@@ -1,3 +1,7 @@
+6.1.2
+~~~~~
+- Add copy to all functionality
+
 6.1.1
 ~~~~~
 - Bug fix: Run wagtailcore migration 40 before molo core migration 34
