@@ -1,3 +1,7 @@
+6.1.4
+~~~~~
+- Only return BannerPages in BannerPage tag and not any children of inheritance
+
 6.1.3
 ~~~~~
 - Add subtitle to BannerPage
