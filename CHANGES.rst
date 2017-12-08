@@ -1,3 +1,7 @@
+6.1.3
+~~~~~
+- Add subtitle to BannerPage
+
 6.1.2
 ~~~~~
 - Add copy to all functionality
