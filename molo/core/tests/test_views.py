@@ -4,10 +4,8 @@ import re
 import json
 import pytest
 import responses
-import urllib
 
 from datetime import timedelta, datetime
-from urlparse import parse_qs
 
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -32,6 +30,7 @@ from molo.core.wagtail_hooks import copy_translation_pages
 
 from mock import patch, Mock
 from six import b
+from six.moves.urllib.parse import quote, parse_qs
 from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site, Page
@@ -117,7 +116,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         admin_url = '/admin/pages/%s/' % main3_pk
         self.assertEqual(
             response['Location'],
-            '/admin/login/?next=' + urllib.quote(admin_url, safe=''))
+            '/admin/login/?next=' + quote(admin_url, safe=''))
 
     def test_copy_langauges_for_translatable_pages_only(self):
         response = copy_translation_pages(
