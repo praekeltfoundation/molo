@@ -40,6 +40,8 @@ from molo.core.api.importers import (
 from molo.core.api.constants import ACTION
 from django.utils import timezone
 
+from six import iteritems
+
 from wagtail.wagtailcore.models import Page
 
 
@@ -440,7 +442,7 @@ def import_site(root_url, site_pk, user_pk):
         writer = csv.writer(csvfile)
 
         rows = [["foreign_id", "local_id"]]
-        for foreign_id, local_id in foreign_local_map.iteritems():
+        for foreign_id, local_id in iteritems(foreign_local_map):
             rows.append([foreign_id, local_id])
 
         writer.writerows(rows)
