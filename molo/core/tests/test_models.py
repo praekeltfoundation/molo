@@ -9,10 +9,14 @@ from django.contrib.auth.models import User
 
 from django.core.exceptions import ValidationError
 
+from mock import patch
+
 from molo.core.models import (
-    ArticlePage, PageTranslation, SectionPage, Main,
+    ArticlePage, CmsSettings, PageTranslation, SectionPage, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
-    BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage)
+    BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
+    Timezone,
+)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
@@ -766,3 +770,32 @@ class TestModels(TestCase, MoloTestCaseMixin):
         promote_articles()
         self.assertQuerysetEqual(
             main.latest_articles(), [repr(present_article), ])
+
+
+@patch('django.utils.timezone.activate')
+class TestCmsSettings(TestCase, MoloTestCaseMixin):
+    def setUp(self):
+        self.mk_main()
+        self.mk_main2()
+
+        # Something creates CmsSettings for both sites when only
+        # one is explicitly created here.
+        self.assertEqual(len(CmsSettings.objects.all()), 0)
+        self.settings = CmsSettings.objects.create(site=self.site)
+        self.assertEqual(len(CmsSettings.objects.all()), 2)
+
+        self.timezone = Timezone(title='FakeContinent/FakeCity')
+        self.timezone.save()
+
+    def test_cms_settings_activates_timezone_once(self, timezone_activate):
+        self.settings.timezone = self.timezone
+        self.settings.save()
+
+        timezone_activate.assert_called_once_with('FakeContinent/FakeCity')
+
+    def test_cms_settings_save_updates_all_timezones(self, timezone_activate):
+        self.settings.timezone = self.timezone
+        self.settings.save()
+
+        for settings in CmsSettings.objects.all():
+            self.assertEqual(settings.timezone, self.timezone)
