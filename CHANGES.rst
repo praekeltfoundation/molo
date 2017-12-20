@@ -1,3 +1,8 @@
+6.2.0
+~~~~~
+- Add timezone to CMS per django install
+- Bug Fix: Assign new banner link page when copying banners
+
 6.1.5
 ~~~~~
 - Bug Fix: Assign new article relations with copy to all
