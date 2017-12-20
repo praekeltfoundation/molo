@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 from django.conf import settings
 from django.utils.timezone import activate
 
@@ -26,9 +26,9 @@ class MoloAppConfig(AppConfig):
             else:
                 timezone_name = timezone.title
 
-        except OperationalError as e:
+        except (OperationalError, ProgrammingError) as e:
             timezone_name = settings.TIME_ZONE
-            logger.warning('Error loading site: {0}'.format(e))
+            logger.warning('Database error: {0}'.format(e))
             logger.warning('Defaulting to timezone: {0}'.format(timezone_name))
 
         activate(timezone_name)

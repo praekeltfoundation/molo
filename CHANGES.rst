@@ -1,3 +1,7 @@
+6.2.1
+~~~~~
+- Bug Fix: Split Migrations for Timezones
+
 6.2.0
 ~~~~~
 - Add timezone to CMS per django install
