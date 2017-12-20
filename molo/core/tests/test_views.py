@@ -192,6 +192,66 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEqual(ArticlePageRecommendedSections.objects.get(
             page=new_article).recommended_article.pk, new_article2.pk)
 
+    def test_copying_banner_where_the_link_page_doesnt_exist(self):
+        # testing that copying a banner page does not give an error
+        # when the link page doesn't exist
+        self.user = self.login()
+        article = self.mk_article(self.yourmind)
+        banner = BannerPage(
+            title='banner', slug='banner', banner_link_page=article)
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(banner.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.banner_index2.pk,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(
+            BannerPage.objects.descendant_of(self.main2).get(
+                slug='blank').banner_link_page, None)
+
+    def test_copying_banner_where_the_link_page_does_exist(self):
+        # testing that copying a banner creates the correct link page relation
+        self.user = self.login()
+        article = self.mk_article(self.yourmind)
+
+        # copy article to main 2
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(article.id,)),
+            data={
+                'new_title': article.title,
+                'new_slug': article.slug,
+                'new_parent_page': self.yourmind2.pk,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        banner = BannerPage(
+            title='banner', slug='banner', banner_link_page=article)
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(banner.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.banner_index2.pk,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        article2 = ArticlePage.objects.descendant_of(
+            self.main2).get(slug=article.slug)
+        self.assertEquals(
+            BannerPage.objects.descendant_of(self.main2).get(
+                slug='blank').banner_link_page.pk, article2.pk)
+
     def test_copy_method_of_section_page_copies_translations_subpages(self):
         self.assertFalse(
             Languages.for_site(
