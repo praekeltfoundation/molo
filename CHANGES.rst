@@ -1,3 +1,7 @@
+6.2.2
+~~~~~
+- Bug Fix: Only create banner relations if current relations exist
+
 6.2.1
 ~~~~~
 - Bug Fix: Split Migrations for Timezones
