@@ -75,8 +75,7 @@ def show_main_language_only(parent_page, pages, request):
 
 @hooks.register('after_copy_page')
 def add_new_tag_article_relations(request, page, new_page):
-    if new_page.depth < 3:
-        create_new_article_relations(page, new_page)
+    create_new_article_relations(page, new_page)
 
 
 @hooks.register('after_copy_page')

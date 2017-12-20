@@ -112,16 +112,17 @@ def create_new_article_relations(old_main, copied_main):
                         relation.section = new_related_section
                         relation.save()
 
-                # replace old article banner relations with new articles
-                for banner in BannerPage.objects.descendant_of(copied_main):
-                    old_page = Page.objects.get(
-                        pk=banner.banner_link_page.pk)
-                    if old_page:
-                        new_article = Page.objects.descendant_of(
-                            copied_main.get_site().root_page).get(
-                            slug=old_page.slug)
-                        banner.banner_link_page = new_article
-                        banner.save()
+            # replace old article banner relations with new articles
+            for banner in BannerPage.objects.descendant_of(
+                    copied_main.get_site().root_page):
+                old_page = Page.objects.filter(
+                    pk=banner.banner_link_page.pk).first()
+                if old_page:
+                    new_article = Page.objects.descendant_of(
+                        copied_main.get_site().root_page).filter(
+                        slug=old_page.slug).first()
+                    banner.banner_link_page = new_article
+                    banner.save()
 
 
 def get_locale_code(language_code=None):
