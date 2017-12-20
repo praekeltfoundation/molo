@@ -5,7 +5,7 @@ from wagtail.wagtailadmin.edit_handlers import EditHandler
 
 from itertools import chain
 
-from django.utils import timezone
+from django.utils import timezone as django_timezone
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -310,6 +310,55 @@ class SiteSettings(BaseSetting):
             heading="Service Directory API Settings"
         )
     ]
+
+
+class Timezone(models.Model):
+    title = models.CharField(
+        max_length=255,
+        unique=True,
+    )
+
+    def __unicode__(self):
+        return self.title
+
+
+@register_setting
+class CmsSettings(BaseSetting):
+    '''
+    CMS settings apply to every site running in this Django app. Wagtail
+    settings are per-site, so this class applies the change to all sites when
+    saving.
+    '''
+
+    timezone = models.ForeignKey(
+        'core.Timezone',
+        null=True,
+        on_delete=models.PROTECT,
+    )
+
+    panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel('timezone'),
+            ],
+            heading='Core settings',
+        ),
+    ]
+
+    class Meta:
+        verbose_name = 'CMS settings'
+
+    def save(self, first_site_save=True, *args, **kwargs):
+        super(CmsSettings, self).save(*args, **kwargs)
+
+        if first_site_save:
+            if self.timezone is not None:
+                django_timezone.activate(self.timezone.title)
+
+            for site in Site.objects.all():
+                cms_settings = CmsSettings.for_site(site)
+                cms_settings.timezone = self.timezone
+                cms_settings.save(first_site_save=False)
 
 
 class ImageInfo(models.Model):
@@ -868,7 +917,7 @@ class Main(CommentedPageMixin, Page):
             featured_in_latest=True,
             languages__language__is_main_language=True).exclude(
                 feature_as_topic_of_the_day=True,
-                demote_date__gt=timezone.now()).order_by(
+                demote_date__gt=django_timezone.now()).order_by(
                     '-featured_in_latest_start_date',
                     '-promote_date', '-latest_revision_created_at').specific()
 
@@ -876,8 +925,8 @@ class Main(CommentedPageMixin, Page):
         return ArticlePage.objects.descendant_of(self).filter(
             feature_as_topic_of_the_day=True,
             languages__language__is_main_language=True,
-            promote_date__lte=timezone.now(),
-            demote_date__gte=timezone.now()).order_by(
+            promote_date__lte=django_timezone.now(),
+            demote_date__gte=django_timezone.now()).order_by(
             '-promote_date').specific()
 
     def footers(self):
@@ -1449,7 +1498,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
         if (commenting_settings['state'] != constants.COMMENTING_OPEN):
-            now = timezone.now()
+            now = django_timezone.now()
             if (commenting_settings['state'] ==
                     constants.COMMENTING_TIMESTAMPED):
                 # Allow commenting over the given time period
@@ -1471,7 +1520,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
 
     def is_current_topic_of_the_day(self):
         if self.feature_as_topic_of_the_day:
-            return self.promote_date <= timezone.now() <= self.demote_date
+            now = django_timezone.now()
+            return self.promote_date <= now <= self.demote_date
         return False
 
     def is_commenting_enabled(self):
