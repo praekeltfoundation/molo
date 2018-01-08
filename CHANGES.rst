@@ -1,3 +1,7 @@
+6.2.3
+~~~~~
+- Bug Fix: Fix migration dependency causing issues running on a clean database
+
 6.2.2
 ~~~~~
 - Bug Fix: Only create banner relations if current relations exist
