@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -92,12 +93,41 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
                                    None,
                                    User.objects.all())
         date = str(self.user.date_joined.strftime("%Y-%m-%d %H:%M"))
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition: '
-                           'attachment;filename=export.csv\r\n\r\nusername,'
-                           'email,first_name,last_name,is_staff,date_joined,'
-                           'alias,mobile_number\r\ntester,tester@example.com,'
-                           ',,False,' + date + ',The Alias,+27784667723\r\n')
-        self.assertEquals(str(response), expected_output)
+        csv_header = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'is_staff',
+            'date_joined',
+            'alias',
+            'mobile_number',
+        ]
+        csv_row_one = [
+            'tester',
+            'tester@example.com',
+            '',
+            '',
+            'False',
+            date,
+            'The Alias',
+            '+27784667723',
+        ]
+        expected_csv = [
+            ','.join(csv_header),
+            ','.join(csv_row_one),
+            '',
+        ]
+        self.assertTrue(isinstance(response, HttpResponse))
+        self.assertEquals(response.getvalue(), "\r\n".join(expected_csv))
+        self.assertEquals(
+            response['Content-Type'],
+            'text/csv',
+        )
+        self.assertEquals(
+            response['Content-Disposition'],
+            'attachment;filename=export.csv',
+        )
 
     def test_download_csv_with_an_alias_contains_ascii_code(self):
         profile = self.user.profile
@@ -108,14 +138,9 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         response = download_as_csv(ProfileUserAdmin(UserProfile, self.site),
                                    None,
                                    User.objects.all())
-        date = str(self.user.date_joined.strftime("%Y-%m-%d %H:%M"))
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition: '
-                           'attachment;filename=export.csv\r\n\r\nusername,'
-                           'email,first_name,last_name,is_staff,date_joined,'
-                           'alias,mobile_number\r\ntester,tester@example.com,'
-                           ',,False,' + date + ',The Alias \xf0\x9f\x98\x81,'
-                           '+27784667723\r\n')
-        self.assertEquals(str(response), expected_output)
+        actual_csv_alias = response.getvalue().split("\r\n")[1].split(',')[6]
+        expected_csv_alias = 'The Alias \xf0\x9f\x98\x81'
+        self.assertEquals(actual_csv_alias, expected_csv_alias)
 
     def test_download_csv_with_an_username_contains_ascii_code(self):
         self.user.username = '사이네'
@@ -124,14 +149,10 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         response = download_as_csv(ProfileUserAdmin(UserProfile, self.site),
                                    None,
                                    User.objects.all())
-        date = str(self.user.date_joined.strftime("%Y-%m-%d %H:%M"))
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition: '
-                           'attachment;filename=export.csv\r\n\r\nusername,'
-                           'email,first_name,last_name,is_staff,date_joined,'
-                           'alias,mobile_number\r\n\xec\x82\xac\xec\x9d\xb4'
-                           '\xeb\x84\xa4,tester@example.com,'
-                           ',,False,' + date + ',,\r\n')
-        self.assertEquals(str(response), expected_output)
+        actual_csv = response.getvalue()
+        actual_csv_username = actual_csv.split("\r\n")[1].split(',')[0]
+        expected_csv_username = '\xec\x82\xac\xec\x9d\xb4\xeb\x84\xa4'
+        self.assertEquals(actual_csv_username, expected_csv_username)
 
 
 class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
