@@ -20,9 +20,8 @@ from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
-from wagtail.wagtailadmin.widgets import Button, ButtonWithDropdownFromHook
+from wagtail.wagtailadmin.widgets import Button
 from wagtail.contrib.modeladmin.options import modeladmin_register
-from wagtail.wagtailadmin.wagtail_hooks import page_listing_more_buttons
 
 from molo.core.api import urls as molo_api_urls
 from molo.core import views
