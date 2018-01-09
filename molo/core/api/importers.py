@@ -1,3 +1,4 @@
+# flake8: noqa: F405
 """
 Various importers for the different content types
 """
@@ -14,7 +15,7 @@ from six import iteritems
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
-from molo.core.models import *  # noqa
+from molo.core.models import *
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT,
     API_PAGES_ENDPOINT,
@@ -23,7 +24,7 @@ from molo.core.api.constants import (
     ERROR,
     WARNING,
 )
-from molo.core.api.errors import *  # noqa
+from molo.core.api.errors import *
 from molo.core.utils import separate_fields
 
 
