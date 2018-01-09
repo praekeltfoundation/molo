@@ -159,78 +159,8 @@ def show_explorer_only_to_users_have_access(request, menu_items):
             item for item in menu_items if item.name != 'explorer']
 
 
-@hooks.register('register_page_listing_buttons')
-def page_custom_listing_buttons(page, page_perms, is_parent=False):
-    yield ButtonWithDropdownFromHook(
-        'More',
-        hook_name='my_button_dropdown_hook',
-        page=page,
-        page_perms=page_perms,
-        is_parent=is_parent,
-        priority=50
-    )
-
-
 @hooks.register('register_page_listing_more_buttons')
-def page_listing_buttons(page, page_perms, is_parent=False):
-    """
-    This removes the standard wagtail dropdown menu.
-
-    This supresses the original 'More' dropdown menu because it breaks
-    the expected behaviour of the yeild functionality used to add
-    additional buttons in wagtail_hooks.
-    """
-    if page_perms.can_move():
-        return None
-
-
-@hooks.register('my_button_dropdown_hook')
-def new_page_listing_buttons(page, page_perms, is_parent=False):
-    """
-    This inherits the buttons from wagtail's page_listing_more_buttons
-    https://github.com/wagtail/wagtail/blob/stable/1.8.x/wagtail/wagtailadmin/wagtail_hooks.py#L94
-    (i.e. the buttons that are put in the original drop down menu)
-    This is done to avoid breakages should their hooks change in the future
-
-
-    It iterates through the buttons and prevents the delete button
-    from being added if the Page should not be deleteable from the admin UI
-    """
-    original_buttons = list(page_listing_more_buttons(page,
-                                                      page_perms,
-                                                      is_parent))
-    if not hasattr(page.specific, 'hide_delete_button'):
-        for b in original_buttons:
-            yield b
-    else:
-        for b in original_buttons:
-            if (hasattr(b, 'attrs') and
-                    'delete' not in b.attrs.get('title').lower()):
-                    yield b
-
-    if not page_perms.can_unpublish():
-        yield Button(
-            _('Publish'),
-            urlresolvers.reverse('publish', args=(page.id,)),
-            attrs={'title': _("Publish page '{title}'").format(
-                title=page.get_admin_display_title()
-            )},
-            priority=40
-        )
-
-
-@hooks.register('my_button_dropdown_hook')
-def add_copy_to_all_action_button(page, page_perms, is_parent=False):
-    """
-    This inherits the buttons from wagtail's page_listing_more_buttons
-    https://github.com/wagtail/wagtail/blob/stable/1.8.x/wagtail/wagtailadmin/wagtail_hooks.py#L94
-    (i.e. the buttons that are put in the original drop down menu)
-    This is done to avoid breakages should their hooks change in the future
-
-
-    It adds a copy to all action button
-    """
-
+def page_listing_some_more_buttons(page, page_perms, is_parent=False):
     yield Button(
         _('Copy to All Countries'),
         urlresolvers.reverse('copy-to-all-confirm', args=(page.id,)),
