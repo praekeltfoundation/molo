@@ -16,12 +16,11 @@ header {
 .filter {
   padding: 10px 0 0;
   &__label {
-    padding: 0;
+    padding: 5px 0;
   }
-  ul,
-  &-list {
+  ul, &-list {
     padding: 0;
-    display: inline-block;
+    display: block;
     &__item,li {
       list-style: none;
     }
@@ -40,10 +39,11 @@ header {
   padding: 0;
   display: inline-block;
   width: 100%;
+  h2 { line-height: 30px; }
   h2, h3, ul, #date_range_filter {
     padding: 0 15px;
   }
-  h2 { line-height: 30px; }
+  .filter__label {padding: 10px 10px 5px;}
 }
 //Filter date popup
 .xdsoft_datetimepicker {
