@@ -6,7 +6,7 @@ from molo.core.admin import (
 )
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
-from molo.core.models import Languages
+from molo.core.models import Languages, PageTranslation
 from molo.core.utils import create_new_article_relations
 
 
@@ -81,6 +81,16 @@ def add_new_tag_article_relations(request, page, new_page):
 @hooks.register('after_copy_page')
 def copy_translation_pages_hook(request, page, new_page):
     copy_translation_pages(page, new_page)
+
+
+@hooks.register('before_delete_page')
+def delete_page_translations(request, page):
+    if request.method == 'POST':
+        ids = PageTranslation.objects.filter(
+            page=page).values_list('translated_page__id')
+
+        for page in Page.objects.filter(id__in=ids):
+            page.delete()
 
 
 # API admin
