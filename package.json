@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Molo Core",
   "main": "gulpfile.js",
-  "dependencies": {},
+  "dependencies": {
+    "marked": "0.3.9"
+  },
   "devDependencies": {
     "del": "^3.0.0",
     "glob": "^7.1.2",
