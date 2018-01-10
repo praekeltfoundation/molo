@@ -1,3 +1,7 @@
+6.2.4
+~~~~~
+- Bug Fix: django-admin user view was serving a TemplateError
+
 6.2.3
 ~~~~~
 - Bug Fix: Fix migration dependency causing issues running on a clean database
