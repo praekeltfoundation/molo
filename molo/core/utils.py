@@ -3,13 +3,9 @@ import shutil
 import zipfile
 import re
 import tempfile
-import imagehash
 import hashlib
 import json
 import distutils.dir_util
-
-from PIL import Image as PILImage
-from StringIO import StringIO
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -237,38 +233,6 @@ def get_image_hash(image):
         return md5.hexdigest()
     finally:
         image.file.close()
-
-
-def get_image_impression_hash(image):
-    '''
-    Returns an image impression hash of a Wagtail Image.
-
-    For more info on impressions hashes see:
-    https://www.safaribooksonline.com/blog/2013/11/26/image-hashing-with-python/  # noqa
-    Handles case where default django storage is used
-    as well as images stored on AWS S3
-    '''
-    if not image.file:
-        return None
-
-    # image is stored on s3
-    if settings.DEFAULT_FILE_STORAGE == 'storages.backends.s3boto.S3BotoStorage':  # noqa
-        s3_file = image.file._get_file()
-        image_in_memory = StringIO(s3_file.read())
-        pil_image = PILImage.open(image_in_memory)
-        return imagehash.average_hash(pil_image).__str__()
-    # image is stored locally
-    elif settings.DEFAULT_FILE_STORAGE == 'django.core.files.storage.FileSystemStorage':  # noqa
-        with open(image.file.path, 'r') as file:
-            image_in_memory = StringIO(file.read())
-            pil_image = PILImage.open(image_in_memory)
-            return imagehash.average_hash(pil_image).__str__()
-    else:
-        raise NotImplementedError(
-            ("settings.DEFAULT_FILE_STORAGE of {} not handled "
-             "in get_image_hash function").format(
-                settings.DEFAULT_FILE_STORAGE),
-            None)
 
 
 def separate_fields(fields):
