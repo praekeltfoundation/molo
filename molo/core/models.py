@@ -844,6 +844,12 @@ class BannerIndexPage(Page, PreventDeleteMixin, ImportableMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
 
+    def child_pages(self):
+        ##return BannerPage.objects.live().child_of(self)
+        index_page = BannerIndexPage.objects.child_of(self).live().first()
+        return BannerPage.objects.child_of(index_page).filter(
+            languages__language__is_main_language=True).specific()
+
     def copy(self, *args, **kwargs):
         site = kwargs['to'].get_site()
         main = site.root_page
