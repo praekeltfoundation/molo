@@ -883,19 +883,6 @@ class ContentImporter(BaseImporter):
             self.log(WARNING, message, e.message.pop("message"), depth)
             return None
 
-        '''
-        except Exception as e:
-            context = {
-                "exception": e,
-                "url": url,
-                "parent title": parent.title,
-                "foreign_page": content["title"].encode('utf-8'),
-            }
-            self.log(
-                ERROR, "Create Page - abandon page and children creation",
-                context, depth)
-        '''
-
         if page:
             # create translations
             if content["meta"]["translations"]:
