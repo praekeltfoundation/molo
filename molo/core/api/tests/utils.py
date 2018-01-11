@@ -113,7 +113,7 @@ def mocked_fetch_and_create_image(url, image_title):
     )
     context = {
         "file_url": url,
-        "foreign_title": image_title.encode('utf-8'),
+        "foreign_title": image_title,
     }
     return (image, context)
 

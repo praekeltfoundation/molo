@@ -527,7 +527,7 @@ class ImageImporter(BaseImporter):
                 "local_version_existed": True,
                 "file_url": file_url,
                 "image_detail_url": image_detail_url,
-                "foreign_title": img_info["title"].encode('utf-8'),
+                "foreign_title": img_info["title"],
             }
             # update record keeper
             if self.record_keeper:
@@ -538,7 +538,7 @@ class ImageImporter(BaseImporter):
         else:
             new_image, context = self.fetch_and_create_image(
                 file_url,
-                img_info["title"].encode('utf-8'))
+                img_info["title"])
             # update record keeper
             if self.record_keeper:
                 self.record_keeper.record_image_relation(
