@@ -1,4 +1,4 @@
-import csv
+import unicodecsv as csv
 
 from django.contrib import admin
 from django.http import HttpResponse
@@ -32,17 +32,14 @@ except NotRegistered:
 
 
 def download_as_csv(ProfileUserAdmin, request, queryset):
-    response = HttpResponse(content_type='text/csv')
+    response = HttpResponse(content_type='text/csv', charset='utf-8')
     response['Content-Disposition'] = 'attachment;filename=export.csv'
-    writer = csv.writer(response)
+    writer = csv.writer(response, encoding='utf-8')
     user_model_fields = UserAdmin.list_display + ('date_joined', )
     profile_fields = ('alias', 'mobile_number')
     field_names = user_model_fields + profile_fields
     writer.writerow(field_names)
     for obj in queryset:
-        if obj.profile.alias:
-            obj.profile.alias = obj.profile.alias.encode('utf-8')
-        obj.username = obj.username.encode('utf-8')
         obj.date_joined = obj.date_joined.strftime("%Y-%m-%d %H:%M")
         writer.writerow(
             [getattr(obj, field) for field in user_model_fields] +

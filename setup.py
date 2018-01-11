@@ -38,6 +38,7 @@ install_requires = [
     'setuptools>=18.5',
     'six>=1.9',
     'ujson==1.35',
+    'unicodecsv==0.14.1',
     'unicore.content',
     'wagtail>=1.13,<1.14',
     'wagtailmedia==0.1.3',
