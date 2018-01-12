@@ -2,7 +2,6 @@ from os import environ, path, walk
 import pkg_resources
 import requests
 import zipfile
-import StringIO
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,7 +9,12 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import (
+    JsonResponse,
+    HttpResponse,
+    HttpResponseNotAllowed,
+    Http404,
+)
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.http import is_safe_url
 from django.utils.translation import (
@@ -20,6 +24,7 @@ from django.utils.translation import (
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
+from io import BytesIO
 from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
 from wagtail.wagtailsearch.models import Query
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
@@ -328,7 +333,7 @@ def download_file(request):
     if request.method == "GET":
         if path.exists(settings.MEDIA_ROOT):
             zipfile_name = 'media_%s.zip' % settings.SITE_NAME
-            in_memory_file = StringIO.StringIO()
+            in_memory_file = BytesIO()
 
             media_zipfile = zipfile.ZipFile(in_memory_file, 'w',
                                             zipfile.ZIP_DEFLATED)
@@ -345,12 +350,15 @@ def download_file(request):
             resp['Content-Disposition'] = (
                 'attachment; filename=%s' % zipfile_name)
 
-            return resp
         else:
-            return render(request,
+            resp = render(request,
                           'django_admin/transfer_media_message.html',
                           {'error_message':
                            'media file does not exist'})
+    else:
+        resp = HttpResponseNotAllowed(permitted_methods=['GET'])
+
+    return resp
 
 
 @page_template(

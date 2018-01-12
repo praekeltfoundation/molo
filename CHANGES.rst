@@ -1,6 +1,6 @@
 6.3.0
 ~~~~~
-- Added Support for Django 1.11 and Python 3.6
+- Add support for Python 3.6 and Django 1.11
 
 6.2.4
 ~~~~~
