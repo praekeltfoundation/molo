@@ -2094,6 +2094,12 @@ class TestDownloadFile(TestCase, MoloTestCaseMixin):
             '/accounts/login/?next=/django-admin/download_media/',
         )
 
+    def test_download_file_doesnt_respond_post(self):
+        self.client.login(username='superuser', password='password')
+        response = self.client.post(reverse('molo_download_media'))
+
+        self.assertEqual(response.status_code, 405)
+
     @override_settings(MEDIA_ROOT='/tmp/media-root-path-does-not-exist')
     def test_download_file_returns_error_media_root_not_exists(self):
         response = self.client.get(reverse('molo_download_media'))
