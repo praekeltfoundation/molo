@@ -119,7 +119,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
             '',
         ]
         self.assertTrue(isinstance(response, HttpResponse))
-        self.assertEquals(response.getvalue(), "\r\n".join(expected_csv))
+        self.assertContains(response, "\r\n".join(expected_csv))
         self.assertEquals(
             response['Content-Type'],
             'text/csv',
@@ -138,9 +138,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         response = download_as_csv(ProfileUserAdmin(UserProfile, self.site),
                                    None,
                                    User.objects.all())
-        actual_csv_alias = response.getvalue().split("\r\n")[1].split(',')[6]
-        expected_csv_alias = 'The Alias \xf0\x9f\x98\x81'
-        self.assertEquals(actual_csv_alias, expected_csv_alias)
+        self.assertContains(response, 'The Alias 😁')
 
     def test_download_csv_with_an_username_contains_ascii_code(self):
         self.user.username = '사이네'
@@ -149,10 +147,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         response = download_as_csv(ProfileUserAdmin(UserProfile, self.site),
                                    None,
                                    User.objects.all())
-        actual_csv = response.getvalue()
-        actual_csv_username = actual_csv.split("\r\n")[1].split(',')[0]
-        expected_csv_username = '\xec\x82\xac\xec\x9d\xb4\xeb\x84\xa4'
-        self.assertEquals(actual_csv_username, expected_csv_username)
+        self.assertContains(response, '사이네')
 
 
 class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
