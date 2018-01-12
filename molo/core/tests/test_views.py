@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from os import environ
+from os import environ, makedirs, path
 import re
 import json
 import pytest
@@ -7,6 +7,7 @@ import responses
 
 from datetime import timedelta, datetime
 
+from django.conf import settings
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
@@ -14,6 +15,8 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings, Client
 from django.utils import timezone
+
+from io import BytesIO
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (
@@ -29,12 +32,15 @@ from molo.core.templatetags.core_tags import \
 from molo.core.wagtail_hooks import copy_translation_pages
 
 from mock import patch, Mock
+from shutil import rmtree
 from six import b
 from six.moves.urllib.parse import quote, parse_qs
 from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site, Page
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+
+from zipfile import ZipFile
 
 
 @pytest.mark.django_db
@@ -2067,3 +2073,64 @@ class TestModerationActions(TestCase, MoloTestCaseMixin):
             self.article2_site2.revisions.first().submitted_for_moderation)
         self.assertTrue(ArticlePage.objects.descendant_of(self.main2).get(
             slug=self.article2_site2.slug))
+
+
+class TestDownloadFile(TestCase, MoloTestCaseMixin):
+    def setUp(self):
+        self.mk_main()
+        self.user = User.objects.create_superuser(
+            username='superuser', password='password', email='s@example.com')
+        self.client.login(username='superuser', password='password')
+
+    def test_download_file_redirects_normal_user(self):
+        User.objects.create_user(
+            username='normal', password='password', email='n@example.com')
+        self.client.login(username='normal', password='password')
+        response = self.client.get(reverse('molo_download_media'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response['Location'],
+            '/accounts/login/?next=/django-admin/download_media/',
+        )
+
+    @override_settings(MEDIA_ROOT='/tmp/media-root-path-does-not-exist')
+    def test_download_file_returns_error_media_root_not_exists(self):
+        response = self.client.get(reverse('molo_download_media'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<h1>Transfer of Media Failed</h1>')
+        self.assertContains(response, '<h3>media file does not exist</h3>')
+
+    @override_settings(MEDIA_ROOT='/tmp/molo-media-root-testing')
+    def test_download_file_returns_something(self):
+        # For some reason that I don't understand yet, in the view
+        # we walk() the split directory name, which means it's a
+        # directory inside the current working directory.
+        directory_name = path.split(settings.MEDIA_ROOT)[-1]
+        filename = path.join(directory_name, 'some_media.txt')
+
+        if not path.exists(settings.MEDIA_ROOT):
+            makedirs(settings.MEDIA_ROOT)
+        if not path.exists(directory_name):
+            makedirs(directory_name)
+        f = open(filename, 'w')
+        f.write('This is a media file')
+        f.close()
+
+        response = self.client.get(reverse('molo_download_media'))
+        file = ZipFile(BytesIO(response.content))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response['Content-Disposition'],
+            'attachment; filename=media_testapp.zip',
+        )
+        self.assertEqual(
+            response['Content-Type'],
+            'application/x-zip-compressed',
+        )
+        self.assertEqual(file.namelist(), [filename])
+        self.assertEqual(file.open(filename).read(), 'This is a media file')
+
+        rmtree(directory_name)
