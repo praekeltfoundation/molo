@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from mock import patch
 
 from molo.core.models import (
-    ArticlePage, CmsSettings, PageTranslation, SectionPage, Main,
+    ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
     BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
     Timezone,
@@ -504,89 +504,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'English')
         self.assertContains(response, 'français')
         self.assertNotContains(response, 'español')
-
-    def test_signal_on_page_delete_removes_translations(self):
-        spanish = SiteLanguageRelation.objects.create(
-            language_setting=self.language_setting,
-            locale='es',
-            is_active=True)
-
-        section = self.mk_section(
-            self.section_index, title="Section", slug="section")
-        self.mk_section_translation(section, self.french)
-        self.mk_section_translation(section, spanish)
-
-        section_sub1 = self.mk_section(
-            section, title='Section subsection')
-        self.mk_section_translation(section_sub1, self.french)
-        p1, p2 = self.mk_articles(section_sub1, 2)
-        self.mk_article_translation(p1, self.french)
-        self.mk_article_translation(p1, spanish)
-
-        section_sub2 = self.mk_section(
-            section, title='Section subsection')
-        p3, p4 = self.mk_articles(section_sub2, 2)
-        self.mk_article_translation(p4, self.french)
-
-        p5, p6 = self.mk_articles(section, 2)
-        self.mk_article_translation(p5, self.french)
-
-        self.mk_section_translation(self.yourmind, self.french)
-        self.mk_section_translation(self.yourmind_sub, self.french)
-
-        p7, p8, p9 = self.mk_articles(self.yourmind_sub, 3)
-        self.mk_article_translation(p7, self.french)
-        self.mk_article_translation(p7, spanish)
-        self.mk_article_translation(p8, self.french)
-        sub_sec = self.mk_section(self.yourmind_sub, title='Sub sec')
-
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 16)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 11)
-        self.assertEqual(PageTranslation.objects.all().count(), 12)
-
-        section.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 6)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 5)
-        self.assertEqual(PageTranslation.objects.all().count(), 5)
-
-        p7.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 3)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 5)
-        self.assertEqual(PageTranslation.objects.all().count(), 3)
-
-        p9.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 2)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 5)
-        self.assertEqual(PageTranslation.objects.all().count(), 3)
-
-        sub_sec.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 2)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 4)
-        self.assertEqual(PageTranslation.objects.all().count(), 3)
-
-        self.yourmind_sub.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 0)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 2)
-        self.assertEqual(PageTranslation.objects.all().count(), 1)
-
-        self.yourmind.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 0)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 0)
-        self.assertEqual(PageTranslation.objects.all().count(), 0)
 
     def test_get_translation_template_tag(self):
         section = self.mk_section(self.section_index)

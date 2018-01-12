@@ -1,3 +1,15 @@
+6.3.0
+~~~~~
+- Added Support for Django 1.11 and Python 3.6
+
+6.2.4
+~~~~~
+- Bug Fix: django-admin user view was serving a TemplateError
+
+6.2.3
+~~~~~
+- Bug Fix: Fix migration dependency causing issues running on a clean database
+
 6.2.2
 ~~~~~
 - Bug Fix: Only create banner relations if current relations exist

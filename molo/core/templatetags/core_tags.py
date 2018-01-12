@@ -165,7 +165,7 @@ def topic_of_the_day(context):
 
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
-def bannerpages(context, position=None):
+def bannerpages(context, position=-1):
     request = context['request']
     locale = context.get('locale_code')
 

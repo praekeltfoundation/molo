@@ -12,6 +12,8 @@ function setup_testapp {
 
 if [ "$TEST" == "molo_lint" ]; then
     flake8 molo
+    flake8 --config=molo/core/migrations/.flake8 molo/core/migrations/
+    flake8 --config=molo/profiles/migrations/.flake8 molo/profiles/migrations/
 elif [ "$TEST" == "testapp_lint" ]; then
     setup_testapp
     flake8 testapp

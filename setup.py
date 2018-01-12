@@ -26,7 +26,7 @@ install_requires = [
     'django-libsass',
     'django-mptt==0.8.6',
     'djangorestframework==3.4.0',
-    'django-phonenumber-field',
+    'django-phonenumber-field==1.3.0',
     'django-import-export',
     'django-daterange-filter',
     'elastic-git',
