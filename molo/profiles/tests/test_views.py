@@ -143,13 +143,14 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
             'username': 'superuser',
             'password': 'pass'
         })
-        self.assertEquals(response['location'], '/admin/')
+        self.assertEquals(response['Location'], '/admin/')
         client = Client(HTTP_HOST=self.site2.hostname)
+        response = client.login(username='superuser', password='pass')
         response = client.post('/admin/login/?next=/admin/', {
             'username': 'superuser',
             'password': 'pass'
         })
-        self.assertEquals(response['location'], '/admin/')
+        self.assertEquals(response['Location'], '/admin/')
 
     def test_superuser_only_users_from_site_show(self):
         response = self.client.post(reverse('molo.profiles:user_register'), {

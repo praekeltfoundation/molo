@@ -55,9 +55,9 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         )
 
     def test_send_export_email(self):
-        send_export_email(self.user.email, {'profile__site': self.site})
+        send_export_email('examplemail@test.com', {'profile__site': self.site})
         message = list(mail.outbox)[0]
-        self.assertEquals(message.to, [self.user.email])
+        self.assertEquals(message.to, ['examplemail@test.com'])
         self.assertEquals(
             message.subject, 'Molo export: ' + settings.SITE_NAME)
         self.assertEquals(
@@ -72,7 +72,8 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
              'text/csv'))
 
         # test sending from the second site
-        send_export_email(self.user.email, {'profile__site': self.site2})
+        send_export_email(
+            'examplemail@test.com', {'profile__site': self.site2})
         message = list(mail.outbox)[1]
         self.assertEquals(
             message.attachments[0],

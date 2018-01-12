@@ -18,11 +18,11 @@ install_requires = [
     'celery<4.0',
     'cookiecutter==1.0.0',
     'dj-database-url',
-    'Django>=1.10,<1.11',
+    'Django>=1.10,<2.0',
     'django-cas-ng==3.5.8',
     'django-el-pagination==3.1.0',
     'django-extensions',
-    'django-google-analytics-app==3.0.0',
+    'django-google-analytics-app==4.0.0',
     'django-libsass',
     'django-mptt==0.8.6',
     'djangorestframework==3.4.0',
@@ -45,6 +45,7 @@ install_requires = [
     'boto==2.48.0',
     'django-storages==1.6.3',
     'Unidecode==0.04.16',
+    'django-treebeard==4.2.0',
 ]
 
 setup(name='molo.core',
