@@ -31,11 +31,6 @@ urlpatterns = [
         name='home_index'
     ),
     url(
-        r'^banners-index/$',
-        views.home_index,
-        name='banners_index'
-    ),
-    url(
         r'^section-index/$',
         views.section_index,
         name='section_index'
