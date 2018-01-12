@@ -366,6 +366,15 @@ def home_index(
     return render(request, template, {'locale_code': locale_code})
 
 
+@page_template('core/banner_index_page.html')
+def banners_index(
+        request,
+        extra_context=None,
+        template=('core/banner_index_page.html')):
+    locale_code = request.GET.get('locale')
+    return render(request, template, {'locale_code': locale_code})
+
+
 @page_template(
     'patterns/basics/sections/sectionpage-article-list-'
     'standard_for-paging.html')
