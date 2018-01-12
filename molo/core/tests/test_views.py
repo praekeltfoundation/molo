@@ -2137,6 +2137,6 @@ class TestDownloadFile(TestCase, MoloTestCaseMixin):
             'application/x-zip-compressed',
         )
         self.assertEqual(file.namelist(), [filename])
-        self.assertEqual(file.open(filename).read(), 'This is a media file')
+        self.assertEqual(file.open(filename).read(), b'This is a media file')
 
         rmtree(directory_name)

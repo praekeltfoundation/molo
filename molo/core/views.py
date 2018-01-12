@@ -2,7 +2,6 @@ from os import environ, path, walk
 import pkg_resources
 import requests
 import zipfile
-import StringIO
 
 from django.conf import settings
 from django.contrib import messages
@@ -25,6 +24,7 @@ from django.utils.translation import (
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
+from io import BytesIO
 from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
 from wagtail.wagtailsearch.models import Query
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
@@ -333,7 +333,7 @@ def download_file(request):
     if request.method == "GET":
         if path.exists(settings.MEDIA_ROOT):
             zipfile_name = 'media_%s.zip' % settings.SITE_NAME
-            in_memory_file = StringIO.StringIO()
+            in_memory_file = BytesIO()
 
             media_zipfile = zipfile.ZipFile(in_memory_file, 'w',
                                             zipfile.ZIP_DEFLATED)
