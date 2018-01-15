@@ -10,7 +10,7 @@ class MoloProfilesModelBackend(MoloModelBackend):
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
 
-        if username is not None:
+        if username is not None and request is not None:
             try:
                 user = UserModel.objects.get(
                     profile__migrated_username=username,

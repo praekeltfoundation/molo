@@ -1,3 +1,7 @@
+6.3.0
+~~~~~
+- Add support for Python 3.6 and Django 1.11
+
 6.2.4
 ~~~~~
 - Bug Fix: django-admin user view was serving a TemplateError

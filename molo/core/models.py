@@ -11,8 +11,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
-from django.db.models.signals import (
-    pre_delete, post_delete, pre_save, post_save)
+from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
 
@@ -1735,27 +1734,3 @@ FooterPage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
-
-
-pages_to_delete = []
-
-
-@receiver(pre_delete, sender=Page)
-def on_page_delete(sender, instance, *a, **kw):
-    ids = PageTranslation.objects.filter(
-        page=instance).values_list('translated_page__id')
-    pages_to_delete.extend(Page.objects.filter(id__in=ids))
-
-
-@receiver(post_delete, sender=Page)
-def on_post_page_delete(sender, instance, *a, **kw):
-    # When we try to delete a translated page in our pre_delete, wagtail
-    # pre_delete function would want to get the same page too, but since we
-    # have already deleted it, wagtail would not be able to find it, therefore
-    # we have to get the translated page in our pre_delete and use a global
-    # variable to store it and pass it into the post_delete and remove it here
-    for p in pages_to_delete:
-        p.delete()
-
-    global pages_to_delete
-    del pages_to_delete[:]
