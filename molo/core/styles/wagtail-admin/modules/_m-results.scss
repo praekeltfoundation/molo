@@ -68,6 +68,9 @@ body.admin-view {
           margin-right: 20px;
       }
       table {
+        th {
+            line-height: 19px;
+        }
         td,th {
           &:first-child {
             padding-left: 10px;

@@ -1,0 +1,20 @@
+.calendarbox, .clockbox {
+    /* Make sure the calendar widget popover displays in front of the sidebar */
+    z-index: 1100;
+    margin-left: -16em !important;
+    margin-top: 9em !important;
+}
+
+.datetimeshortcuts {
+    /* Hide "|" symbol */
+    font-size: 0;
+    a {
+      /* Make text for "Today" a bit smaller so it appears on one line. */
+      font-size: 7pt;
+    }
+
+    a:before {
+      /* Restore deleted spaces */
+      content: " ";
+    }
+}

@@ -4,6 +4,13 @@ Separate smart styles to states folder
 */
 .article-teaser {
   overflow: auto;
+  &__heading {
+      padding: 0 10px;
+      text-transform: capitalize;
+        &:before {
+          content: "#";
+        }
+  }
 }
 .base-teaser {
   &__thumbnail-link {
