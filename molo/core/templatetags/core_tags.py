@@ -296,7 +296,7 @@ def load_child_bannerpages_for_banners(context, banner, count=5):
     request = context['request']
     locale = context.get('locale_code')
     if request.site:
-      pages = request.site.root_page.specific.bannerpages().exact_type(
+        pages = request.site.root_page.specific.bannerpages().exact_type(
           BannerPage)
     else:
         pages = []
