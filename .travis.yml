@@ -10,6 +10,8 @@ env:
   - TOXENV=django110-build
   - TOXENV=django111-testapp_lint
   - TOXENV=django111-build
+  - TOXENV=django20-testapp_lint
+  - TOXENV=django20-build
 
 matrix:
   include:
