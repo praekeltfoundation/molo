@@ -6,8 +6,10 @@ python:
 
 env:
   - TOXENV=molo_lint
-  - TOXENV=testapp_lint
-  - TOXENV=build
+  - TOXENV=django110-testapp_lint
+  - TOXENV=django110-build
+  - TOXENV=django111-testapp_lint
+  - TOXENV=django111-build
 
 matrix:
   include:
