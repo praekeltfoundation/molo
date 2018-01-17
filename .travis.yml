@@ -5,9 +5,9 @@ python:
   - '3.6'
 
 env:
-  - TEST=molo_lint
-  - TEST=testapp_lint
-  - TEST=build
+  - TOXENV=molo_lint
+  - TOXENV=testapp_lint
+  - TOXENV=build
 
 matrix:
   include:
@@ -37,9 +37,9 @@ cache: pip
 before_install:
   - pip install --upgrade pip
 install:
-  - pip install -r requirements-dev.txt
+  - pip install tox==2.9.1
   - pip install coveralls
-script: ./travis.sh
+script: tox
 after_success:
   - coveralls
 deploy:
