@@ -5,9 +5,11 @@ python:
   - '3.6'
 
 env:
-  - DJANGO_INSTALL='Django>=1.10,<1.11' TEST=molo_lint
-  - DJANGO_INSTALL='Django>=1.10,<1.11' TEST=testapp_lint
-  - DJANGO_INSTALL='Django>=1.10,<1.11' TEST=build
+  - DJANGO_VERSION='>=1.10,<1.11' TEST=molo_lint
+  - DJANGO_VERSION='>=1.10,<1.11' TEST=testapp_lint
+  - DJANGO_VERSION='>=1.10,<1.11' TEST=build
+  - DJANGO_VERSION='>=1.11,<2.0' TEST=testapp_lint
+  - DJANGO_VERSION='>=1.11,<2.0' TEST=build
 
 matrix:
   include:
@@ -38,7 +40,7 @@ before_install:
   - pip install --upgrade pip
 install:
   - pip install -r requirements-dev.txt
-  - pip install $DJANGO_INSTALL
+  - pip install Django$DJANGO_VERSION
   - pip install coveralls
 script: ./travis.sh
 after_success:
