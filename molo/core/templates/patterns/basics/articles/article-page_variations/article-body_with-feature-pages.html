@@ -17,7 +17,7 @@
       <li class="unordered-list__item">{{ item|handle_markdown }}</li>
     {% endfor %}
   </ul>
-  {% elif block.block_type = 'page' %}
+  {% elif block.block_type == 'page' %}
   {% load_tags_for_article block.value as navigation_tags %}
   <div class="featured-articles {% if navigation_tags%}featured-articles--tags{% endif %}">
       <a href="{% pageurl block.value %}" class="featured-articles__nav-item">{{ block.value }}</a>
