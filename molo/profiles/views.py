@@ -127,6 +127,11 @@ class MyProfileView(TemplateView):
     """
     template_name = 'profiles/viewprofile.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(MyProfileView, self).get_context_data(**kwargs)
+        context['password_change_form'] = forms.ProfilePasswordChangeForm()
+        return context
+
 
 class MyProfileEdit(UpdateView):
     """
