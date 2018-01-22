@@ -43,7 +43,7 @@ from molo.core.api.constants import ERROR
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
-from molo.core.molo_wagtail_models.py import MoloPage
+from molo.core.molo_wagtail_models import MoloPage
 from molo.core.utils import (
     separate_fields,
     add_json_dump,
