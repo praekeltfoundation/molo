@@ -21,5 +21,4 @@ class MoloPage(Page):
                 # the root path
                 if not WAGTAIL_APPEND_SLASH and page_path != '/':
                     page_path = page_path.rstrip('/')
-                print (site_id, root_url, page_path)
                 return (site_id, root_url, page_path)
