@@ -25,14 +25,14 @@
         {% if navigation_tags %}
           <div class="article-list__item--age-tag featured-articles--age-tag">
             {% for tag in navigation_tags  %}
-                <span>?{{ tag }}</span>
+                <span>{{ tag }}</span>
             {% endfor %}
           </div>
         {% endif %}
       {% endif %}
   </div>
   {% else %}
-    ==>{{ block }}
+    {{ block }}
   {% endif %}
  {% endfor %}
 </article>
