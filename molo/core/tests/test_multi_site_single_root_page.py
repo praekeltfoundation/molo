@@ -40,7 +40,8 @@ class TestSites(TestCase, MoloTestCaseMixin):
 
         # assert that the correct hostname is returned for both sites
         response = client_1.get('/sections-main-1/your-mind/')
-        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, self.site.hostname)
+        client_2 = Client(HTTP_HOST=site_2.hostname)
         response = client_2.get(
             site_2.root_url + '/sections-main-1/your-mind/')
-        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, site_2.hostname)
