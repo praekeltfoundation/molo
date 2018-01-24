@@ -56,15 +56,15 @@ class TestPages(TestCase, MoloTestCaseMixin):
             is_active=True)
 
         self.french = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(main.get_site()),
+            language_setting=Languages.for_site(Site.objects.first()),
             locale='fr',
             is_active=True)
         self.spanish = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(main.get_site()),
+            language_setting=Languages.for_site(Site.objects.first()),
             locale='es',
             is_active=True)
         self.arabic = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(main.get_site()),
+            language_setting=Languages.for_site(Site.objects.first()),
             locale='ar',
             is_active=True)
 
@@ -88,7 +88,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_main2()
         self.main2 = Main.objects.all().last()
         self.language_setting2 = Languages.objects.create(
-            site_id=self.main2.get_site().pk)
+            site_id=Site.objects.last().pk)
         self.english2 = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting2,
             locale='en',
