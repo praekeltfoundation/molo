@@ -1,4 +1,8 @@
-6.3.1
+6.4.0
+~~~~~
+- Allow multiple sites to point to one root page
+
+6.3.2
 ~~~~~
 - Remove untested code
 
