@@ -482,7 +482,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/sections-main-1/your-mind/new-article/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'content= "media title"')
+        self.assertContains(response, 'content="media title"')
 
     def test_site_languages(self):
         main = Main.objects.all().first()

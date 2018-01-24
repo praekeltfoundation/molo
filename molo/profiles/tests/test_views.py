@@ -1107,6 +1107,11 @@ class MyProfileViewTest(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'tester')
         self.assertContains(response, 'The Alias')
 
+        self.assertTrue(isinstance(
+            response.context['password_change_form'],
+            ProfilePasswordChangeForm,
+        ))
+
 
 @override_settings(
     ROOT_URLCONF='molo.profiles.tests.test_views', LOGIN_URL='/login/')
