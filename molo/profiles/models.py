@@ -9,9 +9,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from molo.core.models import (
     TranslatablePageMixin, PreventDeleteMixin, Main, index_pages_after_copy)
+from molo.core.molo_wagtail_models import MoloPage
 from molo.core.utils import generate_slug
 from phonenumber_field.modelfields import PhoneNumberField
-from wagtail.wagtailcore.models import Page, Site
+from wagtail.wagtailcore.models import Site
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, MultiFieldPanel, PageChooserPanel)
@@ -249,7 +250,7 @@ class UserProfilesSettings(BaseSetting):
     # if show_mobile_number_field is False
 
 
-class SecurityQuestion(TranslatablePageMixin, Page):
+class SecurityQuestion(TranslatablePageMixin, MoloPage):
     parent_page_types = ['SecurityQuestionIndexPage']
     subpage_types = []
 
@@ -267,7 +268,7 @@ SecurityQuestion.promote_panels = []
 SecurityQuestion.settings_panels = []
 
 
-class SecurityQuestionIndexPage(Page, PreventDeleteMixin):
+class SecurityQuestionIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = ['core.Main']
     subpage_types = ["SecurityQuestion"]
 
