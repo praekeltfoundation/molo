@@ -292,38 +292,6 @@ def load_descendant_articles_for_section(
 
 
 @register.assignment_tag(takes_context=True)
-def load_child_bannerpages_for_banners(context, banner, count=5):
-    request = context['request']
-    locale = context.get('locale_code')
-    if request.site:
-        pages = request.site.root_page.specific.bannerpages().exact_type(
-          BannerPage)
-    else:
-        pages = []
-
-    qs = get_pages(context, pages, locale)
-
-    # Pagination
-    if count:
-        p = context.get('p', 1)
-        paginator = Paginator(qs, count)
-
-        try:
-            bannerpages = paginator.page(p)
-        except PageNotAnInteger:
-            bannerpages = paginator.page(1)
-        except EmptyPage:
-            bannerpages = paginator.page(paginator.num_pages)
-    else:
-        bannerpages = qs
-    if not locale:
-        return bannerpages
-
-    context.update({'bannerpages_paginated': bannerpages})
-    return bannerpages
-
-
-@register.assignment_tag(takes_context=True)
 def load_child_articles_for_section(context, section, count=5):
     '''
     Returns all child articles
