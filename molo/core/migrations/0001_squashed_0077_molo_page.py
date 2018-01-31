@@ -82,6 +82,7 @@ def configure_root_page(apps, schema_editor):
     Site.objects.create(
         hostname='localhost', root_page=main, is_default_site=True)
 
+
 # molo.core.migrations.0034_create_index_pages
 def create_banner_index(apps, schema_editor):
     from molo.core.models import BannerIndexPage, Main
@@ -112,6 +113,7 @@ def create_footer_index(apps, schema_editor):
             title='Footer pages', slug='footer-pages')
         main.add_child(instance=footer_index)
         footer_index.save_revision().publish()
+
 
 # molo.core.migrations.0047_add_core_permissions_to_groups
 def add_core_permissions_to_groups(apps, schema_editor):
@@ -586,9 +588,7 @@ class Migration(migrations.Migration):
             },
             bases=('wagtailcore.page',),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0002_create_homepage.create_homepage,
-        ),
+        migrations.RunPython(create_homepage),
         migrations.CreateModel(
             name='ArticlePage',
             fields=[
@@ -633,9 +633,7 @@ class Migration(migrations.Migration):
             },
             bases=('wagtailcore.page',),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0004_configure_root_page.configure_root_page,
-        ),
+        migrations.RunPython(configure_root_page),
         migrations.AlterField(
             model_name='articlepage',
             name='subtitle',
@@ -889,15 +887,9 @@ class Migration(migrations.Migration):
             },
             bases=(molo.core.models.CommentedPageMixin, 'wagtailcore.page'),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0034_create_index_pages.create_banner_index,
-        ),
-        migrations.RunPython(
-            code=molo.core.migrations.0034_create_index_pages.create_section_index,
-        ),
-        migrations.RunPython(
-            code=molo.core.migrations.0034_create_index_pages.create_footer_index,
-        ),
+        migrations.RunPython(create_banner_index),
+        migrations.RunPython(create_section_index),
+        migrations.RunPython(create_footer_index),
         migrations.CreateModel(
             name='ArticlePageRelatedSections',
             fields=[
@@ -1081,9 +1073,7 @@ class Migration(migrations.Migration):
             name='enable_clickable_tags',
             field=models.BooleanField(default=False, verbose_name=b'Display tags on Front-end'),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0047_add_core_permissions_to_groups.add_core_permissions_to_groups,
-        ),
+        migrations.RunPython(add_core_permissions_to_groups),
         migrations.AddField(
             model_name='articlepage',
             name='featured_in_homepage_end_date',
@@ -1139,15 +1129,9 @@ class Migration(migrations.Migration):
             name='twitter_sharing',
             field=models.BooleanField(default=False, help_text=b'Enable this field to allow for sharing to Twitter.', verbose_name=b'Twitter'),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0050_data_migration_promoted_articles.set_promote_start_date,
-        ),
-        migrations.RunPython(
-            code=molo.core.migrations.0051_remove_user_permission_for_moderator_group.remove_user_permission_for_moderator_group,
-        ),
-        migrations.RunPython(
-            code=molo.core.migrations.0052_update_permissions_for_groups.update_permissions_for_group,
-        ),
+        migrations.RunPython(set_promote_start_date),
+        migrations.RunPython(remove_user_permission_for_moderator_group),
+        migrations.RunPython(update_permissions_for_group),
         migrations.CreateModel(
             name='ArticlePageRecommendedSections',
             fields=[
@@ -1194,9 +1178,7 @@ class Migration(migrations.Migration):
             },
             bases=('core.sitelanguage', models.Model),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0055_migrate_current_site_languages_to_language_relation.convert_languages_to_site_language_relation,
-        ),
+        migrations.RunPython(convert_languages_to_site_language_relation),
         migrations.CreateModel(
             name='ArticlePageTags',
             fields=[
@@ -1240,9 +1222,7 @@ class Migration(migrations.Migration):
             name='tag',
             field=models.ForeignKey(blank=True, help_text='Tags for tag navigation', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailcore.Page'),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0057_create_tag_index_page.create_tag_index,
-        ),
+        migrations.RunPython(create_tag_index),
         migrations.CreateModel(
             name='SectionPageTags',
             fields=[
@@ -1315,9 +1295,7 @@ class Migration(migrations.Migration):
             name='reaction_question',
             field=models.ForeignKey(blank=True, help_text='Reaction Questions', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailcore.Page'),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0060_reaction_questions_index_page.create_reaction_question_index,
-        ),
+        migrations.RunPython(create_reaction_question_index),
         migrations.AddField(
             model_name='reactionquestionchoice',
             name='success_image',
@@ -1378,9 +1356,7 @@ class Migration(migrations.Migration):
             name='body',
             field=wagtail.wagtailcore.fields.StreamField([(b'heading', wagtail.wagtailcore.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.wagtailimages.blocks.ImageChooserBlock()), (b'list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.wagtailcore.blocks.PageChooserBlock()), (b'media', molo.core.models.MoloMediaBlock(icon=b'media'))], blank=True, null=True),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0068_media_migration.convert_media_to_molo_media,
-        ),
+        migrations.RunPython(convert_media_to_molo_media),
         migrations.CreateModel(
             name='ImageInfo',
             fields=[
@@ -1414,17 +1390,13 @@ class Migration(migrations.Migration):
             name='service_directory_api_username',
             field=models.CharField(blank=True, max_length=255, null=True, verbose_name='service directory username'),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0071_remove_old_image_hashes.delete_imageinfo,
-        ),
+        migrations.RunPython(delete_imageinfo),
         migrations.AddField(
             model_name='sitesettings',
             name='fb_analytics_app_id',
             field=models.CharField(blank=True, help_text='The tracking ID to be used to view Facebook Analytics', max_length=25, null=True, verbose_name='Facebook Analytics App ID'),
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0073_run_wagtail_migration_before_core_34.run_wagtail_migration_before_core_34,
-        ),
+        migrations.RunPython(run_wagtail_migration_before_core_34),
         migrations.AddField(
             model_name='bannerpage',
             name='subtitle',
@@ -1442,10 +1414,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=255, unique=True)),
             ],
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0075_create_timezone.seed_timezones,
-            reverse_code=molo.core.migrations.0075_create_timezone.delete_timezones,
-        ),
+        migrations.RunPython(seed_timezones, delete_timezones),
         migrations.CreateModel(
             name='CmsSettings',
             fields=[
@@ -1457,10 +1426,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'CMS settings',
             },
         ),
-        migrations.RunPython(
-            code=molo.core.migrations.0076_create_cmssettings.set_initial_timezone,
-            reverse_code=molo.core.migrations.0076_create_cmssettings.unset_timezone,
-        ),
+        migrations.RunPython(set_initial_timezone, unset_timezone),
         migrations.CreateModel(
             name='MoloPage',
             fields=[
