@@ -7,60 +7,61 @@ from django.db import migrations
 from django.core.management.sql import emit_post_migrate_signal
 
 
-class Migration(migrations.Migration):
-    def update_permissions_for_group(apps, schema_editor):
-        '''
-        Update permissions for some users.
 
-        Give bulk-delete permissions to moderators.
-        Give edit permission to moderators and editors in order
-        to display 'Main' page in the explorer.
-        '''
-        db_alias = schema_editor.connection.alias
+def update_permissions_for_group(apps, schema_editor):
+    '''
+    Update permissions for some users.
+
+    Give bulk-delete permissions to moderators.
+    Give edit permission to moderators and editors in order
+    to display 'Main' page in the explorer.
+    '''
+    db_alias = schema_editor.connection.alias
+    try:
+        # Django 1.9
+        emit_post_migrate_signal(2, False, db_alias)
+    except TypeError:
+        # Django < 1.9
         try:
-            # Django 1.9
-            emit_post_migrate_signal(2, False, db_alias)
-        except TypeError:
-            # Django < 1.9
-            try:
-                # Django 1.8
-                emit_post_migrate_signal(2, False, 'default', db_alias)
-            except TypeError:  # Django < 1.8
-                emit_post_migrate_signal([], 2, False, 'default', db_alias)
+            # Django 1.8
+            emit_post_migrate_signal(2, False, 'default', db_alias)
+        except TypeError:  # Django < 1.8
+            emit_post_migrate_signal([], 2, False, 'default', db_alias)
 
-        Group = apps.get_model('auth.Group')
-        Permission = apps.get_model('auth.Permission')
-        GroupPagePermission = apps.get_model('wagtailcore.GroupPagePermission')
-        SectionIndexPage = apps.get_model('core.SectionIndexPage')
-        MainPage = apps.get_model('core.Main')
+    Group = apps.get_model('auth.Group')
+    Permission = apps.get_model('auth.Permission')
+    GroupPagePermission = apps.get_model('wagtailcore.GroupPagePermission')
+    SectionIndexPage = apps.get_model('core.SectionIndexPage')
+    MainPage = apps.get_model('core.Main')
 
-        moderator_group = Group.objects.filter(name='Moderators').first()
-        editor_group = Group.objects.filter(name='Editors').first()
+    moderator_group = Group.objects.filter(name='Moderators').first()
+    editor_group = Group.objects.filter(name='Editors').first()
 
-        if moderator_group:
-            sections = SectionIndexPage.objects.first()
-            GroupPagePermission.objects.get_or_create(
-                group_id=moderator_group.id,
-                page_id=sections.id,
-                permission_type='bulk_delete'
-            )
+    if moderator_group:
+        sections = SectionIndexPage.objects.first()
+        GroupPagePermission.objects.get_or_create(
+            group_id=moderator_group.id,
+            page_id=sections.id,
+            permission_type='bulk_delete'
+        )
 
-            main = MainPage.objects.first()
-            GroupPagePermission.objects.get_or_create(
-                group_id=moderator_group.id,
-                page_id=main.id,
-                permission_type='edit'
-            )
+        main = MainPage.objects.first()
+        GroupPagePermission.objects.get_or_create(
+            group_id=moderator_group.id,
+            page_id=main.id,
+            permission_type='edit'
+        )
 
-        if editor_group:
-            main = MainPage.objects.first()
-            GroupPagePermission.objects.get_or_create(
-                group_id=editor_group.id,
-                page_id=main.id,
-                permission_type='edit'
-            )
+    if editor_group:
+        main = MainPage.objects.first()
+        GroupPagePermission.objects.get_or_create(
+            group_id=editor_group.id,
+            page_id=main.id,
+            permission_type='edit'
+        )
 
 
+class Migration(migrations.Migration):
     dependencies = [
         ('core', '0051_remove_user_permission_for_moderator_group'),
         ('contenttypes', '0002_remove_content_type_name'),
