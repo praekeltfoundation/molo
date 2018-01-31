@@ -21,20 +21,450 @@ import wagtail.wagtailsearch.index
 # Move them and any dependencies into this file, then update the
 # RunPython operations to refer to the local versions:
 # molo.core.migrations.0002_create_homepage
+def create_homepage(apps, schema_editor):
+    # Get models
+    ContentType = apps.get_model('contenttypes.ContentType')
+    Page = apps.get_model('wagtailcore.Page')
+    Site = apps.get_model('wagtailcore.Site')
+    HomePage = apps.get_model('core.HomePage')
+
+    # Delete the default homepage
+    Page.objects.get(id=2).delete()
+
+    # Create content type for homepage model
+    homepage_content_type, created = ContentType.objects.get_or_create(
+        model='homepage', app_label='core')
+
+    # Create a new homepage
+    homepage = HomePage.objects.create(
+        title="Homepage",
+        slug='home',
+        content_type=homepage_content_type,
+        path='00010001',
+        depth=2,
+        numchild=0,
+        url_path='/home/',
+    )
+
+    # Create a site with the new homepage set as the root
+    Site.objects.create(
+        hostname='localhost', root_page=homepage, is_default_site=True)
+
+
 # molo.core.migrations.0004_configure_root_page
+def configure_root_page(apps, schema_editor):
+    # Get models
+    ContentType = apps.get_model('contenttypes.ContentType')
+    Site = apps.get_model('wagtailcore.Site')
+    Main = apps.get_model('core.Main')
+    HomePage = apps.get_model('core.HomePage')
+
+    # Delete the default homepage
+    HomePage.objects.all().delete()
+
+    # Create content type for main model
+    main_content_type, created = ContentType.objects.get_or_create(
+        model='main', app_label='core')
+
+    # Create a new homepage
+    main = Main.objects.create(
+        title="Main",
+        slug='main',
+        content_type=main_content_type,
+        path='00010001',
+        depth=2,
+        numchild=0,
+        url_path='/home/',
+    )
+
+    # Create a site with the new homepage set as the root
+    Site.objects.all().delete()
+    Site.objects.create(
+        hostname='localhost', root_page=main, is_default_site=True)
+
 # molo.core.migrations.0034_create_index_pages
+def create_banner_index(apps, schema_editor):
+    from molo.core.models import BannerIndexPage, Main
+    main = Main.objects.first()
+
+    if main:
+        banner_index = BannerIndexPage(title='Banners', slug='banners')
+        main.add_child(instance=banner_index)
+        banner_index.save_revision().publish()
+
+
+def create_section_index(apps, schema_editor):
+    from molo.core.models import SectionIndexPage, Main
+    main = Main.objects.all().first()
+
+    if main:
+        section_index = SectionIndexPage(title='Sections', slug='sections')
+        main.add_child(instance=section_index)
+        section_index.save_revision().publish()
+
+
+def create_footer_index(apps, schema_editor):
+    from molo.core.models import FooterIndexPage, Main
+    main = Main.objects.all().first()
+
+    if main:
+        footer_index = FooterIndexPage(
+            title='Footer pages', slug='footer-pages')
+        main.add_child(instance=footer_index)
+        footer_index.save_revision().publish()
+
 # molo.core.migrations.0047_add_core_permissions_to_groups
+def add_core_permissions_to_groups(apps, schema_editor):
+    db_alias = schema_editor.connection.alias
+    try:
+        # Django 1.9
+        emit_post_migrate_signal(2, False, db_alias)
+    except TypeError:
+        # Django < 1.9
+        try:
+            # Django 1.8
+            emit_post_migrate_signal(2, False, 'default', db_alias)
+        except TypeError:  # Django < 1.8
+            emit_post_migrate_signal([], 2, False, 'default', db_alias)
+
+    Group = apps.get_model('auth.Group')
+    Permission = apps.get_model('auth.Permission')
+    GroupPagePermission = apps.get_model('wagtailcore.GroupPagePermission')
+    BannerIndexPage = apps.get_model('core.BannerIndexPage')
+    SectionIndexPage = apps.get_model('core.SectionIndexPage')
+    FooterIndexPage = apps.get_model('core.FooterIndexPage')
+
+    if Group.objects.all().filter(name='Writer and Content Loader'):
+        Group.objects.get(name='Writer and Content Loader').delete()
+
+    if Group.objects.all().filter(name='Publisher'):
+        Group.objects.get(name='Publisher').delete()
+
+    # Create groups
+    access_admin = Permission.objects.get(codename='access_admin')
+
+    # <- Wagtail Login Only ->
+    wagtail_login_only_group, _created = Group.objects.get_or_create(
+        name='Wagtail Login Only')
+    wagtail_login_only_group.permissions.add(access_admin)
+
+    # <- Editors ->
+    editor_group = Group.objects.get(name='Editors')
+
+    # Remove the existing page permissions
+    editor_group.page_permissions.all().delete()
+
+    # Add page permissions
+    sections = SectionIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=editor_group,
+        page=sections,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=editor_group,
+        page=sections,
+        permission_type='edit',
+    )
+
+    banners = BannerIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=editor_group,
+        page=banners,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=editor_group,
+        page=banners,
+        permission_type='edit',
+    )
+
+    add_sitelanguage = Permission.objects.get(codename='add_sitelanguage')
+    editor_group.permissions.add(add_sitelanguage)
+
+    # <- Moderator ->
+
+    moderator_group = Group.objects.get(name='Moderators')
+
+    add_sitelanguage = Permission.objects.get(codename='add_sitelanguage')
+    change_sitelanguage = Permission.objects.get(
+        codename='change_sitelanguage')
+    change_user = Permission.objects.get(
+        codename='change_user')
+    moderator_group.permissions.add(add_sitelanguage, change_sitelanguage,
+                                    change_user)
+
+    moderator_group.page_permissions.all().delete()
+    sections = SectionIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=sections,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=sections,
+        permission_type='edit',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=sections,
+        permission_type='publish',
+    )
+
+    banners = BannerIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=banners,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=banners,
+        permission_type='edit',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=banners,
+        permission_type='publish',
+    )
+
+    footers = FooterIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=footers,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=footers,
+        permission_type='edit',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=footers,
+        permission_type='publish',
+    )
+
+
 # molo.core.migrations.0050_data_migration_promoted_articles
+def set_promote_start_date(apps, schema_editor):
+    ArticlePage = apps.get_model("core", "ArticlePage")
+
+    latest_articles = ArticlePage.objects.filter(featured_in_latest=True)
+    homepage_articles = ArticlePage.objects.filter(featured_in_homepage=True)
+    section_articles = ArticlePage.objects.filter(featured_in_section=True)
+
+    for article in latest_articles:
+        article.featured_in_latest_start_date = article.latest_revision_created_at
+        article.save()
+    for article in homepage_articles:
+        article.featured_in_homepage_start_date = article.latest_revision_created_at
+        article.save()
+    for article in section_articles:
+        article.featured_in_section_start_date = article.latest_revision_created_at
+        article.save()
+
+
 # molo.core.migrations.0051_remove_user_permission_for_moderator_group
+def remove_user_permission_for_moderator_group(apps, schema_editor):
+    db_alias = schema_editor.connection.alias
+    try:
+        # Django 1.9
+        emit_post_migrate_signal(2, False, db_alias)
+    except TypeError:
+        # Django < 1.9
+        try:
+            # Django 1.8
+            emit_post_migrate_signal(2, False, 'default', db_alias)
+        except TypeError:  # Django < 1.8
+            emit_post_migrate_signal([], 2, False, 'default', db_alias)
+
+    Group = apps.get_model('auth.Group')
+    Permission = apps.get_model('auth.Permission')
+
+    # <- Moderator ->
+    moderator_group = Group.objects.filter(name='Moderators').first()
+    if moderator_group:
+        change_user = Permission.objects.get(codename='change_user')
+        moderator_group.permissions.remove(change_user)
+
+
 # molo.core.migrations.0052_update_permissions_for_groups
+def update_permissions_for_group(apps, schema_editor):
+    '''
+    Update permissions for some users.
+
+    Give bulk-delete permissions to moderators.
+    Give edit permission to moderators and editors in order
+    to display 'Main' page in the explorer.
+    '''
+    db_alias = schema_editor.connection.alias
+    try:
+        # Django 1.9
+        emit_post_migrate_signal(2, False, db_alias)
+    except TypeError:
+        # Django < 1.9
+        try:
+            # Django 1.8
+            emit_post_migrate_signal(2, False, 'default', db_alias)
+        except TypeError:  # Django < 1.8
+            emit_post_migrate_signal([], 2, False, 'default', db_alias)
+
+    Group = apps.get_model('auth.Group')
+    GroupPagePermission = apps.get_model('wagtailcore.GroupPagePermission')
+    SectionIndexPage = apps.get_model('core.SectionIndexPage')
+    MainPage = apps.get_model('core.Main')
+
+    moderator_group = Group.objects.filter(name='Moderators').first()
+    editor_group = Group.objects.filter(name='Editors').first()
+
+    if moderator_group:
+        sections = SectionIndexPage.objects.first()
+        GroupPagePermission.objects.get_or_create(
+            group_id=moderator_group.id,
+            page_id=sections.id,
+            permission_type='bulk_delete'
+        )
+
+        main = MainPage.objects.first()
+        GroupPagePermission.objects.get_or_create(
+            group_id=moderator_group.id,
+            page_id=main.id,
+            permission_type='edit'
+        )
+
+    if editor_group:
+        main = MainPage.objects.first()
+        GroupPagePermission.objects.get_or_create(
+            group_id=editor_group.id,
+            page_id=main.id,
+            permission_type='edit'
+        )
+
+
 # molo.core.migrations.0055_migrate_current_site_languages_to_language_relation
+def convert_languages_to_site_language_relation(apps, schema_editor):
+    from molo.core.models import SiteLanguage, SiteLanguageRelation, Main, Languages
+    main = Main.objects.all().first()
+    if main:
+        site = main.get_site()
+        if site:
+            language_setting, _ = Languages.objects.get_or_create(
+                site_id=site.pk)
+            for language in SiteLanguage.objects.all():
+                site_language_rel = SiteLanguageRelation(
+                    sitelanguage_ptr=language,
+                    language_setting=language_setting,
+                    locale=language.locale,
+                    is_active=language.is_active,
+                    is_main_language=language.is_main_language)
+                site_language_rel.save()
+
+
 # molo.core.migrations.0057_create_tag_index_page
+def create_tag_index(apps, schema_editor):
+    from molo.core.models import TagIndexPage, Main
+    main = Main.objects.all().first()
+
+    if main:
+        tag_index = TagIndexPage(title='Tags', slug='tags')
+        main.add_child(instance=tag_index)
+        tag_index.save_revision().publish()
+
+
 # molo.core.migrations.0060_reaction_questions_index_page
+def create_reaction_question_index(apps, schema_editor):
+    from molo.core.models import ReactionQuestionIndexPage, Main
+    main = Main.objects.all().first()
+
+    if main:
+        reaction_question_index = ReactionQuestionIndexPage(
+            title='Reaction Questions', slug='reaction-questions')
+        main.add_child(instance=reaction_question_index)
+        reaction_question_index.save_revision().publish()
+
+
 # molo.core.migrations.0068_media_migration
+def convert_media_to_molo_media(apps, schema_editor):
+    db_alias = schema_editor.connection.alias
+    try:
+        # Django 1.9
+        emit_post_migrate_signal(2, False, db_alias)
+    except TypeError:
+        # Django < 1.9
+        try:
+            # Django 1.8
+            emit_post_migrate_signal(2, False, 'default', db_alias)
+        except TypeError:  # Django < 1.8
+            emit_post_migrate_signal([], 2, False, 'default', db_alias)
+
+    for media in Media.objects.all():
+        if media.type == 'video':
+            new_media = MoloMedia.objects.create(
+                title=media.title, file=media.file, duration=media.duration,
+                type=media.type, width=media.width, height=media.height,
+                thumbnail=media.thumbnail)
+        else:
+            new_media = MoloMedia.objects.create(
+                title=media.title, file=media.file, duration=media.duration,
+                type=media.type)
+        media.file = None
+        media.save()
+        for article in ArticlePage.objects.all():
+            for block in article.body:
+                if block.block_type is 'media' and block.value is media.id:
+                    block.value = new_media.id
+                    article.save()
+
+
 # molo.core.migrations.0071_remove_old_image_hashes
+def delete_imageinfo(apps, schema_editor):
+    ImageInfo = apps.get_model('core.ImageInfo')
+    ImageInfo.objects.all().delete()
+
+
 # molo.core.migrations.0073_run_wagtail_migration_before_core_34
+def run_wagtail_migration_before_core_34(apps, schema_editor):
+    """
+    Migration 34 needs migration 0040 from wagtail core
+    and this Migration will run wagtail migration before
+    molo core migration 34
+    """
+    db_alias = schema_editor.connection.alias
+    emit_pre_migrate_signal(verbosity=2, interactive=False, db=db_alias)
+
+
 # molo.core.migrations.0075_create_timezone
+def seed_timezones(apps, schema_editor):
+    for timezone_title in common_timezones:
+        timezone = Timezone.objects.create(title=timezone_title)
+        timezone.save()
+
+
+def delete_timezones(apps, schema_editor):
+    Timezone.objects.all().delete()
+
+
 # molo.core.migrations.0076_create_cmssettings
+def set_initial_timezone(apps, schema_editor):
+    current_timezone_name = django_settings.TIME_ZONE or 'UTC'
+    for site in Site.objects.all():
+        cms_settings = CmsSettings.for_site(site)
+        cms_settings.timezone = Timezone.objects.filter(
+            title=current_timezone_name,
+        ).first()
+        cms_settings.save()
+
+
+def unset_timezone(apps, schema_editor):
+    from molo.core.models import CmsSettings
+    from wagtail.wagtailcore.models import Site
+    for site in Site.objects.all():
+        site_settings = CmsSettings.for_site(site)
+        site_settings.timezone = None
+        site_settings.save()
+
 
 class Migration(migrations.Migration):
 
