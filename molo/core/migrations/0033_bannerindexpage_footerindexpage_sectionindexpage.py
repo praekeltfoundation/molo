@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('wagtailcore', '0028_merge'),
-        ('wagtailcore', '0040_page_draft_title'),
         ('core', '0032_sitesettings_ga_tag_manager'),
     ]
 
