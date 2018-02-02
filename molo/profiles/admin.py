@@ -79,7 +79,7 @@ class ProfileUserAdmin(UserAdmin):
 
     def _gender(self, obj, *args, **kwargs):
         if hasattr(obj, 'profile') and obj.profile.gender:
-            return obj.gender
+            return obj.profile.gender
         return ''
 
     def _site(self, obj, *args, **kwargs):
