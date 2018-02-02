@@ -94,7 +94,7 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
             'testing', 'testing@example.com', 'testing')
         form_data = {
             'username': 'testing',
-            'password': '12345',
+            'password': '1234',
         }
         form = RegistrationForm(
             data=form_data,
@@ -108,7 +108,7 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
     def test_terms_and_conditions_is_required(self):
         form_data = {
             'username': 'test',
-            'password': '12345',
+            'password': '1234',
         }
         form = RegistrationForm(
             data=form_data,
