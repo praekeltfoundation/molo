@@ -1,3 +1,7 @@
+6.4.1
+~~~~~
+- Added Gender field to Profiles Admin
+
 6.4.0
 ~~~~~
 - Allow multiple sites to point to one root page
