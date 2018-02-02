@@ -56,7 +56,7 @@ class UserProfileInlineModelAdmin(admin.StackedInline):
 
 class ProfileUserAdmin(UserAdmin):
     list_display = UserAdmin.list_display + (
-        'date_joined', '_alias', '_mobile_number', '_date_of_birth')
+        'date_joined', '_alias', '_mobile_number', '_date_of_birth', '_gender')
 
     list_filter = UserAdmin.list_filter + ('date_joined', )
 
@@ -75,6 +75,11 @@ class ProfileUserAdmin(UserAdmin):
     def _date_of_birth(self, obj, *args, **kwargs):
         if hasattr(obj, 'profile') and obj.profile.date_of_birth:
             return obj.profile.date_of_birth
+        return ''
+
+    def _gender(self, obj, *args, **kwargs):
+        if hasattr(obj, 'profile') and obj.profile.gender:
+            return obj.gender
         return ''
 
     def _site(self, obj, *args, **kwargs):
@@ -114,7 +119,7 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
     index_view_class = FrontendUsersAdminView
     add_to_settings_menu = True
     list_display = ('username', '_alias', '_mobile_number', '_date_of_birth',
-                    'email', 'date_joined', 'is_active', '_site')
+                    'email', 'date_joined', 'is_active', '_site', '_gender')
 
     list_filter = (
         ('date_joined', FrontendUsersDateRangeFilter), 'is_active',
