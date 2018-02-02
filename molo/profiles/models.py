@@ -4,6 +4,7 @@ from django.core import validators
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -250,6 +251,7 @@ class UserProfilesSettings(BaseSetting):
     # if show_mobile_number_field is False
 
 
+@python_2_unicode_compatible
 class SecurityQuestion(TranslatablePageMixin, MoloPage):
     parent_page_types = ['SecurityQuestionIndexPage']
     subpage_types = []
