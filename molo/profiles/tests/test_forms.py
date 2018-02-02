@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -94,7 +95,7 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
             'testing', 'testing@example.com', 'testing')
         form_data = {
             'username': 'testing',
-            'password': '12345',
+            'password': '1234',
         }
         form = RegistrationForm(
             data=form_data,
@@ -108,13 +109,35 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
     def test_terms_and_conditions_is_required(self):
         form_data = {
             'username': 'test',
-            'password': '12345',
+            'password': '1234',
         }
         form = RegistrationForm(
             data=form_data,
             questions=[self.question, ]
         )
         self.assertEqual(form.is_valid(), False)
+
+    def test_security_questions_can_contain_non_ascii(self):
+        question_accents = SecurityQuestion(
+            title=u'Non-ascii characters? ê ờ ប အ',
+            slug='non-ascii-characters',
+        )
+        self.security_index.add_child(instance=question_accents)
+        question_accents.save()
+        form_data = {
+            'username': 'test',
+            'password': '1234',
+            'terms_and_conditions': True,
+        }
+        form = RegistrationForm(
+            data=form_data,
+            questions=[question_accents]
+        )
+        self.assertTrue(form.is_valid())
+        self.assertEqual(
+            form.fields['question_0'].label,
+            u'Non-ascii characters? ê ờ ប အ',
+        )
 
 
 class PasswordRecoveryTestCase(MoloTestCaseMixin, TestCase):
