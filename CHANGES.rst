@@ -1,3 +1,7 @@
+6.4.2
+~~~~~
+- Bug Fix: return gender from profile and not user
+
 6.4.1
 ~~~~~
 - Added Gender field to Profiles Admin
