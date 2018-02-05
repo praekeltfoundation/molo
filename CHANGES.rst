@@ -1,3 +1,7 @@
+6.4.3
+~~~~~
+- Bug Fix: support non-ascii security questions
+
 6.4.2
 ~~~~~
 - Bug Fix: return gender from profile and not user
