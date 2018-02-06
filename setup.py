@@ -18,7 +18,7 @@ install_requires = [
     'celery<4.0',
     'cookiecutter==1.0.0',
     'dj-database-url',
-    'Django>=1.10,<2.0',
+    'Django>=1.11,<2.0',
     'django-cas-ng==3.5.8',
     'django-el-pagination==3.1.0',
     'django-extensions',
