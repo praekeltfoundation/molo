@@ -10,7 +10,7 @@ def create_uuid(apps, schema_editor):
     UserProfile = apps.get_model('profiles', 'UserProfile')
     for user in UserProfile.objects.all():
         user.uuid = uuid.uuid4()
-        user.save()
+        user.save(update_fields=['uuid'])
 
 
 class Migration(migrations.Migration):
