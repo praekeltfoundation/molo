@@ -1,3 +1,8 @@
+6.5.0
+~~~~~
+- Drop support for Django 1.10
+- Update Node.js package electron for security fixes
+
 6.4.3
 ~~~~~
 - Bug Fix: support non-ascii security questions
