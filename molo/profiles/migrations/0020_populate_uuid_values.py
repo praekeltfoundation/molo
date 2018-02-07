@@ -16,19 +16,9 @@ def create_uuid(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profiles', '0018_userprofile_admin_sites'),
+        ('profiles', '0019_add_uuid_field'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='userprofile',
-            name='uuid',
-            field=models.UUIDField(default=uuid.uuid4, null=True),
-        ),
         migrations.RunPython(create_uuid),
-        migrations.AlterField(
-            model_name='userprofile',
-            name='uuid',
-            field=models.UUIDField(default=uuid.uuid4, unique=True),
-        ),
     ]
