@@ -66,10 +66,9 @@ class RegistrationView(FormView):
             self.request.site.root_page).live().filter(
             languages__language__is_main_language=True)
 
-        # create context dictionary with request for get_pages()
-        request = {"request": self.request}
+        context = {"request": self.request}
         self.translated_questions = get_pages(
-            request, self.questions, self.request.LANGUAGE_CODE)
+            context, self.questions, self.request.LANGUAGE_CODE)
         kwargs["questions"] = self.translated_questions
         kwargs["request"] = self.request
         return kwargs
@@ -270,15 +269,14 @@ class ForgotPasswordView(FormView):
             languages__language__is_main_language=True
         )
 
-        # create context dictionary with request for get_pages()
-        request = {"request": self.request}
+        context = {"request": self.request}
         translated_questions = get_pages(
-            request, self.security_questions, self.request.LANGUAGE_CODE
+            context, self.security_questions, self.request.LANGUAGE_CODE
         )
         kwargs["questions"] = translated_questions[
             :profile_settings.num_security_questions]
         # limit security questions - done here because query in get_pages()
-        # cannot be performed once queryset is sliced
+        # cannot be performed once queryset is sliced into a list
         self.security_questions = self.security_questions[
             :profile_settings.num_security_questions]
         return kwargs
