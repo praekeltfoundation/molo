@@ -1,3 +1,9 @@
+6.6.0
+~~~~~
+- Add UUID to molo profile
+- Pin django-google-analytics to 4.2.0
+- Pass UUID to Google Analytics
+
 6.5.0
 ~~~~~
 - Drop support for Django 1.10
