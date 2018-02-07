@@ -276,7 +276,7 @@ class ForgotPasswordView(FormView):
         kwargs["questions"] = translated_questions[
             :profile_settings.num_security_questions]
         # limit security questions - done here because query in get_pages()
-        # cannot be performed once queryset is sliced
+        # cannot be performed once queryset is sliced into a list
         self.security_questions = self.security_questions[
             :profile_settings.num_security_questions]
         return kwargs
