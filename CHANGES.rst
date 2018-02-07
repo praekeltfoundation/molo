@@ -1,3 +1,7 @@
+6.6.2
+~~~~~
+- breaks down the uuid migration into 3 migrations
+
 6.6.1
 ~~~~~
 - Remove localisation of security questions in form
