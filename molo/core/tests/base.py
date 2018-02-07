@@ -78,7 +78,6 @@ class MoloTestCaseMixin(object):
             depth=1,
             numchild=0,
         )
-
         # Create a site with the new homepage set as the root
         # Site.objects.all().delete()
         self.site = self.main.get_site()
@@ -129,15 +128,62 @@ class MoloTestCaseMixin(object):
         # Site.objects.all().delete()
         self.site2 = self.main2.get_site()
 
-    def mk_tag(self, parent, **kwargs):
+    def mk_main3(self, title='main3', slug='main3', path='4099'):
+        self.mk_root()
+        main_content_type, created = ContentType.objects.get_or_create(
+            model='main', app_label='core')
+
+        # Create a new homepage
+        self.main3 = Main.objects.create(
+            title=title,
+            slug=slug,
+            content_type=main_content_type,
+            path=path,
+            depth=2,
+            numchild=0,
+            url_path='/main3/',
+        )
+        self.main3.save_revision().publish()
+        self.main3.save()
+
+        # Create index pages
+        self.section_index3 = SectionIndexPage.objects.child_of(
+            self.main3).first()
+
+        self.reaction_index3 = ReactionQuestionIndexPage.objects.child_of(
+            self.main3).first()
+
+        self.footer_index3 = FooterIndexPage.objects.child_of(
+            self.main3).first()
+
+        self.banner_index3 = BannerIndexPage.objects.child_of(
+            self.main3).first()
+
+        self.tag_index3 = TagIndexPage.objects.child_of(
+            self.main3).first()
+
+        # Create root collection
+        Collection.objects.get_or_create(
+            name="Root",
+            path='0001',
+            depth=1,
+            numchild=0,
+        )
+
+        # Create a site with the new homepage set as the root
+        # Site.objects.all().delete()
+        self.site3 = self.main3.get_site()
+
+    def mk_tag(self, parent, slug=None, **kwargs):
         data = {}
         data.update({
             'title': 'Test Tag',
         })
         data.update(kwargs)
-        data.update({
-            'slug': generate_slug(data['title'])
-        })
+        if slug:
+            data.update({'slug': slug})
+        else:
+            data.update({'slug': generate_slug(data['title'])})
         tag = Tag(**data)
         parent.add_child(instance=tag)
         tag.save_revision().publish()

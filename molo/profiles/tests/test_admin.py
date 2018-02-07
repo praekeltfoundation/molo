@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -92,12 +93,41 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
                                    None,
                                    User.objects.all())
         date = str(self.user.date_joined.strftime("%Y-%m-%d %H:%M"))
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition: '
-                           'attachment;filename=export.csv\r\n\r\nusername,'
-                           'email,first_name,last_name,is_staff,date_joined,'
-                           'alias,mobile_number\r\ntester,tester@example.com,'
-                           ',,False,' + date + ',The Alias,+27784667723\r\n')
-        self.assertEquals(str(response), expected_output)
+        csv_header = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'is_staff',
+            'date_joined',
+            'alias',
+            'mobile_number',
+        ]
+        csv_row_one = [
+            'tester',
+            'tester@example.com',
+            '',
+            '',
+            'False',
+            date,
+            'The Alias',
+            '+27784667723',
+        ]
+        expected_csv = [
+            ','.join(csv_header),
+            ','.join(csv_row_one),
+            '',
+        ]
+        self.assertTrue(isinstance(response, HttpResponse))
+        self.assertContains(response, "\r\n".join(expected_csv))
+        self.assertEquals(
+            response['Content-Type'],
+            'text/csv',
+        )
+        self.assertEquals(
+            response['Content-Disposition'],
+            'attachment;filename=export.csv',
+        )
 
     def test_download_csv_with_an_alias_contains_ascii_code(self):
         profile = self.user.profile
@@ -108,14 +138,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         response = download_as_csv(ProfileUserAdmin(UserProfile, self.site),
                                    None,
                                    User.objects.all())
-        date = str(self.user.date_joined.strftime("%Y-%m-%d %H:%M"))
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition: '
-                           'attachment;filename=export.csv\r\n\r\nusername,'
-                           'email,first_name,last_name,is_staff,date_joined,'
-                           'alias,mobile_number\r\ntester,tester@example.com,'
-                           ',,False,' + date + ',The Alias \xf0\x9f\x98\x81,'
-                           '+27784667723\r\n')
-        self.assertEquals(str(response), expected_output)
+        self.assertContains(response, 'The Alias 😁')
 
     def test_download_csv_with_an_username_contains_ascii_code(self):
         self.user.username = '사이네'
@@ -124,14 +147,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         response = download_as_csv(ProfileUserAdmin(UserProfile, self.site),
                                    None,
                                    User.objects.all())
-        date = str(self.user.date_joined.strftime("%Y-%m-%d %H:%M"))
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition: '
-                           'attachment;filename=export.csv\r\n\r\nusername,'
-                           'email,first_name,last_name,is_staff,date_joined,'
-                           'alias,mobile_number\r\n\xec\x82\xac\xec\x9d\xb4'
-                           '\xeb\x84\xa4,tester@example.com,'
-                           ',,False,' + date + ',,\r\n')
-        self.assertEquals(str(response), expected_output)
+        self.assertContains(response, '사이네')
 
 
 class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
@@ -167,6 +183,14 @@ class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
         )
         self.assertContains(response, self.user.username)
         self.assertNotContains(response, self.superuser.email)
+
+    def test_gender_shown_on_admin(self):
+        self.user.profile.gender = 'female'
+        self.user.profile.save()
+        response = self.client.get(
+            '/admin/auth/user/'
+        )
+        self.assertContains(response, 'female')
 
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_export_csv_redirects(self):

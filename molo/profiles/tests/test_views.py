@@ -143,13 +143,14 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
             'username': 'superuser',
             'password': 'pass'
         })
-        self.assertEquals(response['location'], '/admin/')
+        self.assertEquals(response['Location'], '/admin/')
         client = Client(HTTP_HOST=self.site2.hostname)
+        response = client.login(username='superuser', password='pass')
         response = client.post('/admin/login/?next=/admin/', {
             'username': 'superuser',
             'password': 'pass'
         })
-        self.assertEquals(response['location'], '/admin/')
+        self.assertEquals(response['Location'], '/admin/')
 
     def test_superuser_only_users_from_site_show(self):
         response = self.client.post(reverse('molo.profiles:user_register'), {
@@ -1106,6 +1107,11 @@ class MyProfileViewTest(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'tester')
         self.assertContains(response, 'The Alias')
 
+        self.assertTrue(isinstance(
+            response.context['password_change_form'],
+            ProfilePasswordChangeForm,
+        ))
+
 
 @override_settings(
     ROOT_URLCONF='molo.profiles.tests.test_views', LOGIN_URL='/login/')
@@ -1611,7 +1617,7 @@ class ForgotPasswordViewTest(TestCase, MoloTestCaseMixin):
                 "question_0": "20",
             }
         )
-        self.failUnless(error_message in response.content)
+        self.assertContains(response, error_message)
 
     def test_suspended_user_gets_error(self):
         error_message = "The username and security question(s) combination " \
@@ -1624,7 +1630,7 @@ class ForgotPasswordViewTest(TestCase, MoloTestCaseMixin):
                 "question_0": "20",
             }
         )
-        self.failUnless(error_message in response.content)
+        self.assertContains(response, error_message)
         self.user.is_active = True
         self.user.save()
 
@@ -1637,7 +1643,7 @@ class ForgotPasswordViewTest(TestCase, MoloTestCaseMixin):
                 "question_0": "21",
             }
         )
-        self.failUnless(error_message in response.content)
+        self.assertContains(response, error_message)
 
     def test_too_many_retries_result_in_error(self):
         error_message = ("Too many attempts")
@@ -1652,7 +1658,7 @@ class ForgotPasswordViewTest(TestCase, MoloTestCaseMixin):
                     "question_0": "200",
                 }
             )
-        self.failUnless(error_message in response.content)
+        self.assertContains(response, error_message)
 
     def test_correct_username_and_answer_results_in_redirect(self):
         response = self.client.post(
@@ -1848,7 +1854,7 @@ class TranslatedSecurityQuestionsTest(TestCase, MoloTestCaseMixin):
         # is asked
         self.client.get('/locale/en/')
         response = self.client.get(reverse("molo.profiles:forgot_password"))
-        self.failIf("How old are you in french" in response.content)
+        self.assertNotContains(response, "How old are you in french")
 
 
 class ResetPasswordViewTest(TestCase, MoloTestCaseMixin):

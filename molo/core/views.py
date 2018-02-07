@@ -2,7 +2,6 @@ from os import environ, path, walk
 import pkg_resources
 import requests
 import zipfile
-import StringIO
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,7 +9,12 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import (
+    JsonResponse,
+    HttpResponse,
+    HttpResponseNotAllowed,
+    Http404,
+)
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.http import is_safe_url
 from django.utils.translation import (
@@ -20,9 +24,9 @@ from django.utils.translation import (
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
+from io import BytesIO
 from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
 from wagtail.wagtailsearch.models import Query
-
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     PageTranslation, ArticlePage, Languages, SiteSettings, Tag,
@@ -31,6 +35,7 @@ from molo.core.models import (
 from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm, ReactionQuestionChoiceForm
+from molo.core.tasks import copy_to_all_task
 from django.views.generic import ListView
 
 from el_pagination.decorators import page_template
@@ -328,7 +333,7 @@ def download_file(request):
     if request.method == "GET":
         if path.exists(settings.MEDIA_ROOT):
             zipfile_name = 'media_%s.zip' % settings.SITE_NAME
-            in_memory_file = StringIO.StringIO()
+            in_memory_file = BytesIO()
 
             media_zipfile = zipfile.ZipFile(in_memory_file, 'w',
                                             zipfile.ZIP_DEFLATED)
@@ -345,12 +350,15 @@ def download_file(request):
             resp['Content-Disposition'] = (
                 'attachment; filename=%s' % zipfile_name)
 
-            return resp
         else:
-            return render(request,
+            resp = render(request,
                           'django_admin/transfer_media_message.html',
                           {'error_message':
                            'media file does not exist'})
+    else:
+        resp = HttpResponseNotAllowed(permitted_methods=['GET'])
+
+    return resp
 
 
 @page_template(
@@ -437,6 +445,30 @@ def get_valid_next_url_from_request(request):
     if not next_url or not is_safe_url(url=next_url, host=request.get_host()):
         return ''
     return next_url
+
+
+def copy_to_all_confirm(request, page_id):
+    page = get_object_or_404(Page, id=page_id).specific
+    next_url = get_valid_next_url_from_request(request)
+    if request.method == 'POST':
+        if next_url:
+            return redirect(next_url)
+        return redirect('wagtailadmin_explore', page.get_parent().id)
+
+    return render(request, 'wagtailadmin/pages/confirm_copy_to_all.html', {
+        'page': page,
+        'next': next_url,
+        'not_live_descendant_count': page.get_descendants().not_live().count()
+    })
+
+
+def copy_to_all(request, page_id):
+    page = get_object_or_404(Page, id=page_id).specific
+    copy_to_all_task.delay(page.pk, request.user.pk, request.site.pk)
+    next_url = get_valid_next_url_from_request(request)
+    if next_url:
+        return redirect(next_url)
+    return redirect('wagtailadmin_explore', page.get_parent().id)
 
 
 def publish(request, page_id):

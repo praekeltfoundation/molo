@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-from os import environ
+from os import environ, makedirs, path
 import re
 import json
 import pytest
 import responses
-import urllib
 
 from datetime import timedelta, datetime
-from urlparse import parse_qs
 
+from django.conf import settings
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
@@ -16,7 +15,8 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings, Client
 from django.utils import timezone
-from django.http import HttpRequest
+
+from io import BytesIO
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (
@@ -32,11 +32,15 @@ from molo.core.templatetags.core_tags import \
 from molo.core.wagtail_hooks import copy_translation_pages
 
 from mock import patch, Mock
+from shutil import rmtree
 from six import b
+from six.moves.urllib.parse import quote, parse_qs
 from bs4 import BeautifulSoup
 
 from wagtail.wagtailcore.models import Site, Page
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+
+from zipfile import ZipFile
 
 
 @pytest.mark.django_db
@@ -52,15 +56,15 @@ class TestPages(TestCase, MoloTestCaseMixin):
             is_active=True)
 
         self.french = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(main.get_site()),
+            language_setting=Languages.for_site(Site.objects.first()),
             locale='fr',
             is_active=True)
         self.spanish = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(main.get_site()),
+            language_setting=Languages.for_site(Site.objects.first()),
             locale='es',
             is_active=True)
         self.arabic = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(main.get_site()),
+            language_setting=Languages.for_site(Site.objects.first()),
             locale='ar',
             is_active=True)
 
@@ -84,7 +88,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_main2()
         self.main2 = Main.objects.all().last()
         self.language_setting2 = Languages.objects.create(
-            site_id=self.main2.get_site().pk)
+            site_id=Site.objects.last().pk)
         self.english2 = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting2,
             locale='en',
@@ -118,12 +122,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
         admin_url = '/admin/pages/%s/' % main3_pk
         self.assertEqual(
             response['Location'],
-            '/admin/login/?next=' + urllib.quote(admin_url, safe=''))
+            '/admin/login/?next=' + quote(admin_url, safe=''))
 
     def test_copy_langauges_for_translatable_pages_only(self):
-        request = HttpRequest()
         response = copy_translation_pages(
-            request, self.section_index, self.section_index2)
+            self.section_index, self.section_index2)
         self.assertEquals(response, 'Not translatable page')
 
     def test_able_to_copy_main(self):
@@ -193,6 +196,66 @@ class TestPages(TestCase, MoloTestCaseMixin):
             page=new_article).section.pk, new_section.pk)
         self.assertEqual(ArticlePageRecommendedSections.objects.get(
             page=new_article).recommended_article.pk, new_article2.pk)
+
+    def test_copying_banner_where_the_link_page_doesnt_exist(self):
+        # testing that copying a banner page does not give an error
+        # when the link page doesn't exist
+        self.user = self.login()
+        article = self.mk_article(self.yourmind)
+        banner = BannerPage(
+            title='banner', slug='banner', banner_link_page=article)
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(banner.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.banner_index2.pk,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(
+            BannerPage.objects.descendant_of(self.main2).get(
+                slug='blank').banner_link_page, None)
+
+    def test_copying_banner_where_the_link_page_does_exist(self):
+        # testing that copying a banner creates the correct link page relation
+        self.user = self.login()
+        article = self.mk_article(self.yourmind)
+
+        # copy article to main 2
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(article.id,)),
+            data={
+                'new_title': article.title,
+                'new_slug': article.slug,
+                'new_parent_page': self.yourmind2.pk,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        banner = BannerPage(
+            title='banner', slug='banner', banner_link_page=article)
+        self.banner_index.add_child(instance=banner)
+        banner.save_revision().publish()
+
+        response = self.client.post(reverse(
+            'wagtailadmin_pages:copy',
+            args=(banner.id,)),
+            data={
+                'new_title': 'blank',
+                'new_slug': 'blank',
+                'new_parent_page': self.banner_index2.pk,
+                'copy_subpages': 'true',
+                'publish_copies': 'true'})
+        self.assertEquals(response.status_code, 302)
+        article2 = ArticlePage.objects.descendant_of(
+            self.main2).get(slug=article.slug)
+        self.assertEquals(
+            BannerPage.objects.descendant_of(self.main2).get(
+                slug='blank').banner_link_page.pk, article2.pk)
 
     def test_copy_method_of_section_page_copies_translations_subpages(self):
         self.assertFalse(
@@ -2010,3 +2073,70 @@ class TestModerationActions(TestCase, MoloTestCaseMixin):
             self.article2_site2.revisions.first().submitted_for_moderation)
         self.assertTrue(ArticlePage.objects.descendant_of(self.main2).get(
             slug=self.article2_site2.slug))
+
+
+class TestDownloadFile(TestCase, MoloTestCaseMixin):
+    def setUp(self):
+        self.mk_main()
+        self.user = User.objects.create_superuser(
+            username='superuser', password='password', email='s@example.com')
+        self.client.login(username='superuser', password='password')
+
+    def test_download_file_redirects_normal_user(self):
+        User.objects.create_user(
+            username='normal', password='password', email='n@example.com')
+        self.client.login(username='normal', password='password')
+        response = self.client.get(reverse('molo_download_media'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response['Location'],
+            '/accounts/login/?next=/django-admin/download_media/',
+        )
+
+    def test_download_file_doesnt_respond_post(self):
+        self.client.login(username='superuser', password='password')
+        response = self.client.post(reverse('molo_download_media'))
+
+        self.assertEqual(response.status_code, 405)
+
+    @override_settings(MEDIA_ROOT='/tmp/media-root-path-does-not-exist')
+    def test_download_file_returns_error_media_root_not_exists(self):
+        response = self.client.get(reverse('molo_download_media'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<h1>Transfer of Media Failed</h1>')
+        self.assertContains(response, '<h3>media file does not exist</h3>')
+
+    @override_settings(MEDIA_ROOT='/tmp/molo-media-root-testing')
+    def test_download_file_returns_something(self):
+        # For some reason that I don't understand yet, in the view
+        # we walk() the split directory name, which means it's a
+        # directory inside the current working directory.
+        directory_name = path.split(settings.MEDIA_ROOT)[-1]
+        filename = path.join(directory_name, 'some_media.txt')
+
+        if not path.exists(settings.MEDIA_ROOT):
+            makedirs(settings.MEDIA_ROOT)
+        if not path.exists(directory_name):
+            makedirs(directory_name)
+        f = open(filename, 'w')
+        f.write('This is a media file')
+        f.close()
+
+        response = self.client.get(reverse('molo_download_media'))
+        file = ZipFile(BytesIO(response.content))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response['Content-Disposition'],
+            'attachment; filename=media_testapp.zip',
+        )
+        self.assertEqual(
+            response['Content-Type'],
+            'application/x-zip-compressed',
+        )
+        self.assertEqual(file.namelist(), [filename])
+        self.assertEqual(file.open(filename).read(), b'This is a media file')
+
+        rmtree(directory_name)

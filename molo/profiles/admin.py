@@ -1,4 +1,4 @@
-import csv
+import unicodecsv as csv
 
 from django.contrib import admin
 from django.http import HttpResponse
@@ -32,17 +32,14 @@ except NotRegistered:
 
 
 def download_as_csv(ProfileUserAdmin, request, queryset):
-    response = HttpResponse(content_type='text/csv')
+    response = HttpResponse(content_type='text/csv', charset='utf-8')
     response['Content-Disposition'] = 'attachment;filename=export.csv'
-    writer = csv.writer(response)
+    writer = csv.writer(response, encoding='utf-8')
     user_model_fields = UserAdmin.list_display + ('date_joined', )
     profile_fields = ('alias', 'mobile_number')
     field_names = user_model_fields + profile_fields
     writer.writerow(field_names)
     for obj in queryset:
-        if obj.profile.alias:
-            obj.profile.alias = obj.profile.alias.encode('utf-8')
-        obj.username = obj.username.encode('utf-8')
         obj.date_joined = obj.date_joined.strftime("%Y-%m-%d %H:%M")
         writer.writerow(
             [getattr(obj, field) for field in user_model_fields] +
@@ -59,7 +56,7 @@ class UserProfileInlineModelAdmin(admin.StackedInline):
 
 class ProfileUserAdmin(UserAdmin):
     list_display = UserAdmin.list_display + (
-        'date_joined', '_alias', '_mobile_number', '_date_of_birth')
+        'date_joined', '_alias', '_mobile_number', '_date_of_birth', '_gender')
 
     list_filter = UserAdmin.list_filter + ('date_joined', )
 
@@ -78,6 +75,11 @@ class ProfileUserAdmin(UserAdmin):
     def _date_of_birth(self, obj, *args, **kwargs):
         if hasattr(obj, 'profile') and obj.profile.date_of_birth:
             return obj.profile.date_of_birth
+        return ''
+
+    def _gender(self, obj, *args, **kwargs):
+        if hasattr(obj, 'profile') and obj.profile.gender:
+            return obj.profile.gender
         return ''
 
     def _site(self, obj, *args, **kwargs):
@@ -117,7 +119,7 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
     index_view_class = FrontendUsersAdminView
     add_to_settings_menu = True
     list_display = ('username', '_alias', '_mobile_number', '_date_of_birth',
-                    'email', 'date_joined', 'is_active', '_site')
+                    'email', 'date_joined', 'is_active', '_site', '_gender')
 
     list_filter = (
         ('date_joined', FrontendUsersDateRangeFilter), 'is_active',

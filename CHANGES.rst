@@ -1,3 +1,79 @@
+6.6.0
+~~~~~
+- Add UUID to molo profile
+- Pin django-google-analytics to 4.2.0
+- Pass UUID to Google Analytics
+
+6.5.0
+~~~~~
+- Drop support for Django 1.10
+- Update Node.js package electron for security fixes
+
+6.4.3
+~~~~~
+- Bug Fix: support non-ascii security questions
+
+6.4.2
+~~~~~
+- Bug Fix: return gender from profile and not user
+
+6.4.1
+~~~~~
+- Added Gender field to Profiles Admin
+
+6.4.0
+~~~~~
+- Allow multiple sites to point to one root page
+
+6.3.2
+~~~~~
+- Remove untested code
+
+6.3.1
+~~~~~
+- Template Changes
+
+6.3.0
+~~~~~
+- Add support for Python 3.6 and Django 1.11
+
+6.2.4
+~~~~~
+- Bug Fix: django-admin user view was serving a TemplateError
+
+6.2.3
+~~~~~
+- Bug Fix: Fix migration dependency causing issues running on a clean database
+
+6.2.2
+~~~~~
+- Bug Fix: Only create banner relations if current relations exist
+
+6.2.1
+~~~~~
+- Bug Fix: Split Migrations for Timezones
+
+6.2.0
+~~~~~
+- Add timezone to CMS per django install
+- Bug Fix: Assign new banner link page when copying banners
+
+6.1.5
+~~~~~
+- Bug Fix: Assign new article relations with copy to all
+
+6.1.4
+~~~~~
+- Only return BannerPages in BannerPage tag and not any children of inheritance
+
+6.1.3
+~~~~~
+- Add subtitle to BannerPage
+
+6.1.2
+~~~~~
+- Add copy to all functionality
+
 6.1.1
 ~~~~~
 - Bug fix: Run wagtailcore migration 40 before molo core migration 34

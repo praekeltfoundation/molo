@@ -7,6 +7,7 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
+from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
@@ -184,7 +185,7 @@ class RegistrationForm(forms.Form):
         # This allows any number of security questions to be specified
         for index, question in enumerate(questions):
             self.fields["question_%s" % index] = forms.CharField(
-                label=_(str(question)),
+                label=_(text_type(question)),
                 widget=forms.TextInput(
                     attrs=dict(
                         max_length=150,

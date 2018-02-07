@@ -213,7 +213,7 @@ CELERYBEAT_SCHEDULE = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 LANGUAGE_CODE = environ.get('LANGUAGE_CODE', 'en')
-TIME_ZONE = 'Africa/Johannesburg'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -283,8 +283,7 @@ EXTRA_LANG_INFO = {
     }
 }
 
-locale.LANG_INFO = dict(locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
-
+locale.LANG_INFO.update(EXTRA_LANG_INFO)
 
 LOCALE_PATHS = [
     join(PROJECT_ROOT, "locale"),

@@ -55,32 +55,33 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         )
 
     def test_send_export_email(self):
-        send_export_email(self.user.email, {'profile__site': self.site})
+        send_export_email('examplemail@test.com', {'profile__site': self.site})
         message = list(mail.outbox)[0]
-        self.assertEquals(message.to, [self.user.email])
+        self.assertEquals(message.to, ['examplemail@test.com'])
         self.assertEquals(
             message.subject, 'Molo export: ' + settings.SITE_NAME)
         self.assertEquals(
             message.attachments[0],
             ('Molo_export_testapp.csv',
              'username,alias,first_name,last_name,date_of_birth,email,mobile_n'
-             'umber,is_active,date_joined,last_login\r\ntesting1,The Alias,,,,'
-             ',+27784667723,1,' + str(
+             'umber,is_active,date_joined,last_login,gender\r\ntesting1,The '
+             'Alias,,,,,+27784667723,1,' + str(
                  self.user.date_joined.strftime("%Y-%m-%d %H:%M:%S")) +
              ',' + str(
-                 self.user.last_login.strftime("%Y-%m-%d %H:%M:%S")) + '\r\n',
+                 self.user.last_login.strftime("%Y-%m-%d %H:%M:%S")) + ',\r\n',
              'text/csv'))
 
         # test sending from the second site
-        send_export_email(self.user.email, {'profile__site': self.site2})
+        send_export_email(
+            'examplemail@test.com', {'profile__site': self.site2})
         message = list(mail.outbox)[1]
         self.assertEquals(
             message.attachments[0],
             ('Molo_export_testapp.csv',
              'username,alias,first_name,last_name,date_of_birth,email,mobile_n'
-             'umber,is_active,date_joined,last_login\r\ntesting2,,,,,,,1,' +
-                str(
+             'umber,is_active,date_joined,last_login,gender\r\ntesting2'
+             ',,,,,,,1,' + str(
                     self.user2.date_joined.strftime("%Y-%m-%d %H:%M:%S")) +
              ',' + str(
-                 self.user2.last_login.strftime("%Y-%m-%d %H:%M:%S")) + '\r\n',
-             'text/csv'))
+                 self.user2.last_login.strftime("%Y-%m-%d %H:%M:%S")) +
+                ',\r\n', 'text/csv'))

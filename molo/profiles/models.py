@@ -1,17 +1,20 @@
+import uuid
 from django.contrib.auth import hashers
 from django.contrib.auth.models import User
 from django.core import validators
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 
 from molo.core.models import (
     TranslatablePageMixin, PreventDeleteMixin, Main, index_pages_after_copy)
+from molo.core.molo_wagtail_models import MoloPage
 from molo.core.utils import generate_slug
 from phonenumber_field.modelfields import PhoneNumberField
-from wagtail.wagtailcore.models import Page, Site
+from wagtail.wagtailcore.models import Site
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, MultiFieldPanel, PageChooserPanel)
@@ -249,7 +252,8 @@ class UserProfilesSettings(BaseSetting):
     # if show_mobile_number_field is False
 
 
-class SecurityQuestion(TranslatablePageMixin, Page):
+@python_2_unicode_compatible
+class SecurityQuestion(TranslatablePageMixin, MoloPage):
     parent_page_types = ['SecurityQuestionIndexPage']
     subpage_types = []
 
@@ -267,7 +271,7 @@ SecurityQuestion.promote_panels = []
 SecurityQuestion.settings_panels = []
 
 
-class SecurityQuestionIndexPage(Page, PreventDeleteMixin):
+class SecurityQuestionIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = ['core.Main']
     subpage_types = ["SecurityQuestion"]
 
@@ -296,6 +300,7 @@ def create_security_question_index_page(sender, instance, **kwargs):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name="profile", primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     date_of_birth = models.DateField(null=True)
     alias = models.CharField(
         max_length=128,

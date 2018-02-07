@@ -9,7 +9,7 @@ from markdown import markdown
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
-    ReactionQuestionChoice)
+    ReactionQuestionChoice, BannerPage)
 
 register = template.Library()
 
@@ -165,15 +165,15 @@ def topic_of_the_day(context):
 
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
-def bannerpages(context, position=None):
+def bannerpages(context, position=-1):
     request = context['request']
     locale = context.get('locale_code')
 
     if request.site:
-        pages = request.site.root_page.specific.bannerpages()
+        pages = request.site.root_page.specific.bannerpages().exact_type(
+            BannerPage)
     else:
         pages = []
-
     if position >= 0:
         banners = get_pages(context, pages, locale)
         if position > (len(banners) - 1):

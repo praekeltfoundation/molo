@@ -1,9 +1,9 @@
-from testapp.settings.base import *
+from testapp.settings.base import *  # noqa: F403, F405
 
 
 ENABLE_SSO = True
 
-MIDDLEWARE_CLASSES += (
+MIDDLEWARE_CLASSES += (  # noqa: F405
     'molo.core.middleware.MoloCASMiddleware',
     'molo.core.middleware.Custom403Middleware',
 )
@@ -22,12 +22,11 @@ LOGIN_URL = '/accounts/login/'
 CAS_VERSION = '3'
 
 
-UNICORE_DISTRIBUTE_API = 'http://testserver:6543'
 CELERY_ALWAYS_EAGER = True
 
 DEAFULT_SITE_PORT = 8000
 
 
-INSTALLED_APPS = INSTALLED_APPS + [
+INSTALLED_APPS = INSTALLED_APPS + [  # noqa: F405
     'import_export',
 ]

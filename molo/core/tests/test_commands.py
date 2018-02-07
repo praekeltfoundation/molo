@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import csv
 import pytz
+import tempfile
 from datetime import datetime
 from django.core.management import call_command
 from django.test import TestCase
@@ -35,17 +36,19 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         data = {
             self.article.slug: now
         }
-        with open('dict.csv', 'wb') as f:
-            writer = csv.writer(f)
+        fake_namefile = tempfile.NamedTemporaryFile()
+        with open(fake_namefile.name, 'w') as fake_csv:
+            writer = csv.writer(fake_csv)
             writer.writerow(['slug', 'date'])
             for key, value in data.items():
                 writer.writerow([key, value])
         # call the command
         out = StringIO()
         call_command(
-            'set_promotional_dates_from_csv', 'dict.csv', std_out=out)
+            'set_promotional_dates_from_csv', fake_namefile.name, std_out=out)
         self.assertEquals(
             ArticlePage.objects.last().featured_in_latest_start_date, now)
+        fake_namefile.close()
 
     def test_add_tag_to_article(self):
         self.assertEquals(ArticlePageTags.objects.count(), 0)
@@ -58,8 +61,9 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         }
 
         # create csv
-        with open('tag_dict.csv', 'wb') as f:
-            writer = csv.writer(f)
+        fake_namefile = tempfile.NamedTemporaryFile()
+        with open(fake_namefile.name, 'w') as fake_csv:
+            writer = csv.writer(fake_csv)
             writer.writerow(['slug', 'date'])
             for key, value in tag_data.items():
                 writer.writerow([key, value])
@@ -67,7 +71,7 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         # call command to link tag to article
         out = StringIO()
         call_command(
-            'add_tag_to_article', 'tag_dict.csv', 'en',
+            'add_tag_to_article', fake_csv.name, 'en',
             std_out=out)
 
         # it should create a Article Relationship with the Tag
@@ -76,3 +80,5 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
             ArticlePageTags.objects.first().tag.title, tag.title)
         self.assertEquals(
             ArticlePageTags.objects.first().page, self.article)
+
+        fake_namefile.close()

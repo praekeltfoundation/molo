@@ -15,4 +15,4 @@ def send_export_email(recipient, arguments):
     msg.attach(
         'Molo_export_%s.csv' % settings.SITE_NAME,
         csvfile, 'text/csv')
-    msg.send()
+    msg.send(fail_silently=False)

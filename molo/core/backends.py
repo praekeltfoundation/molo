@@ -16,13 +16,14 @@ class MoloModelBackend(ModelBackend):
 
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
-        try:
-            user = UserModel._default_manager.get_by_natural_key(username)
-            UserProfile.objects.get(user=user, site=request.site)
-        except UserProfile.DoesNotExist:
-            raise PermissionDenied
-        except UserModel.DoesNotExist:
-            UserModel().set_password(password)
+        if request is not None:
+            try:
+                user = UserModel._default_manager.get_by_natural_key(username)
+                UserProfile.objects.get(user=user, site=request.site)
+            except UserProfile.DoesNotExist:
+                raise PermissionDenied
+            except UserModel.DoesNotExist:
+                UserModel().set_password(password)
 
         return super(MoloModelBackend, self).authenticate(
             request=request, username=username, password=password, **kwargs)

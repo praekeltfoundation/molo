@@ -1,8 +1,8 @@
 from wagtail.contrib.modeladmin.views import IndexView
 from wagtail.wagtailadmin import messages
 from django.utils.translation import ugettext as _
-from task import send_export_email
 from django.shortcuts import redirect
+from .task import send_export_email
 
 
 class FrontendUsersAdminView(IndexView):

@@ -5,14 +5,13 @@ from wagtail.wagtailadmin.edit_handlers import EditHandler
 
 from itertools import chain
 
-from django.utils import timezone
+from django.utils import timezone as django_timezone
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
-from django.db.models.signals import (
-    pre_delete, post_delete, pre_save, post_save)
+from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
 
@@ -44,6 +43,7 @@ from molo.core.api.constants import ERROR
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
+from molo.core.molo_wagtail_models import MoloPage
 from molo.core.utils import (
     separate_fields,
     add_json_dump,
@@ -310,6 +310,55 @@ class SiteSettings(BaseSetting):
             heading="Service Directory API Settings"
         )
     ]
+
+
+class Timezone(models.Model):
+    title = models.CharField(
+        max_length=255,
+        unique=True,
+    )
+
+    def __unicode__(self):
+        return self.title
+
+
+@register_setting
+class CmsSettings(BaseSetting):
+    '''
+    CMS settings apply to every site running in this Django app. Wagtail
+    settings are per-site, so this class applies the change to all sites when
+    saving.
+    '''
+
+    timezone = models.ForeignKey(
+        'core.Timezone',
+        null=True,
+        on_delete=models.PROTECT,
+    )
+
+    panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel('timezone'),
+            ],
+            heading='Core settings',
+        ),
+    ]
+
+    class Meta:
+        verbose_name = 'CMS settings'
+
+    def save(self, first_site_save=True, *args, **kwargs):
+        super(CmsSettings, self).save(*args, **kwargs)
+
+        if first_site_save:
+            if self.timezone is not None:
+                django_timezone.activate(self.timezone.title)
+
+            for site in Site.objects.all():
+                cms_settings = CmsSettings.for_site(site)
+                cms_settings.timezone = self.timezone
+                cms_settings.save(first_site_save=False)
 
 
 class ImageInfo(models.Model):
@@ -602,10 +651,13 @@ class TranslatablePageMixinNotRoutable(object):
                 *args, **kwargs)
 
             if new_lang:
-                new_l_rel, _ = LanguageRelation.objects.get_or_create(
-                    page=page_copy)
-                new_l_rel.language = new_lang
-                new_l_rel.save()
+                if LanguageRelation.objects.filter(page=page_copy).exists():
+                    new_l_rel = LanguageRelation.objects.get(page=page_copy)
+                    new_l_rel.language = new_lang
+                    new_l_rel.save()
+                else:
+                    new_l_rel = LanguageRelation.objects.create(
+                        page=page_copy, language=new_lang)
 
             old_parent = self.get_main_language_page()
             if old_parent:
@@ -687,7 +739,7 @@ class TranslatablePageMixin(
     pass
 
 
-class TagIndexPage(Page, PreventDeleteMixin):
+class TagIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['Tag']
 
@@ -698,7 +750,7 @@ class TagIndexPage(Page, PreventDeleteMixin):
         super(TagIndexPage, self).copy(*args, **kwargs)
 
 
-class ReactionQuestionIndexPage(Page, PreventDeleteMixin):
+class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['ReactionQuestion']
 
@@ -709,7 +761,7 @@ class ReactionQuestionIndexPage(Page, PreventDeleteMixin):
         super(ReactionQuestionIndexPage, self).copy(*args, **kwargs)
 
 
-class ReactionQuestion(TranslatablePageMixin, Page):
+class ReactionQuestion(TranslatablePageMixin, MoloPage):
     parent_page_types = ['core.ReactionQuestionIndexPage']
     subpage_types = ['ReactionQuestionChoice']
 
@@ -723,7 +775,7 @@ class ReactionQuestion(TranslatablePageMixin, Page):
 
 
 class ReactionQuestionChoice(TranslatablePageMixinNotRoutable,
-                             PageEffectiveImageMixin, Page):
+                             PageEffectiveImageMixin, MoloPage):
     parent_page_types = ['core.ReactionQuestion']
     subpage_types = []
 
@@ -768,7 +820,7 @@ class ReactionQuestionResponse(models.Model):
         request.session.modified = True
 
 
-class Tag(TranslatablePageMixin, Page, ImportableMixin):
+class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
 
@@ -788,7 +840,7 @@ Tag.promote_panels = [
 ]
 
 
-class BannerIndexPage(Page, PreventDeleteMixin, ImportableMixin):
+class BannerIndexPage(MoloPage, PreventDeleteMixin, ImportableMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
 
@@ -799,10 +851,11 @@ class BannerIndexPage(Page, PreventDeleteMixin, ImportableMixin):
         super(BannerIndexPage, self).copy(*args, **kwargs)
 
 
-class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
+class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
     parent_page_types = ['core.BannerIndexPage']
     subpage_types = []
 
+    subtitle = models.TextField(null=True, blank=True)
     banner = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -822,7 +875,8 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
-    api_fields = ["banner", "banner_link_page", "external_link"]
+    api_fields = [
+        "title", "subtitle", "banner", "banner_link_page", "external_link"]
 
     def get_effective_banner(self):
         if self.banner:
@@ -835,6 +889,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
 
 BannerPage.content_panels = [
     FieldPanel('title', classname='full title'),
+    FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
     FieldPanel('external_link')
@@ -844,7 +899,7 @@ BannerPage.content_panels = [
 index_pages_after_copy = Signal(providing_args=["instance"])
 
 
-class Main(CommentedPageMixin, Page):
+class Main(CommentedPageMixin, MoloPage):
     subpage_types = []
 
     def bannerpages(self):
@@ -862,7 +917,7 @@ class Main(CommentedPageMixin, Page):
             featured_in_latest=True,
             languages__language__is_main_language=True).exclude(
                 feature_as_topic_of_the_day=True,
-                demote_date__gt=timezone.now()).order_by(
+                demote_date__gt=django_timezone.now()).order_by(
                     '-featured_in_latest_start_date',
                     '-promote_date', '-latest_revision_created_at').specific()
 
@@ -870,8 +925,8 @@ class Main(CommentedPageMixin, Page):
         return ArticlePage.objects.descendant_of(self).filter(
             feature_as_topic_of_the_day=True,
             languages__language__is_main_language=True,
-            promote_date__lte=timezone.now(),
-            demote_date__gte=timezone.now()).order_by(
+            promote_date__lte=django_timezone.now(),
+            demote_date__gte=django_timezone.now()).order_by(
             '-promote_date').specific()
 
     def footers(self):
@@ -927,7 +982,7 @@ def create_site(sender, instance, **kwargs):
         site.save()
 
 
-class LanguagePage(CommentedPageMixin, Page):
+class LanguagePage(CommentedPageMixin, MoloPage):
     code = models.CharField(
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
@@ -1014,7 +1069,7 @@ class SiteLanguageRelation(Orderable, SiteLanguage):
     language_setting = ParentalKey(Languages, related_name='languages')
 
 
-class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
+class SectionIndexPage(CommentedPageMixin, MoloPage, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['SectionPage']
 
@@ -1071,7 +1126,7 @@ SectionIndexPage.content_panels = [
 
 
 class SectionPage(ImportableMixin, CommentedPageMixin,
-                  TranslatablePageMixin, Page):
+                  TranslatablePageMixin, MoloPage):
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
@@ -1308,7 +1363,7 @@ class ArticlePageMetaDataTag(TaggedItemBase):
 
 
 class ArticlePage(ImportableMixin, CommentedPageMixin,
-                  TranslatablePageMixin, PageEffectiveImageMixin, Page):
+                  TranslatablePageMixin, PageEffectiveImageMixin, MoloPage):
     parent_page_types = ['core.SectionPage']
 
     subtitle = models.TextField(null=True, blank=True)
@@ -1443,7 +1498,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
         if (commenting_settings['state'] != constants.COMMENTING_OPEN):
-            now = timezone.now()
+            now = django_timezone.now()
             if (commenting_settings['state'] ==
                     constants.COMMENTING_TIMESTAMPED):
                 # Allow commenting over the given time period
@@ -1465,7 +1520,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
 
     def is_current_topic_of_the_day(self):
         if self.feature_as_topic_of_the_day:
-            return self.promote_date <= timezone.now() <= self.demote_date
+            now = django_timezone.now()
+            return self.promote_date <= now <= self.demote_date
         return False
 
     def is_commenting_enabled(self):
@@ -1657,7 +1713,7 @@ class ArticlePageRelatedSections(Orderable):
     api_fields = ['section']
 
 
-class FooterIndexPage(Page, PreventDeleteMixin):
+class FooterIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['FooterPage']
 
@@ -1678,27 +1734,3 @@ FooterPage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
-
-
-pages_to_delete = []
-
-
-@receiver(pre_delete, sender=Page)
-def on_page_delete(sender, instance, *a, **kw):
-    ids = PageTranslation.objects.filter(
-        page=instance).values_list('translated_page__id')
-    pages_to_delete.extend(Page.objects.filter(id__in=ids))
-
-
-@receiver(post_delete, sender=Page)
-def on_post_page_delete(sender, instance, *a, **kw):
-    # When we try to delete a translated page in our pre_delete, wagtail
-    # pre_delete function would want to get the same page too, but since we
-    # have already deleted it, wagtail would not be able to find it, therefore
-    # we have to get the translated page in our pre_delete and use a global
-    # variable to store it and pass it into the post_delete and remove it here
-    for p in pages_to_delete:
-        p.delete()
-
-    global pages_to_delete
-    del pages_to_delete[:]
