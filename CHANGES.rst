@@ -1,3 +1,7 @@
+6.6.1
+~~~~~
+- Remove localisation of security questions in form
+
 6.6.0
 ~~~~~
 - Add UUID to molo profile
