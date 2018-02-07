@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 import pytest
 from django.test import TestCase, RequestFactory
 from mock import patch
@@ -11,8 +11,7 @@ from molo.core.templatetags.core_tags import (
 )
 
 
-@pytest.mark.django_db
-class TestModels(TestCase, MoloTestCaseMixin):
+class TestTemplateTags(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
