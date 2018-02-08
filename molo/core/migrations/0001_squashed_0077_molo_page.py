@@ -22,34 +22,39 @@ import wagtail.wagtailsearch.index
 # Move them and any dependencies into this file, then update the
 # RunPython operations to refer to the local versions:
 # molo.core.migrations.0002_create_homepage
+# NOTE: this function is labelled homepage, but creates BannerPage instead.
+# This is due to necessary changes when squashing the migrations.
+# Instead of creating the HomePage and then renaming it to BannerPage,
+# we create the BannerPage immediately and remove migration to
+# rename the model.
 def create_homepage(apps, schema_editor):
     # Get models
     ContentType = apps.get_model('contenttypes.ContentType')
     Page = apps.get_model('wagtailcore.Page')
     Site = apps.get_model('wagtailcore.Site')
-    HomePage = apps.get_model('core.HomePage')
+    BannerPage = apps.get_model('core.BannerPage')
 
     # Delete the default homepage
     Page.objects.get(id=2).delete()
 
     # Create content type for homepage model
-    homepage_content_type, created = ContentType.objects.get_or_create(
-        model='homepage', app_label='core')
+    bannerpage_content_type, created = ContentType.objects.get_or_create(
+        model='bannerpage', app_label='core')
 
-    # Create a new homepage
-    homepage = HomePage.objects.create(
+    # Create a new bannerpage
+    bannerpage = BannerPage.objects.create(
         title="Homepage",
         slug='home',
-        content_type=homepage_content_type,
+        content_type=bannerpage_content_type,
         path='00010001',
         depth=2,
         numchild=0,
         url_path='/home/',
     )
 
-    # Create a site with the new homepage set as the root
+    # Create a site with the new bannerpage set as the root
     Site.objects.create(
-        hostname='localhost', root_page=homepage, is_default_site=True)
+        hostname='localhost', root_page=bannerpage, is_default_site=True)
 
 
 # molo.core.migrations.0004_configure_root_page
@@ -58,10 +63,10 @@ def configure_root_page(apps, schema_editor):
     ContentType = apps.get_model('contenttypes.ContentType')
     Site = apps.get_model('wagtailcore.Site')
     Main = apps.get_model('core.Main')
-    HomePage = apps.get_model('core.HomePage')
+    BannerPage = apps.get_model('core.BannerPage')
 
     # Delete the default homepage
-    HomePage.objects.all().delete()
+    BannerPage.objects.all().delete()
 
     # Create content type for main model
     main_content_type, created = ContentType.objects.get_or_create(
@@ -589,7 +594,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='HomePage',
+            name='BannerPage',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
             ],
@@ -671,12 +676,12 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image'),
         ),
         migrations.AddField(
-            model_name='homepage',
+            model_name='bannerpage',
             name='banner',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image'),
         ),
         migrations.AddField(
-            model_name='homepage',
+            model_name='bannerpage',
             name='banner_link_page',
             field=models.ForeignKey(blank=True, help_text='Optional page to which the banner will link to', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailcore.Page'),
         ),
@@ -837,10 +842,6 @@ class Migration(migrations.Migration):
             model_name='languagerelation',
             name='page',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='languages', to='wagtailcore.Page'),
-        ),
-        migrations.RenameModel(
-            old_name='HomePage',
-            new_name='BannerPage',
         ),
         migrations.AddField(
             model_name='articlepage',
