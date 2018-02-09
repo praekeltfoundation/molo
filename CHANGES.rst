@@ -1,3 +1,7 @@
+6.6.3
+~~~~~
+- Rename profile migration 0021
+
 6.6.2
 ~~~~~
 - breaks down the uuid migration into 3 migrations
