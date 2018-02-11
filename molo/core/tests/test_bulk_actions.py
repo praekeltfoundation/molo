@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import pytest
+import datetime
 
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, Client
 
 from molo.core.tests.base import MoloTestCaseMixin
 
@@ -10,9 +12,11 @@ from molo.core.models import (
     SiteLanguageRelation, Languages, ArticlePage, ArticlePageTags,
     SectionPage)
 
+from pytz import UTC
+
 
 @pytest.mark.django_db
-@override_settings(GOOGLE_ANALYTICS={})
+@override_settings(GOOGLE_ANALYTICS={}, CELERY_ALWAYS_EAGER=True)
 class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
@@ -145,3 +149,25 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
             self.main3).get(slug=article.slug)
         self.assertTrue(ArticlePageTags.objects.filter(
             page=article_3, tag=tag3).exists())
+
+    def test_copy_to_all_scheduled_page(self):
+        self.user = self.login()
+
+        date = datetime.datetime(2019, 3, 10, 17, 0, tzinfo=UTC)
+        article = ArticlePage(
+            title='article 1', slug='article1', go_live_at=date, live=False)
+        self.yourmind.add_child(instance=article)
+        article.save_revision().publish()
+
+        tag = self.mk_tag(parent=self.tag_index, slug='tag')
+        tag.save_revision().publish()
+        tag2 = self.mk_tag(parent=self.tag_index2, slug='tag')
+        tag2.save_revision().publish()
+        ArticlePageTags.objects.create(page=article, tag=tag)
+        article.refresh_from_db()
+
+        self.assertEquals(article.status_string, 'scheduled')
+
+        self.client.post(reverse('copy-to-all', args=(article.id,)))
+        new_article = ArticlePage.objects.last()
+        self.assertEquals(new_article.status_string, 'scheduled')
