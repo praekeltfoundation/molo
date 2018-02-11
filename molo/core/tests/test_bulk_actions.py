@@ -2,9 +2,8 @@
 import pytest
 import datetime
 
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import TestCase, override_settings, Client
+from django.test import TestCase, override_settings
 
 from molo.core.tests.base import MoloTestCaseMixin
 
