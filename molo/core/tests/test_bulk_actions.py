@@ -168,5 +168,5 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
         self.assertEquals(article.status_string, 'scheduled')
 
         self.client.post(reverse('copy-to-all', args=(article.id,)))
-        new_article = ArticlePage.objects.last()
+        new_article = ArticlePage.objects.descendant_of(self.main2).get(slug=article.slug)
         self.assertEquals(new_article.status_string, 'scheduled')
