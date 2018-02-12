@@ -1,3 +1,7 @@
+6.6.4
+~~~~~
+- Bug Fix: Publish Pages that are scheduled when copying
+
 6.6.3
 ~~~~~
 - Rename profile migration 0021
