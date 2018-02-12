@@ -668,6 +668,11 @@ class TranslatablePageMixinNotRoutable(object):
                     PageTranslation.objects.create(
                         page=new_translation_parent,
                         translated_page=page_copy)
+            if page_copy.status_string == 'draft' and \
+                    page_copy.go_live_at is not None:
+                page_copy.save_revision().publish()
+            elif page_copy.status_string == 'draft':
+                page_copy.save_revision()
             return page_copy
         else:
             return super(TranslatablePageMixinNotRoutable, self).copy(
