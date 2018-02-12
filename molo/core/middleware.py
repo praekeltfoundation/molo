@@ -112,6 +112,15 @@ class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
         params = build_ga_params(
             request, account, path=path, referer=referer, title=title)
         response = set_cookie(params, response)
+
+        # send user unique id after cookie's been set
+        if hasattr(request, 'user') and hasattr(request.user, 'profile')\
+                and request.user.profile.uuid:
+            uuid = request.user.profile.uuid
+            params = build_ga_params(
+                request, account, path=path,
+                referer=referer, title=title, user_id=uuid)
+
         send_ga_tracking.delay(params)
         return response
 

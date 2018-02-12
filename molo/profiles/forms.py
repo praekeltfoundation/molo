@@ -184,7 +184,7 @@ class RegistrationForm(forms.Form):
         # This allows any number of security questions to be specified
         for index, question in enumerate(questions):
             self.fields["question_%s" % index] = forms.CharField(
-                label=_(str(question)),
+                label=question.title,
                 widget=forms.TextInput(
                     attrs=dict(
                         max_length=150,
@@ -481,7 +481,7 @@ class ForgotPasswordForm(forms.Form):
 
         for index, question in enumerate(questions):
             self.fields["question_%s" % index] = forms.CharField(
-                label=_(str(question)),
+                label=question.title,
                 widget=forms.TextInput(
                     attrs=dict(
                         required=True,
