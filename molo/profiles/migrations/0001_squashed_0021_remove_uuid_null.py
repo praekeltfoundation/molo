@@ -122,6 +122,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SecurityQuestion',
             fields=[
+                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page'))
             ],
             options={
                 'verbose_name': 'Security Question',
@@ -151,12 +152,6 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
             bases=('wagtailcore.page',),
-        ),
-        migrations.AddField(
-            model_name='securityquestion',
-            name='page_ptr',
-            field=models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page'),
-            preserve_default=False,
         ),
         migrations.RunPython(create_section_index),
         migrations.AddField(
