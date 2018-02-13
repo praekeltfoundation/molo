@@ -1,3 +1,4 @@
+# flake8: noqa: F405
 """
 Various importers for the different content types
 """
@@ -9,10 +10,12 @@ from io import BytesIO
 
 from django.core.files.images import ImageFile
 
+from six import iteritems
+
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.models import Image
 
-from molo.core.models import *  # noqa
+from molo.core.models import *
 from molo.core.api.constants import (
     API_IMAGES_ENDPOINT,
     API_PAGES_ENDPOINT,
@@ -21,7 +24,7 @@ from molo.core.api.constants import (
     ERROR,
     WARNING,
 )
-from molo.core.api.errors import *  # noqa
+from molo.core.api.errors import *
 from molo.core.utils import separate_fields
 
 
@@ -524,7 +527,7 @@ class ImageImporter(BaseImporter):
                 "local_version_existed": True,
                 "file_url": file_url,
                 "image_detail_url": image_detail_url,
-                "foreign_title": img_info["title"].encode('utf-8'),
+                "foreign_title": img_info["title"],
             }
             # update record keeper
             if self.record_keeper:
@@ -535,7 +538,7 @@ class ImageImporter(BaseImporter):
         else:
             new_image, context = self.fetch_and_create_image(
                 file_url,
-                img_info["title"].encode('utf-8'))
+                img_info["title"])
             # update record keeper
             if self.record_keeper:
                 self.record_keeper.record_image_relation(
@@ -632,7 +635,7 @@ class ContentImporter(BaseImporter):
         Recreates one-to-many relationship
         '''
         iterable = self.record_keeper.foreign_to_many_foreign_map[key]
-        for foreign_page_id, foreign_page_id_list in iterable.iteritems():
+        for foreign_page_id, foreign_page_id_list in iteritems(iterable):
 
             # Assumption: local page has been indexed and exists
             # TODO: handle case where it doesn't exist
@@ -665,8 +668,8 @@ class ContentImporter(BaseImporter):
         '''
         Recreates one-to-one relationship
         '''
-        iterator = self.record_keeper.foreign_to_foreign_map["banner_link_page"].iteritems()  # noqa
-        for foreign_page_id, linked_page_foreign_id in iterator:
+        iterable = self.record_keeper.foreign_to_foreign_map["banner_link_page"]  # noqa
+        for foreign_page_id, linked_page_foreign_id in iteritems(iterable):
             # get local banner page
             local_page_id = self.record_keeper.get_local_page(foreign_page_id)
             local_page = Page.objects.get(id=local_page_id).specific
@@ -718,7 +721,7 @@ class ContentImporter(BaseImporter):
 
         Assumes all articles and images have been created.
         '''
-        for foreign_id, body in self.record_keeper.article_bodies.iteritems():
+        for foreign_id, body in iteritems(self.record_keeper.article_bodies):
             try:
                 local_page_id = self.record_keeper.get_local_page(foreign_id)
                 page = Page.objects.get(id=local_page_id).specific
@@ -880,19 +883,6 @@ class ContentImporter(BaseImporter):
             self.log(WARNING, message, e.message.pop("message"), depth)
             return None
 
-        '''
-        except Exception as e:
-            context = {
-                "exception": e,
-                "url": url,
-                "parent title": parent.title,
-                "foreign_page": content["title"].encode('utf-8'),
-            }
-            self.log(
-                ERROR, "Create Page - abandon page and children creation",
-                context, depth)
-        '''
-
         if page:
             # create translations
             if content["meta"]["translations"]:
@@ -975,7 +965,7 @@ class Logger(object):
     def format_message(self, log_type, message, context, depth=0):
         log_item = "{}>> {}: {}".format(depth * "\t", log_type, message)
         if context:
-            for key, item in context.iteritems():
+            for key, item in iteritems(context):
                 if key == "exception":
                     log_item += "\n{}| {}: {}".format(depth * "\t", "ex_type",
                                                       type(item))

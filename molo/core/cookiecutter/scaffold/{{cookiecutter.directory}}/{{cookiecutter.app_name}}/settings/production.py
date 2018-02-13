@@ -46,13 +46,14 @@ COMPRESS_OFFLINE = True
 # Setup for CAS
 ENABLE_SSO = True
 
-MIDDLEWARE_CLASSES += [
+MIDDLEWARE_CLASSES += [  # noqa: F405
     'molo.core.middleware.MoloCASMiddleware',
     'molo.core.middleware.Custom403Middleware',
 ]
 
 
 AUTHENTICATION_BACKENDS = [
+    'molo.profiles.backends.MoloProfilesModelBackend',
     'molo.core.backends.MoloModelBackend',
     'django.contrib.auth.backends.ModelBackend',
     'molo.core.backends.MoloCASBackend',

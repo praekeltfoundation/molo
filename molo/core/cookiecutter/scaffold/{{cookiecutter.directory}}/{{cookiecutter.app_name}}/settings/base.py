@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'molo.profiles.backends.MoloProfilesModelBackend',
     'molo.core.backends.MoloModelBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
@@ -212,7 +213,7 @@ CELERYBEAT_SCHEDULE = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 LANGUAGE_CODE = environ.get('LANGUAGE_CODE', 'en')
-TIME_ZONE = 'Africa/Johannesburg'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -282,8 +283,7 @@ EXTRA_LANG_INFO = {
     }
 }
 
-locale.LANG_INFO = dict(locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
-
+locale.LANG_INFO.update(EXTRA_LANG_INFO)
 
 LOCALE_PATHS = [
     join(PROJECT_ROOT, "locale"),
@@ -394,17 +394,9 @@ WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = False
 
 ENABLE_SSO = False
 
-UNICORE_DISTRIBUTE_API = 'http://localhost:6543'
-
 ADMIN_LANGUAGE_CODE = environ.get('ADMIN_LANGUAGE_CODE', "en")
 
 FROM_EMAIL = environ.get('FROM_EMAIL', "support@moloproject.org")
-CONTENT_IMPORT_SUBJECT = environ.get(
-    'CONTENT_IMPORT_SUBJECT', 'Molo Content Import')
-CONTENT_COPY_SUBJECT = environ.get(
-    'CONTENT_COPY_SUBJECT', 'Molo Content Copy')
-CONTENT_COPY_FAILED_SUBJECT = environ.get(
-    'CONTENT_COPY_FAILED_SUBJECT', 'Molo Content Copy Failed')
 
 # SMTP Settings
 EMAIL_HOST = environ.get('EMAIL_HOST', 'localhost')

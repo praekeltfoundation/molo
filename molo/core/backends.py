@@ -13,15 +13,17 @@ class MoloModelBackend(ModelBackend):
 
     def authenticate(
             self, request, username=None, password=None, *args, **kwargs):
+
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
-        try:
-            user = UserModel._default_manager.get_by_natural_key(username)
-            UserProfile.objects.get(user=user, site=request.site)
-        except UserProfile.DoesNotExist:
-            raise PermissionDenied
-        except UserModel.DoesNotExist:
-            UserModel().set_password(password)
+        if request is not None:
+            try:
+                user = UserModel._default_manager.get_by_natural_key(username)
+                UserProfile.objects.get(user=user, site=request.site)
+            except UserProfile.DoesNotExist:
+                raise PermissionDenied
+            except UserModel.DoesNotExist:
+                UserModel().set_password(password)
 
         return super(MoloModelBackend, self).authenticate(
             request=request, username=username, password=password, **kwargs)
@@ -29,9 +31,9 @@ class MoloModelBackend(ModelBackend):
 
 class MoloCASBackend(CASBackend):
 
-    def authenticate(self, ticket, service, request):
+    def authenticate(self, request, ticket, service):
         user = super(
-            MoloCASBackend, self).authenticate(ticket, service, request)
+            MoloCASBackend, self).authenticate(request, ticket, service)
         if user is None:
             return None
 

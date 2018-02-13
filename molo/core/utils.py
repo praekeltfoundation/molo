@@ -3,13 +3,9 @@ import shutil
 import zipfile
 import re
 import tempfile
-import imagehash
 import hashlib
 import json
 import distutils.dir_util
-
-from PIL import Image as PILImage
-from StringIO import StringIO
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,31 +17,70 @@ from wagtail.wagtailimages.models import Image
 from molo.core.api.constants import KEYS_TO_EXCLUDE
 
 
-def create_new_article_relations(old_main, copied_main):
+def copy_translation_pages(page, new_page):
+    from molo.core.models import Languages, LanguageRelation, PageTranslation
+    # Only copy translations for TranslatablePageMixin
+    if not hasattr(page.specific, 'copy_language'):
+        return 'Not translatable page'
+
+    current_site = page.get_site()
+    destination_site = new_page.get_site()
+    if current_site is not destination_site and (page.depth > 2):
+        page.specific.copy_language(current_site, destination_site)
+    languages = Languages.for_site(destination_site).languages
+    if (languages.filter(is_main_language=True).exists() and
+            not new_page.languages.exists()):
+        LanguageRelation.objects.create(
+            page=new_page,
+            language=languages.filter(
+                is_main_language=True).first())
+
+    for translation in page.translations.all():
+        new_lang = translation.translated_page.specific.copy_language(
+            current_site, destination_site)
+        new_translation = translation.translated_page.copy(
+            to=new_page.get_parent())
+        if LanguageRelation.objects.filter(page=new_translation).exists():
+            new_l_rel = LanguageRelation.objects.get(page=new_translation)
+            new_l_rel.language = new_lang
+            new_l_rel.save()
+        else:
+            new_l_rel = LanguageRelation.objects.create(
+                page=new_translation, language=new_lang)
+        PageTranslation.objects.create(
+            page=new_page,
+            translated_page=new_translation)
+
+
+def create_new_article_relations(original_page, copied_page):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
         ArticlePageReactionQuestions, ReactionQuestion, \
         ArticlePageRecommendedSections, ArticlePageRelatedSections, \
         SectionPage, BannerPage
-    if old_main and copied_main:
-        if copied_main.get_descendants().count() >= \
-                old_main.get_descendants().count():
-            for article in ArticlePage.objects.descendant_of(copied_main):
+
+    if original_page and copied_page:
+        if copied_page.get_descendants().count() >= \
+                original_page.get_descendants().count():
+            for article in ArticlePage.objects.descendant_of(
+                    copied_page.get_site().root_page):
 
                 # replace old tag with new tag in tag relations
                 tag_relations = ArticlePageTags.objects.filter(page=article)
                 for relation in tag_relations:
                     if relation.tag:
                         new_tag = Tag.objects.descendant_of(
-                            copied_main).filter(slug=relation.tag.slug).first()
+                            copied_page.get_site().root_page).filter(
+                                slug=relation.tag.slug).first()
                         relation.tag = new_tag
                         relation.save()
+
                 # replace old reaction question with new reaction question
                 question_relations = \
                     ArticlePageReactionQuestions.objects.filter(page=article)
                 for relation in question_relations:
                     if relation.reaction_question:
                         new_question = ReactionQuestion.objects.descendant_of(
-                            copied_main).filter(
+                            copied_page.get_site().root_page).filter(
                                 slug=relation.reaction_question.slug).first()
                         relation.reaction_question = new_question
                         relation.save()
@@ -57,7 +92,7 @@ def create_new_article_relations(old_main, copied_main):
                     if relation.recommended_article:
                         new_recommended_article = \
                             ArticlePage.objects.descendant_of(
-                                copied_main).filter(
+                                copied_page.get_site().root_page).filter(
                                 slug=relation.recommended_article.slug).first()
                         relation.recommended_article = new_recommended_article
                         relation.save()
@@ -69,18 +104,21 @@ def create_new_article_relations(old_main, copied_main):
                     if relation.section:
                         new_related_section = \
                             SectionPage.objects.descendant_of(
-                                copied_main).filter(
+                                copied_page.get_site().root_page).filter(
                                 slug=relation.section.slug).first()
                         relation.section = new_related_section
                         relation.save()
 
                 # replace old article banner relations with new articles
-                for banner in BannerPage.objects.descendant_of(copied_main):
-                    old_page = Page.objects.get(
-                        pk=banner.banner_link_page.pk)
+            for banner in BannerPage.objects.descendant_of(
+                    copied_page.get_site().root_page):
+                if banner.banner_link_page:
+                    old_page = Page.objects.filter(
+                        pk=banner.banner_link_page.pk).first()
                     if old_page:
                         new_article = Page.objects.descendant_of(
-                            copied_main).get(slug=old_page.slug)
+                            copied_page.get_site().root_page).filter(
+                            slug=old_page.slug).first()
                         banner.banner_link_page = new_article
                         banner.save()
 
@@ -196,38 +234,6 @@ def get_image_hash(image):
         return md5.hexdigest()
     finally:
         image.file.close()
-
-
-def get_image_impression_hash(image):
-    '''
-    Returns an image impression hash of a Wagtail Image.
-
-    For more info on impressions hashes see:
-    https://www.safaribooksonline.com/blog/2013/11/26/image-hashing-with-python/  # noqa
-    Handles case where default django storage is used
-    as well as images stored on AWS S3
-    '''
-    if not image.file:
-        return None
-
-    # image is stored on s3
-    if settings.DEFAULT_FILE_STORAGE == 'storages.backends.s3boto.S3BotoStorage':  # noqa
-        s3_file = image.file._get_file()
-        image_in_memory = StringIO(s3_file.read())
-        pil_image = PILImage.open(image_in_memory)
-        return imagehash.average_hash(pil_image).__str__()
-    # image is stored locally
-    elif settings.DEFAULT_FILE_STORAGE == 'django.core.files.storage.FileSystemStorage':  # noqa
-        with open(image.file.path, 'r') as file:
-            image_in_memory = StringIO(file.read())
-            pil_image = PILImage.open(image_in_memory)
-            return imagehash.average_hash(pil_image).__str__()
-    else:
-        raise NotImplementedError(
-            ("settings.DEFAULT_FILE_STORAGE of {} not handled "
-             "in get_image_hash function").format(
-                settings.DEFAULT_FILE_STORAGE),
-            None)
 
 
 def separate_fields(fields):

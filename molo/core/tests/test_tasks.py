@@ -103,14 +103,14 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         demote_articles()
         promote_articles()
         homepage_articles = load_descendant_articles_for_section(
-            {}, self.yourmind, featured_in_homepage=5)
+            {}, self.yourmind, featured_in_homepage=True, count=5)
         self.assertEquals(homepage_articles[0].title, 'article3')
         article2.featured_in_homepage_start_date = datetime.now()
         article2.save()
         demote_articles()
         promote_articles()
         homepage_articles = load_descendant_articles_for_section(
-            {}, self.yourmind, featured_in_homepage=5)
+            {}, self.yourmind, featured_in_homepage=True, count=5)
         self.assertEquals(homepage_articles[0].title, 'article2')
 
     def test_order_by_promote_date_section(self):
@@ -129,14 +129,14 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         demote_articles()
         promote_articles()
         section_articles = load_descendant_articles_for_section(
-            {}, self.yourmind, featured_in_section=5)
+            {}, self.yourmind, featured_in_section=True, count=5)
         self.assertEquals(section_articles[0].title, 'article3')
         article2.featured_in_section_start_date = datetime.now()
         article2.save()
         demote_articles()
         promote_articles()
         section_articles = load_descendant_articles_for_section(
-            {}, self.yourmind, featured_in_section=5)
+            {}, self.yourmind, featured_in_section=True, count=5)
         self.assertEquals(section_articles[0].title, 'article2')
 
     def test_promote_articles_latest(self):

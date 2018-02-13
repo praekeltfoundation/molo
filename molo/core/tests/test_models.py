@@ -9,10 +9,14 @@ from django.contrib.auth.models import User
 
 from django.core.exceptions import ValidationError
 
+from mock import patch
+
 from molo.core.models import (
-    ArticlePage, PageTranslation, SectionPage, Main,
+    ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
-    BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage)
+    BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
+    Timezone,
+)
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
@@ -92,7 +96,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         article = self.mk_articles(self.yourmind, 1)[0]
         self.mk_article_translation(article, self.french)
         article2 = article.copy(to=self.yourmind2)
-        copy_translation_pages('', article, article2)
+        copy_translation_pages(article, article2)
         self.assertTrue(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(locale='fr').exists())
@@ -478,7 +482,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/sections-main-1/your-mind/new-article/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'content= "media title"')
+        self.assertContains(response, 'content="media title"')
 
     def test_site_languages(self):
         main = Main.objects.all().first()
@@ -500,89 +504,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'English')
         self.assertContains(response, 'français')
         self.assertNotContains(response, 'español')
-
-    def test_signal_on_page_delete_removes_translations(self):
-        spanish = SiteLanguageRelation.objects.create(
-            language_setting=self.language_setting,
-            locale='es',
-            is_active=True)
-
-        section = self.mk_section(
-            self.section_index, title="Section", slug="section")
-        self.mk_section_translation(section, self.french)
-        self.mk_section_translation(section, spanish)
-
-        section_sub1 = self.mk_section(
-            section, title='Section subsection')
-        self.mk_section_translation(section_sub1, self.french)
-        p1, p2 = self.mk_articles(section_sub1, 2)
-        self.mk_article_translation(p1, self.french)
-        self.mk_article_translation(p1, spanish)
-
-        section_sub2 = self.mk_section(
-            section, title='Section subsection')
-        p3, p4 = self.mk_articles(section_sub2, 2)
-        self.mk_article_translation(p4, self.french)
-
-        p5, p6 = self.mk_articles(section, 2)
-        self.mk_article_translation(p5, self.french)
-
-        self.mk_section_translation(self.yourmind, self.french)
-        self.mk_section_translation(self.yourmind_sub, self.french)
-
-        p7, p8, p9 = self.mk_articles(self.yourmind_sub, 3)
-        self.mk_article_translation(p7, self.french)
-        self.mk_article_translation(p7, spanish)
-        self.mk_article_translation(p8, self.french)
-        sub_sec = self.mk_section(self.yourmind_sub, title='Sub sec')
-
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 16)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 11)
-        self.assertEqual(PageTranslation.objects.all().count(), 12)
-
-        section.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 6)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 5)
-        self.assertEqual(PageTranslation.objects.all().count(), 5)
-
-        p7.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 3)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 5)
-        self.assertEqual(PageTranslation.objects.all().count(), 3)
-
-        p9.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 2)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 5)
-        self.assertEqual(PageTranslation.objects.all().count(), 3)
-
-        sub_sec.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 2)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 4)
-        self.assertEqual(PageTranslation.objects.all().count(), 3)
-
-        self.yourmind_sub.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 0)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 2)
-        self.assertEqual(PageTranslation.objects.all().count(), 1)
-
-        self.yourmind.delete()
-        self.assertEqual(ArticlePage.objects.descendant_of(
-            self.main).count(), 0)
-        self.assertEqual(SectionPage.objects.descendant_of(
-            self.main).count(), 0)
-        self.assertEqual(PageTranslation.objects.all().count(), 0)
 
     def test_get_translation_template_tag(self):
         section = self.mk_section(self.section_index)
@@ -766,3 +687,32 @@ class TestModels(TestCase, MoloTestCaseMixin):
         promote_articles()
         self.assertQuerysetEqual(
             main.latest_articles(), [repr(present_article), ])
+
+
+@patch('django.utils.timezone.activate')
+class TestCmsSettings(TestCase, MoloTestCaseMixin):
+    def setUp(self):
+        self.mk_main()
+        self.mk_main2()
+
+        # Something creates CmsSettings for both sites when only
+        # one is explicitly created here.
+        self.assertEqual(len(CmsSettings.objects.all()), 0)
+        self.settings = CmsSettings.objects.create(site=self.site)
+        self.assertEqual(len(CmsSettings.objects.all()), 2)
+
+        self.timezone = Timezone(title='FakeContinent/FakeCity')
+        self.timezone.save()
+
+    def test_cms_settings_activates_timezone_once(self, timezone_activate):
+        self.settings.timezone = self.timezone
+        self.settings.save()
+
+        timezone_activate.assert_called_once_with('FakeContinent/FakeCity')
+
+    def test_cms_settings_save_updates_all_timezones(self, timezone_activate):
+        self.settings.timezone = self.timezone
+        self.settings.save()
+
+        for settings in CmsSettings.objects.all():
+            self.assertEqual(settings.timezone, self.timezone)
