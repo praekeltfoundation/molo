@@ -306,6 +306,12 @@ def copy_to_all_task(page_id, user_id, site_pk):
                 )
                 copy_translation_pages(page, new_page)
                 create_new_article_relations(page, new_page)
+                if page.status_string == 'scheduled' and \
+                        new_page.status_string == 'draft' and \
+                        new_page.go_live_at is not None:
+                    new_page.save_revision().publish()
+                elif new_page.status_string == 'draft':
+                    new_page.save_revision()
             else:
                 errors.append(str(
                     page.title + ' already exists in ' + main.title))
