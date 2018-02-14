@@ -960,11 +960,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'version': 'marathon-app-version',
             })
 
-    def test_issue_with_django_admin_not_loading(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
-
+    def test_django_admin_loads(self):
         response = self.client.get(reverse('admin:index'))
         self.assertEquals(response.status_code, 200)
 
@@ -1185,9 +1181,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_admin_doesnt_translate_when_frontend_locale_changed(self):
         self.client.get('/locale/af/')
-
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
 
         response = self.client.get('/admin/pages/%d/' % self.main.pk)
