@@ -5,16 +5,17 @@ from django.db import migrations, models
 from django.core.management.sql import emit_pre_migrate_signal
 
 
-class Migration(migrations.Migration):
+def run_wagtail_migration_before_core_34(apps, schema_editor):
     """
     Migration 34 needs migration 0040 from wagtail core
     and this Migration will run wagtail migration before
     molo core migration 34
     """
-    def run_wagtail_migration_before_core_34(apps, schema_editor):
-        db_alias = schema_editor.connection.alias
-        emit_pre_migrate_signal(verbosity=2, interactive=False, db=db_alias)
+    db_alias = schema_editor.connection.alias
+    emit_pre_migrate_signal(verbosity=2, interactive=False, db=db_alias)
 
+
+class Migration(migrations.Migration):
     dependencies = [
         ('wagtailcore', '0040_page_draft_title'),
         ('core', '0072_fb_tracking_id'),

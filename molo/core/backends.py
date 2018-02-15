@@ -19,7 +19,10 @@ class MoloModelBackend(ModelBackend):
         if request is not None:
             try:
                 user = UserModel._default_manager.get_by_natural_key(username)
-                UserProfile.objects.get(user=user, site=request.site)
+                if user.is_superuser:
+                    UserProfile.objects.get(user=user)
+                else:
+                    UserProfile.objects.get(user=user, site=request.site)
             except UserProfile.DoesNotExist:
                 raise PermissionDenied
             except UserModel.DoesNotExist:
