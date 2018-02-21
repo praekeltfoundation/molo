@@ -1,3 +1,7 @@
+6.7.3
+~~~~~
+- add rtl direction on input fields in wagtail
+
 6.7.2
 ~~~~~
 - Bug Fix: only return translation page if it is live
