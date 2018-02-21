@@ -1,0 +1,14 @@
+{% extends "wagtailadmin/admin_base.html" %}
+
+{% block js %}
+  {{ block.super }}
+  <script type="text/javascript">
+    // Detect right-to-left text input, update direction
+    $(function() {
+      var detect_rtl = /[\u0591-\u07FF]/;
+      $('input[type=text], textarea').on('input propertychange',function(){
+        this.style.direction = detect_rtl.test(this.value) ? 'rtl' : 'ltr';
+      }).trigger('propertychange');
+    });
+  </script>
+{% endblock %}
