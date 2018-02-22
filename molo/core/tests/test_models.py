@@ -350,11 +350,11 @@ class TestModels(TestCase, MoloTestCaseMixin):
             title="New article", commenting_state=constants.COMMENTING_OPEN,
             commenting_anonymous_alias="Mrs Beans")
         self.assertTrue(
-            article_1.get_commenting_anonymous_alias() == "Mrs Beans")
+            article_1.get_anonymous_commenting_alias() == "Mrs Beans")
         article_2 = ArticlePage(
             title="New article", commenting_state=constants.COMMENTING_OPEN)
         self.assertTrue(
-            article_2.get_commenting_anonymous_alias() == "anonymous")
+            article_2.get_anonymous_commenting_alias() == "anonymous")
 
     def test_tags(self):
         User.objects.create_superuser(
