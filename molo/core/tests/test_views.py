@@ -110,14 +110,24 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.yourmind_sub2 = self.mk_section(
             self.yourmind2, title='Your mind subsection2')
 
-    def test_site_redirect_if_no_languages(self):
-        user = User.objects.create_superuser(
+        self.superuser = User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
+        self.client.login(username='testuser', password='password')
+
+    def test_superuser_can_log_in_to_any_site(self):
+        response = self.client.get('/admin/')
+        self.assertEquals(response.status_code, 200)
+        client = Client(HTTP_HOST=self.main2.get_site().hostname)
+        client.login(username='testuser', password='password')
+        response = client.get('/admin/')
+        self.assertEquals(response.status_code, 200)
+
+    def test_site_redirect_if_no_languages(self):
         self.mk_main2(title='main3', slug='main3', path='4099')
         main3_pk = Page.objects.get(title='main3').pk
         main3 = Main.objects.all().last()
         client = Client(HTTP_HOST=main3.get_site().hostname)
-        client.login(user=user)
+        client.login(user=self.superuser)
         response = client.get('/admin/pages/%s/' % main3_pk)
         admin_url = '/admin/pages/%s/' % main3_pk
         self.assertEqual(
@@ -950,11 +960,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'version': 'marathon-app-version',
             })
 
-    def test_issue_with_django_admin_not_loading(self):
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
-        self.client.login(username='testuser', password='password')
-
+    def test_django_admin_loads(self):
         response = self.client.get(reverse('admin:index'))
         self.assertEquals(response.status_code, 200)
 
@@ -1175,9 +1181,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_admin_doesnt_translate_when_frontend_locale_changed(self):
         self.client.get('/locale/af/')
-
-        User.objects.create_superuser(
-            username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
 
         response = self.client.get('/admin/pages/%d/' % self.main.pk)
