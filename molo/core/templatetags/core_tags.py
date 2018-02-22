@@ -47,7 +47,7 @@ def get_pages(context, qs, locale):
             pages = []
             for a in qs:
                 translation = a.get_translation_for(locale, request.site)
-                if translation:
+                if translation and translation.live:
                     pages.append(translation)
                 elif a.live:
                     pages.append(a)

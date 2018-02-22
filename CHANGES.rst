@@ -1,3 +1,15 @@
+6.7.4
+~~~~~
+- Pattern Library image icons paths update
+
+6.7.3
+~~~~~
+- add rtl direction on input fields in wagtail
+
+6.7.2
+~~~~~
+- Bug Fix: only return translation page if it is live
+
 6.7.1
 ~~~~~
 - Bug Fix: allow admins to login locally for any site
