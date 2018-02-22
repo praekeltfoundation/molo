@@ -1441,7 +1441,10 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         null=True)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
-
+    commenting_anonymous_alias = models.CharField(
+        max_length=100,
+        blank=True,
+        default='anonymous')
     feature_as_topic_of_the_day = models.BooleanField(
         default=False,
         help_text=_('Article to be featured as the Topic of the Day'))
@@ -1532,6 +1535,12 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
             return False
         return True
 
+    def get_anonymous_commenting_alias(self):
+        if (self.commenting_anonymous_alias == "" or
+                self.commenting_anonymous_alias is None):
+            return "anonymous"
+        return self.commenting_anonymous_alias
+
     def tags_list(self):
         return self.tags.names()
 
@@ -1540,7 +1549,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
 
     api_fields = [
         "title", "subtitle", "body", "tags", "commenting_state",
-        "commenting_open_time", "commenting_close_time", "social_media_title",
+        "commenting_open_time", "commenting_close_time",
+        "commenting_anonymous_alias", "social_media_title",
         "social_media_description", "social_media_image", "related_sections",
         "featured_in_latest", "featured_in_latest_start_date",
         "featured_in_latest_end_date", "featured_in_section",
@@ -1571,6 +1581,7 @@ ArticlePage.content_panels = [
             FieldPanel('commenting_state'),
             FieldPanel('commenting_open_time'),
             FieldPanel('commenting_close_time'),
+            FieldPanel('commenting_anonymous_alias'),
         ],
         heading="Commenting Settings", ),
     MultiFieldPanel(
