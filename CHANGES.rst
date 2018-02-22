@@ -1,3 +1,7 @@
+6.7.4
+~~~~~
+- Pattern Library image icons paths update
+
 6.7.3
 ~~~~~
 - add rtl direction on input fields in wagtail
