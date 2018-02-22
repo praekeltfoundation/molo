@@ -345,6 +345,17 @@ class TestModels(TestCase, MoloTestCaseMixin):
             commenting_state=constants.COMMENTING_DISABLED)
         self.assertFalse(article_3.is_commenting_enabled())
 
+    def test_commenting_anonymous_alias(self):
+        article_1 = ArticlePage(
+            title="New article", commenting_state=constants.COMMENTING_OPEN,
+            commenting_anonymous_alias="Mrs Beans")
+        self.assertTrue(
+            article_1.get_commenting_anonymous_alias() == "Mrs Beans")
+        article_2 = ArticlePage(
+            title="New article", commenting_state=constants.COMMENTING_OPEN)
+        self.assertTrue(
+            article_2.get_commenting_anonymous_alias() == "anonymous")
+
     def test_tags(self):
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')

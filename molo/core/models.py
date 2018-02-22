@@ -1535,6 +1535,9 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
             return False
         return True
 
+    def get_anonymous_commenting_alias(self):
+        return self.commenting_anonymous_alias
+
     def tags_list(self):
         return self.tags.names()
 
