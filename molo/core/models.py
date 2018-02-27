@@ -694,25 +694,22 @@ class TranslatablePageMixinNotRoutable(object):
 
     def serve(self, request, *args, **kwargs):
         locale_code = get_locale_code(get_language_from_request(request))
-        parent = self.get_main_language_page()
-        translation = parent.specific.get_translation_for(
+
+        if locale_code == get_locale_code(SiteLanguage.objects.get(
+                is_main_language=True)):
+            return super(TranslatablePageMixinNotRoutable, self).serve(
+                request, *args, **kwargs)
+
+        main_language_page = self.get_main_language_page()
+        translation_page = main_language_page.specific.get_translation_for(
             locale_code, request.site)
-        language_rel = self.languages.all().first()
 
-        main_lang = Languages.for_site(request.site).languages.filter(
-            is_main_language=True).first()
-        if main_lang.locale == locale_code:
-            translation = parent
-
-        if translation and language_rel.language.locale != locale_code:
+        if translation_page:
             if request.GET.urlencode():
-                return redirect("{}?{}".format(translation.url,
+                return redirect("{}?{}".format(translation_page.url,
                                                request.GET.urlencode()))
             else:
-                return redirect(translation.url)
-
-        return super(TranslatablePageMixinNotRoutable, self).serve(
-            request, *args, **kwargs)
+                return redirect(translation_page.url)
 
 
 def clear_translation_cache(sender, instance, **kwargs):
