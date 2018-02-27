@@ -694,8 +694,8 @@ class TranslatablePageMixinNotRoutable(object):
 
     def serve(self, request, *args, **kwargs):
         locale_code = get_locale_code(get_language_from_request(request))
-        if locale_code == get_locale_code(Languages.for_site(
-                request.site).languages.get(is_main_language=True)):
+        if locale_code == Languages.for_site(
+                request.site).languages.get(is_main_language=True).locale:
             return super(TranslatablePageMixinNotRoutable, self).serve(
                 request, *args, **kwargs)
 
