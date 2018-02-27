@@ -700,8 +700,7 @@ class TranslatablePageMixinNotRoutable(object):
             return super(TranslatablePageMixinNotRoutable, self).serve(
                 request, *args, **kwargs)
 
-        main_language_page = self.get_main_language_page()
-        translation_page = main_language_page.specific.get_translation_for(
+        translation_page = self.specific.get_translation_for(
             locale_code, request.site)
 
         if translation_page:
