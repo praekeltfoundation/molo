@@ -38,11 +38,11 @@ def get_pages(context, queryset, locale):
         request.site).show_only_translated_pages
     for page in queryset:
         translation = page.get_translation_for(locale, request.site)
-        if translation:
+        if translation and translation.live:
             pages.append(translation)
         elif page.live and not show_only_translated_pages:
             pages.append(page)
-        return pages
+    return pages
 
 
 @register.assignment_tag(takes_context=True)
