@@ -52,34 +52,35 @@ def copy_translation_pages(page, new_page):
             translated_page=new_translation)
 
 
-def create_new_article_relations(old_main, copied_main):
+def create_new_article_relations(original_page, copied_page):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
         ArticlePageReactionQuestions, ReactionQuestion, \
         ArticlePageRecommendedSections, ArticlePageRelatedSections, \
         SectionPage, BannerPage
 
-    if old_main and copied_main:
-        if copied_main.get_descendants().count() >= \
-                old_main.get_descendants().count():
+    if original_page and copied_page:
+        if copied_page.get_descendants().count() >= \
+                original_page.get_descendants().count():
             for article in ArticlePage.objects.descendant_of(
-                    copied_main.get_site().root_page):
+                    copied_page.get_site().root_page):
 
                 # replace old tag with new tag in tag relations
                 tag_relations = ArticlePageTags.objects.filter(page=article)
                 for relation in tag_relations:
                     if relation.tag:
                         new_tag = Tag.objects.descendant_of(
-                            copied_main.get_site().root_page).filter(
+                            copied_page.get_site().root_page).filter(
                                 slug=relation.tag.slug).first()
                         relation.tag = new_tag
                         relation.save()
+
                 # replace old reaction question with new reaction question
                 question_relations = \
                     ArticlePageReactionQuestions.objects.filter(page=article)
                 for relation in question_relations:
                     if relation.reaction_question:
                         new_question = ReactionQuestion.objects.descendant_of(
-                            copied_main.get_site().root_page).filter(
+                            copied_page.get_site().root_page).filter(
                                 slug=relation.reaction_question.slug).first()
                         relation.reaction_question = new_question
                         relation.save()
@@ -91,7 +92,7 @@ def create_new_article_relations(old_main, copied_main):
                     if relation.recommended_article:
                         new_recommended_article = \
                             ArticlePage.objects.descendant_of(
-                                copied_main.get_site().root_page).filter(
+                                copied_page.get_site().root_page).filter(
                                 slug=relation.recommended_article.slug).first()
                         relation.recommended_article = new_recommended_article
                         relation.save()
@@ -103,20 +104,20 @@ def create_new_article_relations(old_main, copied_main):
                     if relation.section:
                         new_related_section = \
                             SectionPage.objects.descendant_of(
-                                copied_main.get_site().root_page).filter(
+                                copied_page.get_site().root_page).filter(
                                 slug=relation.section.slug).first()
                         relation.section = new_related_section
                         relation.save()
 
-            # replace old article banner relations with new articles
+                # replace old article banner relations with new articles
             for banner in BannerPage.objects.descendant_of(
-                    copied_main.get_site().root_page):
+                    copied_page.get_site().root_page):
                 if banner.banner_link_page:
                     old_page = Page.objects.filter(
                         pk=banner.banner_link_page.pk).first()
                     if old_page:
                         new_article = Page.objects.descendant_of(
-                            copied_main.get_site().root_page).filter(
+                            copied_page.get_site().root_page).filter(
                             slug=old_page.slug).first()
                         banner.banner_link_page = new_article
                         banner.save()

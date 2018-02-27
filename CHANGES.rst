@@ -1,3 +1,70 @@
+6.7.4
+~~~~~
+- Pattern Library image icons paths update
+
+6.7.3
+~~~~~
+- add rtl direction on input fields in wagtail
+
+6.7.2
+~~~~~
+- Bug Fix: only return translation page if it is live
+
+6.7.1
+~~~~~
+- Bug Fix: allow admins to login locally for any site
+
+6.7.0
+~~~~~
+- Squash core and profile migrations to fix the issues that have arisen from migration dependency issues
+
+6.6.4
+~~~~~
+- Bug Fix: Publish Pages that are scheduled when copying
+
+6.6.3
+~~~~~
+- Rename profile migration 0021
+
+6.6.2
+~~~~~
+- breaks down the uuid migration into 3 migrations
+
+6.6.1
+~~~~~
+- Remove localisation of security questions in form
+
+6.6.0
+~~~~~
+- Add UUID to molo profile
+- Pin django-google-analytics to 4.2.0
+- Pass UUID to Google Analytics
+
+6.5.0
+~~~~~
+- Drop support for Django 1.10
+- Update Node.js package electron for security fixes
+
+6.4.3
+~~~~~
+- Bug Fix: support non-ascii security questions
+
+6.4.2
+~~~~~
+- Bug Fix: return gender from profile and not user
+
+6.4.1
+~~~~~
+- Added Gender field to Profiles Admin
+
+6.4.0
+~~~~~
+- Allow multiple sites to point to one root page
+
+6.3.2
+~~~~~
+- Remove untested code
+
 6.3.1
 ~~~~~
 - Template Changes

@@ -43,6 +43,7 @@ from molo.core.api.constants import ERROR
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
+from molo.core.molo_wagtail_models import MoloPage
 from molo.core.utils import (
     separate_fields,
     add_json_dump,
@@ -603,6 +604,7 @@ class TranslatablePageMixinNotRoutable(object):
         return self.specific
 
     def get_site(self):
+        # TODO: this will need to change for one content repo work
         return self.get_ancestors().filter(
             depth=2).first().sites_rooted_here.all().first() or None
 
@@ -738,7 +740,7 @@ class TranslatablePageMixin(
     pass
 
 
-class TagIndexPage(Page, PreventDeleteMixin):
+class TagIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['Tag']
 
@@ -749,7 +751,7 @@ class TagIndexPage(Page, PreventDeleteMixin):
         super(TagIndexPage, self).copy(*args, **kwargs)
 
 
-class ReactionQuestionIndexPage(Page, PreventDeleteMixin):
+class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['ReactionQuestion']
 
@@ -760,7 +762,7 @@ class ReactionQuestionIndexPage(Page, PreventDeleteMixin):
         super(ReactionQuestionIndexPage, self).copy(*args, **kwargs)
 
 
-class ReactionQuestion(TranslatablePageMixin, Page):
+class ReactionQuestion(TranslatablePageMixin, MoloPage):
     parent_page_types = ['core.ReactionQuestionIndexPage']
     subpage_types = ['ReactionQuestionChoice']
 
@@ -774,7 +776,7 @@ class ReactionQuestion(TranslatablePageMixin, Page):
 
 
 class ReactionQuestionChoice(TranslatablePageMixinNotRoutable,
-                             PageEffectiveImageMixin, Page):
+                             PageEffectiveImageMixin, MoloPage):
     parent_page_types = ['core.ReactionQuestion']
     subpage_types = []
 
@@ -819,7 +821,7 @@ class ReactionQuestionResponse(models.Model):
         request.session.modified = True
 
 
-class Tag(TranslatablePageMixin, Page, ImportableMixin):
+class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
 
@@ -839,7 +841,7 @@ Tag.promote_panels = [
 ]
 
 
-class BannerIndexPage(Page, PreventDeleteMixin, ImportableMixin):
+class BannerIndexPage(MoloPage, PreventDeleteMixin, ImportableMixin):
     parent_page_types = []
     subpage_types = ['BannerPage']
 
@@ -850,7 +852,7 @@ class BannerIndexPage(Page, PreventDeleteMixin, ImportableMixin):
         super(BannerIndexPage, self).copy(*args, **kwargs)
 
 
-class BannerPage(ImportableMixin, TranslatablePageMixin, Page):
+class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
     parent_page_types = ['core.BannerIndexPage']
     subpage_types = []
 
@@ -898,7 +900,7 @@ BannerPage.content_panels = [
 index_pages_after_copy = Signal(providing_args=["instance"])
 
 
-class Main(CommentedPageMixin, Page):
+class Main(CommentedPageMixin, MoloPage):
     subpage_types = []
 
     def bannerpages(self):
@@ -981,7 +983,7 @@ def create_site(sender, instance, **kwargs):
         site.save()
 
 
-class LanguagePage(CommentedPageMixin, Page):
+class LanguagePage(CommentedPageMixin, MoloPage):
     code = models.CharField(
         max_length=255,
         help_text=_('The language code as specified in iso639-2'))
@@ -1068,7 +1070,7 @@ class SiteLanguageRelation(Orderable, SiteLanguage):
     language_setting = ParentalKey(Languages, related_name='languages')
 
 
-class SectionIndexPage(CommentedPageMixin, Page, PreventDeleteMixin):
+class SectionIndexPage(CommentedPageMixin, MoloPage, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['SectionPage']
 
@@ -1125,7 +1127,7 @@ SectionIndexPage.content_panels = [
 
 
 class SectionPage(ImportableMixin, CommentedPageMixin,
-                  TranslatablePageMixin, Page):
+                  TranslatablePageMixin, MoloPage):
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
@@ -1362,7 +1364,7 @@ class ArticlePageMetaDataTag(TaggedItemBase):
 
 
 class ArticlePage(ImportableMixin, CommentedPageMixin,
-                  TranslatablePageMixin, PageEffectiveImageMixin, Page):
+                  TranslatablePageMixin, PageEffectiveImageMixin, MoloPage):
     parent_page_types = ['core.SectionPage']
 
     subtitle = models.TextField(null=True, blank=True)
@@ -1712,7 +1714,7 @@ class ArticlePageRelatedSections(Orderable):
     api_fields = ['section']
 
 
-class FooterIndexPage(Page, PreventDeleteMixin):
+class FooterIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['FooterPage']
 

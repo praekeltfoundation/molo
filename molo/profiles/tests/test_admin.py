@@ -184,6 +184,14 @@ class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, self.user.username)
         self.assertNotContains(response, self.superuser.email)
 
+    def test_gender_shown_on_admin(self):
+        self.user.profile.gender = 'female'
+        self.user.profile.save()
+        response = self.client.get(
+            '/admin/auth/user/'
+        )
+        self.assertContains(response, 'female')
+
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_export_csv_redirects(self):
         profile = self.user.profile

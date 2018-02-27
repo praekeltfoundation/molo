@@ -78,7 +78,6 @@ class MoloTestCaseMixin(object):
             depth=1,
             numchild=0,
         )
-
         # Create a site with the new homepage set as the root
         # Site.objects.all().delete()
         self.site = self.main.get_site()

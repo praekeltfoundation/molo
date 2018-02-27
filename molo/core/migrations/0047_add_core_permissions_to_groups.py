@@ -7,139 +7,140 @@ from django.db import migrations
 from django.core.management.sql import emit_post_migrate_signal
 
 
-class Migration(migrations.Migration):
-    def add_core_permissions_to_groups(apps, schema_editor):
-        db_alias = schema_editor.connection.alias
+def add_core_permissions_to_groups(apps, schema_editor):
+    db_alias = schema_editor.connection.alias
+    try:
+        # Django 1.9
+        emit_post_migrate_signal(2, False, db_alias)
+    except TypeError:
+        # Django < 1.9
         try:
-            # Django 1.9
-            emit_post_migrate_signal(2, False, db_alias)
-        except TypeError:
-            # Django < 1.9
-            try:
-                # Django 1.8
-                emit_post_migrate_signal(2, False, 'default', db_alias)
-            except TypeError:  # Django < 1.8
-                emit_post_migrate_signal([], 2, False, 'default', db_alias)
+            # Django 1.8
+            emit_post_migrate_signal(2, False, 'default', db_alias)
+        except TypeError:  # Django < 1.8
+            emit_post_migrate_signal([], 2, False, 'default', db_alias)
 
-        Group = apps.get_model('auth.Group')
-        Permission = apps.get_model('auth.Permission')
-        GroupPagePermission = apps.get_model('wagtailcore.GroupPagePermission')
-        BannerIndexPage = apps.get_model('core.BannerIndexPage')
-        SectionIndexPage = apps.get_model('core.SectionIndexPage')
-        FooterIndexPage = apps.get_model('core.FooterIndexPage')
+    Group = apps.get_model('auth.Group')
+    Permission = apps.get_model('auth.Permission')
+    GroupPagePermission = apps.get_model('wagtailcore.GroupPagePermission')
+    BannerIndexPage = apps.get_model('core.BannerIndexPage')
+    SectionIndexPage = apps.get_model('core.SectionIndexPage')
+    FooterIndexPage = apps.get_model('core.FooterIndexPage')
 
-        if Group.objects.all().filter(name='Writer and Content Loader'):
-            Group.objects.get(name='Writer and Content Loader').delete()
+    if Group.objects.all().filter(name='Writer and Content Loader'):
+        Group.objects.get(name='Writer and Content Loader').delete()
 
-        if Group.objects.all().filter(name='Publisher'):
-            Group.objects.get(name='Publisher').delete()
+    if Group.objects.all().filter(name='Publisher'):
+        Group.objects.get(name='Publisher').delete()
 
-        # Create groups
-        access_admin = Permission.objects.get(codename='access_admin')
+    # Create groups
+    access_admin = Permission.objects.get(codename='access_admin')
 
-        # <- Wagtail Login Only ->
-        wagtail_login_only_group, _created = Group.objects.get_or_create(
-            name='Wagtail Login Only')
-        wagtail_login_only_group.permissions.add(access_admin)
+    # <- Wagtail Login Only ->
+    wagtail_login_only_group, _created = Group.objects.get_or_create(
+        name='Wagtail Login Only')
+    wagtail_login_only_group.permissions.add(access_admin)
 
-        # <- Editors ->
-        editor_group = Group.objects.get(name='Editors')
+    # <- Editors ->
+    editor_group = Group.objects.get(name='Editors')
 
-        # Remove the existing page permissions
-        editor_group.page_permissions.all().delete()
+    # Remove the existing page permissions
+    editor_group.page_permissions.all().delete()
 
-        # Add page permissions
-        sections = SectionIndexPage.objects.first()
-        GroupPagePermission.objects.get_or_create(
-            group=editor_group,
-            page=sections,
-            permission_type='add',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=editor_group,
-            page=sections,
-            permission_type='edit',
-        )
+    # Add page permissions
+    sections = SectionIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=editor_group,
+        page=sections,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=editor_group,
+        page=sections,
+        permission_type='edit',
+    )
 
-        banners = BannerIndexPage.objects.first()
-        GroupPagePermission.objects.get_or_create(
-            group=editor_group,
-            page=banners,
-            permission_type='add',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=editor_group,
-            page=banners,
-            permission_type='edit',
-        )
+    banners = BannerIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=editor_group,
+        page=banners,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=editor_group,
+        page=banners,
+        permission_type='edit',
+    )
 
-        add_sitelanguage = Permission.objects.get(codename='add_sitelanguage')
-        editor_group.permissions.add(add_sitelanguage)
+    add_sitelanguage = Permission.objects.get(codename='add_sitelanguage')
+    editor_group.permissions.add(add_sitelanguage)
 
-        # <- Moderator ->
+    # <- Moderator ->
 
-        moderator_group = Group.objects.get(name='Moderators')
+    moderator_group = Group.objects.get(name='Moderators')
 
-        add_sitelanguage = Permission.objects.get(codename='add_sitelanguage')
-        change_sitelanguage = Permission.objects.get(
-            codename='change_sitelanguage')
-        change_user = Permission.objects.get(
-            codename='change_user')
-        moderator_group.permissions.add(add_sitelanguage, change_sitelanguage,
-            change_user)
+    add_sitelanguage = Permission.objects.get(codename='add_sitelanguage')
+    change_sitelanguage = Permission.objects.get(
+        codename='change_sitelanguage')
+    change_user = Permission.objects.get(
+        codename='change_user')
+    moderator_group.permissions.add(add_sitelanguage, change_sitelanguage,
+        change_user)
 
-        moderator_group.page_permissions.all().delete()
-        sections = SectionIndexPage.objects.first()
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=sections,
-            permission_type='add',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=sections,
-            permission_type='edit',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=sections,
-            permission_type='publish',
-        )
+    moderator_group.page_permissions.all().delete()
+    sections = SectionIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=sections,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=sections,
+        permission_type='edit',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=sections,
+        permission_type='publish',
+    )
 
-        banners = BannerIndexPage.objects.first()
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=banners,
-            permission_type='add',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=banners,
-            permission_type='edit',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=banners,
-            permission_type='publish',
-        )
+    banners = BannerIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=banners,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=banners,
+        permission_type='edit',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=banners,
+        permission_type='publish',
+    )
 
-        footers = FooterIndexPage.objects.first()
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=footers,
-            permission_type='add',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=footers,
-            permission_type='edit',
-        )
-        GroupPagePermission.objects.get_or_create(
-            group=moderator_group,
-            page=footers,
-            permission_type='publish',
-        )
+    footers = FooterIndexPage.objects.first()
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=footers,
+        permission_type='add',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=footers,
+        permission_type='edit',
+    )
+    GroupPagePermission.objects.get_or_create(
+        group=moderator_group,
+        page=footers,
+        permission_type='publish',
+    )
 
+
+class Migration(migrations.Migration):
     dependencies = [
         ('core', '0046_sitesettings_enable_clickable_tags'),
         ('contenttypes', '0002_remove_content_type_name'),
