@@ -26,9 +26,8 @@ def get_language(site, locale):
 
 def get_pages(context, queryset, locale):
     request = context['request']
-    pages = []
     if not hasattr(request, 'site'):
-        return pages
+        return list[queryset]
 
     language = get_language(request.site, locale)
     if language and language.is_main_language:
@@ -36,6 +35,7 @@ def get_pages(context, queryset, locale):
 
     show_only_translated_pages = SiteSettings.for_site(
         request.site).show_only_translated_pages
+    pages = []
     for page in queryset:
         translation = page.get_translation_for(locale, request.site)
         if translation and translation.live:
