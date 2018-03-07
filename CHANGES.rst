@@ -1,3 +1,7 @@
+6.7.5
+~~~~~
+- Install module typing for python2
+
 6.7.4
 ~~~~~
 - Pattern Library image icons paths update
