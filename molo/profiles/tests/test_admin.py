@@ -205,7 +205,7 @@ class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, self.user)
 
     def test_invalid_uuid_search_on_admin(self):
-        _ , invalid_uuid = str(self.user.profile.uuid).split('-', 1)
+        _, invalid_uuid = str(self.user.profile.uuid).split('-', 1)
         response = self.client.get(
             '/admin/auth/user/?q={0}'.format(invalid_uuid)
         )
