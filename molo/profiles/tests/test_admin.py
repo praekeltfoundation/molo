@@ -192,6 +192,25 @@ class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
         )
         self.assertContains(response, 'female')
 
+    def test_uuid_shown_on_admin(self):
+        response = self.client.get(
+            '/admin/auth/user/'
+        )
+        self.assertContains(response, self.user.profile.uuid)
+
+    def test_valid_uuid_search_on_admin(self):
+        response = self.client.get(
+            '/admin/auth/user/?q={0}'.format(self.user.profile.uuid)
+        )
+        self.assertContains(response, self.user)
+
+    def test_invalid_uuid_search_on_admin(self):
+        _, invalid_uuid = str(self.user.profile.uuid).split('-', 1)
+        response = self.client.get(
+            '/admin/auth/user/?q={0}'.format(invalid_uuid)
+        )
+        self.assertNotContains(response, self.user)
+
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_export_csv_redirects(self):
         profile = self.user.profile
