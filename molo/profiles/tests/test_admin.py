@@ -190,7 +190,13 @@ class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             '/admin/auth/user/'
         )
-        self.assertContains(response, 'female')
+        self.assertContains(response, 'femdale')
+
+    def test_uuid_shown_on_admin(self):
+        response = self.client.get(
+            '/admin/auth/user/'
+        )
+        self.assertContains(response, self.user.profile.uuid)
 
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_export_csv_redirects(self):
