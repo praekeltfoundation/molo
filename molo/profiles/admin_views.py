@@ -48,7 +48,7 @@ class FrontendUsersAdminView(IndexView):
         Remove the (-) if we are searching for a valid UUID value
         """
         try:
-            val = uuid.UUID(search_term, version=4)
+            uuid.UUID(search_term, version=4)
             search_uuid = search_term.replace('-', '')
             return super(FrontendUsersAdminView, self).get_search_results(request, queryset, search_uuid)
         except ValueError:
