@@ -56,7 +56,8 @@ class UserProfileInlineModelAdmin(admin.StackedInline):
 
 class ProfileUserAdmin(UserAdmin):
     list_display = UserAdmin.list_display + (
-        'date_joined', '_alias', '_mobile_number', '_date_of_birth', '_gender')
+        'date_joined', '_alias', '_mobile_number',
+        '_date_of_birth', '_gender', '_uuid')
 
     list_filter = UserAdmin.list_filter + ('date_joined', )
 
@@ -65,6 +66,11 @@ class ProfileUserAdmin(UserAdmin):
     def _alias(self, obj, *args, **kwargs):
         if hasattr(obj, 'profile') and obj.profile.alias:
             return obj.profile.alias
+        return ''
+
+    def _uuid(self, obj, *args, **kwargs):
+        if hasattr(obj, 'profile') and obj.profile.uuid:
+            return obj.profile.uuid
         return ''
 
     def _mobile_number(self, obj, *args, **kwargs):
@@ -119,13 +125,14 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
     index_view_class = FrontendUsersAdminView
     add_to_settings_menu = True
     list_display = ('username', '_alias', '_mobile_number', '_date_of_birth',
-                    'email', 'date_joined', 'is_active', '_site', '_gender')
+                    'email', 'date_joined', 'is_active', '_site',
+                    '_gender', '_uuid')
 
     list_filter = (
         ('date_joined', FrontendUsersDateRangeFilter), 'is_active',
         CustomUsersListFilter)
 
-    search_fields = ('username',)
+    search_fields = ('username', 'profile__uuid',)
 
     def get_queryset(self, request):
         return User.objects.filter(profile__site=request.site)
