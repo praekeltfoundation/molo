@@ -1,3 +1,4 @@
+import uuid
 from wagtail.contrib.modeladmin.views import IndexView
 from wagtail.wagtailadmin import messages
 from django.utils.translation import ugettext as _
@@ -40,3 +41,17 @@ class FrontendUsersAdminView(IndexView):
 
     def get_template_names(self):
         return 'admin/frontend_users_admin_view.html'
+
+
+    def get_search_results(self, request, queryset, search_term):
+        """
+        Remove the (-) if we are searching for a valid UUID value
+        """
+        try:
+            val = uuid.UUID(search_term, version=4)
+            search_uuid = search_term.replace('-', '')
+            return super(FrontendUsersAdminView, self).get_search_results(request, queryset, search_uuid)
+        except ValueError:
+            pass
+
+        return super(FrontendUsersAdminView, self).get_search_results(request, queryset, search_term)
