@@ -190,7 +190,7 @@ class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             '/admin/auth/user/'
         )
-        self.assertContains(response, 'femdale')
+        self.assertContains(response, 'female')
 
     def test_uuid_shown_on_admin(self):
         response = self.client.get(
