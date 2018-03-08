@@ -9,6 +9,7 @@ class FrontendUsersResource(resources.ModelResource):
     alias = Field()
     gender = Field()
     mobile_number = Field()
+    uuid = Field()
 
     class Meta:
         model = User
@@ -18,7 +19,7 @@ class FrontendUsersResource(resources.ModelResource):
 
         export_order = ('username', 'alias', 'first_name', 'last_name',
                         'date_of_birth', 'email', 'mobile_number', 'is_active',
-                        'date_joined', 'last_login', 'gender')
+                        'date_joined', 'last_login', 'gender', 'uuid')
 
     # unfortunately Field's 'attribute' parameter does not work for these
     def dehydrate_date_of_birth(self, user):
@@ -32,3 +33,6 @@ class FrontendUsersResource(resources.ModelResource):
 
     def dehydrate_mobile_number(self, user):
         return user.profile.mobile_number if hasattr(user, 'profile') else ''
+
+    def dehydrate_uuid(self, user):
+        return user.profile.uuid if hasattr(user, 'profile') else ''

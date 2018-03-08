@@ -1,3 +1,9 @@
+6.7.6
+~~~~~
+- Pin version of django-extensions to less than 2
+- Add UUID to user export view and the csv
+- Allow searching the users by UUID
+
 6.7.5
 ~~~~~
 - Install module typing for python2
