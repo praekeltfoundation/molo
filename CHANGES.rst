@@ -1,3 +1,7 @@
+6.7.7
+~~~~~
+- Remove overriding the model admin get_search_results
+
 6.7.6
 ~~~~~
 - Pin version of django-extensions to less than 2
