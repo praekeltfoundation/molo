@@ -3,11 +3,12 @@
 <div class="profiles-join-banner">
   <div class="profiles-join-banner__icon"></div>
   <div class="profiles-join-banner__content">
-    {% trans "Share your opinions and stories, take polls, win fun prizes." as headingtext %}
-    {% include "patterns/basics/headings/sp_variations/heading.html" with type="subheading-alt" htmltag="h4" title=headingtext %}
-    {% trans "Join" as buttontext %}
-    {% url "molo.profiles:user_register" as link %}
-    {% include "patterns/basics/buttons/sp_variations/button.html" with type="yellow" hyperlink=link text=buttontext %}
+    <div class="heading heading__subheading-alt">
+      <h4>{% trans "Share your opinions and stories, take polls, win fun prizes." %}</h4>
+    </div>
+    <a href="{% url 'molo.profiles:user_register' %}" class="call-to-action__button call-to-action__button--yellow">
+      <span class="call-to-action__button-text call-to-action__button-text--yellow">{% trans "Join" %}</span>
+    </a>
   </div>
 </div>
 {% endblock %}

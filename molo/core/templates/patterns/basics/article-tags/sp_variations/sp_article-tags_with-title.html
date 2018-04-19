@@ -4,8 +4,9 @@
 <div class="article-page-tag-cloud">
   <ul class="tag-cloud__block">
   {% if settings.core.SiteSettings.enable_tag_navigation %}
-    {% trans "Read more about" as headingtext%}
-    {% include "patterns/basics/headings/sp_variations/heading.html" with type="micro" htmltag="h4" title=headingtext %}
+  <div class="heading heading__micro">
+    <h4>{% trans "Read more about" %}</h4>
+  </div>
     {% for tag in navigation_tags  %}
       <li class="tag-cloud__item">
         <a href="{% url 'tags_list' tag.slug %}" class="tag-cloud__anchor">

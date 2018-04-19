@@ -1,7 +1,11 @@
 {% load core_tags wagtailcore_tags el_pagination_tags i18n %}
 <div class="section-teaser-listing section-teaser-listing--base">
   <div class="section-teaser-listing-header section-teaser-listing-header--{{self.get_effective_extra_style_hints}}">
-    {% include "patterns/basics/headings/sp_variations/heading.html" with type="section" htmltag="h1" title=self.title %}
+    <div class="heading heading__section">
+      <h1>{{self.title}}</h1>
+    </div>
+
+
     {% include "patterns/basics/banners/sp_variations/section-banner.html" %}
   </div>
 </div>
@@ -14,7 +18,7 @@
   {% include "patterns/components/article-teasers/sp_variations/base-teaser-listing.html" with section=self articles=articles|slice:"4:8"%}
   {% include "patterns/components/article-teasers/sp_variations/carousel-teaser-listing.html" with tag=tags.1.0 tag_articles=tags.1.1%}
   {% include "patterns/components/article-teasers/sp_variations/base-teaser-listing.html" with section=self articles=articles|slice:"8:12"%}
-  
+
   {% get_pages %}
   {% if pages.next %}
     {% trans "Load more" as buttontext %}

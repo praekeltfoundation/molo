@@ -3,7 +3,10 @@
 {% if tag %}
   <div class="carousel-teaser">
   {% if tag_articles %}
-    {% include "patterns/basics/headings/sp_variations/heading.html" with type="component" htmltag="h2" title=tag.title %}
+    <div class="heading heading__component">
+      <h2>{{tag.title}}</h2>
+    </div>
+
     <ul class="carousel-teaser-list">
       {% for article in tag_articles %}
       <li class="carousel-teaser-list__item">
