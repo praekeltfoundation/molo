@@ -6,7 +6,18 @@
     <div class="tag-cloud__heading">
       <h4>{% trans "Read stories about"%}</h4>
     </div>
-    {% include "patterns/basics/article-tags/sp_variations/sp_article-tags.html" %}
+    {% load_tags as tags %}
+    <ul class="tag-cloud__block">
+    {% for tag in tags %}
+      {% if tag %}
+        <li class="tag-cloud__item">
+          <a href="{% url 'tags_list' tag.slug %}" class="tag-cloud__anchor">
+              {{tag.title}}
+          </a>
+        </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
   </div>
 </div>
 {% endblock %}

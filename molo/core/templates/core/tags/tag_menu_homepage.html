@@ -1,4 +1,23 @@
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags core_tags %}
 {% block tag_menu_homepage %}
-  {% include "patterns/components/article-tags/sp_variations/sp_tags-menu.html" %}
+  <div class="tag-cloud">
+    <div class="tag-cloud__icon"></div>
+    <div class="tag-cloud__container">
+      <div class="tag-cloud__heading">
+        <h4>{% trans "Read stories about"%}</h4>
+      </div>
+      {% load_tags as tags %}
+      <ul class="tag-cloud__block">
+      {% for tag in tags %}
+        {% if tag %}
+          <li class="tag-cloud__item">
+            <a href="{% url 'tags_list' tag.slug %}" class="tag-cloud__anchor">
+                {{tag.title}}
+            </a>
+          </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 {% endblock %}
