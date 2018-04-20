@@ -1,5 +1,4 @@
 from django import template
-
 from molo.core.models import MoloMedia
 
 
@@ -14,4 +13,5 @@ def media_listing_homepage(context):
     return {
         'media': MoloMedia.objects.filter(feature_in_homepage=True),
         'request': context['request'],
+        'is_via_freebasics': context['is_via_freebasics'],
     }
