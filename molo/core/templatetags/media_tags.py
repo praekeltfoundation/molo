@@ -1,7 +1,6 @@
 from django import template
 from molo.core.models import MoloMedia
 
-
 register = template.Library()
 
 
