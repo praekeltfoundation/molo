@@ -28,9 +28,10 @@ class Command(BaseCommand):
                         'New Language %s created' %
                         new_language.locale))
 
-                self.stdout.write(self.style.NOTICE(
-                    'Langauge %s already exists' %
-                    desired_main_langauge.first().locale))
+                else:
+                    self.stdout.write(self.style.NOTICE(
+                        'Langauge %s already exists' %
+                        desired_main_langauge.first().locale))
 
                 # switch the language relation to the new language
                 for relation in LanguageRelation.objects.filter(
