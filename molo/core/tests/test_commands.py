@@ -38,7 +38,8 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.assertTrue(self.english.is_main_language)
         call_command('switch_main_language', 'id')
         self.assertTrue(SiteLanguage.objects.get(locale='id').is_main_language)
-        self.assertFalse(SiteLanguage.objects.filter(locale='en').exists())
+        self.assertFalse(
+            LanguageRelation.objects.filter(language__locale='en').exists())
         for relation in LanguageRelation.objects.filter(
                 language__is_main_language=True):
             self.assertEqual(relation.language.locale, 'id')
