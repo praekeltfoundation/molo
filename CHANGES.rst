@@ -1,3 +1,7 @@
+6.8.0
+~~~~~
+- Add management command for switching the main language
+
 6.7.7
 ~~~~~
 - Remove overriding the model admin get_search_results
