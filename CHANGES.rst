@@ -1,3 +1,25 @@
+6.8.0
+~~~~~
+- Add management command for switching the main language
+
+6.7.7
+~~~~~
+- Remove overriding the model admin get_search_results
+
+6.7.6
+~~~~~
+- Pin version of django-extensions to less than 2
+- Add UUID to user export view and the csv
+- Allow searching the users by UUID
+
+6.7.5
+~~~~~
+- Install module typing for python2
+
+6.7.4
+~~~~~
+- Pattern Library image icons paths update
+
 6.7.3
 ~~~~~
 - add rtl direction on input fields in wagtail

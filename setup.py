@@ -1,6 +1,6 @@
 import codecs
 import os
-
+import sys
 from setuptools import setup, find_packages
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -21,7 +21,7 @@ install_requires = [
     'Django>=1.11,<2.0',
     'django-cas-ng==3.5.8',
     'django-el-pagination==3.1.0',
-    'django-extensions',
+    'django-extensions>=1,<2',
     'django-google-analytics-app==4.2.0',
     'django-libsass',
     'django-mptt==0.8.6',
@@ -48,6 +48,10 @@ install_requires = [
     'Unidecode==0.04.16',
     'django-treebeard==4.2.0',
 ]
+
+# we need to only install typing for python2
+if sys.version_info < (3, 5):
+    install_requires.append('typing')
 
 setup(name='molo.core',
       version=read('VERSION'),

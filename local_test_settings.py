@@ -1,6 +1,12 @@
 from testapp.settings.base import *  # noqa: F403, F405
 
 
+ALLOWED_HOSTS = [
+    'localhost',
+    '.localhost',
+    'site2',
+]
+
 ENABLE_SSO = True
 
 MIDDLEWARE_CLASSES += (  # noqa: F405

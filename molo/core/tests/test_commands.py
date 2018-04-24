@@ -8,7 +8,8 @@ from django.test import TestCase
 from django.utils.six import StringIO
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (
-    Main, Languages, ArticlePage, Tag, ArticlePageTags, SiteLanguageRelation)
+    Main, Languages, ArticlePage, Tag, ArticlePageTags, SiteLanguageRelation,
+    SiteLanguage, LanguageRelation)
 
 
 class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
@@ -26,6 +27,23 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.article = ArticlePage(title='Test Article', slug='test-article')
         self.yourmind.add_child(instance=self.article)
         self.article.save_revision().publish()
+
+    def test_switch_main_language(self):
+        out = StringIO()
+        tag = Tag(title='love', slug='love')
+        self.tag_index.add_child(instance=tag)
+        tag.save_revision().publish()
+        for relation in LanguageRelation.objects.filter(
+                language__is_main_language=True):
+            self.assertEqual(relation.language.locale, 'en')
+        self.assertTrue(self.english.is_main_language)
+        call_command('switch_main_language', 'id', std_out=out)
+        self.assertTrue(SiteLanguage.objects.get(locale='id').is_main_language)
+        self.assertFalse(
+            LanguageRelation.objects.filter(language__locale='en').exists())
+        for relation in LanguageRelation.objects.filter(
+                language__is_main_language=True):
+            self.assertEqual(relation.language.locale, 'id')
 
     def test_add_feature_in_latest_date_to_article(self):
         self.assertEquals(self.article.featured_in_latest_start_date, None)

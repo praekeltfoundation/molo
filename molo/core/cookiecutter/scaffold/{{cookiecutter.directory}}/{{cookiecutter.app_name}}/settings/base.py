@@ -32,7 +32,9 @@ SECRET_KEY = "{{cookiecutter.secret_key}}"
 DEBUG = True
 ENV = 'dev'
 
-ALLOWED_HOSTS = ['*']
+# List of hostnames which Django checks when serving your app, to
+# prevent against HTTP Host header attacks.
+ALLOWED_HOSTS = []
 
 
 # Base URL to use when referring to full URLs within the Wagtail admin
