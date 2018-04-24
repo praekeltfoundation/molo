@@ -17,7 +17,8 @@ class Command(BaseCommand):
                 'This command only works for apps with one wagtail site'))
             exit(1)
         main = mains.first()
-        old_main_langauge = SiteLanguage.objects.get(is_main_language=True)
+        old_main_langauge = SiteLanguageRelation.objects.get(
+            is_main_language=True)
         if not main:
             self.stdout.write(self.style.ERROR(
                 'Main page does not exist'))
@@ -46,10 +47,9 @@ class Command(BaseCommand):
 
         new_language.is_main_language = True
         new_language.save()
+        old_main_langauge.is_main_language = False
+        old_main_langauge.is_active = False
+        old_main_langauge.save()
         self.stdout.write(self.style.SUCCESS(
             'Main language swopped from %s to %s' %
             (old_main_langauge.locale, new_language.locale)))
-        old_main_langauge.delete()
-        self.stdout.write(self.style.SUCCESS(
-            'Language with locale %s deleted' %
-            old_main_langauge.locale))
