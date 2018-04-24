@@ -17,9 +17,9 @@ class Command(BaseCommand):
             old_main_langauge = SiteLanguage.objects.get(is_main_language=True)
             if main:
                 # add the new language if necessary
-                desired_main_langauge = SiteLanguage.objects.filter(
+                desired_main_language = SiteLanguage.objects.filter(
                     locale=new_language_locale)
-                if not desired_main_langauge.exists():
+                if not desired_main_language.exists():
                     new_language = SiteLanguageRelation.objects.create(
                         language_setting=Languages.for_site(main.get_site()),
                         locale=new_language_locale,
@@ -30,8 +30,8 @@ class Command(BaseCommand):
 
                 else:
                     self.stdout.write(self.style.NOTICE(
-                        'Langauge %s already exists' %
-                        desired_main_langauge.first().locale))
+                        'Language %s already exists' %
+                        desired_main_language.first().locale))
 
                 # switch the language relation to the new language
                 for relation in LanguageRelation.objects.filter(
