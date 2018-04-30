@@ -38,6 +38,8 @@ class Command(BaseCommand):
             self.stdout.write(self.style.NOTICE(
                 'Language %s already exists' %
                 desired_main_language.first().locale))
+            new_language = new_language = SiteLanguageRelation.objects.get(
+                locale=new_language_locale)
 
         # switch the language relation to the new language
         for relation in LanguageRelation.objects.filter(
