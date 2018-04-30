@@ -1,3 +1,7 @@
+6.8.1
+~~~~~
+- BugFix: assign language variable when needed for management command
+
 6.8.0
 ~~~~~
 - Add management command for switching the main language
