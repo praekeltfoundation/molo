@@ -678,7 +678,7 @@ def get_next_article(context, article):
     locale_code = context.get('locale_code')
     section = article.get_parent_section()
     articles = load_child_articles_for_section(context, section, count=None)
-    if len(articles) > 1:
+    if len(articles) > 1 and article in articles:
         next_article = articles[articles.index(article) - 1]
     else:
         return None
