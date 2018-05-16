@@ -32,7 +32,7 @@ install_requires = [
     'elastic-git',
     'markdown',
     'mote-prk==0.2.1',
-    'raven==5.0.0',
+    'raven==6.5.0',
     'redis',
     'requests',
     'setuptools>=18.5',
