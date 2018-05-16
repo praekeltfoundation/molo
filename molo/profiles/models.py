@@ -301,7 +301,7 @@ def create_security_question_index_page(sender, instance, **kwargs):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name="profile", primary_key=True)
     uuid = models.UUIDField(default=uuid4, unique=True)
-    auth_service_uuid = models.UUIDField(default=uuid4, unique=True)
+    auth_service_uuid = models.UUIDField(unique=True, null=True)
     date_of_birth = models.DateField(null=True)
     alias = models.CharField(
         max_length=128,
