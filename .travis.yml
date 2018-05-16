@@ -5,9 +5,11 @@ python:
   - '3.6'
 
 env:
-  - TEST=molo_lint
-  - TEST=testapp_lint
-  - TEST=build
+  - TOXENV=molo_lint
+  - TOXENV=django110-testapp_lint
+  - TOXENV=django110-build
+  - TOXENV=django111-testapp_lint
+  - TOXENV=django111-build
 
 jobs:
   include:
@@ -51,8 +53,8 @@ cache: pip
 before_install:
   - pip install --upgrade pip
 install:
-  - pip install -r requirements-dev.txt
+  - pip install tox==2.9.1
   - pip install coveralls
-script: ./travis.sh
+script: tox
 after_success:
   - coveralls

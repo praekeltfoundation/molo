@@ -68,12 +68,12 @@ class ReactionQuestionResultsAdminView(FormView):
 
         for response in ReactionQuestionResponse.objects.filter(
                 question=question):
-            data_rows.append(OrderedDict({
-                'submission_date': response.created_at,
-                'answer': response.choice,
-                'user': response.user,
-                'article': response.article
-            }))
+            data = OrderedDict()
+            data['submission_date'] = response.created_at
+            data['answer'] = response.choice
+            data['user'] = response.user
+            data['article'] = response.article
+            data_rows.append(data)
 
         action = request.GET.get('action', None)
         if action == 'download':
