@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
-from wagtail.wagtailsearch.backends import get_search_backend
+from wagtail.search.backends import get_search_backend
 
 from molo.core.models import SiteLanguageRelation, \
     Main, Languages, FooterPage

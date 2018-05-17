@@ -31,8 +31,8 @@ from molo.core.utils import get_image_hash
 
 import responses
 
-from wagtail.wagtailcore.models import Site
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+from wagtail.core.models import Site
+from wagtail.images.tests.utils import Image, get_test_image_file
 
 
 class ArticleImportTestCase(MoloTestCaseMixin, TestCase):

@@ -64,19 +64,19 @@ INSTALLED_APPS = [
     'mote',
     'google_analytics',
 
-    'wagtail.wagtailcore',
-    'wagtail.wagtailadmin',
-    'wagtail.wagtaildocs',
-    'wagtail.wagtailsnippets',
-    'wagtail.wagtailusers',
-    'wagtail.wagtailsites',
-    'wagtail.wagtailimages',
-    'wagtail.wagtailembeds',
-    'wagtail.wagtailsearch',
-    'wagtail.wagtailredirects',
-    'wagtail.wagtailforms',
+    'wagtail.core',
+    'wagtail.admin',
+    'wagtail.documents',
+    'wagtail.snippets',
+    'wagtail.users',
+    'wagtail.sites',
+    'wagtail.images',
+    'wagtail.embeds',
+    'wagtail.search',
+    'wagtail.contrib.redirects',
+    'wagtail.contrib.forms',
     'wagtailmedia',
-    'wagtail.contrib.wagtailsitemaps',
+    'wagtail.contrib.sitemaps',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
     'wagtail.api.v2',
@@ -104,8 +104,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'wagtail.wagtailcore.middleware.SiteMiddleware',
-    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 
     'molo.core.middleware.AdminLocaleMiddleware',
     'molo.core.middleware.NoScriptGASessionMiddleware',
@@ -334,7 +334,7 @@ WAGTAIL_SITE_NAME = "base"
 #
 # WAGTAILSEARCH_BACKENDS = {
 #     'default': {
-#         'BACKEND': ('wagtail.wagtailsearch.backends.'
+#         'BACKEND': ('wagtail.search.backends.'
 #                     'elasticsearch.ElasticSearch'),
 #         'INDEX': 'base',
 #     },

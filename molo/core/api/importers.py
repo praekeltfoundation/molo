@@ -12,8 +12,8 @@ from django.core.files.images import ImageFile
 
 from six import iteritems
 
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailimages.models import Image
+from wagtail.core.models import Page
+from wagtail.images.models import Image
 
 from molo.core.models import *
 from molo.core.api.constants import (

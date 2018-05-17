@@ -17,7 +17,7 @@ from google_analytics.utils import build_ga_params, set_cookie
 from google_analytics.tasks import send_ga_tracking
 
 from molo.core.models import SiteSettings
-from wagtail.wagtailcore.models import Site, Page
+from wagtail.core.models import Site, Page
 from django.core.urlresolvers import resolve
 from django.shortcuts import redirect
 from molo.core.models import Languages

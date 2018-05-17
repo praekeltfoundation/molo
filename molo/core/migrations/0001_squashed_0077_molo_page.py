@@ -11,11 +11,11 @@ import modelcluster.fields
 import molo.core.blocks
 import molo.core.models
 import taggit.managers
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
-import wagtail.wagtailcore.models
-import wagtail.wagtailimages.blocks
-import wagtail.wagtailsearch.index
+import wagtail.core.blocks
+import wagtail.core.fields
+import wagtail.core.models
+import wagtail.images.blocks
+import wagtail.search.index
 
 
 # Functions from the following migrations need manual copying.
@@ -463,7 +463,7 @@ def delete_timezones(apps, schema_editor):
 def set_initial_timezone(apps, schema_editor):
     from django.conf import settings as django_settings
     from molo.core.models import CmsSettings, Timezone
-    from wagtail.wagtailcore.models import Site
+    from wagtail.core.models import Site
 
     current_timezone_name = django_settings.TIME_ZONE or 'UTC'
     for site in Site.objects.all():
@@ -476,7 +476,7 @@ def set_initial_timezone(apps, schema_editor):
 
 def unset_timezone(apps, schema_editor):
     from molo.core.models import CmsSettings
-    from wagtail.wagtailcore.models import Site
+    from wagtail.core.models import Site
     for site in Site.objects.all():
         site_settings = CmsSettings.for_site(site)
         site_settings.timezone = None
@@ -667,7 +667,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='articlepage',
             name='body',
-            field=wagtail.wagtailcore.fields.StreamField(((b'heading', wagtail.wagtailcore.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.wagtailimages.blocks.ImageChooserBlock()), (b'list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.wagtailcore.blocks.PageChooserBlock())), blank=True, null=True),
+            field=wagtail.core.fields.StreamField(((b'heading', wagtail.core.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.images.blocks.ImageChooserBlock()), (b'list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.core.blocks.PageChooserBlock())), blank=True, null=True),
         ),
         migrations.AddField(
             model_name='sectionpage',
@@ -921,7 +921,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='articlepage',
             name='body',
-            field=wagtail.wagtailcore.fields.StreamField(((b'heading', wagtail.wagtailcore.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.wagtailimages.blocks.ImageChooserBlock()), (b'list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.wagtailcore.blocks.PageChooserBlock()), (b'media', molo.core.blocks.MultimediaBlock())), blank=True, null=True),
+            field=wagtail.core.fields.StreamField(((b'heading', wagtail.core.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.images.blocks.ImageChooserBlock()), (b'list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.core.blocks.PageChooserBlock()), (b'media', molo.core.blocks.MultimediaBlock())), blank=True, null=True),
         ),
         migrations.AddField(
             model_name='sitesettings',
@@ -986,7 +986,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sectionpage',
             name='time',
-            field=wagtail.wagtailcore.fields.StreamField(((b'time', wagtail.wagtailcore.blocks.TimeBlock(required=False)),), blank=True, help_text=b'The time/s content will be rotated', null=True),
+            field=wagtail.core.fields.StreamField(((b'time', wagtail.core.blocks.TimeBlock(required=False)),), blank=True, help_text=b'The time/s content will be rotated', null=True),
         ),
         migrations.AddField(
             model_name='sectionpage',
@@ -1036,7 +1036,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='time',
-            field=wagtail.wagtailcore.fields.StreamField(((b'time', wagtail.wagtailcore.blocks.TimeBlock(required=False)),), blank=True, help_text=b'The time/s content will be rotated', null=True),
+            field=wagtail.core.fields.StreamField(((b'time', wagtail.core.blocks.TimeBlock(required=False)),), blank=True, help_text=b'The time/s content will be rotated', null=True),
         ),
         migrations.AddField(
             model_name='sitesettings',
@@ -1127,7 +1127,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='social_media_links_on_footer_page',
-            field=wagtail.wagtailcore.fields.StreamField(((b'social_media_site', wagtail.wagtailcore.blocks.StructBlock(((b'title', wagtail.wagtailcore.blocks.CharBlock(required=True)), (b'link', wagtail.wagtailcore.blocks.CharBlock(required=True)), (b'image', wagtail.wagtailimages.blocks.ImageChooserBlock())))),), blank=True, null=True),
+            field=wagtail.core.fields.StreamField(((b'social_media_site', wagtail.core.blocks.StructBlock(((b'title', wagtail.core.blocks.CharBlock(required=True)), (b'link', wagtail.core.blocks.CharBlock(required=True)), (b'image', wagtail.images.blocks.ImageChooserBlock())))),), blank=True, null=True),
         ),
         migrations.AddField(
             model_name='sitesettings',
@@ -1350,7 +1350,7 @@ class Migration(migrations.Migration):
                 ('thumbnail', models.FileField(blank=True, upload_to='media_thumbnails', verbose_name='thumbnail')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
                 ('youtube_link', models.CharField(blank=True, max_length=512, null=True)),
-                ('collection', models.ForeignKey(default=wagtail.wagtailcore.models.get_root_collection_id, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='wagtailcore.Collection', verbose_name='collection')),
+                ('collection', models.ForeignKey(default=wagtail.core.models.get_root_collection_id, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='wagtailcore.Collection', verbose_name='collection')),
                 ('tags', taggit.managers.TaggableManager(blank=True, help_text=None, through='taggit.TaggedItem', to='taggit.Tag', verbose_name='tags')),
                 ('uploaded_by_user', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='uploaded by user')),
                 ('feature_in_homepage', models.BooleanField(default=False)),
@@ -1359,12 +1359,12 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'verbose_name': 'media',
             },
-            bases=(wagtail.wagtailsearch.index.Indexed, models.Model),
+            bases=(wagtail.search.index.Indexed, models.Model),
         ),
         migrations.AlterField(
             model_name='articlepage',
             name='body',
-            field=wagtail.wagtailcore.fields.StreamField(((b'heading', wagtail.wagtailcore.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.wagtailimages.blocks.ImageChooserBlock()), (b'list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.wagtailcore.blocks.PageChooserBlock()), (b'media', molo.core.models.MoloMediaBlock(icon=b'media'))), blank=True, null=True),
+            field=wagtail.core.fields.StreamField(((b'heading', wagtail.core.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.images.blocks.ImageChooserBlock()), (b'list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.core.blocks.PageChooserBlock()), (b'media', molo.core.models.MoloMediaBlock(icon=b'media'))), blank=True, null=True),
         ),
         migrations.RunPython(convert_media_to_molo_media),
         migrations.CreateModel(

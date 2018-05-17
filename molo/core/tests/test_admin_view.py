@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from wagtail.wagtailimages.tests.utils import get_test_image_file, Image
+from wagtail.images.tests.utils import get_test_image_file, Image
 
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages,

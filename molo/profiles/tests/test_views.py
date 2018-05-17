@@ -21,13 +21,13 @@ from molo.core.models import (
 
 from molo.core.tests.base import MoloTestCaseMixin
 
-from wagtail.wagtailcore.models import Site
+from wagtail.core.models import Site
 
 from bs4 import BeautifulSoup
 
 from django.contrib import admin
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtailcore import urls as wagtail_urls
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.core import urls as wagtail_urls
 
 
 urlpatterns = [
@@ -51,8 +51,8 @@ DEFAULT_MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'wagtail.wagtailcore.middleware.SiteMiddleware',
-    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 
     'molo.core.middleware.AdminLocaleMiddleware',
     'molo.core.middleware.NoScriptGASessionMiddleware',

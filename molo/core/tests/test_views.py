@@ -37,8 +37,8 @@ from six import b
 from six.moves.urllib.parse import quote, parse_qs
 from bs4 import BeautifulSoup
 
-from wagtail.wagtailcore.models import Site, Page
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+from wagtail.core.models import Site, Page
+from wagtail.images.tests.utils import Image, get_test_image_file
 
 from zipfile import ZipFile
 

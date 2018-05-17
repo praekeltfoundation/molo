@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
 from wagtail.utils.urlpatterns import decorate_urlpatterns
-from wagtail.wagtailimages.views.serve import ServeView
+from wagtail.images.views.serve import ServeView
 
 from .api.urls import api_router
 from . import views

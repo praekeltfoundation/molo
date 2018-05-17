@@ -1,7 +1,7 @@
 from django.core.cache import cache
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
-from wagtail.wagtailadmin.edit_handlers import EditHandler
+from wagtail.admin.edit_handlers import EditHandler
 
 from itertools import chain
 
@@ -21,21 +21,21 @@ from modelcluster.tags import ClusterTaggableManager
 from modelcluster.models import ClusterableModel
 
 from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.wagtailcore.models import Page, Orderable, Site
-from wagtail.wagtailcore.fields import StreamField
-from wagtail.wagtailsearch import index
-from wagtail.wagtailadmin.edit_handlers import (
+from wagtail.core.models import Page, Orderable, Site
+from wagtail.core.fields import StreamField
+from wagtail.search import index
+from wagtail.admin.edit_handlers import (
     FieldPanel, FieldRowPanel, StreamFieldPanel, PageChooserPanel,
     MultiFieldPanel, InlinePanel)
-from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
-from wagtail.wagtailcore import blocks
-from wagtail.wagtailcore.models import PageManager
-from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.wagtailimages.models import Image
-from wagtail.contrib.wagtailroutablepage.models import route, RoutablePageMixin
+from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.core import blocks
+from wagtail.core.models import PageManager
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.images.models import Image
+from wagtail.contrib.routable_page.models import route, RoutablePageMixin
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.models import AbstractMedia
-from wagtail.wagtailcore.signals import page_unpublished
+from wagtail.core.signals import page_unpublished
 
 from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
 from molo.core import constants

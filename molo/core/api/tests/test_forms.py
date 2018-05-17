@@ -3,8 +3,8 @@ from mock import patch
 
 from django.test import TestCase
 
-from wagtail.wagtailimages.models import Image
-from wagtail.wagtailimages.tests.utils import get_test_image_file
+from wagtail.images.models import Image
+from wagtail.images.tests.utils import get_test_image_file
 
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.api import forms, importers
