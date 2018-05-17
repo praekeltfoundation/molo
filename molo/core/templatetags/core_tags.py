@@ -664,6 +664,7 @@ def social_media_article(context, page=None):
         twitter = False
 
     data = {
+        'is_via_bbm': context['is_via_bbm'],
         'facebook': facebook,
         'twitter': twitter,
         'request': context['request'],
