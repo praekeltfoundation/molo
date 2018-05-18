@@ -64,11 +64,14 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
             message.attachments[0],
             ('Molo_export_testapp.csv',
              'username,alias,first_name,last_name,date_of_birth,email,mobile_n'
-             'umber,is_active,date_joined,last_login,gender\r\ntesting1,The '
+             'umber,is_active,date_joined,last_login,gender,'
+             'uuid\r\ntesting1,The '
              'Alias,,,,,+27784667723,1,' + str(
                  self.user.date_joined.strftime("%Y-%m-%d %H:%M:%S")) +
              ',' + str(
-                 self.user.last_login.strftime("%Y-%m-%d %H:%M:%S")) + ',\r\n',
+                 self.user.last_login.strftime("%Y-%m-%d %H:%M:%S")) +
+             ',,' + str(
+                 self.user.profile.uuid) + '\r\n',
              'text/csv'))
 
         # test sending from the second site
@@ -79,9 +82,10 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
             message.attachments[0],
             ('Molo_export_testapp.csv',
              'username,alias,first_name,last_name,date_of_birth,email,mobile_n'
-             'umber,is_active,date_joined,last_login,gender\r\ntesting2'
+             'umber,is_active,date_joined,last_login,gender,uuid\r\ntesting2'
              ',,,,,,,1,' + str(
                     self.user2.date_joined.strftime("%Y-%m-%d %H:%M:%S")) +
              ',' + str(
                  self.user2.last_login.strftime("%Y-%m-%d %H:%M:%S")) +
-                ',\r\n', 'text/csv'))
+             ',,' + str(
+                 self.user2.profile.uuid) + '\r\n', 'text/csv'))
