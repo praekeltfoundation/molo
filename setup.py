@@ -41,7 +41,7 @@ install_requires = [
     'unicodecsv==0.14.1',
     'unicore.content',
     'wagtail>=2.0.1,<2.1',
-    'wagtailmedia==0.1.3',
+    'wagtailmedia==0.1.5',
     'ImageHash==3.4',
     'boto==2.48.0',
     'django-storages==1.6.3',
