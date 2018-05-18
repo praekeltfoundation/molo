@@ -1,3 +1,8 @@
+6.8.2
+~~~~~
+- Add auth_service_uuid to UserProfile
+- Fix typo on 403 page
+
 6.8.1
 ~~~~~
 - BugFix: assign language variable when needed for management command
