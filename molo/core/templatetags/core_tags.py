@@ -709,7 +709,8 @@ def get_recommended_articles(context, article):
         return []
 
     preserved = Case(
-        *[When(pk=pk, then=pos) for pos, pk in enumerate(recommended_articles_queryset)])
+        *[When(pk=pk, then=pos) for pos, pk in enumerate(
+                recommended_articles_queryset)])
     articles = ArticlePage.objects.filter(
                   pk__in=recommended_articles_queryset).order_by(preserved)
 
