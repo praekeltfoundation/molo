@@ -24,34 +24,25 @@ def get_language(site, locale):
     return language
 
 
-def get_pages(context, qs, locale):
+def get_pages(context, queryset, locale):
     request = context['request']
+    if not hasattr(request, 'site'):
+        return list[queryset]
 
     language = get_language(request.site, locale)
+    if language and language.is_main_language:
+        return list(queryset.live())
 
-    site_settings = SiteSettings.for_site(request.site)
-    if site_settings.show_only_translated_pages:
-        if language and language.is_main_language:
-            return [a for a in qs.live()]
-        else:
-            pages = []
-            for a in qs:
-                translation = a.get_translation_for(locale, request.site)
-                if translation:
-                    pages.append(translation)
-            return pages
-    else:
-        if language and language.is_main_language:
-            return [a for a in qs.live()]
-        else:
-            pages = []
-            for a in qs:
-                translation = a.get_translation_for(locale, request.site)
-                if translation and translation.live:
-                    pages.append(translation)
-                elif a.live:
-                    pages.append(a)
-            return pages
+    show_only_translated_pages = SiteSettings.for_site(
+        request.site).show_only_translated_pages
+    pages = []
+    for page in queryset:
+        translation = page.get_translation_for(locale, request.site)
+        if translation and translation.live:
+            pages.append(translation)
+        elif page.live and not show_only_translated_pages:
+            pages.append(page)
+    return pages
 
 
 @register.assignment_tag(takes_context=True)
@@ -711,15 +702,17 @@ def get_recommended_articles(context, article):
 
     # http://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order/37648265#37648265 # noqa
     # the following allows us to order the results of the querystring
-    pk_list = recommended_articles.values_list(
-        'recommended_article__pk', flat=True)
+    recommended_articles_queryset = recommended_articles.values_list(
+        'recommended_article', flat=True)
 
-    if not pk_list:
+    if not recommended_articles_queryset:
         return []
 
     preserved = Case(
-        *[When(pk=pk, then=pos) for pos, pk in enumerate(pk_list)])
-    articles = ArticlePage.objects.filter(pk__in=pk_list).order_by(preserved)
+        *[When(pk=pk, then=pos) for pos, pk in enumerate(
+                recommended_articles_queryset)])
+    articles = ArticlePage.objects.filter(
+                  pk__in=recommended_articles_queryset).order_by(preserved)
 
     return get_pages(context, articles, locale_code)
 
