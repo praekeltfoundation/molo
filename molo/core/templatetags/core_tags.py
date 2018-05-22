@@ -702,15 +702,17 @@ def get_recommended_articles(context, article):
 
     # http://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order/37648265#37648265 # noqa
     # the following allows us to order the results of the querystring
-    pk_list = recommended_articles.values_list(
-        'recommended_article__pk', flat=True)
+    recommended_articles_queryset = recommended_articles.values_list(
+        'recommended_article', flat=True)
 
-    if not pk_list:
+    if not recommended_articles_queryset:
         return []
 
     preserved = Case(
-        *[When(pk=pk, then=pos) for pos, pk in enumerate(pk_list)])
-    articles = ArticlePage.objects.filter(pk__in=pk_list).order_by(preserved)
+        *[When(pk=pk, then=pos) for pos, pk in enumerate(
+                recommended_articles_queryset)])
+    articles = ArticlePage.objects.filter(
+                  pk__in=recommended_articles_queryset).order_by(preserved)
 
     return get_pages(context, articles, locale_code)
 
