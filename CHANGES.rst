@@ -1,3 +1,7 @@
+6.8.3
+~~~~~
+- BugFix: Core tags - get_recommended_articles query-set value list update
+
 6.8.2
 ~~~~~
 - Add auth_service_uuid to UserProfile
