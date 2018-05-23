@@ -16,6 +16,7 @@ if [ "$TEST" == "molo_lint" ]; then
     flake8 --config=molo/profiles/migrations/.flake8 molo/profiles/migrations/
 elif [ "$TEST" == "testapp_lint" ]; then
     setup_testapp
+    python testapp/manage.py runscript template_lint
     flake8 testapp
 elif [ "$TEST" == "build" ]; then
     setup_testapp
