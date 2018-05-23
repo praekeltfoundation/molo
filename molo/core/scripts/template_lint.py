@@ -33,7 +33,11 @@ def run():
         template_file = open(filename).read()
 
         # Ensure that the template renders
-        Template(template_file)
+        try:
+            Template(template_file)
+        except TemplateSyntaxError as e:
+            errors.append('TemplateSyntaxError while parsing template')
+            errors.append(e)
 
         lines = template_file.split("\n")
 
