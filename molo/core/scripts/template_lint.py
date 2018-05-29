@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 from django.conf import settings
-from django.template import Template, TemplateSyntaxError
 
 from glob import glob
 
@@ -9,6 +8,7 @@ from os import walk
 from os.path import join
 
 from sys import stderr
+from molo.core.scripts.utils import lint_template_file
 
 
 def log_error(*args, **kwargs):
@@ -26,45 +26,9 @@ def run():
     for directory in template_directories:
         html_templates += glob(join(directory, '*.html'))
 
-    for filename in html_templates:
-        printable_filename = filename.replace(settings.PROJECT_ROOT, '')
-        items_loaded = []
-        errors = []
-        template_file = open(filename).read()
-
-        # Ensure that the template renders
-        try:
-            Template(template_file)
-        except TemplateSyntaxError as e:
-            errors.append('TemplateSyntaxError while parsing template')
-            errors.append(e)
-
-        lines = template_file.split("\n")
-
-        for line in lines:
-            if "{% load " in line:
-                items_loaded += [
-                    item for item in line.split(' ') if item not in [
-                        '{%', 'load', '', '%}']]
-
-        if len(items_loaded) != len(set(items_loaded)):
-            errors.append('Duplicate template tags loaded')
-            exit_code = 1
-
-        for load in items_loaded:
-            try:
-                padded_load = ' {0} '.format(load)
-                new_template_file = template_file.replace(padded_load, '')
-                Template(new_template_file)
-                errors.append('Can remove {0} without error'.format(load))
-                exit_code = 1
-            except TemplateSyntaxError:
-                pass
-
-        if errors:
-            log_error('')
-            log_error(printable_filename)
-            for error in errors:
-                log_error('  {0}'.format(error))
+    errors = [lint_template_file(filename) for filename in html_templates]
+    if any(errors):
+        log_error("\n".join([error for error in errors if error]))
+        exit_code = 1
 
     exit(exit_code)
