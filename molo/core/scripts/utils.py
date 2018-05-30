@@ -14,7 +14,8 @@ def lint_template(template_string):
     try:
         Template(template_string)
     except TemplateSyntaxError as e:
-        errors.append('TemplateSyntaxError while parsing template\n\t{}'.format(str(e)))
+        errors.append(
+            'TemplateSyntaxError while parsing template\n\t{}'.format(str(e)))
 
     lines = template_string.split("\n")
 

@@ -9,9 +9,11 @@ from django.test import TestCase
 from django.conf import settings
 from molo.core.scripts.utils import lint_template_file
 
+
 class TestMoloCoreTemplates(TestCase):
     def test_lint_profile_templates(self):
-        app_template_dir = join(dirname(settings.PROJECT_ROOT), "molo", "core", "templates")
+        app_template_dir = join(
+            dirname(settings.PROJECT_ROOT), "molo", "core", "templates")
 
         html_templates = []
         template_directories = [
@@ -23,5 +25,5 @@ class TestMoloCoreTemplates(TestCase):
 
         errors = [lint_template_file(filename) for filename in html_templates]
         if any(errors):
-            print("\n".join([error for error in errors if error]), file=stderr)
+            print("\n".join([error for error in errors if error]), stderr)
         self.assertFalse(any(errors))
