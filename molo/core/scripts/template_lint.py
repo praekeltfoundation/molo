@@ -28,7 +28,7 @@ def run():
 
     errors = [lint_template_file(filename) for filename in html_templates]
     if any(errors):
-        log_error("\n".join([error for error in errors if error]))
+        log_error(*[error for error in errors if error])
         exit_code = 1
 
     exit(exit_code)

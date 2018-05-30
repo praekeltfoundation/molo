@@ -1,5 +1,3 @@
-from sys import stderr
-
 from os import walk
 from os.path import join, dirname
 
@@ -8,6 +6,7 @@ from glob import glob
 from django.test import TestCase
 from django.conf import settings
 from molo.core.scripts.utils import lint_template_file
+from molo.core.scripts.template_lint import log_error
 
 
 class TestMoloProfileTemplates(TestCase):
@@ -25,5 +24,5 @@ class TestMoloProfileTemplates(TestCase):
 
         errors = [lint_template_file(filename) for filename in html_templates]
         if any(errors):
-            print("\n".join([error for error in errors if error]), stderr)
+            log_error(*[error for error in errors if error])
         self.assertFalse(any(errors))
