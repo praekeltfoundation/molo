@@ -1,3 +1,7 @@
+6.8.4
+~~~~~
+- Customise: Wagtail main nav logout icon
+
 6.8.3
 ~~~~~
 - BugFix: Core tags - get_recommended_articles query-set value list update
