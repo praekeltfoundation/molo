@@ -4,6 +4,7 @@ WAGTAIL ADMIN
 */
 @import "../utilities/*";
 @import "modules/*";
+
 .content-wrapper {
   .pagination {padding: 0 15px;}
   .pagination.col9 {
@@ -23,16 +24,34 @@ WAGTAIL ADMIN
 }
 
 //Wagtail Admin - Button
-input[type=submit].icon-logout {
-  -webkit-font-smoothing: auto;
-  text-decoration: none;
+.icon-logout_wrapper {
   display: block;
-  color: #cacaca;
   padding: 1.7em 1.7em;
-  font-size: 1em;
-  font-weight: 400;
-  border: none;
-  background: transparent;
+  vertical-align: middle;
+  &:before {
+    content: "";
+    background: url("/static/images/icons/logout.svg") 0 0 / contain no-repeat;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    font-weight: bold;
+    margin: 0 5px 0 0;
+  }
+  input[type=submit].icon-logout {
+    -webkit-font-smoothing: auto;
+    text-decoration: none;
+    display: inline-block;
+    color: #cacaca;
+    padding: 0;
+    font-size: 1em;
+    font-weight: 400;
+    border: none;
+    width: auto;
+    background: transparent;
+    vertical-align: middle;
+
+  }
 }
 
 @media screen and (min-width: 90em) {
