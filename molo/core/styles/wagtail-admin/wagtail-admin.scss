@@ -22,6 +22,19 @@ WAGTAIL ADMIN
   margin: 0 0 8px 0;
 }
 
+//Wagtail Admin - Button
+input[type=submit].icon-logout {
+  -webkit-font-smoothing: auto;
+  text-decoration: none;
+  display: block;
+  color: #cacaca;
+  padding: 1.7em 1.7em;
+  font-size: 1em;
+  font-weight: 400;
+  border: none;
+  background: transparent;
+}
+
 @media screen and (min-width: 90em) {
   .wrapper {
     max-width: 100%;
