@@ -21,7 +21,8 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
 from wagtail.wagtailadmin.widgets import Button
-from wagtail.contrib.modeladmin.options import modeladmin_register
+from wagtail.contrib.modeladmin.options import (
+    modeladmin_register, ModelAdminGroup)
 
 from molo.core.api import urls as molo_api_urls
 from molo.core import views
@@ -47,9 +48,6 @@ def register_question_results_admin_view_url():
     ]
 
 
-modeladmin_register(ReactionQuestionsModelAdmin)
-
-
 @hooks.register('register_admin_urls')
 def register_article_question_results_admin_view_url():
     return [
@@ -59,7 +57,23 @@ def register_article_question_results_admin_view_url():
     ]
 
 
-modeladmin_register(ReactionQuestionsSummaryModelAdmin)
+class ReactionQuestionsGroup(ModelAdminGroup):
+    menu_label = 'ReactionQuestions'
+    menu_icon = 'folder-open-inverse'
+    menu_order = 500
+    items = (ReactionQuestionsSummaryModelAdmin, ReactionQuestionsModelAdmin)
+
+
+modeladmin_register(ReactionQuestionsGroup)
+
+
+@hooks.register('construct_main_menu')
+def show_reactionquestions_response_for_users_have_access(request, menu_items):
+    if not request.user.has_perm('core.can_view_response'):
+        menu_items[:] = [
+            item for item in menu_items if item.name != 'reactionquestions']
+
+
 modeladmin_register(AdminViewGroup)
 
 
