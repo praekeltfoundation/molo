@@ -1,3 +1,8 @@
+
+6.9.0
+~~~~~
+- Only show reaction questions modeladmin to users that have can_view_response permission
+
 6.8.4
 ~~~~~
 - Customise: Wagtail main nav logout icon
