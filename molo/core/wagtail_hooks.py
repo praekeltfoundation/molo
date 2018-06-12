@@ -68,7 +68,7 @@ modeladmin_register(ReactionQuestionsGroup)
 
 
 @hooks.register('construct_main_menu')
-def show_reaction_questions_response_for_users_have_access(request, menu_items):
+def show_reactionquestions_response_for_users_have_access(request, menu_items):
     if not request.user.has_perm('core.can_view_response'):
         menu_items[:] = [
             item for item in menu_items if item.name != 'reactionquestions']
