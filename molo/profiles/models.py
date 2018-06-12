@@ -1,4 +1,4 @@
-import uuid
+from uuid import uuid4
 from django.contrib.auth import hashers
 from django.contrib.auth.models import User
 from django.core import validators
@@ -300,7 +300,8 @@ def create_security_question_index_page(sender, instance, **kwargs):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name="profile", primary_key=True)
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    uuid = models.UUIDField(default=uuid4, unique=True)
+    auth_service_uuid = models.UUIDField(unique=True, null=True)
     date_of_birth = models.DateField(null=True)
     alias = models.CharField(
         max_length=128,

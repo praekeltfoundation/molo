@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="310px" height="330px" viewBox="0 0 310 330" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>logout</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="logout" transform="translate(155.000000, 165.000000) scale(1, -1) rotate(-180.000000) translate(-155.000000, -165.000000) " fill-rule="nonzero" fill="#CACACA">
+            <path d="M235.608,84.392 C229.752,78.535 220.253,78.534 214.395,84.391 C208.538,90.249 208.537,99.746 214.395,105.604 L258.789,150 L75.002,150 C66.718,150 60.002,156.716 60.002,165 C60.002,173.284 66.718,180 75.002,180 L258.787,180 L214.395,224.392 C208.537,230.25 208.537,239.747 214.395,245.605 C217.324,248.534 221.163,249.998 225.002,249.998 C228.841,249.998 232.68,248.534 235.608,245.605 L305.606,175.607 C311.464,169.75 311.464,160.252 305.606,154.394 L235.608,84.392 Z" id="Shape"></path>
+            <path d="M145,330 C153.284,330 160,323.284 160,315 C160,306.716 153.284,300 145,300 L30,300 L30,30 L145,30 C153.284,30 160,23.284 160,15 C160,6.716 153.284,0 145,0 L15,0 C6.716,0 0,6.716 0,15 L0,315 C0,323.284 6.716,330 15,330 L145,330 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>

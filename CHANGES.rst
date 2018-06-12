@@ -1,3 +1,29 @@
+
+6.9.0
+~~~~~
+- Only show reaction questions modeladmin to users that have can_view_response permission
+
+6.8.4
+~~~~~
+- Customise: Wagtail main nav logout icon
+
+6.8.3
+~~~~~
+- BugFix: Core tags - get_recommended_articles query-set value list update
+
+6.8.2
+~~~~~
+- Add auth_service_uuid to UserProfile
+- Fix typo on 403 page
+
+6.8.1
+~~~~~
+- BugFix: assign language variable when needed for management command
+
+6.8.0
+~~~~~
+- Add management command for switching the main language
+
 6.7.7
 ~~~~~
 - Remove overriding the model admin get_search_results

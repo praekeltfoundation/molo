@@ -820,6 +820,11 @@ class ReactionQuestionResponse(models.Model):
         request.session['reaction_response_submissions'].append(article.id)
         request.session.modified = True
 
+    class Meta:
+        permissions = (
+            ("can_view_response", "Can view Response"),
+        )
+
 
 class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
