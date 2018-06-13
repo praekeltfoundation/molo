@@ -397,24 +397,27 @@ def tag_index(request, extra_context=None,
         raise Http404
 
     main = request.site.root_page
-    context = {'request': request}
-    locale = request.LANGUAGE_CODE
+    tag = Tag.objects.filter(title=tag_name).descendant_of(main).first()
 
-    tag = Tag.objects.filter(slug=tag_name).descendant_of(main).first()
-    articles = []
-    for article_tag in ArticlePageTags.objects.filter(
-            tag=tag.get_main_language_page()).all():
-        articles.append(article_tag.page.pk)
-    articles = ArticlePage.objects.filter(
-        pk__in=articles).descendant_of(main).order_by(
-            'latest_revision_created_at')
-    # count = articles.count() if articles.count() < count else count
-    # context = self.get_context_data(
-    #     object_list=get_pages(context, articles[:count], locale))
-    object_list = get_pages(context, articles, locale)
-    locale_code = request.GET.get('locale')
-    return render(request, template, {
-        'object_list': object_list, 'tag': tag, 'locale_code': locale_code})
+    if tag:
+        context = {'request': request}
+        locale = request.LANGUAGE_CODE
+        articles = []
+        for article_tag in ArticlePageTags.objects.filter(
+                tag=tag.get_main_language_page()).all():
+            articles.append(article_tag.page.pk)
+        articles = ArticlePage.objects.filter(
+            pk__in=articles).descendant_of(main).order_by(
+                'latest_revision_created_at')
+        # count = articles.count() if articles.count() < count else count
+        # context = self.get_context_data(
+        #     object_list=get_pages(context, articles[:count], locale))
+        object_list = get_pages(context, articles, locale)
+        locale_code = request.GET.get('locale')
+        return render(request, template, {
+            'object_list': object_list, 'tag': tag,
+            'locale_code': locale_code})
+    raise Http404
 
 
 @page_template('search/search_results_for_paging.html')
