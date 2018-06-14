@@ -284,20 +284,19 @@ class TagsListView(ListView):
 
         if site_settings.enable_tag_navigation:
             tag = Tag.objects.filter(slug=tag).descendant_of(main).first()
-            articles = []
-            for article_tag in ArticlePageTags.objects.filter(
-                    tag=tag.get_main_language_page()).all():
-                articles.append(article_tag.page.pk)
-            articles = ArticlePage.objects.filter(
-                pk__in=articles).descendant_of(main).order_by(
+            if tag:
+                articles = []
+                for article_tag in ArticlePageTags.objects.filter(
+                        tag=tag.get_main_language_page()).all():
+                    articles.append(article_tag.page.pk)
+                articles = ArticlePage.objects.filter(
+                    pk__in=articles).descendant_of(main).order_by(
+                        'latest_revision_created_at')
+                return get_pages(context, articles[:count], locale)
+            return ArticlePage.objects.descendant_of(main).filter(
+                tags__name__in=[tag]).order_by(
                     'latest_revision_created_at')
-            # count = articles.count() if articles.count() < count else count
-            # context = self.get_context_data(
-            #     object_list=get_pages(context, articles[:count], locale))
-            return get_pages(context, articles[:count], locale)
-        return ArticlePage.objects.descendant_of(main).filter(
-            tags__name__in=[tag]).order_by(
-                'latest_revision_created_at')
+            return None
 
     def get_context_data(self, *args, **kwargs):
         context = super(TagsListView, self).get_context_data(*args, **kwargs)
