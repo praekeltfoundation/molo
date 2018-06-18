@@ -296,7 +296,7 @@ class TagsListView(ListView):
             return ArticlePage.objects.descendant_of(main).filter(
                 tags__name__in=[tag]).order_by(
                     'latest_revision_created_at')
-            return None
+            return Tag.objects.none()
 
     def get_context_data(self, *args, **kwargs):
         context = super(TagsListView, self).get_context_data(*args, **kwargs)
@@ -398,7 +398,7 @@ def tag_index(request, extra_context=None,
     main = request.site.root_page
     tag = Tag.objects.filter(title=tag_name).descendant_of(main).first()
 
-    if tag:
+    if tag.exists():
         context = {'request': request}
         locale = request.LANGUAGE_CODE
         articles = []
