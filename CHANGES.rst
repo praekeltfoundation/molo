@@ -1,3 +1,10 @@
+CHANGES
+=======
+
+6.9.1
+~~~~~
+- Return http404 if no tag can be found
+- Remove elastic-git from setup
 
 6.9.0
 ~~~~~
