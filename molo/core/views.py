@@ -283,8 +283,9 @@ class TagsListView(ListView):
         locale = self.request.LANGUAGE_CODE
 
         if site_settings.enable_tag_navigation:
-            tag = Tag.objects.filter(slug=tag).descendant_of(main).first()
-            if tag:
+            tag = Tag.objects.filter(slug=tag).descendant_of(main)
+            if tag.exists():
+                tag = tag.first()
                 articles = []
                 for article_tag in ArticlePageTags.objects.filter(
                         tag=tag.get_main_language_page()).all():
@@ -293,10 +294,10 @@ class TagsListView(ListView):
                     pk__in=articles).descendant_of(main).order_by(
                         'latest_revision_created_at')
                 return get_pages(context, articles[:count], locale)
-            return ArticlePage.objects.descendant_of(main).filter(
-                tags__name__in=[tag]).order_by(
-                    'latest_revision_created_at')
-            return Tag.objects.none()
+            raise Http404
+        return ArticlePage.objects.descendant_of(main).filter(
+            tags__name__in=[tag]).order_by(
+                'latest_revision_created_at')
 
     def get_context_data(self, *args, **kwargs):
         context = super(TagsListView, self).get_context_data(*args, **kwargs)
@@ -396,9 +397,10 @@ def tag_index(request, extra_context=None,
         raise Http404
 
     main = request.site.root_page
-    tag = Tag.objects.filter(title=tag_name).descendant_of(main).first()
+    tag = Tag.objects.filter(title=tag_name).descendant_of(main)
 
     if tag.exists():
+        tag = tag.first()
         context = {'request': request}
         locale = request.LANGUAGE_CODE
         articles = []
