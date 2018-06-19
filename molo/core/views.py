@@ -397,7 +397,7 @@ def tag_index(request, extra_context=None,
         raise Http404
 
     main = request.site.root_page
-    tag = Tag.objects.filter(title=tag_name).descendant_of(main)
+    tag = Tag.objects.filter(slug=tag_name).descendant_of(main)
 
     if tag.exists():
         tag = tag.first()
