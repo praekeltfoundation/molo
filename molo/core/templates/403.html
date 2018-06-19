@@ -6,7 +6,7 @@
 
 {% block content %}
     <h2>{% trans "Access Denied" %}</h2>
-    <p>{% trans "You do not have permssion to access this site." %}</p>
+    <p>{% trans "You do not have permission to access this site." %}</p>
     <p><a href="{% url 'wagtailadmin_logout' %}?next={% url 'wagtailadmin_login' %}">Retry</a></p>
 {% endblock %}
  

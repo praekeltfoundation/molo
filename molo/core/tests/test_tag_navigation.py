@@ -152,6 +152,8 @@ class TestTags(MoloTestCaseMixin, TestCase):
         self.assertEquals(len(response.context['object_list']), 5)
         for article in response.context['object_list']:
             self.assertEquals(article.get_site().pk, self.main.get_site().pk)
+        response = self.client.get('/tags/bogus/')
+        self.assertEquals(response.status_code, 404)
 
     def test_new_tag_article_relations_made_when_copying_site(self):
         tag = self.mk_tag(parent=self.tag_index)

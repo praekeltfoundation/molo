@@ -117,7 +117,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
         self.assertContains(
-            response, 'You do not have permssion to access this site.',
+            response, 'You do not have permission to access this site.',
             status_code=403)
         user = User.objects.get(username='test@example.com')
         user.profile.admin_sites.add(Main.objects.first().get_site())
@@ -134,7 +134,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
         self.assertContains(
-            response, 'You do not have permssion to access this site.',
+            response, 'You do not have permission to access this site.',
             status_code=403)
 
     @patch('cas.CASClientV2.verify_ticket')
@@ -153,7 +153,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             follow=True)
 
         self.assertContains(
-            response, 'You do not have permssion to access this site.',
+            response, 'You do not have permission to access this site.',
             status_code=403)
 
     @patch('cas.CASClientV2.verify_ticket')
@@ -172,7 +172,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             follow=True)
 
         self.assertContains(
-            response, 'You do not have permssion to access this site.',
+            response, 'You do not have permission to access this site.',
             status_code=403)
 
     def test_normal_user_login_has_no_permissions(self):
@@ -182,7 +182,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/admin/')
         self.assertContains(
-            response, 'You do not have permssion to access this site.',
+            response, 'You do not have permission to access this site.',
             status_code=403)
 
     @patch('cas.CASClientV2.verify_ticket')
