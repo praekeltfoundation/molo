@@ -283,18 +283,18 @@ class TagsListView(ListView):
         locale = self.request.LANGUAGE_CODE
 
         if site_settings.enable_tag_navigation:
-            tag = Tag.objects.filter(slug=tag).descendant_of(main).first()
-            articles = []
-            for article_tag in ArticlePageTags.objects.filter(
-                    tag=tag.get_main_language_page()).all():
-                articles.append(article_tag.page.pk)
-            articles = ArticlePage.objects.filter(
-                pk__in=articles).descendant_of(main).order_by(
-                    'latest_revision_created_at')
-            # count = articles.count() if articles.count() < count else count
-            # context = self.get_context_data(
-            #     object_list=get_pages(context, articles[:count], locale))
-            return get_pages(context, articles[:count], locale)
+            tag = Tag.objects.filter(slug=tag).descendant_of(main)
+            if tag.exists():
+                tag = tag.first()
+                articles = []
+                for article_tag in ArticlePageTags.objects.filter(
+                        tag=tag.get_main_language_page()).all():
+                    articles.append(article_tag.page.pk)
+                articles = ArticlePage.objects.filter(
+                    pk__in=articles).descendant_of(main).order_by(
+                        'latest_revision_created_at')
+                return get_pages(context, articles[:count], locale)
+            raise Http404
         return ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
                 'latest_revision_created_at')
@@ -397,24 +397,28 @@ def tag_index(request, extra_context=None,
         raise Http404
 
     main = request.site.root_page
-    context = {'request': request}
-    locale = request.LANGUAGE_CODE
+    tag = Tag.objects.filter(slug=tag_name).descendant_of(main)
 
-    tag = Tag.objects.filter(slug=tag_name).descendant_of(main).first()
-    articles = []
-    for article_tag in ArticlePageTags.objects.filter(
-            tag=tag.get_main_language_page()).all():
-        articles.append(article_tag.page.pk)
-    articles = ArticlePage.objects.filter(
-        pk__in=articles).descendant_of(main).order_by(
-            'latest_revision_created_at')
-    # count = articles.count() if articles.count() < count else count
-    # context = self.get_context_data(
-    #     object_list=get_pages(context, articles[:count], locale))
-    object_list = get_pages(context, articles, locale)
-    locale_code = request.GET.get('locale')
-    return render(request, template, {
-        'object_list': object_list, 'tag': tag, 'locale_code': locale_code})
+    if tag.exists():
+        tag = tag.first()
+        context = {'request': request}
+        locale = request.LANGUAGE_CODE
+        articles = []
+        for article_tag in ArticlePageTags.objects.filter(
+                tag=tag.get_main_language_page()).all():
+            articles.append(article_tag.page.pk)
+        articles = ArticlePage.objects.filter(
+            pk__in=articles).descendant_of(main).order_by(
+                'latest_revision_created_at')
+        # count = articles.count() if articles.count() < count else count
+        # context = self.get_context_data(
+        #     object_list=get_pages(context, articles[:count], locale))
+        object_list = get_pages(context, articles, locale)
+        locale_code = request.GET.get('locale')
+        return render(request, template, {
+            'object_list': object_list, 'tag': tag,
+            'locale_code': locale_code})
+    raise Http404
 
 
 @page_template('search/search_results_for_paging.html')
