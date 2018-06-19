@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from django.http import Http404
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
