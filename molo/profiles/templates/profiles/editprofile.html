@@ -4,9 +4,9 @@
 
 {% block content %}
 <div class="profiles">
-	<form method="post" action="{% url "molo.profiles:edit_my_profile" %}" class="profiles__form">
-	{% csrf_token %}
-	{% if settings.profiles.UserProfilesSettings.activate_display_name %}
+  <form method="post" action="{% url "molo.profiles:edit_my_profile" %}" class="profiles__form">
+  {% csrf_token %}
+    {% if settings.profiles.UserProfilesSettings.activate_display_name %}
     <fieldset>
       <label for="alias">{% trans "Update your display name:" %}</label>
       {{ form.alias.errors}}
@@ -67,7 +67,7 @@
       <span class="input-hint">{% trans "(e.g. example@foo.com)" %}</span>
     </fieldset>
     {% endif %}
-	<input type="submit" value="{% trans "Save" %}" class="call-to-action__button call-to-action__button--primary">
-	</form>
+    <input type="submit" value="{% trans "Save" %}" class="call-to-action__button call-to-action__button--primary">
+  </form>
 </div>
 {% endblock %}

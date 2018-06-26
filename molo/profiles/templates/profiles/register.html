@@ -3,22 +3,24 @@
 {% get_settings %}
 
 {% block content %}
-<h1 class="heading heading--profiles">{% trans "Register" %}</h1>
+  <div class="heading">
+    <h1 class="heading__profiles">{% trans "Register" %}</h1>
+  </div>
 
-<div class="call-to-action call-to-action--profile">
-    <h4 class="heading heading--subtitle">
-      {% trans "Already a member?" %}
-    </h5>
-    <a href="{% url "molo.profiles:auth_login" %}" class="call-to-action__nav-item-text call-to-action__nav-item-text--login">{% trans "Login" %}</a>
-</div>
+  <div class="call-to-action call-to-action--profile">
+      <h4 class="heading heading--subtitle">
+        {% trans "Already a member?" %}
+      </h4>
+      <a href="{% url "molo.profiles:auth_login" %}" class="call-to-action__nav-item-text call-to-action__nav-item-text--login">{% trans "Login" %}</a>
 
-<h4 class="heading heading--subtitle">
-    {% trans "Not a member yet?" %}
-    {% trans "Join us by signing up below." %}
-</h4>
-<div class="profiles">
-  <form method="post" action="{% url "molo.profiles:user_register" %}" class="profiles__form">
-  {% csrf_token %}
+      <h4 class="heading heading--subtitle">
+          {% trans "Not a member yet?" %}
+          {% trans "Join us by signing up below." %}
+      </h4>
+  </div>
+  <div class="profiles">
+    <form method="post" action="{% url "molo.profiles:user_register" %}" class="profiles__form">
+    {% csrf_token %}
     <fieldset>
       <label for="id_username">{% trans "CHOOSE A USERNAME" %}</label>
       {{ form.username.errors}}
