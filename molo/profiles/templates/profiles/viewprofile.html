@@ -35,7 +35,7 @@
     {% if settings.profiles.UserProfilesSettings.activate_gender %}
     <fieldset>
       <label for="id_gender">{% trans "Gender:" %}</label>
-      <p class="profiles__description pprofiles__description--gender">
+      <p class="profiles__description profiles__gender">
         {{ user.profile.gender | default:defaultText }}
       </p>
     </fieldset>
@@ -44,14 +44,14 @@
     {% if settings.profiles.UserProfilesSettings.activate_location %}
     <fieldset>
       <label for="id_location">{% trans "Location:" %}</label>
-      <p class="profiles__description profiles__description--location">{{ user.profile.location | default:defaultText }}</p>
+      <p class="profiles__description profiles__location">{{ user.profile.location | default:defaultText }}</p>
     </fieldset>
     {% endif %}
 
     {% if settings.profiles.UserProfilesSettings.activate_education_level %}
     <fieldset>
       <label for="education_level">{% trans "Education Level:" %}</label>
-      <p class="profiles__description profiles__description--education_level">{{ user.profile.education_level | default:defaultText }}</p>
+      <p class="profiles__description profiles__education_level">{{ user.profile.education_level | default:defaultText }}</p>
     </fieldset>
     {% endif %}
 
