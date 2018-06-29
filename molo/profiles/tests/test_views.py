@@ -906,8 +906,8 @@ class RegistrationDone(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(reverse('molo.profiles:registration_done'))
         self.assertContains(response, '<p class="profiles__description">'
-                            'Let us know more about yourself to get access to '
-                            'exclusive content.</p>')
+                            'Let us know more about yourself '
+                            'to get access to exclusive content.</p>')
         self.assertContains(response, 'Thank you for joining!')
 
         response = self.client.post(reverse(
