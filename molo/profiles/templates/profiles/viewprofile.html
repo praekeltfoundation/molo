@@ -18,10 +18,12 @@
     {% trans "Not set." as defaultText %}
     <fieldset>
       <label>{% trans "Date of Birth: " %}</label>
-      <p class="profiles__description profiles__dob">
+      <p class="profile__dob">
         {% if user.profile.date_of_birth %}
           {{ user.profile.date_of_birth | date:"M d, Y" }}
-        {% else %}{{defaultText}}{% endif %}
+        {% else %}
+          {{defaultText}}
+        {% endif %}
       </p>
     </fieldset>
 
