@@ -4,18 +4,19 @@
 
 {% block content %}
 <div class="profiles">
-  <h4 class="heading heading--subtitle">
+  <h4 class="heading heading__subtitle">
     {% trans "Thank you for joining!" %}
   </h4>
 {% with profile_settings=settings.profiles.UserProfilesSettings %}
 
   {% if profile_settings.activate_dob and not profile_settings.capture_dob_on_reg or profile_settings.activate_display_name and not profile_settings.capture_display_name_on_reg or profile_settings.activate_gender and not profile_settings.capture_gender_on_reg or profile_settings.activate_location and not profile_settings.capture_location_on_reg or profile_settings.activate_education_level and not profile_settings.capture_education_level_on_reg %}
-    <p class="profiles__description">{% trans "Let us know more about yourself to get access to exclusive content." %}</p>
+    <h6 class="heading heading--subtitle">{% trans "Let us know more about yourself to get access to exclusive content." %}
+    </h6>
     <form method="post" action="{% url "molo.profiles:registration_done" %}" class="profiles__form">
     {% csrf_token %}
       {% if profile_settings.activate_dob and not profile_settings.capture_dob_on_reg %}
       <fieldset>
-        <label for="date_of_birth">{% trans "SELECT DATE OF BIRTH" %}</label><br>
+        <label for="date_of_birth">{% trans "SELECT DATE OF BIRTH" %}</label>
         {{ form.date_of_birth.errors}}
         {{ form.date_of_birth }}
       </fieldset>
@@ -23,7 +24,7 @@
 
       {% if profile_settings.activate_display_name and not profile_settings.capture_display_name_on_reg %}
       <fieldset>
-        <label for="alias">{% trans "DISPLAY NAME" %}</label><br>
+        <label for="alias">{% trans "DISPLAY NAME" %}</label>
           {{ form.alias.errors }}
           {{ form.alias }}
           <span class="input-hint">{% trans "We value your online security, therefore we hide your username and allow you to comment and interact with the site with a display name." %}</span>
@@ -32,7 +33,7 @@
 
       {% if profile_settings.activate_gender and not profile_settings.capture_gender_on_reg %}
       <fieldset>
-        <label for="gender">{% trans "I IDENTIFY MY GENDER AS:" %}</label><br>
+        <label for="gender">{% trans "I IDENTIFY MY GENDER AS:" %}</label>
         {{ form.gender.errors }}
         {{ form.gender }}
         <span class="input-hint">{% trans "Only you will see this" %}</span>
@@ -41,7 +42,7 @@
 
       {% if profile_settings.activate_location and not profile_settings.capture_location_on_reg %}
       <fieldset>
-        <label for="location">{% trans "WHERE DO YOU LIVE?" %}</label><br>
+        <label for="location">{% trans "WHERE DO YOU LIVE?" %}</label>
         {{ form.location.errors }}
         {{ form.location }}
         <span class="input-hint">{% trans "Only you will see this" %}</span>
@@ -50,17 +51,21 @@
 
       {% if profile_settings.activate_education_level and not profile_settings.capture_education_level_on_reg %}
       <fieldset>
-        <label for="education_level">{% trans "WHAT IS YOUR HIGHEST LEVEL OF EDUCATION?" %}</label><br>
+        <label for="education_level">{% trans "WHAT IS YOUR HIGHEST LEVEL OF EDUCATION?" %}</label>
        {{ form.education_level.errors }}
        {{ form.education_level }}
        <span class="input-hint">{% trans "Only you will see this" %}</span>
       </fieldset>
       {% endif %}
-    <input type="submit" value="{% trans "Save" %}" />
+    <input type="submit" value="{% trans "Save" %}" class="call-to-action__button call-to-action__button--primary" />
     </form>
   {% endif %}
 {% endwith %}
-  <a href="/">{% trans "Home Page" %}</a>
-  <a href="{% url "molo.profiles:view_my_profile" %}">{% trans "Profile" %}</a>
+  <div class="call-to-action call-to-action--wide-back">
+      <a href="{% url "molo.profiles:view_my_profile" %}" class="call-to-action__nav-item-text call-to-action__nav-item-text--left">{% trans "Profile" %}</a>
+      <a href="/" class="call-to-action__nav-item-text call-to-action__nav-item-text--left">
+        {% trans "Home Page" %}
+      </a>
+  </div>
 </div>
 {% endblock %}
