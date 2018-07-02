@@ -29,7 +29,6 @@ install_requires = [
     'django-phonenumber-field==1.3.0',
     'django-import-export',
     'django-daterange-filter',
-    'elastic-git',
     'markdown',
     'mote-prk==0.2.1',
     'raven==5.0.0',

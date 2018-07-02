@@ -4,7 +4,13 @@
 {% block content %}
 <h1 class="heading heading--profiles">{% trans "Login Success" %}</h1>
 <div class="profiles">
-    <h4 class="heading heading--feeback-title">{% trans "Welcome Back!" %}</h4>
-    <a href="/">{% trans "Home Page" %}</a>
+    <div class="heading">
+      <h4 class="heading__micro">{% trans "Welcome Back!" %}</h4>
+    <div>
+    <div class="call-to-action call-to-action--wide-back">
+        <a href="/" class="call-to-action__nav-item-text call-to-action__nav-item-text--left">
+          {% trans "Home Page" %}
+        </a>
+    </div>
   </div>
 {% endblock %}
