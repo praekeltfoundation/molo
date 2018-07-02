@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+6.9.2
+~~~~~
+- Profiles templates update
+- Travis update accordingly
+
 6.9.1
 ~~~~~
 - Return http404 if no tag can be found
