@@ -10,8 +10,7 @@
 {% with profile_settings=settings.profiles.UserProfilesSettings %}
 
   {% if profile_settings.activate_dob and not profile_settings.capture_dob_on_reg or profile_settings.activate_display_name and not profile_settings.capture_display_name_on_reg or profile_settings.activate_gender and not profile_settings.capture_gender_on_reg or profile_settings.activate_location and not profile_settings.capture_location_on_reg or profile_settings.activate_education_level and not profile_settings.capture_education_level_on_reg %}
-    <h6 class="heading heading--subtitle">
-      {% trans "Let us know more about yourself to get access to exclusive content." %}
+    <h6 class="heading heading--subtitle">{% trans "Let us know more about yourself to get access to exclusive content." %}
     </h6>
     <form method="post" action="{% url "molo.profiles:registration_done" %}" class="profiles__form">
     {% csrf_token %}
