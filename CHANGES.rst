@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+6.9.3
+~~~~~
+- Update tagged articles to order from newst to oldest
+
 6.9.2
 ~~~~~
 - Profiles templates update
