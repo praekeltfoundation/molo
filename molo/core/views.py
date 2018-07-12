@@ -292,7 +292,7 @@ class TagsListView(ListView):
                     articles.append(article_tag.page.pk)
                 articles = ArticlePage.objects.filter(
                     pk__in=articles).descendant_of(main).order_by(
-                        'latest_revision_created_at')
+                        '-latest_revision_created_at')
                 return get_pages(context, articles[:count], locale)
             raise Http404
         return ArticlePage.objects.descendant_of(main).filter(
