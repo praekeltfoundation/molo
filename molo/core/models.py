@@ -1542,6 +1542,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
 
     class Meta:
         verbose_name = _('Article')
+        ordering = ('latest_revision_created_at')
 
     api_fields = [
         "title", "subtitle", "body", "tags", "commenting_state",

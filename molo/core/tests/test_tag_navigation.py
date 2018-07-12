@@ -284,9 +284,10 @@ class TestTags(MoloTestCaseMixin, TestCase):
             '<a href="/sections-main-1/your-mind/article-3/"')
 
         # check that they ordered by the latest first
-        self.assertTrue(
-            response.content.decode().find('sections-main-1/your-mind/article-2/')
-            < response.content.decode().find('/sections-main-1/your-mind/article-1/'))
+        response_articles_list = response.context_data['object_list']
+        self.assertEquals(article3.pk, response_articles_list[0].pk)
+        self.assertEquals(article2.pk, response_articles_list[1].pk)
+
     def test_promoted_tags(self):
         articles = self.mk_articles(self.yourmind, count=5)
         tag = self.mk_tag(parent=self.tag_index)
