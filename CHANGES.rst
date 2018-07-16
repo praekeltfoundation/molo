@@ -1,5 +1,8 @@
 CHANGES
 =======
+6.9.4
+~~~~~
+- Remove old profile templates
 
 6.9.3
 ~~~~~
