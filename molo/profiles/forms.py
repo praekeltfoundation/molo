@@ -253,6 +253,13 @@ class RegistrationForm(forms.Form):
 
         return alias
 
+    def clean_date_of_birth(self):
+        val = self.data.get('date_of_birth')
+        if val and val > timezone.now():
+            err = _("Date of birth can not be in the future.")
+            raise forms.ValidationError(err)
+        return val
+
 
 class DoneForm(forms.Form):
     date_of_birth = forms.DateField(
