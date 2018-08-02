@@ -170,7 +170,7 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
             data=form_data,
             questions=[self.question, ]
         )
-        self.assertEqual(form.is_valid(), False)
+        self.assertEqual(form.is_valid(), True)
 
 
 class PasswordRecoveryTestCase(MoloTestCaseMixin, TestCase):
