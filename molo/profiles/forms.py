@@ -1,7 +1,7 @@
 from django.utils import timezone
 
 import re
-
+import datetime
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from django.contrib.auth import authenticate
@@ -260,7 +260,11 @@ class RegistrationForm(forms.Form):
         if self.profile_settings.activate_dob:
             required = self.profile_settings.dob_required
             val = self.data.get('date_of_birth')
-            if not val:
+
+            if val and not isinstance(val, datetime.date):
+                val = timezone.datetime.strptime(val, '%Y-%m-%d')
+
+            else:
                 vals = (
                     int(self.data.get('date_of_birth_year', 1)),
                     int(self.data.get('date_of_birth_month', 1)),
@@ -444,7 +448,11 @@ class EditProfileForm(forms.ModelForm):
         if self.profile_settings.activate_dob:
             required = self.profile_settings.dob_required
             val = self.data.get('date_of_birth')
-            if not val:
+
+            if val and not isinstance(val, datetime.date):
+                val = timezone.datetime.strptime(val, '%Y-%m-%d')
+
+            else:
                 vals = (
                     int(self.data.get('date_of_birth_year', 1)),
                     int(self.data.get('date_of_birth_month', 1)),
