@@ -319,29 +319,34 @@ class DoneForm(forms.Form):
                 self.profile_settings.show_mobile_number_field and
                 self.profile_settings.country_code)
 
-        self.fields['email'].required = (
-            self.profile_settings.email_required and
-            self.profile_settings.show_email_field)
-        self.fields['alias'].required = (
-            self.profile_settings.activate_display_name and
-            self.profile_settings.capture_display_name_on_reg and
-            self.profile_settings.display_name_required)
-        self.fields['date_of_birth'].required = (
-            self.profile_settings.activate_dob and
-            self.profile_settings.capture_dob_on_reg and
-            self.profile_settings.dob_required)
-        self.fields['gender'].required = (
-            self.profile_settings.activate_gender and
-            self.profile_settings.capture_gender_on_reg and
-            self.profile_settings.gender_required)
-        self.fields['location'].required = (
-            self.profile_settings.activate_location and
-            self.profile_settings.capture_location_on_reg and
-            self.profile_settings.location_required)
-        self.fields['education_level'].required = (
-            self.profile_settings.activate_education_level and
-            self.profile_settings.capture_education_level_on_reg and
-            self.profile_settings.activate_education_level_required)
+        if self.fields.get('email'):
+            self.fields['email'].required = (
+                self.profile_settings.email_required and
+                self.profile_settings.show_email_field)
+
+        if self.fields.get('date_of_birth'):
+            self.fields['date_of_birth'].required = (
+                self.profile_settings.activate_dob and
+                self.profile_settings.capture_dob_on_reg and
+                self.profile_settings.dob_required)
+
+        if self.fields.get('gender'):
+            self.fields['gender'].required = (
+                self.profile_settings.activate_gender and
+                self.profile_settings.capture_gender_on_reg and
+                self.profile_settings.gender_required)
+
+        if self.fields.get('location'):
+            self.fields['location'].required = (
+                self.profile_settings.activate_location and
+                self.profile_settings.capture_location_on_reg and
+                self.profile_settings.location_required)
+
+        if self.fields.get('education_level'):
+            self.fields['education_level'].required = (
+                self.profile_settings.activate_education_level and
+                self.profile_settings.capture_education_level_on_reg and
+                self.profile_settings.activate_education_level_required)
 
 
 class EditProfileForm(forms.ModelForm):
@@ -385,29 +390,34 @@ class EditProfileForm(forms.ModelForm):
                 self.profile_settings.show_mobile_number_field and
                 self.profile_settings.country_code)
 
-        self.fields['email'].required = (
-            self.profile_settings.email_required and
-            self.profile_settings.show_email_field)
-        self.fields['alias'].required = (
-            self.profile_settings.activate_display_name and
-            self.profile_settings.capture_display_name_on_reg and
-            self.profile_settings.display_name_required)
-        self.fields['date_of_birth'].required = (
-            self.profile_settings.activate_dob and
-            self.profile_settings.capture_dob_on_reg and
-            self.profile_settings.dob_required)
-        self.fields['gender'].required = (
-            self.profile_settings.activate_gender and
-            self.profile_settings.capture_gender_on_reg and
-            self.profile_settings.gender_required)
-        self.fields['location'].required = (
-            self.profile_settings.activate_location and
-            self.profile_settings.capture_location_on_reg and
-            self.profile_settings.location_required)
-        self.fields['education_level'].required = (
-            self.profile_settings.activate_education_level and
-            self.profile_settings.capture_education_level_on_reg and
-            self.profile_settings.activate_education_level_required)
+        if self.fields.get('email'):
+            self.fields['email'].required = (
+                self.profile_settings.email_required and
+                self.profile_settings.show_email_field)
+
+        if self.fields.get('date_of_birth'):
+            self.fields['date_of_birth'].required = (
+                self.profile_settings.activate_dob and
+                self.profile_settings.capture_dob_on_reg and
+                self.profile_settings.dob_required)
+
+        if self.fields.get('gender'):
+            self.fields['gender'].required = (
+                self.profile_settings.activate_gender and
+                self.profile_settings.capture_gender_on_reg and
+                self.profile_settings.gender_required)
+
+        if self.fields.get('location'):
+            self.fields['location'].required = (
+                self.profile_settings.activate_location and
+                self.profile_settings.capture_location_on_reg and
+                self.profile_settings.location_required)
+
+        if self.fields.get('education_level'):
+            self.fields['education_level'].required = (
+                self.profile_settings.activate_education_level and
+                self.profile_settings.capture_education_level_on_reg and
+                self.profile_settings.activate_education_level_required)
 
     class Meta:
         model = UserProfile
