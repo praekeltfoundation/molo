@@ -152,10 +152,13 @@ class RegistrationForm(forms.Form):
             self.profile_settings = UserProfilesSettings.for_site(site)
         else:
             self.profile_settings = UserProfilesSettings.for_site(request.site)
-        self.fields['mobile_number'].required = (
-            self.profile_settings.mobile_number_required and
-            self.profile_settings.show_mobile_number_field and
-            self.profile_settings.country_code)
+
+        if self.fields.get('mobile_number'):
+            self.fields['mobile_number'].required = (
+                self.profile_settings.mobile_number_required and
+                self.profile_settings.show_mobile_number_field and
+                self.profile_settings.country_code)
+
         self.fields['email'].required = (
             self.profile_settings.email_required and
             self.profile_settings.show_email_field)
@@ -309,10 +312,13 @@ class DoneForm(forms.Form):
             self.profile_settings = UserProfilesSettings.for_site(site)
         else:
             self.profile_settings = UserProfilesSettings.for_site(request.site)
-        self.fields['mobile_number'].required = (
-            self.profile_settings.mobile_number_required and
-            self.profile_settings.show_mobile_number_field and
-            self.profile_settings.country_code)
+
+        if self.fields.get('mobile_number'):
+            self.fields['mobile_number'].required = (
+                self.profile_settings.mobile_number_required and
+                self.profile_settings.show_mobile_number_field and
+                self.profile_settings.country_code)
+
         self.fields['email'].required = (
             self.profile_settings.email_required and
             self.profile_settings.show_email_field)
@@ -372,10 +378,13 @@ class EditProfileForm(forms.ModelForm):
             self.profile_settings = UserProfilesSettings.for_site(site)
         else:
             self.profile_settings = UserProfilesSettings.for_site(request.site)
-        self.fields['mobile_number'].required = (
-            self.profile_settings.mobile_number_required and
-            self.profile_settings.show_mobile_number_field and
-            self.profile_settings.country_code)
+
+        if self.fields.get('mobile_number'):
+            self.fields['mobile_number'].required = (
+                self.profile_settings.mobile_number_required and
+                self.profile_settings.show_mobile_number_field and
+                self.profile_settings.country_code)
+
         self.fields['email'].required = (
             self.profile_settings.email_required and
             self.profile_settings.show_email_field)
