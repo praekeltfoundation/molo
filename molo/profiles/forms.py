@@ -254,27 +254,24 @@ class RegistrationForm(forms.Form):
         return alias
 
     def clean_date_of_birth(self):
-        required = (
-            self.profile_settings.activate_dob and
-            self.profile_settings.dob_required
-        )
+        if self.profile_settings.activate_dob:
+            required = self.profile_settings.dob_required
+            vals = (
+                int(self.data.get('date_of_birth_year', 0)),
+                int(self.data.get('date_of_birth_month', 0)),
+                int(self.data.get('date_of_birth_day', 0)),
+            )
 
-        vals = (
-            int(self.data.get('date_of_birth_year', 0)),
-            int(self.data.get('date_of_birth_month', 0)),
-            int(self.data.get('date_of_birth_day', 0)),
-        )
+            if required and not all(vals):
+                err = _("This field is required.")
+                raise forms.ValidationError(err)
 
-        val = timezone.datetime(*vals).date()
+            val = timezone.datetime(*vals).date()
 
-        if required and not val and not all(vals):
-            err = _("This field is required.")
-            raise forms.ValidationError(err)
-
-        if val and val > timezone.now().date():
-            err = _("Date of birth can not be in the future.")
-            raise forms.ValidationError(err)
-        return val
+            if val and val > timezone.now().date():
+                err = _("Date of birth can not be in the future.")
+                raise forms.ValidationError(err)
+            return val
 
 
 class DoneForm(forms.Form):
@@ -421,27 +418,24 @@ class EditProfileForm(forms.ModelForm):
         return alias
 
     def clean_date_of_birth(self):
-        required = (
-            self.profile_settings.activate_dob and
-            self.profile_settings.dob_required
-        )
+        if self.profile_settings.activate_dob:
+            required = self.profile_settings.dob_required
+            vals = (
+                int(self.data.get('date_of_birth_year', 0)),
+                int(self.data.get('date_of_birth_month', 0)),
+                int(self.data.get('date_of_birth_day', 0)),
+            )
 
-        vals = (
-            int(self.data.get('date_of_birth_year', 0)),
-            int(self.data.get('date_of_birth_month', 0)),
-            int(self.data.get('date_of_birth_day', 0)),
-        )
+            if required and not all(vals):
+                err = _("This field is required.")
+                raise forms.ValidationError(err)
 
-        val = timezone.datetime(*vals).date()
+            val = timezone.datetime(*vals).date()
 
-        if required and not val and not all(vals):
-            err = _("This field is required.")
-            raise forms.ValidationError(err)
-
-        if val and val > timezone.now().date():
-            err = _("Date of birth can not be in the future.")
-            raise forms.ValidationError(err)
-        return val
+            if val and val > timezone.now().date():
+                err = _("Date of birth can not be in the future.")
+                raise forms.ValidationError(err)
+            return val
 
     def is_valid(self):
         if 'mobile_number' in self.data:
