@@ -257,16 +257,19 @@ class RegistrationForm(forms.Form):
         if self.profile_settings.activate_dob:
             required = self.profile_settings.dob_required
             vals = (
-                int(self.data.get('date_of_birth_year', 0)),
-                int(self.data.get('date_of_birth_month', 0)),
-                int(self.data.get('date_of_birth_day', 0)),
+                int(self.data.get('date_of_birth_year', 1)),
+                int(self.data.get('date_of_birth_month', 1)),
+                int(self.data.get('date_of_birth_day', 1)),
             )
 
-            if required and not all(vals):
+            try:
+                val = timezone.datetime(*vals).date()
+            except ValueError:
+                val = None
+
+            if required and not val:
                 err = _("This field is required.")
                 raise forms.ValidationError(err)
-
-            val = timezone.datetime(*vals).date()
 
             if val and val > timezone.now().date():
                 err = _("Date of birth can not be in the future.")
@@ -421,16 +424,19 @@ class EditProfileForm(forms.ModelForm):
         if self.profile_settings.activate_dob:
             required = self.profile_settings.dob_required
             vals = (
-                int(self.data.get('date_of_birth_year', 0)),
-                int(self.data.get('date_of_birth_month', 0)),
-                int(self.data.get('date_of_birth_day', 0)),
+                int(self.data.get('date_of_birth_year', 1)),
+                int(self.data.get('date_of_birth_month', 1)),
+                int(self.data.get('date_of_birth_day', 1)),
             )
 
-            if required and not all(vals):
+            try:
+                val = timezone.datetime(*vals).date()
+            except ValueError:
+                val = None
+
+            if required and not val:
                 err = _("This field is required.")
                 raise forms.ValidationError(err)
-
-            val = timezone.datetime(*vals).date()
 
             if val and val > timezone.now().date():
                 err = _("Date of birth can not be in the future.")
