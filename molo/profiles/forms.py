@@ -256,16 +256,17 @@ class RegistrationForm(forms.Form):
     def clean_date_of_birth(self):
         if self.profile_settings.activate_dob:
             required = self.profile_settings.dob_required
-            vals = (
-                int(self.data.get('date_of_birth_year', 1)),
-                int(self.data.get('date_of_birth_month', 1)),
-                int(self.data.get('date_of_birth_day', 1)),
-            )
-
-            try:
-                val = timezone.datetime(*vals).date()
-            except ValueError:
-                val = None
+            val = self.data.get('date_of_birth')
+            if not val:
+                vals = (
+                    int(self.data.get('date_of_birth_year', 1)),
+                    int(self.data.get('date_of_birth_month', 1)),
+                    int(self.data.get('date_of_birth_day', 1)),
+                )
+                try:
+                    val = timezone.datetime(*vals).date()
+                except ValueError:
+                    val = None
 
             if required and not val:
                 err = _("This field is required.")
@@ -423,16 +424,17 @@ class EditProfileForm(forms.ModelForm):
     def clean_date_of_birth(self):
         if self.profile_settings.activate_dob:
             required = self.profile_settings.dob_required
-            vals = (
-                int(self.data.get('date_of_birth_year', 1)),
-                int(self.data.get('date_of_birth_month', 1)),
-                int(self.data.get('date_of_birth_day', 1)),
-            )
-
-            try:
-                val = timezone.datetime(*vals).date()
-            except ValueError:
-                val = None
+            val = self.data.get('date_of_birth')
+            if not val:
+                vals = (
+                    int(self.data.get('date_of_birth_year', 1)),
+                    int(self.data.get('date_of_birth_month', 1)),
+                    int(self.data.get('date_of_birth_day', 1)),
+                )
+                try:
+                    val = timezone.datetime(*vals).date()
+                except ValueError:
+                    val = None
 
             if required and not val:
                 err = _("This field is required.")
