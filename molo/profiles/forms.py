@@ -262,7 +262,7 @@ class RegistrationForm(forms.Form):
             val = self.data.get('date_of_birth')
 
             if val and not isinstance(val, datetime.date):
-                val = timezone.datetime.strptime(val, '%Y-%m-%d')
+                val = timezone.datetime.strptime(val, '%Y-%m-%d').date()
 
             else:
                 vals = (
@@ -450,7 +450,7 @@ class EditProfileForm(forms.ModelForm):
             val = self.data.get('date_of_birth')
 
             if val and not isinstance(val, datetime.date):
-                val = timezone.datetime.strptime(val, '%Y-%m-%d')
+                val = timezone.date.strptime(val, '%Y-%m-%d').date()
 
             else:
                 vals = (
