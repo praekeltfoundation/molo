@@ -329,6 +329,12 @@ class DoneForm(forms.Form):
                 self.profile_settings.email_required and
                 self.profile_settings.show_email_field)
 
+        if self.fields.get('alias'):
+            self.fields['alias'].required = (
+                self.profile_settings.activate_display_name and
+                self.profile_settings.capture_display_name_on_reg and
+                self.profile_settings.display_name_required)
+
         if self.fields.get('date_of_birth'):
             self.fields['date_of_birth'].required = (
                 self.profile_settings.activate_dob and
@@ -419,6 +425,12 @@ class EditProfileForm(forms.ModelForm):
             self.fields['education_level'].required = (
                 self.profile_settings.activate_education_level and
                 self.profile_settings.activate_education_level_required)
+
+        if self.fields.get('alias'):
+            self.fields['alias'].required = (
+                self.profile_settings.activate_display_name and
+                self.profile_settings.display_name_required
+                )
 
     class Meta:
         model = UserProfile
