@@ -153,11 +153,10 @@ class RegistrationForm(forms.Form):
         else:
             self.profile_settings = UserProfilesSettings.for_site(request.site)
 
-        if self.fields.get('mobile_number'):
-            self.fields['mobile_number'].required = (
-                self.profile_settings.mobile_number_required and
-                self.profile_settings.show_mobile_number_field and
-                self.profile_settings.country_code)
+        self.fields['mobile_number'].required = (
+            self.profile_settings.mobile_number_required and
+            self.profile_settings.show_mobile_number_field and
+            self.profile_settings.country_code)
 
         self.fields['email'].required = (
             self.profile_settings.email_required and
@@ -402,25 +401,21 @@ class EditProfileForm(forms.ModelForm):
         if self.fields.get('date_of_birth'):
             self.fields['date_of_birth'].required = (
                 self.profile_settings.activate_dob and
-                self.profile_settings.capture_dob_on_reg and
                 self.profile_settings.dob_required)
 
         if self.fields.get('gender'):
             self.fields['gender'].required = (
                 self.profile_settings.activate_gender and
-                self.profile_settings.capture_gender_on_reg and
                 self.profile_settings.gender_required)
 
         if self.fields.get('location'):
             self.fields['location'].required = (
                 self.profile_settings.activate_location and
-                self.profile_settings.capture_location_on_reg and
                 self.profile_settings.location_required)
 
         if self.fields.get('education_level'):
             self.fields['education_level'].required = (
                 self.profile_settings.activate_education_level and
-                self.profile_settings.capture_education_level_on_reg and
                 self.profile_settings.activate_education_level_required)
 
     class Meta:
