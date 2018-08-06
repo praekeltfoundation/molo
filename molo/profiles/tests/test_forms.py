@@ -155,6 +155,10 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
             questions=[self.question, ]
         )
         self.assertEqual(form.is_valid(), False)
+        self.assertEqual(
+            u'Date of birth can not be in the future.',
+            form.errors['date_of_birth'][0]
+        )
 
     def test_date_of_birth(self):
         today = timezone.now()
