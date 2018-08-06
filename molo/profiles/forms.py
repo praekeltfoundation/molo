@@ -265,14 +265,16 @@ class RegistrationForm(forms.Form):
 
             else:
                 vals = (
-                    int(self.data.get('date_of_birth_year', 1)),
-                    int(self.data.get('date_of_birth_month', 1)),
-                    int(self.data.get('date_of_birth_day', 1)),
+                    self.data.get('date_of_birth_year'),
+                    self.data.get('date_of_birth_month'),
+                    self.data.get('date_of_birth_day'),
                 )
-                try:
-                    val = timezone.datetime(*vals).date()
-                except ValueError:
-                    val = None
+                if all(vals):
+                    try:
+                        val = timezone.datetime(
+                            *(int(i) for i in vals)).date()
+                    except ValueError:
+                        val = None
 
             if required and not val:
                 err = _("This field is required.")
@@ -449,14 +451,16 @@ class EditProfileForm(forms.ModelForm):
 
             else:
                 vals = (
-                    int(self.data.get('date_of_birth_year', 1)),
-                    int(self.data.get('date_of_birth_month', 1)),
-                    int(self.data.get('date_of_birth_day', 1)),
+                    self.data.get('date_of_birth_year'),
+                    self.data.get('date_of_birth_month'),
+                    self.data.get('date_of_birth_day'),
                 )
-                try:
-                    val = timezone.datetime(*vals).date()
-                except ValueError:
-                    val = None
+                if all(vals):
+                    try:
+                        val = timezone.datetime(
+                            *(int(i) for i in vals)).date()
+                    except ValueError:
+                        val = None
 
             if required and not val:
                 err = _("This field is required.")
