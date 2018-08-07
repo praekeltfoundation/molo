@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.5
+~~~~~
+- Birth date validation in molo profile not to accept future dates
+
 6.9.4
 ~~~~~
 - Remove old profile templates
