@@ -85,7 +85,7 @@ def validate_no_email_or_phone(input):
     return True
 
 
-class DateOfBirthValidation(object):
+class DateOfBirthValidationMixin(object):
 
     def clean_date_of_birth(self):
         if self.profile_settings.activate_dob:
@@ -119,7 +119,7 @@ class DateOfBirthValidation(object):
             return date_of_birth
 
 
-class RegistrationForm(DateOfBirthValidation, forms.Form):
+class RegistrationForm(DateOfBirthValidationMixin, forms.Form):
     username = forms.RegexField(
         regex=r'^[\w.@+-]+$',
         widget=forms.TextInput(
@@ -364,7 +364,7 @@ class DoneForm(forms.Form):
                 profile_settings.activate_education_level_required)
 
 
-class EditProfileForm(DateOfBirthValidation, forms.ModelForm):
+class EditProfileForm(DateOfBirthValidationMixin, forms.ModelForm):
     alias = forms.CharField(
         label=_("Display Name"),
         required=False
