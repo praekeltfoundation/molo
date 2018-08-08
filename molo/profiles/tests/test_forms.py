@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
+from django.utils import timezone
 from django.contrib.auth.models import User
 
 from molo.profiles.forms import (
@@ -138,6 +139,42 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
             form.fields['question_0'].label,
             u'Non-ascii characters? ê ờ ប အ',
         )
+
+    def test_future_date_of_birth(self):
+        today = timezone.now()
+        form_data = {
+            'username': 'testusername',
+            'password': '1234',
+            'date_of_birth_year': today.year,
+            'date_of_birth_month': today.month,
+            'date_of_birth_day': today.day + 1,
+            'terms_and_conditions': True
+        }
+        form = RegistrationForm(
+            data=form_data,
+            questions=[self.question, ]
+        )
+        self.assertEqual(form.is_valid(), False)
+        self.assertEqual(
+            u'Date of birth can not be in the future.',
+            form.errors['date_of_birth'][0]
+        )
+
+    def test_date_of_birth(self):
+        today = timezone.now()
+        form_data = {
+            'username': 'testusername',
+            'password': '1234',
+            'date_of_birth_year': today.year,
+            'date_of_birth_month': today.month,
+            'date_of_birth_day': today.day - 1,
+            'terms_and_conditions': True
+        }
+        form = RegistrationForm(
+            data=form_data,
+            questions=[self.question, ]
+        )
+        self.assertEqual(form.is_valid(), True)
 
 
 class PasswordRecoveryTestCase(MoloTestCaseMixin, TestCase):
