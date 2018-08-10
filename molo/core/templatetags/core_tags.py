@@ -345,7 +345,9 @@ def get_articles_for_tag(context, tag):
                ArticlePageTags.objects.filter(tag=main_tag)]
         return get_pages(
             context, ArticlePage.objects.descendant_of(
-                request.site.root_page).filter(pk__in=pks), locale)
+                request.site.root_page).filter(
+                pk__in=pks).order_by(
+                'latest_revision_created_at'), locale)
     return None
 
 
