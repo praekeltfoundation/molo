@@ -307,9 +307,9 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         # test that edited articles appear at the top of the list
         response_articles_list = response.context_data['object_list']
-        self.assertEquals(article1.pk, response_articles_list[0].pk)
+        self.assertEquals(article3.pk, response_articles_list[0].pk)
         self.assertEquals(article2.pk, response_articles_list[2].pk)
-        self.assertEquals(article3.pk, response_articles_list[1].pk)
+        self.assertEquals(article1.pk, response_articles_list[1].pk)
 
     def test_promoted_tags(self):
         articles = self.mk_articles(self.yourmind, count=5)
