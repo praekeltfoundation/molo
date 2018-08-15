@@ -13,7 +13,7 @@ def read(*parts):
 
 install_requires = [
     'babel',
-    'beautifulsoup4',
+    'beautifulsoup4==4.6.0',
     'cached-property',
     'celery<4.0',
     'cookiecutter==1.0.0',
@@ -22,9 +22,9 @@ install_requires = [
     'django-cas-ng==3.5.8',
     'django-el-pagination==3.1.0',
     'django-extensions>=1,<2',
-    'django-google-analytics-app==4.2.0',
+    'django-google-analytics-app==4.3.3',
     'django-libsass',
-    'django-mptt==0.8.6',
+    'django-mptt==0.8.7',
     'djangorestframework==3.4.0',
     'django-phonenumber-field==1.3.0',
     'django-import-export',
