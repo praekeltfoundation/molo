@@ -51,6 +51,7 @@ cache: pip
 before_install:
   - pip install --upgrade pip
 install:
+  - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
   - pip install coveralls
 script: ./travis.sh
