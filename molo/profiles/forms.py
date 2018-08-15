@@ -1,7 +1,7 @@
 from django.utils import timezone
 
 import re
-
+import datetime
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from django.contrib.auth import authenticate
@@ -85,7 +85,41 @@ def validate_no_email_or_phone(input):
     return True
 
 
-class RegistrationForm(forms.Form):
+class DateOfBirthValidationMixin(object):
+
+    def clean_date_of_birth(self):
+        if self.profile_settings.activate_dob:
+            date_of_birth = self.data.get('date_of_birth')
+            is_date = isinstance(date_of_birth, datetime.date)
+
+            if date_of_birth and not is_date:
+                date_of_birth = timezone.datetime.strptime(
+                    date_of_birth, '%Y-%m-%d').date()
+
+            else:
+                user_input = (
+                    self.data.get('date_of_birth_year'),
+                    self.data.get('date_of_birth_month'),
+                    self.data.get('date_of_birth_day'),
+                )
+                if all(user_input):
+                    try:
+                        date_of_birth = timezone.datetime(
+                            *(int(i) for i in user_input)).date()
+                    except ValueError:
+                        date_of_birth = None
+
+            if self.profile_settings.dob_required and not date_of_birth:
+                err = _("This field is required.")
+                raise forms.ValidationError(err)
+
+            if date_of_birth and date_of_birth > timezone.now().date():
+                err = _("Date of birth can not be in the future.")
+                raise forms.ValidationError(err)
+            return date_of_birth
+
+
+class RegistrationForm(DateOfBirthValidationMixin, forms.Form):
     username = forms.RegexField(
         regex=r'^[\w.@+-]+$',
         widget=forms.TextInput(
@@ -149,36 +183,38 @@ class RegistrationForm(forms.Form):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         if not request:
             site = Site.objects.get(is_default_site=True)
-            profile_settings = UserProfilesSettings.for_site(site)
+            self.profile_settings = UserProfilesSettings.for_site(site)
         else:
-            profile_settings = UserProfilesSettings.for_site(request.site)
+            self.profile_settings = UserProfilesSettings.for_site(request.site)
+
         self.fields['mobile_number'].required = (
-            profile_settings.mobile_number_required and
-            profile_settings.show_mobile_number_field and
-            profile_settings.country_code)
+            self.profile_settings.mobile_number_required and
+            self.profile_settings.show_mobile_number_field and
+            self.profile_settings.country_code)
+
         self.fields['email'].required = (
-            profile_settings.email_required and
-            profile_settings.show_email_field)
+            self.profile_settings.email_required and
+            self.profile_settings.show_email_field)
         self.fields['alias'].required = (
-            profile_settings.activate_display_name and
-            profile_settings.capture_display_name_on_reg and
-            profile_settings.display_name_required)
+            self.profile_settings.activate_display_name and
+            self.profile_settings.capture_display_name_on_reg and
+            self.profile_settings.display_name_required)
         self.fields['date_of_birth'].required = (
-            profile_settings.activate_dob and
-            profile_settings.capture_dob_on_reg and
-            profile_settings.dob_required)
+            self.profile_settings.activate_dob and
+            self.profile_settings.capture_dob_on_reg and
+            self.profile_settings.dob_required)
         self.fields['gender'].required = (
-            profile_settings.activate_gender and
-            profile_settings.capture_gender_on_reg and
-            profile_settings.gender_required)
+            self.profile_settings.activate_gender and
+            self.profile_settings.capture_gender_on_reg and
+            self.profile_settings.gender_required)
         self.fields['location'].required = (
-            profile_settings.activate_location and
-            profile_settings.capture_location_on_reg and
-            profile_settings.location_required)
+            self.profile_settings.activate_location and
+            self.profile_settings.capture_location_on_reg and
+            self.profile_settings.location_required)
         self.fields['education_level'].required = (
-            profile_settings.activate_education_level and
-            profile_settings.capture_education_level_on_reg and
-            profile_settings.activate_education_level_required)
+            self.profile_settings.activate_education_level and
+            self.profile_settings.capture_education_level_on_reg and
+            self.profile_settings.activate_education_level_required)
 
         # Security questions fields are created dynamically.
         # This allows any number of security questions to be specified
@@ -192,8 +228,8 @@ class RegistrationForm(forms.Form):
                 )
             )
             self.fields["question_%s" % index].required = (
-                profile_settings.show_security_question_fields and
-                profile_settings.security_questions_required
+                self.profile_settings.show_security_question_fields and
+                self.profile_settings.security_questions_required
             )
 
     def security_questions(self):
@@ -285,29 +321,50 @@ class DoneForm(forms.Form):
             profile_settings = UserProfilesSettings.for_site(site)
         else:
             profile_settings = UserProfilesSettings.for_site(request.site)
-        self.fields['date_of_birth'].required = (
-            profile_settings.activate_dob and not
-            profile_settings.capture_dob_on_reg and
-            profile_settings.dob_required)
-        self.fields['alias'].required = (
-            profile_settings.activate_display_name and not
-            profile_settings.capture_display_name_on_reg and
-            profile_settings.display_name_required)
-        self.fields['gender'].required = (
-            profile_settings.activate_gender and not
-            profile_settings.capture_gender_on_reg and
-            profile_settings.gender_required)
-        self.fields['location'].required = (
-            profile_settings.activate_location and not
-            profile_settings.capture_location_on_reg and
-            profile_settings.location_required)
-        self.fields['education_level'].required = (
-            profile_settings.activate_education_level and not
-            profile_settings.capture_education_level_on_reg and
-            profile_settings.activate_education_level_required)
+
+        if self.fields.get('mobile_number'):
+            self.fields['mobile_number'].required = (
+                profile_settings.mobile_number_required and
+                profile_settings.show_mobile_number_field and
+                profile_settings.country_code)
+
+        if self.fields.get('email'):
+            self.fields['email'].required = (
+                profile_settings.email_required and
+                profile_settings.show_email_field)
+
+        if self.fields.get('alias'):
+            self.fields['alias'].required = (
+                profile_settings.activate_display_name and
+                profile_settings.capture_display_name_on_reg and
+                profile_settings.display_name_required)
+
+        if self.fields.get('date_of_birth'):
+            self.fields['date_of_birth'].required = (
+                profile_settings.activate_dob and
+                profile_settings.capture_dob_on_reg and
+                profile_settings.dob_required)
+
+        if self.fields.get('gender'):
+            self.fields['gender'].required = (
+                profile_settings.activate_gender and
+                profile_settings.capture_gender_on_reg and
+                profile_settings.gender_required)
+
+        if self.fields.get('location'):
+            self.fields['location'].required = (
+                profile_settings.activate_location and
+                profile_settings.capture_location_on_reg and
+                profile_settings.location_required)
+
+        if self.fields.get('education_level'):
+            self.fields['education_level'].required = (
+                profile_settings.activate_education_level and
+                profile_settings.capture_education_level_on_reg and
+                profile_settings.activate_education_level_required)
 
 
-class EditProfileForm(forms.ModelForm):
+class EditProfileForm(DateOfBirthValidationMixin, forms.ModelForm):
     alias = forms.CharField(
         label=_("Display Name"),
         required=False
@@ -338,31 +395,46 @@ class EditProfileForm(forms.ModelForm):
         super(EditProfileForm, self).__init__(*args, **kwargs)
         if not request:
             site = Site.objects.get(is_default_site=True)
-            profile_settings = UserProfilesSettings.for_site(site)
+            self.profile_settings = UserProfilesSettings.for_site(site)
         else:
-            profile_settings = UserProfilesSettings.for_site(request.site)
-        self.fields['mobile_number'].required = (
-            profile_settings.mobile_number_required and
-            profile_settings.show_mobile_number_field and
-            profile_settings.country_code)
-        self.fields['email'].required = (
-            profile_settings.email_required and
-            profile_settings.show_email_field)
-        self.fields['alias'].required = (
-            profile_settings.activate_display_name and
-            profile_settings.display_name_required)
-        self.fields['date_of_birth'].required = (
-            profile_settings.activate_dob and
-            profile_settings.dob_required)
-        self.fields['gender'].required = (
-            profile_settings.activate_gender and
-            profile_settings.gender_required)
-        self.fields['location'].required = (
-            profile_settings.activate_location and
-            profile_settings.location_required)
-        self.fields['education_level'].required = (
-            profile_settings.activate_education_level and
-            profile_settings.activate_education_level_required)
+            self.profile_settings = UserProfilesSettings.for_site(request.site)
+
+        if self.fields.get('mobile_number'):
+            self.fields['mobile_number'].required = (
+                self.profile_settings.mobile_number_required and
+                self.profile_settings.show_mobile_number_field and
+                self.profile_settings.country_code)
+
+        if self.fields.get('email'):
+            self.fields['email'].required = (
+                self.profile_settings.email_required and
+                self.profile_settings.show_email_field)
+
+        if self.fields.get('date_of_birth'):
+            self.fields['date_of_birth'].required = (
+                self.profile_settings.activate_dob and
+                self.profile_settings.dob_required)
+
+        if self.fields.get('gender'):
+            self.fields['gender'].required = (
+                self.profile_settings.activate_gender and
+                self.profile_settings.gender_required)
+
+        if self.fields.get('location'):
+            self.fields['location'].required = (
+                self.profile_settings.activate_location and
+                self.profile_settings.location_required)
+
+        if self.fields.get('education_level'):
+            self.fields['education_level'].required = (
+                self.profile_settings.activate_education_level and
+                self.profile_settings.activate_education_level_required)
+
+        if self.fields.get('alias'):
+            self.fields['alias'].required = (
+                self.profile_settings.activate_display_name and
+                self.profile_settings.display_name_required
+                )
 
     class Meta:
         model = UserProfile
