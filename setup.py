@@ -13,7 +13,7 @@ def read(*parts):
 
 install_requires = [
     'babel',
-    'beautifulsoup4<4.6.1,>=4.5.1',
+    'beautifulsoup4==4.6.0',
     'cached-property',
     'celery<4.0',
     'cookiecutter==1.0.0',
