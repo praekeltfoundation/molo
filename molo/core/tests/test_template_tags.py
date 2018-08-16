@@ -165,9 +165,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
                 'request': request
             }, article2)[0],
             tag)
-        # create a request for the tag
-        response = self.client.get('/tags/' + tag.slug + '/')
-
 
     def test_load_tags_for_article(self):
         request = self.factory.get('/')
