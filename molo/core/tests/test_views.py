@@ -470,6 +470,29 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(
             response, '<a href="/locale/ar/')
 
+    def test_order_of_child_articles_in_section(self):
+        '''
+        Sections should display articles by order of more recently
+        created
+        '''
+        new_section = self.mk_section(self.section_index)
+        articles = self.mk_articles(new_section, count=3)
+        article1 = articles[0]
+        article2 = articles[1]
+        article3 = articles[3]
+
+        # edit the articles
+        article1.title = "Edited article"
+        article1.save_revision().publish()
+        article3.title = "Another edited article"
+        article3.save_revision().publish()
+        response = self.client.get('/sections-main-1/test-section-0/')
+        # test that edited articles appear at the top of the list
+        response_articles_list = response.context_data['object_list']
+        self.assertEquals(article3.pk, response_articles_list[0].pk)
+        self.assertEquals(article2.pk, response_articles_list[2].pk)
+        self.assertEquals(article1.pk, response_articles_list[1].pk)
+
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
             self.yourmind_sub, count=10,
