@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.7
+~~~~~
+- Fix beatifulsoup4 requirement and pin it to 4.1.0
+
 6.9.6
 ~~~~~
 - Order old tagged articles
