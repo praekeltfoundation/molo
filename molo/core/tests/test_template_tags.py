@@ -141,31 +141,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
             {'locale_code': 'fr', 'request': request}, self.yourmind),
             None)
 
-    def test_load_articles_for_tag(self):
-        '''
-        test that the tag view loads all the articles
-        related to that tag
-        '''
-        request = self.factory.get('/')
-        request.site = self.site
-        tag = self.mk_tag(parent=self.tag_index)
-        article1 = self.mk_article(self.yourmind, title='article 1')
-        article2 = self.mk_article(self.yourmind, title='article 2')
-
-        # attach the articles to the tag
-        self.assertEquals(load_tags_for_article(
-            {
-                'locale_code': 'en',
-                'request': request
-            }, article1)[0],
-            tag)
-        self.assertEquals(load_tags_for_article(
-            {
-                'locale_code': 'en',
-                'request': request
-            }, article2)[0],
-            tag)
-
     def test_load_tags_for_article(self):
         request = self.factory.get('/')
         request.site = self.site
