@@ -491,9 +491,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         article1_location = response.content.decode().find(article1.title)
         article2_location = response.content.decode().find(article2.title)
         article3_location = response.content.decode().find(article3.title)
-        print(article1_location)
-        print(article2_location)
-        print(article3_location)
         # test that edited articles appear at the top of the list
         self.assertTrue(article3_location<article2_location)
         self.assertTrue(article1_location<article2_location)
