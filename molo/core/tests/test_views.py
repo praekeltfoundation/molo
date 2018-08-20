@@ -479,7 +479,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         articles = self.mk_articles(new_section, count=3)
         article1 = articles[0]
         article2 = articles[1]
-        article3 = articles[3]
+        article3 = articles[2]
 
         # edit the articles
         article1.title = "Edited article"
@@ -487,11 +487,17 @@ class TestPages(TestCase, MoloTestCaseMixin):
         article3.title = "Another edited article"
         article3.save_revision().publish()
         response = self.client.get('/sections-main-1/test-section-0/')
+
+        article1_location = response.content.decode().find(article1.title)
+        article2_location = response.content.decode().find(article2.title)
+        article3_location = response.content.decode().find(article3.title)
+        print(article1_location)
+        print(article2_location)
+        print(article3_location)
         # test that edited articles appear at the top of the list
-        response_articles_list = response.context_data['object_list']
-        self.assertEquals(article3.pk, response_articles_list[0].pk)
-        self.assertEquals(article2.pk, response_articles_list[2].pk)
-        self.assertEquals(article1.pk, response_articles_list[1].pk)
+        self.assertTrue(article3_location<article2_location)
+        self.assertTrue(article1_location<article2_location)
+        self.assertTrue(article3_location<article2_location)
 
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
