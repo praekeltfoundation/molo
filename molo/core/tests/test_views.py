@@ -492,9 +492,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
         article2_location = response.content.decode().find(article2.title)
         article3_location = response.content.decode().find(article3.title)
         # test that edited articles appear at the top of the list
-        self.assertTrue(article3_location<article2_location)
-        self.assertTrue(article1_location<article2_location)
-        self.assertTrue(article3_location<article2_location)
+        self.assertTrue(article3_location < article2_location)
+        self.assertTrue(article1_location < article2_location)
+        self.assertTrue(article3_location < article2_location)
 
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
