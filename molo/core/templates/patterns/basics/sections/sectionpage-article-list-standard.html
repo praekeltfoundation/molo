@@ -1,6 +1,6 @@
 {% load wagtailcore_tags wagtailimages_tags core_tags static i18n %}
 
-{% load_child_articles_for_section self as articles %}
+{% load_child_articles_for_section self order_by=True as articles %}
 <ul class="promoted-article-list">
   {% for article in articles %}
   <li class="promoted-article-list__item promoted-article-list__item-standard {% if forloop.first %}promoted-article-list__item--hero{% endif %}">

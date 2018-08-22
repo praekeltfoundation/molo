@@ -283,7 +283,7 @@ def load_descendant_articles_for_section(
 
 
 @register.assignment_tag(takes_context=True)
-def load_child_articles_for_section(context, section, count=5):
+def load_child_articles_for_section(context, section, count=5, order_by=False):
     '''
     Returns all child articles
     If the `locale_code` in the context is not the main language, it will
@@ -294,8 +294,19 @@ def load_child_articles_for_section(context, section, count=5):
 
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
-    child_articles = ArticlePage.objects.child_of(
-        main_language_page).filter(languages__language__is_main_language=True)
+
+    # check if the articles need ordering
+    if order_by:
+        child_articles = ArticlePage.objects.child_of(
+            main_language_page).filter(
+            languages__language__is_main_language=True).order_by(
+            '-latest_revision_created_at',
+        )
+    else:
+        child_articles = ArticlePage.objects.child_of(
+            main_language_page).filter(
+            languages__language__is_main_language=True,
+        )
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
