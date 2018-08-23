@@ -295,19 +295,19 @@ def load_child_articles_for_section(context, section, count=5):
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
 
-    # check if the articles need ordering
-
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(
-        languages__language__is_main_language=True)
+        languages__language__is_main_language=True).order_by(
+        '-first_published_at')
+    print(child_articles)
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
+    # child_articles = child_articles.order_by('-first_published_at')
     qs = list(chain(
         get_pages(context, child_articles, locale),
         get_pages(context, related_articles, locale)))
 
-    child_articles.order_by('-first_published_at')
     # Pagination
     if count:
         p = context.get('p', 1)
