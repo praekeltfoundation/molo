@@ -556,6 +556,28 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
+def get_translation_for_new_qs(qs, locale, site, is_live=True):
+    translated_pages = []
+    language = Languages.for_site(site).languages.get(locale=locale)
+    for article in qs:
+        cache_key = article.get_translation_for_cache_key(
+            locale, site, is_live)
+        trans_pk = cache.get(cache_key)
+
+        # TODO: consider pickling page object. Be careful about page size in
+        # memory
+        if trans_pk:
+            translated_pages.append(Page.objects.get(pk=trans_pk).specific)
+            continue
+        try:
+            translated_page = article.translated_pages.get(language=language)
+            cache.set(cache_key, translated_page.pk, None)
+            translated_pages.append(translated_page)
+        except:
+            translated_pages.append(article)
+    return translated_pages
+
+
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
         return "get_translation_for_{}_{}_{}_{}_{}".format(
@@ -563,6 +585,28 @@ class TranslatablePageMixinNotRoutable(object):
             self.latest_revision_created_at.isoformat())
 
     def get_translation_for(self, locale, site, is_live=True):
+        if settings.USE_NEW_TRANSLATIONS:
+            return self.get_translation_for_new(locale, site, is_live)
+        return self.get_translation_for_old(locale, site, is_live)
+
+    def get_translation_for_new(self, locale, site, is_live=True):
+        cache_key = self.get_translation_for_cache_key(locale, site, is_live)
+        trans_pk = cache.get(cache_key)
+
+        # TODO: consider pickling page object. Be careful about page size in
+        # memory
+        if trans_pk:
+            return Page.objects.get(pk=trans_pk).specific
+
+        language = Languages.for_site(site).languages.get(locale=locale)
+        try:
+            translated_page = self.translated_pages.get(language=language)
+            cache.set(cache_key, translated_page.pk, None)
+            return translated_page.first().live()
+        except:
+            pass
+
+    def get_translation_for_old(self, locale, site, is_live=True):
         cache_key = self.get_translation_for_cache_key(locale, site, is_live)
         trans_pk = cache.get(cache_key)
 
@@ -615,10 +659,13 @@ class TranslatablePageMixinNotRoutable(object):
         if (languages.filter(
                 is_main_language=True).exists() and
                 not self.languages.exists()):
+            language = languages.filter(
+                is_main_language=True).first()
             LanguageRelation.objects.create(
                 page=self,
-                language=languages.filter(
-                    is_main_language=True).first())
+                language=language)
+        response = super(
+            TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
         return response
 
     def move(self, target, pos=None):
@@ -829,7 +876,8 @@ class ReactionQuestionResponse(models.Model):
 class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
-
+    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    translated_pages = models.ManyToManyField("self", blank=True, null=True)
     feature_in_homepage = models.BooleanField(default=False)
 
     api_fields = [
@@ -1133,6 +1181,8 @@ SectionIndexPage.content_panels = [
 
 class SectionPage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, MoloPage):
+    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    translated_pages = models.ManyToManyField("self", blank=True, null=True)
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
@@ -1370,8 +1420,9 @@ class ArticlePageMetaDataTag(TaggedItemBase):
 
 class ArticlePage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, PageEffectiveImageMixin, MoloPage):
+    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    translated_pages = models.ManyToManyField("self", blank=True, null=True)
     parent_page_types = ['core.SectionPage']
-
     subtitle = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     featured_in_latest = models.BooleanField(

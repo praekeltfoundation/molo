@@ -150,6 +150,11 @@ class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
         return response
 
 
+class WillReturnTrue(django.utils.deprecation.MiddlewareMixin):
+    def process_request(self, request):
+        return True
+
+
 class MultiSiteRedirectToHomepage(django.utils.deprecation.MiddlewareMixin):
 
     def process_request(self, request):

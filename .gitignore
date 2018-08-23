@@ -108,6 +108,7 @@ db.sqlite3
 
 /ve/
 node_modules/
+
 /testapp/
 
 .vscode/
