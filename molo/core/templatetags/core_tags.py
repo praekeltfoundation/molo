@@ -303,7 +303,6 @@ def load_child_articles_for_section(context, section, count=5):
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
-    # child_articles = child_articles.order_by('-first_published_at')
     qs = list(chain(
         get_pages(context, child_articles, locale),
         get_pages(context, related_articles, locale)))
