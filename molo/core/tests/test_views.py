@@ -488,22 +488,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertTrue(
             article3_location < article2_location < article1_location)
 
-        # edit the articles
-        article1.title = article1.title + " Edited"
-        article1.save_revision().publish()
-        article3.title = article3.title + " Edited"
-        article3.save_revision().publish()
-        article2.title = article2.title + " Edited"
-        article2.save_revision().publish()
-        response = self.client.get('/sections-main-1/test-section-0/')
-
-        article1_location = response.content.decode().find(article1.title)
-        article2_location = response.content.decode().find(article2.title)
-        article3_location = response.content.decode().find(article3.title)
-
-        # test the articles are still ordered by the first published
-        self.assertTrue(
-            article3_location < article2_location < article1_location)
 
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
