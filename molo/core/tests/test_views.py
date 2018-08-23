@@ -488,8 +488,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertTrue(
             article3_location < article2_location < article1_location)
 
-        self.assertTrue(
-            article3_location < article2_location < article1_location)
         # edit the articles
         article1.title = article1.title + " Edited"
         article1.save_revision().publish()
