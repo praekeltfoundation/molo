@@ -307,6 +307,7 @@ def load_child_articles_for_section(context, section, count=5):
         get_pages(context, child_articles, locale),
         get_pages(context, related_articles, locale)))
 
+    child_articles.order_by('-first_published_at')
     # Pagination
     if count:
         p = context.get('p', 1)
