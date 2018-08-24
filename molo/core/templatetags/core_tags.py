@@ -299,7 +299,6 @@ def load_child_articles_for_section(context, section, count=5):
         main_language_page).filter(
         languages__language__is_main_language=True).order_by(
         '-first_published_at')
-    print(child_articles)
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
