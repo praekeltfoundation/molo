@@ -685,7 +685,10 @@ def get_next_article(context, article):
     section = article.get_parent_section()
     articles = load_child_articles_for_section(context, section, count=None)
     if len(articles) > 1:
-        next_article = articles[articles.index(article) - 1]
+        if len(articles) > articles.index(article) + 1:
+            next_article = articles[articles.index(article) + 1]
+        else:
+            next_article = articles[0]
     else:
         return None
 
