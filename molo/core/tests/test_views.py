@@ -488,7 +488,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertTrue(
             article3_location < article2_location < article1_location)
 
-
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
             self.yourmind_sub, count=10,
