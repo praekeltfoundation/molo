@@ -294,8 +294,12 @@ def load_child_articles_for_section(context, section, count=5):
 
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
+
     child_articles = ArticlePage.objects.child_of(
-        main_language_page).filter(languages__language__is_main_language=True)
+        main_language_page).filter(
+        languages__language__is_main_language=True).order_by(
+        '-first_published_at')
+
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
     qs = list(chain(
@@ -681,7 +685,10 @@ def get_next_article(context, article):
     section = article.get_parent_section()
     articles = load_child_articles_for_section(context, section, count=None)
     if len(articles) > 1:
-        next_article = articles[articles.index(article) - 1]
+        if len(articles) > articles.index(article) + 1:
+            next_article = articles[articles.index(article) + 1]
+        else:
+            next_article = articles[0]
     else:
         return None
 

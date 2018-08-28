@@ -470,6 +470,24 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertNotContains(
             response, '<a href="/locale/ar/')
 
+    def test_order_of_child_articles_in_section(self):
+        '''
+        Sections should display articles by order most recently published
+        '''
+        new_section = self.mk_section(self.section_index)
+        articles = self.mk_articles(new_section, count=3)
+        article1 = articles[0]
+        article2 = articles[1]
+        article3 = articles[2]
+        response = self.client.get('/sections-main-1/test-section-0/')
+
+        article1_location = response.content.decode().find(article1.title)
+        article2_location = response.content.decode().find(article2.title)
+        article3_location = response.content.decode().find(article3.title)
+
+        self.assertTrue(
+            article3_location < article2_location < article1_location)
+
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
             self.yourmind_sub, count=10,
@@ -1220,7 +1238,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/sections-main-1/your-mind-in-french/')
         self.assertContains(response, 'Page 1 of 3')
-        self.assertContains(response, 'Test page 0 in french')
+        # articles ordered by most recently published
+        self.assertContains(response, 'Test page 14 in french')
 
         response = self.client.get('/sections-main-1/your-mind-in-french/?p=2')
         self.assertContains(response, 'Page 2 of 3')
@@ -1231,8 +1250,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
             'h/?p=3', follow=True)
 
         self.assertContains(response, 'Page 3 of 3')
-        self.assertNotContains(response, 'Test page 11 in french')
-        self.assertContains(response, 'Test page 11')
+        self.assertNotContains(response, 'Test page 3 in french')
+        self.assertContains(response, 'Test page 3')
 
     def test_pagination_for_articles_in_sub_sections(self):
         self.mk_articles(self.yourmind_sub, count=15)
