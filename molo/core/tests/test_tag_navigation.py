@@ -289,9 +289,12 @@ class TestTags(MoloTestCaseMixin, TestCase):
         self.assertEquals(article2.pk, response_articles_list[1].pk)
 
     def test_articles_within_tag_order_by_first_published_at(self):
-        article1 = self.mk_article(self.yourmind, title='article 1')
-        article2 = self.mk_article(self.yourmind, title='article 2')
-        article3 = self.mk_article(self.yourmind, title='article 3')
+        article1 = self.mk_article(self.yourmind, title='article 1',
+                                   first_published_at=datetime.now())
+        article2 = self.mk_article(self.yourmind, title='article 2',
+                                   first_published_at=datetime.now())
+        article3 = self.mk_article(self.yourmind, title='article 3',
+                                   first_published_at=datetime.now())
 
         tag = self.mk_tag(parent=self.tag_index)
         ArticlePageTags.objects.create(page=article1, tag=tag)
