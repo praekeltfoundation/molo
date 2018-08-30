@@ -310,7 +310,6 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         # test that editing does not change the order of the articles
         response_articles_list = response.context_data['object_list']
-        print(response_articles_list)
         self.assertEquals(article3.pk, response_articles_list[0].pk)
         self.assertEquals(article2.pk, response_articles_list[1].pk)
         self.assertEquals(article1.pk, response_articles_list[2].pk)
