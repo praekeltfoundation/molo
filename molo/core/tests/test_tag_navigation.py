@@ -396,7 +396,6 @@ class TestTags(MoloTestCaseMixin, TestCase):
         response = self.client.get(
             reverse("tags_list", kwargs={"tag_name": "common"})
         )
-        self.assertEqual(
-            list(response.context["object_list"]),
-            [first_article, second_article]
-        )
+        self.assertEqual(2, len(list(response.context["object_list"])))
+        self.assertIn(first_article, list(response.context["object_list"]))
+        self.assertIn(second_article, list(response.context["object_list"]))
