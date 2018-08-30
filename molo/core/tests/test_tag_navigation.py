@@ -288,7 +288,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
         self.assertEquals(article3.pk, response_articles_list[0].pk)
         self.assertEquals(article2.pk, response_articles_list[1].pk)
 
-    def test_articles_within_tag_order_by_latest(self):
+    def test_articles_within_tag_order_by_first_published_at(self):
         article1 = self.mk_article(self.yourmind, title='article 1')
         article2 = self.mk_article(self.yourmind, title='article 2')
         article3 = self.mk_article(self.yourmind, title='article 3')
@@ -305,11 +305,12 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         response = self.client.get('/tags/' + tag.slug + '/')
 
-        # test that edited articles appear at the top of the list
+        # test that editing does not change the order of the articles
         response_articles_list = response.context_data['object_list']
+        print(response_articles_list)
         self.assertEquals(article3.pk, response_articles_list[0].pk)
-        self.assertEquals(article2.pk, response_articles_list[2].pk)
-        self.assertEquals(article1.pk, response_articles_list[1].pk)
+        self.assertEquals(article2.pk, response_articles_list[1].pk)
+        self.assertEquals(article1.pk, response_articles_list[2].pk)
 
     def test_promoted_tags(self):
         articles = self.mk_articles(self.yourmind, count=5)
