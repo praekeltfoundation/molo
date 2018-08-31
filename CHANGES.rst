@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.9
+~~~~~
+- Order tagged articles by first published
+
 6.9.8
 ~~~~~
 - Order section articles by first published

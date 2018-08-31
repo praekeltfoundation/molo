@@ -292,12 +292,12 @@ class TagsListView(ListView):
                     articles.append(article_tag.page.pk)
                 articles = ArticlePage.objects.filter(
                     pk__in=articles).descendant_of(main).order_by(
-                        '-latest_revision_created_at')
+                        '-first_published_at')
                 return get_pages(context, articles[:count], locale)
             raise Http404
         return ArticlePage.objects.descendant_of(main).filter(
             tags__name__in=[tag]).order_by(
-                'latest_revision_created_at')
+                '-first_published_at')
 
     def get_context_data(self, *args, **kwargs):
         context = super(TagsListView, self).get_context_data(*args, **kwargs)
