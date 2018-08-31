@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.10
+~~~~~
+- Fix registration form tests
+
 6.9.9
 ~~~~~
 - Order tagged articles by first published
