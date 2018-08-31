@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
+
 from django.test import TestCase
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -141,13 +143,13 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
         )
 
     def test_future_date_of_birth(self):
-        today = timezone.now()
+        tomorrow = timezone.now() + timedelta(days=1)
         form_data = {
             'username': 'testusername',
             'password': '1234',
-            'date_of_birth_year': today.year,
-            'date_of_birth_month': today.month,
-            'date_of_birth_day': today.day + 1,
+            'date_of_birth_year': tomorrow.year,
+            'date_of_birth_month': tomorrow.month,
+            'date_of_birth_day': tomorrow.day,
             'terms_and_conditions': True
         }
         form = RegistrationForm(
@@ -161,13 +163,13 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
         )
 
     def test_date_of_birth(self):
-        today = timezone.now()
+        yesterday = timezone.now() - timedelta(days=1)
         form_data = {
             'username': 'testusername',
             'password': '1234',
-            'date_of_birth_year': today.year,
-            'date_of_birth_month': today.month,
-            'date_of_birth_day': today.day - 1,
+            'date_of_birth_year': yesterday.year,
+            'date_of_birth_month': yesterday.month,
+            'date_of_birth_day': yesterday.day,
             'terms_and_conditions': True
         }
         form = RegistrationForm(
