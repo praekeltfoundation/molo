@@ -626,10 +626,14 @@ class TranslatablePageMixinNotRoutable(object):
         if (languages.filter(
                 is_main_language=True).exists() and
                 not self.languages.exists()):
+            language = languages.filter(
+                is_main_language=True).first()
             LanguageRelation.objects.create(
                 page=self,
-                language=languages.filter(
-                    is_main_language=True).first())
+                language=language)
+            response = super(
+                TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
+
         return response
 
     def move(self, target, pos=None):
@@ -840,7 +844,8 @@ class ReactionQuestionResponse(models.Model):
 class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
-
+    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    translated_pages = models.ManyToManyField("self", blank=True, null=True)
     feature_in_homepage = models.BooleanField(default=False)
 
     api_fields = [
@@ -1144,6 +1149,8 @@ SectionIndexPage.content_panels = [
 
 class SectionPage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, MoloPage):
+    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    translated_pages = models.ManyToManyField("self", blank=True, null=True)
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
@@ -1381,6 +1388,8 @@ class ArticlePageMetaDataTag(TaggedItemBase):
 
 class ArticlePage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, PageEffectiveImageMixin, MoloPage):
+    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    translated_pages = models.ManyToManyField("self", blank=True, null=True)
     parent_page_types = ['core.SectionPage']
 
     subtitle = models.TextField(null=True, blank=True)
