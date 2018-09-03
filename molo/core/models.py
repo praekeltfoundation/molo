@@ -205,6 +205,16 @@ class SiteSettings(BaseSetting):
     enable_service_directory = models.BooleanField(
         default=False, verbose_name='Enable service directory'
     )
+    default_service_directory_radius = models.\
+        PositiveSmallIntegerField(
+            null=True,
+            blank=True,
+            verbose_name=_('Default Service Directory Radius'),
+            help_text=_(
+                'When set this will enable service directory radius filter '
+                'as the set value for the default radius value'
+            )
+        )
     service_directory_api_base_url = models.CharField(
         verbose_name=_('service directory base url'),
         max_length=255,
@@ -306,6 +316,7 @@ class SiteSettings(BaseSetting):
                 FieldPanel('service_directory_api_username'),
                 FieldPanel('service_directory_api_password'),
                 FieldPanel('google_places_api_server_key'),
+                FieldPanel('default_service_directory_radius'),
             ],
             heading="Service Directory API Settings"
         )
