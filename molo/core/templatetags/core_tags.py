@@ -25,7 +25,11 @@ def get_language(site, locale):
 
 
 def get_pages(context, queryset, locale):
+    from molo.core.models import get_translation_for_new_qs
+    from django.conf import settings
     request = context['request']
+    if queryset.count() == 0:
+        return []
     if not hasattr(request, 'site'):
         return list[queryset]
 
@@ -36,12 +40,17 @@ def get_pages(context, queryset, locale):
     show_only_translated_pages = SiteSettings.for_site(
         request.site).show_only_translated_pages
     pages = []
-    for page in queryset:
-        translation = page.get_translation_for(locale, request.site)
-        if translation and translation.live:
-            pages.append(translation)
-        elif page.live and not show_only_translated_pages:
-            pages.append(page)
+    if settings.USE_NEW_TRANSLATIONS:
+        pages = get_translation_for_new_qs(queryset, locale, request.site)
+        if not pages:
+            pages = []
+    else:
+        for page in queryset:
+            translation = page.get_translation_for(locale, request.site)
+            if translation and translation.live:
+                pages.append(translation)
+            elif page.live and not show_only_translated_pages:
+                pages.append(page)
     return pages
 
 
@@ -75,7 +84,6 @@ def get_translation(context, page):
     locale_code = context.get('locale_code')
     translation = page.get_translation_for(
         locale_code, context['request'].site)
-
     return translation or page
 
 
@@ -118,11 +126,11 @@ def tag_menu_homepage(context):
     'core/tags/latest_listing_homepage.html',
     takes_context=True
 )
-def latest_listing_homepage(context, num_count=5):
+def latest_listing_homepage(context, num_count=5, articles=None):
     request = context['request']
     locale = context.get('locale_code')
 
-    if request.site:
+    if request.site and not articles:
         articles = request.site.root_page.specific \
             .latest_articles()
     else:

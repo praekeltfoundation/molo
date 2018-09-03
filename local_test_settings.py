@@ -7,7 +7,7 @@ ALLOWED_HOSTS = [
     'site2',
 ]
 
-ENABLE_SSO = True
+ENABLE_SSO = False
 
 MIDDLEWARE_CLASSES += (  # noqa: F405
     'molo.core.middleware.MoloCASMiddleware',
