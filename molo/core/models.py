@@ -778,6 +778,12 @@ class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
 class ReactionQuestion(TranslatablePageMixin, MoloPage):
     parent_page_types = ['core.ReactionQuestionIndexPage']
     subpage_types = ['ReactionQuestionChoice']
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.CASCADE,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True, null=True)
 
     def has_user_submitted_reaction_response(
             self, request, reaction_id, article_id):
@@ -842,7 +848,11 @@ class ReactionQuestionResponse(models.Model):
 class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
-    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.CASCADE,
+                                 )
     translated_pages = models.ManyToManyField("self", blank=True, null=True)
     feature_in_homepage = models.BooleanField(default=False)
 
@@ -874,6 +884,12 @@ class BannerIndexPage(MoloPage, PreventDeleteMixin, ImportableMixin):
 class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
     parent_page_types = ['core.BannerIndexPage']
     subpage_types = []
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.CASCADE,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True, null=True)
 
     subtitle = models.TextField(null=True, blank=True)
     banner = models.ForeignKey(
@@ -1147,7 +1163,11 @@ SectionIndexPage.content_panels = [
 
 class SectionPage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, MoloPage):
-    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.CASCADE,
+                                 )
     translated_pages = models.ManyToManyField("self", blank=True, null=True)
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
@@ -1386,7 +1406,11 @@ class ArticlePageMetaDataTag(TaggedItemBase):
 
 class ArticlePage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, PageEffectiveImageMixin, MoloPage):
-    language = models.ForeignKey('core.SiteLanguage', blank=True, null=True)
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.CASCADE,
+                                 )
     translated_pages = models.ManyToManyField("self", blank=True, null=True)
     parent_page_types = ['core.SectionPage']
 
