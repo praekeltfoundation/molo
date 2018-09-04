@@ -631,8 +631,6 @@ class TranslatablePageMixinNotRoutable(object):
             LanguageRelation.objects.create(
                 page=self,
                 language=language)
-            response = super(
-                TranslatablePageMixinNotRoutable, self).save(*args, **kwargs)
 
         return response
 
