@@ -567,6 +567,53 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
+def get_translations_for_pages(pages, locale, site, is_live=True):
+    show_only_translated_pages = SiteSettings.for_site(
+        site).show_only_translated_pages
+
+    language_setting = Languages.for_site(site)
+    language = language_setting.languages.filter(
+        locale=locale).first()
+
+    if not language:
+        if show_only_translated_pages:
+            return []
+        else:
+            return list(pages)
+
+    translated_pages = []
+    for page in pages:
+        cache_key = page.get_translation_for_cache_key(
+            locale, site, is_live)
+        trans_pk = cache.get(cache_key)
+
+        # TODO: consider pickling page object. Be careful about page size in
+        # memory
+        if trans_pk:
+            translated_pages.append(Page.objects.get(pk=trans_pk).specific)
+            continue
+
+        main_language_page = page.get_main_language_page()
+        if language.is_main_language and not page == main_language_page:
+            cache.set(cache_key, main_language_page.pk, None)
+            translated_pages.append(main_language_page)
+            continue
+
+        # Filter the translation pages for this page by the given language
+        translations = page.specific.translations.filter(
+            translated_page__languages__language=language)
+        if is_live is not None:
+            translations = translations.filter(translated_page__live=True)
+
+        if translations:
+            translated = translations.first().translated_page.specific
+            cache.set(cache_key, translated.pk, None)
+            translated_pages.append(translated)
+        elif not show_only_translated_pages:
+            translated_pages.append(page)
+    return translated_pages
+
+
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
         return "get_translation_for_{}_{}_{}_{}_{}".format(
