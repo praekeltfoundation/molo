@@ -47,9 +47,4 @@ class Migration(migrations.Migration):
             name='translated_pages',
             field=models.ManyToManyField(blank=True, null=True, related_name='_tag_translated_pages_+', to='core.Tag'),
         ),
-        migrations.AlterField(
-            model_name='sitesettings',
-            name='default_service_directory_radius',
-            field=models.PositiveSmallIntegerField(blank=True, help_text='When set this will enable service directory radius filter as the set value for the default radius value', null=True, verbose_name='Default Service Directory Radius'),
-        ),
     ]
