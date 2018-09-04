@@ -13,10 +13,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='articlepage',
-            options={'ordering': ('-latest_revision_created_at',), 'verbose_name': 'Article'},
-        ),
         migrations.AddField(
             model_name='articlepage',
             name='language',
