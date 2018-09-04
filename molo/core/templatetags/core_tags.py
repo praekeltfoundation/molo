@@ -25,6 +25,12 @@ def get_language(site, locale):
 
 
 def get_pages(context, queryset, locale):
+    from molo.core.models import get_translations_for_pages
+    from django.conf import settings
+
+    if queryset.count() == 0:
+        return []
+
     request = context['request']
     if not hasattr(request, 'site'):
         return list[queryset]
@@ -33,15 +39,18 @@ def get_pages(context, queryset, locale):
     if language and language.is_main_language:
         return list(queryset.live())
 
-    show_only_translated_pages = SiteSettings.for_site(
-        request.site).show_only_translated_pages
     pages = []
-    for page in queryset:
-        translation = page.get_translation_for(locale, request.site)
-        if translation and translation.live:
-            pages.append(translation)
-        elif page.live and not show_only_translated_pages:
-            pages.append(page)
+    if settings.USE_QS_TRANSLATIONS:
+        pages = get_translations_for_pages(queryset, locale, request.site)
+    else:
+        show_only_translated_pages = SiteSettings.for_site(
+            request.site).show_only_translated_pages
+        for page in queryset:
+            translation = page.get_translation_for(locale, request.site)
+            if translation and translation.live:
+                pages.append(translation)
+            elif page.live and not show_only_translated_pages:
+                pages.append(page)
     return pages
 
 
