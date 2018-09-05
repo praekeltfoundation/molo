@@ -626,10 +626,12 @@ class TranslatablePageMixinNotRoutable(object):
         if (languages.filter(
                 is_main_language=True).exists() and
                 not self.languages.exists()):
+            language = languages.filter(
+                is_main_language=True).first()
             LanguageRelation.objects.create(
                 page=self,
-                language=languages.filter(
-                    is_main_language=True).first())
+                language=language)
+
         return response
 
     def move(self, target, pos=None):
@@ -776,6 +778,12 @@ class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
 class ReactionQuestion(TranslatablePageMixin, MoloPage):
     parent_page_types = ['core.ReactionQuestionIndexPage']
     subpage_types = ['ReactionQuestionChoice']
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
 
     def has_user_submitted_reaction_response(
             self, request, reaction_id, article_id):
@@ -790,6 +798,12 @@ class ReactionQuestionChoice(TranslatablePageMixinNotRoutable,
                              PageEffectiveImageMixin, MoloPage):
     parent_page_types = ['core.ReactionQuestion']
     subpage_types = []
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
 
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -840,7 +854,12 @@ class ReactionQuestionResponse(models.Model):
 class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
-
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
     feature_in_homepage = models.BooleanField(default=False)
 
     api_fields = [
@@ -871,6 +890,12 @@ class BannerIndexPage(MoloPage, PreventDeleteMixin, ImportableMixin):
 class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
     parent_page_types = ['core.BannerIndexPage']
     subpage_types = []
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
 
     subtitle = models.TextField(null=True, blank=True)
     banner = models.ForeignKey(
@@ -1144,6 +1169,12 @@ SectionIndexPage.content_panels = [
 
 class SectionPage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, MoloPage):
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
     description = models.TextField(null=True, blank=True)
     uuid = models.CharField(max_length=32, blank=True, null=True)
     image = models.ForeignKey(
@@ -1381,6 +1412,12 @@ class ArticlePageMetaDataTag(TaggedItemBase):
 
 class ArticlePage(ImportableMixin, CommentedPageMixin,
                   TranslatablePageMixin, PageEffectiveImageMixin, MoloPage):
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
     parent_page_types = ['core.SectionPage']
 
     subtitle = models.TextField(null=True, blank=True)
