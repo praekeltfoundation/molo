@@ -256,6 +256,12 @@ class UserProfilesSettings(BaseSetting):
 class SecurityQuestion(TranslatablePageMixin, MoloPage):
     parent_page_types = ['SecurityQuestionIndexPage']
     subpage_types = []
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
 
     class Meta:
         verbose_name = _("Security Question")
