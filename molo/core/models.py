@@ -798,6 +798,12 @@ class ReactionQuestionChoice(TranslatablePageMixinNotRoutable,
                              PageEffectiveImageMixin, MoloPage):
     parent_page_types = ['core.ReactionQuestion']
     subpage_types = []
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
 
     image = models.ForeignKey(
         'wagtailimages.Image',
