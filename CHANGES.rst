@@ -2,6 +2,10 @@ CHANGES
 =======
 6.9.12
 ~~~~~~
+- Fixed unmerged commits
+
+6.9.12
+~~~~~~
 - Add translation fields
 
 6.9.11
