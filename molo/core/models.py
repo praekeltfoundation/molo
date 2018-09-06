@@ -320,6 +320,7 @@ class SiteSettings(BaseSetting):
                 FieldPanel('service_directory_api_password'),
                 FieldPanel('google_places_api_server_key'),
                 FieldPanel('default_service_directory_radius'),
+                FieldPanel('enable_multi_category_service_directory_search'),
             ],
             heading="Service Directory API Settings"
         )
