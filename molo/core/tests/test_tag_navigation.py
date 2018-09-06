@@ -208,6 +208,83 @@ class TestTags(MoloTestCaseMixin, TestCase):
         latest_articles = response.context['tag_nav_data']['latest_articles']
         self.assertEqual(latest_articles[0].pk, latest_of_latest_articles.pk)
 
+    def test_latest_articles_translated_when_tag_navigation_enabled(self):
+        article_1 = self.mk_article(
+            self.yourmind, title='article-1', featured_in_latest_start_date=(
+                datetime.now() - timedelta(days=1)), featured_in_latest=True,
+            featured_in_homepage_start_date=datetime.now())
+        article_2 = self.mk_article(
+            self.yourmind, title='article-2', featured_in_latest_start_date=(
+                datetime.now() - timedelta(days=1)), featured_in_latest=True,
+            featured_in_homepage_start_date=datetime.now())
+        tag = self.mk_tag(parent=self.tag_index)
+        ArticlePageTags.objects.create(page=article_1, tag=tag)
+        ArticlePageTags.objects.create(page=article_2, tag=tag)
+
+        # make the translation for the article and the tag
+        fr_article_1 = self.mk_article_translation(
+            article_1,
+            self.french,
+            title=article_1.title + ' in french',)
+        self.mk_tag_translation(
+            tag,
+            self.french,
+            title=tag.title + ' in french',)
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+
+        promote_articles()
+
+        self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        latest_articles = response.context['tag_nav_data']['latest_articles']
+        self.assertTrue(fr_article_1 in latest_articles)
+        self.assertTrue(article_2 in latest_articles)
+        self.assertFalse(article_1 in latest_articles)
+
+    def test_latest_articles_show_only_translations_with_tag_navigation(self):
+        self.site_settings.show_only_translated_pages = True
+        self.site_settings.save()
+
+        article_1 = self.mk_article(
+            self.yourmind, title='article-1', featured_in_latest_start_date=(
+                datetime.now() - timedelta(days=1)), featured_in_latest=True,
+            featured_in_homepage_start_date=datetime.now())
+        article_2 = self.mk_article(
+            self.yourmind, title='article-2', featured_in_latest_start_date=(
+                datetime.now() - timedelta(days=1)), featured_in_latest=True,
+            featured_in_homepage_start_date=datetime.now())
+        tag = self.mk_tag(parent=self.tag_index)
+        ArticlePageTags.objects.create(page=article_1, tag=tag)
+        ArticlePageTags.objects.create(page=article_2, tag=tag)
+
+        tag.feature_in_homepage = True
+        tag.save_revision().publish()
+        promote_articles()
+
+        # Test no articles are shown if we don't have translations
+        self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        latest_articles = response.context['tag_nav_data']['latest_articles']
+        self.assertFalse(latest_articles is None)
+
+        # make the translation for the article and the tag
+        fr_article_1 = self.mk_article_translation(
+            article_1,
+            self.french,
+            title=article_1.title + ' in french',)
+        self.mk_tag_translation(
+            tag,
+            self.french,
+            title=tag.title + ' in french',)
+
+        self.client.get('/locale/fr/')
+        response = self.client.get('/')
+        latest_articles = response.context['tag_nav_data']['latest_articles']
+        self.assertTrue(fr_article_1 in latest_articles)
+        self.assertFalse(article_2 in latest_articles)
+        self.assertFalse(article_1 in latest_articles)
+
     def test_article_not_repeated_when_tag_navigation_enabled_homepage(self):
         tag = self.mk_tag(parent=self.tag_index)
         tag.feature_in_homepage = True
