@@ -205,6 +205,9 @@ class SiteSettings(BaseSetting):
     enable_service_directory = models.BooleanField(
         default=False, verbose_name='Enable service directory'
     )
+    enable_multi_category_service_directory_search = models.BooleanField(
+        default=False, verbose_name='Enable multi service directory search'
+    )
     default_service_directory_radius = models.\
         PositiveSmallIntegerField(
             null=True,
@@ -317,6 +320,7 @@ class SiteSettings(BaseSetting):
                 FieldPanel('service_directory_api_password'),
                 FieldPanel('google_places_api_server_key'),
                 FieldPanel('default_service_directory_radius'),
+                FieldPanel('enable_multi_category_service_directory_search'),
             ],
             heading="Service Directory API Settings"
         )
