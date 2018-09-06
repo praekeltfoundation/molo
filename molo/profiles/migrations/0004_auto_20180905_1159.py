@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0078_add_core_translation_fields'),
+        ('core', '0004_add_core_translation_fields'),
         ('profiles', '0002_userprofile_auth_service_uuid'),
     ]
 
