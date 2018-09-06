@@ -205,6 +205,9 @@ class SiteSettings(BaseSetting):
     enable_service_directory = models.BooleanField(
         default=False, verbose_name='Enable service directory'
     )
+    enable_multi_category_service_directory_search = models.BooleanField(
+        default=False, verbose_name='Enable multi service directory search'
+    )
     default_service_directory_radius = models.\
         PositiveSmallIntegerField(
             null=True,
