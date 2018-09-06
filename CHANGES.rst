@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.15
+~~~~~~
+- Refactor translation lookups to reduce page load and database queries
+
 6.9.14
 ~~~~~~
 - add "Enable multi service directory search" Site setting field
