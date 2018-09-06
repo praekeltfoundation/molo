@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.12
+~~~~~~
+- Add translation fields
+
 6.9.11
 ~~~~~~
 - Add nullable default service directory radius field to Site setting model
