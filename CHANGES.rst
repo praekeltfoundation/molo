@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.14
+~~~~~~
+- add "Enable multi service directory search" Site setting field
+
 6.9.12
 ~~~~~~
 - Fixed unmerged commits
