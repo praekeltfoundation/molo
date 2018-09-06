@@ -410,3 +410,5 @@ CSRF_FAILURE_VIEW = 'molo.core.views.csrf_failure'
 
 FREE_BASICS_URL_FOR_CSRF_MESSAGE = environ.get(
     'FREE_BASICS_URL_FOR_CSRF_MESSAGE', '')
+
+USE_QS_TRANSLATIONS = environ.get('USE_QS_TRANSLATIONS', '') == 'true'
