@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.16
+~~~~~~
+- Fix Bug in get_tag_articles template tag
+
 6.9.15
 ~~~~~~
 - Refactor translation lookups to reduce page load and database queries

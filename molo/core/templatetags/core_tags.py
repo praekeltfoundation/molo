@@ -462,7 +462,7 @@ def get_tag_articles(
             latest_articles = all_latest_articles[:latest_article_count]
             exclude_pks += [p.pk for p in latest_articles]
         else:
-            latest_articles = all_latest_articles
+            latest_articles = list(all_latest_articles)
             exclude_pks += [p.pk for p in latest_articles]
 
     # Featured Section/s
