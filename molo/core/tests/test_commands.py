@@ -45,6 +45,14 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
                 language__is_main_language=True):
             self.assertEqual(relation.language.locale, 'id')
 
+    def test_add_language_to_pages(self):
+        self.assertNone(self.article.langauge)
+        self.assertNone(self.yourmind.langauge)
+        call_command('add_language_to_pages')
+        english = SiteLanguage.objects.first()
+        self.assertEquals(self.article.language, english.pk)
+        self.assertEquals(self.yourmind.language, english.pk)
+
     def test_add_feature_in_latest_date_to_article(self):
         self.assertEquals(self.article.featured_in_latest_start_date, None)
         now = datetime.now()
