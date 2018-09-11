@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.17
+~~~~~~
+- Add a maintenance mode middleware
+
 6.9.16
 ~~~~~~
 - Fix Bug in get_tag_articles template tag
