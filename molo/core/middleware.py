@@ -3,23 +3,23 @@ import django.utils.deprecation
 
 from bs4 import BeautifulSoup
 
-from django.http import HttpResponseForbidden
-from django.views.defaults import permission_denied
-from django_cas_ng.middleware import CASMiddleware
-from django_cas_ng.views import login as cas_login, logout as cas_logout
-from django.contrib.auth.views import login, logout
 from django.conf import settings
+from django.http import HttpResponseForbidden
+from django_cas_ng.middleware import CASMiddleware
+from django.views.defaults import permission_denied
+from django.contrib.auth.views import login, logout
+from django.core.urlresolvers import resolve, reverse
+from django.shortcuts import redirect, render_to_response
+from django_cas_ng.views import login as cas_login, logout as cas_logout
 # test
-from django.contrib.messages import get_messages
 from django.utils.translation import activate
+from django.contrib.messages import get_messages
 
-from google_analytics.utils import build_ga_params, set_cookie
 from google_analytics.tasks import send_ga_tracking
+from google_analytics.utils import build_ga_params, set_cookie
 
-from molo.core.models import SiteSettings
 from wagtail.wagtailcore.models import Site, Page
-from django.core.urlresolvers import resolve
-from django.shortcuts import redirect
+from molo.core.models import SiteSettings
 from molo.core.models import Languages
 
 
@@ -163,3 +163,35 @@ class MultiSiteRedirectToHomepage(django.utils.deprecation.MiddlewareMixin):
                     return redirect('%s%s' % (p_site.root_url, request.path))
             if not Languages.for_site(request.site).languages.all().exists():
                 return redirect('%s/admin/' % request.site.root_url)
+
+
+class MaintenanceModeMiddleware(django.utils.deprecation.MiddlewareMixin):
+
+    def process_request(self, request):
+        maintenance = getattr(settings, 'MAINTENANCE_MODE', None)
+        template_name = getattr(
+            settings,
+            'MAINTENANCE_MODE_TEMPLATE', 'core/maintenance_mode.html'
+        )
+        if maintenance and reverse('health') not in request.path:
+            page_ctx = getattr(
+                settings,
+                'MAINTENANCE_MODE_PAGE_CONTEXT',
+                {'title': 'Maintenance Mode'}
+            )
+
+            class Page(object):
+                depth = 2
+
+                def __init__(self, ctx):
+                    for k, v in ctx.items():
+                        setattr(self, k, v)
+
+            return render_to_response(
+                template_name, context={
+                    'self': Page(page_ctx),
+                    'request': request,
+                    'ENV': getattr(settings, 'ENV', 'dev'),
+                    'STATIC_URL': getattr(settings, 'STATIC_URL', 'dev'),
+                }
+            )
