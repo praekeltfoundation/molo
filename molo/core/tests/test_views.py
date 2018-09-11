@@ -134,6 +134,33 @@ class TestPages(TestCase, MoloTestCaseMixin):
             response['Location'],
             '/admin/login/?next=' + quote(admin_url, safe=''))
 
+    @override_settings(MAINTENANCE_MODE=True)
+    def test_maintenance_mode(self):
+        response = self.client.get(reverse('home_index'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Maintenance Mode')
+        self.assertTemplateUsed(response, 'core/maintenance_mode.html')
+
+    @override_settings(MAINTENANCE_MODE=True)
+    def test_maintenance_mode_health_check(self):
+        response = self.client.get(reverse('health'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Maintenance Mode')
+        self.assertTemplateNotUsed(response, 'core/maintenance_mode.html')
+
+    @override_settings(MAINTENANCE_MODE=True)
+    @override_settings(MAINTENANCE_MODE_TEMPLATE='base.html')
+    @override_settings(
+        MAINTENANCE_MODE_PAGE_CONTEXT={'title': 'Random nonsense'})
+    def test_maintenance_mode_settings_override(self):
+        response = self.client.get(reverse('home_index'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'base.html')
+        self.assertContains(response, 'Random nonsense')
+
     def test_copy_langauges_for_translatable_pages_only(self):
         response = copy_translation_pages(
             self.section_index, self.section_index2)

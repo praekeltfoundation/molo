@@ -9,7 +9,7 @@ from django.utils.six import StringIO
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (
     Main, Languages, ArticlePage, Tag, ArticlePageTags, SiteLanguageRelation,
-    SiteLanguage, LanguageRelation)
+    SiteLanguage, LanguageRelation, SectionPage)
 
 
 class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
@@ -44,6 +44,16 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         for relation in LanguageRelation.objects.filter(
                 language__is_main_language=True):
             self.assertEqual(relation.language.locale, 'id')
+
+    def test_add_language_to_pages(self):
+        self.assertIsNone(self.article.language)
+        self.assertIsNone(self.yourmind.language)
+        call_command('add_language_to_pages')
+        english = SiteLanguage.objects.first()
+        article = ArticlePage.objects.get(pk=self.article.pk)
+        yourmind = SectionPage.objects.get(pk=self.yourmind.pk)
+        self.assertEquals(article.language, english)
+        self.assertEquals(yourmind.language, english)
 
     def test_add_feature_in_latest_date_to_article(self):
         self.assertEquals(self.article.featured_in_latest_start_date, None)
