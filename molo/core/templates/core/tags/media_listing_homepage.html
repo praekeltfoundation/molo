@@ -1,27 +1,74 @@
-{% load core_tags media_tags wagtailembeds_tags i18n %}
+{% load wagtailimages_tags wagtailembeds_tags %}
 
 {% block homepage_media %}
-{% for media in media %}
-  {% if media.youtube_link %}
-    <div class="responsive-object">
-      {% embed media.youtube_link %}
+  {% if media %}
+    {% for media in media %}
+    <div class="media-player">
+      <div class="media-player__content">
+        {% if media.youtube_link %}
+          {% if not is_via_freebasics %}
+            <div class="media-player__embed-object">
+              {% embed media.youtube_link %}
+            </div>
+          {% else %}
+            <div class="media-player__no-player">
+              <h4 class="media-player__title">{{media.title}}</h4>
+              <a alt="{% trans 'Click to watch on youtube!' %}" href="{{ media.youtube_link }}" target="_top" class="media-player__icon">{% trans 'Click to watch on youtube!' %}</a>
+              <h3 class="media-player__subtitle">
+                {% trans "Media will be played externally in a new window" %}
+              </h3>
+            </div>
+          {% endif %}
+        {% elif media.type == 'video'%}
+          {% if not is_via_freebasics %}
+            <video poster="/media/{{ media.thumbnail }}" controls>
+              <source src={{media.file.url}} type="video/mp4">
+              <source src={{media.file.url}} type="video/webm">
+              <source src={{media.file.url}} type="video/ogg">
+              <span class="media-player__caption">
+                {% trans "Your browser does not support the video tag." %}
+              </span>
+            </video>
+          {% else %}
+            <div class="media-player__no-player">
+              <h4 class="media-player__title">{{media.title}}</h4>
+              <a alt="{% trans 'Click here to download video' %}" href="{{media.file.url}}" target="_top" onclick="ga('send', 'event', 'Video', 'Download', '{{media.title}}');" class="call-to-action__button media-player__icon" download></a>
+              <h3 class="media-player__subtitle">
+                {% trans "Video files will not be played, you can download them" %}
+              </h3>
+            </div>
+          {% endif %}
+        {% elif media.type == 'audio'%}
+          {% if not is_via_freebasics %}
+            <audio controls>
+              <source src={{media.file.url}} type="audio/mpeg">
+              <source src={{media.file.url}} type="audio/ogg">
+              <source src={{media.file.url}} type="audio/wav">
+                <span class="media-player__caption">
+                  {% trans "Your browser does not support the audio tag." %}
+                </span>
+            </audio>
+          {% else %}
+            <div class="media-player__no-player">
+              <h4 class="media-player__title">{{media.title}}</h4>
+              <a alt="{% trans 'Click here to download audio' %}"  href="{{media.file.url}}" onclick="ga('send', 'event', 'Audio', 'Download', '{{media.title}}');" class="call-to-action__button  media-player__icon" download></a>
+              <h3 class="media-player__subtitle">
+                {% trans "Audio files will not be played, you can download them" %}
+              </h3>
+            </div>
+          {% endif %}
+        {% endif %}
+        {% if not is_via_freebasics %}
+          {% if media.title %}
+            <a href="{{media.file.url}}" onclick="ga('send', 'event', '{% if media.youtube_link or media.type == 'video'%}Video{% elif media.type == 'audio'%}Audio{% endif %}', 'Download', '{{media.title}}');" class="call-to-action__button call-to-action__button--yellow" download>
+              <span class="call-to-action__button-text call-to-action__button-text--yellow">
+                {% trans "Download" %} {% if media.youtube_link or media.type == 'video'%}Video{% elif media.type == 'audio'%}Audio{% endif %}
+              </span>
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
     </div>
-    <button>
-    <a href={{media.file.url}} download>{% trans "Click to Download!" %}</a>
-    </button>
-    <a href={{media.youtube_link}}>{% trans "Click to watch on youtube!" %}</a>
-  {% elif media.type == 'video'%}
-    <video width="320" height="240" controls>
-        <source src={{media.file.url}} type="video/mp4">
-        {% trans "Your browser does not support the video tag." %}
-    </video>
-  {% elif media.type == 'audio'%}
-    <div>
-        <audio controls><source src={{media.file.url}}
-          type="audio/mpeg">{% trans "Click here to download" %}
-          <a href={{media.file.url}}>{{media.title}}</a>
-        </audio>
-    </div>
+    {% endfor %}
   {% endif %}
-{% endfor%}
 {% endblock %}
