@@ -5,6 +5,7 @@ import tempfile
 from datetime import datetime
 from django.core.management import call_command
 from django.test import TestCase
+from django.core.urlresolvers import reverse
 from django.utils.six import StringIO
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (
@@ -21,6 +22,14 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.english = SiteLanguageRelation.objects.create(
             language_setting=Languages.for_site(self.main.get_site()),
             locale='en',
+            is_active=True)
+        self.spanish = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(self.main.get_site()),
+            locale='sp',
+            is_active=True)
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(self.main.get_site()),
+            locale='fr',
             is_active=True)
         self.yourmind = self.mk_section(
             self.section_index, title='Your mind')
@@ -54,6 +63,35 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         yourmind = SectionPage.objects.get(pk=self.yourmind.pk)
         self.assertEquals(article.language, english)
         self.assertEquals(yourmind.language, english)
+
+    def test_add_translated_pages_to_pages(self):
+        # create article in english with translation in spanish and french
+        english_article = self.article
+        self.mk_article_translation(english_article, self.spanish)
+        spanish_article = ArticlePage.objects.last()
+        self.mk_article_translation(english_article, self.french)
+        french_article = ArticlePage.objects.last()
+        self.assertFalse(english_article.translated_pages.exists())
+        self.assertFalse(spanish_article.translated_pages.exists())
+        self.assertFalse(french_article.translated_pages.exists())
+
+        # run command to add languages to these pages
+        call_command('add_language_to_pages')
+
+        # run command to add list of translated_pages to these pages
+        call_command('add_translated_pages_to_pages')
+        self.assertTrue(english_article.translated_pages.filter(
+            pk=spanish_article.pk).exists())
+        self.assertTrue(english_article.translated_pages.filter(
+            pk=french_article.pk).exists())
+        self.assertTrue(spanish_article.translated_pages.filter(
+            pk=english_article.pk).exists())
+        self.assertTrue(spanish_article.translated_pages.filter(
+            pk=french_article.pk).exists())
+        self.assertTrue(french_article.translated_pages.filter(
+            pk=english_article.pk).exists())
+        self.assertTrue(french_article.translated_pages.filter(
+            pk=spanish_article.pk).exists())
 
     def test_add_feature_in_latest_date_to_article(self):
         self.assertEquals(self.article.featured_in_latest_start_date, None)
