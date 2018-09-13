@@ -66,19 +66,32 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
     def test_add_translated_pages_to_pages(self):
         # create article in english with translation in spanish and french
         english_article = self.article
-        self.mk_article_translation(english_article, self.spanish)
-        spanish_article = ArticlePage.objects.last()
-        self.mk_article_translation(english_article, self.french)
-        french_article = ArticlePage.objects.last()
+        spanish_article = self.mk_article_translation(
+            english_article, self.spanish)
+        french_article = self.mk_article_translation(
+            english_article, self.french)
+
+        # create section in english with translations
+        english_section = self.yourmind
+        spanish_section = self.mk_section_translation(
+            self.yourmind, self.spanish)
+        french_section = self.mk_section_translation(
+            self.yourmind, self.french)
+
         self.assertFalse(english_article.translated_pages.exists())
         self.assertFalse(spanish_article.translated_pages.exists())
         self.assertFalse(french_article.translated_pages.exists())
+        self.assertFalse(english_section.translated_pages.exists())
+        self.assertFalse(spanish_section.translated_pages.exists())
+        self.assertFalse(french_section.translated_pages.exists())
 
         # run command to add languages to these pages
         call_command('add_language_to_pages')
 
         # run command to add list of translated_pages to these pages
         call_command('add_translated_pages_to_pages')
+
+        # test translated pages for articles
         self.assertTrue(english_article.translated_pages.filter(
             pk=spanish_article.pk).exists())
         self.assertTrue(english_article.translated_pages.filter(
@@ -91,6 +104,20 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
             pk=english_article.pk).exists())
         self.assertTrue(french_article.translated_pages.filter(
             pk=spanish_article.pk).exists())
+
+        # test translated pages for sections
+        self.assertTrue(english_section.translated_pages.filter(
+            pk=spanish_section.pk).exists())
+        self.assertTrue(english_section.translated_pages.filter(
+            pk=french_section.pk).exists())
+        self.assertTrue(spanish_section.translated_pages.filter(
+            pk=english_section.pk).exists())
+        self.assertTrue(spanish_section.translated_pages.filter(
+            pk=french_section.pk).exists())
+        self.assertTrue(french_section.translated_pages.filter(
+            pk=english_section.pk).exists())
+        self.assertTrue(french_section.translated_pages.filter(
+            pk=spanish_section.pk).exists())
 
     def test_add_feature_in_latest_date_to_article(self):
         self.assertEquals(self.article.featured_in_latest_start_date, None)

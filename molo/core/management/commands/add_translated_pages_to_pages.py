@@ -7,10 +7,11 @@ from molo.core.models import PageTranslation, SiteLanguage, Page
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        # first add all the translations to the main language ArticlePage
-        # and add the main language as a translated to the translated pages
+        # first add all the translations to the main language Page
+        # and add the main language page as a translated page
+        # to the translated pages
         main_language = SiteLanguage.objects.get(is_main_language=True)
-        pages = Page.objects.all().exclude(depth__in=[1, 2, 3, 4])
+        pages = Page.objects.all().exclude(depth__in=[1, 2, 3])
         for page in pages:
             if page.specific.language.pk == main_language.pk:
                 for translation in PageTranslation.objects.filter(page=page):
@@ -27,14 +28,14 @@ class Command(BaseCommand):
                             'is missing page/translated_page'
                             % (translation.pk)))
 
-        # loop through all translated_pages on the main language field and
+        # loop through all translated_pages on the main language page and
         # add all the translations to the rest of the translated pages
         # except the language that it is in
-        for page in Page.objects.all().exclude(depth__in=[1, 2, 3, 4]):
+        for page in Page.objects.all().exclude(depth__in=[1, 2, 3]):
             if page.specific.language.pk == main_language.pk:
                 for translated_page in page.specific.translated_pages.all():
                     translations = page.specific.translated_pages.all().\
-                        exclude(language__pk=main_language.pk)
+                        exclude(language__pk=translated_page.pk)
                     for translation in translations:
                         translated_page.translated_pages.add(translation)
                     translated_page.save()
