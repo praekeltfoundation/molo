@@ -109,7 +109,7 @@ class DateOfBirthValidationMixin(object):
                     except ValueError:
                         date_of_birth = None
 
-            if self.profile_settings.dob_required and not date_of_birth:
+            if self.fields['date_of_birth'].required and not date_of_birth:
                 err = _("This field is required.")
                 raise forms.ValidationError(err)
 
