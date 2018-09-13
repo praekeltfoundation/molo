@@ -8,7 +8,10 @@ from django.contrib.auth.models import User
 from molo.profiles.forms import (
     ForgotPasswordForm, RegistrationForm, ProfilePasswordChangeForm)
 from molo.core.tests.base import MoloTestCaseMixin
-from molo.profiles.models import SecurityQuestion, SecurityQuestionIndexPage
+from molo.profiles.models import (SecurityQuestion, SecurityQuestionIndexPage,
+                                  UserProfilesSettings)
+
+from wagtail.wagtailcore.models import Site
 
 
 class RegisterTestCase(MoloTestCaseMixin, TestCase):
@@ -170,6 +173,25 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
             'date_of_birth_year': yesterday.year,
             'date_of_birth_month': yesterday.month,
             'date_of_birth_day': yesterday.day,
+            'terms_and_conditions': True
+        }
+        form = RegistrationForm(
+            data=form_data,
+            questions=[self.question, ]
+        )
+        self.assertEqual(form.is_valid(), True)
+
+    def test_if_date_of_birth_required_but_not_on_reg(self):
+        site = Site.objects.get(is_default_site=True)
+        profile_settings = UserProfilesSettings.for_site(site)
+        profile_settings.activate_dob = True
+        profile_settings.capture_dob_on_reg = False
+        profile_settings.dob_required = True
+        profile_settings.save()
+
+        form_data = {
+            'username': 'testusername',
+            'password': '1234',
             'terms_and_conditions': True
         }
         form = RegistrationForm(
