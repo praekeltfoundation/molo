@@ -96,10 +96,14 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
             pk=spanish_article.pk).exists())
         self.assertTrue(english_article.translated_pages.filter(
             pk=french_article.pk).exists())
+        self.assertFalse(english_article.translated_pages.filter(
+            pk=english_article.pk).exists())
         self.assertTrue(spanish_article.translated_pages.filter(
             pk=english_article.pk).exists())
         self.assertTrue(spanish_article.translated_pages.filter(
             pk=french_article.pk).exists())
+        self.assertFalse(spanish_article.translated_pages.filter(
+            pk=spanish_article.pk).exists())
         self.assertTrue(french_article.translated_pages.filter(
             pk=english_article.pk).exists())
         self.assertTrue(french_article.translated_pages.filter(
