@@ -219,7 +219,6 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
         form = DoneForm(
             data=form_data,
         )
-        print(form)
         self.assertEqual(form.is_valid(), True)
 
 
