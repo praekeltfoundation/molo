@@ -32,10 +32,12 @@ class Command(BaseCommand):
         # add all the translations to the rest of the translated pages
         # except the language that it is in
         for page in Page.objects.all().exclude(depth__in=[1, 2, 3]):
-            if page.specific.language.pk == main_language.pk:
-                for translated_page in page.specific.translated_pages.all():
-                    translations = page.specific.translated_pages.all().\
-                        exclude(language__pk=translated_page.language.pk)
-                    for translation in translations:
-                        translated_page.translated_pages.add(translation)
-                    translated_page.save()
+            if page.language:
+                if page.specific.language.pk == main_language.pk:
+                    for translated_page in \
+                            page.specific.translated_pages.all():
+                        translations = page.specific.translated_pages.all().\
+                            exclude(language__pk=translated_page.language.pk)
+                        for translation in translations:
+                            translated_page.translated_pages.add(translation)
+                        translated_page.save()
