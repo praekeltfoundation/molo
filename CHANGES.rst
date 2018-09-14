@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.9.18
+~~~~~~
+- Add scripts for new translations
+
 6.9.17
 ~~~~~~
 - Add a maintenance mode middleware
