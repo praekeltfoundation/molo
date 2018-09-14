@@ -6,7 +6,7 @@ from molo.core.admin import (
 )
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
-from molo.core.models import Languages, PageTranslation
+from molo.core.models import Languages
 from molo.core.utils import create_new_article_relations
 
 
@@ -82,7 +82,7 @@ def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
     if main_language and parent_page.depth > 2:
-        return pages.filter(languages__language__locale=main_language.locale)
+        return pages.filter(language=main_language)
     return pages
 
 
@@ -99,11 +99,8 @@ def copy_translation_pages_hook(request, page, new_page):
 @hooks.register('before_delete_page')
 def delete_page_translations(request, page):
     if request.method == 'POST':
-        ids = PageTranslation.objects.filter(
-            page=page).values_list('translated_page__id')
-
-        for page in Page.objects.filter(id__in=ids):
-            page.delete()
+        for translation in page.specific.translation_pages.all():
+            translation.delete()
 
 
 # API admin
@@ -130,8 +127,8 @@ class LanguageSummaryItem(SummaryItem):
         return {
             'summaries': [{
                 'language': l.get_locale_display(),
-                'total': Page.objects.filter(
-                    languages__language__id=l.id).count()
+                'total': Page.objects.specific().filter(
+                    language=l).count()
             }for l in languages],
         }
 

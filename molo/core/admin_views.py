@@ -16,7 +16,7 @@ class ReactionQuestionSummaryAdminView(FormView):
         data_headings = ['Article']
         data_rows = []
         choices = question.get_children().filter(
-            languages__language__is_main_language=True)
+            language__is_main_language=True)
         choice_totals = []
         for choice in choices:
             data_headings.append(choice.title)
