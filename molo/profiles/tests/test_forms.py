@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 from molo.profiles.forms import (
-    ForgotPasswordForm, RegistrationForm, ProfilePasswordChangeForm)
+    ForgotPasswordForm, RegistrationForm, ProfilePasswordChangeForm, DoneForm)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.profiles.models import (SecurityQuestion, SecurityQuestionIndexPage,
                                   UserProfilesSettings)
@@ -198,6 +198,28 @@ class RegisterTestCase(MoloTestCaseMixin, TestCase):
             data=form_data,
             questions=[self.question, ]
         )
+        self.assertEqual(form.is_valid(), True)
+
+    def test_if_alias_on_reg_is_not_on_form_done(self):
+        site = Site.objects.get(is_default_site=True)
+        profile_settings = UserProfilesSettings.for_site(site)
+        profile_settings.activate_display_name = True
+        profile_settings.capture_display_name_on_reg = True
+        profile_settings.display_name_required = True
+        profile_settings.activate_dob = True
+
+        profile_settings.save()
+
+        yesterday = timezone.now() - timedelta(days=1)
+        form_data = {
+            'date_of_birth_year': yesterday.year,
+            'date_of_birth_month': yesterday.month,
+            'date_of_birth_day': yesterday.day,
+        }
+        form = DoneForm(
+            data=form_data,
+        )
+        print(form)
         self.assertEqual(form.is_valid(), True)
 
 
