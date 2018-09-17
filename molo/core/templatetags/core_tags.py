@@ -40,7 +40,7 @@ def get_pages(context, queryset, locale):
         return list(queryset.live())
 
     pages = []
-    if settings.USE_QS_TRANSLATIONS:
+    if getattr(settings, 'USE_QS_TRANSLATIONS', None):
         pages = get_translations_for_pages(queryset, locale, request.site)
     else:
         show_only_translated_pages = SiteSettings.for_site(
