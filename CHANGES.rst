@@ -1,5 +1,15 @@
 CHANGES
 =======
+
+6.9.19
+~~~~~~
+- Add validation to managements commands
+
+6.9.19
+~~~~~~
+- BugFix: Date of birth on registration error
+- BugFix: Errors in DoneForm fields
+
 6.9.18
 ~~~~~~
 - Add scripts for new translations

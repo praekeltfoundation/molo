@@ -13,7 +13,8 @@ class Command(BaseCommand):
         main_language = SiteLanguage.objects.get(is_main_language=True)
         pages = Page.objects.all().exclude(depth__in=[1, 2, 3])
         for page in pages:
-            if page.specific.language.pk == main_language.pk:
+            if page.specific.language and (
+               page.specific.language.pk == main_language.pk):
                 for translation in PageTranslation.objects.filter(page=page):
                     if translation.page and translation.translated_page:
                         page.specific.translated_pages.add(
@@ -32,8 +33,10 @@ class Command(BaseCommand):
         # add all the translations to the rest of the translated pages
         # except the language that it is in
         for page in Page.objects.all().exclude(depth__in=[1, 2, 3]):
-            if page.specific.language.pk == main_language.pk:
-                for translated_page in page.specific.translated_pages.all():
+            if page.specific.language and (
+               page.specific.language.pk == main_language.pk):
+                for translated_page in \
+                        page.specific.translated_pages.all():
                     translations = page.specific.translated_pages.all().\
                         exclude(language__pk=translated_page.language.pk)
                     for translation in translations:
