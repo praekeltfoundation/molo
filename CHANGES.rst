@@ -1,5 +1,10 @@
 CHANGES
 =======
+
+6.9.19
+~~~~~~
+- Add validation to managements commands
+
 6.9.19
 ~~~~~~
 - BugFix: Date of birth on registration error
