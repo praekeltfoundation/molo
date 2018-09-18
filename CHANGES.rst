@@ -1,7 +1,11 @@
 CHANGES
 =======
 
-6.9.19
+6.9.21
+~~~~~~
+- Add more validation to managements commands
+
+6.9.20
 ~~~~~~
 - Add validation to managements commands
 
