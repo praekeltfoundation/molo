@@ -16,7 +16,8 @@ class Command(BaseCommand):
             if page.specific.language and (
                page.specific.language.pk == main_language.pk):
                 for translation in PageTranslation.objects.filter(page=page):
-                    if translation.page and translation.translated_page:
+                    if translation.page and translation.translated_page and \
+                     translation.translated_page.specific.language:
                         page.specific.translated_pages.add(
                             translation.translated_page.specific)
                         translation.translated_page.specific.translated_pages\
