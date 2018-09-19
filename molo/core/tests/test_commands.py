@@ -64,6 +64,21 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.assertEquals(yourmind.language, english)
 
     def test_add_translated_pages_to_pages(self):
+        self.mk_main2()
+        self.main2 = Main.objects.all().last()
+        self.language_setting2 = Languages.objects.create(
+            site_id=self.main2.get_site().pk)
+        self.english2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='en',
+            is_active=True)
+
+        self.spanish2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='es',
+            is_active=True)
+        self.yourmind2 = self.mk_section(
+            self.section_index2, title='Your mind')
         # create article in english with translation in spanish and french
         english_article = self.article
         spanish_article = self.mk_article_translation(
@@ -73,8 +88,11 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
 
         # create section in english with translations
         english_section = self.yourmind
+        english_section2 = self.yourmind2
         spanish_section = self.mk_section_translation(
             self.yourmind, self.spanish)
+        spanish_section2 = self.mk_section_translation(
+            self.yourmind2, self.spanish2)
         french_section = self.mk_section_translation(
             self.yourmind, self.french)
 
@@ -82,7 +100,9 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.assertFalse(spanish_article.translated_pages.exists())
         self.assertFalse(french_article.translated_pages.exists())
         self.assertFalse(english_section.translated_pages.exists())
+        self.assertFalse(english_section2.translated_pages.exists())
         self.assertFalse(spanish_section.translated_pages.exists())
+        self.assertFalse(spanish_section2.translated_pages.exists())
         self.assertFalse(french_section.translated_pages.exists())
 
         # run command to add languages to these pages
@@ -120,10 +140,14 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         # test translated pages for sections
         self.assertTrue(english_section.translated_pages.filter(
             pk=spanish_section.pk).exists())
+        self.assertTrue(english_section2.translated_pages.filter(
+            pk=spanish_section2.pk).exists())
         self.assertTrue(english_section.translated_pages.filter(
             pk=french_section.pk).exists())
         self.assertTrue(spanish_section.translated_pages.filter(
             pk=english_section.pk).exists())
+        self.assertTrue(spanish_section2.translated_pages.filter(
+            pk=english_section2.pk).exists())
         self.assertTrue(spanish_section.translated_pages.filter(
             pk=french_section.pk).exists())
         self.assertTrue(french_section.translated_pages.filter(
