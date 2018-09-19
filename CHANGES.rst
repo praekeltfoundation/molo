@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+6.9.22
+~~~~~~
+- Made translation commands multisite aware
+
 6.9.21
 ~~~~~~
 - Add more validation to managements commands
