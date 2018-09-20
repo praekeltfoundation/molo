@@ -123,7 +123,7 @@ def latest_listing_homepage(context, num_count=5):
         articles = request.site.root_page.specific \
             .latest_articles()
     else:
-        return []
+        articles = []
     return {
         'articles': get_pages(context, articles, locale)[:num_count],
         'request': context['request'],
@@ -143,7 +143,7 @@ def topic_of_the_day(context):
         articles = request.site.root_page.specific \
             .topic_of_the_day()
     else:
-        return []
+        articles = ArticlePage.objects.none()
 
     return {
         'articles': get_pages(context, articles, locale),
