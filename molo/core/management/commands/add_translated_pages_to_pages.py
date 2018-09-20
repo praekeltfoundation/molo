@@ -30,7 +30,7 @@ class Command(BaseCommand):
                         if translation.page and \
                          translation.translated_page and \
                          translation.translated_page.specific.language and \
-                         translation.traslated_page.pk != translation.page.pk:
+                         translation.translated_page.pk != translation.page.pk:
                             page.specific.translated_pages.add(
                                 translation.translated_page.specific)
                             translation.translated_page.specific.\
