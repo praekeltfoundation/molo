@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+6.9.24
+~~~~~~
+- Update the tagged stories ordering in core_tags
+
 6.9.23
 ~~~~~~
 - Translation script bugfix
