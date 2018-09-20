@@ -9,7 +9,7 @@ from django.utils.six import StringIO
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (
     Main, Languages, ArticlePage, Tag, ArticlePageTags, SiteLanguageRelation,
-    SiteLanguage, LanguageRelation, SectionPage)
+    SiteLanguage, LanguageRelation, SectionPage, PageTranslation)
 
 
 class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
@@ -85,6 +85,8 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
             english_article, self.spanish)
         french_article = self.mk_article_translation(
             english_article, self.french)
+        PageTranslation.objects.create(
+            page=english_article, translated_page=english_article)
 
         # create section in english with translations
         english_section = self.yourmind
@@ -124,6 +126,8 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
             pk=spanish_article.pk).exists())
         self.assertFalse(english_article.translated_pages.filter(
             pk=french_article.pk).exists())
+        self.assertFalse(english_article.translated_pages.filter(
+            pk=english_article.pk).exists())
         self.assertFalse(english_article.translated_pages.filter(
             pk=english_article.pk).exists())
         self.assertTrue(spanish_article.translated_pages.filter(
