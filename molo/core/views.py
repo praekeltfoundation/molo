@@ -287,14 +287,14 @@ class TagsListView(ListView):
     template_name = "core/article_tags.html"
 
     def get_queryset(self, *args, **kwargs):
-        tag = self.kwargs["tag_name"]
-        count = self.request.GET.get("count")
-        main = self.request.site.root_page
         site_settings = SiteSettings.for_site(self.request.site)
-        context = {'request': self.request}
-        locale = self.request.LANGUAGE_CODE
-
         if site_settings.enable_tag_navigation:
+            tag = self.kwargs["tag_name"]
+            count = self.request.GET.get("count")
+            main = self.request.site.root_page
+            context = {'request': self.request}
+            locale = self.request.LANGUAGE_CODE
+
             tag = Tag.objects.filter(slug=tag).descendant_of(main)
             if tag.exists():
                 tag = tag.first()
