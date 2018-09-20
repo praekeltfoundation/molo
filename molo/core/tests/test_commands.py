@@ -9,7 +9,7 @@ from django.utils.six import StringIO
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import (
     Main, Languages, ArticlePage, Tag, ArticlePageTags, SiteLanguageRelation,
-    SiteLanguage, LanguageRelation, SectionPage)
+    SiteLanguage, LanguageRelation, SectionPage, PageTranslation)
 
 
 class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
@@ -64,17 +64,37 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.assertEquals(yourmind.language, english)
 
     def test_add_translated_pages_to_pages(self):
+        self.mk_main2()
+        self.main2 = Main.objects.all().last()
+        self.language_setting2 = Languages.objects.create(
+            site_id=self.main2.get_site().pk)
+        self.english2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='en',
+            is_active=True)
+
+        self.spanish2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='es',
+            is_active=True)
+        self.yourmind2 = self.mk_section(
+            self.section_index2, title='Your mind')
         # create article in english with translation in spanish and french
         english_article = self.article
         spanish_article = self.mk_article_translation(
             english_article, self.spanish)
         french_article = self.mk_article_translation(
             english_article, self.french)
+        PageTranslation.objects.create(
+            page=english_article, translated_page=english_article)
 
         # create section in english with translations
         english_section = self.yourmind
+        english_section2 = self.yourmind2
         spanish_section = self.mk_section_translation(
             self.yourmind, self.spanish)
+        spanish_section2 = self.mk_section_translation(
+            self.yourmind2, self.spanish2)
         french_section = self.mk_section_translation(
             self.yourmind, self.french)
 
@@ -82,40 +102,56 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.assertFalse(spanish_article.translated_pages.exists())
         self.assertFalse(french_article.translated_pages.exists())
         self.assertFalse(english_section.translated_pages.exists())
+        self.assertFalse(english_section2.translated_pages.exists())
         self.assertFalse(spanish_section.translated_pages.exists())
+        self.assertFalse(spanish_section2.translated_pages.exists())
         self.assertFalse(french_section.translated_pages.exists())
 
         # run command to add languages to these pages
         call_command('add_language_to_pages')
 
+        # remove the langauge from one page to ensure script works
+        # as intended for pages without a language
+        # which is to not add them as a translated page
+
+        french_article.language = None
+        french_article.save()
+
+        self.assertIsNone(french_article.language)
         # run command to add list of translated_pages to these pages
         call_command('add_translated_pages_to_pages')
 
         # test translated pages for articles
         self.assertTrue(english_article.translated_pages.filter(
             pk=spanish_article.pk).exists())
-        self.assertTrue(english_article.translated_pages.filter(
+        self.assertFalse(english_article.translated_pages.filter(
             pk=french_article.pk).exists())
+        self.assertFalse(english_article.translated_pages.filter(
+            pk=english_article.pk).exists())
         self.assertFalse(english_article.translated_pages.filter(
             pk=english_article.pk).exists())
         self.assertTrue(spanish_article.translated_pages.filter(
             pk=english_article.pk).exists())
-        self.assertTrue(spanish_article.translated_pages.filter(
+        self.assertFalse(spanish_article.translated_pages.filter(
             pk=french_article.pk).exists())
         self.assertFalse(spanish_article.translated_pages.filter(
             pk=spanish_article.pk).exists())
-        self.assertTrue(french_article.translated_pages.filter(
+        self.assertFalse(french_article.translated_pages.filter(
             pk=english_article.pk).exists())
-        self.assertTrue(french_article.translated_pages.filter(
+        self.assertFalse(french_article.translated_pages.filter(
             pk=spanish_article.pk).exists())
 
         # test translated pages for sections
         self.assertTrue(english_section.translated_pages.filter(
             pk=spanish_section.pk).exists())
+        self.assertTrue(english_section2.translated_pages.filter(
+            pk=spanish_section2.pk).exists())
         self.assertTrue(english_section.translated_pages.filter(
             pk=french_section.pk).exists())
         self.assertTrue(spanish_section.translated_pages.filter(
             pk=english_section.pk).exists())
+        self.assertTrue(spanish_section2.translated_pages.filter(
+            pk=english_section2.pk).exists())
         self.assertTrue(spanish_section.translated_pages.filter(
             pk=french_section.pk).exists())
         self.assertTrue(french_section.translated_pages.filter(
