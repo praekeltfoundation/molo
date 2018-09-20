@@ -1,4 +1,5 @@
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from wagtail.wagtailadmin.edit_handlers import EditHandler
@@ -571,7 +572,7 @@ class LanguageRelation(models.Model):
     language = models.ForeignKey('core.SiteLanguage', related_name='+')
 
 
-def get_translations_for_pages(pages, locale, site, is_live=True):
+def get_translation_for(pages, locale, site, is_live=True):
     show_only_translated_pages = SiteSettings.for_site(
         site).show_only_translated_pages
 
@@ -587,33 +588,38 @@ def get_translations_for_pages(pages, locale, site, is_live=True):
 
     translated_pages = []
     for page in pages:
-        cache_key = page.get_translation_for_cache_key(
+        cache_key = page.specific.get_translation_for_cache_key(
             locale, site, is_live)
         trans_pk = cache.get(cache_key)
 
-        # TODO: consider pickling page object. Be careful about page size in
-        # memory
+    # TODO: consider pickling page object. Be careful about page size in
+    # memory
         if trans_pk:
             translated_pages.append(Page.objects.get(pk=trans_pk).specific)
             continue
 
-        main_language_page = page.get_main_language_page()
+        main_language_page = page.specific.get_main_language_page()
         if language.is_main_language and not page == main_language_page:
             cache.set(cache_key, main_language_page.pk, None)
             translated_pages.append(main_language_page)
             continue
 
         # Filter the translation pages for this page by the given language
-        translations = page.specific.translated_pages.all(language=language)
-        if is_live is not None:
-            translations = translations.filter(translated_page__live=True)
+        try:
+            translations = page.specific.translated_pages.get(
+                language=language)
+            if is_live is not None:
+                translations = translations.filter(
+                    translated_page__live=True)
 
-        if translations:
-            translated = translations.first().specific
-            cache.set(cache_key, translated.pk, None)
-            translated_pages.append(translated)
-        elif not show_only_translated_pages:
-            translated_pages.append(page)
+            if translations:
+                translated = translations.first().specific
+                cache.set(cache_key, translated.pk, None)
+                translated_pages.append(translated)
+            elif not show_only_translated_pages:
+                translated_pages.append(page)
+        except ObjectDoesNotExist:
+            continue
     return translated_pages
 
 
@@ -622,52 +628,6 @@ class TranslatablePageMixinNotRoutable(object):
         return "get_translation_for_{}_{}_{}_{}_{}".format(
             self.pk, locale, site.pk, is_live,
             self.latest_revision_created_at.isoformat())
-
-    def get_translations_for(pages, locale, site, is_live=True):
-        show_only_translated_pages = SiteSettings.for_site(
-            site).show_only_translated_pages
-
-        language_setting = Languages.for_site(site)
-        language = language_setting.languages.filter(
-            locale=locale).first()
-
-        if not language:
-            if show_only_translated_pages:
-                return []
-            else:
-                return list(pages)
-
-        translated_pages = []
-        for page in pages:
-            cache_key = page.get_translation_for_cache_key(
-                locale, site, is_live)
-            trans_pk = cache.get(cache_key)
-
-        # TODO: consider pickling page object. Be careful about page size in
-        # memory
-            if trans_pk:
-                translated_pages.append(Page.objects.get(pk=trans_pk).specific)
-                continue
-
-            main_language_page = page.get_main_language_page()
-            if language.is_main_language and not page == main_language_page:
-                cache.set(cache_key, main_language_page.pk, None)
-                translated_pages.append(main_language_page)
-                continue
-
-            # Filter the translation pages for this page by the given language
-            translations = page.specific.translated_pages.all(
-                language=language)
-            if is_live is not None:
-                translations = translations.filter(translated_page__live=True)
-
-            if translations:
-                translated = translations.first().specific
-                cache.set(cache_key, translated.pk, None)
-                translated_pages.append(translated)
-            elif not show_only_translated_pages:
-                translated_pages.append(page)
-        return translated_pages
 
     def get_main_language_page(self):
         try:
@@ -767,12 +727,13 @@ class TranslatablePageMixinNotRoutable(object):
     def serve(self, request, *args, **kwargs):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
-        translation = parent.specific.get_translation_for(
-            locale_code, request.site)
         main_lang = Languages.for_site(request.site).languages.filter(
             is_main_language=True).first()
         if main_lang.locale == locale_code:
             translation = parent
+        else:
+            translation = parent.specific.translated_pages.filter(
+                language__locale=locale_code).first()
 
         if translation and self.language.locale != locale_code:
             if request.GET.urlencode():

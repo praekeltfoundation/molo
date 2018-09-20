@@ -304,6 +304,15 @@ class MoloTestCaseMixin(object):
         translation.save_revision().publish()
         PageTranslation.objects.get_or_create(
             page=source, translated_page=translation)
+        source.specific.translated_pages.add(translation)
+        source.save()
+        for translated_page in \
+                source.specific.translated_pages.all():
+            translations = source.specific.translated_pages.all().\
+                exclude(language__pk=translated_page.language.pk)
+            for translation in translations:
+                translated_page.translated_pages.add(translation)
+            translated_page.save()
         return translation
 
     def mk_section_translation(self, source, language, **kwargs):

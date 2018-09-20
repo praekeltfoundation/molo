@@ -6,7 +6,7 @@ from molo.core.admin import (
 )
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
-from molo.core.models import Languages
+from molo.core.models import Languages, ArticlePage
 from molo.core.utils import create_new_article_relations
 
 
@@ -17,7 +17,6 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.utils.html import format_html
 
 from wagtail.wagtailcore import hooks
-from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
 from wagtail.wagtailadmin.widgets import Button
@@ -127,7 +126,7 @@ class LanguageSummaryItem(SummaryItem):
         return {
             'summaries': [{
                 'language': l.get_locale_display(),
-                'total': Page.objects.specific().filter(
+                'total': ArticlePage.objects.all().filter(
                     language=l).count()
             }for l in languages],
         }

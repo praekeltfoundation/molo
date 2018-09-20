@@ -25,7 +25,7 @@ def get_language(site, locale):
 
 
 def get_pages(context, queryset, locale):
-    from molo.core.models import get_translations_for_pages
+    from molo.core.models import get_translation_for
 
     if queryset.count() == 0:
         return []
@@ -38,7 +38,7 @@ def get_pages(context, queryset, locale):
     if language and language.is_main_language:
         return list(queryset.live())
 
-    pages = get_translations_for_pages(queryset, locale, request.site)
+    pages = get_translation_for(queryset, locale, request.site)
     return pages or []
 
 
@@ -49,7 +49,7 @@ def load_tags(context):
 
     if request.site:
         qs = Tag.objects.descendant_of(request.site.root_page).filter(
-            is_main_language=True).live()
+            language__is_main_language=True).live()
     else:
         return[]
 
@@ -70,10 +70,12 @@ def load_sections(context):
 @register.assignment_tag(takes_context=True)
 def get_translation(context, page):
     locale_code = context.get('locale_code')
-    translation = page.get_translation_for(
-        locale_code, context['request'].site)
+    try:
+        translation = page.translated_pages.get(language__locale=locale_code)
+    except:
+        return page
 
-    return translation or page
+    return translation
 
 
 @register.assignment_tag(takes_context=True)
@@ -202,22 +204,13 @@ def footer_page(context):
 def breadcrumbs(context):
     self = context.get('self')
     locale_code = context.get('locale_code')
-
-    if self is None or self.depth <= 2:
-        # When on the home page, displaying breadcrumbs is irrelevant.
-        ancestors = ()
-    else:
-        ancestors = Page.objects.live().ancestor_of(
-            self, inclusive=True).filter(depth__gt=3).specific()
-
+    ancestors = []
     translated_ancestors = []
-    for p in ancestors:
-        if hasattr(p, 'get_translation_for'):
-            translated_ancestors.append(
-                p.get_translation_for(
-                    locale_code, context['request'].site) or p)
-        else:
-            translated_ancestors.append(p)
+    if self is not None and not self.depth <= 2:
+        ancestors = Page.objects.live().ancestor_of(
+            self, inclusive=True).filter(depth__gt=3)
+        if ancestors:
+            translated_ancestors = get_pages(context, ancestors, locale_code)
 
     return {
         'ancestors': translated_ancestors,
@@ -545,7 +538,7 @@ def load_tags_for_article(context, article):
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
     if question:
-        question_pk = question.get_main_language_page().pk
+        question_pk = question.specific.get_main_language_page().pk
         question = ReactionQuestion.objects.filter(pk=question_pk)
     if question and question.first().get_children():
         pks = [c.pk for c in question.first().get_children().filter(
@@ -559,7 +552,7 @@ def load_choices_for_reaction_question(context, question):
 def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
-        question = question.get_main_language_page().specific
+        question = question.specific.get_main_language_page()
         article = ArticlePage.objects.get(pk=article_pk)
         if hasattr(article, 'get_main_language_page'):
             article = article.get_main_language_page()
@@ -689,10 +682,10 @@ def get_next_article(context, article):
     else:
         return None
 
-    if next_article.get_translation_for(locale_code, context['request'].site):
-        return next_article.get_translation_for(
-            locale_code, context['request'].site)
-    else:
+    try:
+        next_article.translated_pages.get(language__locale=locale_code)
+        return next_article
+    except:
         return next_article
 
 
