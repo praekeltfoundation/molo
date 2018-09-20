@@ -34,8 +34,9 @@ def copy_translation_pages(page, new_page):
             page=new_page,
             language=languages.filter(
                 is_main_language=True).first())
+        new_page.language = languages.filter(is_main_language=True).first()
 
-    for translation in page.translations.all():
+    for translation in page.translated_pages.all():
         new_lang = translation.translated_page.specific.copy_language(
             current_site, destination_site)
         new_translation = translation.translated_page.copy(
@@ -44,12 +45,22 @@ def copy_translation_pages(page, new_page):
             new_l_rel = LanguageRelation.objects.get(page=new_translation)
             new_l_rel.language = new_lang
             new_l_rel.save()
+            new_translation.language = new_lang
         else:
             new_l_rel = LanguageRelation.objects.create(
                 page=new_translation, language=new_lang)
+            new_translation.language = new_lang
         PageTranslation.objects.create(
             page=new_page,
             translated_page=new_translation)
+        for translated_page in \
+                page.specific.translated_pages.all():
+            translations = page.specific.translated_pages.all().\
+                exclude(language__pk=translated_page.language.pk)
+            for translation in translations:
+                translated_page.translated_pages.add(translation)
+            translated_page.save()
+        new_translation.save()
 
 
 def create_new_article_relations(original_page, copied_page):
