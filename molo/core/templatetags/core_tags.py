@@ -63,7 +63,7 @@ def load_sections(context):
     if request.site:
         qs = request.site.root_page.specific.sections()
     else:
-        qs = []
+        return []
     return get_pages(context, qs, locale)
 
 
@@ -123,7 +123,7 @@ def latest_listing_homepage(context, num_count=5):
         articles = request.site.root_page.specific \
             .latest_articles()
     else:
-        articles = []
+        return []
     return {
         'articles': get_pages(context, articles, locale)[:num_count],
         'request': context['request'],
@@ -143,7 +143,7 @@ def topic_of_the_day(context):
         articles = request.site.root_page.specific \
             .topic_of_the_day()
     else:
-        articles = ArticlePage.objects.none()
+        return []
 
     return {
         'articles': get_pages(context, articles, locale),
