@@ -138,6 +138,18 @@ def add_translation(request, page_id, locale):
     language_relation.save()
     translation.save_revision()
 
+    # add the translation the new way
+    translation.specific.language = language
+    page.specific.translated_pages.add(translation)
+    page.save()
+    for translated_page in \
+            page.specific.translated_pages.all():
+        translations = page.specific.translated_pages.all().\
+            exclude(language__pk=translated_page.language.pk)
+        for translation in translations:
+            translated_page.translated_pages.add(translation)
+        translated_page.save()
+
     # make sure new translation is in draft mode
     translation.unpublish()
     PageTranslation.objects.get_or_create(

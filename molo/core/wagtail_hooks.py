@@ -99,7 +99,7 @@ def copy_translation_pages_hook(request, page, new_page):
 @hooks.register('before_delete_page')
 def delete_page_translations(request, page):
     if request.method == 'POST':
-        for translation in page.specific.translation_pages.all():
+        for translation in page.specific.translated_pages.all():
             translation.delete()
 
 
