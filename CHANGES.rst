@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+6.9.23
+~~~~~~
+- Translation script bugfix
+
 6.9.22
 ~~~~~~
 - Made translation commands multisite aware
