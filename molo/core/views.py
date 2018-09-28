@@ -31,7 +31,8 @@ from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     ArticlePage, Languages, SiteSettings, Tag,
     ArticlePageTags, SectionPage, ReactionQuestionChoice,
-    ReactionQuestionResponse, ReactionQuestion)
+    ReactionQuestionResponse, ReactionQuestion, TranslatablePageMixin)
+
 from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm, ReactionQuestionChoiceForm
@@ -108,14 +109,12 @@ def health(request):
 
 
 def add_translation(request, page_id, locale):
-    from molo.core.models import TranslatablePageMixin
     _page = get_object_or_404(Page, id=page_id)
     page = _page.specific
     if not issubclass(type(page), TranslatablePageMixin):
         messages.add_message(
             request, messages.INFO, _('That page is not translatable.'))
         return redirect(reverse('wagtailadmin_home'))
-
     # redirect to edit page if translation already exists for this locale
     translated_page = page.translated_pages.filter(language__locale=locale)
     if translated_page.exists():
@@ -131,11 +130,10 @@ def add_translation(request, page_id, locale):
     new_title = str(language) + " translation of %s" % page.title
     new_slug = generate_slug(new_title)
     translation = page.__class__(
-        title=new_title, slug=new_slug)
-    page.get_parent().add_child(instance=translation)
+        title=new_title, slug=new_slug, language=language)
     translation.save_revision()
+    page.get_parent().add_child(instance=translation)
     # add the translation the new way
-    translation.specific.language = language
     page.specific.translated_pages.add(translation)
     page.save()
     for translated_page in \

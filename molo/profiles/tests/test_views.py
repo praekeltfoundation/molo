@@ -16,8 +16,7 @@ from molo.profiles.models import (
     SecurityQuestion, SecurityAnswer,
     UserProfile, SecurityQuestionIndexPage, UserProfilesSettings
 )
-from molo.core.models import (
-    PageTranslation, Main, FooterPage, Languages, SiteLanguageRelation)
+from molo.core.models import Main, FooterPage, Languages, SiteLanguageRelation
 
 from molo.core.tests.base import MoloTestCaseMixin
 

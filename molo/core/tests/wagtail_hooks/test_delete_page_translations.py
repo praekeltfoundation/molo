@@ -1,11 +1,6 @@
 from django.test import TestCase
 
-from molo.core.models import (
-    ArticlePage,
-    Languages,
-    PageTranslation,
-    SiteLanguageRelation,
-)
+from molo.core.models import ArticlePage, Languages, SiteLanguageRelation
 from molo.core.tests.base import MoloTestCaseMixin
 
 

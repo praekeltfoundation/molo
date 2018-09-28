@@ -7,11 +7,9 @@ ALLOWED_HOSTS = [
     'site2',
 ]
 
-ENABLE_SSO = True
+ENABLE_SSO = False
 
 MIDDLEWARE_CLASSES += (  # noqa: F405
-    'molo.core.middleware.MoloCASMiddleware',
-    'molo.core.middleware.Custom403Middleware',
     'molo.core.middleware.MaintenanceModeMiddleware',
 )
 
@@ -20,7 +18,6 @@ AUTHENTICATION_BACKENDS = (
     'molo.profiles.backends.MoloProfilesModelBackend',
     'molo.core.backends.MoloModelBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'molo.core.backends.MoloCASBackend',
 )
 
 CAS_SERVER_URL = 'http://testcasserver'

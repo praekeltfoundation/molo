@@ -227,13 +227,21 @@ def render_translations(context, page):
         (l.locale, str(l))
         for l in Languages.for_site(context['request'].site).languages.filter(
             is_main_language=False)]
+
+    translated = []
+    for code, title in languages:
+        if page.specific.translated_pages.filter(
+                language__locale=code).exists():
+            translated.append({
+                'locale': {'title': title, 'code': code},
+                'translated':
+                    page.specific.translated_pages.filter(
+                        language__locale=code).first()})
+        else:
+            translated.append({
+                'locale': {'title': title, 'code': code}})
     return {
-        'translations': [{
-            'locale': {'title': title, 'code': code},
-            'translated':
-                page.specific.translated_pages.filter(
-                    language__locale=code).first()}
-            for code, title in languages],
+        'translations': translated,
         'page': page
     }
 
