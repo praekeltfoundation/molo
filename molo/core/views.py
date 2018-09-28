@@ -119,7 +119,6 @@ def add_translation(request, page_id, locale):
     # redirect to edit page if translation already exists for this locale
     translated_page = page.translated_pages.filter(language__locale=locale)
     if translated_page.exists():
-        print 'should not be in here'
         return redirect(
             reverse('wagtailadmin_pages:edit', args=[
                 translated_page.first().id]))

@@ -227,7 +227,6 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         promote_articles()
 
         response = self.client.get('/')
-        print response
         self.assertContains(response, 'English section')
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')

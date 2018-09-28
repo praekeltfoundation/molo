@@ -691,7 +691,6 @@ def get_recommended_articles(context, article):
     else:
         a = article.get_main_language_page()
         recommended_articles = a.specific.recommended_articles.all()
-    print recommended_articles
     # http://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order/37648265#37648265 # noqa
     # the following allows us to order the results of the querystring
     recommended_articles_queryset = recommended_articles.values_list(
