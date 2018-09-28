@@ -18,7 +18,7 @@ from molo.core.api.constants import KEYS_TO_EXCLUDE
 
 
 def copy_translation_pages(page, new_page):
-    from molo.core.models import Languages, LanguageRelation, PageTranslation
+    from molo.core.models import Languages, LanguageRelation
     # Only copy translations for TranslatablePageMixin
     if not hasattr(page.specific, 'copy_language'):
         return 'Not translatable page'
@@ -50,9 +50,6 @@ def copy_translation_pages(page, new_page):
             new_l_rel = LanguageRelation.objects.create(
                 page=new_translation, language=new_lang)
             new_translation.language = new_lang
-        PageTranslation.objects.create(
-            page=new_page,
-            translated_page=new_translation)
         for translated_page in \
                 page.specific.translated_pages.all():
             translations = page.specific.translated_pages.all().\

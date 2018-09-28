@@ -959,11 +959,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_featured_homepage_listing_in_french(self):
         en_page = self.mk_article(
             self.yourmind_sub, featured_in_homepage_start_date=datetime.now())
-        promote_articles()
         fr_page = self.mk_article_translation(
             en_page, self.french,
             title=en_page.title + ' in french',
             subtitle=en_page.subtitle + ' in french')
+        promote_articles()
         response = self.client.get('/')
         self.assertContains(
             response,
@@ -1721,7 +1721,6 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
             is_active=True)
 
         self.section_a = self.mk_section(self.section_index, title='Section A')
-
         self.section_a.enable_next_section = True
         self.section_a.save()
 
@@ -1799,14 +1798,14 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
             title=self.article_b.title + ' in french').delete()
         section = ArticlePage.objects.get(
             title=self.article_c.title + ' in french').get_parent().specific
-        section.enable_recommended_section = True
+        section.enable_next_section = True
         section.save()
         self.client.get('/locale/fr/')
 
         response = self.client.get(
             '/sections-main-1/section-a/article-c-in-french/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'Article A in french')
+        self.assertContains(response, 'Article B')
 
     def test_next_article_show_only_translated_pages(self):
         default_site = Site.objects.get(is_default_site=True)
