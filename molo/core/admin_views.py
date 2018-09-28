@@ -4,7 +4,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.edit import FormView
 from molo.core.models import ReactionQuestionResponse, ReactionQuestion, \
-    ArticlePageReactionQuestions, ArticlePage
+    ArticlePageReactionQuestions, ArticlePage, ReactionQuestionChoice
 
 
 class ReactionQuestionSummaryAdminView(FormView):
@@ -15,7 +15,7 @@ class ReactionQuestionSummaryAdminView(FormView):
             page=article).reaction_question
         data_headings = ['Article']
         data_rows = []
-        choices = question.get_children().filter(
+        choices = ReactionQuestionChoice.objects.child_of(question).filter(
             language__is_main_language=True)
         choice_totals = []
         for choice in choices:

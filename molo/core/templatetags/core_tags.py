@@ -37,7 +37,6 @@ def get_pages(context, queryset, locale):
     language = get_language(request.site, locale)
     if language and language.is_main_language:
         return list(queryset.live())
-
     pages = get_translation_for(queryset, locale, request.site)
     return pages or []
 
@@ -122,8 +121,7 @@ def latest_listing_homepage(context, num_count=5):
     locale = context.get('locale_code')
 
     if request.site:
-        articles = request.site.root_page.specific \
-            .latest_articles()
+        articles = request.site.root_page.specific.latest_articles()
     else:
         articles = []
     return {
@@ -221,7 +219,8 @@ def breadcrumbs(context):
 @register.inclusion_tag(
     'wagtail/translations_actions.html', takes_context=True)
 def render_translations(context, page):
-    if not hasattr(page.specific, 'get_translation_for'):
+    from molo.core.models import TranslatablePageMixin
+    if not issubclass(type(page.specific), TranslatablePageMixin):
         return {}
 
     languages = [
@@ -232,9 +231,8 @@ def render_translations(context, page):
         'translations': [{
             'locale': {'title': title, 'code': code},
             'translated':
-                page.specific.get_translation_for(
-                    code, context['request'].site, is_live=None)
-            if hasattr(page.specific, 'get_translation_for') else None}
+                page.specific.translated_pages.filter(
+                    language__locale=code).first()}
             for code, title in languages],
         'page': page
     }
@@ -538,12 +536,10 @@ def load_tags_for_article(context, article):
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
     if question:
-        question_pk = question.specific.get_main_language_page().pk
-        question = ReactionQuestion.objects.filter(pk=question_pk)
-    if question and question.first().get_children():
-        pks = [c.pk for c in question.first().get_children().filter(
-            language__is_main_language=True)]
-        choices = ReactionQuestionChoice.objects.filter(pk__in=pks)
+        question = question.specific.get_main_language_page().specific
+    if question and question.get_children():
+        choices = ReactionQuestionChoice.objects.child_of(
+            question).filter(language__is_main_language=True)
         return get_pages(context, choices, locale)
     return []
 
@@ -598,7 +594,6 @@ def load_child_sections_for_section(context, section, count=None):
 
     if not locale:
         return qs[:count]
-
     return get_pages(context, qs, locale)
 
 
@@ -706,7 +701,6 @@ def get_recommended_articles(context, article):
 
     if not recommended_articles_queryset:
         return []
-
     preserved = Case(
         *[When(pk=pk, then=pos) for pos, pk in enumerate(
                 recommended_articles_queryset)])

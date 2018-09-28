@@ -301,17 +301,18 @@ class MoloTestCaseMixin(object):
         language_relation = translation.languages.first()
         language_relation.language = language
         language_relation.save()
+        translation.language = language
         translation.save_revision().publish()
-        PageTranslation.objects.get_or_create(
-            page=source, translated_page=translation)
         source.specific.translated_pages.add(translation)
         source.save()
+        PageTranslation.objects.get_or_create(
+            page=source, translated_page=translation)
         for translated_page in \
                 source.specific.translated_pages.all():
             translations = source.specific.translated_pages.all().\
                 exclude(language__pk=translated_page.language.pk)
-            for translation in translations:
-                translated_page.translated_pages.add(translation)
+            for t in translations:
+                translated_page.translated_pages.add(t)
             translated_page.save()
         return translation
 

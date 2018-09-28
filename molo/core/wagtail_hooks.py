@@ -80,8 +80,11 @@ modeladmin_register(AdminViewGroup)
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
-    if main_language and parent_page.depth > 2:
-        return pages.filter(language=main_language)
+    specific_pages = [page.specific for page in pages]
+    if pages and main_language and parent_page.depth > 2:
+        new_pages = [page for page in specific_pages
+                     if page.language.pk == main_language.pk]
+        return new_pages
     return pages
 
 
@@ -97,7 +100,7 @@ def copy_translation_pages_hook(request, page, new_page):
 
 @hooks.register('before_delete_page')
 def delete_page_translations(request, page):
-    if request.method == 'POST':
+    if request.method == 'POST' and page.specific.language.is_main_language:
         for translation in page.specific.translated_pages.all():
             translation.delete()
 

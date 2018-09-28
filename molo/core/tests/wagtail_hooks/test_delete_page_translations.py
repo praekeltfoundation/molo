@@ -42,12 +42,12 @@ class TestHookDeletePageTranslations(TestCase, MoloTestCaseMixin):
     def test_does_not_delete_on_get_request(self):
         response = self.client.get(
             '/admin/pages/{0}/delete/'.format(self.page_english.id))
-
         self.assertEqual(response.status_code, 200)
         self.assertEqual(ArticlePage.objects.filter(title='En').count(), 1)
         self.assertEqual(ArticlePage.objects.filter(title='Xh').count(), 1)
         self.assertEqual(ArticlePage.objects.filter(title='Zu').count(), 1)
-        self.assertEqual(PageTranslation.objects.all().count(), 2)
+        self.assertEqual(ArticlePage.objects.get(
+                title='En').translated_pages.all().count(), 2)
 
     def test_deletes_all_on_post_request(self):
         response = self.client.post(
@@ -57,14 +57,13 @@ class TestHookDeletePageTranslations(TestCase, MoloTestCaseMixin):
         self.assertEqual(ArticlePage.objects.filter(title='En').count(), 0)
         self.assertEqual(ArticlePage.objects.filter(title='Xh').count(), 0)
         self.assertEqual(ArticlePage.objects.filter(title='Zu').count(), 0)
-        self.assertEqual(PageTranslation.objects.all().count(), 0)
 
     def test_delete_translation_does_not_delete_original(self):
         response = self.client.post(
             '/admin/pages/{0}/delete/'.format(self.page_zulu.id))
-
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ArticlePage.objects.filter(title='En').count(), 1)
-        self.assertEqual(ArticlePage.objects.filter(title='Xh').count(), 1)
         self.assertEqual(ArticlePage.objects.filter(title='Zu').count(), 0)
-        self.assertEqual(PageTranslation.objects.all().count(), 1)
+        self.assertEqual(ArticlePage.objects.filter(title='Xh').count(), 1)
+        self.assertEqual(ArticlePage.objects.get(
+                title='En').translated_pages.all().count(), 1)

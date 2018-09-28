@@ -575,7 +575,6 @@ class LanguageRelation(models.Model):
 def get_translation_for(pages, locale, site, is_live=True):
     show_only_translated_pages = SiteSettings.for_site(
         site).show_only_translated_pages
-
     language_setting = Languages.for_site(site)
     language = language_setting.languages.filter(
         locale=locale).first()
@@ -597,7 +596,6 @@ def get_translation_for(pages, locale, site, is_live=True):
         if trans_pk:
             translated_pages.append(Page.objects.get(pk=trans_pk).specific)
             continue
-
         main_language_page = page.specific.get_main_language_page()
         if language.is_main_language and not page == main_language_page:
             cache.set(cache_key, main_language_page.pk, None)
@@ -606,19 +604,21 @@ def get_translation_for(pages, locale, site, is_live=True):
 
         # Filter the translation pages for this page by the given language
         try:
-            translations = page.specific.translated_pages.get(
+            translation = page.specific.translated_pages.get(
                 language=language)
             if is_live is not None:
-                translations = translations.filter(
-                    translated_page__live=True)
-
-            if translations:
-                translated = translations.first().specific
+                if not translation.live:
+                    translation = None
+            if translation:
+                translated = translation.specific
                 cache.set(cache_key, translated.pk, None)
                 translated_pages.append(translated)
-            elif not show_only_translated_pages:
-                translated_pages.append(page)
+            else:
+                if not show_only_translated_pages:
+                    translated_pages.append(page)
         except ObjectDoesNotExist:
+            if not show_only_translated_pages:
+                translated_pages.append(page)
             continue
     return translated_pages
 
@@ -655,15 +655,15 @@ class TranslatablePageMixinNotRoutable(object):
                 language=language)
             self.language = language
             self.save()
-
         return response
 
     def move(self, target, pos=None):
         super(TranslatablePageMixinNotRoutable, self).move(target, pos)
 
-        if hasattr(self, 'translations'):
+        if hasattr(self, 'translated_pages'):
             for p in self.translated_pages.all():
-                p.move(target, pos='last-child')
+                if not Page.objects.filter(pk=self.pk).first():
+                    p.move(target, pos='last-child')
 
     def copy_language(self, current_site, destination_site):
         language = self.languages.all().first()
@@ -1335,8 +1335,7 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
 
         main_lang = Languages.for_site(self.get_site()).languages.filter(
             is_main_language=True).first()
-        language_rel = self.language
-        if language_rel and main_lang.pk == self.language.pk:
+        if self.language and main_lang.pk == self.language.pk:
             parent_section = SectionPage.objects.all().ancestor_of(self).last()
             if parent_section:
                 return parent_section.get_effective_image()
@@ -1346,7 +1345,7 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             return page.specific.get_effective_image()
 
     def get_parent_section(self):
-        return SectionPage.objects.all().ancestor_of(self).last()
+        return self.get_parent().specific
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1550,11 +1549,13 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         if not (current_site is destination_site):
             language = self.language
             if not destination_site.languages.languages.filter(
-                    locale=language.language.locale).exists():
+                    locale=language.locale).exists():
                 new_lang = SiteLanguageRelation.objects.create(
                     language_setting=Languages.for_site(destination_site),
-                    locale=language.language.locale,
+                    locale=language.locale,
                     is_active=False)
+                self.language = new_lang
+                self.save()
                 LanguageRelation.objects.create(
                     page=self, language=new_lang)
         super(ArticlePage, self).move(*args, **kwargs)
@@ -1563,7 +1564,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         return self.url
 
     def get_parent_section(self):
-        return SectionPage.objects.all().ancestor_of(self).last()
+        return self.get_parent().specific
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()

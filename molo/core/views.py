@@ -29,7 +29,7 @@ from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
 from wagtail.wagtailsearch.models import Query
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
-    PageTranslation, ArticlePage, Languages, SiteSettings, Tag,
+    ArticlePage, Languages, SiteSettings, Tag,
     ArticlePageTags, SectionPage, ReactionQuestionChoice,
     ReactionQuestionResponse, ReactionQuestion)
 from molo.core.templatetags.core_tags import get_pages
@@ -108,19 +108,21 @@ def health(request):
 
 
 def add_translation(request, page_id, locale):
+    from molo.core.models import TranslatablePageMixin
     _page = get_object_or_404(Page, id=page_id)
     page = _page.specific
-    if not hasattr(page, 'get_translation_for'):
+    if not issubclass(type(page), TranslatablePageMixin):
         messages.add_message(
             request, messages.INFO, _('That page is not translatable.'))
         return redirect(reverse('wagtailadmin_home'))
 
     # redirect to edit page if translation already exists for this locale
-    translated_page = page.get_translation_for(
-        locale, request.site, is_live=None)
-    if translated_page:
+    translated_page = page.translated_pages.filter(language__locale=locale)
+    if translated_page.exists():
+        print 'should not be in here'
         return redirect(
-            reverse('wagtailadmin_pages:edit', args=[translated_page.id]))
+            reverse('wagtailadmin_pages:edit', args=[
+                translated_page.first().id]))
 
     # create translation and redirect to edit page
     language = Languages.for_site(request.site).languages.filter(
@@ -133,11 +135,6 @@ def add_translation(request, page_id, locale):
         title=new_title, slug=new_slug)
     page.get_parent().add_child(instance=translation)
     translation.save_revision()
-    language_relation = translation.languages.first()
-    language_relation.language = language
-    language_relation.save()
-    translation.save_revision()
-
     # add the translation the new way
     translation.specific.language = language
     page.specific.translated_pages.add(translation)
@@ -152,8 +149,6 @@ def add_translation(request, page_id, locale):
 
     # make sure new translation is in draft mode
     translation.unpublish()
-    PageTranslation.objects.get_or_create(
-        page=page, translated_page=translation)
     return redirect(
         reverse('wagtailadmin_pages:edit', args=[translation.id]))
 
@@ -288,10 +283,10 @@ class TagsListView(ListView):
 
     def get_queryset(self, *args, **kwargs):
         site_settings = SiteSettings.for_site(self.request.site)
+        main = self.request.site.root_page
+        tag = self.kwargs["tag_name"]
         if site_settings.enable_tag_navigation:
-            tag = self.kwargs["tag_name"]
             count = self.request.GET.get("count")
-            main = self.request.site.root_page
             context = {'request': self.request}
             locale = self.request.LANGUAGE_CODE
 

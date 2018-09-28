@@ -83,8 +83,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.client.get(reverse(
             'add_translation', args=[self.english_section.id, 'fr']))
         page = SectionPage.objects.get(
-            slug='french-translation-of-english-section')
-        self.assertEquals(str(page.languages.all()[0].language), 'French')
+            title='French translation of English section')
+        self.assertEquals(str(page.language.locale), 'fr')
 
     def test_draft_translations_have_additional_css_clsss(self):
         self.client.post(reverse(
@@ -173,13 +173,11 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertRedirects(response, reverse('wagtailadmin_home'))
 
     def test_site_languages_summary(self):
-        self.client.post(reverse(
-            'add_translation', args=[self.english_subsection.id, 'fr']))
-        self.client.post(reverse(
-            'add_translation', args=[self.english_section.id, 'fr']))
-        page = SectionPage.objects.get(
-            slug='french-translation-of-english-section')
-        page.save_revision().publish()
+        articles = self.mk_articles(
+            parent=self.english_section, count=2)
+        for article in articles:
+            self.client.post(reverse(
+                'add_translation', args=[article.id, 'fr']))
         response = self.client.get(reverse('wagtailadmin_home'))
         self.assertContains(response, '<span>2</span>English Pages')
         self.assertContains(response, '<span>2</span>French Pages')
@@ -229,10 +227,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         promote_articles()
 
         response = self.client.get('/')
-        self.assertContains(
-            response,
-            '<a href="/sections-main-1/english-section/"'
-            ' class="section-listing__theme-bg-link">English section</a>')
+        print response
+        self.assertContains(response, 'English section')
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
         self.assertContains(
@@ -532,6 +528,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             featured_in_latest_start_date=datetime.now(),
             featured_in_homepage_start_date=datetime.now())
         promote_articles()
+        en_page = ArticlePage.objects.get(pk=en_page.pk)
         self.mk_article_translation(
             en_page, self.spanish_mexico,
             title=en_page.title + ' in Mexican Spanish',)
@@ -539,8 +536,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            '<a href="/sections-main-1/english-section2/"'
-            ' class="section-listing__theme-bg-link">English section2</a>')
+            'English section2')
         self.assertNotContains(
             response,
             'English section2 in Mexican Spanish')
