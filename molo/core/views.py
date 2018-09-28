@@ -131,8 +131,8 @@ def add_translation(request, page_id, locale):
     new_slug = generate_slug(new_title)
     translation = page.__class__(
         title=new_title, slug=new_slug, language=language)
-    translation.save_revision()
     page.get_parent().add_child(instance=translation)
+    translation.save_revision()
     # add the translation the new way
     page.specific.translated_pages.add(translation)
     page.save()
