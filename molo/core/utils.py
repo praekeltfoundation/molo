@@ -18,7 +18,7 @@ from molo.core.api.constants import KEYS_TO_EXCLUDE
 
 
 def copy_translation_pages(page, new_page):
-    from molo.core.models import Languages, LanguageRelation
+    from molo.core.models import Languages
     # Only copy translations for TranslatablePageMixin
     if not hasattr(page.specific, 'copy_language'):
         return 'Not translatable page'
@@ -28,12 +28,7 @@ def copy_translation_pages(page, new_page):
     if current_site is not destination_site and (page.depth > 2):
         page.specific.copy_language(current_site, destination_site)
     languages = Languages.for_site(destination_site).languages
-    if (languages.filter(is_main_language=True).exists() and
-            not new_page.languages.exists()):
-        LanguageRelation.objects.create(
-            page=new_page,
-            language=languages.filter(
-                is_main_language=True).first())
+    if languages.filter(is_main_language=True).exists():
         new_page.language = languages.filter(is_main_language=True).first()
 
     for translation in page.specific.translated_pages.all():
@@ -41,15 +36,7 @@ def copy_translation_pages(page, new_page):
             current_site, destination_site)
         new_translation = translation.copy(
             to=new_page.get_parent())
-        if LanguageRelation.objects.filter(page=new_translation).exists():
-            new_l_rel = LanguageRelation.objects.get(page=new_translation)
-            new_l_rel.language = new_lang
-            new_l_rel.save()
-            new_translation.language = new_lang
-        else:
-            new_l_rel = LanguageRelation.objects.create(
-                page=new_translation, language=new_lang)
-            new_translation.language = new_lang
+        new_translation.language = new_lang
         for translated_page in \
                 page.specific.translated_pages.all():
             translations = page.specific.translated_pages.all().\

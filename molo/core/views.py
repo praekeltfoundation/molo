@@ -136,6 +136,8 @@ def add_translation(request, page_id, locale):
     # add the translation the new way
     page.specific.translated_pages.add(translation)
     page.save()
+    translation.specific.translated_pages.add(page)
+    translation.save()
     for translated_page in \
             page.specific.translated_pages.all():
         translations = page.specific.translated_pages.all().\
