@@ -29,7 +29,7 @@ install_requires = [
     'django-phonenumber-field==1.3.0',
     'django-import-export',
     'django-daterange-filter',
-    'markdown',
+    'markdown>=3.0.1',
     'mote-prk==0.2.1',
     'raven==5.0.0',
     'redis',
