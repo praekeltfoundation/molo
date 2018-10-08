@@ -1701,6 +1701,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
         self.assertEquals(response.status_code, 200)
         self.assertNotContains(response, self.article_b.title + ' in french')
         self.assertContains(response, self.article_d.title + ' in french')
+        self.assertContains(response, self.article_c_fr.title)
 
 
 class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
