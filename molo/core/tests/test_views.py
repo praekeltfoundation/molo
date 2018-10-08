@@ -1651,7 +1651,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, self.article_a.title)
+        self.assertContains(response, self.article_b.title)
         self.assertContains(response, self.article_c.title + ' in french')
 
     def test_article_recommended_section_only_translated(self):
