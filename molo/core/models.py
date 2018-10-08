@@ -694,16 +694,6 @@ class TranslatablePageMixinNotRoutable(object):
             if new_lang:
                 page_copy.language = new_lang
                 page_copy.save()
-
-            old_parent = self.get_main_language_page()
-            if old_parent:
-                new_translation_parent = \
-                    page_copy.get_parent().get_children().filter(
-                        slug=old_parent.slug).first()
-                if new_translation_parent:
-                    PageTranslation.objects.create(
-                        page=new_translation_parent,
-                        translated_page=page_copy)
             return page_copy
         else:
             return super(TranslatablePageMixinNotRoutable, self).copy(

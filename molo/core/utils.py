@@ -37,6 +37,10 @@ def copy_translation_pages(page, new_page):
         new_translation = translation.copy(
             to=new_page.get_parent())
         new_translation.language = new_lang
+        new_translation.specific.translated_pages.add(new_page)
+        new_page.specific.translated_pages.add(new_translation)
+        new_page.save()
+        new_translation.save()
         for translated_page in \
                 page.specific.translated_pages.all():
             translations = page.specific.translated_pages.all().\
