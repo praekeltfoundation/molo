@@ -610,7 +610,7 @@ def load_child_sections_for_section(context, section, count=None):
 def handle_markdown(value):
     md = markdown(
         value,
-        [
+        extensions=[
             'markdown.extensions.fenced_code',
             'codehilite',
         ]
