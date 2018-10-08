@@ -15,7 +15,7 @@ class MarkDownBlock(blocks.TextBlock):
     def render_basic(self, value, context=None):
         md = markdown(
             value,
-            [
+            extensions=[
                 'markdown.extensions.fenced_code',
                 'codehilite',
             ],
@@ -43,7 +43,7 @@ type="audio/mpeg">Click here to download
 
         md = markdown(
             player_code.format(value.file.url, value.title),
-            [
+            extensions=[
                 'markdown.extensions.fenced_code',
                 'codehilite',
             ],
