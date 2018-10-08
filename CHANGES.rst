@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.10.0
+~~~~~~
+- Fix MarkDown dependency
+- (this is potentially a breaking change for dependant projects that explicitly use MarkDown)
 
 6.9.24
 ~~~~~~
