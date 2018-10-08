@@ -688,7 +688,11 @@ def get_next_article(context, article):
     try:
         return next_article.translated_pages.get(language__locale=locale_code)
     except:
-        return next_article
+        if next_article.language.locale == locale_code or not \
+                SiteSettings.for_site(
+                    context['request'].site).show_only_translated_pages:
+            return next_article
+        return None
 
 
 @register.assignment_tag(takes_context=True)
