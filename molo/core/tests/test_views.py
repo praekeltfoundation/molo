@@ -646,7 +646,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Sample page content for %s' % (
             en_page.title + ' in spanish'))
 
-    @override_settings(USE_QS_TRANSLATIONS=False)
     def test_switching_between_child_languages_with_old_get_pages(self):
         self.yourmind_es = self.mk_section_translation(
             self.yourmind, self.spanish, title='Your mind in spanish')
