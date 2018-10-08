@@ -665,7 +665,7 @@ class TranslatablePageMixinNotRoutable(object):
 
         if hasattr(self, 'translated_pages'):
             for p in self.translated_pages.all():
-                if not Page.objects.filter(pk=self.pk).first():
+                if not Page.objects.filter(pk=p.pk).first():
                     p.move(target, pos='last-child')
 
     def copy_language(self, current_site, destination_site):
