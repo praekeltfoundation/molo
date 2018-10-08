@@ -239,7 +239,8 @@ def render_translations(context, page):
                         language__locale=code).first()})
         else:
             translated.append({
-                'locale': {'title': title, 'code': code}})
+                'locale': {'title': title, 'code': code},
+                'translated': []})
     return {
         'translations': translated,
         'page': page
