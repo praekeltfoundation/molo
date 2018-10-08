@@ -618,6 +618,9 @@ def get_translation_for(pages, locale, site, is_live=True):
                     translated_pages.append(page)
         except ObjectDoesNotExist:
             if not show_only_translated_pages:
+                if is_live is not None:
+                    if not page.live:
+                        continue
                 translated_pages.append(page)
             continue
     return translated_pages
@@ -1345,7 +1348,7 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             return page.specific.get_effective_image()
 
     def get_parent_section(self):
-        return self.get_parent().specific
+        return SectionPage.objects.all().ancestor_of(self).last()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()

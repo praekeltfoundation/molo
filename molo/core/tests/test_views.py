@@ -318,14 +318,14 @@ class TestPages(TestCase, MoloTestCaseMixin):
             Languages.for_site(
                 self.main2.get_site()).languages.filter(
                     locale='fr').first().is_active)
-        new_section = Page.objects.get(slug='blank')
+        new_section = Page.objects.get(slug='blank').specific
         self.assertEquals(new_section.get_site(), self.main2.get_site())
         self.assertEquals(
             new_section.get_children().count(),
             self.yourmind.get_children().count())
         self.assertEquals(
-            new_section.translations.all().count(),
-            self.yourmind.translations.all().count())
+            new_section.translated_pages.all().count(),
+            self.yourmind.translated_pages.all().count())
 
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_copy_main_with_celery_disabled(self):
