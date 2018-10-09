@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -266,6 +267,8 @@ class MoloTestCaseMixin(object):
                 'slug': generate_slug(data['title'])
             })
             article = ArticlePage(**data)
+            if not article.first_published_at:
+                article.first_published_at = datetime.now()
             parent.add_child(instance=article)
             article.save_revision().publish()
             articles.append(article)
