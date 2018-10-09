@@ -1318,8 +1318,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections-main-1/your-mind-in-french/')
         self.assertContains(response, 'Page 1 of 3')
         # articles ordered by most recently published
-        self.assertContains(response, 'Test page 14 in french')
         print(response.content)
+        self.assertContains(response, 'Test page 14 in french')
 
         response = self.client.get('/sections-main-1/your-mind-in-french/?p=2')
         self.assertContains(response, 'Page 2 of 3')
