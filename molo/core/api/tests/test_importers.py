@@ -25,6 +25,7 @@ from molo.core.models import (
     ArticlePageTags,
     SectionPageTags,
     BannerPage,
+    get_translation_for
 )
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.utils import get_image_hash
@@ -476,8 +477,9 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
 
         self.assertEqual(ArticlePage.objects.count(), 2)
         site = Site.objects.get(pk=self.importer.site_pk)
-        self.assertEqual(article.get_translation_for(
-            "fr", site),
+        self.assertEqual(get_translation_for(
+            [article],
+            "fr", site)[0],
             translated_article)
 
     def test_create_section_page_translated(self):
@@ -509,8 +511,9 @@ class TestContentImporter(TestCase, MoloTestCaseMixin):
 
         self.assertEqual(SectionPage.objects.count(), 2)
         site = Site.objects.get(pk=self.importer.site_pk)
-        self.assertEqual(section.get_translation_for(
-            "fr", site),
+        self.assertEqual(get_translation_for(
+            [section],
+            "fr", site)[0],
             translated_section)
 
     @patch("molo.core.api.importers.requests.get",

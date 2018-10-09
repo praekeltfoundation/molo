@@ -37,5 +37,3 @@ DEAFULT_SITE_PORT = 8000
 INSTALLED_APPS = INSTALLED_APPS + [  # noqa: F405
     'import_export',
 ]
-
-USE_QS_TRANSLATIONS = True

@@ -45,6 +45,7 @@ class Command(BaseCommand):
         for relation in LanguageRelation.objects.filter(
                 language__is_main_language=True):
             relation.language = new_language
+            relation.page.specific.language = new_language
             relation.save()
 
         new_language.is_main_language = True

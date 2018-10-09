@@ -29,9 +29,10 @@ from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
 from wagtail.wagtailsearch.models import Query
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
-    PageTranslation, ArticlePage, Languages, SiteSettings, Tag,
+    ArticlePage, Languages, SiteSettings, Tag,
     ArticlePageTags, SectionPage, ReactionQuestionChoice,
-    ReactionQuestionResponse, ReactionQuestion)
+    ReactionQuestionResponse, ReactionQuestion, TranslatablePageMixin)
+
 from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm, ReactionQuestionChoiceForm
@@ -55,7 +56,7 @@ def search(request, results_per_page=10, load_more=False):
         main = request.site.root_page
 
         results = ArticlePage.objects.descendant_of(main).filter(
-            languages__language__locale=locale
+            language__locale=locale
         ).exact_type(ArticlePage).values_list('pk', flat=True)
 
         # Elasticsearch backend doesn't support filtering
@@ -110,17 +111,16 @@ def health(request):
 def add_translation(request, page_id, locale):
     _page = get_object_or_404(Page, id=page_id)
     page = _page.specific
-    if not hasattr(page, 'get_translation_for'):
+    if not issubclass(type(page), TranslatablePageMixin):
         messages.add_message(
             request, messages.INFO, _('That page is not translatable.'))
         return redirect(reverse('wagtailadmin_home'))
-
     # redirect to edit page if translation already exists for this locale
-    translated_page = page.get_translation_for(
-        locale, request.site, is_live=None)
-    if translated_page:
+    translated_page = page.translated_pages.filter(language__locale=locale)
+    if translated_page.exists():
         return redirect(
-            reverse('wagtailadmin_pages:edit', args=[translated_page.id]))
+            reverse('wagtailadmin_pages:edit', args=[
+                translated_page.first().id]))
 
     # create translation and redirect to edit page
     language = Languages.for_site(request.site).languages.filter(
@@ -130,18 +130,24 @@ def add_translation(request, page_id, locale):
     new_title = str(language) + " translation of %s" % page.title
     new_slug = generate_slug(new_title)
     translation = page.__class__(
-        title=new_title, slug=new_slug)
+        title=new_title, slug=new_slug, language=language)
     page.get_parent().add_child(instance=translation)
     translation.save_revision()
-    language_relation = translation.languages.first()
-    language_relation.language = language
-    language_relation.save()
-    translation.save_revision()
+    # add the translation the new way
+    page.specific.translated_pages.add(translation)
+    page.save()
+    translation.specific.translated_pages.add(page)
+    translation.save()
+    for translated_page in \
+            page.specific.translated_pages.all():
+        translations = page.specific.translated_pages.all().\
+            exclude(language__pk=translated_page.language.pk)
+        for translation in translations:
+            translated_page.translated_pages.add(translation)
+        translated_page.save()
 
     # make sure new translation is in draft mode
     translation.unpublish()
-    PageTranslation.objects.get_or_create(
-        page=page, translated_page=translation)
     return redirect(
         reverse('wagtailadmin_pages:edit', args=[translation.id]))
 
@@ -275,14 +281,14 @@ class TagsListView(ListView):
     template_name = "core/article_tags.html"
 
     def get_queryset(self, *args, **kwargs):
-        tag = self.kwargs["tag_name"]
-        count = self.request.GET.get("count")
-        main = self.request.site.root_page
         site_settings = SiteSettings.for_site(self.request.site)
-        context = {'request': self.request}
-        locale = self.request.LANGUAGE_CODE
-
+        main = self.request.site.root_page
+        tag = self.kwargs["tag_name"]
         if site_settings.enable_tag_navigation:
+            count = self.request.GET.get("count")
+            context = {'request': self.request}
+            locale = self.request.LANGUAGE_CODE
+
             tag = Tag.objects.filter(slug=tag).descendant_of(main)
             if tag.exists():
                 tag = tag.first()
