@@ -25,8 +25,7 @@ def get_language(site, locale):
 
 
 def get_pages(context, queryset, locale):
-    from molo.core.models import get_translations_for_pages
-    from django.conf import settings
+    from molo.core.models import get_translation_for
 
     if queryset.count() == 0:
         return []
@@ -38,20 +37,8 @@ def get_pages(context, queryset, locale):
     language = get_language(request.site, locale)
     if language and language.is_main_language:
         return list(queryset.live())
-
-    pages = []
-    if getattr(settings, 'USE_QS_TRANSLATIONS', None):
-        pages = get_translations_for_pages(queryset, locale, request.site)
-    else:
-        show_only_translated_pages = SiteSettings.for_site(
-            request.site).show_only_translated_pages
-        for page in queryset:
-            translation = page.get_translation_for(locale, request.site)
-            if translation and translation.live:
-                pages.append(translation)
-            elif page.live and not show_only_translated_pages:
-                pages.append(page)
-    return pages
+    pages = get_translation_for(queryset, locale, request.site)
+    return pages or []
 
 
 @register.assignment_tag(takes_context=True)
@@ -61,9 +48,9 @@ def load_tags(context):
 
     if request.site:
         qs = Tag.objects.descendant_of(request.site.root_page).filter(
-            languages__language__is_main_language=True).live()
+            language__is_main_language=True).live()
     else:
-        qs = []
+        return[]
 
     return get_pages(context, qs, locale)
 
@@ -75,17 +62,19 @@ def load_sections(context):
     if request.site:
         qs = request.site.root_page.specific.sections()
     else:
-        qs = []
+        return []
     return get_pages(context, qs, locale)
 
 
 @register.assignment_tag(takes_context=True)
 def get_translation(context, page):
     locale_code = context.get('locale_code')
-    translation = page.get_translation_for(
-        locale_code, context['request'].site)
+    try:
+        translation = page.translated_pages.get(language__locale=locale_code)
+    except:
+        return page
 
-    return translation or page
+    return translation
 
 
 @register.assignment_tag(takes_context=True)
@@ -132,8 +121,7 @@ def latest_listing_homepage(context, num_count=5):
     locale = context.get('locale_code')
 
     if request.site:
-        articles = request.site.root_page.specific \
-            .latest_articles()
+        articles = request.site.root_page.specific.latest_articles()
     else:
         articles = []
     return {
@@ -214,22 +202,13 @@ def footer_page(context):
 def breadcrumbs(context):
     self = context.get('self')
     locale_code = context.get('locale_code')
-
-    if self is None or self.depth <= 2:
-        # When on the home page, displaying breadcrumbs is irrelevant.
-        ancestors = ()
-    else:
-        ancestors = Page.objects.live().ancestor_of(
-            self, inclusive=True).filter(depth__gt=3).specific()
-
+    ancestors = []
     translated_ancestors = []
-    for p in ancestors:
-        if hasattr(p, 'get_translation_for'):
-            translated_ancestors.append(
-                p.get_translation_for(
-                    locale_code, context['request'].site) or p)
-        else:
-            translated_ancestors.append(p)
+    if self is not None and not self.depth <= 2:
+        ancestors = Page.objects.live().ancestor_of(
+            self, inclusive=True).filter(depth__gt=3)
+        if ancestors:
+            translated_ancestors = get_pages(context, ancestors, locale_code)
 
     return {
         'ancestors': translated_ancestors,
@@ -240,21 +219,30 @@ def breadcrumbs(context):
 @register.inclusion_tag(
     'wagtail/translations_actions.html', takes_context=True)
 def render_translations(context, page):
-    if not hasattr(page.specific, 'get_translation_for'):
+    from molo.core.models import TranslatablePageMixinNotRoutable
+    if not issubclass(type(page.specific), TranslatablePageMixinNotRoutable):
         return {}
 
     languages = [
         (l.locale, str(l))
         for l in Languages.for_site(context['request'].site).languages.filter(
             is_main_language=False)]
+
+    translated = []
+    for code, title in languages:
+        if page.specific.translated_pages.filter(
+                language__locale=code).exists():
+            translated.append({
+                'locale': {'title': title, 'code': code},
+                'translated':
+                    page.specific.translated_pages.filter(
+                        language__locale=code).first()})
+        else:
+            translated.append({
+                'locale': {'title': title, 'code': code},
+                'translated': []})
     return {
-        'translations': [{
-            'locale': {'title': title, 'code': code},
-            'translated':
-                page.specific.get_translation_for(
-                    code, context['request'].site, is_live=None)
-            if hasattr(page.specific, 'get_translation_for') else None}
-            for code, title in languages],
+        'translations': translated,
         'page': page
     }
 
@@ -272,7 +260,7 @@ def load_descendant_articles_for_section(
     locale = context.get('locale_code')
 
     qs = ArticlePage.objects.descendant_of(page).filter(
-        languages__language__is_main_language=True)
+        language__is_main_language=True)
 
     if featured_in_homepage is not None:
         qs = qs.filter(featured_in_homepage=featured_in_homepage).order_by(
@@ -306,7 +294,7 @@ def load_child_articles_for_section(context, section, count=5):
 
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(
-        languages__language__is_main_language=True).order_by(
+        language__is_main_language=True).order_by(
         '-first_published_at')
 
     related_articles = ArticlePage.objects.filter(
@@ -368,7 +356,7 @@ def get_next_tag(context, tag):
     locale_code = context.get('locale_code')
     current_tag = tag.get_main_language_page()
     qs = Tag.objects.descendant_of(request.site.root_page).filter(
-        languages__language__is_main_language=True).live()
+        language__is_main_language=True).live()
     if qs.exists():
         tags = list(qs)
         if not (len(tags) == tags.index(current_tag) + 1):
@@ -393,7 +381,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     tags_list = []
     main_language_page = section.get_main_language_page()
     child_articles = ArticlePage.objects.descendant_of(
-        main_language_page).filter(languages__language__is_main_language=True)
+        main_language_page).filter(language__is_main_language=True)
     for article in child_articles:
         exclude_pks.append(article.pk)
     related_articles = ArticlePage.objects.filter(
@@ -444,7 +432,7 @@ def get_tag_articles(
     # ordered by featured in latest promote date
     all_latest_articles = ArticlePage.objects.descendant_of(
         request.site.root_page).filter(
-        languages__language__is_main_language=True,
+        language__is_main_language=True,
         featured_in_latest=True).exact_type(ArticlePage).exclude(
             pk__in=exclude_pks).order_by('-featured_in_latest_start_date')
     if all_latest_articles:
@@ -469,7 +457,7 @@ def get_tag_articles(
     sections = request.site.root_page.specific.sections()
     for section in sections[:section_count]:
         sec_articles = ArticlePage.objects.descendant_of(section).filter(
-            languages__language__is_main_language=True,
+            language__is_main_language=True,
             featured_in_homepage=True).order_by(
                 '-featured_in_homepage_start_date').exclude(
                 pk__in=exclude_pks)
@@ -515,7 +503,7 @@ def get_tag_articles(
         'latest_articles': latest_articles + get_pages(
             context, ArticlePage.objects.descendant_of(
                 request.site.root_page).filter(
-                languages__language__is_main_language=True).exact_type(
+                language__is_main_language=True).exact_type(
                     ArticlePage).exclude(pk__in=exclude_pks).order_by(
                         '-featured_in_latest'), locale)})
 
@@ -557,12 +545,10 @@ def load_tags_for_article(context, article):
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
     if question:
-        question_pk = question.get_main_language_page().pk
-        question = ReactionQuestion.objects.filter(pk=question_pk)
-    if question and question.first().get_children():
-        pks = [c.pk for c in question.first().get_children().filter(
-            languages__language__is_main_language=True)]
-        choices = ReactionQuestionChoice.objects.filter(pk__in=pks)
+        question = question.specific.get_main_language_page().specific
+    if question and question.get_children():
+        choices = ReactionQuestionChoice.objects.child_of(
+            question).filter(language__is_main_language=True)
         return get_pages(context, choices, locale)
     return []
 
@@ -571,7 +557,7 @@ def load_choices_for_reaction_question(context, question):
 def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
-        question = question.get_main_language_page().specific
+        question = question.specific.get_main_language_page()
         article = ArticlePage.objects.get(pk=article_pk)
         if hasattr(article, 'get_main_language_page'):
             article = article.get_main_language_page()
@@ -593,7 +579,7 @@ def load_reaction_question(context, article):
         if question and request.site:
             qs = ReactionQuestion.objects.descendant_of(
                 request.site.root_page).live().filter(
-                    pk=question.pk, languages__language__is_main_language=True)
+                    pk=question.pk, language__is_main_language=True)
         else:
             return []
         translated_question = get_pages(context, qs, locale)
@@ -613,11 +599,10 @@ def load_child_sections_for_section(context, section, count=None):
     locale = context.get('locale_code')
 
     qs = SectionPage.objects.child_of(page).filter(
-        languages__language__is_main_language=True)
+        language__is_main_language=True)
 
     if not locale:
         return qs[:count]
-
     return get_pages(context, qs, locale)
 
 
@@ -700,12 +685,14 @@ def get_next_article(context, article):
             next_article = articles[0]
     else:
         return None
-
-    if next_article.get_translation_for(locale_code, context['request'].site):
-        return next_article.get_translation_for(
-            locale_code, context['request'].site)
-    else:
-        return next_article
+    try:
+        return next_article.translated_pages.get(language__locale=locale_code)
+    except:
+        if next_article.language.locale == locale_code or not \
+                SiteSettings.for_site(
+                    context['request'].site).show_only_translated_pages:
+            return next_article
+        return None
 
 
 @register.assignment_tag(takes_context=True)
@@ -717,7 +704,6 @@ def get_recommended_articles(context, article):
     else:
         a = article.get_main_language_page()
         recommended_articles = a.specific.recommended_articles.all()
-
     # http://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order/37648265#37648265 # noqa
     # the following allows us to order the results of the querystring
     recommended_articles_queryset = recommended_articles.values_list(
@@ -725,7 +711,6 @@ def get_recommended_articles(context, article):
 
     if not recommended_articles_queryset:
         return []
-
     preserved = Case(
         *[When(pk=pk, then=pos) for pos, pk in enumerate(
                 recommended_articles_queryset)])

@@ -16,8 +16,7 @@ from molo.profiles.models import (
     SecurityQuestion, SecurityAnswer,
     UserProfile, SecurityQuestionIndexPage, UserProfilesSettings
 )
-from molo.core.models import (
-    PageTranslation, Main, FooterPage, Languages, SiteLanguageRelation)
+from molo.core.models import Main, FooterPage, Languages, SiteLanguageRelation
 
 from molo.core.tests.base import MoloTestCaseMixin
 
@@ -1833,13 +1832,10 @@ class TranslatedSecurityQuestionsTest(TestCase, MoloTestCaseMixin):
             slug="how-old-are-you-in-french",
         )
         self.security_index.add_child(instance=fr_question)
-        language_relation = fr_question.languages.first()
-        language_relation.language = self.french
-        language_relation.save()
+        fr_question.language = self.french
+        fr_question.translated_pages.add(self.q1)
         fr_question.save_revision().publish()
-        PageTranslation.objects.get_or_create(
-            page=self.q1, translated_page=fr_question)
-
+        self.q1.translated_pages.add(fr_question)
         self.q1.save_revision().publish()
         self.client.get('/locale/fr/')
         response = self.client.get(reverse("molo.profiles:forgot_password"))

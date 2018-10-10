@@ -83,7 +83,7 @@ class ReactionQuestionsSummaryModelAdmin(
     def get_queryset(self, request):
         qs = ArticlePage.objects.descendant_of(
             request.site.root_page).filter(
-                languages__language__is_main_language=True).exclude(
+            language__is_main_language=True).exclude(
             reaction_questions=None
         )
         return qs

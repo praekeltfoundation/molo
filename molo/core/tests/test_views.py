@@ -318,14 +318,14 @@ class TestPages(TestCase, MoloTestCaseMixin):
             Languages.for_site(
                 self.main2.get_site()).languages.filter(
                     locale='fr').first().is_active)
-        new_section = Page.objects.get(slug='blank')
+        new_section = Page.objects.get(slug='blank').specific
         self.assertEquals(new_section.get_site(), self.main2.get_site())
         self.assertEquals(
             new_section.get_children().count(),
             self.yourmind.get_children().count())
         self.assertEquals(
-            new_section.translations.all().count(),
-            self.yourmind.translations.all().count())
+            new_section.translated_pages.all().count(),
+            self.yourmind.translated_pages.all().count())
 
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_copy_main_with_celery_disabled(self):
@@ -575,8 +575,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             ' class="section-listing__theme-bg-link">Your mind</a>')
         self.assertContains(
             response,
-            '<a href="/sections-main-1/your-mind-in-french/"'
-            ' class="section-listing__theme-bg-link">Your mind in french</a>')
+            'Your mind in french')
 
         # unpublished section should fallback to main language
         self.yourmind_fr.unpublish()
@@ -585,12 +584,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         self.assertContains(
             response,
-            '<a href="/sections-main-1/your-mind/"'
-            ' class="section-listing__theme-bg-link">Your mind</a>')
+            'Your mind')
         self.assertNotContains(
             response,
-            '<a href="/sections-main-1/your-mind-in-french/"'
-            ' class="section-listing__theme-bg-link">Your mind in french</a>')
+            'Your mind in french')
 
     def test_switching_between_child_languages(self):
         self.yourmind_es = self.mk_section_translation(
@@ -649,7 +646,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Sample page content for %s' % (
             en_page.title + ' in spanish'))
 
-    @override_settings(USE_QS_TRANSLATIONS=False)
     def test_switching_between_child_languages_with_old_get_pages(self):
         self.yourmind_es = self.mk_section_translation(
             self.yourmind, self.spanish, title='Your mind in spanish')
@@ -711,11 +707,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
         en_latest = self.mk_articles(
             self.yourmind_sub, count=10,
             featured_in_latest_start_date=datetime.now())
-        promote_articles()
         for p in en_latest:
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french')
-
+        promote_articles()
         response = self.client.get('/')
         self.assertContains(response, 'Latest')
         self.assertContains(
@@ -737,10 +732,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
         en_latest = self.mk_articles(
             self.yourmind_sub, count=4,
             featured_in_latest_start_date=datetime.now())
-        promote_articles()
         for p in en_latest:
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french')
+        promote_articles()
 
         fr_articles = self.mk_articles(self.yourmind_sub, count=10)
         for p in fr_articles:
@@ -753,11 +748,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
         en_latest = self.mk_articles(
             self.yourmind_sub, count=10,
             featured_in_latest_start_date=datetime.now())
-        promote_articles()
 
         for p in en_latest:
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french')
+        promote_articles()
 
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
@@ -789,7 +784,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
             'Test page 9</h5></a>', html=True)
 
         # unpublished article should fallback to main language
-        en_latest[9].specific.translations.first().translated_page.unpublish()
+        en_latest[9].specific.translated_pages.get(
+            language__pk=self.french.pk).unpublish()
 
         response = self.client.get('/')
         self.assertNotContains(
@@ -962,11 +958,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_featured_homepage_listing_in_french(self):
         en_page = self.mk_article(
             self.yourmind_sub, featured_in_homepage_start_date=datetime.now())
-        promote_articles()
         fr_page = self.mk_article_translation(
             en_page, self.french,
             title=en_page.title + ' in french',
             subtitle=en_page.subtitle + ' in french')
+        promote_articles()
         response = self.client.get('/')
         self.assertContains(
             response,
@@ -1009,8 +1005,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         # Login
         self.user = self.login()
 
-        self.yourmind_fr = self.mk_section_translation(
-            self.yourmind, self.french, title='Your mind in french')
         self.yourmind_ar = self.mk_section_translation(
             self.yourmind, self.arabic, title='Your mind in arabic')
         en_page = self.mk_article(self.yourmind)
@@ -1049,7 +1043,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEquals(page_en.get_parent().specific, self.yourmind_sub)
 
         page_fr = ArticlePage.objects.get(pk=fr_page.pk)
-        self.assertEquals(page_fr.get_parent().specific, self.yourmind_sub)
+        self.assertEquals(page_fr.get_parent().specific, self.yourmind)
 
     def test_health(self):
         environ['MARATHON_APP_ID'] = 'marathon-app-id'
@@ -1727,7 +1721,6 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
             is_active=True)
 
         self.section_a = self.mk_section(self.section_index, title='Section A')
-
         self.section_a.enable_next_section = True
         self.section_a.save()
 
@@ -1801,16 +1794,18 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
         self.assertContains(response, self.article_b.title)
-
         ArticlePage.objects.get(
             title=self.article_b.title + ' in french').delete()
-
+        section = ArticlePage.objects.get(
+            title=self.article_c.title + ' in french').get_parent().specific
+        section.enable_next_section = True
+        section.save()
         self.client.get('/locale/fr/')
 
         response = self.client.get(
             '/sections-main-1/section-a/article-c-in-french/')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, self.article_b.title)
+        self.assertContains(response, 'Article B')
 
     def test_next_article_show_only_translated_pages(self):
         default_site = Site.objects.get(is_default_site=True)

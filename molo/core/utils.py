@@ -18,7 +18,7 @@ from molo.core.api.constants import KEYS_TO_EXCLUDE
 
 
 def copy_translation_pages(page, new_page):
-    from molo.core.models import Languages, LanguageRelation, PageTranslation
+    from molo.core.models import Languages
     # Only copy translations for TranslatablePageMixin
     if not hasattr(page.specific, 'copy_language'):
         return 'Not translatable page'
@@ -28,28 +28,27 @@ def copy_translation_pages(page, new_page):
     if current_site is not destination_site and (page.depth > 2):
         page.specific.copy_language(current_site, destination_site)
     languages = Languages.for_site(destination_site).languages
-    if (languages.filter(is_main_language=True).exists() and
-            not new_page.languages.exists()):
-        LanguageRelation.objects.create(
-            page=new_page,
-            language=languages.filter(
-                is_main_language=True).first())
+    if languages.filter(is_main_language=True).exists():
+        new_page.language = languages.filter(is_main_language=True).first()
 
-    for translation in page.translations.all():
-        new_lang = translation.translated_page.specific.copy_language(
+    for translation in page.specific.translated_pages.all():
+        new_lang = translation.specific.copy_language(
             current_site, destination_site)
-        new_translation = translation.translated_page.copy(
+        new_translation = translation.copy(
             to=new_page.get_parent())
-        if LanguageRelation.objects.filter(page=new_translation).exists():
-            new_l_rel = LanguageRelation.objects.get(page=new_translation)
-            new_l_rel.language = new_lang
-            new_l_rel.save()
-        else:
-            new_l_rel = LanguageRelation.objects.create(
-                page=new_translation, language=new_lang)
-        PageTranslation.objects.create(
-            page=new_page,
-            translated_page=new_translation)
+        new_translation.language = new_lang
+        new_translation.specific.translated_pages.add(new_page)
+        new_page.specific.translated_pages.add(new_translation)
+        new_page.save()
+        new_translation.save()
+        for translated_page in \
+                page.specific.translated_pages.all():
+            translations = page.specific.translated_pages.all().\
+                exclude(language__pk=translated_page.language.pk)
+            for translation in translations:
+                translated_page.translated_pages.add(translation)
+            translated_page.save()
+        new_translation.save()
 
 
 def create_new_article_relations(original_page, copied_page):

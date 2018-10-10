@@ -840,12 +840,11 @@ class ContentImporter(BaseImporter):
             language = SiteLanguageRelation.objects.get(
                 language_setting=self.language_setting,
                 locale=locale)
-            language_relation = page.languages.first()
-            language_relation.language = language
-            language_relation.save()
-            PageTranslation.objects.get_or_create(
-                page=local_main_lang_page,
-                translated_page=page)
+            page.language = language
+            page.translated_pages.add(local_main_lang_page)
+            local_main_lang_page.translated_pages.add(page)
+            page.save()
+            local_main_lang_page.save()
         except:
             # TODO: log that creating translation failed
             # TODO: log that page is now being deleted
