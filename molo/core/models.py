@@ -636,7 +636,7 @@ class TranslatablePageMixinNotRoutable(object):
         try:
             return self.translated_pages.get(
                 language__is_main_language=True).specific
-        except self.DoesNotExist:
+        except:
             return self.specific
 
     def get_site(self):

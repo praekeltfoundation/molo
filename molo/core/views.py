@@ -31,7 +31,8 @@ from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     ArticlePage, Languages, SiteSettings, Tag,
     ArticlePageTags, SectionPage, ReactionQuestionChoice,
-    ReactionQuestionResponse, ReactionQuestion, TranslatablePageMixin)
+    ReactionQuestionResponse, ReactionQuestion,
+    TranslatablePageMixinNotRoutable)
 
 from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
@@ -111,7 +112,7 @@ def health(request):
 def add_translation(request, page_id, locale):
     _page = get_object_or_404(Page, id=page_id)
     page = _page.specific
-    if not issubclass(type(page), TranslatablePageMixin):
+    if not issubclass(type(page), TranslatablePageMixinNotRoutable):
         messages.add_message(
             request, messages.INFO, _('That page is not translatable.'))
         return redirect(reverse('wagtailadmin_home'))

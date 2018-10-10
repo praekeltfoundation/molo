@@ -219,8 +219,8 @@ def breadcrumbs(context):
 @register.inclusion_tag(
     'wagtail/translations_actions.html', takes_context=True)
 def render_translations(context, page):
-    from molo.core.models import TranslatablePageMixin
-    if not issubclass(type(page.specific), TranslatablePageMixin):
+    from molo.core.models import TranslatablePageMixinNotRoutable
+    if not issubclass(type(page.specific), TranslatablePageMixinNotRoutable):
         return {}
 
     languages = [
