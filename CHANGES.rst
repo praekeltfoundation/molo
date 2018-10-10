@@ -1,5 +1,10 @@
 CHANGES
 =======
+7.0.0
+~~~~~~
+- Molo Translations were completely refactored
+- These are breaking changes, in order to upgrade to this version, once this version is on your project, before making any changes, run the management commands `add_language_to_pages`, and then run `add_translated_pages_to_pages`
+
 6.10.0
 ~~~~~~
 - Fix MarkDown dependency
