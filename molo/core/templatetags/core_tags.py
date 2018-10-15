@@ -9,7 +9,7 @@ from markdown import markdown
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
-    ReactionQuestionChoice, BannerPage)
+    ReactionQuestionChoice, BannerPage, get_translation_for)
 
 register = template.Library()
 
@@ -364,10 +364,10 @@ def get_next_tag(context, tag):
         else:
             next_tag = tags[0]
 
-        if next_tag.get_translation_for(
-                locale_code, context['request'].site):
-            return next_tag.get_translation_for(
-                locale_code, context['request'].site)
+        next_tag_translated = get_translation_for(
+                [next_tag], locale_code, context['request'].site)
+        if next_tag_translated:
+            return next_tag_translated[0]
         else:
             return next_tag
 
