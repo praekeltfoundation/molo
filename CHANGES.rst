@@ -1,5 +1,10 @@
 CHANGES
 =======
+
+7.0.1
+~~~~~~
+- Handling added for NoneType errors
+
 7.0.0
 ~~~~~~
 - Molo Translations were completely refactored
