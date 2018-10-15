@@ -728,7 +728,8 @@ class TranslatablePageMixinNotRoutable(object):
             translation = parent.specific.translated_pages.filter(
                 language__locale=locale_code).first()
 
-        if translation and self.language.locale != locale_code:
+        if translation and self.language and \
+                self.language.locale != locale_code:
             if request.GET.urlencode():
                 return redirect("{}?{}".format(translation.url,
                                                request.GET.urlencode()))
