@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.test import TestCase
+from django.utils.timezone import datetime
 from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
