@@ -83,7 +83,7 @@ def show_main_language_only(parent_page, pages, request):
     specific_pages = [page.specific for page in pages]
     if pages and main_language and parent_page.depth > 2:
         new_pages = [page for page in specific_pages
-                     if page.language.pk == main_language.pk if page.language]
+                     if page.language and page.language.pk == main_language.pk]
         return new_pages
     return pages
 
