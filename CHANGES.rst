@@ -1,5 +1,8 @@
 CHANGES
 =======
+7.0.2
+~~~~~~
+- Fix error in show_main_language_only() when testing if a page has a language
 
 7.0.1
 ~~~~~~
