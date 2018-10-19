@@ -244,6 +244,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             fr_article1.get_effective_image(), '')
 
         en_article1.image = self.image
+        en_article1.save()
         self.assertEquals(
             en_article1.get_effective_image(), self.image)
 
@@ -253,6 +254,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         # if the translated article has an image it should return its image
         fr_article1.image = self.image2
+        fr_article1.save()
         self.assertEquals(
             fr_article1.get_effective_image(), self.image2)
 

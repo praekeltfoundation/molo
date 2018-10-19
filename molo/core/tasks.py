@@ -165,7 +165,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                         # get a random article
                         random_article = ArticlePage.objects.live().filter(
                             featured_in_latest=False,
-                            languages__language__id=main_lang.id
+                            language__id=main_lang.id
                         ).descendant_of(index).order_by('?').exact_type(
                             ArticlePage).first()
                         # set random article to feature in latest
@@ -181,7 +181,7 @@ def rotate_featured_in_homepage(main_lang, day, main):
     def demote_last_featured_article_in_homepage(section):
             articles = ArticlePage.objects.live().filter(
                 featured_in_homepage=True,
-                languages__language__id=main_lang.id
+                language__id=main_lang.id
             ).descendant_of(section).order_by(
                 '-featured_in_homepage_start_date')
             if articles.count() >= 2:
@@ -206,7 +206,7 @@ def rotate_featured_in_homepage(main_lang, day, main):
                         if time.tm_hour == datetime.now().hour:
                             random_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
-                                languages__language__id=main_lang.id
+                                language__id=main_lang.id
                             ).descendant_of(section).order_by('?').exact_type(
                                 ArticlePage).first()
 

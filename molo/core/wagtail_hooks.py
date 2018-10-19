@@ -6,7 +6,7 @@ from molo.core.admin import (
 )
 from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
-from molo.core.models import Languages, PageTranslation
+from molo.core.models import Languages, ArticlePage
 from molo.core.utils import create_new_article_relations
 
 
@@ -17,7 +17,6 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.utils.html import format_html
 
 from wagtail.wagtailcore import hooks
-from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailadmin.site_summary import SummaryItem
 from wagtail.wagtailadmin.widgets import Button
@@ -81,8 +80,11 @@ modeladmin_register(AdminViewGroup)
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
-    if main_language and parent_page.depth > 2:
-        return pages.filter(languages__language__locale=main_language.locale)
+    specific_pages = [page.specific for page in pages]
+    if pages and main_language and parent_page.depth > 2:
+        new_pages = [page for page in specific_pages
+                     if page.language and page.language.pk == main_language.pk]
+        return new_pages
     return pages
 
 
@@ -98,12 +100,9 @@ def copy_translation_pages_hook(request, page, new_page):
 
 @hooks.register('before_delete_page')
 def delete_page_translations(request, page):
-    if request.method == 'POST':
-        ids = PageTranslation.objects.filter(
-            page=page).values_list('translated_page__id')
-
-        for page in Page.objects.filter(id__in=ids):
-            page.delete()
+    if request.method == 'POST' and page.specific.language.is_main_language:
+        for translation in page.specific.translated_pages.all():
+            translation.delete()
 
 
 # API admin
@@ -130,8 +129,8 @@ class LanguageSummaryItem(SummaryItem):
         return {
             'summaries': [{
                 'language': l.get_locale_display(),
-                'total': Page.objects.filter(
-                    languages__language__id=l.id).count()
+                'total': ArticlePage.objects.all().filter(
+                    language=l).count()
             }for l in languages],
         }
 

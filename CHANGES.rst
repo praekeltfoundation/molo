@@ -1,5 +1,18 @@
 CHANGES
 =======
+7.0.2
+~~~~~~
+- Fix error in show_main_language_only() when testing if a page has a language
+
+7.0.1
+~~~~~~
+- Handling added for NoneType errors
+
+7.0.0
+~~~~~~
+- Molo Translations were completely refactored
+- These are breaking changes, in order to upgrade to this version, once this version is on your project, before making any changes, run the management commands `add_language_to_pages`, and then run `add_translated_pages_to_pages`
+
 6.10.0
 ~~~~~~
 - Fix MarkDown dependency

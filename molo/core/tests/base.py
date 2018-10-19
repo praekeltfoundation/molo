@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -266,6 +267,8 @@ class MoloTestCaseMixin(object):
                 'slug': generate_slug(data['title'])
             })
             article = ArticlePage(**data)
+            if not article.first_published_at:
+                article.first_published_at = datetime.now()
             parent.add_child(instance=article)
             article.save_revision().publish()
             articles.append(article)
@@ -301,9 +304,19 @@ class MoloTestCaseMixin(object):
         language_relation = translation.languages.first()
         language_relation.language = language
         language_relation.save()
+        translation.language = language
         translation.save_revision().publish()
+        source.specific.translated_pages.add(translation)
+        source.save()
         PageTranslation.objects.get_or_create(
             page=source, translated_page=translation)
+        for translated_page in \
+                source.specific.translated_pages.all():
+            translations = source.specific.translated_pages.all().\
+                exclude(language__pk=translated_page.language.pk)
+            for t in translations:
+                translated_page.translated_pages.add(t)
+            translated_page.save()
         return translation
 
     def mk_section_translation(self, source, language, **kwargs):

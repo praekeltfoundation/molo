@@ -64,7 +64,7 @@ class RegistrationView(FormView):
         kwargs = super(RegistrationView, self).get_form_kwargs()
         self.questions = SecurityQuestion.objects.descendant_of(
             self.request.site.root_page).live().filter(
-            languages__language__is_main_language=True)
+            language__is_main_language=True)
 
         context = {"request": self.request}
         self.translated_questions = get_pages(
@@ -266,7 +266,7 @@ class ForgotPasswordView(FormView):
         profile_settings = UserProfilesSettings.for_site(self.request.site)
         self.security_questions = SecurityQuestion.objects.descendant_of(
             self.request.site.root_page).live().filter(
-            languages__language__is_main_language=True
+            language__is_main_language=True
         )
 
         context = {"request": self.request}
