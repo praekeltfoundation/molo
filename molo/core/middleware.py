@@ -4,6 +4,7 @@ import django.utils.deprecation
 from bs4 import BeautifulSoup
 
 from django.conf import settings
+
 from django.http import HttpResponseForbidden
 from django_cas_ng.middleware import CASMiddleware
 from django.views.defaults import permission_denied
@@ -99,8 +100,7 @@ class NoScriptGASessionMiddleware(django.utils.deprecation.MiddlewareMixin):
 
 class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
     """Uses GA IDs stored in Wagtail to track pageviews using celery"""
-    def submit_tracking(self, account, request, response):
-        custom_params = {}
+    def submit_tracking(self, account, request, response, custom_params={}):
         try:
             title = BeautifulSoup(
                 response.content, "html.parser"
