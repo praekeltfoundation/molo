@@ -100,6 +100,7 @@ class NoScriptGASessionMiddleware(django.utils.deprecation.MiddlewareMixin):
 class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
     """Uses GA IDs stored in Wagtail to track pageviews using celery"""
     def submit_tracking(self, account, request, response):
+        custom_params = {}
         try:
             title = BeautifulSoup(
                 response.content, "html.parser"
@@ -117,9 +118,11 @@ class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
         if hasattr(request, 'user') and hasattr(request.user, 'profile')\
                 and request.user.profile.uuid:
             uuid = request.user.profile.uuid
+            custom_params.update({'cd2': request.user.profile.uuid})
             params = build_ga_params(
                 request, account, path=path,
-                referer=referer, title=title, user_id=uuid)
+                referer=referer, title=title,
+                user_id=uuid, custom_params=custom_params)
 
         send_ga_tracking.delay(params)
         return response

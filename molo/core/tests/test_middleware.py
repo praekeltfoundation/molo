@@ -61,3 +61,34 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         response = middleware.submit_tracking(account, request, response)
 
         self.assertTrue(mock_method.called_with(request.get_full_path()))
+
+    @mock.patch("google_analytics.utils.build_ga_params")
+    def test_ga_middleware_custom_params(self, mock_method):
+        self.backend = get_search_backend('default')
+        self.backend.reset_index()
+        self.mk_articles(self.english_section, count=2)
+        self.backend.refresh_index()
+        response = self.client.get(reverse('search'), {
+            'q': 'Test'
+        })
+        headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
+        request = self.make_fake_request(
+            '/search/?q=Test', headers)
+
+        middleware = MoloGoogleAnalyticsMiddleware()
+        account = ''
+        response = middleware.submit_tracking(account, request, response)
+        print(response)
+        self.assertNotContains(response, '&cd2')
+
+        # test that the cd2 param is passed when the user logs in
+        self.backend.refresh_index()
+        self.client.login(username='testuser', password='password')
+        headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
+        request = self.make_fake_request(
+            '/search/?q=Test', headers)
+
+        middleware = MoloGoogleAnalyticsMiddleware()
+        account = ''
+        response = middleware.submit_tracking(account, request, response)
+        self.assertContains(response, '&cd2')
