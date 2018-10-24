@@ -7,7 +7,6 @@ from django.test.client import Client
 from django.test.client import RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.urlresolvers import reverse
-
 from google_analytics.templatetags.google_analytics_tags import google_analytics  # noqa
 from molo.core.middleware import MoloGoogleAnalyticsMiddleware
 from molo.core.models import Main, Languages, SiteLanguageRelation
