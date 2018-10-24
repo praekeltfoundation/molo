@@ -61,3 +61,26 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         response = middleware.submit_tracking(account, request, response)
 
         self.assertTrue(mock_method.called_with(request.get_full_path()))
+
+    @mock.patch("google_analytics.utils.build_ga_params")
+    def test_ga_submit_tracking_with_custom_params(self, mock_method):
+        self.backend = get_search_backend('default')
+        self.backend.reset_index()
+        self.mk_articles(self.english_section, count=2)
+        self.backend.refresh_index()
+        response = self.client.get(reverse('search'), {
+            'q': 'Test'
+        })
+        headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
+        request = self.make_fake_request(
+            '/search/?q=Test', headers)
+
+        middleware = MoloGoogleAnalyticsMiddleware()
+        account = ''
+        custom_params = {'cd2': '1235-245'}
+        response = middleware.submit_tracking(account,
+                                              request,
+                                              response,
+                                              custom_params,
+                                              )
+        self.assertTrue(mock_method.called_with(custom_params))
