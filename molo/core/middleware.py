@@ -117,7 +117,6 @@ class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
         if hasattr(request, 'user') and hasattr(request.user, 'profile')\
                 and request.user.profile.uuid:
             uuid = request.user.profile.uuid
-            custom_params.update({'cd2': request.user.profile.uuid})
             params = build_ga_params(
                 request, account, path=path,
                 referer=referer, title=title,
