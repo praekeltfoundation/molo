@@ -4,7 +4,6 @@ import django.utils.deprecation
 from bs4 import BeautifulSoup
 
 from django.conf import settings
-
 from django.http import HttpResponseForbidden
 from django_cas_ng.middleware import CASMiddleware
 from django.views.defaults import permission_denied
