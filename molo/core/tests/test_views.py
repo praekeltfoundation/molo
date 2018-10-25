@@ -1063,21 +1063,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'version': 'marathon-app-version',
             })
 
-    def test_search(self):
-        """
-        test searching an empty query string,
-        and a string with leading and trailing empty spaces
-        - this was a reported bug known to cause a 500 error
-        """
-        response = self.client.get('/search/?q=+')
-        self.assertEquals(response.status_code, 200)
-
-        response = self.client.get('/search/?q=+article+')
-        self.assertEquals(response.status_code, 200)
-
-        response = self.client.get('/search/?q=article')
-        self.assertEquals(response.status_code, 200)
-
     def test_django_admin_loads(self):
         response = self.client.get(reverse('admin:index'))
         self.assertEquals(response.status_code, 200)
