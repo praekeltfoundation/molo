@@ -50,6 +50,10 @@ def csrf_failure(request, reason=""):
 
 def search(request, results_per_page=10, load_more=False):
     search_query = request.GET.get('q', None)
+
+    if search_query:
+        search_query = search_query.strip()
+
     page = request.GET.get('p', 1)
     locale = get_locale_code(get_language_from_request(request))
 
