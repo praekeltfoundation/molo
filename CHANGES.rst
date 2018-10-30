@@ -1,5 +1,8 @@
 CHANGES
 =======
+7.0.3
+~~~~~~
+- Ensure Show Only Translated Pages setting honours live status of page
 
 7.0.3
 ~~~~~~

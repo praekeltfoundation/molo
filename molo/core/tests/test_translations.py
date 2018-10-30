@@ -383,6 +383,70 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             ' promoted-article__title--theme-headings">English article2</h5>'
             '</a>', html=True)
 
+    def test_that_only_live_pages_show_with_only_translated_setting_off(self):
+        # set the site settings show_only_translated_pages to False
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+        setting.show_only_translated_pages = False
+        setting.save()
+
+        self.mk_section_translation(
+            self.english_section, self.french,
+            title=self.english_section.title + ' in french')
+
+        article1 = self.mk_article(
+            self.english_section,
+            title='English article1',
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now())
+        self.mk_article_translation(
+            article1, self.french, title=article1.title + ' in french',)
+
+        article2 = self.mk_article(
+            self.english_section,
+            title='English article2',
+            featured_in_latest_start_date=datetime.now(),
+            featured_in_homepage_start_date=datetime.now())
+
+        # tests that users will see the main language article for
+        # pages that haven't been translated
+        response = self.client.get('/locale/fr/', follow=True)
+        response = self.client.get('/sections-main-1/english-section/',
+                                   follow=True)
+        self.assertContains(
+            response, 'English article1 in french', html=True)
+        self.assertContains(
+            response, 'English article2', html=True)
+        self.assertNotContains(
+            response, 'English article2 in french', html=True)
+
+        # tests that users won't see the main language page if it isn't live
+        article2.unpublish()
+
+        response = self.client.get('/sections-main-1/english-section/',
+                                   follow=True)
+        self.assertContains(
+            response, 'English article1 in french', html=True)
+        self.assertNotContains(
+            response, 'English article2', html=True)
+        self.assertNotContains(
+            response, 'English article2 in french', html=True)
+
+        # tests that users won't see the main language page if both it and the
+        # the translation are not live
+        fr_article = self.mk_article_translation(
+            article2, self.french, title=article2.title + ' in french',)
+        fr_article.unpublish()
+
+        response = self.client.get('/sections-main-1/english-section/',
+                                   follow=True)
+        self.assertContains(
+            response, 'English article1 in french', html=True)
+        self.assertNotContains(
+            response, 'English article2', html=True)
+        self.assertNotContains(
+            response, 'English article2 in french', html=True)
+
     def test_if_main_lang_page_unpublished_translated_page_still_shows(self):
         eng_section2 = self.mk_section(
             self.section_index, title='English section2')

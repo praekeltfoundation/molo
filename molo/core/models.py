@@ -615,6 +615,8 @@ def get_translation_for(pages, locale, site, is_live=True):
                 translated_pages.append(translated)
             else:
                 if not show_only_translated_pages:
+                    if is_live is not None and not page.live:
+                        continue
                     translated_pages.append(page)
         except ObjectDoesNotExist:
             if not show_only_translated_pages:
