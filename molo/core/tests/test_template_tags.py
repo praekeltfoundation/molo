@@ -7,7 +7,7 @@ from molo.core.models import (
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
-    topic_of_the_day,
+    topic_of_the_day, render_translation
 )
 
 
@@ -34,6 +34,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
+
+    def test_render_translations(self):
+        # this should return an empty dictionary for non main lang pages
+        article = self.mk_articles(self.yourmind, 1)[0]
+        fr_article = self.mk_article_translation(article, self.french)
+        self.assertEquals(render_translation({}, fr_article), {})
 
     def test_bannerpages_without_position(self):
         banner = BannerPage(title='test banner')
