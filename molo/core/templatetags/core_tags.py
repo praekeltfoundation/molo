@@ -222,6 +222,8 @@ def render_translations(context, page):
     from molo.core.models import TranslatablePageMixinNotRoutable
     if not issubclass(type(page.specific), TranslatablePageMixinNotRoutable):
         return {}
+    if not page.specific.language.is_main_language:
+        return {}
 
     languages = [
         (l.locale, str(l))
