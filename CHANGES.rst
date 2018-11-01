@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.10.1
+~~~~~~
+- search query string bug fix
+
 6.10.0
 ~~~~~~
 - Fix MarkDown dependency
