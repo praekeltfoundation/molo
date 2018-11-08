@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+7.0.6
+~~~~~~
+- Bug: Update copy_language to new Translations
+
 7.0.5
 ~~~~~~
 - Ensure only main language pages are able to be translated
