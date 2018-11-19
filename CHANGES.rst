@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.10.2
+~~~~~~
+- 403 Middleware bug fix
+
 6.10.1
 ~~~~~~
 - search query string bug fix
