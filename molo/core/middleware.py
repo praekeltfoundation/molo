@@ -56,10 +56,10 @@ class MoloCASMiddleware(CASMiddleware):
 class Custom403Middleware(django.utils.deprecation.MiddlewareMixin):
     """Catches 403 responses and raises 403 which allows for custom 403.html"""
     def process_response(self, request, response):
-        storage = get_messages(request)
-        for message in storage:
-            pass
         if isinstance(response, HttpResponseForbidden):
+            storage = get_messages(request)
+            for message in storage:
+                pass
             return permission_denied(request, 'error')
         return response
 
