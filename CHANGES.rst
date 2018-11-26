@@ -1,5 +1,8 @@
 CHANGES
 =======
+7.0.7
+~~~~~~
+- Bug: Empty tags not saved in articles
 
 7.0.6
 ~~~~~~
