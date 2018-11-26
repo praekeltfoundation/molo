@@ -615,6 +615,8 @@ def get_translation_for(pages, locale, site, is_live=True):
                 translated_pages.append(translated)
             else:
                 if not show_only_translated_pages:
+                    if is_live is not None and not page.live:
+                        continue
                     translated_pages.append(page)
         except ObjectDoesNotExist:
             if not show_only_translated_pages:
@@ -669,18 +671,18 @@ class TranslatablePageMixinNotRoutable(object):
                     p.move(target, pos='last-child')
 
     def copy_language(self, current_site, destination_site):
-        language = self.languages.all().first()
+        language = self.language
         if language:
             if not hasattr(destination_site, 'languages') or \
                 not destination_site.languages.languages.filter(
-                    locale=language.language.locale).exists():
+                    locale=language.locale).exists():
                 new_lang = SiteLanguageRelation.objects.create(
                     language_setting=Languages.for_site(destination_site),
-                    locale=language.language.locale,
+                    locale=language.locale,
                     is_active=False)
             else:
                 new_lang = destination_site.languages.languages.filter(
-                    locale=language.language.locale).first()
+                    locale=language.locale).first()
             return new_lang
 
     def copy(self, *args, **kwargs):
@@ -1735,6 +1737,12 @@ class ArticlePageTags(Orderable):
     )
     panels = [PageChooserPanel('tag', 'core.Tag')]
     api_fields = ['tag']
+
+    def save(self, *args, **kwargs):
+        if (self.tag is None):
+            return
+        else:
+            super(ArticlePageTags, self).save(*args, **kwargs)
 
 
 class ArticlePageReactionQuestions(Orderable):

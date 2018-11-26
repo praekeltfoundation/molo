@@ -1,5 +1,20 @@
 CHANGES
 =======
+7.0.7
+~~~~~~
+- Bug: Empty tags not saved in articles
+
+7.0.6
+~~~~~~
+- Bug: Update copy_language to new Translations
+
+7.0.5
+~~~~~~
+- Ensure only main language pages are able to be translated
+
+7.0.4
+~~~~~~
+- Ensure Show Only Translated Pages setting honours live status of page
 
 7.0.3
 ~~~~~~

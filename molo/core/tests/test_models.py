@@ -15,7 +15,7 @@ from molo.core.models import (
     ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
     BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
-    Timezone,
+    Timezone, ArticlePageTags
 )
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
@@ -455,6 +455,20 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             ArticlePage.objects.filter(
                 metadata_tags__name='peace').count(), 1)
+
+    def test_nav_tags_with_empty_tags(self):
+        """
+        ArticlePageTags with no tags should not be saved
+        """
+        nav_tag = ArticlePageTags.objects.create(
+            tag=None)
+        article = self.mk_article(
+            self.yourmind,
+            title="New Article",
+        )
+        article.nav_tag = nav_tag
+        article.save_revision().publish()
+        self.assertEquals(None, article.nav_tag.pk, nav_tag.pk)
 
     def test_social_media(self):
 
