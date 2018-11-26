@@ -1738,6 +1738,12 @@ class ArticlePageTags(Orderable):
     panels = [PageChooserPanel('tag', 'core.Tag')]
     api_fields = ['tag']
 
+    def save(self, *args, **kwargs):
+        if (self.tag is None):
+            return
+        else:
+            super(ArticlePageTags, self).save(*args, **kwargs)
+
 
 class ArticlePageReactionQuestions(Orderable):
     page = ParentalKey(ArticlePage, related_name='reaction_questions')
