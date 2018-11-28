@@ -175,7 +175,16 @@ What is bundled with Molo?
       links to other pages.
 4. Molo Profiles: Provides code to help with User profiles in a project using the Molo code base.
 
+.. note::   This library does not provide a Django user model, it provides a
+            profile model that can be attached to a user. Our experience is
+            that custom User models in Django add all sorts of unpleasantries
+            when using migrations.
 
+Package setup::
+
+   INSTALLED_APPS = (
+      'molo.profiles',
+   )
 
 Testing the Molo scaffolding tool
 ---------------------------------
