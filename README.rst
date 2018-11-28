@@ -81,8 +81,7 @@ is read by the generated package's ``setup.py`` file.
 
 Multiple requires can be specified on the command line::
 
-   $ molo scaffold myapp --require=django-contrib-comments \
-   >   --require=molo.profiles
+   $ molo scaffold myapp --require=django-contrib-comments
 
 Automatically adding installed apps
 -----------------------------------
@@ -106,7 +105,6 @@ This results in the following ``urls.py`` entry::
 For convenience, here's the full scaffold command for the current plugins::
 
     $ molo scaffold myapp \
-        --require=molo.profiles --include=molo.profiles ^profiles/ \
         --require=django-contrib-comments --include=django_comments ^comments/ \
         --require=molo.commenting --include=molo.commenting ^commenting/ \
         --require=molo.yourwords --include=molo.yourwords ^yourwords/
@@ -132,9 +130,7 @@ some amount of customization. Use the ``unpack-templates`` command in the
 scaffolded application to unpack a package's templates in your application's
 templates directory::
 
-   $ molo scaffold testapp \
-   >   --require=molo.profiles \
-   >   --include=molo.profiles ^profiles/
+   $ molo scaffold testapp
    $ pip install -e testapp
    ...
 
@@ -196,6 +192,7 @@ The Molo test mixin contains helper methods to generate test content necessary f
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response['Location'], expected_url)
 
+
 `MoloTestCaseMixin` methods
 
     * login()
@@ -210,7 +207,6 @@ The Molo test mixin contains helper methods to generate test content necessary f
     * mk_main(title='Main', slug='main'), mk_main2(title='main2', slug='main2', path='4098')
 
         Create the main page of your molo test site
-
 
     * mk_tag(parent, slug=None, \**kwargs), mk_tags(parent, count=2, \**kwargs)
 
@@ -239,7 +235,6 @@ The Molo test mixin contains helper methods to generate test content necessary f
       mk_reaction_translation(source, language, \**kwargs)
 
         Create a translated version of the source (Page)
-
 
 What is bundled with Molo?
 --------------------------
