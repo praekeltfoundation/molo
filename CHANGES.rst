@@ -1,5 +1,9 @@
 CHANGES
 =======
+6.10.3
+~~~~~~
+- Added documentation on writing Test Cases
+
 6.10.2
 ~~~~~~
 - 403 Middleware bug fix
