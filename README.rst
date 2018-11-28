@@ -81,8 +81,7 @@ is read by the generated package's ``setup.py`` file.
 
 Multiple requires can be specified on the command line::
 
-   $ molo scaffold myapp --require=django-contrib-comments \
-   >   --require=molo.profiles
+   $ molo scaffold myapp --require=django-contrib-comments
 
 Automatically adding installed apps
 -----------------------------------
@@ -106,7 +105,6 @@ This results in the following ``urls.py`` entry::
 For convenience, here's the full scaffold command for the current plugins::
 
     $ molo scaffold myapp \
-        --require=molo.profiles --include=molo.profiles ^profiles/ \
         --require=django-contrib-comments --include=django_comments ^comments/ \
         --require=molo.commenting --include=molo.commenting ^commenting/ \
         --require=molo.yourwords --include=molo.yourwords ^yourwords/
@@ -132,9 +130,7 @@ some amount of customization. Use the ``unpack-templates`` command in the
 scaffolded application to unpack a package's templates in your application's
 templates directory::
 
-   $ molo scaffold testapp \
-   >   --require=molo.profiles \
-   >   --include=molo.profiles ^profiles/
+   $ molo scaffold testapp
    $ pip install -e testapp
    ...
 
@@ -155,13 +151,14 @@ The format is::
 
    $ molo unpack-templates <source package> <target package>
 
-Writing tests
+Running tests
 ~~~~~~~~~~~~~
 
 Now develop your application and write tests for the features you add.
 Running your tests for Django works as you would expect::
 
    $ ./manage.py test
+
 
 What is bundled with Molo?
 --------------------------
@@ -178,7 +175,16 @@ What is bundled with Molo?
       links to other pages.
 4. Molo Profiles: Provides code to help with User profiles in a project using the Molo code base.
 
+.. note::   This library does not provide a Django user model, it provides a
+            profile model that can be attached to a user. Our experience is
+            that custom User models in Django add all sorts of unpleasantries
+            when using migrations.
 
+Package setup::
+
+   INSTALLED_APPS = (
+      'molo.profiles',
+   )
 
 Testing the Molo scaffolding tool
 ---------------------------------
