@@ -106,6 +106,27 @@ class TestSearch(TestCase, MoloTestCaseMixin):
         response = self.client.get(reverse('search'))
         self.assertContains(response, 'No search results for None')
 
+    def test_search_empty_values(self):
+        self.backend = get_search_backend('default')
+        self.backend.reset_index()
+
+        self.mk_article(
+            self.english_section, title="Site 1 article")
+        self.mk_article(
+            self.yourmind2, title="Site 2 article")
+        self.backend.refresh_index()
+
+        response = self.client.get(reverse('search'), {
+            'q': ' '
+        })
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('search'), {
+            'q': ' article '
+        })
+        self.assertContains(response, 'Site 1 article')
+        self.assertNotContains(response, 'Site 2 article')
+
     def test_search_works_with_multisite(self):
         self.backend = get_search_backend('default')
         self.backend.reset_index()

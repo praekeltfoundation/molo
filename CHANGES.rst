@@ -1,5 +1,9 @@
 CHANGES
 =======
+7.0.8
+~~~~~~
+- Added testing documentation
+
 7.0.7
 ~~~~~~
 - Bug: Empty tags not saved in articles
