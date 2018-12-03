@@ -15,7 +15,7 @@ from molo.core.models import (
     ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
     BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
-    Timezone, ArticlePageTags
+    Timezone, Tag, ArticlePageTags
 )
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
@@ -456,19 +456,39 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.filter(
                 metadata_tags__name='peace').count(), 1)
 
-    def test_nav_tags_with_empty_tags(self):
+    def test_nav_tag_delete_updates_article(self):
         """
         ArticlePageTags with no tags should not be saved
         """
-        nav_tag = ArticlePageTags.objects.create(
-            tag=None)
+        tag_index = TagIndexPage.objects.child_of(self.main).first()
         article = self.mk_article(
-            self.yourmind,
-            title="New Article",
-        )
-        article.nav_tag = nav_tag
-        article.save_revision().publish()
-        self.assertEquals(None, article.nav_tag.pk, nav_tag.pk)
+            parent=self.yourmind, title='first_main_article')
+
+        article2 = self.mk_article(
+            parent=self.yourmind, title='second_main_article')
+        tag = Tag(title='New tag')
+        tag2 = Tag(title='Another New tag')
+        tag_index.add_child(instance=tag)
+        tag.save_revision().publish()
+        tag_index.add_child(instance=tag2)
+        tag2.save_revision().publish()
+
+        article.nav_tags.create(tag=tag)
+        article.save()
+
+        article2.nav_tags.create(tag=tag)
+        article2.nav_tags.create(tag=tag2)
+        article2.save()
+        self.assertEqual(article.nav_tags.get(tag=tag).tag,
+                         article2.nav_tags.get(tag=tag).tag,
+                         )
+        # delete the tag
+        tag.delete()
+        # test the nav_tags are deleted and removed from the articles
+        self.assertEqual(ArticlePageTags.objects.count(), 1)
+        self.assertFalse(ArticlePageTags.objects.filter(pk=1).exists())
+        self.assertFalse(article.nav_tags.filter(pk=1).exists())
+        self.assertTrue(article2.nav_tags.get(), tag2)
 
     def test_social_media(self):
 

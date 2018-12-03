@@ -54,6 +54,8 @@ from molo.core.utils import (
     get_image_hash
 )
 
+from django.db.models.signals import pre_delete
+
 
 class BaseReadOnlyPanel(EditHandler):
     def render(self):
@@ -888,6 +890,20 @@ Tag.promote_panels = [
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")
 ]
+
+
+@receiver(pre_delete, sender=Tag)
+def delete_tag(sender, instance, **kwargs):
+    nav_tags = ArticlePageTags.objects.filter(tag=instance)
+    if not nav_tags:
+        return
+    for nav_tag in nav_tags:
+        page = nav_tag.page
+        nav_tag.delete()
+        if page.live:
+            page.save_revision().publish()
+        else:
+            page.save()
 
 
 class BannerIndexPage(MoloPage, PreventDeleteMixin, ImportableMixin):
