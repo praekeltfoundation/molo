@@ -486,7 +486,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         tag.delete()
         # test the nav_tags are deleted and removed from the articles
         self.assertEqual(ArticlePageTags.objects.count(), 1)
-        self.assertFalse(ArticlePageTags.objects.filter(pk=1).exists())
         self.assertFalse(article.nav_tags.filter(pk=1).exists())
         self.assertTrue(article2.nav_tags.get(), tag2)
 
