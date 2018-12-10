@@ -26,6 +26,7 @@ Contents
    merged-cms
    template-tags
    template-patterns
+   testing
    plugins
    release-notes
 

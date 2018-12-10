@@ -1,9 +1,17 @@
 CHANGES
 =======
 
-7.0.7
+7.0.9
 ~~~~~~
 - Bug: Add pre-delete for Tag to delete all article nav tags when tag deleted
+
+7.0.8
+~~~~~~
+- Added testing documentation
+
+7.0.7
+~~~~~~
+- Bug: Empty tags not saved in articles
 
 7.0.6
 ~~~~~~
