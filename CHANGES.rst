@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+7.0.7
+~~~~~~
+- Bug: Add pre-delete for Tag to delete all article nav tags when tag deleted
+
 7.0.6
 ~~~~~~
 - Bug: Update copy_language to new Translations
