@@ -185,6 +185,9 @@ DATABASES = {
         engine='django_prometheus.db.backends.sqlite3')
  }
 
+DATABASES['default']['TEST'] = {}
+DATABASES['default']['TEST']['NAME'] = join(PROJECT_ROOT, 'db.sqlite3')
+
 # PostgreSQL (Recommended, but requires the psycopg2 library and Postgresql
 #             development headers)
 # DATABASES = {
