@@ -46,6 +46,7 @@ install_requires = [
     'django-storages==1.6.3',
     'Unidecode==0.04.16',
     'django-treebeard==4.2.0',
+    'django-prometheus',
 ]
 
 # we need to only install typing for python2
