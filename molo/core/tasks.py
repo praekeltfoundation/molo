@@ -15,7 +15,6 @@ from django.core import management
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
 from molo.core.utils import (
     create_new_article_relations, copy_translation_pages)
@@ -308,10 +307,14 @@ def copy_to_all_task(page_id, user_id, site_pk):
                 copy_translation_pages(page, new_page)
                 create_new_article_relations(page, new_page)
                 revision = new_page.save_revision()
-                if page.status_string == _('scheduled') and \
-                        new_page.status_string == _('draft') and \
-                        new_page.go_live_at is not None:
-                    revision.publish()
+                # If the original page is scheduled
+                if not page.live and not page.expired and \
+                        page.approved_schedule:
+                    # If the new page is in draft
+                    if not new_page.live and not new_page.expired and \
+                            not new_page.approved_schedule:
+                        if new_page.go_live_at is not None:
+                            revision.publish()
             else:
                 errors.append(str(
                     page.title + ' already exists in ' + main.title))
