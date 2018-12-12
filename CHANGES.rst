@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+7.1.0
+~~~~~
+- Added prometheus mmetrics. Changes required to project see link 
+  https://github.com/korfuri/django-prometheus/blob/master/django_prometheus/db/common.py
+
 7.0.9
 ~~~~~~
 - Bug: Add pre-delete for Tag to delete all article nav tags when tag deleted

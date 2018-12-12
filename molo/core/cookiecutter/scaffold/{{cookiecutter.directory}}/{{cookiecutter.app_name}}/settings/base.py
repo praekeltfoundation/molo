@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_extensions',
+    'django_prometheus',
 
     'taggit',
     'modelcluster',
@@ -95,6 +96,7 @@ SITE_ID = 1
 DEFAULT_SITE_PORT = 8000
 
 MIDDLEWARE_CLASSES = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'molo.core.middleware.ForceDefaultLanguageMiddleware',
@@ -112,6 +114,7 @@ MIDDLEWARE_CLASSES = [
 
     'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
     'molo.core.middleware.MultiSiteRedirectToHomepage',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -176,8 +179,14 @@ GOOGLE_ANALYTICS_IGNORE_PATH = [
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 # SQLite (simplest install)
-DATABASES = {'default': dj_database_url.config(
-    default='sqlite:///%s' % (join(PROJECT_ROOT, 'db.sqlite3'),))}
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///%s' % (join(PROJECT_ROOT, 'db.sqlite3')),
+        engine='django_prometheus.db.backends.sqlite3')
+ }
+
+DATABASES['default']['TEST'] = {}
+DATABASES['default']['TEST']['NAME'] = join(PROJECT_ROOT, 'db.sqlite3')
 
 # PostgreSQL (Recommended, but requires the psycopg2 library and Postgresql
 #             development headers)
