@@ -1,5 +1,13 @@
 CHANGES
 =======
+7.1.1
+~~~~~
+- Fixed bug in copy to all task where article revision wasn't being saved
+
+7.1.0
+~~~~~
+- Added prometheus metrics. Changes required to project see link 
+  https://github.com/korfuri/django-prometheus/blob/master/django_prometheus/db/common.py
 
 7.0.9
 ~~~~~~

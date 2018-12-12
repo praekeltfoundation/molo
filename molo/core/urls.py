@@ -83,4 +83,5 @@ urlpatterns = [
     url(
         r'^(\d+)/copy_to_all/$',
         views.copy_to_all, name='copy-to-all'),
+    url('', include('django_prometheus.urls')),
 ]
