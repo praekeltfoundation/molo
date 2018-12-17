@@ -16,10 +16,10 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.utils.html import format_html
 
-from wagtail.wagtailcore import hooks
-from wagtail.wagtailadmin.menu import MenuItem
-from wagtail.wagtailadmin.site_summary import SummaryItem
-from wagtail.wagtailadmin.widgets import Button
+from wagtail.core import hooks
+from wagtail.admin.menu import MenuItem
+from wagtail.admin.site_summary import SummaryItem
+from wagtail.admin.widgets import Button
 from wagtail.contrib.modeladmin.options import (
     modeladmin_register, ModelAdminGroup)
 

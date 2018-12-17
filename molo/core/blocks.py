@@ -1,9 +1,9 @@
 from django.utils.safestring import mark_safe
 from markdown import markdown
 
-from wagtail.wagtailcore import blocks
+from wagtail.core import blocks
 from wagtailmedia.blocks import AbstractMediaChooserBlock
-from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.images.blocks import ImageChooserBlock
 
 
 class MarkDownBlock(blocks.TextBlock):

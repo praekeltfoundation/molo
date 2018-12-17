@@ -3,7 +3,7 @@ from collections import OrderedDict
 from rest_framework import serializers
 
 from wagtail.api.v2.serializers import PageSerializer
-from wagtail.wagtailimages.api.v2.serializers import ImageSerializer
+from wagtail.images.api.v2.serializers import ImageSerializer
 
 from molo.core.models import TranslatablePageMixinNotRoutable, ImageInfo
 

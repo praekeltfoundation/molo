@@ -18,7 +18,7 @@ from django.contrib.messages import get_messages
 from google_analytics.tasks import send_ga_tracking
 from google_analytics.utils import build_ga_params, set_cookie
 
-from wagtail.wagtailcore.models import Site, Page
+from wagtail.core.models import Site, Page
 from molo.core.models import SiteSettings
 from molo.core.models import Languages
 

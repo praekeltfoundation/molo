@@ -42,7 +42,7 @@ from django.utils import timezone
 
 from six import iteritems
 
-from wagtail.wagtailcore.models import Page
+from wagtail.core.models import Page
 
 
 IMPORT_EMAIL_TEMPLATE = "content_import/import_email.html"

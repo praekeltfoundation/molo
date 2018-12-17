@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.core.urlresolvers import reverse
 
-# from wagtail.wagtailimages.tests.utils import get_test_image_file, Image
+# from wagtail.images.tests.utils import get_test_image_file, Image
 
 from molo.core.api.tests.utils import mocked_requests_get
 from molo.core.tests.base import MoloTestCaseMixin

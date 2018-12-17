@@ -3,8 +3,8 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
+import wagtail.core.blocks
+import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sectionpage',
             name='time',
-            field=wagtail.wagtailcore.fields.StreamField([(b'time', wagtail.wagtailcore.blocks.TimeBlock(required=False))], blank=True, help_text=b'The time/s content will be rotated', null=True),
+            field=wagtail.core.fields.StreamField([(b'time', wagtail.core.blocks.TimeBlock(required=False))], blank=True, help_text=b'The time/s content will be rotated', null=True),
         ),
         migrations.AddField(
             model_name='sectionpage',
@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='time',
-            field=wagtail.wagtailcore.fields.StreamField([(b'time', wagtail.wagtailcore.blocks.TimeBlock(required=False))], blank=True, help_text=b'The time/s content will be rotated', null=True),
+            field=wagtail.core.fields.StreamField([(b'time', wagtail.core.blocks.TimeBlock(required=False))], blank=True, help_text=b'The time/s content will be rotated', null=True),
         ),
         migrations.AddField(
             model_name='sitesettings',

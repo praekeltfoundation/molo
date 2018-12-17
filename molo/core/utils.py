@@ -10,9 +10,9 @@ import distutils.dir_util
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from wagtail.wagtailcore.utils import cautious_slugify
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailimages.models import Image
+from wagtail.core.utils import cautious_slugify
+from wagtail.core.models import Page
+from wagtail.images.models import Image
 
 from molo.core.api.constants import KEYS_TO_EXCLUDE
 
@@ -130,7 +130,7 @@ RE_NUMERICAL_SUFFIX = re.compile(r'^[\w-]*-(\d+)+$')
 
 
 def generate_slug(text, tail_number=0):
-    from wagtail.wagtailcore.models import Page
+    from wagtail.core.models import Page
     """
     Returns a new unique slug. Object must provide a SlugField called slug.
     URL friendly slugs are generated using django.template.defaultfilters'

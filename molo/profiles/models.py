@@ -14,9 +14,9 @@ from molo.core.models import (
 from molo.core.molo_wagtail_models import MoloPage
 from molo.core.utils import generate_slug
 from phonenumber_field.modelfields import PhoneNumberField
-from wagtail.wagtailcore.models import Site
+from wagtail.core.models import Site
 from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.wagtailadmin.edit_handlers import (
+from wagtail.admin.edit_handlers import (
     FieldPanel, MultiFieldPanel, PageChooserPanel)
 
 

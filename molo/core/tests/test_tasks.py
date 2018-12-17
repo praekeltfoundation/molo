@@ -11,7 +11,7 @@ from molo.core.tasks import rotate_content, demote_articles, promote_articles
 from molo.core.templatetags.core_tags import \
     load_descendant_articles_for_section
 
-from wagtail.wagtailcore.models import Site
+from wagtail.core.models import Site
 from wagtail.contrib.settings.context_processors import SettingsProxy
 
 
