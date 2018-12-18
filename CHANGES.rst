@@ -1,5 +1,11 @@
 CHANGES
 =======
+8.0.0
+~~~~~
+- Drop support for Python 2
+- Upgrade to Wagtail 2
+- These are potentially breaking changes for dependant projects that explicitly import Wagtail modules
+
 7.1.1
 ~~~~~
 - Fixed bug in copy to all task where article revision wasn't being saved
