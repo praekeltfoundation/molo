@@ -25,8 +25,8 @@ from django.utils.translation import ugettext as _
 from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
 from io import BytesIO
-from wagtail.wagtailcore.models import Page, UserPagePermissionsProxy
-from wagtail.wagtailsearch.models import Query
+from wagtail.core.models import Page, UserPagePermissionsProxy
+from wagtail.search.models import Query
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     ArticlePage, Languages, SiteSettings, Tag,

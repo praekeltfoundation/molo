@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from wagtail.wagtailcore.models import Page, Collection
+from wagtail.core.models import Page, Collection
 
 from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
                               SectionIndexPage, FooterIndexPage,

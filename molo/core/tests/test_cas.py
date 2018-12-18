@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import Main
 from django.contrib.auth.models import Group, Permission
-from wagtail.wagtailcore.models import GroupPagePermission
+from wagtail.core.models import GroupPagePermission
 
 
 class CASTestCase(TestCase, MoloTestCaseMixin):

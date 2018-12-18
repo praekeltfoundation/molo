@@ -3,7 +3,7 @@ from os.path import join
 from django.test import TestCase, override_settings
 from django.conf import settings
 
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+from wagtail.images.tests.utils import Image, get_test_image_file
 
 from molo.core.models import ImageInfo
 from molo.core.tests.base import MoloTestCaseMixin

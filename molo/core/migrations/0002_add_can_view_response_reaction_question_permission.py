@@ -6,9 +6,9 @@ from django.db import migrations, models
 import django.db.models.deletion
 import molo.core.blocks
 import molo.core.models
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
-import wagtail.wagtailimages.blocks
+import wagtail.core.blocks
+import wagtail.core.fields
+import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='articlepage',
             name='body',
-            field=wagtail.wagtailcore.fields.StreamField((('heading', wagtail.wagtailcore.blocks.CharBlock(classname='full title')), ('paragraph', molo.core.blocks.MarkDownBlock()), ('image', wagtail.wagtailimages.blocks.ImageChooserBlock()), ('list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label='Item'))), ('numbered_list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label='Item'))), ('page', wagtail.wagtailcore.blocks.PageChooserBlock()), ('media', molo.core.models.MoloMediaBlock(icon='media'))), blank=True, null=True),
+            field=wagtail.core.fields.StreamField((('heading', wagtail.core.blocks.CharBlock(classname='full title')), ('paragraph', molo.core.blocks.MarkDownBlock()), ('image', wagtail.images.blocks.ImageChooserBlock()), ('list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label='Item'))), ('numbered_list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label='Item'))), ('page', wagtail.core.blocks.PageChooserBlock()), ('media', molo.core.models.MoloMediaBlock(icon='media'))), blank=True, null=True),
         ),
         migrations.AlterField(
             model_name='articlepage',
@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sectionpage',
             name='time',
-            field=wagtail.wagtailcore.fields.StreamField((('time', wagtail.wagtailcore.blocks.TimeBlock(required=False)),), blank=True, help_text='The time/s content will be rotated', null=True),
+            field=wagtail.core.fields.StreamField((('time', wagtail.core.blocks.TimeBlock(required=False)),), blank=True, help_text='The time/s content will be rotated', null=True),
         ),
         migrations.AlterField(
             model_name='sectionpage',
@@ -190,7 +190,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sitesettings',
             name='social_media_links_on_footer_page',
-            field=wagtail.wagtailcore.fields.StreamField((('social_media_site', wagtail.wagtailcore.blocks.StructBlock((('title', wagtail.wagtailcore.blocks.CharBlock(required=True)), ('link', wagtail.wagtailcore.blocks.CharBlock(required=True)), ('image', wagtail.wagtailimages.blocks.ImageChooserBlock())))),), blank=True, null=True),
+            field=wagtail.core.fields.StreamField((('social_media_site', wagtail.core.blocks.StructBlock((('title', wagtail.core.blocks.CharBlock(required=True)), ('link', wagtail.core.blocks.CharBlock(required=True)), ('image', wagtail.images.blocks.ImageChooserBlock())))),), blank=True, null=True),
         ),
         migrations.AlterField(
             model_name='sitesettings',
@@ -205,7 +205,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sitesettings',
             name='time',
-            field=wagtail.wagtailcore.fields.StreamField((('time', wagtail.wagtailcore.blocks.TimeBlock(required=False)),), blank=True, help_text='The time/s content will be rotated', null=True),
+            field=wagtail.core.fields.StreamField((('time', wagtail.core.blocks.TimeBlock(required=False)),), blank=True, help_text='The time/s content will be rotated', null=True),
         ),
         migrations.AlterField(
             model_name='sitesettings',
