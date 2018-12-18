@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from wagtail.api.v2.router import WagtailAPIRouter
-from wagtail.wagtaildocs.api.v2.endpoints import DocumentsAPIEndpoint
+from wagtail.documents.api.v2.endpoints import DocumentsAPIEndpoint
 
 from molo.core.api import admin_views
 from molo.core.api.endpoints import (

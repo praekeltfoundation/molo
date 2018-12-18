@@ -11,7 +11,7 @@ from molo.core.tests.base import MoloTestCaseMixin
 from molo.profiles.models import (SecurityQuestion, SecurityQuestionIndexPage,
                                   UserProfilesSettings)
 
-from wagtail.wagtailcore.models import Site
+from wagtail.core.models import Site
 
 
 class RegisterTestCase(MoloTestCaseMixin, TestCase):

@@ -1,10 +1,10 @@
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailcore.utils import resolve_model_string
+from wagtail.core.models import Page
+from wagtail.core.utils import resolve_model_string
 from wagtail.api.v2.endpoints import PagesAPIEndpoint
 from wagtail.api.v2.serializers import BaseSerializer
 from wagtail.api.v2.utils import BadRequestError
-from wagtail.wagtailimages.api.v2.endpoints import ImagesAPIEndpoint
-from wagtail.wagtailimages.api.v2.endpoints import BaseAPIEndpoint
+from wagtail.images.api.v2.endpoints import ImagesAPIEndpoint
+from wagtail.images.api.v2.endpoints import BaseAPIEndpoint
 
 from molo.core.models import (
     SiteLanguage,

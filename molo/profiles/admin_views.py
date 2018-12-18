@@ -1,5 +1,5 @@
 from wagtail.contrib.modeladmin.views import IndexView
-from wagtail.wagtailadmin import messages
+from wagtail.admin import messages
 from django.utils.translation import ugettext as _
 from django.shortcuts import redirect
 from .task import send_export_email

@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django import forms
 
-from wagtail.wagtailadmin.forms import WagtailAdminPageForm
+from wagtail.admin.forms import WagtailAdminPageForm
 from django.utils.translation import ugettext_lazy as _
 
 

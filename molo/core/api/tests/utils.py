@@ -19,8 +19,8 @@ from .constants import (
     SUB_SECTION_RESPONSE_1,
     NESTED_ARTICLE_RESPONSE,
 )
-from wagtail.wagtailimages.tests.utils import get_test_image_file
-from wagtail.wagtailimages.models import Image
+from wagtail.images.tests.utils import get_test_image_file
+from wagtail.images.models import Image
 
 
 # Inspired by http://stackoverflow.com/a/28507806

@@ -12,7 +12,7 @@ from google_analytics.templatetags.google_analytics_tags import google_analytics
 from molo.core.middleware import MoloGoogleAnalyticsMiddleware
 from molo.core.models import Main, Languages, SiteLanguageRelation
 from molo.core.tests.base import MoloTestCaseMixin
-from wagtail.wagtailsearch.backends import get_search_backend
+from wagtail.search.backends import get_search_backend
 
 
 class TestUtils(TestCase, MoloTestCaseMixin):

@@ -4,7 +4,7 @@ from molo.core.models import Main, SiteLanguageRelation, Languages
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.utils import generate_slug
 
-from wagtail.wagtailcore.models import Site
+from wagtail.core.models import Site
 
 
 class TestSites(TestCase, MoloTestCaseMixin):

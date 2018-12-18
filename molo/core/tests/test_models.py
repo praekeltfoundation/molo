@@ -24,7 +24,7 @@ from molo.core.templatetags.core_tags import (
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.tasks import promote_articles
 from molo.core.wagtail_hooks import copy_translation_pages
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+from wagtail.images.tests.utils import Image, get_test_image_file
 
 
 @pytest.mark.django_db

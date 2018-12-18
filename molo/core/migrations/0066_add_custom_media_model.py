@@ -8,11 +8,11 @@ import django.db.models.deletion
 import molo.core.blocks
 import molo.core.models
 import taggit.managers
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
-import wagtail.wagtailcore.models
-import wagtail.wagtailimages.blocks
-import wagtail.wagtailsearch.index
+import wagtail.core.blocks
+import wagtail.core.fields
+import wagtail.core.models
+import wagtail.images.blocks
+import wagtail.search.index
 
 
 class Migration(migrations.Migration):
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('thumbnail', models.FileField(blank=True, upload_to='media_thumbnails', verbose_name='thumbnail')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
                 ('youtube_link', models.CharField(blank=True, max_length=512, null=True)),
-                ('collection', models.ForeignKey(default=wagtail.wagtailcore.models.get_root_collection_id, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='wagtailcore.Collection', verbose_name='collection')),
+                ('collection', models.ForeignKey(default=wagtail.core.models.get_root_collection_id, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='wagtailcore.Collection', verbose_name='collection')),
                 ('tags', taggit.managers.TaggableManager(blank=True, help_text=None, through='taggit.TaggedItem', to='taggit.Tag', verbose_name='tags')),
                 ('uploaded_by_user', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='uploaded by user')),
             ],
@@ -46,11 +46,11 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'verbose_name': 'media',
             },
-            bases=(wagtail.wagtailsearch.index.Indexed, models.Model),
+            bases=(wagtail.search.index.Indexed, models.Model),
         ),
         migrations.AlterField(
             model_name='articlepage',
             name='body',
-            field=wagtail.wagtailcore.fields.StreamField([(b'heading', wagtail.wagtailcore.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.wagtailimages.blocks.ImageChooserBlock()), (b'list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.wagtailcore.blocks.PageChooserBlock()), (b'media', molo.core.models.MoloMediaBlock(icon=b'media'))], blank=True, null=True),
+            field=wagtail.core.fields.StreamField([(b'heading', wagtail.core.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.images.blocks.ImageChooserBlock()), (b'list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.core.blocks.PageChooserBlock()), (b'media', molo.core.models.MoloMediaBlock(icon=b'media'))], blank=True, null=True),
         ),
     ]
