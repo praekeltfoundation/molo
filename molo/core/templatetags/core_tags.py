@@ -1,4 +1,3 @@
-import time
 from itertools import chain
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.cache import cache
@@ -421,6 +420,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
         return []
 
     return tags_list
+
 
 @REQUEST_TIME.time()
 @register.simple_tag(takes_context=True)
