@@ -6,10 +6,10 @@ from django.conf import settings
 from django.contrib import admin
 from django.views.generic.base import TemplateView
 from django_cas_ng import views as cas_views
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtaildocs import urls as wagtaildocs_urls
-from wagtail.wagtailcore import urls as wagtail_urls
-from wagtail.contrib.wagtailsitemaps import views as wagtail_views
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.core import urls as wagtail_urls
+from wagtail.contrib.sitemaps import views as wagtail_views
 
 from molo.core import views as core_views
 # Path to a custom template that will be used by the admin

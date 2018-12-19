@@ -3,8 +3,8 @@ from molo.profiles.admin import FrontendUsersModelAdmin, UserProfileModelAdmin
 from molo.profiles.models import (
     UserProfilesSettings, UserProfile, SecurityAnswer)
 from wagtail.contrib.modeladmin.options import modeladmin_register
-from wagtail.wagtailadmin.site_summary import SummaryItem
-from wagtail.wagtailcore import hooks
+from wagtail.admin.site_summary import SummaryItem
+from wagtail.core import hooks
 
 
 class ProfileWarningMessagee(SummaryItem):

@@ -4,9 +4,9 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 import molo.core.blocks
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
-import wagtail.wagtailimages.blocks
+import wagtail.core.blocks
+import wagtail.core.fields
+import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='articlepage',
             name='body',
-            field=wagtail.wagtailcore.fields.StreamField([(b'heading', wagtail.wagtailcore.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.wagtailimages.blocks.ImageChooserBlock()), (b'list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.wagtailcore.blocks.ListBlock(wagtail.wagtailcore.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.wagtailcore.blocks.PageChooserBlock()), (b'media', molo.core.blocks.MultimediaBlock())], blank=True, null=True),
+            field=wagtail.core.fields.StreamField([(b'heading', wagtail.core.blocks.CharBlock(classname=b'full title')), (b'paragraph', molo.core.blocks.MarkDownBlock()), (b'image', wagtail.images.blocks.ImageChooserBlock()), (b'list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'numbered_list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label=b'Item'))), (b'page', wagtail.core.blocks.PageChooserBlock()), (b'media', molo.core.blocks.MultimediaBlock())], blank=True, null=True),
         ),
     ]

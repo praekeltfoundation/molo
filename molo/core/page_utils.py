@@ -1,8 +1,8 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailcore.blocks import StreamValue
+from wagtail.core.models import Page
+from wagtail.core.blocks import StreamValue
 from molo.core.models import (
     ArticlePage,
     ArticlePageRecommendedSections,

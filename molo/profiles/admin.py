@@ -22,7 +22,7 @@ from import_export.widgets import DateTimeWidget, DateWidget
 from import_export.resources import ModelResource
 from import_export.results import RowResult
 
-from wagtail.wagtailcore.models import Site
+from wagtail.core.models import Site
 
 
 try:

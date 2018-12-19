@@ -1,5 +1,5 @@
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailcore.utils import WAGTAIL_APPEND_SLASH
+from wagtail.core.models import Page
+from wagtail.core.utils import WAGTAIL_APPEND_SLASH
 from django.urls import reverse
 
 

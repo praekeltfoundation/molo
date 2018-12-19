@@ -8,7 +8,7 @@ import django.db.models.deletion
 
 from molo.core.models import CmsSettings, Timezone
 
-from wagtail.wagtailcore.models import Site
+from wagtail.core.models import Site
 
 
 def set_initial_timezone(apps, schema_editor):

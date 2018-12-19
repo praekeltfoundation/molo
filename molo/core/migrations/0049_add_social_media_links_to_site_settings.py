@@ -4,9 +4,9 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
-import wagtail.wagtailimages.blocks
+import wagtail.core.blocks
+import wagtail.core.fields
+import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='social_media_links_on_footer_page',
-            field=wagtail.wagtailcore.fields.StreamField([(b'social_media_site', wagtail.wagtailcore.blocks.StructBlock([(b'title', wagtail.wagtailcore.blocks.CharBlock(required=True)), (b'link', wagtail.wagtailcore.blocks.CharBlock(required=True)), (b'image', wagtail.wagtailimages.blocks.ImageChooserBlock())]))], blank=True, null=True),
+            field=wagtail.core.fields.StreamField([(b'social_media_site', wagtail.core.blocks.StructBlock([(b'title', wagtail.core.blocks.CharBlock(required=True)), (b'link', wagtail.core.blocks.CharBlock(required=True)), (b'image', wagtail.images.blocks.ImageChooserBlock())]))], blank=True, null=True),
         ),
         migrations.AddField(
             model_name='sitesettings',
