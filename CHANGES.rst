@@ -1,5 +1,9 @@
 CHANGES
 =======
+8.0.1
+~~~~~
+- Update ReadonlyPanel implementation for wagtail2
+
 8.0.0
 ~~~~~
 - Drop support for Python 2
