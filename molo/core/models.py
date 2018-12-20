@@ -57,12 +57,27 @@ from molo.core.utils import (
 from django.db.models.signals import pre_delete
 
 
-class BaseReadOnlyPanel(EditHandler):
+class ReadOnlyPanel(EditHandler):
+
+    def __init__(self, attr, heading=None, classname='', help_text=''):
+        self.attr = attr
+        self.heading = pretty_name(self.attr) if heading is None else heading
+        self.classname = classname
+        self.help_text = help_text
+
     def render(self):
         value = getattr(self.instance, self.attr)
         if callable(value):
             value = value()
         return format_html('<div style="padding-top: 1.2em;">{}</div>', value)
+
+    def clone(self):
+        return self.__class__(
+            heading=self.heading,
+            classname=self.classname,
+            help_text=self.help_text,
+            attr=self.attr,
+        )
 
     def render_as_object(self):
         return format_html(
@@ -78,18 +93,6 @@ class BaseReadOnlyPanel(EditHandler):
             '<div class="field-content">{}</div>'
             '</div>',
             self.heading, _(':'), self.render())
-
-
-class ReadOnlyPanel:
-    def __init__(self, attr, heading=None, classname=''):
-        self.attr = attr
-        self.heading = pretty_name(self.attr) if heading is None else heading
-        self.classname = classname
-
-    def bind_to_model(self, model):
-        return type(str(_('ReadOnlyPanel')), (BaseReadOnlyPanel,),
-                    {'attr': self.attr, 'heading': self.heading,
-                     'classname': self.classname})
 
 
 @register_setting

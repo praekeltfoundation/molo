@@ -47,6 +47,7 @@ install_requires = [
     'Unidecode==0.04.16',
     'django-treebeard==4.2.0',
     'django-prometheus',
+    'prometheus_client',
 ]
 
 # we need to only install typing for python2
