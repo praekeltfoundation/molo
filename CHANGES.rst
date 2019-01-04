@@ -1,5 +1,9 @@
 CHANGES
 =======
+8.0.2
+~~~~~
+- Update django-google-analytics-app, boto and django-storages dependencies
+
 8.0.1
 ~~~~~
 - Update ReadonlyPanel implementation for wagtail2
