@@ -22,7 +22,7 @@ install_requires = [
     'django-cas-ng==3.5.8',
     'django-el-pagination==3.1.0',
     'django-extensions>=1,<2',
-    'django-google-analytics-app==4.3.3',
+    'django-google-analytics-app==4.3.7',
     'django-libsass',
     'django-mptt==0.8.7',
     'djangorestframework==3.7.4',
@@ -42,11 +42,12 @@ install_requires = [
     'wagtail>=2.0,<2.1',
     'wagtailmedia==0.2.0',
     'ImageHash==3.4',
-    'boto==2.48.0',
-    'django-storages==1.6.3',
+    'boto==2.49.0',
+    'django-storages==1.7.1',
     'Unidecode==0.04.16',
     'django-treebeard==4.2.0',
     'django-prometheus',
+    'prometheus_client',
 ]
 
 # we need to only install typing for python2

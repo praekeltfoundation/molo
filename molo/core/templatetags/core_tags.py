@@ -11,7 +11,13 @@ from molo.core.models import (
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
     ReactionQuestionChoice, BannerPage, get_translation_for)
 
+from prometheus_client import Summary
+
 register = template.Library()
+
+
+REQUEST_TIME = Summary(
+        'request_processing_seconds', 'Time spent processing request')
 
 
 def get_language(site, locale):
@@ -416,6 +422,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     return tags_list
 
 
+@REQUEST_TIME.time()
 @register.simple_tag(takes_context=True)
 def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
