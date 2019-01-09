@@ -19,7 +19,9 @@
     {% include "wagtailadmin/pages/listing/_locked_indicator.html" with page=page %}
 </h2>
 
+{# BEGIN CUSTOM TEMPLATE LOGIC #}
 {% render_translations page %}
+{# END CUSTOM TEMPLATE LOGIC #}
 <ul class="actions">
     {% page_listing_buttons page page_perms %}
 </ul>
