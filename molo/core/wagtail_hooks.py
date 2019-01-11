@@ -8,7 +8,7 @@ from molo.core.admin_views import ReactionQuestionResultsAdminView, \
     ReactionQuestionSummaryAdminView
 from molo.core.models import Languages, ArticlePage
 from molo.core.utils import create_new_article_relations
-
+from django.db.models.query import QuerySet
 
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
@@ -80,10 +80,23 @@ modeladmin_register(AdminViewGroup)
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
-    specific_pages = [page.specific for page in pages]
+    if isinstance(pages, QuerySet):
+        specific_pages = pages
+        for page in pages:
+            if not page.specific:
+                specific_pages = specific_pages.exclude(pk=page.pk)
+    else:
+        specific_pages = [page.specific for page in pages]
     if pages and main_language and parent_page.depth > 2:
-        new_pages = [page for page in specific_pages
-                     if page.language and page.language.pk == main_language.pk]
+        if isinstance(specific_pages, QuerySet):
+            new_pages = specific_pages
+            for page in specific_pages:
+                if not page.language and page.language.pk == main_language.pk:
+                    new_pages = new_pages.exclude(pk=page.pk)
+        else:
+            new_pages = [page for page in specific_pages
+                         if page.language and
+                         page.language.pk == main_language.pk]
         return new_pages
     return pages
 
