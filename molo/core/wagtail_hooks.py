@@ -88,12 +88,12 @@ def show_main_language_only(parent_page, pages, request):
     else:
         specific_pages = [page.specific for page in pages]
     if pages and main_language and parent_page.depth > 2:
-        if isinstance(specific_pages, QuerySet):
+        if isinstance(specific_pages, list):
             new_pages = specific_pages
             for page in specific_pages:
-                if (not (page.language and page.language.pk) ==
-                        main_language.pk):
-                    new_pages = new_pages.exclude(pk=page.pk)
+                if page.language:
+                    if not page.language.pk == main_language.pk:
+                        new_pages = new_pages.exclude(pk=page.pk)
         else:
             new_pages = [page for page in specific_pages
                          if page.language and
