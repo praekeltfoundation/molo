@@ -72,7 +72,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'wagtailadmin_explore', args=[self.section_index.id]))
         # checks that only the english section is listed
         # and not the french section
-        self.assertNotContains(response, 'English section')
+        self.assertContains(response, 'English section')
         self.assertNotContains(response,
                                'French translation of English section')
 
