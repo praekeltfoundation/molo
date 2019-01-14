@@ -5,6 +5,7 @@ from datetime import datetime
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.shortcuts import get_object_or_404
+from django.db.models.query import QuerySet
 
 from wagtail.core.models import Site
 
@@ -79,7 +80,6 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
     def test_that_only_main_language_pages_returns_list(self):
         self.client.post(reverse(
             'add_translation', args=[self.english_section.id, 'fr']))
-        print("site id : ", self.english_section.id)
         request = self.client.get(
             "http://main-1.localhost:8000/admin/pages/"
             + str(self.english_section.id) + "/")
@@ -95,6 +95,28 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         # checks that only the english section is listed
         # and not the french section
         assert isinstance(pages, list)
+        assert len(pages) == 1
+        self.assertEquals(pages[0].title, 'English section')
+
+    def test_that_only_main_language_pages_returns_queryset(self):
+        self.client.post(reverse(
+            'add_translation', args=[self.english_section.id, 'fr']))
+        request = self.client.get(
+            "http://main-1.localhost:8000/admin/pages/"
+            + str(self.english_section.id) + "/")
+        request.site = self.site
+        parent_page = get_object_or_404(Page, id=self.section_index.id)
+        pages = parent_page.get_children().prefetch_related(
+            'content_type', 'sites_rooted_here')
+        pages[0].language = self.english
+        pages = show_main_language_only(
+            parent_page,
+            pages,
+            request,
+        )
+        # checks that only the english section is listed
+        # and not the french section
+        assert isinstance(pages, QuerySet)
         assert len(pages) == 1
         self.assertEquals(pages[0].title, 'English section')
 
