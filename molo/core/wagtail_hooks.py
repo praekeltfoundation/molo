@@ -91,7 +91,7 @@ def show_main_language_only(parent_page, pages, request):
         if isinstance(specific_pages, QuerySet):
             new_pages = specific_pages
             for page in specific_pages:
-                if not ((page.language and page.language.pk) ==
+                if (not (page.language and page.language.pk) ==
                         main_language.pk):
                     new_pages = new_pages.exclude(pk=page.pk)
         else:
