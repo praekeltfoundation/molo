@@ -1,6 +1,9 @@
 CHANGES
 =======
-8.0.2
+8.0.4
+~~~~~
+- Fix molo wagtail_hooks to work with querysets
+8.0.3
 ~~~~~
 - Upgrade to Wagtail 2.2
 
