@@ -14,7 +14,6 @@ from molo.core.models import SectionPage, SiteSettings, \
     ArticlePage, Main, SiteLanguageRelation, Languages, ArticlePageTags
 from molo.core.tasks import promote_articles
 from molo.core.wagtail_hooks import show_main_language_only
-
 from wagtail.core.models import Page
 
 
@@ -113,7 +112,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             pages,
             request,
         )
-        # checks that only the english section is listed
+        # check a queryset is returned
+        # checks that only the english section is in the queryset
         # and not the french section
         assert isinstance(pages, QuerySet)
         assert len(pages) == 1
