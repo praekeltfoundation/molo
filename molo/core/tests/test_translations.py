@@ -108,7 +108,6 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         parent_page = get_object_or_404(Page, id=self.section_index.id)
         pages = parent_page.get_children().prefetch_related(
             'content_type', 'sites_rooted_here')
-        pages[0].language = self.english
         pages = show_main_language_only(
             parent_page,
             pages,

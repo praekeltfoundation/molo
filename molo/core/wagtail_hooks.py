@@ -80,25 +80,22 @@ modeladmin_register(AdminViewGroup)
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
-    if isinstance(pages, QuerySet):
-        specific_pages = pages
-        for page in pages:
-            if not page.specific:
-                specific_pages = specific_pages.exclude(pk=page.pk)
-    else:
-        specific_pages = [page.specific for page in pages]
     if pages and main_language and parent_page.depth > 2:
-        if isinstance(specific_pages, list):
-            new_pages = specific_pages
-            for page in specific_pages:
-                if page.language:
-                    if not page.language.pk == main_language.pk:
-                        new_pages = new_pages.exclude(pk=page.pk)
+        if isinstance(pages, QuerySet):
+            for page in pages:
+                if not page.specific:
+                    pages = pages.exclude(pk=page.pk)
+                elif not page.specific.language:
+                    pages = pages.exclude(pk=page.pk)
+                elif page.specific.language.pk != main_language.pk:
+                    pages = pages.exclude(pk=page.pk)
+            return pages
         else:
+            specific_pages = [page.specific for page in pages]
             new_pages = [page for page in specific_pages
                          if page.language and
                          page.language.pk == main_language.pk]
-        return new_pages
+            return new_pages
     return pages
 
 
