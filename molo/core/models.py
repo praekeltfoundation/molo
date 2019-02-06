@@ -1473,7 +1473,9 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     featured_in_homepage_end_date = models.DateTimeField(null=True, blank=True)
     featured_video = models.ForeignKey(
         'MoloMedia', null=True, blank=True, on_delete=models.SET_NULL,
-        help_text='If a video is added here, it will override the article image as the hero')
+        help_text='If a video is added here, it will override the article'
+                  ' image as the hero'
+    )
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
