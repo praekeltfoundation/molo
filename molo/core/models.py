@@ -36,6 +36,7 @@ from wagtail.images.models import Image
 from wagtail.contrib.routable_page.models import route, RoutablePageMixin
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.models import AbstractMedia
+from wagtailmedia.edit_handlers import MediaChooserPanel
 from wagtail.core.signals import page_unpublished
 
 from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
@@ -1471,11 +1472,12 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     featured_in_homepage_start_date = models.DateTimeField(
         null=True, blank=True)
     featured_in_homepage_end_date = models.DateTimeField(null=True, blank=True)
-    featured_video = models.ForeignKey(
-        'MoloMedia', null=True, blank=True, on_delete=models.SET_NULL,
-        help_text='If a video is added here, it will override the article'
-                  ' image as the hero'
-    )
+    homepage_media = StreamField([
+        ('media', MoloMediaBlock(icon='media'),)
+    ], null=True, blank=True,
+       help_text='If media is added here, it will override the article'
+                   ' image as the hero')
+    is_media_page = models.BooleanField(default=False)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1655,6 +1657,12 @@ ArticlePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
+    MultiFieldPanel(
+        [
+            StreamFieldPanel('homepage_media'),
+            FieldPanel('is_media_page'),
+        ], heading='Homepage Media Options'
+    ),
     StreamFieldPanel('body'),
     FieldPanel('tags'),
     MultiFieldPanel(
