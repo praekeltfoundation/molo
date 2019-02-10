@@ -36,7 +36,6 @@ from wagtail.images.models import Image
 from wagtail.contrib.routable_page.models import route, RoutablePageMixin
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.models import AbstractMedia
-from wagtailmedia.edit_handlers import MediaChooserPanel
 from wagtail.core.signals import page_unpublished
 
 from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
