@@ -1476,7 +1476,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         ('media', MoloMediaBlock(icon='media'),)
     ], null=True, blank=True,
        help_text='If media is added here, it will override the article'
-                   ' image as the hero')
+                 ' image as the hero')
     is_media_page = models.BooleanField(default=False)
     image = models.ForeignKey(
         'wagtailimages.Image',
