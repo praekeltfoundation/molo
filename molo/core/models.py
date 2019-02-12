@@ -1035,7 +1035,7 @@ class Main(CommentedPageMixin, MoloPage):
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
             form_index = FormIndexPage(
-                title='Forma', slug=('forms-%s' % (
+                title='Forms', slug=('forms-%s' % (
                     generate_slug(self.title), )))
             self.add_child(instance=form_index)
             form_index.save_revision().publish()
