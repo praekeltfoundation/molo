@@ -1876,6 +1876,6 @@ class FormPage(TranslatablePageMixinNotRoutable, AbstractEmailForm):
             FieldPanel('subject'),
         ], "Email"),
     ]
-    
+
     def serve(self, request, *args, **kwargs):
         return super(AbstractEmailForm, self).serve(request, *args, **kwargs)
