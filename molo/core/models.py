@@ -55,13 +55,6 @@ from molo.core.utils import (
 )
 
 from django.db.models.signals import pre_delete
-
-from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (
-    FieldPanel, FieldRowPanel,
-    InlinePanel, MultiFieldPanel
-)
-from wagtail.core.fields import RichTextField
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 
 
@@ -1821,7 +1814,7 @@ class ArticlePageRelatedSections(Orderable):
 
 class FooterIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = []
-    subpage_types = ['FooterPage',]
+    subpage_types = ['FooterPage']
 
     def copy(self, *args, **kwargs):
         site = kwargs['to'].get_site()
@@ -1844,7 +1837,7 @@ FooterPage.promote_panels = [
 
 class FormIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = []
-    subpage_types = ['FormPage',]
+    subpage_types = ['FormPage']
 
     def copy(self, *args, **kwargs):
         site = kwargs['to'].get_site()
@@ -1854,7 +1847,8 @@ class FormIndexPage(MoloPage, PreventDeleteMixin):
 
 
 class FormField(AbstractFormField):
-    page = ParentalKey('FormPage', on_delete=models.CASCADE, related_name='form_fields')
+    page = ParentalKey(
+        'FormPage', on_delete=models.CASCADE, related_name='form_fields')
 
 
 class FormPage(TranslatablePageMixinNotRoutable, AbstractEmailForm):
@@ -1869,7 +1863,6 @@ class FormPage(TranslatablePageMixinNotRoutable, AbstractEmailForm):
         ('paragraph', blocks.RichTextBlock()),
     ], null=True, blank=True)
     thank_you_text = models.TextField(blank=True)
-
     content_panels = AbstractEmailForm.content_panels + [
         FieldPanel('intro', classname="full"),
         StreamFieldPanel('body'),

@@ -14,9 +14,9 @@ def forms_list(context):
     main = context['request'].site.root_page
     page = FormIndexPage.objects.child_of(main).live().first()
     if page:
-        forms = (FormPage.objects.child_of(page)
-                       .filter(language__is_main_language=True)
-                       .specific())
+        forms = (
+            FormPage.objects.child_of(page).filter(
+                language__is_main_language=True).specific())
     else:
         forms = FormPage.objects.none()
     context.update({
