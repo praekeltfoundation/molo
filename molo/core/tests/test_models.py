@@ -377,7 +377,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'body-0-order': 1,
             'body-0-type': 'paragraph',
             'tags': 'love, war',
-            'action-publish': 'Publish'
+            'action-publish': 'Publish',
+            'homepage_media-count': 0
         }
         self.client.post(
             reverse('wagtailadmin_pages:add',
@@ -430,7 +431,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'body-0-order': 1,
             'body-0-type': 'paragraph',
             'metadata_tags': 'love, happiness',
-            'action-publish': 'Publish'
+            'action-publish': 'Publish',
+            'homepage_media-count': 0
         }
         self.client.post(
             reverse('wagtailadmin_pages:add',
@@ -595,6 +597,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'body-0-type': 'paragraph',
             'metadata_tags': 'love, happiness',
             'action-publish': 'Publish',
+            'homepage_media-count': 0
         }
         self.client.post(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
