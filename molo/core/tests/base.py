@@ -11,7 +11,8 @@ from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
                               BannerIndexPage, TagIndexPage, Tag,
                               ReactionQuestionIndexPage,
                               ArticlePageReactionQuestions, ReactionQuestion,
-                              ReactionQuestionChoice, BannerPage)
+                              ReactionQuestionChoice, BannerPage,
+                              FormIndexPage)
 from molo.core.utils import generate_slug
 
 
@@ -72,6 +73,8 @@ class MoloTestCaseMixin(object):
 
         self.tag_index = TagIndexPage.objects.child_of(self.main).first()
 
+        self.form_index = FormIndexPage.objects.child_of(self.main).first()
+
         # Create root collection
         Collection.objects.create(
             name="Root",
@@ -115,6 +118,9 @@ class MoloTestCaseMixin(object):
             self.main2).first()
 
         self.tag_index2 = TagIndexPage.objects.child_of(
+            self.main2).first()
+
+        self.form_index2 = FormIndexPage.objects.child_of(
             self.main2).first()
 
         # Create root collection
@@ -161,6 +167,9 @@ class MoloTestCaseMixin(object):
             self.main3).first()
 
         self.tag_index3 = TagIndexPage.objects.child_of(
+            self.main3).first()
+
+        self.form_index3 = FormIndexPage.objects.child_of(
             self.main3).first()
 
         # Create root collection
