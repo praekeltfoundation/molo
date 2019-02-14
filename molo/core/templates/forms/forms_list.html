@@ -1,0 +1,9 @@
+{% load wagtailcore_tags forms_tags %}
+
+{% block content %}
+    {% for formpage in forms %}
+    <a href="{% pageurl formpage.specific %}">
+            {{formpage.title}}
+          </a>
+	{% endfor %}
+{% endblock %}

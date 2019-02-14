@@ -3,12 +3,14 @@ import pytest
 from django.test import TestCase, RequestFactory
 from mock import patch
 from molo.core.models import (
-    Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags)
+    Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags,
+    FormPage)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
     topic_of_the_day, render_translations
 )
+from molo.core.templatetags.forms_tags import forms_list
 
 
 @pytest.mark.django_db
@@ -34,6 +36,33 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
+        # create a requset object
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/')
+        self.request.site = self.site
+
+    def create_form_page(
+            self, parent, title="Test Form",
+            slug="test-form", **kwargs):
+        form_page = FormPage(
+            title=title,
+            slug=slug,
+            intro='Introduction to Test Form ...',
+            thank_you_text='Thank you for taking the Test Form',
+            **kwargs
+        )
+        parent.add_child(instance=form_page)
+        form_page.save_revision().publish()
+        return form_page
+
+    def test_get_form_list_homepage(self):
+        context = {
+            'locale_code': 'en',
+            'request': self.request,
+            'forms': self.create_form_page(self.form_index)
+        }
+        context = forms_list(context)
+        self.assertEqual(len(context['forms']), 1)
 
     def test_render_translations(self):
         # this should return an empty dictionary for non main lang pages

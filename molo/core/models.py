@@ -55,6 +55,7 @@ from molo.core.utils import (
 )
 
 from django.db.models.signals import pre_delete
+from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
 
 
 class ReadOnlyPanel(EditHandler):
@@ -1026,6 +1027,11 @@ class Main(CommentedPageMixin, MoloPage):
                     generate_slug(self.title), )))
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
+            form_index = FormIndexPage(
+                title='Forms', slug=('forms-%s' % (
+                    generate_slug(self.title), )))
+            self.add_child(instance=form_index)
+            form_index.save_revision().publish()
             tag_index = TagIndexPage(
                 title='Tags', slug=('tags-%s' % (
                     generate_slug(self.title), )))
@@ -1839,3 +1845,42 @@ FooterPage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
+
+
+class FormIndexPage(MoloPage, PreventDeleteMixin):
+    parent_page_types = []
+    subpage_types = ['FormPage']
+
+    def copy(self, *args, **kwargs):
+        site = kwargs['to'].get_site()
+        main = site.root_page
+        FormIndexPage.objects.child_of(main).delete()
+        super(FormIndexPage, self).copy(*args, **kwargs)
+
+
+class FormField(AbstractFormField):
+    page = ParentalKey(
+        'FormPage', on_delete=models.CASCADE, related_name='form_fields')
+
+
+class FormPage(TranslatablePageMixinNotRoutable, AbstractForm):
+    parent_page_types = ['FormIndexPage']
+    subpage_types = []
+    language = models.ForeignKey(
+        'core.SiteLanguage', blank=True, null=True,
+        on_delete=models.SET_NULL)
+    translated_pages = models.ManyToManyField("self", blank=True)
+    intro = models.TextField(blank=True)
+    body = StreamField([
+        ('paragraph', blocks.RichTextBlock()),
+    ], null=True, blank=True)
+    thank_you_text = models.TextField(blank=True)
+    content_panels = AbstractForm.content_panels + [
+        FieldPanel('intro', classname="full"),
+        StreamFieldPanel('body'),
+        InlinePanel('form_fields', label="Form fields"),
+        FieldPanel('thank_you_text', classname="full")
+    ]
+
+    def serve(self, request, *args, **kwargs):
+        return super(AbstractForm, self).serve(request, *args, **kwargs)
