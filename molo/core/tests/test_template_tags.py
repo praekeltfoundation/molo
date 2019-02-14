@@ -36,7 +36,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
-         # create a requset object
+        # create a requset object
         self.factory = RequestFactory()
         self.request = self.factory.get('/')
         self.request.site = self.site
