@@ -36,6 +36,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
+         # create a requset object
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/')
+        self.request.site = self.site
 
     def create_form_page(
             self, parent, title="Test Form",
@@ -43,7 +47,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         form_page = FormPage(
             title=title,
             slug=slug,
-            introduction='Introduction to Test Form ...',
+            intro='Introduction to Test Form ...',
             thank_you_text='Thank you for taking the Test Form',
             **kwargs
         )
@@ -55,9 +59,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         context = {
             'locale_code': 'en',
             'request': self.request,
+            'forms': self.create_form_page(self.form_index)
         }
         context = forms_list(context)
-        self.assertEqual(len(context['form']), 1)
+        self.assertEqual(len(context['forms']), 1)
 
     def test_render_translations(self):
         # this should return an empty dictionary for non main lang pages
