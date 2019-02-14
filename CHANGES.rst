@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.2.0
+~~~~~
+- Add forms
+
 8.1.0
 ~~~~~
 - Add media to article for hero on homepage
