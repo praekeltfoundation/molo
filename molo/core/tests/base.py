@@ -11,7 +11,8 @@ from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
                               BannerIndexPage, TagIndexPage, Tag,
                               ReactionQuestionIndexPage,
                               ArticlePageReactionQuestions, ReactionQuestion,
-                              ReactionQuestionChoice, BannerPage)
+                              ReactionQuestionChoice, BannerPage,
+                              FormIndexPage)
 from molo.core.utils import generate_slug
 
 
@@ -118,7 +119,7 @@ class MoloTestCaseMixin(object):
 
         self.tag_index2 = TagIndexPage.objects.child_of(
             self.main2).first()
-        
+
         self.form_index2 = FormIndexPage.objects.child_of(
             self.main2).first()
 

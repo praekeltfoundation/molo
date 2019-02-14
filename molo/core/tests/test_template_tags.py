@@ -36,7 +36,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.yourmind_sub = self.mk_section(
             self.yourmind, title='Your mind subsection')
-    
+
     def create_form_page(
             self, parent, title="Test Form",
             slug="test-form", **kwargs):
