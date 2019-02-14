@@ -168,7 +168,7 @@ class MoloTestCaseMixin(object):
 
         self.tag_index3 = TagIndexPage.objects.child_of(
             self.main3).first()
-        
+
         self.form_index3 = FormIndexPage.objects.child_of(
             self.main3).first()
 
