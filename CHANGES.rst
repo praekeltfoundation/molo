@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.3.1
+~~~~~
+- Add new social media article sharing options to template tag
+
 8.3.0
 ~~~~~
 - Add new social media article sharing options
