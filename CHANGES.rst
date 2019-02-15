@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.3.0
+~~~~~
+- Add new social media article sharing options
+
 8.2.0
 ~~~~~
 - Add forms
