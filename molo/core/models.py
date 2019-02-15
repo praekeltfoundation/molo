@@ -202,6 +202,36 @@ class SiteSettings(BaseSetting):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    whatsapp_sharing = models.BooleanField(
+        default=False, verbose_name='Whatsapp',
+        help_text='Enable this field to allow for sharing to Whatsapp.')
+    whatsapp_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    youtube_sharing = models.BooleanField(
+        default=False, verbose_name='YouTube',
+        help_text='Enable this field to allow for sharing to YouTube.')
+    youtube_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    telegram_sharing = models.BooleanField(
+        default=False, verbose_name='Telegram',
+        help_text='Enable this field to allow for sharing to Telegram.')
+    telegram_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     enable_clickable_tags = models.BooleanField(
         default=False, verbose_name='Display tags on Front-end')
     enable_tag_navigation = models.BooleanField(
@@ -309,6 +339,12 @@ class SiteSettings(BaseSetting):
                 ImageChooserPanel('facebook_image'),
                 FieldPanel('twitter_sharing'),
                 ImageChooserPanel('twitter_image'),
+                FieldPanel('whatsapp_sharing'),
+                ImageChooserPanel('whatsapp_image'),
+                FieldPanel('youtube_sharing'),
+                ImageChooserPanel('youtube_image'),
+                FieldPanel('telegram_sharing'),
+                ImageChooserPanel('telegram_image'),
             ],
             heading="Social Media Article Sharing Buttons",
         ),
