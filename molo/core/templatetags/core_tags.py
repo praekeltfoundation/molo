@@ -671,17 +671,17 @@ def social_media_article(context, page=None):
         twitter = site_settings.twitter_image
     else:
         twitter = False
-    
+
     if site_settings.whatsapp_sharing:
         whatsapp = site_settings.whatsapp_image
     else:
         whatsapp = False
-    
+
     if site_settings.youtube_sharing:
         youtube = site_settings.youtube_image
     else:
         youtube = False
-    
+
     if site_settings.telegram_sharing:
         telegram = site_settings.telegram_image
     else:
