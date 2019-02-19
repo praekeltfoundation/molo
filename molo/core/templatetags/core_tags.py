@@ -677,10 +677,10 @@ def social_media_article(context, page=None):
     else:
         whatsapp = False
 
-    if site_settings.youtube_sharing:
-        youtube = site_settings.youtube_image
+    if site_settings.viber_sharing:
+        viber = site_settings.viber_image
     else:
-        youtube = False
+        viber = False
 
     if site_settings.telegram_sharing:
         telegram = site_settings.telegram_image
@@ -691,7 +691,7 @@ def social_media_article(context, page=None):
         'facebook': facebook,
         'twitter': twitter,
         'whatsapp': whatsapp,
-        'youtube': youtube,
+        'viber': viber,
         'telegram': telegram,
         'request': context['request'],
         'locale_code': locale,
