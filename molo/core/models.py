@@ -212,10 +212,10 @@ class SiteSettings(BaseSetting):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    youtube_sharing = models.BooleanField(
-        default=False, verbose_name='YouTube',
-        help_text='Enable this field to allow for sharing to YouTube.')
-    youtube_image = models.ForeignKey(
+    viber_sharing = models.BooleanField(
+        default=False, verbose_name='Viber',
+        help_text='Enable this field to allow for sharing to Viber.')
+    viber_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
