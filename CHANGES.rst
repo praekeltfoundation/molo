@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.3.3
+~~~~~
+- Add viber content panels
+
 8.3.2
 ~~~~~
 - Add viber sharing
