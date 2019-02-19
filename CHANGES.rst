@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.3.2
+~~~~~
+- Add viber sharing
+
 8.3.1
 ~~~~~
 - Add new social media article sharing options to template tag
