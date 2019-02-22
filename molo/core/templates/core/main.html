@@ -4,7 +4,7 @@
 {% block content %}
     {% bannerpages %}
     {% if not settings.core.SiteSettings.enable_tag_navigation %}
-      {% topic_of_the_day %}
+      {% hero_article %}
       {% latest_listing_homepage num_count=6 %}
       {% section_listing_homepage %}
       {% media_listing_homepage %}
