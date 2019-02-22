@@ -31,14 +31,14 @@ class ArticlePageForm(WagtailAdminPageForm):
                 self.add_error(
                     "promote_date",
                     "Please specify the date and time that you would like "
-                    "this article to appear as the Topic of the Day."
+                    "this article to appear as the Hero Article."
                 )
 
             if not demote_date:
                 self.add_error(
                     "demote_date",
                     "Please specify the date and time that you would like "
-                    "this article to be demoted as the Topic of the Day."
+                    "this article to be demoted as the Hero Article."
                 )
 
             if promote_date and demote_date:

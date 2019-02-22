@@ -568,7 +568,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)))
         self.assertEqual(response.status_code, 200)
 
-        # Marking article as Topic of the day with no promote date
+        # Marking article as Hero Article with no promote date
         # or demote date raises error
         post_data = {
             "feature_as_hero_article": True,
@@ -606,7 +606,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertRaisesMessage(
             ValidationError,
             "Please specify the date and time that you would like this "
-            "article to appear as the Topic of the Day."
+            "article to appear as the Hero Article."
         )
 
         # Raises error if promote_date is in the past
@@ -686,7 +686,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.yourmind.add_child(instance=article_2)
         self.assertFalse(article_2.is_current_hero_article())
 
-    # exclude future-scheduled topic of the day articles from the
+    # exclude future-scheduled Hero Article articles from the
     # latest articles queryset.
     # Create two articles, one with present promote date and one
     # with future promote date. Verify that the article with a

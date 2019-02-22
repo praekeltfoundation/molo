@@ -1575,7 +1575,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
 
     feature_as_hero_article = models.BooleanField(
         default=False,
-        help_text=_('Article to be featured as the Topic of the Day'))
+        help_text=_('Article to be featured as the Hero Article'))
     promote_date = models.DateTimeField(blank=True, null=True)
     demote_date = models.DateTimeField(blank=True, null=True)
 
@@ -1733,7 +1733,7 @@ ArticlePage.promote_panels = [
         ArticlePage.featured_section_promote_panels, "Featuring in Section"),
     MultiFieldPanel(
         ArticlePage.featured_homepage_promote_panels, "Featuring in Homepage"),
-    MultiFieldPanel(ArticlePage.hero_article_panels, "Topic of the Day"),
+    MultiFieldPanel(ArticlePage.hero_article_panels, "Hero Article"),
     MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
         Page.promote_panels,
