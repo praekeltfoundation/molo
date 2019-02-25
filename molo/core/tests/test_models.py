@@ -555,7 +555,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'fr', 'request': request}, section2)
         self.assertEquals(section2.id, qs.id)
 
-    def test_topic_of_the_day(self):
+    def test_hero_article(self):
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
@@ -568,10 +568,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)))
         self.assertEqual(response.status_code, 200)
 
-        # Marking article as Topic of the day with no promote date
+        # Marking article as Hero Article with no promote date
         # or demote date raises error
         post_data = {
-            "feature_as_topic_of_the_day": True,
+            "feature_as_hero_article": True,
             'title': 'this is a test article',
             'slug': 'this-is-a-test-article',
             'recommended_articles-INITIAL_FORMS': 0,
@@ -606,7 +606,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertRaisesMessage(
             ValidationError,
             "Please specify the date and time that you would like this "
-            "article to appear as the Topic of the Day."
+            "article to appear as the Hero Article."
         )
 
         # Raises error if promote_date is in the past
@@ -664,17 +664,17 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(article.featured_in_homepage)
         self.assertFalse(article.featured_in_section)
 
-    def test_is_topic_of_the_day(self):
+    def test_is_hero_article(self):
         promote_date = timezone.now() + timedelta(days=-1)
         demote_date = timezone.now() + timedelta(days=1)
         article_1 = ArticlePage(
             title="New article",
-            feature_as_topic_of_the_day=True,
+            feature_as_hero_article=True,
             promote_date=promote_date,
             demote_date=demote_date
         )
         self.yourmind.add_child(instance=article_1)
-        self.assertTrue(article_1.is_current_topic_of_the_day())
+        self.assertTrue(article_1.is_current_hero_article())
 
         promote_date = timezone.now() + timedelta(days=2)
         demote_date = timezone.now() + timedelta(days=4)
@@ -684,15 +684,15 @@ class TestModels(TestCase, MoloTestCaseMixin):
             demote_date=demote_date
         )
         self.yourmind.add_child(instance=article_2)
-        self.assertFalse(article_2.is_current_topic_of_the_day())
+        self.assertFalse(article_2.is_current_hero_article())
 
-    # exclude future-scheduled topic of the day articles from the
+    # exclude future-scheduled Hero Article articles from the
     # latest articles queryset.
     # Create two articles, one with present promote date and one
     # with future promote date. Verify that the article with a
     # future promote date does not appear in latest articles
     # queryset.
-    def test_future_topic_of_the_day_not_in_latest(self):
+    def test_future_hero_article_not_in_latest(self):
         promote_date = timezone.now() + timedelta(days=2)
         demote_date = timezone.now() + timedelta(days=4)
         future_article = ArticlePage(
@@ -702,7 +702,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             depth="1",
             path="0003",
             featured_in_latest=True,
-            feature_as_topic_of_the_day=True
+            feature_as_hero_article=True
         )
         self.yourmind.add_child(instance=future_article)
         future_article.save()
@@ -718,7 +718,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             depth="1",
             path="0004",
             featured_in_latest_start_date=promote_date,
-            feature_as_topic_of_the_day=True
+            feature_as_hero_article=True
         )
         self.yourmind.add_child(instance=present_article)
         present_article.save()

@@ -49,8 +49,8 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
                          content["featured_in_section"])
         self.assertEqual(page.featured_in_homepage,
                          content["featured_in_homepage"])
-        self.assertEqual(page.feature_as_topic_of_the_day,
-                         content["feature_as_topic_of_the_day"])
+        self.assertEqual(page.feature_as_hero_article,
+                         content["feature_as_hero_article"])
 
         self.assertEqual(page.commenting_open_time,
                          content["commenting_open_time"])

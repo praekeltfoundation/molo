@@ -138,16 +138,16 @@ def latest_listing_homepage(context, num_count=5):
 
 
 @register.inclusion_tag(
-    'core/tags/topic_of_the_day.html',
+    'core/tags/hero_article.html',
     takes_context=True
 )
-def topic_of_the_day(context):
+def hero_article(context):
     request = context['request']
     locale = context.get('locale_code')
 
     if request.site:
         articles = request.site.root_page.specific \
-            .topic_of_the_day()
+            .hero_article()
     else:
         articles = ArticlePage.objects.none()
 
