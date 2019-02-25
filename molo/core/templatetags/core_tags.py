@@ -600,7 +600,7 @@ def load_reaction_question(context, article):
 @register.assignment_tag(takes_context=True)
 def load_child_sections_for_section(context, section, count=None):
     '''
-    Returns all child articles
+    Returns all child sections
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
     '''
@@ -608,6 +608,24 @@ def load_child_sections_for_section(context, section, count=None):
     locale = context.get('locale_code')
 
     qs = SectionPage.objects.child_of(page).filter(
+        language__is_main_language=True)
+
+    if not locale:
+        return qs[:count]
+    return get_pages(context, qs, locale)
+
+
+@register.assignment_tag(takes_context=True)
+def load_sibling_sections(context, section, count=None):
+    '''
+    Returns all sibling sections
+    If the `locale_code` in the context is not the main language, it will
+    return the translations of the live articles.
+    '''
+    page = section.get_main_language_page()
+    locale = context.get('locale_code')
+
+    qs = SectionPage.objects.sibling_of(page).filter(
         language__is_main_language=True)
 
     if not locale:
