@@ -8,7 +8,7 @@ from molo.core.models import (
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
-    topic_of_the_day, render_translations
+    hero_article, render_translations
 )
 from molo.core.templatetags.forms_tags import forms_list
 
@@ -206,14 +206,14 @@ class TestModels(TestCase, MoloTestCaseMixin):
             [])
 
     @patch('molo.core.templatetags.core_tags.get_pages')
-    def test_topic_of_the_day_empty_queryset_if_no_site(self, get_pages_mock):
+    def test_hero_article_empty_queryset_if_no_site(self, get_pages_mock):
         request = self.factory.get('/')
         request.site = None
         context = {'request': request, 'locale_code': 'en'}
         get_pages_mock.return_value = []
 
         self.assertEquals(
-            topic_of_the_day(context),
+            hero_article(context),
             {
                 'articles': [],
                 'request': request,

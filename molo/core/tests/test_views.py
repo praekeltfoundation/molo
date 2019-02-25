@@ -887,19 +887,19 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             featured_in_homepage_articles.first().title, article.title)
 
-    def test_featured_topic_of_the_day(self):
+    def test_featured_hero_article(self):
         promote_date = timezone.now() + timedelta(days=-1)
         demote_date = timezone.now() + timedelta(days=1)
         self.mk_article(
             self.yourmind_sub,
-            feature_as_topic_of_the_day=True,
+            feature_as_hero_article=True,
             promote_date=promote_date,
             demote_date=demote_date
         )
         response = self.client.get('/')
         self.assertContains(
             response,
-            'Topic of the Day')
+            'Hero Article')
 
     def test_social_media_footer(self):
         default_site = Site.objects.get(is_default_site=True)

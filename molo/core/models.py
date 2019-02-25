@@ -1028,14 +1028,14 @@ class Main(CommentedPageMixin, MoloPage):
         return ArticlePage.objects.descendant_of(self).filter(
             featured_in_latest=True,
             language__is_main_language=True).exclude(
-                feature_as_topic_of_the_day=True,
+                feature_as_hero_article=True,
                 demote_date__gt=django_timezone.now()).order_by(
                     '-featured_in_latest_start_date',
                     '-promote_date', '-latest_revision_created_at').specific()
 
-    def topic_of_the_day(self):
+    def hero_article(self):
         return ArticlePage.objects.descendant_of(self).filter(
-            feature_as_topic_of_the_day=True,
+            feature_as_hero_article=True,
             language__is_main_language=True,
             promote_date__lte=django_timezone.now(),
             demote_date__gte=django_timezone.now()).order_by(
@@ -1573,9 +1573,9 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    feature_as_topic_of_the_day = models.BooleanField(
+    feature_as_hero_article = models.BooleanField(
         default=False,
-        help_text=_('Article to be featured as the Topic of the Day'))
+        help_text=_('Article to be featured as the Hero Article'))
     promote_date = models.DateTimeField(blank=True, null=True)
     demote_date = models.DateTimeField(blank=True, null=True)
 
@@ -1593,8 +1593,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         FieldPanel('featured_in_homepage_end_date'),
     ]
 
-    topic_of_the_day_panels = [
-        FieldPanel('feature_as_topic_of_the_day'),
+    hero_article_panels = [
+        FieldPanel('feature_as_hero_article'),
         FieldPanel('promote_date'),
         FieldPanel('demote_date'),
     ]
@@ -1652,8 +1652,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
             return False
         return True
 
-    def is_current_topic_of_the_day(self):
-        if self.feature_as_topic_of_the_day:
+    def is_current_hero_article(self):
+        if self.feature_as_hero_article:
             now = django_timezone.now()
             return self.promote_date <= now <= self.demote_date
         return False
@@ -1680,7 +1680,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         "featured_in_latest_end_date", "featured_in_section",
         "featured_in_section_start_date", "featured_in_section_end_date",
         "featured_in_homepage", "featured_in_homepage_start_date",
-        "featured_in_homepage_end_date", "feature_as_topic_of_the_day",
+        "featured_in_homepage_end_date", "feature_as_hero_article",
         "promote_date", "demote_date", "metadata_tags",
         "latest_revision_created_at", "image",
         "social_media_image", "social_media_description",
@@ -1733,7 +1733,7 @@ ArticlePage.promote_panels = [
         ArticlePage.featured_section_promote_panels, "Featuring in Section"),
     MultiFieldPanel(
         ArticlePage.featured_homepage_promote_panels, "Featuring in Homepage"),
-    MultiFieldPanel(ArticlePage.topic_of_the_day_panels, "Topic of the Day"),
+    MultiFieldPanel(ArticlePage.hero_article_panels, "Hero Article"),
     MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
         Page.promote_panels,

@@ -1,0 +1,7 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+
+{% block hero_article %}
+{% if articles %}
+  {% include "patterns/components/article-teasers/hero-article_variations/articles_default.html" %}
+{% endif %}
+{% endblock %}

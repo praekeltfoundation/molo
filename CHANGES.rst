@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+8.4.0
+~~~~~
+- Name change from topic_of_the_day to hero_article (you will need to do the same in your project code)
+- Template tag added for getting sibling sections
+
 8.3.3
 ~~~~~
 - Add viber content panels
