@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.5.0
+~~~~~
+- Add email to contact form
+
 8.4.0
 ~~~~~
 - Name change from topic_of_the_day to hero_article (you will need to do the same in your project code)
