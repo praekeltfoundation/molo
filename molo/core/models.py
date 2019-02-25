@@ -55,7 +55,7 @@ from molo.core.utils import (
 )
 
 from django.db.models.signals import pre_delete
-from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
+from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 
 
 class ReadOnlyPanel(EditHandler):
@@ -1899,7 +1899,7 @@ class FormField(AbstractFormField):
         'FormPage', on_delete=models.CASCADE, related_name='form_fields')
 
 
-class FormPage(TranslatablePageMixinNotRoutable, AbstractForm):
+class FormPage(TranslatablePageMixinNotRoutable, AbstractEmailForm):
     parent_page_types = ['FormIndexPage']
     subpage_types = []
     language = models.ForeignKey(
@@ -1911,12 +1911,19 @@ class FormPage(TranslatablePageMixinNotRoutable, AbstractForm):
         ('paragraph', blocks.RichTextBlock()),
     ], null=True, blank=True)
     thank_you_text = models.TextField(blank=True)
-    content_panels = AbstractForm.content_panels + [
+    content_panels = AbstractEmailForm.content_panels + [
         FieldPanel('intro', classname="full"),
         StreamFieldPanel('body'),
         InlinePanel('form_fields', label="Form fields"),
-        FieldPanel('thank_you_text', classname="full")
+        FieldPanel('thank_you_text', classname="full"),
+        MultiFieldPanel([
+            FieldRowPanel([
+                FieldPanel('from_address', classname="col6"),
+                FieldPanel('to_address', classname="col6"),
+            ]),
+            FieldPanel('subject'),
+        ], "Email"),
     ]
 
     def serve(self, request, *args, **kwargs):
-        return super(AbstractForm, self).serve(request, *args, **kwargs)
+        return super(AbstractEmailForm, self).serve(request, *args, **kwargs)
