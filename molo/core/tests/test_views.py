@@ -899,7 +899,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertContains(
             response,
-            'Topic of the Day')
+            'Hero Article')
 
     def test_social_media_footer(self):
         default_site = Site.objects.get(is_default_site=True)
