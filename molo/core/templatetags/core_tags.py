@@ -288,7 +288,8 @@ def load_descendant_articles_for_section(
 
 
 @register.assignment_tag(takes_context=True)
-def load_child_articles_for_section(context, section, count=5):
+def load_child_articles_for_section(
+        context, section, featured_in_section=None, count=5):
     '''
     Returns all child articles
     If the `locale_code` in the context is not the main language, it will
@@ -304,6 +305,11 @@ def load_child_articles_for_section(context, section, count=5):
         main_language_page).filter(
         language__is_main_language=True).order_by(
         '-first_published_at')
+
+    if featured_in_section is not None:
+        child_articles = child_articles.filter(
+            featured_in_section=featured_in_section).order_by(
+                '-featured_in_section_start_date')
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
