@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.5.1
+~~~~~
+- Add feature_in_seftion filter to load_child_pages
+
 8.5.0
 ~~~~~
 - Add email to contact form
