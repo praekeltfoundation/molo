@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.5.2
+~~~~~
+- BugFix: get_translation_for now works for multi site one root page
+
 8.5.1
 ~~~~~
 - Add feature_in_seftion filter to load_child_pages

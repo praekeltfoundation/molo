@@ -152,7 +152,7 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
     def test_copy_to_all_scheduled_page(self):
         self.user = self.login()
 
-        date = datetime.datetime(2019, 3, 10, 17, 0, tzinfo=UTC)
+        date = datetime.datetime(3099, 3, 10, 17, 0, tzinfo=UTC)
         article = ArticlePage(
             title='article 1', slug='article1', go_live_at=date, live=False)
         self.yourmind.add_child(instance=article)

@@ -617,7 +617,7 @@ class LanguageRelation(models.Model):
 def get_translation_for(pages, locale, site, is_live=True):
     show_only_translated_pages = SiteSettings.for_site(
         site).show_only_translated_pages
-    language_setting = Languages.for_site(site)
+    language_setting = Languages.for_site(site.root_page.get_site())
     language = language_setting.languages.filter(
         locale=locale).first()
 
