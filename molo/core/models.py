@@ -648,7 +648,6 @@ def get_translation_for(pages, locale, site, is_live=True):
         try:
             translation = page.specific.translated_pages.get(
                 language=language)
-           
             if is_live is not None:
                 if not translation.live:
                     translation = None
