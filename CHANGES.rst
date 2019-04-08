@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.6.0
+~~~~~
+- Remove MoloPage
+
 8.5.2
 ~~~~~
 - BugFix: get_translation_for now works for multi site one root page
