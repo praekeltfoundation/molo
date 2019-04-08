@@ -10,8 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 
 
 from molo.core.models import (
-    TranslatablePageMixin, PreventDeleteMixin, Main, index_pages_after_copy)
-from molo.core.molo_wagtail_models import MoloPage
+    TranslatablePageMixin, PreventDeleteMixin, Main, index_pages_after_copy,
+    Page)
 from molo.core.utils import generate_slug
 from phonenumber_field.modelfields import PhoneNumberField
 from wagtail.core.models import Site
@@ -253,7 +253,7 @@ class UserProfilesSettings(BaseSetting):
 
 
 @python_2_unicode_compatible
-class SecurityQuestion(TranslatablePageMixin, MoloPage):
+class SecurityQuestion(TranslatablePageMixin, Page):
     parent_page_types = ['SecurityQuestionIndexPage']
     subpage_types = []
     language = models.ForeignKey('core.SiteLanguage',
@@ -277,7 +277,7 @@ SecurityQuestion.promote_panels = []
 SecurityQuestion.settings_panels = []
 
 
-class SecurityQuestionIndexPage(MoloPage, PreventDeleteMixin):
+class SecurityQuestionIndexPage(Page, PreventDeleteMixin):
     parent_page_types = ['core.Main']
     subpage_types = ["SecurityQuestion"]
 
