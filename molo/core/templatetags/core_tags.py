@@ -233,8 +233,9 @@ def render_translations(context, page):
 
     languages = [
         (l.locale, str(l))
-        for l in Languages.for_site(context['request'].site).languages.filter(
-            is_main_language=False)]
+        for l in Languages.for_site(
+            context['request'].site.root_page.get_site()).languages.filter(
+                is_main_language=False)]
 
     translated = []
     for code, title in languages:
