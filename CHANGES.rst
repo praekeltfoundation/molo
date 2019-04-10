@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+8.7.0
+~~~~~
+- Remove overriden get_url_parts method for Page
+
+8.6.0
+~~~~~
+- Do not install: Broken
+
 8.5.2
 ~~~~~
 - BugFix: get_translation_for now works for multi site one root page
