@@ -1,9 +1,14 @@
 CHANGES
 =======
 
+8.7.0
+~~~~~
+- Remove overriden get_url_parts method for Page
+
 8.6.0
 ~~~~~
-- Remove MoloPage
+- Do not install: Broken
+>>>>>>> release/8.7.0
 
 8.5.2
 ~~~~~
