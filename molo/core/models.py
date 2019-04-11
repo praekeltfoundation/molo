@@ -1358,6 +1358,15 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             language__is_main_language=True)
 
     def get_site(self):
+        # We needed a way to find out which site is the default site 
+        # when two sites are pointing to one url. Instead of adding 
+        # a new model that inherits from wagtail Site model and add 
+        # a field for this, we decided to do a check against the 
+        # site name for the word main. This way we just need to 
+        # add the word main in the site name definition. Since 
+        # developers are the only ones touching the sites, and the 
+        # fact that we did not want to add more custom models, we 
+        # chose this route 
         try:
             return self.get_ancestors().filter(
                 depth=2).first().sites_rooted_here.get(

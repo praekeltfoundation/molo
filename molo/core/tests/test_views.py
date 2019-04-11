@@ -34,7 +34,7 @@ from molo.core.wagtail_hooks import copy_translation_pages
 from mock import patch, Mock
 from shutil import rmtree
 from six import b
-from six.moves.urllib.parse import quote, parse_qs
+from six.moves.urllib.parse import parse_qs
 from bs4 import BeautifulSoup
 
 from wagtail.core.models import Site, Page
