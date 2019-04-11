@@ -122,18 +122,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = client.get('/admin/')
         self.assertEquals(response.status_code, 200)
 
-    def test_site_redirect_if_no_languages(self):
-        self.mk_main2(title='main3', slug='main3', path='4099')
-        main3_pk = Page.objects.get(title='main3').pk
-        main3 = Main.objects.all().last()
-        client = Client(HTTP_HOST=main3.get_site().hostname)
-        client.login(user=self.superuser)
-        response = client.get('/admin/pages/%s/' % main3_pk)
-        admin_url = '/admin/pages/%s/' % main3_pk
-        self.assertEqual(
-            response['Location'],
-            '/admin/login/?next=' + quote(admin_url, safe=''))
-
     @override_settings(MAINTENANCE_MODE=True)
     def test_maintenance_mode(self):
         response = self.client.get(reverse('home_index'))
