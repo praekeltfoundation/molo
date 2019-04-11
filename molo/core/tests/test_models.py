@@ -15,7 +15,7 @@ from molo.core.models import (
     ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
     BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
-    Timezone, Tag, ArticlePageTags
+    Timezone, Tag, ArticlePageTags, Site
 )
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
@@ -88,6 +88,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index2, title='Your mind')
         self.yourmind_sub2 = self.mk_section(
             self.yourmind2, title='Your mind subsection')
+
+    def test_multisite_one_root_page(self):
+        second_site = Site.objects.create(
+            hostname='kaios.mr.com', port=80, root_page=self.main,
+            is_default_site=False, site_name='kaios main')
+        self.assertEquals(self.main.get_site().pk, second_site.pk)
 
     def test_copy_method_of_article_page_copies_over_languages(self):
         self.assertFalse(

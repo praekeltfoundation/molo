@@ -11,7 +11,6 @@ from django.contrib.auth.views import login, logout
 from django.core.urlresolvers import resolve, reverse
 from django.shortcuts import redirect, render_to_response
 from django_cas_ng.views import login as cas_login, logout as cas_logout
-# test
 from django.utils.translation import activate
 from django.contrib.messages import get_messages
 
