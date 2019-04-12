@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.8.0
+~~~~~
+- BugFix: Adapted get_site() to check if site_name contains main (TEMPORARY FIX)
+
 8.7.0
 ~~~~~
 - Remove overriden get_url_parts method for Page

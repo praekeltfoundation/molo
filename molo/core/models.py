@@ -683,9 +683,13 @@ class TranslatablePageMixinNotRoutable(object):
             return self.specific
 
     def get_site(self):
-        # TODO: this will need to change for one content repo work
-        return self.get_ancestors().filter(
-            depth=2).first().sites_rooted_here.all().first() or None
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
     def save(self, *args, **kwargs):
         response = super(
@@ -1044,6 +1048,13 @@ class Main(CommentedPageMixin, Page):
         return FooterPage.objects.descendant_of(self).filter(
             language__is_main_language=True).specific()
 
+    def get_site(self):
+        try:
+            return self.sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.sites_rooted_here.all().first() or None
+
     def save(self, *args, **kwargs):
         super(Main, self).save(*args, **kwargs)
         if not self.get_descendants().exists():
@@ -1346,9 +1357,22 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             language__is_main_language=True)
 
     def get_site(self):
-        main = self.get_ancestors().filter(
-            depth=2).first()
-        return main.sites_rooted_here.all().first()
+        # We needed a way to find out which site is the default site
+        # when two sites are pointing to one url. Instead of adding
+        # a new model that inherits from wagtail Site model and add
+        # a field for this, we decided to do a check against the
+        # site name for the word main. This way we just need to
+        # add the word main in the site name definition. Since
+        # developers are the only ones touching the sites, and the
+        # fact that we did not want to add more custom models, we
+        # chose this route
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
     def get_effective_extra_style_hints(self):
         cache_key = "effective_extra_style_hints_{}_{}".format(
