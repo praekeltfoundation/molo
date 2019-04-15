@@ -280,7 +280,7 @@ def load_descendant_articles_for_section(
     if featured_in_homepage is not None:
         order_by = settings.get_article_ordering_display() \
             if settings and settings.article_ordering \
-            else '-featured_in_section_start_date'
+            else '-featured_in_homepage_start_date'
 
         qs = qs.filter(featured_in_homepage=featured_in_homepage)\
             .order_by(order_by)
