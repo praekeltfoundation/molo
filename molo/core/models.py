@@ -98,6 +98,20 @@ class ReadOnlyPanel(EditHandler):
 
 @register_setting
 class SiteSettings(BaseSetting):
+    ARTICLE_ORDERING_CHOICES = (
+        (1, 'first_published_at'),
+        (2, '-first_published_at'),
+        (3, 'pk'),
+        (4, '-pk'),
+    )
+    SECTION_ORDERING_CHOICES = (
+        (1, 'featured_in_section_start_date'),
+        (2, '-featured_in_section_start_date'),
+        (3, 'first_published_at'),
+        (4, '-first_published_at'),
+        (5, 'pk'),
+        (6, '-pk'),
+    )
     logo = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -279,6 +293,11 @@ class SiteSettings(BaseSetting):
         null=True,
         blank=True,
     )
+    section_ordering = models.SmallIntegerField(
+        choices=SECTION_ORDERING_CHOICES, null=True)
+
+    article_ordering = models.SmallIntegerField(
+        choices=ARTICLE_ORDERING_CHOICES, null=True)
 
     panels = [
         ImageChooserPanel('logo'),

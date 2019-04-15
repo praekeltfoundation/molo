@@ -47,7 +47,7 @@ def get_pages(context, queryset, locale):
     return pages or []
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_tags(context):
     request = context['request']
     locale = context.get('locale_code')
@@ -61,7 +61,7 @@ def load_tags(context):
     return get_pages(context, qs, locale)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_sections(context):
     request = context['request']
     locale = context.get('locale_code')
@@ -72,7 +72,7 @@ def load_sections(context):
     return get_pages(context, qs, locale)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_translation(context, page):
     locale_code = context.get('locale_code')
     try:
@@ -83,7 +83,7 @@ def get_translation(context, page):
     return translation
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_parent(context, page):
     parent = page.get_parent()
     if not parent.specific_class == SectionIndexPage:
@@ -233,8 +233,9 @@ def render_translations(context, page):
 
     languages = [
         (l.locale, str(l))
-        for l in Languages.for_site(context['request'].site).languages.filter(
-            is_main_language=False)]
+        for l in Languages.for_site(
+            context['request'].site.root_page.get_site()).languages.filter(
+                is_main_language=False)]
 
     translated = []
     for code, title in languages:
@@ -255,31 +256,36 @@ def render_translations(context, page):
     }
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_descendant_articles_for_section(
         context, section, featured_in_homepage=None, featured_in_section=None,
         featured_in_latest=None, count=5):
-    '''
+    """
     Returns all descendant articles (filtered using the parameters)
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
-    '''
-    page = section.get_main_language_page()
+    """
+    request = context.get('request')
     locale = context.get('locale_code')
+    page = section.get_main_language_page()
+    settings = SiteSettings.for_site(request.site)
 
     qs = ArticlePage.objects.descendant_of(page).filter(
         language__is_main_language=True)
 
+    if settings.section_ordering:
+        qs = qs.order_by(settings.get_section_ordering_display())
+
     if featured_in_homepage is not None:
         qs = qs.filter(featured_in_homepage=featured_in_homepage).order_by(
-            '-featured_in_homepage_start_date')
+            settings.get_section_ordering_display() or '-featured_in_homepage_start_date')
 
     if featured_in_latest is not None:
         qs = qs.filter(featured_in_latest=featured_in_latest)
 
     if featured_in_section is not None:
         qs = qs.filter(featured_in_section=featured_in_section).order_by(
-            '-featured_in_section_start_date')
+            settings.get_section_ordering_display() or '-featured_in_section_start_date')
 
     if not locale:
         return qs.live()[:count]
@@ -287,16 +293,18 @@ def load_descendant_articles_for_section(
     return get_pages(context, qs, locale)[:count]
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_child_articles_for_section(
         context, section, featured_in_section=None, count=5):
-    '''
+    """
     Returns all child articles
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
-    '''
+    """
+    request = context.get('request')
     locale = context.get('locale_code')
     main_language_page = section.get_main_language_page()
+    settings = SiteSettings.for_site(request.site)
 
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
@@ -304,12 +312,12 @@ def load_child_articles_for_section(
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(
         language__is_main_language=True).order_by(
-        '-first_published_at')
+        settings.get_article_ordering_display() or '-first_published_at')
 
     if featured_in_section is not None:
         child_articles = child_articles.filter(
             featured_in_section=featured_in_section).order_by(
-                '-featured_in_section_start_date')
+                settings.get_article_ordering_display() or '-featured_in_section_start_date')
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
@@ -348,7 +356,7 @@ def get_articles_for_tags_with_translations(
                 pk__in=exclude_pks), locale)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_articles_for_tag(context, tag):
     request = context['request']
     locale = context.get('locale_code')
@@ -364,7 +372,7 @@ def get_articles_for_tag(context, tag):
     return None
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_next_tag(context, tag):
     request = context['request']
     locale_code = context.get('locale_code')
@@ -386,7 +394,7 @@ def get_next_tag(context, tag):
             return next_tag
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     request = context['request']
     locale = context.get('locale_code')
@@ -525,7 +533,7 @@ def get_tag_articles(
     return data
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_tags_for_article(context, article):
     if not article.specific.__class__ == ArticlePage:
         return None
@@ -556,7 +564,7 @@ def load_tags_for_article(context, article):
     return get_pages(context, qs, locale)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
     if question:
@@ -568,7 +576,7 @@ def load_choices_for_reaction_question(context, question):
     return []
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
@@ -580,7 +588,7 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
             request, question.pk, article.pk)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_reaction_question(context, article):
     locale = context.get('locale_code')
     request = context['request']
@@ -603,7 +611,7 @@ def load_reaction_question(context, article):
         return question
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_child_sections_for_section(context, section, count=None):
     '''
     Returns all child sections
@@ -621,7 +629,7 @@ def load_child_sections_for_section(context, section, count=None):
     return get_pages(context, qs, locale)
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def load_sibling_sections(context, section, count=None):
     '''
     Returns all sibling sections
@@ -724,7 +732,7 @@ def social_media_article(context, page=None):
     return data
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_next_article(context, article):
     locale_code = context.get('locale_code')
     section = article.get_parent_section()
@@ -746,7 +754,7 @@ def get_next_article(context, article):
         return None
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_recommended_articles(context, article):
     locale_code = context.get('locale_code')
 
