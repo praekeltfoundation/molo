@@ -268,26 +268,33 @@ def load_descendant_articles_for_section(
     request = context.get('request')
     locale = context.get('locale_code')
     page = section.get_main_language_page()
-    settings = SiteSettings.for_site(request.site)
+    settings = SiteSettings.for_site(request.site) \
+        if request else None
 
     qs = ArticlePage.objects.descendant_of(page).filter(
         language__is_main_language=True)
 
-    if settings.section_ordering:
+    if settings and settings.section_ordering:
         qs = qs.order_by(settings.get_section_ordering_display())
 
     if featured_in_homepage is not None:
-        qs = qs.filter(featured_in_homepage=featured_in_homepage).order_by(
-            settings.get_section_ordering_display()
-            or '-featured_in_homepage_start_date')
+        order_by = settings.get_article_ordering_display() \
+            if settings and settings.article_ordering \
+            else '-featured_in_section_start_date'
+
+        qs = qs.filter(featured_in_homepage=featured_in_homepage)\
+            .order_by(order_by)
 
     if featured_in_latest is not None:
         qs = qs.filter(featured_in_latest=featured_in_latest)
 
     if featured_in_section is not None:
-        qs = qs.filter(featured_in_section=featured_in_section).order_by(
-            settings.get_section_ordering_display()
-            or '-featured_in_section_start_date')
+        order_by = settings.get_article_ordering_display() \
+            if settings and settings.article_ordering \
+            else '-featured_in_section_start_date'
+
+        qs = qs.filter(featured_in_section=featured_in_section)\
+            .order_by(order_by)
 
     if not locale:
         return qs.live()[:count]
@@ -306,21 +313,26 @@ def load_child_articles_for_section(
     request = context.get('request')
     locale = context.get('locale_code')
     main_language_page = section.get_main_language_page()
-    settings = SiteSettings.for_site(request.site)
+    settings = SiteSettings.for_site(request.site) \
+        if request else None
 
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
+    order_by = settings.get_article_ordering_display() \
+        if settings and settings.article_ordering \
+        else '-first_published_at'
 
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(
-        language__is_main_language=True).order_by(
-        settings.get_article_ordering_display() or '-first_published_at')
+        language__is_main_language=True).order_by(order_by)
 
     if featured_in_section is not None:
+        order_by = settings.get_article_ordering_display()\
+                if settings and settings.article_ordering \
+                else '-featured_in_section_start_date'
         child_articles = child_articles.filter(
-            featured_in_section=featured_in_section).order_by(
-                settings.get_article_ordering_display()
-                or '-featured_in_section_start_date')
+            featured_in_section=featured_in_section)\
+            .order_by(order_by)
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
