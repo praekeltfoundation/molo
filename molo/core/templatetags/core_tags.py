@@ -278,14 +278,16 @@ def load_descendant_articles_for_section(
 
     if featured_in_homepage is not None:
         qs = qs.filter(featured_in_homepage=featured_in_homepage).order_by(
-            settings.get_section_ordering_display() or '-featured_in_homepage_start_date')
+            settings.get_section_ordering_display()
+            or '-featured_in_homepage_start_date')
 
     if featured_in_latest is not None:
         qs = qs.filter(featured_in_latest=featured_in_latest)
 
     if featured_in_section is not None:
         qs = qs.filter(featured_in_section=featured_in_section).order_by(
-            settings.get_section_ordering_display() or '-featured_in_section_start_date')
+            settings.get_section_ordering_display()
+            or '-featured_in_section_start_date')
 
     if not locale:
         return qs.live()[:count]
@@ -317,7 +319,8 @@ def load_child_articles_for_section(
     if featured_in_section is not None:
         child_articles = child_articles.filter(
             featured_in_section=featured_in_section).order_by(
-                settings.get_article_ordering_display() or '-featured_in_section_start_date')
+                settings.get_article_ordering_display()
+                or '-featured_in_section_start_date')
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
