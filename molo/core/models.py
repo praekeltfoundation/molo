@@ -294,10 +294,10 @@ class SiteSettings(BaseSetting):
         blank=True,
     )
     section_ordering = models.SmallIntegerField(
-        choices=SECTION_ORDERING_CHOICES, null=True)
+        choices=SECTION_ORDERING_CHOICES, null=True, blank=True)
 
     article_ordering = models.SmallIntegerField(
-        choices=ARTICLE_ORDERING_CHOICES, null=True)
+        choices=ARTICLE_ORDERING_CHOICES, null=True, blank=True)
 
     panels = [
         ImageChooserPanel('logo'),
@@ -385,6 +385,13 @@ class SiteSettings(BaseSetting):
                 FieldPanel('enable_multi_category_service_directory_search'),
             ],
             heading="Service Directory API Settings"
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('section_ordering'),
+                FieldPanel('article_ordering'),
+            ],
+            heading="Article Ordering"
         )
     ]
 
