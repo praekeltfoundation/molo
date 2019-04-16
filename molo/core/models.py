@@ -56,6 +56,7 @@ from molo.core.utils import (
 
 from django.db.models.signals import pre_delete
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
+from django_enumfield import enum
 
 
 class ReadOnlyPanel(EditHandler):
@@ -96,24 +97,45 @@ class ReadOnlyPanel(EditHandler):
             self.heading, _(':'), self.render())
 
 
+class ArticleOrderingChoices(enum.Enum):
+    CMS_DEFAULT_SORTING = 1
+    FIRST_PUBLISHED_AT = 2
+    FIRST_PUBLISHED_AT_DESC = 3
+    PK = 4
+    PK_DESC = 5
+
+    labels = {
+        CMS_DEFAULT_SORTING: 'CMS Default Sorting',
+        FIRST_PUBLISHED_AT: 'First Published At',
+        FIRST_PUBLISHED_AT_DESC: 'First Published At Desc',
+        PK: 'Primary Key',
+        PK_DESC: 'Primary Key Desc',
+    }
+
+
+class SectionOrderingChoices(enum.Enum):
+    CMS_DEFAULT_SORTING = 1
+    FEATURED_IN_SECTION_START_DATE = 2
+    FEATURED_IN_SECTION_START_DATE_DESC = 3
+    FIRST_PUBLISHED_AT = 4
+    FIRST_PUBLISHED_AT_DESC = 5
+    PK = 6
+    PK_DESC = 7
+
+    labels = {
+        CMS_DEFAULT_SORTING: 'CMS Default Sorting',
+        FEATURED_IN_SECTION_START_DATE: 'Featured Start Date',
+        FEATURED_IN_SECTION_START_DATE_DESC: 'Featured Start Date Desc',
+        FIRST_PUBLISHED_AT: 'First Published At',
+        FIRST_PUBLISHED_AT_DESC: 'First Published At Desc',
+        PK: 'Primary Key',
+        PK_DESC: 'Primary Key Desc',
+    }
+
+
 @register_setting
 class SiteSettings(BaseSetting):
-    ARTICLE_ORDERING_CHOICES = (
-        (1, 'CMS Default Sorting'),
-        (2, 'first_published_at'),
-        (3, '-first_published_at'),
-        (4, 'pk'),
-        (5, '-pk'),
-    )
-    SECTION_ORDERING_CHOICES = (
-        (1, 'CMS Default Sorting'),
-        (2, 'featured_in_section_start_date'),
-        (3, '-featured_in_section_start_date'),
-        (4, 'first_published_at'),
-        (5, '-first_published_at'),
-        (6, 'pk'),
-        (7, '-pk'),
-    )
+
     logo = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -295,11 +317,11 @@ class SiteSettings(BaseSetting):
         null=True,
         blank=True,
     )
-    section_ordering = models.SmallIntegerField(
-        choices=SECTION_ORDERING_CHOICES, null=True, blank=True)
+    section_ordering = enum.EnumField(
+        SectionOrderingChoices, null=True, blank=True)
 
-    article_ordering = models.SmallIntegerField(
-        choices=ARTICLE_ORDERING_CHOICES, null=True, blank=True)
+    article_ordering = enum.EnumField(
+        ArticleOrderingChoices, null=True, blank=True)
 
     panels = [
         ImageChooserPanel('logo'),
