@@ -113,26 +113,6 @@ class ArticleOrderingChoices(enum.Enum):
     }
 
 
-class SectionOrderingChoices(enum.Enum):
-    CMS_DEFAULT_SORTING = 1
-    FEATURED_IN_SECTION_START_DATE = 2
-    FEATURED_IN_SECTION_START_DATE_DESC = 3
-    FIRST_PUBLISHED_AT = 4
-    FIRST_PUBLISHED_AT_DESC = 5
-    PK = 6
-    PK_DESC = 7
-
-    labels = {
-        CMS_DEFAULT_SORTING: 'CMS Default Sorting',
-        FEATURED_IN_SECTION_START_DATE: 'Featured Start Date',
-        FEATURED_IN_SECTION_START_DATE_DESC: 'Featured Start Date Desc',
-        FIRST_PUBLISHED_AT: 'First Published At',
-        FIRST_PUBLISHED_AT_DESC: 'First Published At Desc',
-        PK: 'Primary Key',
-        PK_DESC: 'Primary Key Desc',
-    }
-
-
 @register_setting
 class SiteSettings(BaseSetting):
 
@@ -317,11 +297,11 @@ class SiteSettings(BaseSetting):
         null=True,
         blank=True,
     )
-    section_ordering = enum.EnumField(
-        SectionOrderingChoices, null=True, blank=True)
 
-    article_ordering = enum.EnumField(
-        ArticleOrderingChoices, null=True, blank=True)
+    article_ordering_within_section = enum.EnumField(
+        ArticleOrderingChoices, null=True, blank=True,
+        help_text="Ordering of articles within a section"
+    )
 
     panels = [
         ImageChooserPanel('logo'),
@@ -412,8 +392,7 @@ class SiteSettings(BaseSetting):
         ),
         MultiFieldPanel(
             [
-                FieldPanel('section_ordering'),
-                FieldPanel('article_ordering'),
+                FieldPanel('article_ordering_within_section'),
             ],
             heading="Article Ordering"
         )

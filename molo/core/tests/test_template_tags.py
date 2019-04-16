@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.test import TestCase, RequestFactory
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags,
-    FormPage, SiteSettings)
+    FormPage, SiteSettings, ArticleOrderingChoices)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
@@ -203,7 +203,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         request.site = self.site
         settings = SiteSettings.objects.create(
-            site=self.site, section_ordering=6)
+            site=self.site,
+            article_ordering_within_section=
+            ArticleOrderingChoices.PK
+        )
         article1 = self.mk_article(
             self.yourmind, title='article 1',
             first_published_at=today - timezone.timedelta(hours=1),
@@ -222,7 +225,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'en', 'request': request
         }, self.yourmind)[1], article2)
 
-        settings.section_ordering = 7
+        settings.article_ordering_within_section =\
+            ArticleOrderingChoices.PK_DESC
         settings.save()
 
         self.assertEqual(load_descendant_articles_for_section({
@@ -237,7 +241,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         request.site = self.site
         settings = SiteSettings.objects.create(
-            site=self.site, article_ordering=4)
+            site=self.site,
+            article_ordering_within_section=
+            ArticleOrderingChoices.PK
+        )
         article1 = self.mk_article(self.yourmind, title='article 1')
         article1.first_published_at = today + timezone.timedelta(hours=1)
         article1.save()
@@ -253,7 +260,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'en', 'request': request
         }, self.yourmind)[1], article2)
 
-        settings.article_ordering = 5
+        settings.article_ordering_within_section =\
+            ArticleOrderingChoices.PK_DESC
         settings.save()
 
         self.assertEqual(load_child_articles_for_section({

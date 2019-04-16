@@ -10,7 +10,7 @@ from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
     ReactionQuestionChoice, BannerPage, get_translation_for,
-    SectionOrderingChoices, ArticleOrderingChoices
+    ArticleOrderingChoices
 )
 
 from prometheus_client import Summary
@@ -276,48 +276,31 @@ def load_descendant_articles_for_section(
     qs = ArticlePage.objects.descendant_of(page).filter(
         language__is_main_language=True)
 
-    section_ordering = settings and settings.section_ordering
+    article_ordering = settings \
+        and settings.article_ordering_within_section
 
-    if section_ordering \
-    and settings.section_ordering != \
-    SectionOrderingChoices.CMS_DEFAULT_SORTING:
-        order_by = SectionOrderingChoices.\
-            get(settings.section_ordering).name.lower()
+    cms_ordering = article_ordering \
+        and settings.article_ordering_within_section !=\
+        ArticleOrderingChoices.CMS_DEFAULT_SORTING
+
+    if article_ordering and cms_ordering:
+        order_by = ArticleOrderingChoices.\
+            get(settings.article_ordering_within_section).name.lower()
 
         order_by = order_by if order_by.find('_desc') == -1 \
             else '-{}'.format(order_by.replace('_desc', ''))
         qs = qs.order_by(order_by)
 
     if featured_in_homepage is not None:
-        order_by = SectionOrderingChoices.\
-            get(settings.section_ordering).name.lower() \
-            if section_ordering \
-            and settings.section_ordering !=\
-            SectionOrderingChoices.CMS_DEFAULT_SORTING \
-            else '-featured_in_homepage_start_date'
-
-        order_by = order_by if order_by.find('_desc') == -1 \
-            else '-{}'.format(order_by.replace('_desc', ''))
-
         qs = qs.filter(featured_in_homepage=featured_in_homepage)\
-            .order_by(order_by)
+            .order_by('-featured_in_homepage_start_date')
 
     if featured_in_latest is not None:
         qs = qs.filter(featured_in_latest=featured_in_latest)
 
     if featured_in_section is not None:
-        order_by = SectionOrderingChoices.\
-            get(settings.section_ordering).name.lower() \
-            if section_ordering \
-            and settings.section_ordering !=\
-            SectionOrderingChoices.CMS_DEFAULT_SORTING \
-            else '-featured_in_section_start_date'
-
-        order_by = order_by if order_by.find('_desc') == -1 \
-            else '-{}'.format(order_by.replace('_desc', ''))
-
         qs = qs.filter(featured_in_section=featured_in_section)\
-            .order_by(order_by)
+            .order_by('-featured_in_section_start_date')
 
     if not locale:
         return qs.live()[:count]
@@ -341,35 +324,25 @@ def load_child_articles_for_section(
 
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
-    article_ordering = settings and settings.article_ordering
+    article_ordering = settings and settings.article_ordering_within_section
     order_by = ArticleOrderingChoices.\
-        get(settings.article_ordering).name.lower() \
+        get(settings.article_ordering_within_section).name.lower() \
         if article_ordering \
-        and settings.article_ordering !=\
+        and settings.article_ordering_within_section !=\
         ArticleOrderingChoices.CMS_DEFAULT_SORTING\
         else '-first_published_at'
 
     order_by = order_by if order_by.find('_desc') == -1 \
         else '-{}'.format(order_by.replace('_desc', ''))
-    
+
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(
         language__is_main_language=True).order_by(order_by)
 
     if featured_in_section is not None:
-        order_by = ArticleOrderingChoices.\
-            get(settings.article_ordering).name.lower()\
-                if article_ordering \
-                and settings.article_ordering !=\
-                ArticleOrderingChoices.CMS_DEFAULT_SORTING \
-                else '-featured_in_section_start_date'
-
-        order_by = order_by if order_by.find('_desc') == -1 \
-            else '-{}'.format(order_by.replace('_desc', ''))
-
         child_articles = child_articles.filter(
             featured_in_section=featured_in_section)\
-            .order_by(order_by)
+            .order_by('-featured_in_section_start_date')
 
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
