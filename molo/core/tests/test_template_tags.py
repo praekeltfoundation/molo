@@ -204,8 +204,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request.site = self.site
         settings = SiteSettings.objects.create(
             site=self.site,
-            article_ordering_within_section=
-            ArticleOrderingChoices.PK
+            article_ordering_within_section=ArticleOrderingChoices.PK
         )
         article1 = self.mk_article(
             self.yourmind, title='article 1',
@@ -242,8 +241,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request.site = self.site
         settings = SiteSettings.objects.create(
             site=self.site,
-            article_ordering_within_section=
-            ArticleOrderingChoices.PK
+            article_ordering_within_section=ArticleOrderingChoices.PK
         )
         article1 = self.mk_article(self.yourmind, title='article 1')
         article1.first_published_at = today + timezone.timedelta(hours=1)
