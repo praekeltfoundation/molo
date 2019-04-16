@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-8.8.0
+8.8.1
 ~~~~~
 - BugFix: Adapted get_site() to check if site_name contains main (TEMPORARY FIX)
 
