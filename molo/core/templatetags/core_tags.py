@@ -274,12 +274,14 @@ def load_descendant_articles_for_section(
     qs = ArticlePage.objects.descendant_of(page).filter(
         language__is_main_language=True)
 
-    if settings and settings.section_ordering:
+    section_ordering = settings and settings.section_ordering
+
+    if section_ordering and settings.section_ordering != 1:
         qs = qs.order_by(settings.get_section_ordering_display())
 
     if featured_in_homepage is not None:
-        order_by = settings.get_article_ordering_display() \
-            if settings and settings.article_ordering \
+        order_by = settings.get_section_ordering_display() \
+            if section_ordering and settings.section_ordering != 1 \
             else '-featured_in_homepage_start_date'
 
         qs = qs.filter(featured_in_homepage=featured_in_homepage)\
@@ -289,8 +291,8 @@ def load_descendant_articles_for_section(
         qs = qs.filter(featured_in_latest=featured_in_latest)
 
     if featured_in_section is not None:
-        order_by = settings.get_article_ordering_display() \
-            if settings and settings.article_ordering \
+        order_by = settings.get_section_ordering_display() \
+            if section_ordering and settings.section_ordering != 1 \
             else '-featured_in_section_start_date'
 
         qs = qs.filter(featured_in_section=featured_in_section)\
@@ -318,8 +320,9 @@ def load_child_articles_for_section(
 
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
+    article_ordering = settings and settings.article_ordering
     order_by = settings.get_article_ordering_display() \
-        if settings and settings.article_ordering \
+        if article_ordering and settings.article_ordering != 1\
         else '-first_published_at'
 
     child_articles = ArticlePage.objects.child_of(
@@ -328,7 +331,7 @@ def load_child_articles_for_section(
 
     if featured_in_section is not None:
         order_by = settings.get_article_ordering_display()\
-                if settings and settings.article_ordering \
+                if article_ordering and settings.article_ordering != 1 \
                 else '-featured_in_section_start_date'
         child_articles = child_articles.filter(
             featured_in_section=featured_in_section)\

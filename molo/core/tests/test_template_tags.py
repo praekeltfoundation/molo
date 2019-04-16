@@ -203,7 +203,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         request.site = self.site
         settings = SiteSettings.objects.create(
-            site=self.site, section_ordering=5)
+            site=self.site, section_ordering=6)
         article1 = self.mk_article(
             self.yourmind, title='article 1',
             first_published_at=today - timezone.timedelta(hours=1),
@@ -222,7 +222,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'en', 'request': request
         }, self.yourmind)[1], article2)
 
-        settings.section_ordering = 6
+        settings.section_ordering = 7
         settings.save()
 
         self.assertEqual(load_descendant_articles_for_section({
@@ -237,7 +237,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         request.site = self.site
         settings = SiteSettings.objects.create(
-            site=self.site, article_ordering=3)
+            site=self.site, article_ordering=4)
         article1 = self.mk_article(self.yourmind, title='article 1')
         article1.first_published_at = today + timezone.timedelta(hours=1)
         article1.save()
@@ -253,7 +253,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'en', 'request': request
         }, self.yourmind)[1], article2)
 
-        settings.article_ordering = 4
+        settings.article_ordering = 5
         settings.save()
 
         self.assertEqual(load_child_articles_for_section({
