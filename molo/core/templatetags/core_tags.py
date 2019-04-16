@@ -278,15 +278,26 @@ def load_descendant_articles_for_section(
 
     section_ordering = settings and settings.section_ordering
 
-    if section_ordering and settings.section_ordering != 1:
-        qs = qs.order_by(settings.get_section_ordering_display())
+    if section_ordering \
+    and settings.section_ordering != \
+    SectionOrderingChoices.CMS_DEFAULT_SORTING:
+        order_by = SectionOrderingChoices.\
+            get(settings.section_ordering).name.lower()
+
+        order_by = order_by if order_by.find('_desc') == -1 \
+            else '-{}'.format(order_by.replace('_desc', ''))
+        qs = qs.order_by(order_by)
 
     if featured_in_homepage is not None:
-        order_by = settings.get_section_ordering_display() \
+        order_by = SectionOrderingChoices.\
+            get(settings.section_ordering).name.lower() \
             if section_ordering \
             and settings.section_ordering !=\
             SectionOrderingChoices.CMS_DEFAULT_SORTING \
             else '-featured_in_homepage_start_date'
+
+        order_by = order_by if order_by.find('_desc') == -1 \
+            else '-{}'.format(order_by.replace('_desc', ''))
 
         qs = qs.filter(featured_in_homepage=featured_in_homepage)\
             .order_by(order_by)
@@ -295,11 +306,15 @@ def load_descendant_articles_for_section(
         qs = qs.filter(featured_in_latest=featured_in_latest)
 
     if featured_in_section is not None:
-        order_by = settings.get_section_ordering_display() \
+        order_by = SectionOrderingChoices.\
+            get(settings.section_ordering).name.lower() \
             if section_ordering \
             and settings.section_ordering !=\
             SectionOrderingChoices.CMS_DEFAULT_SORTING \
             else '-featured_in_section_start_date'
+
+        order_by = order_by if order_by.find('_desc') == -1 \
+            else '-{}'.format(order_by.replace('_desc', ''))
 
         qs = qs.filter(featured_in_section=featured_in_section)\
             .order_by(order_by)
@@ -327,22 +342,31 @@ def load_child_articles_for_section(
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
     article_ordering = settings and settings.article_ordering
-    order_by = settings.get_article_ordering_display() \
+    order_by = ArticleOrderingChoices.\
+        get(settings.article_ordering).name.lower() \
         if article_ordering \
         and settings.article_ordering !=\
         ArticleOrderingChoices.CMS_DEFAULT_SORTING\
         else '-first_published_at'
 
+    order_by = order_by if order_by.find('_desc') == -1 \
+        else '-{}'.format(order_by.replace('_desc', ''))
+    
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(
         language__is_main_language=True).order_by(order_by)
 
     if featured_in_section is not None:
-        order_by = settings.get_article_ordering_display()\
+        order_by = ArticleOrderingChoices.\
+            get(settings.article_ordering).name.lower()\
                 if article_ordering \
                 and settings.article_ordering !=\
                 ArticleOrderingChoices.CMS_DEFAULT_SORTING \
                 else '-featured_in_section_start_date'
+
+        order_by = order_by if order_by.find('_desc') == -1 \
+            else '-{}'.format(order_by.replace('_desc', ''))
+
         child_articles = child_articles.filter(
             featured_in_section=featured_in_section)\
             .order_by(order_by)
