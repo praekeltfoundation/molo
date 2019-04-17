@@ -1,14 +1,16 @@
 # coding=utf-8
 import pytest
-from django.test import TestCase, RequestFactory
 from mock import patch
+from django.utils import timezone
+from django.test import TestCase, RequestFactory
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags,
-    FormPage)
+    FormPage, SiteSettings, ArticleOrderingChoices)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
-    hero_article, render_translations
+    hero_article, render_translations, load_descendant_articles_for_section,
+    load_child_articles_for_section
 )
 from molo.core.templatetags.forms_tags import forms_list
 
@@ -195,6 +197,77 @@ class TestModels(TestCase, MoloTestCaseMixin):
                 'request': request
             }, self.yourmind),
             None)
+
+    def test_article_ordering_descendant_articles(self):
+        today = timezone.now()
+        request = self.factory.get('/')
+        request.site = self.site
+        settings = SiteSettings.objects.create(
+            site=self.site,
+            article_ordering_within_section=ArticleOrderingChoices.PK
+        )
+        article1 = self.mk_article(
+            self.yourmind, title='article 1',
+            first_published_at=today - timezone.timedelta(hours=1),
+            featured_in_section_start_date=today - timezone.timedelta(hours=1)
+        )
+        article2 = self.mk_article(
+            self.yourmind, title='article 2',
+            first_published_at=today,
+            featured_in_section_start_date=today
+        )
+
+        self.assertEqual(load_descendant_articles_for_section({
+            'locale_code': 'en', 'request': request
+        }, self.yourmind)[0], article1)
+        self.assertEqual(load_descendant_articles_for_section({
+            'locale_code': 'en', 'request': request
+        }, self.yourmind)[1], article2)
+
+        settings.article_ordering_within_section =\
+            ArticleOrderingChoices.PK_DESC
+        settings.save()
+
+        self.assertEqual(load_descendant_articles_for_section({
+            'locale_code': 'en', 'request': request
+        }, self.yourmind)[0], article2)
+        self.assertEqual(load_descendant_articles_for_section({
+            'locale_code': 'en', 'request': request
+        }, self.yourmind)[1], article1)
+
+    def test_article_ordering_child_articles(self):
+        today = timezone.now()
+        request = self.factory.get('/')
+        request.site = self.site
+        settings = SiteSettings.objects.create(
+            site=self.site,
+            article_ordering_within_section=ArticleOrderingChoices.PK
+        )
+        article1 = self.mk_article(self.yourmind, title='article 1')
+        article1.first_published_at = today + timezone.timedelta(hours=1)
+        article1.save()
+
+        article2 = self.mk_article(self.yourmind, title='article 2')
+        article2.first_published_at = today - timezone.timedelta(hours=1)
+        article2.save()
+
+        self.assertEqual(load_child_articles_for_section({
+            'locale_code': 'en', 'request': request
+        }, self.yourmind)[0], article1)
+        self.assertEqual(load_child_articles_for_section({
+            'locale_code': 'en', 'request': request
+        }, self.yourmind)[1], article2)
+
+        settings.article_ordering_within_section =\
+            ArticleOrderingChoices.PK_DESC
+        settings.save()
+
+        self.assertEqual(load_child_articles_for_section({
+            'locale_code': 'en', 'request': request
+        }, self.yourmind)[0], article2)
+        self.assertEqual(load_child_articles_for_section({
+            'locale_code': 'en', 'request': request
+        }, self.yourmind)[1], article1)
 
     def test_get_recommended_articles(self):
         request = self.factory.get('/')
