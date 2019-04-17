@@ -119,7 +119,7 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
         self.client.post(reverse('copy-to-all', args=(article.id,)))
 
         # assert that only exists once in site 2 and not in site 3
-        self.assertEquals(ArticlePage.objects.descendant_of(
+        self.assertEqual(ArticlePage.objects.descendant_of(
             self.main2).filter(slug=article.slug).count(), 1)
         self.assertFalse(ArticlePage.objects.descendant_of(
             self.main3).filter(slug=article.slug).exists())
@@ -165,9 +165,9 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
         ArticlePageTags.objects.create(page=article, tag=tag)
         article.refresh_from_db()
 
-        self.assertEquals(article.status_string, 'scheduled')
+        self.assertEqual(article.status_string, 'scheduled')
 
         self.client.post(reverse('copy-to-all', args=(article.id,)))
         new_article = ArticlePage.objects.descendant_of(
             self.main2).get(slug=article.slug)
-        self.assertEquals(new_article.status_string, 'scheduled')
+        self.assertEqual(new_article.status_string, 'scheduled')
