@@ -29,7 +29,7 @@ class SiteImportView(FormView):
 
     def form_valid(self, form):
         url = form.cleaned_data["url"]
-        site_pk = self.request.site.root_page.get_site().pk
+        site_pk = self.request.site.root_page.specific.get_site().pk
         user_pk = self.request.user.pk
 
         # call the function synchronously if locally hosted
