@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.9.0
+~~~~~
+- Add get_site() to all index pages
+
 8.8.1
 ~~~~~
 - BugFix: Adapted get_site() to check if site_name contains main (TEMPORARY FIX)
