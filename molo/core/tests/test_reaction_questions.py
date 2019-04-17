@@ -213,14 +213,14 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
         for choice in question.get_children():
             self.assertContains(response, choice.title)
         choice1 = question.get_children().first()
-        self.assertEquals(ReactionQuestionResponse.objects.all().count(), 0)
+        self.assertEqual(ReactionQuestionResponse.objects.all().count(), 0)
         response = self.client.post(reverse(
             'reaction-vote', kwargs={
                 'question_id': question.id, 'article_slug': article.slug}),
             {'choice': choice1.id})
-        self.assertEquals(ReactionQuestionResponse.objects.all().count(), 1)
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(
+        self.assertEqual(ReactionQuestionResponse.objects.all().count(), 1)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
             response['Location'], '/reaction/test-page-0/22/yes/feedback/')
         response = self.client.get('/reaction/test-page-0/22/yes/feedback/')
         self.assertContains(
@@ -231,7 +231,7 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
             'reaction-vote', kwargs={
                 'question_id': question.id, 'article_slug': article.slug}),
             {'choice': choice1.id})
-        self.assertEquals(ReactionQuestionResponse.objects.all().count(), 1)
+        self.assertEqual(ReactionQuestionResponse.objects.all().count(), 1)
 
     def test_correct_reaction_shown_for_locale(self):
         article = self.mk_article(self.yourmind)
@@ -261,7 +261,7 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
                 'question_id': translated_question.id,
                 'article_slug': article.slug}),
             {'choice': translated_choice.id})
-        self.assertEquals(ReactionQuestionResponse.objects.all().count(), 1)
+        self.assertEqual(ReactionQuestionResponse.objects.all().count(), 1)
         response = self.client.get('/reaction/test-page-0/20/yes/feedback/')
         self.assertContains(
             response, '<a href="/sections-main-1/your-mind/test-page-0/">')

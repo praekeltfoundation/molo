@@ -68,7 +68,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # this should return an empty dictionary for non main lang pages
         article = self.mk_articles(self.yourmind, 1)[0]
         fr_article = self.mk_article_translation(article, self.french)
-        self.assertEquals(render_translations({}, fr_article), {})
+        self.assertEqual(render_translations({}, fr_article), {})
 
     def test_bannerpages_without_position(self):
         banner = BannerPage(title='test banner')
@@ -85,7 +85,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         request.site = self.site
 
-        self.assertEquals(len(bannerpages({
+        self.assertEqual(len(bannerpages({
             'locale_code': 'en', 'request': request})['bannerpages']), 3)
 
     def test_bannerpages_with_position(self):
@@ -103,14 +103,14 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         request.site = self.site
 
-        self.assertEquals(len(bannerpages({
+        self.assertEqual(len(bannerpages({
             'locale_code': 'en',
             'request': request}, position=0)['bannerpages']), 1)
-        self.assertEquals(bannerpages({
+        self.assertEqual(bannerpages({
             'locale_code': 'en',
             'request': request}, position=0)['bannerpages'][0].title,
             'test banner')
-        self.assertEquals(bannerpages({
+        self.assertEqual(bannerpages({
             'locale_code': 'en',
             'request': request}, position=1)['bannerpages'][0].title,
             'test banner 2')
@@ -130,7 +130,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         request.site = self.site
 
-        self.assertEquals(bannerpages({
+        self.assertEqual(bannerpages({
             'locale_code': 'en',
             'request': request}, position=4), None)
 
@@ -141,38 +141,38 @@ class TestModels(TestCase, MoloTestCaseMixin):
         article = self.mk_articles(self.yourmind, 1)[0]
         fr_article = self.mk_article_translation(article, self.french)
 
-        self.assertEquals(
+        self.assertEqual(
             get_parent({'locale_code': 'fr', 'request': request}, article),
             self.yourmind)
-        self.assertEquals(
+        self.assertEqual(
             get_parent({'locale_code': 'fr', 'request': request}, fr_article),
             self.yourmind)
-        self.assertEquals(get_parent(
+        self.assertEqual(get_parent(
             {'locale_code': 'fr', 'request': request}, self.yourmind_sub),
             self.yourmind)
 
         fr_yourmind = self.mk_section_translation(self.yourmind, self.french)
-        self.assertEquals(
+        self.assertEqual(
             get_parent({'locale_code': 'en', 'request': request}, article),
             self.yourmind)
-        self.assertEquals(
+        self.assertEqual(
             get_parent({'locale_code': 'en', 'request': request}, fr_article),
             self.yourmind)
-        self.assertEquals(get_parent(
+        self.assertEqual(get_parent(
             {'locale_code': 'en', 'request': request}, self.yourmind_sub),
             self.yourmind)
 
-        self.assertEquals(
+        self.assertEqual(
             get_parent({'locale_code': 'fr', 'request': request}, article),
             fr_yourmind)
-        self.assertEquals(
+        self.assertEqual(
             get_parent({'locale_code': 'fr', 'request': request}, fr_article),
             fr_yourmind)
-        self.assertEquals(get_parent(
+        self.assertEqual(get_parent(
             {'locale_code': 'fr', 'request': request}, self.yourmind_sub),
             fr_yourmind)
 
-        self.assertEquals(get_parent(
+        self.assertEqual(get_parent(
             {'locale_code': 'fr', 'request': request}, self.yourmind),
             None)
 
@@ -183,13 +183,13 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         tag = self.mk_tag(parent=self.tag_index)
         ArticlePageTags.objects.create(page=article1, tag=tag)
-        self.assertEquals(load_tags_for_article(
+        self.assertEqual(load_tags_for_article(
             {
                 'locale_code': 'en',
                 'request': request
             }, article1)[0],
             tag)
-        self.assertEquals(load_tags_for_article(
+        self.assertEqual(load_tags_for_article(
             {
                 'locale_code': 'en',
                 'request': request
@@ -201,7 +201,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request.site = self.site
         article1 = self.mk_article(self.yourmind, title='article 1')
 
-        self.assertEquals(get_recommended_articles(
+        self.assertEqual(get_recommended_articles(
             {'locale_code': 'en', 'request': request}, article1),
             [])
 
@@ -212,7 +212,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         context = {'request': request, 'locale_code': 'en'}
         get_pages_mock.return_value = []
 
-        self.assertEquals(
+        self.assertEqual(
             hero_article(context),
             {
                 'articles': [],

@@ -37,15 +37,15 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             extra_style_hints='secondary')
 
     def test_extra_css_set_on_current_section(self):
-        self.assertEquals(
+        self.assertEqual(
             self.new_section.get_effective_extra_style_hints(), 'primary')
 
     def test_extra_css_not_set_to_use_inherited_value(self):
-        self.assertEquals(
+        self.assertEqual(
             self.new_section2.get_effective_extra_style_hints(), 'primary')
 
     def test_extra_css_not_set_on_either_so_should_be_blank(self):
-        self.assertEquals(
+        self.assertEqual(
             self.new_section3.get_effective_extra_style_hints(), '')
 
         self.client.get('/locale/fr/')
@@ -74,11 +74,11 @@ class TestEffectiveStyleHints(TestCase, MoloTestCaseMixin):
             ' section-listing--standard">')
 
     def test_extra_css_not_set_on_child_so_should_use_parent_value(self):
-        self.assertEquals(
+        self.assertEqual(
             self.new_section4.get_effective_extra_style_hints(), 'primary')
 
     def test_extra_css_is_set_on_child_so_should_use_child_value(self):
-        self.assertEquals(
+        self.assertEqual(
             self.new_section5.get_effective_extra_style_hints(), 'secondary')
 
     def test_translated_page_so_should_use_main_lang_page_value(self):

@@ -124,7 +124,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
         all_section_articles = list(chain(section_articles, tag_articles))
         self.assertTrue(self.unique(all_section_articles))
         self.assertContains(response, tag.title)
-        self.assertEquals(len(tag_articles), 4)
+        self.assertEqual(len(tag_articles), 4)
 
     def test_article_only_site_specific_artcles_show_under_tag(self):
         tag = self.mk_tag(parent=self.tag_index)
@@ -148,13 +148,13 @@ class TestTags(MoloTestCaseMixin, TestCase):
                 'new_parent_page': self.root.id,
                 'copy_subpages': 'true',
                 'publish_copies': 'true'})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         response = self.client.get('/tags/' + tag.slug + '/')
-        self.assertEquals(len(response.context['object_list']), 5)
+        self.assertEqual(len(response.context['object_list']), 5)
         for article in response.context['object_list']:
-            self.assertEquals(article.get_site().pk, self.main.get_site().pk)
+            self.assertEqual(article.get_site().pk, self.main.get_site().pk)
         response = self.client.get('/tags/bogus/')
-        self.assertEquals(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_new_tag_article_relations_made_when_copying_site(self):
         tag = self.mk_tag(parent=self.tag_index)
@@ -179,13 +179,13 @@ class TestTags(MoloTestCaseMixin, TestCase):
                 'new_parent_page': self.root.id,
                 'copy_subpages': 'true',
                 'publish_copies': 'true'})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         main3 = Main.objects.get(slug='blank')
         new_articles = ArticlePage.objects.descendant_of(main3)
         new_article_tags = ArticlePageTags.objects.filter(
             page__in=new_articles)
         for article_tag_relation in new_article_tags:
-            self.assertEquals(
+            self.assertEqual(
                 article_tag_relation.tag.get_site().pk, main3.get_site().pk)
 
     def test_latest_articles_get_priority_when_tag_navigation_enabled(self):
@@ -363,8 +363,8 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         # check that they ordered by the latest first
         response_articles_list = response.context_data['object_list']
-        self.assertEquals(article3.pk, response_articles_list[0].pk)
-        self.assertEquals(article2.pk, response_articles_list[1].pk)
+        self.assertEqual(article3.pk, response_articles_list[0].pk)
+        self.assertEqual(article2.pk, response_articles_list[1].pk)
 
     def test_articles_within_tag_order_by_first_published_at(self):
         article1 = self.mk_article(self.yourmind, title='article 1',
@@ -388,9 +388,9 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         # test that editing does not change the order of the articles
         response_articles_list = response.context_data['object_list']
-        self.assertEquals(article3.pk, response_articles_list[0].pk)
-        self.assertEquals(article2.pk, response_articles_list[1].pk)
-        self.assertEquals(article1.pk, response_articles_list[2].pk)
+        self.assertEqual(article3.pk, response_articles_list[0].pk)
+        self.assertEqual(article2.pk, response_articles_list[1].pk)
+        self.assertEqual(article1.pk, response_articles_list[2].pk)
 
     def test_promoted_tags(self):
         articles = self.mk_articles(self.yourmind, count=5)
@@ -402,7 +402,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
         tag.save_revision().publish()
 
         response = self.client.get('/')
-        self.assertEquals(
+        self.assertEqual(
             str(response.context['tag_nav_data']['tags_list']),
             '[(<Tag: Test Tag>, [<ArticlePage: Test page 0>, <ArticlePage'
             ': Test page 1>, <ArticlePage: Test page 2>, <ArticleP'
@@ -421,7 +421,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
         tag.save_revision().publish()
 
         response = self.client.get('/')
-        self.assertEquals(
+        self.assertEqual(
             str(response.context['tag_nav_data']['tags_list']),
             '[(<Tag: Test Tag>, [<ArticlePage: Test page 0>, <ArticlePage: '
             'Test page 1>, <ArticlePage: Test page 2>, <ArticlePage: Test p'
