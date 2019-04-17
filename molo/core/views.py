@@ -267,7 +267,7 @@ class ReactionQuestionChoiceView(FormView):
                 created.save()
                 created.set_response_as_submitted_for_session(
                     self.request, article)
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 created.user = self.request.user
                 created.save()
 

@@ -39,7 +39,7 @@ class MoloCASMiddleware(CASMiddleware):
         elif not view_func.__module__.startswith('django.contrib.admin.'):
             return None
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if request.user.has_perm('wagtailadmin.access_admin'):
                 """
                 Implemented using wagtails permissions model
