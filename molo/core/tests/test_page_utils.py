@@ -101,7 +101,7 @@ class TestPageUtils(TestCase, MoloTestCaseMixin):
 
         result = get_pages_from_id_list(id_list)
 
-        self.assertEquals(result, [])
+        self.assertEqual(result, [])
 
 
 class TestConvertingPageBlocksToRecommendedArticles(MoloTestCaseMixin, TestCase):  # noqa
