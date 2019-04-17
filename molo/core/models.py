@@ -617,7 +617,7 @@ class LanguageRelation(models.Model):
 def get_translation_for(pages, locale, site, is_live=True):
     show_only_translated_pages = SiteSettings.for_site(
         site).show_only_translated_pages
-    language_setting = Languages.for_site(site.root_page.get_site())
+    language_setting = Languages.for_site(site.root_page.specific.get_site())
     language = language_setting.languages.filter(
         locale=locale).first()
 
@@ -733,7 +733,7 @@ class TranslatablePageMixinNotRoutable(object):
 
     def copy(self, *args, **kwargs):
         current_site = self.get_site()
-        destination_site = kwargs['to'].get_site()
+        destination_site = kwargs['to'].specific.get_site()
         if current_site is not destination_site:
             new_lang = self.copy_language(current_site, destination_site)
             page_copy = super(TranslatablePageMixinNotRoutable, self).copy(
@@ -790,7 +790,7 @@ class TranslatablePageMixinNotRoutable(object):
 
 def clear_translation_cache(sender, instance, **kwargs):
     if isinstance(instance, TranslatablePageMixin):
-        site = instance.get_site()
+        site = instance.specific.get_site()
         for lang in Languages.for_site(site).languages.all():
             cache.delete(instance.get_translation_for_cache_key(
                 lang.locale, site, True))
@@ -818,10 +818,19 @@ class TagIndexPage(MoloPage, PreventDeleteMixin):
     subpage_types = ['Tag']
 
     def copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
+        site = kwargs['to'].specific.get_site()
         main = site.root_page
         TagIndexPage.objects.child_of(main).delete()
         super(TagIndexPage, self).copy(*args, **kwargs)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
 
 class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
@@ -829,10 +838,19 @@ class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
     subpage_types = ['ReactionQuestion']
 
     def copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
+        site = kwargs['to'].specific.get_site()
         main = site.root_page
         ReactionQuestionIndexPage.objects.child_of(main).delete()
         super(ReactionQuestionIndexPage, self).copy(*args, **kwargs)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
 
 class ReactionQuestion(TranslatablePageMixin, MoloPage):
@@ -955,10 +973,19 @@ class BannerIndexPage(MoloPage, PreventDeleteMixin, ImportableMixin):
     subpage_types = ['BannerPage']
 
     def copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
+        site = kwargs['to'].specific.get_site()
         main = site.root_page
         BannerIndexPage.objects.child_of(main).delete()
         super(BannerIndexPage, self).copy(*args, **kwargs)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
 
 class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
@@ -1209,6 +1236,15 @@ class SectionIndexPage(CommentedPageMixin, MoloPage, PreventDeleteMixin):
         default=constants.COMMENTING_OPEN)
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
     def celery_copy(self, *args, **kwargs):
         SectionIndexPage.objects.child_of(kwargs['to']).delete()
@@ -1894,6 +1930,15 @@ class FooterIndexPage(MoloPage, PreventDeleteMixin):
         FooterIndexPage.objects.child_of(main).delete()
         super(FooterIndexPage, self).copy(*args, **kwargs)
 
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
+
 
 class FooterPage(ArticlePage):
     parent_page_types = ['FooterIndexPage']
@@ -1916,6 +1961,15 @@ class FormIndexPage(MoloPage, PreventDeleteMixin):
         main = site.root_page
         FormIndexPage.objects.child_of(main).delete()
         super(FormIndexPage, self).copy(*args, **kwargs)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
 
 class FormField(AbstractFormField):

@@ -158,7 +158,7 @@ class MultiSiteRedirectToHomepage(django.utils.deprecation.MiddlewareMixin):
             current_site = Site.find_for_request(request)
             func, args, kwargs = resolve(request.path)
             if args:
-                p_site = Page.objects.get(pk=args[-1]).get_site()
+                p_site = Page.objects.get(pk=args[-1]).specific.get_site()
                 if p_site and not current_site == p_site:
                     return redirect('%s%s' % (p_site.root_url, request.path))
             if not Languages.for_site(request.site).languages.all().exists():
