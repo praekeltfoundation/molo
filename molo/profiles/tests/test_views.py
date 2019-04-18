@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'', include(wagtail_urls)),
 ]
 
-DEFAULT_MIDDLEWARE_CLASSES = [
+DEFAULT_MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'molo.core.middleware.ForceDefaultLanguageMiddleware',
@@ -64,7 +64,7 @@ DEFAULT_MIDDLEWARE_CLASSES = [
 @override_settings(
     ROOT_URLCONF='molo.profiles.tests.test_views', LOGIN_URL='/login/')
 @override_settings(ENABLE_SSO=False)
-@override_settings(MIDDLEWARE_CLASSES=DEFAULT_MIDDLEWARE_CLASSES)
+@override_settings(MIDDLEWARE=DEFAULT_MIDDLEWARE)
 class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):

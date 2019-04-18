@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.test import TestCase
-from django.utils.timezone import datetime
+from django.utils import timezone
 from django.core.urlresolvers import reverse
 
 from molo.core.tests.base import MoloTestCaseMixin
@@ -132,8 +132,8 @@ class TestTags(MoloTestCaseMixin, TestCase):
         tag.save_revision().publish()
         articles = self.mk_articles(
             parent=self.yourmind,
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now(), count=5)
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now(), count=5)
         for article in articles:
             ArticlePageTags.objects.create(page=article, tag=tag)
 
@@ -162,8 +162,8 @@ class TestTags(MoloTestCaseMixin, TestCase):
         tag.save_revision().publish()
         articles = self.mk_articles(
             parent=self.yourmind,
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now(), count=30)
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now(), count=30)
         for article in articles:
             ArticlePageTags.objects.create(page=article, tag=tag)
 
@@ -195,11 +195,11 @@ class TestTags(MoloTestCaseMixin, TestCase):
         articles = self.mk_articles(
             parent=self.yourmind,
             featured_in_latest_start_date=(
-                datetime.now() - timedelta(days=1)),
-            featured_in_homepage_start_date=datetime.now(), count=30)
+                timezone.now() - timedelta(days=1)),
+            featured_in_homepage_start_date=timezone.now(), count=30)
         latest_of_latest_articles = self.mk_article(
-            parent=self.yourmind, featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now())
+            parent=self.yourmind, featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now())
         for article in articles:
             ArticlePageTags.objects.create(page=article, tag=tag)
 
@@ -212,12 +212,12 @@ class TestTags(MoloTestCaseMixin, TestCase):
     def test_latest_articles_translated_when_tag_navigation_enabled(self):
         article_1 = self.mk_article(
             self.yourmind, title='article-1', featured_in_latest_start_date=(
-                datetime.now() - timedelta(days=1)), featured_in_latest=True,
-            featured_in_homepage_start_date=datetime.now())
+                timezone.now() - timedelta(days=1)), featured_in_latest=True,
+            featured_in_homepage_start_date=timezone.now())
         article_2 = self.mk_article(
             self.yourmind, title='article-2', featured_in_latest_start_date=(
-                datetime.now() - timedelta(days=1)), featured_in_latest=True,
-            featured_in_homepage_start_date=datetime.now())
+                timezone.now() - timedelta(days=1)), featured_in_latest=True,
+            featured_in_homepage_start_date=timezone.now())
         tag = self.mk_tag(parent=self.tag_index)
         ArticlePageTags.objects.create(page=article_1, tag=tag)
         ArticlePageTags.objects.create(page=article_2, tag=tag)
@@ -249,12 +249,12 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
         article_1 = self.mk_article(
             self.yourmind, title='article-1', featured_in_latest_start_date=(
-                datetime.now() - timedelta(days=1)), featured_in_latest=True,
-            featured_in_homepage_start_date=datetime.now())
+                timezone.now() - timedelta(days=1)), featured_in_latest=True,
+            featured_in_homepage_start_date=timezone.now())
         article_2 = self.mk_article(
             self.yourmind, title='article-2', featured_in_latest_start_date=(
-                datetime.now() - timedelta(days=1)), featured_in_latest=True,
-            featured_in_homepage_start_date=datetime.now())
+                timezone.now() - timedelta(days=1)), featured_in_latest=True,
+            featured_in_homepage_start_date=timezone.now())
         tag = self.mk_tag(parent=self.tag_index)
         ArticlePageTags.objects.create(page=article_1, tag=tag)
         ArticlePageTags.objects.create(page=article_2, tag=tag)
@@ -292,8 +292,8 @@ class TestTags(MoloTestCaseMixin, TestCase):
         tag.save_revision().publish()
         articles = self.mk_articles(
             parent=self.yourmind,
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now(), count=30)
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now(), count=30)
         for article in articles:
             ArticlePageTags.objects.create(page=article, tag=tag)
 
@@ -368,11 +368,11 @@ class TestTags(MoloTestCaseMixin, TestCase):
 
     def test_articles_within_tag_order_by_first_published_at(self):
         article1 = self.mk_article(self.yourmind, title='article 1',
-                                   first_published_at=datetime.now())
+                                   first_published_at=timezone.now())
         article2 = self.mk_article(self.yourmind, title='article 2',
-                                   first_published_at=datetime.now())
+                                   first_published_at=timezone.now())
         article3 = self.mk_article(self.yourmind, title='article 3',
-                                   first_published_at=datetime.now())
+                                   first_published_at=timezone.now())
 
         tag = self.mk_tag(parent=self.tag_index)
         ArticlePageTags.objects.create(page=article1, tag=tag)

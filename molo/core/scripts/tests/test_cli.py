@@ -129,5 +129,5 @@ class TestCli(TestCase):
 
     def test_get_package(self):
         from molo.core.scripts.cli import get_package
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             UsageError, 'molo.foo is not installed.', get_package, 'molo.foo')

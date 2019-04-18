@@ -46,7 +46,7 @@ COMPRESS_OFFLINE = True
 # Setup for CAS
 ENABLE_SSO = True
 
-MIDDLEWARE_CLASSES += [  # noqa: F405
+MIDDLEWARE += [  # noqa: F405
     'molo.core.middleware.MoloCASMiddleware',
     'molo.core.middleware.Custom403Middleware',
 ]

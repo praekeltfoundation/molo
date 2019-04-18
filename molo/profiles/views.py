@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from molo.core.templatetags.core_tags import get_pages
 from molo.profiles import forms
@@ -74,7 +75,7 @@ class RegistrationView(FormView):
         return kwargs
 
 
-class RegistrationDone(FormView):
+class RegistrationDone(LoginRequiredMixin, FormView):
     form_class = forms.DoneForm
     template_name = 'profiles/done.html'
 
@@ -119,7 +120,7 @@ def logout_page(request):
     return HttpResponseRedirect(request.GET.get('next', '/'))
 
 
-class MyProfileView(TemplateView):
+class MyProfileView(LoginRequiredMixin, TemplateView):
     """
     Enables viewing of the user's profile in the HTML site, by the profile
     owner.
@@ -132,7 +133,7 @@ class MyProfileView(TemplateView):
         return context
 
 
-class MyProfileEdit(UpdateView):
+class MyProfileEdit(LoginRequiredMixin, UpdateView):
     """
     Enables editing of the user's profile in the HTML site
     """
@@ -162,7 +163,7 @@ class MyProfileEdit(UpdateView):
         return kwargs
 
 
-class ProfilePasswordChangeView(FormView):
+class ProfilePasswordChangeView(LoginRequiredMixin, FormView):
     form_class = forms.ProfilePasswordChangeForm
     template_name = 'profiles/change_password.html'
 

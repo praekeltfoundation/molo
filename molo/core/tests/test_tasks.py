@@ -259,13 +259,13 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         # checks to see that the number of latest articles has not increased
         self.assertEqual(self.main.latest_articles().count(), 10)
         # checks to see the the old first articles is not still the first one
-        self.assertNotEquals(
+        self.assertNotEqual(
             first_article_old, self.main.latest_articles()[0].pk)
         # checks to see the old first article has moved up 2 places
         self.assertEqual(
             first_article_old, self.main.latest_articles()[2].pk)
         # checks to see the the old last article is not still last
-        self.assertNotEquals(
+        self.assertNotEqual(
             last_article_old, self.main.latest_articles()[8].pk)
 
     def test_latest_rotation_on_multisite(self):
@@ -311,13 +311,13 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         # checks to see that the number of latest articles has not increased
         self.assertEqual(self.main2.latest_articles().count(), 10)
         # checks to see the the old first articles is not still the first one
-        self.assertNotEquals(
+        self.assertNotEqual(
             first_article_old, self.main2.latest_articles()[0].pk)
         # checks to see the old first article has moved up 2 places
         self.assertEqual(
             first_article_old, self.main2.latest_articles()[2].pk)
         # checks to see the the old last article is not still last
-        self.assertNotEquals(
+        self.assertNotEqual(
             last_article_old, self.main2.latest_articles()[8].pk)
 
         featured_from_main1 = self.main2.latest_articles().descendant_of(
@@ -512,11 +512,11 @@ class TestTasks(TestCase, MoloTestCaseMixin):
             ArticlePage.objects.count(), 20)
         self.assertEqual(
             get_featured_articles(self.yourmind_sub).count(), 10)
-        self.assertNotEquals(
+        self.assertNotEqual(
             first_article_old, get_featured_articles(self.yourmind_sub)[0].pk)
         self.assertEqual(
             first_article_old, get_featured_articles(self.yourmind_sub)[2].pk)
-        self.assertNotEquals(
+        self.assertNotEqual(
             last_article_old, get_featured_articles(self.yourmind_sub)[9].pk)
 
     def test_homepage_content_demotions(self):
