@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.9.1
+~~~~~
+- Refactor deprecating Django 2.0 code on molo.core and molo.profiles
+
 8.9.0
 ~~~~~
 - Add get_site() to all index pages
