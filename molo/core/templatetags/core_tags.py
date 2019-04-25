@@ -565,6 +565,7 @@ def load_tags_for_article(context, article):
 
     locale = context.get('locale_code')
     request = context['request']
+    qs = None
 
     cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
         locale, request.site.pk, article.pk,
@@ -572,20 +573,21 @@ def load_tags_for_article(context, article):
     tags_pks = cache.get(cache_key)
 
     if not tags_pks:
-        tags = [
-            article_tag.tag.pk for article_tag in
-            article.specific.get_main_language_page().nav_tags.all()
-            if article_tag.tag]
+        tags = article.specific.get_main_language_page().nav_tags\
+            .filter(tag__isnull=False).values_list('tag__pk', flat=True)
+
         if tags and request.site:
             qs = Tag.objects.descendant_of(
-                request.site.root_page).live().filter(pk__in=tags)
+                request.site.root_page
+            ).live().filter(pk__in=tags)
             tags_pks = qs.values_list("pk", flat=True)
             cache.set(cache_key, tags_pks, 300)
         else:
             return []
 
-    qs = Tag.objects.descendant_of(
-        request.site.root_page).live().filter(pk__in=tags_pks)
+    if not qs:
+        qs = Tag.objects.descendant_of(
+            request.site.root_page).live().filter(pk__in=tags_pks)
     return get_pages(context, qs, locale)
 
 
