@@ -4,7 +4,7 @@ from prometheus_client import Summary
 
 
 DATABASE_QUERIES = Summary(
-   'database_queries', 'DB queries for get tag articles'
+   'database_queries', 'DB queries count'
 )
 
 
