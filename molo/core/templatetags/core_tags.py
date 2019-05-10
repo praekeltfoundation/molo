@@ -1,11 +1,15 @@
 from itertools import chain
+from markdown import markdown
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.cache import cache
 from django import template
 from django.utils.safestring import mark_safe
 from django.db.models import Case, When
-from markdown import markdown
 
+from prometheus_client import Summary
+
+from molo.core.decorators import prometheus_query_count
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
@@ -13,7 +17,6 @@ from molo.core.models import (
     ArticleOrderingChoices
 )
 
-from prometheus_client import Summary
 
 register = template.Library()
 
@@ -382,6 +385,7 @@ def get_articles_for_tags_with_translations(
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_articles_for_tag(context, tag):
     request = context['request']
     locale = context.get('locale_code')
@@ -398,6 +402,7 @@ def get_articles_for_tag(context, tag):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_next_tag(context, tag):
     request = context['request']
     locale_code = context.get('locale_code')
@@ -420,6 +425,7 @@ def get_next_tag(context, tag):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     request = context['request']
     locale = context.get('locale_code')
@@ -463,6 +469,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
 
 @register.simple_tag(takes_context=True)
 @REQUEST_TIME.time()
+@prometheus_query_count
 def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
         latest_article_count=3):
@@ -558,6 +565,7 @@ def get_tag_articles(
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_tags_for_article(context, article):
     if not article.specific.__class__ == ArticlePage:
         return None
@@ -589,6 +597,7 @@ def load_tags_for_article(context, article):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
     if question:
@@ -601,6 +610,7 @@ def load_choices_for_reaction_question(context, question):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
@@ -613,6 +623,7 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_reaction_question(context, article):
     locale = context.get('locale_code')
     request = context['request']
@@ -636,12 +647,13 @@ def load_reaction_question(context, article):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_child_sections_for_section(context, section, count=None):
-    '''
+    """
     Returns all child sections
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
-    '''
+    """
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
@@ -654,12 +666,13 @@ def load_child_sections_for_section(context, section, count=None):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_sibling_sections(context, section, count=None):
-    '''
+    """
     Returns all sibling sections
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
-    '''
+    """
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
@@ -694,6 +707,7 @@ def handle_markdown(value):
     'core/tags/social_media_footer.html',
     takes_context=True
 )
+@prometheus_query_count
 def social_media_footer(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
@@ -713,6 +727,7 @@ def social_media_footer(context, page=None):
     'core/tags/social_media_article.html',
     takes_context=True
 )
+@prometheus_query_count
 def social_media_article(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
@@ -757,6 +772,7 @@ def social_media_article(context, page=None):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_next_article(context, article):
     locale_code = context.get('locale_code')
     section = article.get_parent_section()
@@ -779,6 +795,7 @@ def get_next_article(context, article):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_recommended_articles(context, article):
     locale_code = context.get('locale_code')
 
