@@ -98,14 +98,14 @@ class ReadOnlyPanel(EditHandler):
 
 
 class ArticleOrderingChoices(enum.Enum):
-    CMS_DEFAULT_SORTING = 1
+    SORT_ORDER = 1
     FIRST_PUBLISHED_AT = 2
     FIRST_PUBLISHED_AT_DESC = 3
     PK = 4
     PK_DESC = 5
 
     labels = {
-        CMS_DEFAULT_SORTING: 'CMS Default Sorting',
+        SORT_ORDER: 'CMS Default Sorting',
         FIRST_PUBLISHED_AT: 'First Published At',
         FIRST_PUBLISHED_AT_DESC: 'First Published At Desc',
         PK: 'Primary Key',

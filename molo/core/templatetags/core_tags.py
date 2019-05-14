@@ -284,7 +284,7 @@ def load_descendant_articles_for_section(
 
     cms_ordering = article_ordering \
         and settings.article_ordering_within_section !=\
-        ArticleOrderingChoices.CMS_DEFAULT_SORTING
+        ArticleOrderingChoices.SORT_ORDER
 
     if article_ordering and cms_ordering:
         order_by = ArticleOrderingChoices.\
@@ -332,7 +332,7 @@ def load_child_articles_for_section(
         get(settings.article_ordering_within_section).name.lower() \
         if article_ordering \
         and settings.article_ordering_within_section !=\
-        ArticleOrderingChoices.CMS_DEFAULT_SORTING\
+        ArticleOrderingChoices.SORT_ORDER\
         else '-first_published_at'
 
     order_by = order_by if order_by.find('_desc') == -1 \
