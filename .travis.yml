@@ -37,7 +37,7 @@ jobs:
         distributions: sdist bdist_wheel
         user: Praekelt
         password:
-          secure: JI8dx9kVSBeQ8jrNnW3i1+VSyc23e1hpbcqZPXIX+nPU1tt4LeEezYzX1hPLiwifNebHjXglU+8K5x7UI2BsIfa1B654mBNWzuMkARTrEx6tjpFMr88bR49fNd9T74oVP6iRGMfhh2no2hlRXHDC7DYNk1W4DC4XVjCk42Hne7zoDhX8vKAJ/9myGas19j5tbNCKKNtHOp4TkogUMu/6Wgnwg5ShksBBQIUL3Pkfy8H41JVzATvcXhw+Ufso/0pn49ovF97I2jQI9gUoQ+R6G/utvdq5RKemw0ZeyR8aj68mWNRfaB5kYIyopkG/x5qgUcqMTfY5Ooby2hXpusqYlfUCSL5Y5kvb7RKpt3u9ky8tU4fSZ2UhZl8RGflb0InMPN+4W/8oWWcwk4Vg+j2nibCKx2+BuZqdaJJsfXze/Qtc9aGffIesra6s9+Qtp7uIaIqaizLrADi1jAPDGf2IiCf3q2/ckWA3QWFwOGWNfGm5mjYhXdlio8leMJY7g8yffH4D9tPTVV/mKOYBkWfshgNbr6N0LXmdov1GWKO4QAJX364eGbmGs/CfuvSzyYN3+0awCql4y8yrw56lqTZK6Kho034tUHgSwmM0/qyAFO061zoR1vH6d6s8rMQBNtdYLylawP9vSwxZIVcgp/D3Djll1Mx+1sy6jRwJOw45bRo=
+          secure: TrR3EF0bUSLZFjvfp62Jjjc+d0HTjXRR5BGoM7K1ON4buyyq3AGj8Fvc20d8CN/jcpqnibj+L3MNZnFkgEjsCy7GRav42QTVtQPj5Sorodp8qM7e329do6VAtO3iL6uoG258gYD0oqM0PZjlZurGZjksI7P/IsaZXeFh2I4NyS5Dy/m9f1zhzo5fS4H5oOpK8ohTPe3l9yRBXHteaAZYSrC8pc05U82iSaiWY4RbtJfxB2lPsxTJCh7nrjsyOu+jOubxuandve6YrKnCdpb2JQaPOeSBVpxHxhlf47MTTp5Q4DCO0DLA+kDoBZ1aEkM5gULQihjrKRtmbbXr0AmA+KEVdtZ9KySkmZB8W4lJfz+nyhxvKYEujNKoRYsxLBb5Nxxs/wuy/JTSJBQwdxDff8Yqz0o0N4xsMRy389o06QpE1ARqXpNE7+JSODyZT4ojTMVSmuU2CpwxDSR5L6ZA61nhDECoGe39HLgXiB/LTXgLxCt8O41u+gNQwGbE0iL22C1hPrkT5qWgP6YoMIK8PvpJAw2PVlxnaGZISljPQmV5txBSfi8h7u+wPnRJIVqgaWiM9mM27LhjZnMKPUqIspkMEvc0YoAJ6QYRPsATEUMlZIg+U+FCeSlALNd1cCzxiritPPNOYw9JG2PVACLtnmxhe1L9ILVg48t4loeHxUc=
         on:
           tags: true
           all_branches: true
