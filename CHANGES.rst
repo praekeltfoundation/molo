@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-8.9.2
+8.9.3
 ~~~~~
 - Add custom Prometheus query count decorator
 
