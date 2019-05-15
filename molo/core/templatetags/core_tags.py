@@ -289,9 +289,10 @@ def load_descendant_articles_for_section(
         order_by = order_by if order_by.find('_desc') == -1 \
             else '-{}'.format(order_by.replace('_desc', ''))
 
-        # if the sort order is equal to SORT_ORDER do not order QS, CMS handles it
+        # if the sort order is equal to CMS_DEFAULT_SORTING
+        #  do not order QS, CMS handles it
         if article_ordering and settings.article_ordering_within_section\
-                != ArticleOrderingChoices.SORT_ORDER:
+                != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
             qs = qs.order_by(order_by)
 
     if featured_in_homepage is not None:
@@ -339,10 +340,11 @@ def load_child_articles_for_section(
         main_language_page).filter(
         language__is_main_language=True)
 
-    # if the sort order is equal to SORT_ORDER do not order QS, CMS handles it
+    # if the sort order is equal to CMS_DEFAULT_SORTING
+    #  do not order QS, CMS handles it
     if article_ordering and settings.article_ordering_within_section\
-            != ArticleOrderingChoices.SORT_ORDER:
-        child_articles.order_by(order_by)
+            != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+        child_articles = child_articles.order_by(order_by)
 
     if featured_in_section is not None:
         child_articles = child_articles.filter(
