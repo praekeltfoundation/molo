@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.9.4
+~~~~~
+- Article ordering bug fix
+
 8.9.3
 ~~~~~
 - Add custom Prometheus query count decorator
