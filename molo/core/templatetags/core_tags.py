@@ -342,7 +342,7 @@ def load_child_articles_for_section(
 
     # if the sort order is equal to CMS_DEFAULT_SORTING
     #  do not order QS, CMS handles it
-    if article_ordering and settings.article_ordering_within_section\
+    if getattr(settings, 'article_ordering_within_section')\
             != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
         child_articles = child_articles.order_by(order_by)
 

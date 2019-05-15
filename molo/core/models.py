@@ -299,7 +299,7 @@ class SiteSettings(BaseSetting):
     )
 
     article_ordering_within_section = enum.EnumField(
-        ArticleOrderingChoices, null=True, blank=True,
+        ArticleOrderingChoices, null=True, blank=True, default=None,
         help_text="Ordering of articles within a section"
     )
 
