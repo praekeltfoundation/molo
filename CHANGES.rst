@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+8.9.4
+~~~~~
+- Article ordering bug fix
+
+8.9.3
+~~~~~
+- Add custom Prometheus query count decorator
+
 8.9.1
 ~~~~~
 - Refactor deprecating Django 2.0 code on molo.core and molo.profiles
