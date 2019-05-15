@@ -282,7 +282,7 @@ def load_descendant_articles_for_section(
     article_ordering = settings \
         and settings.article_ordering_within_section
 
-    if article_ordering and article_ordering:
+    if article_ordering:
         order_by = ArticleOrderingChoices.\
             get(settings.article_ordering_within_section).name.lower()
 
