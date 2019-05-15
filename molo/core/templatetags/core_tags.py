@@ -282,17 +282,17 @@ def load_descendant_articles_for_section(
     article_ordering = settings \
         and settings.article_ordering_within_section
 
-    cms_ordering = article_ordering \
-        and settings.article_ordering_within_section !=\
-        ArticleOrderingChoices.SORT_ORDER
-
-    if article_ordering and cms_ordering:
+    if article_ordering and article_ordering:
         order_by = ArticleOrderingChoices.\
             get(settings.article_ordering_within_section).name.lower()
 
         order_by = order_by if order_by.find('_desc') == -1 \
             else '-{}'.format(order_by.replace('_desc', ''))
-        qs = qs.order_by(order_by)
+
+        # if the sort order is equal to SORT_ORDER do not order QS, CMS handles it
+        if article_ordering and settings.article_ordering_within_section\
+                != ArticleOrderingChoices.SORT_ORDER:
+            qs = qs.order_by(order_by)
 
     if featured_in_homepage is not None:
         qs = qs.filter(featured_in_homepage=featured_in_homepage)\
@@ -330,17 +330,19 @@ def load_child_articles_for_section(
     article_ordering = settings and settings.article_ordering_within_section
     order_by = ArticleOrderingChoices.\
         get(settings.article_ordering_within_section).name.lower() \
-        if article_ordering \
-        and settings.article_ordering_within_section !=\
-        ArticleOrderingChoices.SORT_ORDER\
-        else '-first_published_at'
+        if article_ordering else '-first_published_at'
 
     order_by = order_by if order_by.find('_desc') == -1 \
         else '-{}'.format(order_by.replace('_desc', ''))
 
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(
-        language__is_main_language=True).order_by(order_by)
+        language__is_main_language=True)
+
+    # if the sort order is equal to SORT_ORDER do not order QS, CMS handles it
+    if article_ordering and settings.article_ordering_within_section\
+            != ArticleOrderingChoices.SORT_ORDER:
+        child_articles.order_by(order_by)
 
     if featured_in_section is not None:
         child_articles = child_articles.filter(
