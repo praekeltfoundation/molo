@@ -8,12 +8,12 @@ from molo.core.utils import generate_slug
 class TestUtils(TestCase, MoloTestCaseMixin):
 
     def test_get_locale_code(self):
-        self.assertEquals(utils.get_locale_code(), 'en')
-        self.assertEquals(utils.get_locale_code('en-GB'), 'en-GB')
-        self.assertEquals(utils.get_locale_code('en_GB'), 'en-GB')
-        self.assertEquals(utils.get_locale_code('fr_FR'), 'fr-FR')
-        self.assertEquals(utils.get_locale_code('zu-ZA'), 'zu-ZA')
-        self.assertEquals(utils.get_locale_code('en'), 'en')
+        self.assertEqual(utils.get_locale_code(), 'en')
+        self.assertEqual(utils.get_locale_code('en-GB'), 'en-GB')
+        self.assertEqual(utils.get_locale_code('en_GB'), 'en-GB')
+        self.assertEqual(utils.get_locale_code('fr_FR'), 'fr-FR')
+        self.assertEqual(utils.get_locale_code('zu-ZA'), 'zu-ZA')
+        self.assertEqual(utils.get_locale_code('en'), 'en')
 
     def test_slugify(self):
         self.mk_main()
@@ -26,9 +26,9 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             is_active=True)
 
         self.mk_section(self.main, title='Your mind')
-        self.assertEquals(generate_slug('Your mind'), 'your-mind-1')
+        self.assertEqual(generate_slug('Your mind'), 'your-mind-1')
 
         self.mk_section(self.main, title='Your mind')
-        self.assertEquals(generate_slug('Your mind'), 'your-mind-2')
+        self.assertEqual(generate_slug('Your mind'), 'your-mind-2')
 
-        self.assertEquals(generate_slug(None), 'no-title')
+        self.assertEqual(generate_slug(None), 'no-title')

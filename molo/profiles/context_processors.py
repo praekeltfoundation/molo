@@ -6,7 +6,7 @@ def get_profile_data(request):
     alias = ''
     date_of_birth = ''
     mobile_number = ''
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user = request.user
         profile = user.profile
         username = user.username

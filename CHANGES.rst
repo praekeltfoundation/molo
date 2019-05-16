@@ -1,6 +1,22 @@
 CHANGES
 =======
 
+8.9.5
+~~~~~
+- Make get_parent_section language aware
+
+8.9.4
+~~~~~
+- Article ordering bug fix
+
+8.9.3
+~~~~~
+- Add custom Prometheus query count decorator
+
+8.9.1
+~~~~~
+- Refactor deprecating Django 2.0 code on molo.core and molo.profiles
+
 8.9.0
 ~~~~~
 - Add get_site() to all index pages

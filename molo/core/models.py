@@ -56,6 +56,7 @@ from molo.core.utils import (
 
 from django.db.models.signals import pre_delete
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
+from django_enumfield import enum
 
 
 class ReadOnlyPanel(EditHandler):
@@ -96,8 +97,25 @@ class ReadOnlyPanel(EditHandler):
             self.heading, _(':'), self.render())
 
 
+class ArticleOrderingChoices(enum.Enum):
+    CMS_DEFAULT_SORTING = 1
+    FIRST_PUBLISHED_AT = 2
+    FIRST_PUBLISHED_AT_DESC = 3
+    PK = 4
+    PK_DESC = 5
+
+    labels = {
+        CMS_DEFAULT_SORTING: 'CMS Default Sorting',
+        FIRST_PUBLISHED_AT: 'First Published At',
+        FIRST_PUBLISHED_AT_DESC: 'First Published At Desc',
+        PK: 'Primary Key',
+        PK_DESC: 'Primary Key Desc',
+    }
+
+
 @register_setting
 class SiteSettings(BaseSetting):
+
     logo = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -280,6 +298,11 @@ class SiteSettings(BaseSetting):
         blank=True,
     )
 
+    article_ordering_within_section = enum.EnumField(
+        ArticleOrderingChoices, null=True, blank=True, default=None,
+        help_text="Ordering of articles within a section"
+    )
+
     panels = [
         ImageChooserPanel('logo'),
         MultiFieldPanel(
@@ -366,6 +389,12 @@ class SiteSettings(BaseSetting):
                 FieldPanel('enable_multi_category_service_directory_search'),
             ],
             heading="Service Directory API Settings"
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('article_ordering_within_section'),
+            ],
+            heading="Article Ordering"
         )
     ]
 
@@ -1461,8 +1490,12 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             page = self.get_main_language_page()
             return page.specific.get_effective_image()
 
-    def get_parent_section(self):
-        return SectionPage.objects.all().ancestor_of(self).last()
+    def get_parent_section(self, locale=None):
+        page = SectionPage.objects.all().ancestor_of(self).last()
+        if locale and page.language.locale == locale:
+            return page
+        return page.translated_pages.filter(
+            language__locale=locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1686,7 +1719,11 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def get_absolute_url(self):  # pragma: no cover
         return self.url
 
-    def get_parent_section(self):
+    def get_parent_section(self, locale=None):
+        parent = self.get_parent().specific
+        if locale and parent.language.locale != locale:
+            return parent.translated_pages.filter(
+                locale=locale).first()
         return self.get_parent().specific
 
     def allow_commenting(self):

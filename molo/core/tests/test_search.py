@@ -62,7 +62,7 @@ class TestSearch(TestCase, MoloTestCaseMixin):
         })
         results = response.context['results']
         for article in results:
-            self.assertNotEquals(article.title, 'Test Footer')
+            self.assertNotEqual(article.title, 'Test Footer')
 
     def test_search(self):
         self.backend = get_search_backend('default')

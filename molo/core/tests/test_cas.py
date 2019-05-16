@@ -51,7 +51,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
     def test_login_redirect(self):
         response = self.client.get('/admin/', follow=True)
-        self.assertEquals(
+        self.assertEqual(
             response.request.get('QUERY_STRING'),
             'service=http%3A%2F%2Ftestserver'
             '%2Fadmin%2Flogin%2F%3Fnext%3D%252Fadmin%252F')
@@ -204,14 +204,14 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
 
         # logout
         response = self.client.get('/admin/logout/', follow=True)
-        self.assertEquals(
+        self.assertEqual(
             response.request.get('QUERY_STRING'),
             'service=http%3A%2F%2Ftestserver%2F')
 
     def test_normal_profiles_login_works_when_cas_enabled(self):
         client = Client()
         response = client.get('/profiles/login/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_normal_profiles_logout_works_when_cas_enabled(self):
         client = Client()
@@ -229,4 +229,4 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
         client.login(username='testuser', password='password')
 
         response = client.get('/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)

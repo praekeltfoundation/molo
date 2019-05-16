@@ -3,7 +3,6 @@ import random
 import logging
 
 from io import BytesIO
-from datetime import datetime
 
 from celery import task
 from time import strptime
@@ -64,7 +63,7 @@ def rotate_content(day=None):
         index = SectionIndexPage.objects.live().child_of(main).first()
         site_settings = SiteSettings.for_site(site)
         if day is None:
-            day = datetime.today().weekday()
+            day = timezone.now().weekday()
 
         # calls the two rotate methods with the necessary params
         if main and index:
@@ -89,17 +88,17 @@ def clearsessions():
 @task(ignore_result=True)
 def demote_articles():
     ArticlePage.objects.live().filter(
-        featured_in_latest_end_date__lte=datetime.now()).update(
+        featured_in_latest_end_date__lte=timezone.now()).update(
             featured_in_latest=False,
             featured_in_latest_start_date=None,
             featured_in_latest_end_date=None)
     ArticlePage.objects.live().filter(
-        featured_in_section_end_date__lte=datetime.now()).update(
+        featured_in_section_end_date__lte=timezone.now()).update(
             featured_in_section=False,
             featured_in_section_start_date=None,
             featured_in_section_end_date=None)
     ArticlePage.objects.live().filter(
-        featured_in_homepage_end_date__lte=datetime.now()).update(
+        featured_in_homepage_end_date__lte=timezone.now()).update(
             featured_in_homepage=False,
             featured_in_homepage_start_date=None,
             featured_in_homepage_end_date=None)
@@ -108,13 +107,13 @@ def demote_articles():
 @task(ignore_result=True)
 def promote_articles():
     ArticlePage.objects.live().filter(
-        featured_in_latest_start_date__lte=datetime.now()).update(
+        featured_in_latest_start_date__lte=timezone.now()).update(
         featured_in_latest=True)
     ArticlePage.objects.live().filter(
-        featured_in_section_start_date__lte=datetime.now()).update(
+        featured_in_section_start_date__lte=timezone.now()).update(
         featured_in_section=True)
     ArticlePage.objects.live().filter(
-        featured_in_homepage_start_date__lte=datetime.now()).update(
+        featured_in_homepage_start_date__lte=timezone.now()).update(
         featured_in_homepage=True)
 
 
@@ -161,7 +160,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
             if days[day]:
                 for time in site_settings.time:
                     time = strptime(str(time), '%H:%M:%S')
-                    if time.tm_hour == datetime.now().hour:
+                    if time.tm_hour == timezone.now().hour:
                         # get a random article
                         random_article = ArticlePage.objects.live().filter(
                             featured_in_latest=False,
@@ -171,7 +170,7 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                         # set random article to feature in latest
                         if random_article:
                             random_article.featured_in_latest_start_date = \
-                                datetime.now()
+                                timezone.now()
                             random_article.save_revision().publish()
                             promote_articles()
                             demote_last_featured_article()
@@ -203,7 +202,7 @@ def rotate_featured_in_homepage(main_lang, day, main):
                 if days[day]:
                     for time in section.time:
                         time = strptime(str(time), '%H:%M:%S')
-                        if time.tm_hour == datetime.now().hour:
+                        if time.tm_hour == timezone.now().hour:
                             random_article = ArticlePage.objects.live().filter(
                                 featured_in_homepage=False,
                                 language__id=main_lang.id
@@ -214,7 +213,7 @@ def rotate_featured_in_homepage(main_lang, day, main):
                             if random_article:
                                 random_article. \
                                     featured_in_homepage_start_date = \
-                                    datetime.now()
+                                    timezone.now()
                                 random_article.save_revision().publish()
                                 promote_articles()
                                 demote_last_featured_article_in_homepage(

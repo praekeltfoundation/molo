@@ -48,6 +48,7 @@ install_requires = [
     'django-treebeard==4.2.0',
     'django-prometheus',
     'prometheus_client',
+    'django-enumfield==1.5',
 ]
 
 # we need to only install typing for python2

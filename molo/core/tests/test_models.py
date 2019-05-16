@@ -1,7 +1,5 @@
 # coding=utf-8
 import pytest
-import datetime as dt
-from datetime import datetime, timedelta
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
 from django.core.urlresolvers import reverse
@@ -93,7 +91,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         second_site = Site.objects.create(
             hostname='kaios.mr.com', port=80, root_page=self.main,
             is_default_site=False, site_name='kaios main')
-        self.assertEquals(self.main.get_site().pk, second_site.pk)
+        self.assertEqual(self.main.get_site().pk, second_site.pk)
 
     def test_copy_method_of_article_page_copies_over_languages(self):
         self.assertFalse(
@@ -131,38 +129,38 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(sections.child_of(self.main2).exists())
 
     def test_copy_method_of_section_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_copy_method_of_reaction_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
         self.reaction_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_copy_method_of_tag_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        self.assertEqual(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
         self.tag_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_copy_method_of_footer_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        self.assertEqual(
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_copy_method_of_banner_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        self.assertEqual(
             BannerIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             BannerIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_main_returns_bannerpages(self):
@@ -175,22 +173,23 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(self.main.bannerpages().count(), 2)
 
     def test_article_order(self):
-        now = datetime.now()
+        now = timezone.now()
         article1 = self.mk_article(
             self.yourmind_sub, first_published_at=now)
 
         self.mk_article(
-            self.yourmind_sub, first_published_at=now + timedelta(hours=1))
+            self.yourmind_sub,
+            first_published_at=now + timezone.timedelta(hours=1))
 
         # most recent first
-        self.assertEquals(
+        self.assertEqual(
             self.yourmind_sub.articles()[0].title, article1.title)
 
         # swap published date
-        article1.first_published_at = now + timedelta(hours=4)
+        article1.first_published_at = now + timezone.timedelta(hours=4)
         article1.save_revision().publish()
 
-        self.assertEquals(
+        self.assertEqual(
             self.yourmind_sub.articles()[0].title, article1.title)
 
     def test_get_effective_image_for_sections(self):
@@ -198,43 +197,43 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index,
             title="New Section", slug="new-section",
             image=self.image)
-        self.assertEquals(
+        self.assertEqual(
             en_section.get_effective_image(), self.image)
 
         # image not set to use inherited value
         en_section2 = self.mk_section(
             en_section, title="New Section 2", slug="new-section-2")
-        self.assertEquals(
+        self.assertEqual(
             en_section2.get_effective_image(), en_section.image)
 
         # image not set to use inherited value
         en_section3 = self.mk_section(
             en_section2, title="New Section 3", slug="new-section-3")
-        self.assertEquals(
+        self.assertEqual(
             en_section3.get_effective_image(), en_section.image)
 
         # set the image
         en_section3.image = self.image2
-        self.assertEquals(
+        self.assertEqual(
             en_section3.get_effective_image(), self.image2)
         # if translated section doesn't have
         # an image it will inherited from the parent
         fr_section3 = self.mk_section_translation(en_section3, self.french)
-        self.assertEquals(
+        self.assertEqual(
             fr_section3.get_effective_image(), en_section3.image)
 
         fr_section2 = self.mk_section_translation(en_section2, self.french)
-        self.assertEquals(
+        self.assertEqual(
             fr_section2.get_effective_image(), en_section.image)
 
         # check if the section doesn't have image it will return None
         en_section4 = self.mk_section(
             self.section_index,
             title="New Section 4", slug="new-section-4",)
-        self.assertEquals(
+        self.assertEqual(
             en_section4.get_effective_image(), '')
         fr_section4 = self.mk_section_translation(en_section4, self.french)
-        self.assertEquals(
+        self.assertEqual(
             fr_section4.get_effective_image(), '')
 
     def test_get_effective_image_for_articles(self):
@@ -244,24 +243,24 @@ class TestModels(TestCase, MoloTestCaseMixin):
         en_article1, en_article2 = self.mk_articles(section, 2)
         fr_article1 = self.mk_article_translation(en_article1, self.french)
 
-        self.assertEquals(
+        self.assertEqual(
             en_article1.get_effective_image(), '')
-        self.assertEquals(
+        self.assertEqual(
             fr_article1.get_effective_image(), '')
 
         en_article1.image = self.image
         en_article1.save()
-        self.assertEquals(
+        self.assertEqual(
             en_article1.get_effective_image(), self.image)
 
         # if image not set it should inherite from the main language article
-        self.assertEquals(
+        self.assertEqual(
             fr_article1.get_effective_image(), en_article1.image)
 
         # if the translated article has an image it should return its image
         fr_article1.image = self.image2
         fr_article1.save()
-        self.assertEquals(
+        self.assertEqual(
             fr_article1.get_effective_image(), self.image2)
 
     def test_number_of_child_sections(self):
@@ -278,15 +277,15 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request.site = self.site
         articles = load_child_articles_for_section(
             {'request': request, 'locale_code': 'en'}, new_section, count=None)
-        self.assertEquals(len(articles), 12)
+        self.assertEqual(len(articles), 12)
 
     def test_parent_section(self):
         new_section = self.mk_section(
             self.section_index, title="New Section", slug="new-section")
         new_section1 = self.mk_section(
             new_section, title="New Section 1", slug="new-section-1")
-        self.assertEquals(
-            new_section1.get_parent_section(), new_section)
+        self.assertEqual(
+            new_section1.get_parent_section('en'), new_section)
 
     def test_commenting_closed_settings_fallbacks(self):
         new_section = self.mk_section(
@@ -296,20 +295,20 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.section_index.commenting_state = constants.COMMENTING_CLOSED
         self.section_index.save()
         comment_settings = new_article.get_effective_commenting_settings()
-        self.assertEquals(comment_settings['state'],
-                          constants.COMMENTING_CLOSED)
+        self.assertEqual(
+            comment_settings['state'], constants.COMMENTING_CLOSED)
         # test overriding settings in section
         new_section.commenting_state = constants.COMMENTING_CLOSED
         new_section.save()
         comment_settings = new_article.get_effective_commenting_settings()
-        self.assertEquals(comment_settings['state'],
-                          constants.COMMENTING_CLOSED)
+        self.assertEqual(
+            comment_settings['state'], constants.COMMENTING_CLOSED)
         # test overriding settings in article
         new_article.commenting_state = constants.COMMENTING_DISABLED
         new_article.save_revision().publish()
         comment_settings = new_article.get_effective_commenting_settings()
-        self.assertEquals(comment_settings['state'],
-                          constants.COMMENTING_DISABLED)
+        self.assertEqual(
+            comment_settings['state'], constants.COMMENTING_DISABLED)
 
     def test_commenting_allowed(self):
         new_section = self.mk_section(
@@ -317,7 +316,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         new_article = self.mk_article(
             new_section, title="New article",
             commenting_state=constants.COMMENTING_OPEN)
-        now = datetime.now()
+        now = timezone.now()
         # with commenting open
         self.assertTrue(new_article.allow_commenting())
         # with commenting disabled and no reopen_time given
@@ -325,20 +324,16 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(new_article.allow_commenting())
         # with commenting closed but past reopen time
         new_article.commenting_state = constants.COMMENTING_CLOSED
-        new_article.commenting_open_time = timezone.make_aware(
-            now - dt.timedelta(1))
+        new_article.commenting_open_time = now - timezone.timedelta(days=1)
         self.assertTrue(new_article.allow_commenting())
         # with commenting timestamped and within specified time
         new_article.commenting_state = constants.COMMENTING_TIMESTAMPED
-        new_article.commenting_open_time = timezone.make_aware(
-            now - dt.timedelta(1))
-        new_article.commenting_close_time = timezone.make_aware(
-            now + dt.timedelta(1))
+        new_article.commenting_open_time = now - timezone.timedelta(days=1)
+        new_article.commenting_close_time = now + timezone.timedelta(days=1)
         self.assertTrue(new_article.allow_commenting())
         # with commenting closed and not yet reopen_time
         new_article.commenting_state = constants.COMMENTING_CLOSED
-        new_article.commenting_open_time = timezone.make_aware(
-            now + dt.timedelta(1))
+        new_article.commenting_open_time = now + timezone.timedelta(days=1)
         self.assertFalse(new_article.allow_commenting())
 
     def test_commenting_enabled(self):
@@ -400,11 +395,11 @@ class TestModels(TestCase, MoloTestCaseMixin):
                     args=('core', 'articlepage', self.yourmind.id, )),
             post_data)
 
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(tags__name='war').count(), 2)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(tags__name='love').count(), 1)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(tags__name='peace').count(), 1)
 
     def test_meta_data_tags(self):
@@ -454,13 +449,13 @@ class TestModels(TestCase, MoloTestCaseMixin):
                     args=('core', 'articlepage', self.yourmind.id, )),
             post_data)
 
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 metadata_tags__name='happiness').count(), 2)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 metadata_tags__name='love').count(), 1)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 metadata_tags__name='peace').count(), 1)
 
@@ -513,18 +508,18 @@ class TestModels(TestCase, MoloTestCaseMixin):
             social_media_title='media title',
             social_media_image=self.image,)
 
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 social_media_title='media title').count(), 2)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 social_media_description='media description').count(), 1)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 social_media_image=self.image).count(), 1)
 
         response = self.client.get('/sections-main-1/your-mind/new-article/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'content="media title"')
 
     def test_site_languages(self):
@@ -556,10 +551,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request.site = self.site
         qs = get_translation({
             'locale_code': 'fr', 'request': request}, section)
-        self.assertEquals(translated_section.id, qs.id)
+        self.assertEqual(translated_section.id, qs.id)
         qs = get_translation({
             'locale_code': 'fr', 'request': request}, section2)
-        self.assertEquals(section2.id, qs.id)
+        self.assertEqual(section2.id, qs.id)
 
     def test_hero_article(self):
         User.objects.create_superuser(
@@ -617,7 +612,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         # Raises error if promote_date is in the past
         post_data.update({
-            "promote_date": timezone.now() + timedelta(days=-1),
+            "promote_date": timezone.now() + timezone.timedelta(days=-1),
         })
         self.client.post(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
@@ -632,7 +627,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # promote date
         post_data.update({
             "promote_date": timezone.now(),
-            "demote_date": timezone.now() + timedelta(days=-1)
+            "demote_date": timezone.now() + timezone.timedelta(days=-1)
         })
         self.client.post(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
@@ -671,8 +666,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(article.featured_in_section)
 
     def test_is_hero_article(self):
-        promote_date = timezone.now() + timedelta(days=-1)
-        demote_date = timezone.now() + timedelta(days=1)
+        promote_date = timezone.now() + timezone.timedelta(days=-1)
+        demote_date = timezone.now() + timezone.timedelta(days=1)
         article_1 = ArticlePage(
             title="New article",
             feature_as_hero_article=True,
@@ -682,8 +677,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.yourmind.add_child(instance=article_1)
         self.assertTrue(article_1.is_current_hero_article())
 
-        promote_date = timezone.now() + timedelta(days=2)
-        demote_date = timezone.now() + timedelta(days=4)
+        promote_date = timezone.now() + timezone.timedelta(days=2)
+        demote_date = timezone.now() + timezone.timedelta(days=4)
         article_2 = ArticlePage(
             title="New article",
             promote_date=promote_date,
@@ -699,8 +694,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
     # future promote date does not appear in latest articles
     # queryset.
     def test_future_hero_article_not_in_latest(self):
-        promote_date = timezone.now() + timedelta(days=2)
-        demote_date = timezone.now() + timedelta(days=4)
+        promote_date = timezone.now() + timezone.timedelta(days=2)
+        demote_date = timezone.now() + timezone.timedelta(days=4)
         future_article = ArticlePage(
             title="Future article",
             promote_date=promote_date,
@@ -715,8 +710,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
         main = Main.objects.all().first()
         self.assertQuerysetEqual(main.latest_articles(), [])
 
-        promote_date = timezone.now() + timedelta(days=-2)
-        demote_date = timezone.now() + timedelta(days=-1)
+        promote_date = timezone.now() + timezone.timedelta(days=-2)
+        demote_date = timezone.now() + timezone.timedelta(days=-1)
         present_article = ArticlePage(
             title="Present article",
             promote_date=promote_date,

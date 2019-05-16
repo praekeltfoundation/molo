@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import date, datetime
-
+from datetime import date
+from django.utils import timezone
 from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'', include(wagtail_urls)),
 ]
 
-DEFAULT_MIDDLEWARE_CLASSES = [
+DEFAULT_MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'molo.core.middleware.ForceDefaultLanguageMiddleware',
@@ -64,7 +64,7 @@ DEFAULT_MIDDLEWARE_CLASSES = [
 @override_settings(
     ROOT_URLCONF='molo.profiles.tests.test_views', LOGIN_URL='/login/')
 @override_settings(ENABLE_SSO=False)
-@override_settings(MIDDLEWARE_CLASSES=DEFAULT_MIDDLEWARE_CLASSES)
+@override_settings(MIDDLEWARE=DEFAULT_MIDDLEWARE)
 class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
@@ -142,14 +142,14 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
             'username': 'superuser',
             'password': 'pass'
         })
-        self.assertEquals(response['Location'], '/admin/')
+        self.assertEqual(response['Location'], '/admin/')
         client = Client(HTTP_HOST=self.site2.hostname)
         response = client.login(username='superuser', password='pass')
         response = client.post('/admin/login/?next=/admin/', {
             'username': 'superuser',
             'password': 'pass'
         })
-        self.assertEquals(response['Location'], '/admin/')
+        self.assertEqual(response['Location'], '/admin/')
 
     def test_superuser_only_users_from_site_show(self):
         response = self.client.post(reverse('molo.profiles:user_register'), {
@@ -176,7 +176,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, 'testing1')
 
     def test_login_to_different_registration_site(self):
-        self.assertEquals(User.objects.count(), 0)
+        self.assertEqual(User.objects.count(), 0)
         response = self.client.post(reverse('molo.profiles:user_register'), {
             'username': 'testing',
             'password': '1234',
@@ -184,7 +184,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
         })
         user = User.objects.all().first()
-        self.assertEquals(User.objects.count(), 1)
+        self.assertEqual(User.objects.count(), 1)
         self.assertTrue(user.profile)
         self.assertEqual(user.profile.site, self.main.get_site())
         client = Client(HTTP_HOST=self.site2.hostname)
@@ -1238,7 +1238,7 @@ class MyProfileEditTest(TestCase, MoloTestCaseMixin):
     def test_update_no_input(self):
         response = self.client.post(reverse('molo.profiles:edit_my_profile'),
                                     {})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
     def test_update_alias_and_dob(self):
         response = self.client.post(reverse('molo.profiles:edit_my_profile'),
@@ -1552,7 +1552,7 @@ class ProfilePasswordChangeViewTest(TestCase, MoloTestCaseMixin):
                 'new_password': '1234',
                 'confirm_password': '1234',
             })
-        self.assertEquals(response['location'], '/profiles/view/myprofile/')
+        self.assertEqual(response['location'], '/profiles/view/myprofile/')
         # Avoid cache by loading from db
         user = User.objects.get(pk=self.user.pk)
         self.assertTrue(user.check_password('1234'))
@@ -1745,7 +1745,7 @@ class SecurityQuestionsTest(TestCase, MoloTestCaseMixin):
         self.q2 = SecurityQuestion(
             title="What is your name?",
             slug="what-is-your-name",
-            latest_revision_created_at=datetime.now()
+            latest_revision_created_at=timezone.now()
         )
         self.security_index.add_child(instance=self.q2)
         self.q2.save()
@@ -2009,7 +2009,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/admin/pages/{0}/'
                                    .format(str(main_page.pk)))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         security_q_index_page_title = (
             SecurityQuestionIndexPage.objects.first().title)
@@ -2027,7 +2027,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/admin/pages/{0}/'
                                    .format(str(security_q_index_page.pk)))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         delete_link = ('<a href="/admin/pages/{0}/delete/" '
                        'title="Delete this page" class="u-link '
@@ -2040,7 +2040,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/admin/pages/{0}/edit/'
                                    .format(str(security_q_index_page.pk)))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         delete_button = ('<li><a href="/admin/pages/{0}/delete/" '
                          'class="shortcut">Delete</a></li>'
