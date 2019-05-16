@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.9.5
+~~~~~
+- Make get_parent_section language aware
+
 8.9.4
 ~~~~~
 - Article ordering bug fix
