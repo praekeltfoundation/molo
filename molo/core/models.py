@@ -1490,8 +1490,12 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             page = self.get_main_language_page()
             return page.specific.get_effective_image()
 
-    def get_parent_section(self):
-        return SectionPage.objects.all().ancestor_of(self).last()
+    def get_parent_section(self, locale=None):
+        page = SectionPage.objects.all().ancestor_of(self).last()
+        if locale and page.language.locale == locale:
+            return page
+        return page.translated_pages.filter(
+            language__locale=locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1715,7 +1719,11 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def get_absolute_url(self):  # pragma: no cover
         return self.url
 
-    def get_parent_section(self):
+    def get_parent_section(self, locale=None):
+        parent = self.get_parent().specific
+        if locale and parent.language.locale != locale:
+            return parent.translated_pages.filter(
+                locale=locale).first()
         return self.get_parent().specific
 
     def allow_commenting(self):

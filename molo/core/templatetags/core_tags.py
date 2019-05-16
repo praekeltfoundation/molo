@@ -779,7 +779,7 @@ def social_media_article(context, page=None):
 @prometheus_query_count
 def get_next_article(context, article):
     locale_code = context.get('locale_code')
-    section = article.get_parent_section()
+    section = article.get_parent_section('en')
     articles = load_child_articles_for_section(context, section, count=None)
     if len(articles) > 1:
         if len(articles) > articles.index(article) + 1:
