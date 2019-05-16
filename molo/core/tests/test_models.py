@@ -285,7 +285,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         new_section1 = self.mk_section(
             new_section, title="New Section 1", slug="new-section-1")
         self.assertEqual(
-            new_section1.get_parent_section(), new_section)
+            new_section1.get_parent_section('en'), new_section)
 
     def test_commenting_closed_settings_fallbacks(self):
         new_section = self.mk_section(
