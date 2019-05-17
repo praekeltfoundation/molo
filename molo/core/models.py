@@ -41,6 +41,7 @@ from wagtail.core.signals import page_unpublished
 from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
 from molo.core import constants
 from molo.core.api.constants import ERROR
+from wagtail.core.fields import RichTextField
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
@@ -57,6 +58,8 @@ from molo.core.utils import (
 from django.db.models.signals import pre_delete
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from django_enumfield import enum
+
+
 
 
 class ReadOnlyPanel(EditHandler):
@@ -1492,10 +1495,11 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
 
     def get_parent_section(self, locale=None):
         page = SectionPage.objects.all().ancestor_of(self).last()
-        if locale and page.language.locale == locale:
-            return page
-        return page.translated_pages.filter(
-            language__locale=locale).first()
+        if page.exists():
+            if locale and page.language.locale == locale:
+                return page
+            return page.translated_pages.filter(
+                language__locale=locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1721,10 +1725,11 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
 
     def get_parent_section(self, locale=None):
         parent = self.get_parent().specific
-        if locale and parent.language.locale != locale:
-            return parent.translated_pages.filter(
-                locale=locale).first()
-        return self.get_parent().specific
+        if parent:
+            if locale and parent.language.locale != locale:
+                return parent.translated_pages.filter(
+                    locale=locale).first()
+            return self.get_parent().specific
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
