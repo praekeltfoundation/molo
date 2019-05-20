@@ -41,7 +41,6 @@ from wagtail.core.signals import page_unpublished
 from molo.core.blocks import MarkDownBlock, SocialMediaLinkBlock
 from molo.core import constants
 from molo.core.api.constants import ERROR
-from wagtail.core.fields import RichTextField
 from molo.core.forms import ArticlePageForm
 from molo.core.utils import get_locale_code, generate_slug
 from molo.core.mixins import PageEffectiveImageMixin
@@ -58,8 +57,6 @@ from molo.core.utils import (
 from django.db.models.signals import pre_delete
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from django_enumfield import enum
-
-
 
 
 class ReadOnlyPanel(EditHandler):
