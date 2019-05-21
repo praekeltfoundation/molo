@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+9.10.0
+~~~~~~
+- Add richtext streamfield to Article Body
+- Add freebasics check on BannerPage
+
 8.9.5
 ~~~~~
 - Make get_parent_section language aware
