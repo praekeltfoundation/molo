@@ -1047,6 +1047,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    hide_on_freebasics = models.BooleanField(default=False)
     api_fields = [
         "title", "subtitle", "banner", "banner_link_page", "external_link"]
 
@@ -1064,7 +1065,8 @@ BannerPage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    FieldPanel('external_link')
+    FieldPanel('external_link'),
+    FieldPanel('hide_on_freebasics')
 ]
 
 # Signal for allowing plugins to create indexes
@@ -1492,10 +1494,11 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
 
     def get_parent_section(self, locale=None):
         page = SectionPage.objects.all().ancestor_of(self).last()
-        if locale and page.language.locale == locale:
-            return page
-        return page.translated_pages.filter(
-            language__locale=locale).first()
+        if page:
+            if locale and page.language.locale == locale:
+                return page
+            return page.translated_pages.filter(
+                language__locale=locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1721,10 +1724,11 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
 
     def get_parent_section(self, locale=None):
         parent = self.get_parent().specific
-        if locale and parent.language.locale != locale:
-            return parent.translated_pages.filter(
-                locale=locale).first()
-        return self.get_parent().specific
+        if parent:
+            if locale and parent.language.locale != locale:
+                return parent.translated_pages.filter(
+                    locale=locale).first()
+            return self.get_parent().specific
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
