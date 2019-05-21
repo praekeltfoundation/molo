@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='bannerpage',
-            name='hide_on_freebasics',
+            name='hide_banner_on_freebasics',
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(

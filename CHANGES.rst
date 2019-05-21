@@ -1,7 +1,11 @@
 CHANGES
 =======
 
-9.10.0
+8.10.2
+~~~~~~
+- Rename model fiel din migration for bannerpage (fixed clash)
+
+8.10.0
 ~~~~~~
 - Add richtext streamfield to Article Body
 - Add freebasics check on BannerPage
