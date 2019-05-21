@@ -1492,7 +1492,7 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
 
     def get_parent_section(self, locale=None):
         page = SectionPage.objects.all().ancestor_of(self).last()
-        if page.exists():
+        if page:
             if locale and page.language.locale == locale:
                 return page
             return page.translated_pages.filter(
