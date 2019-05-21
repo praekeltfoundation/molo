@@ -1047,6 +1047,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    hide_on_freebasics = models.BooleanField(default=False)
     api_fields = [
         "title", "subtitle", "banner", "banner_link_page", "external_link"]
 
@@ -1064,7 +1065,8 @@ BannerPage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    FieldPanel('external_link')
+    FieldPanel('external_link'),
+    FieldPanel('hide_on_freebasics')
 ]
 
 # Signal for allowing plugins to create indexes
