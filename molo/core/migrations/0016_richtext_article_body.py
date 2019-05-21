@@ -22,10 +22,5 @@ class Migration(migrations.Migration):
             model_name='articlepage',
             name='body',
             field=wagtail.core.fields.StreamField([('heading', wagtail.core.blocks.CharBlock(classname='full title')), ('paragraph', molo.core.blocks.MarkDownBlock()), ('image', wagtail.images.blocks.ImageChooserBlock()), ('list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label='Item'))), ('numbered_list', wagtail.core.blocks.ListBlock(wagtail.core.blocks.CharBlock(label='Item'))), ('page', wagtail.core.blocks.PageChooserBlock()), ('media', molo.core.models.MoloMediaBlock(icon='media')), ('richtext', wagtail.core.blocks.RichTextBlock())], blank=True, null=True),
-        ),
-        migrations.AlterField(
-            model_name='sitesettings',
-            name='article_ordering_within_section',
-            field=django_enumfield.db.fields.EnumField(blank=True, default=None, enum=molo.core.models.ArticleOrderingChoices, help_text='Ordering of articles within a section', null=True),
-        ),
+        )
     ]
