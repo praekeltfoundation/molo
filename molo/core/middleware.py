@@ -108,10 +108,8 @@ class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
 
         path = request.get_full_path()
         referer = request.META.get('HTTP_REFERER', '')
-
         if hasattr(request, 'user') and hasattr(request.user, 'profile')\
                 and request.user.profile.uuid:
-            print(request.user)
             uuid = request.user.profile.uuid
             params = build_ga_params(
                 request, account, path=path,
