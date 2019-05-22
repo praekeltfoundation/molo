@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.10.4
+~~~~~~
+- Add template tag for reaction question response couunt
+
 8.10.3
 ~~~~~~
 - Add is_via_freebasics check to template tag for bannerpages
