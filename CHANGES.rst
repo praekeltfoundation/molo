@@ -1,6 +1,23 @@
 CHANGES
 =======
 
+8.10.4
+~~~~~~
+- Add template tag for reaction question response couunt
+
+8.10.3
+~~~~~~
+- Add is_via_freebasics check to template tag for bannerpages
+
+8.10.2
+~~~~~~
+- Rename model fiel din migration for bannerpage (fixed clash)
+
+8.10.0
+~~~~~~
+- Add richtext streamfield to Article Body
+- Add freebasics check on BannerPage
+
 8.9.5
 ~~~~~
 - Make get_parent_section language aware

@@ -1047,6 +1047,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    hide_banner_on_freebasics = models.BooleanField(default=False)
     api_fields = [
         "title", "subtitle", "banner", "banner_link_page", "external_link"]
 
@@ -1064,7 +1065,8 @@ BannerPage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    FieldPanel('external_link')
+    FieldPanel('external_link'),
+    FieldPanel('hide_banner_on_freebasics')
 ]
 
 # Signal for allowing plugins to create indexes
@@ -1492,7 +1494,7 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
 
     def get_parent_section(self, locale=None):
         page = SectionPage.objects.all().ancestor_of(self).last()
-        if page.exists():
+        if page:
             if locale and page.language.locale == locale:
                 return page
             return page.translated_pages.filter(
@@ -1639,7 +1641,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
-        ('media', MoloMediaBlock(icon='media'),)
+        ('media', MoloMediaBlock(icon='media'),),
+        ('richtext',  blocks.RichTextBlock())
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
