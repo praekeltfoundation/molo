@@ -183,12 +183,22 @@ def bannerpages(context, position=-1):
                 'bannerpages': [banners[position]],
                 'request': context['request'],
                 'locale_code': locale,
+                'is_via_freebasics':
+                    'Internet.org' in request.META.get('HTTP_VIA', '') or
+                    'InternetOrgApp' in request.META.get(
+                        'HTTP_USER_AGENT', '') or
+                    'true' in request.META.get('HTTP_X_IORG_FBS', '')
             }
         return None
+    print('returning here')
     return {
         'bannerpages': get_pages(context, pages, locale),
         'request': context['request'],
         'locale_code': locale,
+        'is_via_freebasics':
+            'Internet.org' in request.META.get('HTTP_VIA', '') or
+            'InternetOrgApp' in request.META.get('HTTP_USER_AGENT', '') or
+            'true' in request.META.get('HTTP_X_IORG_FBS', '')
     }
 
 
