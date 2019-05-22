@@ -5,12 +5,13 @@ from django.utils import timezone
 from django.test import TestCase, RequestFactory
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags,
-    FormPage, SiteSettings, ArticleOrderingChoices)
+    FormPage, SiteSettings, ArticleOrderingChoices, ReactionQuestionChoice,
+    ReactionQuestion, ReactionQuestionResponse, ReactionQuestionIndexPage)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
     hero_article, render_translations, load_descendant_articles_for_section,
-    load_child_articles_for_section
+    load_child_articles_for_section, load_reaction_choice_submission_count,
 )
 from molo.core.templatetags.forms_tags import forms_list
 
@@ -65,6 +66,26 @@ class TestModels(TestCase, MoloTestCaseMixin):
         }
         context = forms_list(context)
         self.assertEqual(len(context['forms']), 1)
+
+    def test_reaction_question_submission_count(self):
+        article = self.mk_articles(self.yourmind, 1)[0]
+        question = ReactionQuestion(title='q1')
+        ReactionQuestionIndexPage.objects.last().add_child(instance=question)
+        question.save_revision().publish()
+        choice = ReactionQuestionChoice(title='yes')
+        question.add_child(instance=choice)
+        choice.save_revision().publish()
+        choice2 = ReactionQuestionChoice(title='no')
+        question.add_child(instance=choice2)
+        choice2.save_revision().publish()
+        ReactionQuestionResponse.objects.create(
+            choice=choice, article=article, question=question)
+        count = load_reaction_choice_submission_count(
+            choice=choice, article=article, question=question)
+        self.assertEqual(count, 1)
+        count = load_reaction_choice_submission_count(
+            choice=choice2, article=article, question=question)
+        self.assertEqual(count, 0)
 
     def test_render_translations(self):
         # this should return an empty dictionary for non main lang pages
