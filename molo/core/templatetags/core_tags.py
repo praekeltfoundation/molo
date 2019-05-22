@@ -14,7 +14,7 @@ from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
     ReactionQuestionChoice, BannerPage, get_translation_for,
-    ArticleOrderingChoices
+    ArticleOrderingChoices, ReactionQuestionResponse
 )
 
 
@@ -620,6 +620,14 @@ def load_choices_for_reaction_question(context, question):
             question).filter(language__is_main_language=True)
         return get_pages(context, choices, locale)
     return []
+
+
+@register.simple_tag()
+def load_reaction_choice_submission_count(choice, article, question):
+    if choice and article:
+        choice = choice.specific.get_main_language_page().specific
+        return ReactionQuestionResponse.objects.filter(
+            article=article, choice=choice, question=question).count()
 
 
 @register.simple_tag(takes_context=True)
