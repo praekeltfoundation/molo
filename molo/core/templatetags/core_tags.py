@@ -190,7 +190,6 @@ def bannerpages(context, position=-1):
                     'true' in request.META.get('HTTP_X_IORG_FBS', '')
             }
         return None
-    print('returning here')
     return {
         'bannerpages': get_pages(context, pages, locale),
         'request': context['request'],
