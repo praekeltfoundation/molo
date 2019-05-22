@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.10.3
+~~~~~~
+- Add is_via_freebasics check to template tag for bannerpages
+
 8.10.2
 ~~~~~~
 - Rename model fiel din migration for bannerpage (fixed clash)
