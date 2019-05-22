@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import responses
-import mock
+from unittest.mock import patch
 from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.urlresolvers import reverse
 
-from google_analytics.templatetags.google_analytics_tags import google_analytics  # noqa
+import google_analytics  # noqa
 from molo.core.middleware import MoloGoogleAnalyticsMiddleware
+
 from molo.core.models import Main, Languages, SiteLanguageRelation
 from molo.core.tests.base import MoloTestCaseMixin
 from wagtail.search.backends import get_search_backend
@@ -43,7 +44,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         return request
 
     @responses.activate
-    @mock.patch("google_analytics.utils.build_ga_params")
+    @patch("google_analytics.utils.build_ga_params")
     def test_ga_middleware(self, mock_method):
         self.backend = get_search_backend('default')
         self.backend.reset_index()
@@ -62,12 +63,14 @@ class TestUtils(TestCase, MoloTestCaseMixin):
 
         self.assertTrue(mock_method.called_with(request.get_full_path()))
 
-    @mock.patch("google_analytics.utils.build_ga_params")
+    @patch('molo.core.middleware.build_ga_params')
     def test_ga_submit_tracking_with_custom_params(self, mock_method):
         self.backend = get_search_backend('default')
         self.backend.reset_index()
         self.mk_articles(self.english_section, count=2)
         self.backend.refresh_index()
+        custom_params = {'cd2': '1235-245'}
+
         response = self.client.get(reverse('search'), {
             'q': 'Test'
         })
@@ -75,12 +78,10 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         request = self.make_fake_request(
             '/search/?q=Test', headers)
 
-        middleware = MoloGoogleAnalyticsMiddleware()
-        account = ''
-        custom_params = {'cd2': '1235-245'}
-        response = middleware.submit_tracking(account,
-                                              request,
-                                              response,
-                                              custom_params,
-                                              )
-        self.assertTrue(mock_method.called_with(custom_params))
+
+        # middleware.submit_tracking(account,request,response,custom_params,)
+        # check if uuid was there
+        print("mock method: ", mock_method.__dict__)
+
+        # mock_method.assert_called()
+        mock_method.assert_called_with(custom_params)
