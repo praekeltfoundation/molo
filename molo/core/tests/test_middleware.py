@@ -119,8 +119,6 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             account, request, response, custom_params,)
 
         # check if uuid was there
-        for arg in mock_method._mock_call_args:
-            print("here: ", arg)
         self.assertTrue('user_id' in mock_method._mock_call_args[1])
         self.assertTrue('custom_params' in mock_method._mock_call_args[1])
         self.assertTrue(mock_method._mock_call_args[1]['custom_params'],
