@@ -299,7 +299,7 @@ class SiteSettings(BaseSetting):
     )
 
     article_ordering_within_section = enum.EnumField(
-        ArticleOrderingChoices, null=True, blank=True,
+        ArticleOrderingChoices, null=True, blank=True, default=None,
         help_text="Ordering of articles within a section"
     )
 
@@ -1047,6 +1047,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    hide_banner_on_freebasics = models.BooleanField(default=False)
     api_fields = [
         "title", "subtitle", "banner", "banner_link_page", "external_link"]
 
@@ -1064,7 +1065,8 @@ BannerPage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    FieldPanel('external_link')
+    FieldPanel('external_link'),
+    FieldPanel('hide_banner_on_freebasics')
 ]
 
 # Signal for allowing plugins to create indexes
@@ -1490,8 +1492,13 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             page = self.get_main_language_page()
             return page.specific.get_effective_image()
 
-    def get_parent_section(self):
-        return SectionPage.objects.all().ancestor_of(self).last()
+    def get_parent_section(self, locale=None):
+        page = SectionPage.objects.all().ancestor_of(self).last()
+        if page:
+            if locale and page.language.locale == locale:
+                return page
+            return page.translated_pages.filter(
+                language__locale=locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1634,7 +1641,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
-        ('media', MoloMediaBlock(icon='media'),)
+        ('media', MoloMediaBlock(icon='media'),),
+        ('richtext',  blocks.RichTextBlock())
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
@@ -1715,8 +1723,13 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def get_absolute_url(self):  # pragma: no cover
         return self.url
 
-    def get_parent_section(self):
-        return self.get_parent().specific
+    def get_parent_section(self, locale=None):
+        parent = self.get_parent().specific
+        if parent:
+            if locale and parent.language.locale != locale:
+                return parent.translated_pages.filter(
+                    locale=locale).first()
+            return self.get_parent().specific
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()

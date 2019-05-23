@@ -1598,7 +1598,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
     def test_article_recommended_section_enabled_disabled(self):
 
         self.assertTrue(
-            self.article_a.get_parent_section()
+            self.article_a.get_parent_section('en')
             .enable_recommended_section)
 
         self.assertEqual(
@@ -1731,7 +1731,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def test_next_article_main_language(self):
         # assumes articles loop
         self.assertTrue(
-            self.article_b.get_parent_section().enable_next_section)
+            self.article_b.get_parent_section('en').enable_next_section)
 
         response = self.client.get('/sections-main-1/section-a/article-c/')
         self.assertEqual(response.status_code, 200)

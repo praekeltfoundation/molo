@@ -1,6 +1,39 @@
 CHANGES
 =======
 
+8.10.5
+~~~~~~
+- Add custom_params for unauthenticated users in the GA params
+
+8.10.4
+~~~~~~
+- Add template tag for reaction question response couunt
+
+8.10.3
+~~~~~~
+- Add is_via_freebasics check to template tag for bannerpages
+
+8.10.2
+~~~~~~
+- Rename model fiel din migration for bannerpage (fixed clash)
+
+8.10.0
+~~~~~~
+- Add richtext streamfield to Article Body
+- Add freebasics check on BannerPage
+
+8.9.5
+~~~~~
+- Make get_parent_section language aware
+
+8.9.4
+~~~~~
+- Article ordering bug fix
+
+8.9.3
+~~~~~
+- Add custom Prometheus query count decorator
+
 8.9.1
 ~~~~~
 - Refactor deprecating Django 2.0 code on molo.core and molo.profiles
