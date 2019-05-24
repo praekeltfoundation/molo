@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.10.8
+~~~~~~
+- BugFix: Add .specific to Pages
+
 8.10.7
 ~~~~~~
 - BugFix: add validation check for load_child_articles_for_section
