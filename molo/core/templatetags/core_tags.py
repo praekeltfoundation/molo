@@ -333,7 +333,7 @@ def load_child_articles_for_section(
         return None
     request = context.get('request')
     locale = context.get('locale_code')
-    main_language_page = section.get_main_language_page()
+    main_language_page = section.specific.get_main_language_page()
     settings = SiteSettings.for_site(request.site) \
         if request else None
 
