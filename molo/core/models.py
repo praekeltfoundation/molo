@@ -1493,12 +1493,17 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             return page.specific.get_effective_image()
 
     def get_parent_section(self, locale=None):
-        page = SectionPage.objects.all().ancestor_of(self).last()
+        page = SectionPage.objects.parent_of(self).last()
         if page:
             if locale and page.language.locale == locale:
                 return page
+            elif locale:
+                return page.translated_pages.filter(
+                    language__locale=locale).first()
+            if page.language.locale == self.language.locale:
+                return page
             return page.translated_pages.filter(
-                language__locale=locale).first()
+                language__locale=self.language.locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1728,7 +1733,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         if parent:
             if locale and parent.language.locale != locale:
                 return parent.translated_pages.filter(
-                    language__locale=locale).first()
+                    locale=locale).first()
             return self.get_parent().specific
 
     def allow_commenting(self):
