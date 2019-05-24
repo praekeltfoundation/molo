@@ -677,6 +677,8 @@ def load_child_sections_for_section(context, section, count=None):
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
     """
+    if not section:
+        return None
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
@@ -798,7 +800,8 @@ def social_media_article(context, page=None):
 @prometheus_query_count
 def get_next_article(context, article):
     locale_code = context.get('locale_code')
-    section = article.get_parent_section('en')
+    section = article.get_parent_section().get_main_language_page()
+    article = article.get_main_language_page()
     articles = load_child_articles_for_section(context, section, count=None)
     if len(articles) > 1:
         if len(articles) > articles.index(article) + 1:
