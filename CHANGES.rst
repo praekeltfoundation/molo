@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.10.6
+~~~~~~
+- BugFix: get_parent_section
+
 8.10.5
 ~~~~~~
 - Add custom_params for unauthenticated users in the GA params
