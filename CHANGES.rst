@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+8.10.6
+~~~~~~
+- BugFix: get_parent_section
+
+8.10.5
+~~~~~~
+- Add custom_params for unauthenticated users in the GA params
+
 8.10.4
 ~~~~~~
 - Add template tag for reaction question response couunt
