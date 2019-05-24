@@ -1728,7 +1728,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         if parent:
             if locale and parent.language.locale != locale:
                 return parent.translated_pages.filter(
-                    locale=locale).first()
+                    language__locale=locale).first()
             return self.get_parent().specific
 
     def allow_commenting(self):

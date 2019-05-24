@@ -172,6 +172,11 @@ class TestModels(TestCase, MoloTestCaseMixin):
         banner.save_revision().publish()
         self.assertEqual(self.main.bannerpages().count(), 2)
 
+    def test_get_parent_section_for_article(self):
+        article = self.mk_article(self.yourmind_sub)
+        parent = article.get_parent_section()
+        self.assertEqual(parent.pk, self.yourmind_sub.pk)
+
     def test_article_order(self):
         now = timezone.now()
         article1 = self.mk_article(
