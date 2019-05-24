@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.10.7
+~~~~~~
+- BugFix: add validation check for load_child_articles_for_section
+
 8.10.6
 ~~~~~~
 - BugFix: get_parent_section
