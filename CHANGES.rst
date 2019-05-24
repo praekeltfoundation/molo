@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.10.9
+~~~~~~
+- BugFix: get_paret_section and get_next_article tags + tests
+
 8.10.8
 ~~~~~~
 - BugFix: Add .specific to Pages
