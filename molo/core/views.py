@@ -272,9 +272,16 @@ class ReactionQuestionChoiceView(FormView):
                 created.save()
 
         else:
-            messages.error(
-                self.request,
-                "You have already given feedback on this article.")
+            if 'ajax' in self.request.POST and self.request.POST['ajax'] == 'True':
+                response = ReactionQuestionResponse.objects.filter(
+                    article=article.pk, question=question_id,
+                    user=self.request.user).last()
+                response.choice = choice
+                response.save()
+            else:
+                messages.error(
+                    self.request,
+                    "You have already given feedback on this article.")
         return super(ReactionQuestionChoiceView, self).form_valid(
             form, *args, **kwargs)
 
