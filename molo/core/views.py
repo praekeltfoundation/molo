@@ -272,7 +272,8 @@ class ReactionQuestionChoiceView(FormView):
                 created.save()
 
         else:
-            if 'ajax' in self.request.POST and self.request.POST['ajax'] == 'True':
+            if 'ajax' in self.request.POST and \
+                    self.request.POST['ajax'] == 'True':
                 response = ReactionQuestionResponse.objects.filter(
                     article=article.pk, question=question_id,
                     user=self.request.user).last()
