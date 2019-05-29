@@ -1736,6 +1736,15 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
                     language__locale=locale).first()
             return self.get_parent().specific
 
+    def get_top_level_parent(self, locale=None, depth=3):
+        parent = self.get_parent().specific
+        if parent:
+            if locale and parent.language.locale != locale:
+                return parent.translated_pages.filter(
+                    language__locale=locale, depth=depth
+                ).first().specific
+            return self.get_parent().specific
+
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
         if (commenting_settings['state'] != constants.COMMENTING_OPEN):
