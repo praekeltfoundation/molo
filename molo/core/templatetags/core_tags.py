@@ -647,6 +647,20 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
 
 @register.simple_tag(takes_context=True)
 @prometheus_query_count
+def load_user_choice_reaction_question(context, question, article, choice):
+    request = context['request']
+    if question:
+        question = question.specific.get_main_language_page()
+        article = ArticlePage.objects.get(pk=article)
+        if hasattr(article, 'get_main_language_page'):
+            article = article.get_main_language_page()
+        return ReactionQuestionResponse.objects.filter(
+            article=article, choice=choice,
+            question=question, user=request.user).exists()
+
+
+@register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_reaction_question(context, article):
     locale = context.get('locale_code')
     request = context['request']
