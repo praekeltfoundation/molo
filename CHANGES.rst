@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.11.0
+~~~~~~
+- Add check for Ajax submisson on Reaction Questions
+
 8.10.9
 ~~~~~~
 - BugFix: get_paret_section and get_next_article tags + tests
