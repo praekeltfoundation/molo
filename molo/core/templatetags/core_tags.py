@@ -649,7 +649,7 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
 @prometheus_query_count
 def load_user_choice_reaction_question(context, question, article, choice):
     request = context['request']
-    if question:
+    if question and request.user.is_authenticated:
         question = question.specific.get_main_language_page()
         article = ArticlePage.objects.get(pk=article)
         if hasattr(article, 'get_main_language_page'):
