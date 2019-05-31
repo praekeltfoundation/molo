@@ -20,22 +20,6 @@ class MoloPage(Page):
                         return True
         return False
 
-    @property
-    def is_cast(self):
-        return self.is_content_page("Cast")
-
-    @property
-    def is_news(self):
-        return self.is_content_page("News")
-
-    @property
-    def is_listen(self):
-        return self.is_content_page("Listen")
-
-    @property
-    def is_watch(self):
-        return self.is_content_page("Watch")
-
     def get_top_level_parent(self, locale=None, depth=3):
         # exclude main has no attribute 'language'
         if depth < 1:

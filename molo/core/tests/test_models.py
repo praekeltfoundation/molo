@@ -749,16 +749,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(article_2.is_current_hero_article())
 
     def test_molo_page_helper_method_is_content_page(self):
-        news = ArticlePage(title="News")
-        cast = ArticlePage(title="Cast")
-        watch = ArticlePage(title="Watch")
-        listen = ArticlePage(title="Listen")
-
-        self.assertTrue(news.is_content_page("news"))
-        self.assertTrue(cast.is_content_page("cast"))
-        self.assertTrue(watch.is_content_page("watch"))
-        self.assertTrue(listen.is_content_page("listen"))
         self.assertTrue(self.yourmind.is_content_page("Your mind"))
+        self.assertFalse(self.yourmind.is_content_page("Not Your mind"))
 
     # exclude future-scheduled Hero Article articles from the
     # latest articles queryset.
