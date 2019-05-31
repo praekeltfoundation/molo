@@ -329,9 +329,11 @@ def load_child_articles_for_section(
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
     """
+    if not section:
+        return None
     request = context.get('request')
     locale = context.get('locale_code')
-    main_language_page = section.get_main_language_page()
+    main_language_page = section.specific.get_main_language_page()
     settings = SiteSettings.for_site(request.site) \
         if request else None
 
@@ -645,6 +647,20 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
 
 @register.simple_tag(takes_context=True)
 @prometheus_query_count
+def load_user_choice_reaction_question(context, question, article, choice):
+    request = context['request']
+    if question and request.user.is_authenticated:
+        question = question.specific.get_main_language_page()
+        article = ArticlePage.objects.get(pk=article)
+        if hasattr(article, 'get_main_language_page'):
+            article = article.get_main_language_page()
+        return ReactionQuestionResponse.objects.filter(
+            article=article, choice=choice,
+            question=question, user=request.user).exists()
+
+
+@register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_reaction_question(context, article):
     locale = context.get('locale_code')
     request = context['request']
@@ -675,8 +691,12 @@ def load_child_sections_for_section(context, section, count=None):
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
     """
-    page = section.get_main_language_page()
+    if not section:
+        return None
+
     locale = context.get('locale_code')
+    page = section.get_main_language_page() \
+        if hasattr(section, 'get_main_language_page') else section
 
     qs = SectionPage.objects.child_of(page).filter(
         language__is_main_language=True)
@@ -796,7 +816,7 @@ def social_media_article(context, page=None):
 @prometheus_query_count
 def get_next_article(context, article):
     locale_code = context.get('locale_code')
-    section = article.get_parent_section('en')
+    section = article.get_parent_section()
     articles = load_child_articles_for_section(context, section, count=None)
     if len(articles) > 1:
         if len(articles) > articles.index(article) + 1:

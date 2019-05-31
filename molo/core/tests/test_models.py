@@ -4,8 +4,8 @@ from django.test import TestCase, RequestFactory
 from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-
 from django.core.exceptions import ValidationError
+from django.contrib.contenttypes.models import ContentType
 
 from mock import patch
 
@@ -171,6 +171,67 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.banner_index.add_child(instance=banner)
         banner.save_revision().publish()
         self.assertEqual(self.main.bannerpages().count(), 2)
+
+    def test_get_parent_section_for_article(self):
+        article = self.mk_article(self.yourmind_sub)
+        parent = article.get_parent_section()
+        self.assertEqual(parent.pk, self.yourmind_sub.pk)
+
+    def test_get_parent_section_for_section(self):
+        parent = self.yourmind_sub.get_parent_section()
+        self.assertEqual(parent.pk, self.yourmind.pk)
+
+    def test_get_top_level_parent(self):
+        title = 'title'
+        main_content_type, created = ContentType.objects.get_or_create(
+            model='main', app_label='core')
+        main = Main.objects.create(
+            title=title, slug=title, content_type=main_content_type,
+            path='00010011', depth=2, numchild=0, url_path='/home/',
+        )
+        SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='en', is_active=True)
+
+        french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='fr', is_active=True)
+
+        en_section = self.mk_section(
+            main, title="New Section", slug="new-section")
+        en_section2 = self.mk_section(
+            en_section, title="New Section 2", slug="new-section-2")
+        en_section3 = self.mk_section(
+            en_section2, title="New Section 3", slug="new-section-3")
+        en_section4 = self.mk_section(
+            en_section3, title="New Section 4", slug="new-section-4")
+
+        self.mk_section_translation(en_section, french)
+        self.mk_section_translation(en_section2, french)
+        fr_section3 = self.mk_section_translation(en_section3, french)
+        fr_section4 = self.mk_section_translation(en_section4, french)
+
+        parent = fr_section3.get_top_level_parent(locale='en')
+        self.assertEqual(parent.pk, en_section.pk)
+        self.assertEqual(fr_section3.depth, 5)
+        self.assertEqual(parent.depth, 3)
+
+        parent = fr_section4.get_top_level_parent(locale='en')
+        self.assertEqual(parent.pk, en_section.pk)
+        self.assertEqual(fr_section4.depth, 6)
+        self.assertEqual(parent.depth, 3)
+
+        parent = fr_section4.get_top_level_parent(locale='en', depth=4)
+        self.assertEqual(parent.pk, en_section2.pk)
+        self.assertEqual(fr_section4.depth, 6)
+        self.assertEqual(parent.depth, 4)
+
+        parent = fr_section4.get_top_level_parent(locale='en', depth=2)
+        self.assertEqual(parent.pk, main.pk)
+        self.assertEqual(parent.depth, 2)
+
+        parent = fr_section4.get_top_level_parent(locale='en', depth=-1)
+        self.assertEqual(parent, None)
 
     def test_article_order(self):
         now = timezone.now()
