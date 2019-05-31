@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.11.1
+~~~~~~
+- Add get_top_level_parent Page model method
+
 8.11.0
 ~~~~~~
 - Add check for Ajax submisson on Reaction Questions
