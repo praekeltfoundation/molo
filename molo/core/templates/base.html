@@ -26,9 +26,9 @@
     {% image self.social_media_image width-300 as tmp_photo %}
     <meta property="og:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
     <meta property="og:image:url" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
-
-    {% if settings.core.SiteSettings.google_search_console %}
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% if settings.core.SiteSettings.google_search_console %}
+
     <meta name="google-site-verification" content="{{settings.core.SiteSettings.global_google_search_console}}" />
     {% endif %}
 
