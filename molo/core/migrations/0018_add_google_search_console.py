@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sitesettings',
             name='google_search_console',
-            field=models.CharField(blank=True, help_text='The Google Search Console tracking code (e.g GTM-XXX) to be used to view search performance', max_length=255, null=True, verbose_name='Google Search Console'),
+            field=models.CharField(blank=True, help_text='The Google Search Console verification code', max_length=255, null=True, verbose_name='Google Search Console'),
         ),
     ]

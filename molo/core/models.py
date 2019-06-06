@@ -147,8 +147,7 @@ class SiteSettings(BaseSetting):
         null=True,
         blank=True,
         help_text=_(
-            "The Google Search Console tracking code (e.g GTM-XXX) to be used"
-            " to view search performance")
+            "The Google Search Console verification code")
     )
 
     fb_analytics_app_id = models.CharField(
