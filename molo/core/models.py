@@ -141,6 +141,15 @@ class SiteSettings(BaseSetting):
             "Global GA Tag Manager tracking code (e.g GTM-XXX) to be used"
             " to view analytics on more than one site globally")
     )
+    google_search_console = models.CharField(
+        verbose_name=_('Google Search Console'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The Google Search Console tracking code (e.g GTM-XXX) to be used"
+            " to view search performance")
+    )
 
     fb_analytics_app_id = models.CharField(
         verbose_name=_('Facebook Analytics App ID'),
