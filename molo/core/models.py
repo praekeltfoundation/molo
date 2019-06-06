@@ -141,6 +141,14 @@ class SiteSettings(BaseSetting):
             "Global GA Tag Manager tracking code (e.g GTM-XXX) to be used"
             " to view analytics on more than one site globally")
     )
+    google_search_console = models.CharField(
+        verbose_name=_('Google Search Console'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The Google Search Console verification code")
+    )
 
     fb_analytics_app_id = models.CharField(
         verbose_name=_('Facebook Analytics App ID'),
@@ -1493,12 +1501,17 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             return page.specific.get_effective_image()
 
     def get_parent_section(self, locale=None):
-        page = SectionPage.objects.all().ancestor_of(self).last()
+        page = SectionPage.objects.parent_of(self).last()
         if page:
             if locale and page.language.locale == locale:
                 return page
+            elif locale:
+                return page.translated_pages.filter(
+                    language__locale=locale).first()
+            if page.language.locale == self.language.locale:
+                return page
             return page.translated_pages.filter(
-                language__locale=locale).first()
+                language__locale=self.language.locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1728,7 +1741,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         if parent:
             if locale and parent.language.locale != locale:
                 return parent.translated_pages.filter(
-                    locale=locale).first()
+                    language__locale=locale).first()
             return self.get_parent().specific
 
     def allow_commenting(self):

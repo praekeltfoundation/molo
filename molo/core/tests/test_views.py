@@ -1262,6 +1262,20 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertContains(
             response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
 
+    def test_google_search_console_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        response = self.client.get('/')
+        self.assertNotContains(response, 'google-site-verification')
+
+        setting.google_search_console = 'GTM-2345678'
+        setting.save()
+
+        response = self.client.get('/')
+        self.assertContains(response, 'google-site-verification')
+        self.assertContains(response, 'GTM-2345678')
+
     def test_admin_doesnt_translate_when_frontend_locale_changed(self):
         self.client.get('/locale/af/')
         self.client.login(username='testuser', password='password')

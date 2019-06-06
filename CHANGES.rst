@@ -1,6 +1,38 @@
 CHANGES
 =======
 
+8.11.3
+~~~~~~
+- Add google search console verification and setting
+
+8.11.2
+~~~~~~
+- Add Page model exact_type, is_content_page helper methods
+
+8.11.1
+~~~~~~
+- Add get_top_level_parent Page model method
+
+8.11.0
+~~~~~~
+- Add check for Ajax submisson on Reaction Questions
+
+8.10.9
+~~~~~~
+- BugFix: get_paret_section and get_next_article tags + tests
+
+8.10.8
+~~~~~~
+- BugFix: Add .specific to Pages
+
+8.10.7
+~~~~~~
+- BugFix: add validation check for load_child_articles_for_section
+
+8.10.6
+~~~~~~
+- BugFix: get_parent_section
+
 8.10.5
 ~~~~~~
 - Add custom_params for unauthenticated users in the GA params
