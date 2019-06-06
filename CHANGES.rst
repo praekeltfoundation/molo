@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.11.3
+~~~~~~
+- Add google search console verification and setting
+
 8.11.2
 ~~~~~~
 - Add Page model exact_type, is_content_page helper methods
