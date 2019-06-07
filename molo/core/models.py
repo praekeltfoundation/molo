@@ -343,7 +343,7 @@ class SiteSettings(BaseSetting):
             [
                 FieldPanel('google_search_console'),
             ],
-            heading="Google Search Console",
+            heading="Google Search Console Verification Code",
         ),
         MultiFieldPanel(
             [
