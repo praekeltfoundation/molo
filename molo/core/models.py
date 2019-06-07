@@ -341,6 +341,12 @@ class SiteSettings(BaseSetting):
         ),
         MultiFieldPanel(
             [
+                FieldPanel('google_search_console'),
+            ],
+            heading="Google Search Console",
+        ),
+        MultiFieldPanel(
+            [
                 FieldPanel('content_rotation_start_date'),
                 FieldPanel('content_rotation_end_date'),
                 FieldRowPanel([
