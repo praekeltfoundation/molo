@@ -1,6 +1,9 @@
 CHANGES
 =======
 
+8.11.4
+~~~~~~
+- Add the GSC siteSettings panel
 8.11.3
 ~~~~~~
 - Add google search console verification and setting
