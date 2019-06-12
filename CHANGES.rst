@@ -1,9 +1,14 @@
 CHANGES
 =======
 
+8.11.5
+~~~~~~
+- Upgrade Django Rest Framework due to security vulnerability
+
 8.11.4
 ~~~~~~
 - Add the GSC siteSettings panel
+
 8.11.3
 ~~~~~~
 - Add google search console verification and setting
