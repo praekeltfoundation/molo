@@ -693,8 +693,10 @@ def load_child_sections_for_section(context, section, count=None):
     """
     if not section:
         return None
-    page = section.get_main_language_page()
+
     locale = context.get('locale_code')
+    page = section.get_main_language_page() \
+        if hasattr(section, 'get_main_language_page') else section
 
     qs = SectionPage.objects.child_of(page).filter(
         language__is_main_language=True)
