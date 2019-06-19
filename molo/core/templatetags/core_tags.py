@@ -549,7 +549,8 @@ def get_tag_articles(
     # Featured Tag/s
     tag_qs = Tag.objects.descendant_of(request.site.root_page).filter(
         feature_in_homepage=True).live()
-    for tag in tag_qs:
+    if tag_qs:
+        tag = tag_qs.first()
         tag_articles = get_articles_for_tags_with_translations(
             request, tag, exclude_pks, locale,
             context, exclude_pks)

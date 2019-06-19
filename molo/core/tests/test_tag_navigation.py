@@ -425,9 +425,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
             str(response.context['tag_nav_data']['tags_list']),
             '[(<Tag: Test Tag>, [<ArticlePage: Test page 0>, <ArticlePage: '
             'Test page 1>, <ArticlePage: Test page 2>, <ArticlePage: Test p'
-            'age 3>]), (<Tag: Test Tag 2>, [<ArticlePage: Test page 0>, <Ar'
-            'ticlePage: Test page 1>, <ArticlePage: Test page 2>, <Articl'
-            'ePage: Test page 3>])]')
+            'age 3>])]')
         self.assertNotContains(response, 'Test Page 5')
 
     def test_tag_navigation_shows_correct_tag_for_locale(self):
