@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.11.6
+~~~~~~
+- optimisation for home page
+
 8.11.5
 ~~~~~~
 - Upgrade Django Rest Framework due to security vulnerability
