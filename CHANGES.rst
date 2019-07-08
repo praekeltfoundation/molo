@@ -1,9 +1,22 @@
 CHANGES
 =======
 
+8.11.7
+~~~~~~
+- Update the robots.txt file to exclude index pages
+
+8.11.6
+~~~~~~
+- optimisation for home page
+
+8.11.5
+~~~~~~
+- Upgrade Django Rest Framework due to security vulnerability
+
 8.11.4
 ~~~~~~
 - Add the GSC siteSettings panel
+
 8.11.3
 ~~~~~~
 - Add google search console verification and setting
