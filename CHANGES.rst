@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.11.7
+~~~~~~
+- Update the robots.txt file to exclude index pages
+
 8.11.6
 ~~~~~~
 - optimisation for home page
