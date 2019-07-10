@@ -1110,7 +1110,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEqual(response.status_code, 404)
         response = self.client.get('/sections-main-1/your-mind')
         self.assertEqual(response.status_code, 301)
-        self.assertEqual(response.url, '/sections-main-1/'+self.yourmind.slug+'/')
+        self.assertEqual(response.url,
+                         '/sections-main-1/' + self.yourmind.slug + '/')
 
     def test_subsection_is_translated(self):
         en_page = self.mk_article(self.yourmind_sub)
