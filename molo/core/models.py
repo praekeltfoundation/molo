@@ -710,6 +710,7 @@ def get_translation_for(pages, locale, site, is_live=True):
                         continue
                 translated_pages.append(page)
             continue
+
     return translated_pages
 
 
@@ -824,9 +825,8 @@ class TranslatablePageMixinNotRoutable(object):
             if request.GET.urlencode():
                 return redirect("{}?{}".format(translation.url,
                                                request.GET.urlencode()))
-            else:
+            elif translation.live:
                 return redirect(translation.url)
-
         return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)
 

@@ -1098,6 +1098,21 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
         self.assertEqual(response.status_code, 200)
 
+    def test_translation_drafted_page__translations_no_redirects(self):
+        """
+        When the non-main language's version of the page is in draft mode
+        The link to that page should redirect to the main langauge's version
+        of the page not the in draft version
+        """
+        response = self.client.get('/locale/fr/')
+        self.yourmind_fr.unpublish()
+        response = self.client.get('/sections-main-1/your-mind-in-french/')
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get('/sections-main-1/your-mind')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.url,
+                         '/sections-main-1/' + self.yourmind.slug + '/')
+
     def test_subsection_is_translated(self):
         en_page = self.mk_article(self.yourmind_sub)
         self.mk_article_translation(
