@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.11.8
+~~~~~~
+-Fix the page serve to only redirect translated pages 
+
 8.11.7
 ~~~~~~
 - Update the robots.txt file to exclude index pages
