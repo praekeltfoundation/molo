@@ -3,6 +3,42 @@ CHANGES
 
 8.11.8
 ~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+-adding  __str__ method for the timezone model
+
+8.11.8
+~~~~~~
 -Fix the page serve to only redirect translated pages 
 
 8.11.7
