@@ -68,8 +68,6 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             'admin/settings/core/cmssettings/'
         )
-        import pdb
-        pdb.set_trace()
         self.assertContains(response, 'Africa/Abidjan')
         self.assertNotContains(response, 'Timezone Object')
 
