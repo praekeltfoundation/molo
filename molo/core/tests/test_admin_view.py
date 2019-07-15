@@ -63,6 +63,16 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         )
         self.assertContains(response, 'Your Mind')
 
+    def test_cms_timezone_settings_in_adminview(self):
+        self.mk_article(self.yourmind)
+        response = self.client.get(
+            'admin/settings/core/cmssettings/'
+        )
+        import pdb
+        pdb.set_trace()
+        self.assertContains(response, 'Africa/Abidjan')
+        self.assertNotContains(response, 'Timezone Object')
+
     def test_article_tag_in_admin_view(self):
         article = self.mk_article(self.yourmind, title='article')
         article.tags.add("the tag")
