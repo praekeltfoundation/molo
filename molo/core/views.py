@@ -101,7 +101,8 @@ def search(request, results_per_page=10, load_more=False):
 
 def locale_set(request, locale):
     request.session[LANGUAGE_SESSION_KEY] = locale
-    return redirect(request.GET.get('next', '/'))
+    # the next var if empty a blank is passed instead of / hence the below
+    return redirect(request.GET.get('next', '/') or '/')
 
 
 def health(request):
