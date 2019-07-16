@@ -1664,7 +1664,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
         ('media', MoloMediaBlock(icon='media'),),
-        ('richtext',  blocks.RichTextBlock())
+        ('richtext', blocks.RichTextBlock()),
+        ('html', blocks.RawHTMLBlock())
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
