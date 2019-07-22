@@ -1,17 +1,21 @@
 CHANGES
 =======
 
+8.12.1
+~~~~~~
+- Update setting locale view redirect incase of empty next param
+
 8.12
 ~~~~
 - Adding a raw HTML field for the article body
 
 8.11.9
 ~~~~~~
--adding  __str__ method for the timezone model
+- Adding __str__ method for the timezone model
 
 8.11.8
 ~~~~~~
--Fix the page serve to only redirect translated pages 
+- Fix the page serve to only redirect translated pages 
 
 8.11.7
 ~~~~~~
@@ -19,7 +23,7 @@ CHANGES
 
 8.11.6
 ~~~~~~
-- optimisation for home page
+- Optimisation for home page
 
 8.11.5
 ~~~~~~
