@@ -223,8 +223,8 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
         self.assertEqual(ReactionQuestionResponse.objects.all().count(), 1)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response['Location'], '/reaction/test-page-0/22/yes/feedback/')
-        response = self.client.get('/reaction/test-page-0/22/yes/feedback/')
+            response['Location'], '/reaction/test-page-0/20/yes/feedback/')
+        response = self.client.get('/reaction/test-page-0/20/yes/feedback/')
         self.assertContains(
             response, '<a href="/sections-main-1/your-mind/test-page-0/">')
         self.assertContains(response, 'well done')
