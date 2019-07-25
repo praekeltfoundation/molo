@@ -1,19 +1,22 @@
 from itertools import chain
+from markdown import markdown
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.cache import cache
 from django import template
 from django.utils.safestring import mark_safe
 from django.db.models import Case, When
-from markdown import markdown
 
+from prometheus_client import Summary
+
+from molo.core.decorators import prometheus_query_count
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
     ReactionQuestionChoice, BannerPage, get_translation_for,
-    ArticleOrderingChoices
+    ArticleOrderingChoices, ReactionQuestionResponse
 )
 
-from prometheus_client import Summary
 
 register = template.Library()
 
@@ -180,12 +183,21 @@ def bannerpages(context, position=-1):
                 'bannerpages': [banners[position]],
                 'request': context['request'],
                 'locale_code': locale,
+                'is_via_freebasics':
+                    'Internet.org' in request.META.get('HTTP_VIA', '') or
+                    'InternetOrgApp' in request.META.get(
+                        'HTTP_USER_AGENT', '') or
+                    'true' in request.META.get('HTTP_X_IORG_FBS', '')
             }
         return None
     return {
         'bannerpages': get_pages(context, pages, locale),
         'request': context['request'],
         'locale_code': locale,
+        'is_via_freebasics':
+            'Internet.org' in request.META.get('HTTP_VIA', '') or
+            'InternetOrgApp' in request.META.get('HTTP_USER_AGENT', '') or
+            'true' in request.META.get('HTTP_X_IORG_FBS', '')
     }
 
 
@@ -279,17 +291,18 @@ def load_descendant_articles_for_section(
     article_ordering = settings \
         and settings.article_ordering_within_section
 
-    cms_ordering = article_ordering \
-        and settings.article_ordering_within_section !=\
-        ArticleOrderingChoices.CMS_DEFAULT_SORTING
-
-    if article_ordering and cms_ordering:
+    if article_ordering:
         order_by = ArticleOrderingChoices.\
             get(settings.article_ordering_within_section).name.lower()
 
         order_by = order_by if order_by.find('_desc') == -1 \
             else '-{}'.format(order_by.replace('_desc', ''))
-        qs = qs.order_by(order_by)
+
+        # if the sort order is equal to CMS_DEFAULT_SORTING
+        #  do not order QS, CMS handles it
+        if article_ordering and settings.article_ordering_within_section\
+                != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+            qs = qs.order_by(order_by)
 
     if featured_in_homepage is not None:
         qs = qs.filter(featured_in_homepage=featured_in_homepage)\
@@ -316,9 +329,11 @@ def load_child_articles_for_section(
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
     """
+    if not section:
+        return None
     request = context.get('request')
     locale = context.get('locale_code')
-    main_language_page = section.get_main_language_page()
+    main_language_page = section.specific.get_main_language_page()
     settings = SiteSettings.for_site(request.site) \
         if request else None
 
@@ -327,17 +342,20 @@ def load_child_articles_for_section(
     article_ordering = settings and settings.article_ordering_within_section
     order_by = ArticleOrderingChoices.\
         get(settings.article_ordering_within_section).name.lower() \
-        if article_ordering \
-        and settings.article_ordering_within_section !=\
-        ArticleOrderingChoices.CMS_DEFAULT_SORTING\
-        else '-first_published_at'
+        if article_ordering else '-first_published_at'
 
     order_by = order_by if order_by.find('_desc') == -1 \
         else '-{}'.format(order_by.replace('_desc', ''))
 
     child_articles = ArticlePage.objects.child_of(
         main_language_page).filter(
-        language__is_main_language=True).order_by(order_by)
+        language__is_main_language=True)
+
+    # if the sort order is equal to CMS_DEFAULT_SORTING
+    #  do not order QS, CMS handles it
+    if getattr(settings, 'article_ordering_within_section')\
+            != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+        child_articles = child_articles.order_by(order_by)
 
     if featured_in_section is not None:
         child_articles = child_articles.filter(
@@ -382,6 +400,7 @@ def get_articles_for_tags_with_translations(
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_articles_for_tag(context, tag):
     request = context['request']
     locale = context.get('locale_code')
@@ -398,6 +417,7 @@ def get_articles_for_tag(context, tag):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_next_tag(context, tag):
     request = context['request']
     locale_code = context.get('locale_code')
@@ -420,6 +440,7 @@ def get_next_tag(context, tag):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     request = context['request']
     locale = context.get('locale_code')
@@ -461,13 +482,13 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     return tags_list
 
 
-@REQUEST_TIME.time()
 @register.simple_tag(takes_context=True)
+@REQUEST_TIME.time()
+@prometheus_query_count
 def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
         latest_article_count=3):
     # TODO: consider caching this tag - these queries are too expensive
-
     request = context['request']
     locale = context.get('locale_code')
 
@@ -528,7 +549,8 @@ def get_tag_articles(
     # Featured Tag/s
     tag_qs = Tag.objects.descendant_of(request.site.root_page).filter(
         feature_in_homepage=True).live()
-    for tag in tag_qs:
+    if tag_qs:
+        tag = tag_qs.first()
         tag_articles = get_articles_for_tags_with_translations(
             request, tag, exclude_pks, locale,
             context, exclude_pks)
@@ -559,6 +581,7 @@ def get_tag_articles(
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_tags_for_article(context, article):
     if not article.specific.__class__ == ArticlePage:
         return None
@@ -590,6 +613,7 @@ def load_tags_for_article(context, article):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
     if question:
@@ -601,7 +625,16 @@ def load_choices_for_reaction_question(context, question):
     return []
 
 
+@register.simple_tag()
+def load_reaction_choice_submission_count(choice, article, question):
+    if choice and article:
+        choice = choice.specific.get_main_language_page().specific
+        return ReactionQuestionResponse.objects.filter(
+            article=article, choice=choice, question=question).count()
+
+
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
@@ -614,6 +647,21 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
+def load_user_choice_reaction_question(context, question, article, choice):
+    request = context['request']
+    if question and request.user.is_authenticated:
+        question = question.specific.get_main_language_page()
+        article = ArticlePage.objects.get(pk=article)
+        if hasattr(article, 'get_main_language_page'):
+            article = article.get_main_language_page()
+        return ReactionQuestionResponse.objects.filter(
+            article=article, choice=choice,
+            question=question, user=request.user).exists()
+
+
+@register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_reaction_question(context, article):
     locale = context.get('locale_code')
     request = context['request']
@@ -637,14 +685,19 @@ def load_reaction_question(context, article):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_child_sections_for_section(context, section, count=None):
-    '''
+    """
     Returns all child sections
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
-    '''
-    page = section.get_main_language_page()
+    """
+    if not section:
+        return None
+
     locale = context.get('locale_code')
+    page = section.get_main_language_page() \
+        if hasattr(section, 'get_main_language_page') else section
 
     qs = SectionPage.objects.child_of(page).filter(
         language__is_main_language=True)
@@ -655,12 +708,13 @@ def load_child_sections_for_section(context, section, count=None):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def load_sibling_sections(context, section, count=None):
-    '''
+    """
     Returns all sibling sections
     If the `locale_code` in the context is not the main language, it will
     return the translations of the live articles.
-    '''
+    """
     page = section.get_main_language_page()
     locale = context.get('locale_code')
 
@@ -695,6 +749,7 @@ def handle_markdown(value):
     'core/tags/social_media_footer.html',
     takes_context=True
 )
+@prometheus_query_count
 def social_media_footer(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
@@ -714,6 +769,7 @@ def social_media_footer(context, page=None):
     'core/tags/social_media_article.html',
     takes_context=True
 )
+@prometheus_query_count
 def social_media_article(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
@@ -758,6 +814,7 @@ def social_media_article(context, page=None):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_next_article(context, article):
     locale_code = context.get('locale_code')
     section = article.get_parent_section()
@@ -780,6 +837,7 @@ def get_next_article(context, article):
 
 
 @register.simple_tag(takes_context=True)
+@prometheus_query_count
 def get_recommended_articles(context, article):
     locale_code = context.get('locale_code')
 

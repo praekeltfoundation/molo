@@ -1,5 +1,14 @@
-Sitemap: {{request.get_host}}/sitemap.xml
+Sitemap: http://{{request.get_host}}/sitemap.xml
 User-agent: *
 Disallow: /admin/
 Disallow: /django-admin/
 Disallow: /health/
+Disallow: /search/
+Disallow: /sections/$
+Disallow: /banners/$
+Disallow: /polls/$
+Disallow: /reaction-questions/$
+Disallow: /forms/$
+Disallow: /tags/$
+Disallow: /footer/$
+Disallow: /yourwords/$

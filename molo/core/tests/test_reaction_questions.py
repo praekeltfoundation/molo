@@ -2,6 +2,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
 
 from molo.core.models import (
     Main, ReactionQuestionResponse,
@@ -204,7 +205,7 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
         self.yourmind2 = self.mk_section(
             self.section_index2, title='Your mind2')
 
-    def test_can_react_on_article(self):
+    def test_can_react_on_article_with_and_without_ajax_call(self):
         article = self.mk_article(self.yourmind)
         question = self.mk_reaction_question(self.reaction_index, article)
         self.user = self.login()
@@ -213,6 +214,7 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
         for choice in question.get_children():
             self.assertContains(response, choice.title)
         choice1 = question.get_children().first()
+        choice2 = question.get_children().last()
         self.assertEqual(ReactionQuestionResponse.objects.all().count(), 0)
         response = self.client.post(reverse(
             'reaction-vote', kwargs={
@@ -221,8 +223,8 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
         self.assertEqual(ReactionQuestionResponse.objects.all().count(), 1)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response['Location'], '/reaction/test-page-0/22/yes/feedback/')
-        response = self.client.get('/reaction/test-page-0/22/yes/feedback/')
+            response['Location'], '/reaction/test-page-0/20/yes/feedback/')
+        response = self.client.get('/reaction/test-page-0/20/yes/feedback/')
         self.assertContains(
             response, '<a href="/sections-main-1/your-mind/test-page-0/">')
         self.assertContains(response, 'well done')
@@ -232,6 +234,28 @@ class TestReactionQuestions(TestCase, MoloTestCaseMixin):
                 'question_id': question.id, 'article_slug': article.slug}),
             {'choice': choice1.id})
         self.assertEqual(ReactionQuestionResponse.objects.all().count(), 1)
+        self.assertEqual(
+            ReactionQuestionResponse.objects.last().choice.pk, choice1.pk)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        # this should show if the submit is not done via ajax
+        self.assertEqual(
+            str(messages[0]),
+            'You have already given feedback on this article.')
+
+        # submit with ajax in post data
+        response = self.client.post(reverse(
+            'reaction-vote', kwargs={
+                'question_id': question.id, 'article_slug': article.slug}),
+            {'choice': choice2.id, 'ajax': 'True'})
+        # there should still only be one response object from user
+        # but the vote should change from choice 1 to choice 2
+        self.assertEqual(ReactionQuestionResponse.objects.all().count(), 1)
+        self.assertEqual(
+            ReactionQuestionResponse.objects.last().choice.pk, choice2.pk)
+        messages = list(get_messages(response.wsgi_request))
+        # no error message if the submit is done via ajax
+        self.assertEqual(len(messages), 0)
 
     def test_correct_reaction_shown_for_locale(self):
         article = self.mk_article(self.yourmind)

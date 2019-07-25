@@ -55,7 +55,6 @@ from molo.core.utils import (
 )
 
 from django.db.models.signals import pre_delete
-from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from django_enumfield import enum
 
 
@@ -140,6 +139,14 @@ class SiteSettings(BaseSetting):
         help_text=_(
             "Global GA Tag Manager tracking code (e.g GTM-XXX) to be used"
             " to view analytics on more than one site globally")
+    )
+    google_search_console = models.CharField(
+        verbose_name=_('Google Search Console'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The Google Search Console verification code")
     )
 
     fb_analytics_app_id = models.CharField(
@@ -299,7 +306,7 @@ class SiteSettings(BaseSetting):
     )
 
     article_ordering_within_section = enum.EnumField(
-        ArticleOrderingChoices, null=True, blank=True,
+        ArticleOrderingChoices, null=True, blank=True, default=None,
         help_text="Ordering of articles within a section"
     )
 
@@ -330,6 +337,12 @@ class SiteSettings(BaseSetting):
                 FieldPanel('global_ga_tracking_code'),
             ],
             heading="GA Tracking Code Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('google_search_console'),
+            ],
+            heading="Google Search Console Verification Code",
         ),
         MultiFieldPanel(
             [
@@ -408,6 +421,9 @@ class Timezone(models.Model):
     def __unicode__(self):
         return self.title
 
+    def __str__(self):
+        return self.title
+
 
 @register_setting
 class CmsSettings(BaseSetting):
@@ -418,7 +434,7 @@ class CmsSettings(BaseSetting):
     '''
 
     timezone = models.ForeignKey(
-        'core.Timezone',
+        Timezone,
         null=True,
         on_delete=models.PROTECT,
     )
@@ -696,6 +712,7 @@ def get_translation_for(pages, locale, site, is_live=True):
                         continue
                 translated_pages.append(page)
             continue
+
     return translated_pages
 
 
@@ -810,9 +827,8 @@ class TranslatablePageMixinNotRoutable(object):
             if request.GET.urlencode():
                 return redirect("{}?{}".format(translation.url,
                                                request.GET.urlencode()))
-            else:
+            elif translation.live:
                 return redirect(translation.url)
-
         return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)
 
@@ -1047,6 +1063,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    hide_banner_on_freebasics = models.BooleanField(default=False)
     api_fields = [
         "title", "subtitle", "banner", "banner_link_page", "external_link"]
 
@@ -1064,7 +1081,8 @@ BannerPage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    FieldPanel('external_link')
+    FieldPanel('external_link'),
+    FieldPanel('hide_banner_on_freebasics')
 ]
 
 # Signal for allowing plugins to create indexes
@@ -1130,11 +1148,6 @@ class Main(CommentedPageMixin, MoloPage):
                     generate_slug(self.title), )))
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
-            form_index = FormIndexPage(
-                title='Forms', slug=('forms-%s' % (
-                    generate_slug(self.title), )))
-            self.add_child(instance=form_index)
-            form_index.save_revision().publish()
             tag_index = TagIndexPage(
                 title='Tags', slug=('tags-%s' % (
                     generate_slug(self.title), )))
@@ -1490,8 +1503,18 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             page = self.get_main_language_page()
             return page.specific.get_effective_image()
 
-    def get_parent_section(self):
-        return SectionPage.objects.all().ancestor_of(self).last()
+    def get_parent_section(self, locale=None):
+        page = SectionPage.objects.parent_of(self).last()
+        if page:
+            if locale and page.language.locale == locale:
+                return page
+            elif locale:
+                return page.translated_pages.filter(
+                    language__locale=locale).first()
+            if page.language.locale == self.language.locale:
+                return page
+            return page.translated_pages.filter(
+                language__locale=self.language.locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1634,7 +1657,9 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
-        ('media', MoloMediaBlock(icon='media'),)
+        ('media', MoloMediaBlock(icon='media'),),
+        ('richtext', blocks.RichTextBlock()),
+        ('html', blocks.RawHTMLBlock())
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
@@ -1715,8 +1740,13 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def get_absolute_url(self):  # pragma: no cover
         return self.url
 
-    def get_parent_section(self):
-        return self.get_parent().specific
+    def get_parent_section(self, locale=None):
+        parent = self.get_parent().specific
+        if parent:
+            if locale and parent.language.locale != locale:
+                return parent.translated_pages.filter(
+                    language__locale=locale).first()
+            return self.get_parent().specific
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
@@ -1979,58 +2009,3 @@ FooterPage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
-
-
-class FormIndexPage(MoloPage, PreventDeleteMixin):
-    parent_page_types = []
-    subpage_types = ['FormPage']
-
-    def copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
-        main = site.root_page
-        FormIndexPage.objects.child_of(main).delete()
-        super(FormIndexPage, self).copy(*args, **kwargs)
-
-    def get_site(self):
-        try:
-            return self.get_ancestors().filter(
-                depth=2).first().sites_rooted_here.get(
-                    site_name__icontains='main')
-        except Exception:
-            return self.get_ancestors().filter(
-                depth=2).first().sites_rooted_here.all().first() or None
-
-
-class FormField(AbstractFormField):
-    page = ParentalKey(
-        'FormPage', on_delete=models.CASCADE, related_name='form_fields')
-
-
-class FormPage(TranslatablePageMixinNotRoutable, AbstractEmailForm):
-    parent_page_types = ['FormIndexPage']
-    subpage_types = []
-    language = models.ForeignKey(
-        'core.SiteLanguage', blank=True, null=True,
-        on_delete=models.SET_NULL)
-    translated_pages = models.ManyToManyField("self", blank=True)
-    intro = models.TextField(blank=True)
-    body = StreamField([
-        ('paragraph', blocks.RichTextBlock()),
-    ], null=True, blank=True)
-    thank_you_text = models.TextField(blank=True)
-    content_panels = AbstractEmailForm.content_panels + [
-        FieldPanel('intro', classname="full"),
-        StreamFieldPanel('body'),
-        InlinePanel('form_fields', label="Form fields"),
-        FieldPanel('thank_you_text', classname="full"),
-        MultiFieldPanel([
-            FieldRowPanel([
-                FieldPanel('from_address', classname="col6"),
-                FieldPanel('to_address', classname="col6"),
-            ]),
-            FieldPanel('subject'),
-        ], "Email"),
-    ]
-
-    def serve(self, request, *args, **kwargs):
-        return super(AbstractEmailForm, self).serve(request, *args, **kwargs)

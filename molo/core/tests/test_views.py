@@ -326,7 +326,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEqual(Page.objects.descendant_of(self.main).count(), 14)
+        self.assertEqual(Page.objects.descendant_of(self.main).count(), 13)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -339,7 +339,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'publish_copies': 'true'})
         self.assertEqual(response.status_code, 302)
         new_main = Page.objects.get(slug='new-main')
-        self.assertEqual(Page.objects.descendant_of(new_main).count(), 14)
+        self.assertEqual(Page.objects.descendant_of(new_main).count(), 13)
 
         self.assertEqual(len(mail.outbox), 1)
         [email] = mail.outbox
@@ -359,7 +359,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEqual(Page.objects.descendant_of(self.main).count(), 14)
+        self.assertEqual(Page.objects.descendant_of(self.main).count(), 13)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -375,7 +375,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_main_celery = Page.objects.get(slug='new-main-celery')
         # few pages created since we're not letting celery run
         self.assertEqual(
-            Page.objects.descendant_of(new_main_celery).count(), 7)
+            Page.objects.descendant_of(new_main_celery).count(), 6)
 
         # no email sent since copy is not complete
         self.assertEqual(len(mail.outbox), 0)
@@ -1098,6 +1098,21 @@ class TestPages(TestCase, MoloTestCaseMixin):
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
         self.assertEqual(response.status_code, 200)
 
+    def test_translation_drafted_page__translations_no_redirects(self):
+        """
+        When the non-main language's version of the page is in draft mode
+        The link to that page should redirect to the main langauge's version
+        of the page not the in draft version
+        """
+        response = self.client.get('/locale/fr/')
+        self.yourmind_fr.unpublish()
+        response = self.client.get('/sections-main-1/your-mind-in-french/')
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get('/sections-main-1/your-mind')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.url,
+                         '/sections-main-1/' + self.yourmind.slug + '/')
+
     def test_subsection_is_translated(self):
         en_page = self.mk_article(self.yourmind_sub)
         self.mk_article_translation(
@@ -1261,6 +1276,20 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
         self.assertContains(
             response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
+
+    def test_google_search_console_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        response = self.client.get('/')
+        self.assertNotContains(response, 'google-site-verification')
+
+        setting.google_search_console = 'GTM-2345678'
+        setting.save()
+
+        response = self.client.get('/')
+        self.assertContains(response, 'google-site-verification')
+        self.assertContains(response, 'GTM-2345678')
 
     def test_admin_doesnt_translate_when_frontend_locale_changed(self):
         self.client.get('/locale/af/')
@@ -1598,7 +1627,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
     def test_article_recommended_section_enabled_disabled(self):
 
         self.assertTrue(
-            self.article_a.get_parent_section()
+            self.article_a.get_parent_section('en')
             .enable_recommended_section)
 
         self.assertEqual(
@@ -1731,7 +1760,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def test_next_article_main_language(self):
         # assumes articles loop
         self.assertTrue(
-            self.article_b.get_parent_section().enable_next_section)
+            self.article_b.get_parent_section('en').enable_next_section)
 
         response = self.client.get('/sections-main-1/section-a/article-c/')
         self.assertEqual(response.status_code, 200)
