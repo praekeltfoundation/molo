@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+9.0.1
+~~~~
+- Remove wagtail forms from molo core
+
 8.12
 ~~~~
 - Adding a raw HTML field for the article body
