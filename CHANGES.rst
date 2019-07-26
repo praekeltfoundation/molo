@@ -1,5 +1,8 @@
 CHANGES
 =======
+8.12.2
+~~~~~~
+- Add the request language to the custom params in GA middleware 
 
 8.12
 ~~~~
