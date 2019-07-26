@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.12.2
+~~~~~~
+- Add the request language to the custom params in GA middleware
+
 8.12.1
 ~~~~~~
 - Update setting locale view redirect incase of empty next param
@@ -15,7 +19,7 @@ CHANGES
 
 8.11.8
 ~~~~~~
-- Fix the page serve to only redirect translated pages 
+- Fix the page serve to only redirect translated pages
 
 8.11.7
 ~~~~~~
@@ -187,7 +191,7 @@ CHANGES
 
 7.1.0
 ~~~~~
-- Added prometheus metrics. Changes required to project see link 
+- Added prometheus metrics. Changes required to project see link
   https://github.com/korfuri/django-prometheus/blob/master/django_prometheus/db/common.py
 
 7.0.9
