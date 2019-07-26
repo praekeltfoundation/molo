@@ -13,6 +13,7 @@ from django.shortcuts import redirect, render_to_response
 from django_cas_ng.views import login as cas_login, logout as cas_logout
 from django.utils.translation import activate
 from django.contrib.messages import get_messages
+from django.utils.translation import get_language_from_request
 
 from google_analytics.tasks import send_ga_tracking
 from google_analytics.utils import build_ga_params, set_cookie
@@ -107,6 +108,7 @@ class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
             title = None
 
         path = request.get_full_path()
+        custom_params['cd10'] = get_language_from_request(request)
         referer = request.META.get('HTTP_REFERER', '')
         if hasattr(request, 'user') and hasattr(request.user, 'profile')\
                 and request.user.profile.uuid:
