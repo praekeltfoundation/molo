@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.12.3
+~~~~~~
+- Get Tag articles template tag bug fix
+
 8.12.2
 ~~~~~~
 - Add the request language to the custom params in GA middleware
