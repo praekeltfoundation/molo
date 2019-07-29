@@ -521,20 +521,22 @@ def get_tag_articles(
     # Featured Section/s
     sections = request.site.root_page.specific.sections()
     for section in sections[:section_count]:
-        aa = ArticlePage.objects.descendant_of(section).filter(
+        article_pages = ArticlePage.objects.descendant_of(section).filter(
             language__is_main_language=True,
             featured_in_homepage=True).order_by(
             '-featured_in_homepage_start_date')
 
-        sec_articles = get_pages(context, aa, locale)
+        sec_articles = get_pages(context, article_pages, locale)
 
         sec_translated_articles = [
             x for x in sec_articles if x.pk not in exclude_pks]
 
         exclude_pks += [
             p.pk for p in sec_translated_articles[:sec_articles_count]]
+
         section = SectionPage.objects.filter(pk=section.pk)
         section_for_locale = get_pages(context, section, locale)
+
         if section_for_locale:
             section = section_for_locale[0]
 
@@ -545,7 +547,6 @@ def get_tag_articles(
 
         if section_for_locale:
             sections_list.append((section, sec_translated_articles))
-    data.update({'sections': sections_list})
 
     # Featured Tag/s
     tag_qs = Tag.objects.descendant_of(request.site.root_page).filter(
@@ -554,15 +555,17 @@ def get_tag_articles(
         tag = tag_qs.first()
         tag_articles = get_articles_for_tags_with_translations(
             request, tag, None, locale, context, exclude_pks)
+
         if tag_articles and len(tag_articles) > tag_count:
             tag_articles = tag_articles[:tag_count]
+
         exclude_pks += [p.pk for p in tag_articles]
         tag_for_locale = get_pages(context, tag_qs.filter(pk=tag.pk), locale)
+
         if tag_for_locale:
             tags_list.append((tag_for_locale[0], tag_articles))
         else:
             tags_list.append((tag, tag_articles))
-    data.update({'tags_list': tags_list})
 
     # Latest Articles
     pages = get_pages(
@@ -572,7 +575,10 @@ def get_tag_articles(
                     ArticlePage).order_by('-featured_in_latest'), locale)
     articles = [x for x in pages if x.pk not in exclude_pks]
 
-    data.update({'latest_articles': latest_articles + articles})
+    data.update({
+        'tags_list': tags_list,
+        'sections': sections_list,
+        'latest_articles': latest_articles + articles})
     return data
 
 
