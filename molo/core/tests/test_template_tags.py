@@ -13,7 +13,7 @@ from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
     hero_article, render_translations, load_descendant_articles_for_section,
     load_child_articles_for_section, load_reaction_choice_submission_count,
-    load_user_choice_reaction_question
+    load_user_choice_reaction_question, get_tag_articles
 )
 from molo.core.templatetags.forms_tags import forms_list
 
@@ -345,3 +345,39 @@ class TestModels(TestCase, MoloTestCaseMixin):
                 'locale_code': 'en',
             }
         )
+
+    def test_get_tag_articles(self):
+        request = self.factory.get('/')
+        request.site = self.site
+        your_body = self.mk_section(
+            self.section_index, title='Your body')
+
+        article01 = self.mk_article(your_body, title='Your body 1')
+        article02 = self.mk_article(your_body, title='Your body 2')
+
+        article1 = self.mk_article(self.yourmind, title='article 1')
+        article2 = self.mk_article(self.yourmind, title='article 2')
+
+        self.mk_article(self.yourmind, title='article 3')
+        self.mk_article(self.yourmind, title='article 4')
+        self.mk_article(self.yourmind, title='article 5')
+        self.mk_article(self.yourmind, title='article 6')
+        self.mk_article(self.yourmind, title='article 7')
+        self.mk_article(self.yourmind, title='article 8')
+        self.mk_article(self.yourmind, title='article 9')
+
+        tag1 = self.mk_tag(parent=self.main, feature_in_homepage=True)
+        tag2 = self.mk_tag(parent=self.main, feature_in_homepage=True)
+
+        ArticlePageTags.objects.create(page=article1, tag=tag1)
+        ArticlePageTags.objects.create(page=article01, tag=tag1)
+
+        ArticlePageTags.objects.create(page=article2, tag=tag2)
+        ArticlePageTags.objects.create(page=article02, tag=tag2)
+
+        articles = get_tag_articles({'locale_code': 'en', 'request': request})
+        tag_articles = articles['tags_list'][0][1]
+
+        for i in tag_articles:
+            self.assertNotIn(i, articles['sections'])
+            self.assertNotIn(i, articles['latest_articles'])
