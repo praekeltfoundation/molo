@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.12.4
+~~~~~~
+- Update the robots.txt file
+
 8.12.3
 ~~~~~~
 - Get Tag articles template tag bug fix
