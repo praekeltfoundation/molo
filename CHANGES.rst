@@ -1,9 +1,29 @@
 CHANGES
 =======
 
+9.0.2
+~~~~
+- Merge develop to 9.x
+
 9.0.1
 ~~~~
 - Remove wagtail forms from molo core
+
+8.12.4
+~~~~~~
+- Update the robots.txt file
+
+8.12.3
+~~~~~~
+- Get Tag articles template tag bug fix
+
+8.12.2
+~~~~~~
+- Add the request language to the custom params in GA middleware
+
+8.12.1
+~~~~~~
+- Update setting locale view redirect incase of empty next param
 
 8.12
 ~~~~
@@ -11,11 +31,11 @@ CHANGES
 
 8.11.9
 ~~~~~~
--adding  __str__ method for the timezone model
+- Adding __str__ method for the timezone model
 
 8.11.8
 ~~~~~~
--Fix the page serve to only redirect translated pages 
+- Fix the page serve to only redirect translated pages
 
 8.11.7
 ~~~~~~
@@ -23,7 +43,7 @@ CHANGES
 
 8.11.6
 ~~~~~~
-- optimisation for home page
+- Optimisation for home page
 
 8.11.5
 ~~~~~~
@@ -187,7 +207,7 @@ CHANGES
 
 7.1.0
 ~~~~~
-- Added prometheus metrics. Changes required to project see link 
+- Added prometheus metrics. Changes required to project see link
   https://github.com/korfuri/django-prometheus/blob/master/django_prometheus/db/common.py
 
 7.0.9
