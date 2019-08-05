@@ -2,6 +2,7 @@
 
 import responses
 from unittest.mock import patch
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
@@ -21,9 +22,9 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         self.client = Client()
         # Creates Main language
         self.mk_main()
-        main = Main.objects.all().first()
+        self.main = Main.objects.all().first()
         self.english = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(main.get_site()),
+            language_setting=Languages.for_site(self.main.get_site()),
             locale='en',
             is_active=True)
         # Creates a section under the index page
@@ -37,13 +38,15 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         profile.mobile_number = '+27784667723'
         profile.save()
 
-    def make_fake_request(self, url, headers={}, user=None):
+    def make_fake_request(self, url, headers={}, user=None, locale=None):
         """
         We don't have any normal views, so we're creating fake
         views using django's RequestFactory
         """
         rf = RequestFactory()
         request = rf.get(url, **headers)
+        if locale:
+            request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = locale
         if user:
             request.user = self.user
         session_middleware = SessionMiddleware()
@@ -68,8 +71,10 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         response = middleware.submit_tracking(account, request, response)
-
         self.assertTrue(mock_method.called_with(request.get_full_path()))
+        self.assertEquals(
+            mock_method._mock_call_args[1]['custom_params']['cd10'],
+            self.english.locale)
 
     @patch('molo.core.middleware.build_ga_params')
     def test_ga_submit_tracking_with_custom_params(self, mock_method):
@@ -95,6 +100,34 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         self.assertFalse('user_id' in mock_method._mock_call_args[1])
         self.assertTrue(mock_method._mock_call_args[1]['custom_params'],
                         custom_params)
+        # the language parameter is passed into the request
+        self.assertEquals(
+            mock_method._mock_call_args[1]['custom_params']['cd10'],
+            custom_params['cd10'],
+            self.english.locale)
+
+    @patch('molo.core.middleware.build_ga_params')
+    def test_ga_submit_tracking_with_custom_params__language_change(
+            self, mock_method):
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(self.main.get_site()),
+            locale='fr',
+            is_active=True)
+        response = self.client.get('/locale/fr/', follow=True)
+        headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
+        request = self.make_fake_request(
+            '/locale/fr/',
+            headers, self.user,
+            locale=self.french.locale)
+
+        middleware = MoloGoogleAnalyticsMiddleware()
+        account = ''
+        response = middleware.submit_tracking(account, request, response)
+        self.assertTrue(mock_method.called_with(request.get_full_path()))
+
+        self.assertEquals(
+            mock_method._mock_call_args[1]['custom_params']['cd10'],
+            self.french.locale)
 
     @patch('molo.core.middleware.build_ga_params')
     def test_ga_submit_tracking_with_custom_params__authenticated(
