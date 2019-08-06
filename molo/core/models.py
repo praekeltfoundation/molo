@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from wagtail.admin.edit_handlers import EditHandler
@@ -18,8 +18,8 @@ from django.template.response import TemplateResponse
 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
-from modelcluster.tags import ClusterTaggableManager
 from modelcluster.models import ClusterableModel
+from modelcluster.contrib.taggit import ClusterTaggableManager
 
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.core.models import Page, Orderable, Site
@@ -727,6 +727,11 @@ class TranslatablePageMixinNotRoutable(object):
         try:
             return self.translated_pages.get(
                 language__is_main_language=True).specific
+
+        except MultipleObjectsReturned:
+            return self.translated_pages.filter(
+                language__is_main_language=True).first().specific
+
         except ObjectDoesNotExist:
             return self.specific
 
