@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+8.12.5
+~~~~~~
+- Bug fixes: get_next_article, load_tags_for_article tags and form invalid key security question check
+
 8.12.4
 ~~~~~~
 - Update the robots.txt file
