@@ -229,7 +229,7 @@ class ForgotPasswordView(FormView):
         # check security question answers
         answer_checks = []
         for i in range(profile_settings.num_security_questions):
-            user_answer = form.cleaned_data["question_%s" % (i,)]
+            user_answer = form.cleaned_data.get("question_%s" % (i,))
             try:
                 saved_answer = user.profile.securityanswer_set.get(
                     user=user.profile,

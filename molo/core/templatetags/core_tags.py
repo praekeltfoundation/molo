@@ -591,9 +591,12 @@ def load_tags_for_article(context, article):
     locale = context.get('locale_code')
     request = context['request']
 
+    latest_revision_date = article.latest_revision_created_at.isoformat() \
+        if article.latest_revision_created_at \
+        else article.created_at.isoformat()
+
     cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
-        locale, request.site.pk, article.pk,
-        article.latest_revision_created_at.isoformat())
+        locale, request.site.pk, article.pk, latest_revision_date)
     tags_pks = cache.get(cache_key)
 
     if not tags_pks:
@@ -822,20 +825,24 @@ def get_next_article(context, article):
     section = article.get_parent_section()
     articles = load_child_articles_for_section(context, section, count=None)
     if len(articles) > 1:
-        if len(articles) > articles.index(article) + 1:
-            next_article = articles[articles.index(article) + 1]
-        else:
-            next_article = articles[0]
-    else:
-        return None
-    try:
-        return next_article.translated_pages.get(language__locale=locale_code)
-    except:
-        if next_article.language.locale == locale_code or not \
-                SiteSettings.for_site(
-                    context['request'].site).show_only_translated_pages:
-            return next_article
-        return None
+        try:
+            if len(articles) > articles.index(article) + 1:
+                next_article = articles[articles.index(article) + 1]
+            else:
+                next_article = articles[0]
+
+            try:
+                return next_article.translated_pages.get(
+                    language__locale=locale_code)
+            except:
+                if next_article.language.locale == locale_code or not \
+                    SiteSettings.for_site(
+                        context['request'].site).show_only_translated_pages:
+                    return next_article
+
+        except ValueError:
+            return None
+    return None
 
 
 @register.simple_tag(takes_context=True)
