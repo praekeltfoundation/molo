@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from molo.core.middleware import MoloGoogleAnalyticsMiddleware
 from django.contrib.auth.models import User

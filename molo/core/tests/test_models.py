@@ -2,7 +2,7 @@
 import pytest
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -13,7 +13,7 @@ from molo.core.models import (
     ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
     BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
-    Timezone, Tag, ArticlePageTags, Site
+    Timezone, Tag, ArticlePageTags, Site, LanguageRelation
 )
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
@@ -30,22 +30,36 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
-        self.main = Main.objects.all().first()
         self.factory = RequestFactory()
+        self.main = Main.objects.all().first()
         self.language_setting = Languages.objects.create(
             site_id=self.main.get_site().pk)
+
         self.english = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting,
-            locale='en',
-            is_active=True)
-        # LanguageRelation.objects.create(
-        #     page=main, language=self.english)
+            locale='en', is_active=True)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.english)
+
         self.french = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting,
-            locale='fr',
-            is_active=True)
-        # LanguageRelation.objects.create(
-        #     page=self, language=self.french)
+            locale='fr', is_active=True)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.french)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.reaction_index, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.banner_index, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.tag_index, language=self.english)
 
         # Create an image for running tests on
         self.image = Image.objects.create(
@@ -71,6 +85,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
             language_setting=self.language_setting2,
             locale='es',
             is_active=True)
+
+        LanguageRelation.objects.create(
+            page=self.main2, language=self.english2)
+
+        LanguageRelation.objects.create(
+            page=self.main2, language=self.spanish)
 
         # Create an image for running tests on
         self.image = Image.objects.create(
@@ -98,6 +118,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             Languages.for_site(
                 self.main2.get_site()).languages.filter(locale='fr').exists())
         article = self.mk_articles(self.yourmind, 1)[0]
+
+        LanguageRelation.objects.create(
+            page=article, language=self.english2)
+
         self.mk_article_translation(article, self.french)
         article2 = article.copy(to=self.yourmind2)
         copy_translation_pages(article, article2)
@@ -129,6 +153,9 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(sections.child_of(self.main2).exists())
 
     def test_copy_method_of_section_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=SectionIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
@@ -136,6 +163,9 @@ class TestModels(TestCase, MoloTestCaseMixin):
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_copy_method_of_reaction_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=ReactionQuestionIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
         self.reaction_index.copy(to=self.main2)
@@ -143,6 +173,9 @@ class TestModels(TestCase, MoloTestCaseMixin):
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_copy_method_of_tag_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=TagIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
         self.tag_index.copy(to=self.main2)
@@ -150,6 +183,9 @@ class TestModels(TestCase, MoloTestCaseMixin):
             TagIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_copy_method_of_footer_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=FooterIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
@@ -157,6 +193,9 @@ class TestModels(TestCase, MoloTestCaseMixin):
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_copy_method_of_banner_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=BannerIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             BannerIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)

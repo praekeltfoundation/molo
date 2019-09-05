@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('user', models.OneToOneField(related_name='profile', primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='profile', primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)),
                 ('date_of_birth', models.DateField(null=True)),
                 ('alias', models.CharField(max_length=128, null=True, blank=True)),
                 ('avatar', models.ImageField(upload_to=b'users/profile', null=True, verbose_name=b'avatar', blank=True)),

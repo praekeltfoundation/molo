@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='pagetranslation',
             name='translated_page',
-            field=models.OneToOneField(related_name='source_page', to='wagtailcore.Page'),
+            field=models.OneToOneField(related_name='source_page', to='wagtailcore.Page', on_delete=models.SET_NULL),
         ),
     ]

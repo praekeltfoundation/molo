@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FooterPage',
             fields=[
-                ('articlepage_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='core.ArticlePage')),
+                ('articlepage_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='core.ArticlePage', on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,

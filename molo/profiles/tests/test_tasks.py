@@ -6,7 +6,7 @@ from django.conf import settings
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import Main, Languages, SiteLanguageRelation
 from molo.profiles.task import send_export_email
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class ModelsTestCase(TestCase, MoloTestCaseMixin):

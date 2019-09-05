@@ -470,7 +470,8 @@ class ImageInfo(models.Model):
         'wagtailimages.Image',
         null=True,
         blank=True,
-        related_name='image_info'
+        related_name='image_info',
+        on_delete=models.SET_NULL
     )
 
     def save(self, *args, **kwargs):
@@ -649,14 +650,27 @@ class CommentedPageMixin(object):
 
 
 class PageTranslation(models.Model):
-    page = models.ForeignKey('wagtailcore.Page', related_name='translations')
+    page = models.ForeignKey(
+        'wagtailcore.Page',
+        related_name='translations',
+        on_delete=models.SET_NULL
+    )
     translated_page = models.OneToOneField(
-        'wagtailcore.Page', related_name='source_page')
+        'wagtailcore.Page',
+        related_name='source_page',
+        on_delete=models.SET_NULL
+    )
 
 
 class LanguageRelation(models.Model):
-    page = models.ForeignKey('wagtailcore.Page', related_name='languages')
-    language = models.ForeignKey('core.SiteLanguage', related_name='+')
+    page = models.ForeignKey(
+        'wagtailcore.Page',
+        related_name='languages', on_delete=models.SET_NULL
+    )
+    language = models.ForeignKey(
+        'core.SiteLanguage',
+        related_name='+', on_delete=models.SET_NULL
+    )
 
 
 def get_translation_for(pages, locale, site, is_live=True):
@@ -955,11 +969,14 @@ ReactionQuestionChoice.content_panels = [
 
 
 class ReactionQuestionResponse(models.Model):
-    user = models.ForeignKey('auth.User', blank=True, null=True)
-    article = models.ForeignKey('core.ArticlePage')
+    user = models.ForeignKey(
+        'auth.User', blank=True, null=True, on_delete=models.SET_NULL
+    )
+    article = models.ForeignKey(
+        'core.ArticlePage', on_delete=models.SET_NULL)
     choice = models.ForeignKey(
-        'core.ReactionQuestionChoice', blank=True, null=True)
-    question = models.ForeignKey('core.ReactionQuestion')
+        'core.ReactionQuestionChoice', blank=True, null=True, on_delete=models.SET_NULL)
+    question = models.ForeignKey('core.ReactionQuestion', on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def set_response_as_submitted_for_session(self, request, article):

@@ -60,11 +60,11 @@ urlpatterns = [
         name='reaction-feedback'),
 
     url(r'^api/', include(
-        'molo.core.api.urls', namespace='molo_api', app_name='molo.api')),
+        ('molo.core.api.urls', 'molo.api'), namespace='molo_api')),
 
-    url(r'^api/v2/', include(
+    url(r'^api/v2/', include((
         decorate_urlpatterns(api_router.get_urlpatterns(), never_cache),
-        namespace=api_router.url_namespace, app_name='molo.api'
+        'molo.api'), namespace=api_router.url_namespace
     )),
     url(
         r'^versions/$',

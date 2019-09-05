@@ -7,10 +7,10 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django_cas_ng.middleware import CASMiddleware
 from django.views.defaults import permission_denied
-from django.contrib.auth.views import login, logout
-from django.core.urlresolvers import resolve, reverse
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import resolve, reverse
 from django.shortcuts import redirect, render_to_response
-from django_cas_ng.views import login as cas_login, logout as cas_logout
+from django_cas_ng.views import LoginView as cas_login, LogoutView as cas_logout
 from django.utils.translation import activate
 from django.contrib.messages import get_messages
 from django.utils.translation import get_language_from_request
@@ -26,13 +26,13 @@ from molo.core.models import Languages
 class MoloCASMiddleware(CASMiddleware):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if view_func == login or view_func == logout:
+        if view_func == LoginView.as_view() or view_func == LogoutView.as_view():
             return None
 
         if view_func == cas_login:
             return cas_login(request, *view_args, **view_kwargs)
-        elif view_func == cas_logout:
-            return cas_logout(request, *view_args, **view_kwargs)
+        elif view_func == cas_logout.as_view():
+            return cas_logout.as_view(request, *view_args, **view_kwargs)
 
         if settings.CAS_ADMIN_PREFIX:
             if not request.path.startswith(settings.CAS_ADMIN_PREFIX):

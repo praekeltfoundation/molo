@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('content_object', modelcluster.fields.ParentalKey(related_name='metadata_tagged_items', to='core.ArticlePage')),
-                ('tag', models.ForeignKey(related_name='core_articlepagemetadatatag_items', to='taggit.Tag')),
+                ('tag', models.ForeignKey(related_name='core_articlepagemetadatatag_items', to='taggit.Tag', on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
