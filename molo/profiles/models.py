@@ -307,7 +307,7 @@ def create_security_question_index_page(sender, instance, **kwargs):
 class UserProfile(models.Model):
     user = models.OneToOneField(
         User, related_name="profile",
-        primary_key=True, on_delete=models.SET_NULL
+        primary_key=True, on_delete=models.CASCADE
     )
     uuid = models.UUIDField(default=uuid4, unique=True)
     auth_service_uuid = models.UUIDField(unique=True, null=True)
@@ -376,8 +376,8 @@ def user_profile_handler(sender, instance, created, **kwargs):
 
 class SecurityAnswer(models.Model):
     user = models.ForeignKey(
-        UserProfile, on_delete=models.SET_NULL)
-    question = models.ForeignKey(SecurityQuestion, on_delete=models.SET_NULL)
+        UserProfile, on_delete=models.CASCADE)
+    question = models.ForeignKey(SecurityQuestion, on_delete=models.CASCADE)
     answer = models.CharField(max_length=150, null=False, blank=False)
 
     def set_answer(self, raw_answer):

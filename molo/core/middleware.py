@@ -9,7 +9,7 @@ from django_cas_ng.middleware import CASMiddleware
 from django.views.defaults import permission_denied
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import resolve, reverse
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import redirect, render
 from django_cas_ng.views import LoginView as cas_login, LogoutView as cas_logout
 from django.utils.translation import activate
 from django.contrib.messages import get_messages
@@ -48,7 +48,7 @@ class MoloCASMiddleware(CASMiddleware):
                 """
                 return None
             else:
-                return permission_denied(request, 'error')
+                return permission_denied(request, HttpResponseForbidden)
         return super(MoloCASMiddleware, self).process_view(
             request, view_func, view_args, view_kwargs)
 
@@ -60,7 +60,7 @@ class Custom403Middleware(django.utils.deprecation.MiddlewareMixin):
         for message in storage:
             pass
         if isinstance(response, HttpResponseForbidden):
-            return permission_denied(request, 'error')
+            return permission_denied(request, HttpResponseForbidden)
         return response
 
 
@@ -191,7 +191,7 @@ class MaintenanceModeMiddleware(django.utils.deprecation.MiddlewareMixin):
                     for k, v in ctx.items():
                         setattr(self, k, v)
 
-            return render_to_response(
+            return render(
                 template_name, context={
                     'self': Page(page_ctx),
                     'request': request,

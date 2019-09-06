@@ -152,6 +152,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         sections = self.main.sections()
         self.assertFalse(sections.child_of(self.main2).exists())
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_section_index_wont_duplicate_index_pages(self):
         LanguageRelation.objects.create(
             page=SectionIndexPage.objects.child_of(self.main2).first(),
@@ -162,6 +163,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_reaction_index_wont_duplicate_index_pages(self):
         LanguageRelation.objects.create(
             page=ReactionQuestionIndexPage.objects.child_of(self.main2).first(),
@@ -172,6 +174,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_tag_index_wont_duplicate_index_pages(self):
         LanguageRelation.objects.create(
             page=TagIndexPage.objects.child_of(self.main2).first(),
@@ -182,6 +185,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_footer_index_wont_duplicate_index_pages(self):
         LanguageRelation.objects.create(
             page=FooterIndexPage.objects.child_of(self.main2).first(),
@@ -192,6 +196,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_banner_index_wont_duplicate_index_pages(self):
         LanguageRelation.objects.create(
             page=BannerIndexPage.objects.child_of(self.main2).first(),
@@ -366,7 +371,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_number_of_child_sections(self):
         new_section = self.mk_section(self.section_index)
         self.mk_sections(new_section, count=12)
-        response = self.client.get('/')
+        self.client.get('/')
         response = self.client.get('/sections-main-1/test-section-0/')
         self.assertContains(response, 'Test Section 11')
 

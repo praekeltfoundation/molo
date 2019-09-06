@@ -653,23 +653,23 @@ class PageTranslation(models.Model):
     page = models.ForeignKey(
         'wagtailcore.Page',
         related_name='translations',
-        on_delete=models.SET_NULL
+        on_delete=models.CASCADE
     )
     translated_page = models.OneToOneField(
         'wagtailcore.Page',
         related_name='source_page',
-        on_delete=models.SET_NULL
+        on_delete=models.CASCADE
     )
 
 
 class LanguageRelation(models.Model):
     page = models.ForeignKey(
         'wagtailcore.Page',
-        related_name='languages', on_delete=models.SET_NULL
+        related_name='languages', on_delete=models.CASCADE
     )
     language = models.ForeignKey(
         'core.SiteLanguage',
-        related_name='+', on_delete=models.SET_NULL
+        related_name='+', on_delete=models.CASCADE
     )
 
 
@@ -970,13 +970,13 @@ ReactionQuestionChoice.content_panels = [
 
 class ReactionQuestionResponse(models.Model):
     user = models.ForeignKey(
-        'auth.User', blank=True, null=True, on_delete=models.SET_NULL
+        'auth.User', blank=True, null=True, on_delete=models.CASCADE
     )
     article = models.ForeignKey(
-        'core.ArticlePage', on_delete=models.SET_NULL)
+        'core.ArticlePage', on_delete=models.CASCADE)
     choice = models.ForeignKey(
         'core.ReactionQuestionChoice', blank=True, null=True, on_delete=models.SET_NULL)
-    question = models.ForeignKey('core.ReactionQuestion', on_delete=models.SET_NULL)
+    question = models.ForeignKey('core.ReactionQuestion', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def set_response_as_submitted_for_session(self, request, article):
