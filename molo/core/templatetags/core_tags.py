@@ -399,8 +399,8 @@ def get_articles_for_tags_with_translations(
     return [x for x in pages if x.pk not in exclude_pks]
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def get_articles_for_tag(context, tag):
     request = context['request']
     locale = context.get('locale_code')
@@ -416,8 +416,8 @@ def get_articles_for_tag(context, tag):
     return None
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def get_next_tag(context, tag):
     request = context['request']
     locale_code = context.get('locale_code')
@@ -439,8 +439,8 @@ def get_next_tag(context, tag):
             return next_tag
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     request = context['request']
     locale = context.get('locale_code')
@@ -482,9 +482,9 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     return tags_list
 
 
+@prometheus_query_count
 @register.simple_tag(takes_context=True)
 @REQUEST_TIME.time()
-@prometheus_query_count
 def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
         latest_article_count=3):
@@ -582,8 +582,8 @@ def get_tag_articles(
     return data
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def load_tags_for_article(context, article):
     if not article.specific.__class__ == ArticlePage:
         return None
@@ -617,8 +617,8 @@ def load_tags_for_article(context, article):
     return get_pages(context, qs, locale)
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def load_choices_for_reaction_question(context, question):
     locale = context.get('locale_code')
     if question:
@@ -638,8 +638,8 @@ def load_reaction_choice_submission_count(choice, article, question):
             article=article, choice=choice, question=question).count()
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def load_user_can_vote_on_reaction_question(context, question, article_pk):
     request = context['request']
     if question:
@@ -651,8 +651,8 @@ def load_user_can_vote_on_reaction_question(context, question, article_pk):
             request, question.pk, article.pk)
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def load_user_choice_reaction_question(context, question, article, choice):
     request = context['request']
     if question and request.user.is_authenticated:
@@ -665,8 +665,8 @@ def load_user_choice_reaction_question(context, question, article, choice):
             question=question, user=request.user).exists()
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def load_reaction_question(context, article):
     locale = context.get('locale_code')
     request = context['request']
@@ -689,8 +689,8 @@ def load_reaction_question(context, article):
         return question
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def load_child_sections_for_section(context, section, count=None):
     """
     Returns all child sections
@@ -712,8 +712,8 @@ def load_child_sections_for_section(context, section, count=None):
     return get_pages(context, qs, locale)
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def load_sibling_sections(context, section, count=None):
     """
     Returns all sibling sections
@@ -750,11 +750,11 @@ def handle_markdown(value):
     return mark_safe(md)
 
 
+@prometheus_query_count
 @register.inclusion_tag(
     'core/tags/social_media_footer.html',
     takes_context=True
 )
-@prometheus_query_count
 def social_media_footer(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
@@ -770,11 +770,11 @@ def social_media_footer(context, page=None):
     return data
 
 
+@prometheus_query_count
 @register.inclusion_tag(
     'core/tags/social_media_article.html',
     takes_context=True
 )
-@prometheus_query_count
 def social_media_article(context, page=None):
     request = context['request']
     locale = context.get('locale_code')
@@ -818,8 +818,8 @@ def social_media_article(context, page=None):
     return data
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def get_next_article(context, article):
     locale_code = context.get('locale_code')
     section = article.get_parent_section()
@@ -845,8 +845,8 @@ def get_next_article(context, article):
     return None
 
 
-@register.simple_tag(takes_context=True)
 @prometheus_query_count
+@register.simple_tag(takes_context=True)
 def get_recommended_articles(context, article):
     locale_code = context.get('locale_code')
 
