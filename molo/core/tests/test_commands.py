@@ -42,7 +42,7 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.tag_index.add_child(instance=tag)
         tag.save_revision().publish()
         for relation in LanguageRelation.objects.filter(
-                language__is_main_language=True):
+            language__is_main_language=True):
             self.assertEqual(relation.language.locale, 'en')
         self.assertTrue(self.english.is_main_language)
         call_command('switch_main_language', 'id', std_out=out)
@@ -50,7 +50,7 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         self.assertFalse(
             LanguageRelation.objects.filter(language__locale='en').exists())
         for relation in LanguageRelation.objects.filter(
-                language__is_main_language=True):
+            language__is_main_language=True):
             self.assertEqual(relation.language.locale, 'id')
 
     def test_add_language_to_pages(self):
@@ -172,7 +172,7 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         # call the command
         out = StringIO()
         call_command(
-            'set_promotional_dates_from_csv', fake_namefile.name, std_out=out)
+            'set_promotional_dates_from_csv', csv_name=fake_namefile.name, std_out=out)
         self.assertEqual(
             ArticlePage.objects.last().featured_in_latest_start_date, now)
         fake_namefile.close()
