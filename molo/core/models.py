@@ -975,8 +975,10 @@ class ReactionQuestionResponse(models.Model):
     article = models.ForeignKey(
         'core.ArticlePage', on_delete=models.CASCADE)
     choice = models.ForeignKey(
-        'core.ReactionQuestionChoice', blank=True, null=True, on_delete=models.SET_NULL)
-    question = models.ForeignKey('core.ReactionQuestion', on_delete=models.CASCADE)
+        'core.ReactionQuestionChoice',
+        blank=True, null=True, on_delete=models.SET_NULL)
+    question = models.ForeignKey(
+        'core.ReactionQuestion', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def set_response_as_submitted_for_session(self, request, article):

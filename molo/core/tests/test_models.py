@@ -131,7 +131,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(
-                    locale='fr').first().is_active)
+                locale='fr').first().is_active)
 
     def test_move_method_of_article_page_copies_over_languages(self):
         self.assertFalse(
@@ -146,7 +146,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(
-                    locale='fr').first().is_active)
+                locale='fr').first().is_active)
 
     def test_sections_method_of_main_gives_children_of_main_only(self):
         sections = self.main.sections()
@@ -166,8 +166,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
     @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_reaction_index_wont_duplicate_index_pages(self):
         LanguageRelation.objects.create(
-            page=ReactionQuestionIndexPage.objects.child_of(self.main2).first(),
-            language=self.spanish)
+            page=ReactionQuestionIndexPage.objects.child_of(
+                self.main2).first(),
+            language=self.spanish
+        )
         self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
         self.reaction_index.copy(to=self.main2)
@@ -334,7 +336,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # check if the section doesn't have image it will return None
         en_section4 = self.mk_section(
             self.section_index,
-            title="New Section 4", slug="new-section-4",)
+            title="New Section 4", slug="new-section-4", )
         self.assertEqual(
             en_section4.get_effective_image(), '')
         fr_section4 = self.mk_section_translation(en_section4, self.french)
@@ -488,7 +490,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         }
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
         post_data.update({
             'title': 'this is a test article2',
@@ -497,7 +499,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         })
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
 
         self.assertEqual(
@@ -542,7 +544,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         }
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
         post_data.update({
             'title': 'this is a test article2',
@@ -551,7 +553,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         })
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
 
         self.assertEqual(
@@ -598,7 +600,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertTrue(article2.nav_tags.get(), tag2)
 
     def test_social_media(self):
-
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
@@ -606,12 +607,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.mk_article(
             self.yourmind, title="New article",
             social_media_title='media title',
-            social_media_description='media description',)
+            social_media_description='media description', )
 
         self.mk_article(
             self.yourmind, title="New article2",
             social_media_title='media title',
-            social_media_image=self.image,)
+            social_media_image=self.image, )
 
         self.assertEqual(
             ArticlePage.objects.filter(
@@ -669,7 +670,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # create a new article and go to it's edit page
         new_section = self.mk_section(
             self.section_index, title="New Section", slug="new-section")
-        new_article = self.mk_article(new_section, title="New article",)
+        new_article = self.mk_article(new_section, title="New article", )
         response = self.client.get(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)))
         self.assertEqual(response.status_code, 200)
