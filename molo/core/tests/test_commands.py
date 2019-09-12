@@ -45,7 +45,7 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
             language__is_main_language=True):
             self.assertEqual(relation.language.locale, 'en')
         self.assertTrue(self.english.is_main_language)
-        call_command('switch_main_language', 'id', std_out=out)
+        call_command('switch_main_language', new_language_locale='id', std_out=out)
         self.assertTrue(SiteLanguage.objects.get(locale='id').is_main_language)
         self.assertFalse(
             LanguageRelation.objects.filter(language__locale='en').exists())
@@ -198,7 +198,7 @@ class ManagementCommandsTest(TestCase, MoloTestCaseMixin):
         # call command to link tag to article
         out = StringIO()
         call_command(
-            'add_tag_to_article', fake_csv.name, 'en',
+            'add_tag_to_article', csv_name=fake_csv.name, locale='en',
             std_out=out)
 
         # it should create a Article Relationship with the Tag

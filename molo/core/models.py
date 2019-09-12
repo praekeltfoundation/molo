@@ -471,7 +471,7 @@ class ImageInfo(models.Model):
         null=True,
         blank=True,
         related_name='image_info',
-        on_delete=models.SET_NULL
+        on_delete=models.CASCADE
     )
 
     def save(self, *args, **kwargs):

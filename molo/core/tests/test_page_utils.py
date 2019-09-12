@@ -40,8 +40,13 @@ class TestPageUtils(TestCase, MoloTestCaseMixin):
 
         (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)  # noqa
 
-        self.assertEqual(remaining_blocks, [self.other_block_1])
-        self.assertEqual(end_article_page_blocks, [self.page_block_1])
+        self.assertTrue('id' in remaining_blocks[0])
+        self.assertEqual(remaining_blocks[0]['type'], self.other_block_1['type'])
+        self.assertTrue(remaining_blocks[0]['value'], self.other_block_1['value'])
+
+        self.assertTrue('id' in end_article_page_blocks)
+        self.assertEqual(end_article_page_blocks['type'], self.page_block_1['type'])
+        self.assertEqual(end_article_page_blocks['value'], self.page_block_1['value'])
 
     def test_seperate_end_page_links_2(self):
         test_stream = [
@@ -63,11 +68,19 @@ class TestPageUtils(TestCase, MoloTestCaseMixin):
 
         (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)  # noqa
 
-        self.assertEqual(remaining_blocks, [self.other_block_1])
+        self.assertEqual(remaining_blocks[0]['type'], self.other_block_1['type'])
+        self.assertEqual(remaining_blocks[0]['value'], self.other_block_1['value'])
+
+        self.assertEqual(len(end_article_page_blocks), 2)
         self.assertEqual(
-            end_article_page_blocks,
-            [self.page_block_1,
-             self.page_block_2])
+            end_article_page_blocks[0]['type'], self.page_block_1['type'])
+        self.assertEqual(
+            end_article_page_blocks[0]['value'], self.page_block_1['value'])
+
+        self.assertEqual(
+            end_article_page_blocks[1]['type'], self.page_block_2['type'])
+        self.assertEqual(
+            end_article_page_blocks[1]['value'], self.page_block_2['value'])
 
     def test_get_page_ids_from_page_blocks(self):
         test_stream = [
@@ -116,7 +129,7 @@ class TestConvertingPageBlocksToRecommendedArticles(MoloTestCaseMixin, TestCase)
 
         self.linked_article = self.mk_article(self.section_index)
         self.main_article = self.mk_article(self.section_index)
-        self.body = [fake_page_stream_block(self.linked_article.id)]
+        self.body = [fake_page_stream_block(self.linked_article)]
         setattr(self.main_article, 'body', json.dumps(self.body))
         self.main_article.save()
 

@@ -20,9 +20,12 @@ admin.autodiscover()
 # implement CAS URLs in a production setting
 if settings.ENABLE_SSO:
     urlpatterns = [
-        url(r'^admin/login/', cas_views.LoginView.as_view()),
-        url(r'^admin/logout/', cas_views.LogoutView.as_view()),
-        url(r'^admin/callback/', cas_views.CallbackView.as_view()),
+        url(r'^admin/login/',
+            cas_views.LoginView.as_view(), name='cas_ng_login'),
+        url(r'^admin/logout/',
+            cas_views.LogoutView.as_view(), name='cas_ng_logout'),
+        url(r'^admin/callback/',
+            cas_views.CallbackView.as_view(), name='cas_ng_callback'),
     ]
 else:
     urlpatterns = []
