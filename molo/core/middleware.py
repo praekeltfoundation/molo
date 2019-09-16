@@ -27,13 +27,16 @@ from molo.core.models import Languages
 class MoloCASMiddleware(CASMiddleware):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        logout = LogoutView.as_view()
-        if view_func == LoginView.as_view() or view_func == logout:
+        logout = LogoutView.as_view().__name__
+        is_logout = view_func.__name__ == logout
+        is_login = view_func.__name__ == LoginView.as_view().__name__
+
+        if is_login or is_logout:
             return None
 
-        if view_func == CasLogin:
+        if view_func.__name__ == CasLogin.__name__:
             return CasLogin(request, *view_args, **view_kwargs)
-        elif view_func == logout:
+        elif is_logout:
             return CasLogout.as_view(request, *view_args, **view_kwargs)
 
         if settings.CAS_ADMIN_PREFIX:

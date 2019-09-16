@@ -193,7 +193,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         })
         # assert that logging into a different site throws permission denied
         self.assertContains(
-            response, 'Your username and password do not match.')
+            response, 'Your username and pin do not match.')
 
     def test_logout(self):
         response = self.client.get('%s?next=%s' % (
@@ -203,7 +203,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def test_login(self):
         response = self.client.get(reverse('molo.profiles:auth_login'))
-        self.assertContains(response, 'Forgotten your password')
+        self.assertContains(response, 'Forgotten your pin')
 
     def test_warning_message_shown_in_wagtail_if_no_country_code(self):
         site = Site.objects.get(is_default_site=True)
