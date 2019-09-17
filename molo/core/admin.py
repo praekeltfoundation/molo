@@ -17,7 +17,8 @@ from molo.core.models import (
 
 
 class DateFilter(DateRangeFilter):
-    template = 'admin/date_range_filter.html'
+    # template = 'admin/date_range_filter.html'
+    pass
 
 
 class ReactionQuestionAdmin(admin.ModelAdmin):
