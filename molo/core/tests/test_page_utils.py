@@ -146,7 +146,14 @@ class TestConvertingPageBlocksToRecommendedArticles(MoloTestCaseMixin, TestCase)
 
     def test_move_page_links_to_recommended_articles(self):
 
-        self.assertEqual(self.main_article.body.stream_data, self.body)
+        self.assertTrue(
+            'id' in self.main_article.body.stream_data[0].keys())
+        self.assertEqual(
+            self.main_article.body.stream_data[0]['type'],
+            self.body[0]['type'])
+        self.assertEqual(
+            self.main_article.body.stream_data[0]['value'],
+            self.body[0]['value'])
         self.assertEqual(
             ArticlePageRecommendedSections.objects.count(), 0
         )
