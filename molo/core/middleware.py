@@ -197,7 +197,7 @@ class MaintenanceModeMiddleware(django.utils.deprecation.MiddlewareMixin):
                         setattr(self, k, v)
 
             return render(
-                template_name, context={
+                request, template_name, context={
                     'self': Page(page_ctx),
                     'request': request,
                     'ENV': getattr(settings, 'ENV', 'dev'),

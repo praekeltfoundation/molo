@@ -527,20 +527,20 @@ class TestTasks(TestCase, MoloTestCaseMixin):
 
         self.mk_articles(
             self.yourmind_sub, count=2,
-            featured_in_homepage_start_date=timezone.localdate().replace(2017, 1, 1, 1))
+            featured_in_homepage_start_date=timezone.datetime(2017, 1, 1, tzinfo=timezone.tzinfo))
         self.mk_articles(
             self.yourmind_sub, count=1,
-            featured_in_homepage_start_date=timezone.localdate().replace(2017, 1, 2, 1))
+            featured_in_homepage_start_date=timezone.datetime(2017, 1, 2, tzinfo=timezone.tzinfo))
         self.mk_articles(
             self.yourmind_sub, count=4, featured_in_homepage=False)
         promote_articles()
 
         self.mk_articles(
             self.mylife, count=2,
-            featured_in_homepage_start_date=timezone.localdate().replace(2017, 1, 3, 1))
+            featured_in_homepage_start_date=timezone.datetime(2017, 1, 3, tzinfo=timezone.tzinfo))
         self.mk_articles(
             self.mylife, count=1,
-            featured_in_homepage_start_date=timezone.localdate().replace(2017, 1, 4, 1))
+            featured_in_homepage_start_date=timezone.datetime(2017, 1, 4, tzinfo=timezone.tzinfo))
         self.mk_articles(
             self.mylife, count=4, featured_in_homepage=False)
         promote_articles()
