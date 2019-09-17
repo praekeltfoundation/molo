@@ -65,6 +65,10 @@ class ReadOnlyPanel(EditHandler):
         self.heading = pretty_name(self.attr) if heading is None else heading
         self.classname = classname
         self.help_text = help_text
+        self.form = None
+        self.model = None
+        self.request = None
+        self.instance = None
 
     def render(self):
         value = getattr(self.instance, self.attr)
