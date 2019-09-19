@@ -30,7 +30,7 @@ install_requires = [
     'django-import-export',
     'django-daterange-filter',
     'markdown>=3.0.1',
-    'mote-prk~=0.3.1',
+    'mote-praekelt~=0.1.6',
     'raven~=6.10.0',
     'redis',
     'requests',
