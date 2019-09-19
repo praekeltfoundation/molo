@@ -294,7 +294,8 @@ class ImportExportTestCase(TestCase, MoloTestCaseMixin):
             'username': 'newuser',
             'password': 'newuser',
         })
-        self.assertContains(response, 'Your username and pin do not match. Please try again.')
+        self.assertContains(
+            response, 'Your username and pin do not match. Please try again.')
 
         client = Client(HTTP_HOST=self.site2.hostname)
 

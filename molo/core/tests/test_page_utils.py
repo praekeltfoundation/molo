@@ -41,12 +41,16 @@ class TestPageUtils(TestCase, MoloTestCaseMixin):
         (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)  # noqa
 
         # self.assertTrue('id' in remaining_blocks[0])
-        self.assertEqual(remaining_blocks[0]['type'], self.other_block_1['type'])
-        self.assertTrue(remaining_blocks[0]['value'], self.other_block_1['value'])
+        self.assertEqual(
+            remaining_blocks[0]['type'], self.other_block_1['type'])
+        self.assertTrue(
+            remaining_blocks[0]['value'], self.other_block_1['value'])
 
         # self.assertTrue('id' in end_article_page_blocks)
-        self.assertEqual(end_article_page_blocks[1]['type'], self.page_block_1['type'])
-        self.assertEqual(end_article_page_blocks[1]['value'], self.page_block_1['value'])
+        self.assertEqual(
+            end_article_page_blocks[1]['type'], self.page_block_1['type'])
+        self.assertEqual(
+            end_article_page_blocks[1]['value'], self.page_block_1['value'])
 
     def test_seperate_end_page_links_2(self):
         test_stream = [
@@ -68,8 +72,10 @@ class TestPageUtils(TestCase, MoloTestCaseMixin):
 
         (remaining_blocks, end_article_page_blocks) = seperate_end_page_links(test_stream)  # noqa
 
-        self.assertEqual(remaining_blocks[0]['type'], self.other_block_1['type'])
-        self.assertEqual(remaining_blocks[0]['value'], self.other_block_1['value'])
+        self.assertEqual(
+            remaining_blocks[0]['type'], self.other_block_1['type'])
+        self.assertEqual(
+            remaining_blocks[0]['value'], self.other_block_1['value'])
 
         self.assertEqual(len(end_article_page_blocks), 2)
         self.assertEqual(

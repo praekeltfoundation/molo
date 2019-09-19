@@ -524,23 +524,23 @@ class TestTasks(TestCase, MoloTestCaseMixin):
         def get_featured_articles(section):
             return ArticlePage.objects.live().filter(
                 featured_in_homepage=True,).descendant_of(section)
-        local_time = timezone.localtime()
+        local_time = timezone.localtime().replace(year=2017, month=1, day=1)
         self.mk_articles(
             self.yourmind_sub, count=2,
-            featured_in_homepage_start_date=local_time.replace(year=2017, month=1, day=1))
+            featured_in_homepage_start_date=local_time)
         self.mk_articles(
             self.yourmind_sub, count=1,
-            featured_in_homepage_start_date=local_time.replace(year=2017, month=1, day=2))
+            featured_in_homepage_start_date=local_time.replace(day=2))
         self.mk_articles(
             self.yourmind_sub, count=4, featured_in_homepage=False)
         promote_articles()
 
         self.mk_articles(
             self.mylife, count=2,
-            featured_in_homepage_start_date=local_time.replace(year=2017, month=1, day=3))
+            featured_in_homepage_start_date=local_time.replace(day=3))
         self.mk_articles(
             self.mylife, count=1,
-            featured_in_homepage_start_date=local_time.replace(year=2017, month=1, day=4))
+            featured_in_homepage_start_date=local_time.replace(day=4))
         self.mk_articles(
             self.mylife, count=4, featured_in_homepage=False)
         promote_articles()
