@@ -48,9 +48,9 @@ class TestPageUtils(TestCase, MoloTestCaseMixin):
 
         # self.assertTrue('id' in end_article_page_blocks)
         self.assertEqual(
-            end_article_page_blocks[1]['type'], self.page_block_1['type'])
+            end_article_page_blocks[0]['type'], self.page_block_1['type'])
         self.assertEqual(
-            end_article_page_blocks[1]['value'], self.page_block_1['value'])
+            end_article_page_blocks[0]['value'], self.page_block_1['value'])
 
     def test_seperate_end_page_links_2(self):
         test_stream = [
