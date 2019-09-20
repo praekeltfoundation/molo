@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from wagtail.contrib.modeladmin.options import (
-    ModelAdmin as WagtailModelAdmin,
+    ModelAdmin as WagtailModelAdmin, modeladmin_register
 )
 from wagtail.contrib.modeladmin.options import ModelAdminGroup
 
@@ -43,6 +43,11 @@ class ReactionQuestionResponseAdmin(admin.ModelAdmin):
     readonly_fields = ['question', 'choice']
 
 
+class SectionPageAdmin(WagtailModelAdmin):
+    model = SectionPage
+
+
+modeladmin_register(SectionPageAdmin)
 admin.site.register(ReactionQuestion, ReactionQuestionAdmin)
 admin.site.register(ReactionQuestionResponse, ReactionQuestionResponseAdmin)
 
