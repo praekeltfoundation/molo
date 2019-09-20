@@ -3,7 +3,7 @@ Views for importing content from another wagtail instance
 """
 from django.conf import settings
 from django.shortcuts import render
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views.generic import View, FormView
 

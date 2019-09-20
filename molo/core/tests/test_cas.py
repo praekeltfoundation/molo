@@ -2,10 +2,12 @@ from mock import patch
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group, Permission
+
+from wagtail.core.models import GroupPagePermission
+
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import Main
-from django.contrib.auth.models import Group, Permission
-from wagtail.core.models import GroupPagePermission
 
 
 class CASTestCase(TestCase, MoloTestCaseMixin):
@@ -70,6 +72,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
+        mock_verify.assert_called_once()
         user = User.objects.get(username='test@example.com')
         self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
         self.assertEqual(user.email, 'root@example.com')
@@ -89,7 +92,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
-
+        mock_verify.assert_called_once()
         self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
 
     @patch('cas.CASClientV2.verify_ticket')
@@ -109,6 +112,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
+        mock_verify.assert_called_once()
 
         self.assertContains(response, 'Welcome to the testapp Wagtail CMS')
         response = self.client.get('/admin/logout/', follow=True)
@@ -151,7 +155,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
-
+        mock_verify.assert_called_once()
         self.assertContains(
             response, 'You do not have permission to access this site.',
             status_code=403)
@@ -170,6 +174,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
+        mock_verify.assert_called_once()
 
         self.assertContains(
             response, 'You do not have permission to access this site.',
@@ -201,7 +206,7 @@ class CASTestCase(TestCase, MoloTestCaseMixin):
             '/admin/login/',
             {'ticket': 'fake-ticket', 'next': '/admin/'},
             follow=True)
-
+        mock_verify.assert_called_once()
         # logout
         response = self.client.get('/admin/logout/', follow=True)
         self.assertEqual(

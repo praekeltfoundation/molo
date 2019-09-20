@@ -16,7 +16,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BannerIndexPage',
             fields=[
-                ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
+                ('page_ptr', models.OneToOneField(
+                    parent_link=True, auto_created=True, primary_key=True,
+                    serialize=False, to='wagtailcore.Page', on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -26,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FooterIndexPage',
             fields=[
-                ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
+                ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='wagtailcore.Page', on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -36,7 +38,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SectionIndexPage',
             fields=[
-                ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
+                ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='wagtailcore.Page', on_delete=models.SET_NULL)),
                 ('commenting_state', models.CharField(default=b'O', max_length=1, null=True, blank=True, choices=[(b'O', b'Open'), (b'C', b'Closed'), (b'D', b'Disabled'), (b'T', b'Timestamped')])),
                 ('commenting_open_time', models.DateTimeField(null=True, blank=True)),
                 ('commenting_close_time', models.DateTimeField(null=True, blank=True)),

@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+10.0.0
+~~~~~~
+- Support Django 2.2.5+ support
+
+9.0.1
+~~~~~
+- Remove wagtail forms from molo core
+
 8.12.5
 ~~~~~~
 - Bug fixes: get_next_article, load_tags_for_article tags and form invalid key security question check

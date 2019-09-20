@@ -55,7 +55,6 @@ from molo.core.utils import (
 )
 
 from django.db.models.signals import pre_delete
-from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
 from django_enumfield import enum
 
 
@@ -66,6 +65,10 @@ class ReadOnlyPanel(EditHandler):
         self.heading = pretty_name(self.attr) if heading is None else heading
         self.classname = classname
         self.help_text = help_text
+        self.form = None
+        self.model = None
+        self.request = None
+        self.instance = None
 
     def render(self):
         value = getattr(self.instance, self.attr)
@@ -471,7 +474,8 @@ class ImageInfo(models.Model):
         'wagtailimages.Image',
         null=True,
         blank=True,
-        related_name='image_info'
+        related_name='image_info',
+        on_delete=models.CASCADE
     )
 
     def save(self, *args, **kwargs):
@@ -650,14 +654,27 @@ class CommentedPageMixin(object):
 
 
 class PageTranslation(models.Model):
-    page = models.ForeignKey('wagtailcore.Page', related_name='translations')
+    page = models.ForeignKey(
+        'wagtailcore.Page',
+        related_name='translations',
+        on_delete=models.CASCADE
+    )
     translated_page = models.OneToOneField(
-        'wagtailcore.Page', related_name='source_page')
+        'wagtailcore.Page',
+        related_name='source_page',
+        on_delete=models.CASCADE
+    )
 
 
 class LanguageRelation(models.Model):
-    page = models.ForeignKey('wagtailcore.Page', related_name='languages')
-    language = models.ForeignKey('core.SiteLanguage', related_name='+')
+    page = models.ForeignKey(
+        'wagtailcore.Page',
+        related_name='languages', on_delete=models.CASCADE
+    )
+    language = models.ForeignKey(
+        'core.SiteLanguage',
+        related_name='+', on_delete=models.CASCADE
+    )
 
 
 def get_translation_for(pages, locale, site, is_live=True):
@@ -956,11 +973,16 @@ ReactionQuestionChoice.content_panels = [
 
 
 class ReactionQuestionResponse(models.Model):
-    user = models.ForeignKey('auth.User', blank=True, null=True)
-    article = models.ForeignKey('core.ArticlePage')
+    user = models.ForeignKey(
+        'auth.User', blank=True, null=True, on_delete=models.CASCADE
+    )
+    article = models.ForeignKey(
+        'core.ArticlePage', on_delete=models.CASCADE)
     choice = models.ForeignKey(
-        'core.ReactionQuestionChoice', blank=True, null=True)
-    question = models.ForeignKey('core.ReactionQuestion')
+        'core.ReactionQuestionChoice',
+        blank=True, null=True, on_delete=models.SET_NULL)
+    question = models.ForeignKey(
+        'core.ReactionQuestion', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def set_response_as_submitted_for_session(self, request, article):
@@ -1149,11 +1171,6 @@ class Main(CommentedPageMixin, MoloPage):
                     generate_slug(self.title), )))
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
-            form_index = FormIndexPage(
-                title='Forms', slug=('forms-%s' % (
-                    generate_slug(self.title), )))
-            self.add_child(instance=form_index)
-            form_index.save_revision().publish()
             tag_index = TagIndexPage(
                 title='Tags', slug=('tags-%s' % (
                     generate_slug(self.title), )))
@@ -2015,58 +2032,3 @@ FooterPage.promote_panels = [
     MultiFieldPanel(
         Page.promote_panels,
         "Common page configuration", "collapsible collapsed")]
-
-
-class FormIndexPage(MoloPage, PreventDeleteMixin):
-    parent_page_types = []
-    subpage_types = ['FormPage']
-
-    def copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
-        main = site.root_page
-        FormIndexPage.objects.child_of(main).delete()
-        super(FormIndexPage, self).copy(*args, **kwargs)
-
-    def get_site(self):
-        try:
-            return self.get_ancestors().filter(
-                depth=2).first().sites_rooted_here.get(
-                    site_name__icontains='main')
-        except Exception:
-            return self.get_ancestors().filter(
-                depth=2).first().sites_rooted_here.all().first() or None
-
-
-class FormField(AbstractFormField):
-    page = ParentalKey(
-        'FormPage', on_delete=models.CASCADE, related_name='form_fields')
-
-
-class FormPage(TranslatablePageMixinNotRoutable, AbstractEmailForm):
-    parent_page_types = ['FormIndexPage']
-    subpage_types = []
-    language = models.ForeignKey(
-        'core.SiteLanguage', blank=True, null=True,
-        on_delete=models.SET_NULL)
-    translated_pages = models.ManyToManyField("self", blank=True)
-    intro = models.TextField(blank=True)
-    body = StreamField([
-        ('paragraph', blocks.RichTextBlock()),
-    ], null=True, blank=True)
-    thank_you_text = models.TextField(blank=True)
-    content_panels = AbstractEmailForm.content_panels + [
-        FieldPanel('intro', classname="full"),
-        StreamFieldPanel('body'),
-        InlinePanel('form_fields', label="Form fields"),
-        FieldPanel('thank_you_text', classname="full"),
-        MultiFieldPanel([
-            FieldRowPanel([
-                FieldPanel('from_address', classname="col6"),
-                FieldPanel('to_address', classname="col6"),
-            ]),
-            FieldPanel('subject'),
-        ], "Email"),
-    ]
-
-    def serve(self, request, *args, **kwargs):
-        return super(AbstractEmailForm, self).serve(request, *args, **kwargs)

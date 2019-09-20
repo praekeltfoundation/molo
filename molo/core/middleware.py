@@ -7,10 +7,11 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django_cas_ng.middleware import CASMiddleware
 from django.views.defaults import permission_denied
-from django.contrib.auth.views import login, logout
-from django.core.urlresolvers import resolve, reverse
-from django.shortcuts import redirect, render_to_response
-from django_cas_ng.views import login as cas_login, logout as cas_logout
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import resolve, reverse
+from django.shortcuts import redirect, render
+from django_cas_ng.views import LoginView as CasLogin,\
+    LogoutView as CasLogout
 from django.utils.translation import activate
 from django.contrib.messages import get_messages
 from django.utils.translation import get_language_from_request
@@ -26,13 +27,17 @@ from molo.core.models import Languages
 class MoloCASMiddleware(CASMiddleware):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if view_func == login or view_func == logout:
+        logout = LogoutView.as_view().__name__
+        is_logout = view_func.__name__ == logout
+        is_login = view_func.__name__ == LoginView.as_view().__name__
+
+        if is_login or is_logout:
             return None
 
-        if view_func == cas_login:
-            return cas_login(request, *view_args, **view_kwargs)
-        elif view_func == cas_logout:
-            return cas_logout(request, *view_args, **view_kwargs)
+        if view_func.__name__ == CasLogin.__name__:
+            return CasLogin(request, *view_args, **view_kwargs)
+        elif is_logout:
+            return CasLogout.as_view(request, *view_args, **view_kwargs)
 
         if settings.CAS_ADMIN_PREFIX:
             if not request.path.startswith(settings.CAS_ADMIN_PREFIX):
@@ -48,7 +53,7 @@ class MoloCASMiddleware(CASMiddleware):
                 """
                 return None
             else:
-                return permission_denied(request, 'error')
+                return permission_denied(request, HttpResponseForbidden)
         return super(MoloCASMiddleware, self).process_view(
             request, view_func, view_args, view_kwargs)
 
@@ -60,7 +65,7 @@ class Custom403Middleware(django.utils.deprecation.MiddlewareMixin):
         for message in storage:
             pass
         if isinstance(response, HttpResponseForbidden):
-            return permission_denied(request, 'error')
+            return permission_denied(request, HttpResponseForbidden)
         return response
 
 
@@ -191,8 +196,8 @@ class MaintenanceModeMiddleware(django.utils.deprecation.MiddlewareMixin):
                     for k, v in ctx.items():
                         setattr(self, k, v)
 
-            return render_to_response(
-                template_name, context={
+            return render(
+                request, template_name, context={
                     'self': Page(page_ctx),
                     'request': request,
                     'ENV': getattr(settings, 'ENV', 'dev'),

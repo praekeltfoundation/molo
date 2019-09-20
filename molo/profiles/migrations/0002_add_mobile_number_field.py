@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('show_mobile_number_field', models.BooleanField(default=False, verbose_name='Add mobile number field to registration')),
                 ('mobile_number_required', models.BooleanField(default=False, verbose_name='Mobile number required')),
-                ('site', models.OneToOneField(editable=False, to='wagtailcore.Site')),
+                ('site', models.OneToOneField(editable=False, to='wagtailcore.Site', on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
