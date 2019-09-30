@@ -438,17 +438,13 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     exclude_pks = []
     tags_list = []
     main_language_page = section.get_main_language_page()
-    child_articles = ArticlePage.objects.descendant_of(
-        main_language_page).filter(language__is_main_language=True)
+    exclude_pks += ArticlePage.objects.descendant_of(
+        main_language_page).filter(
+        language__is_main_language=True).values_list('pk', flat=True)
 
-    for article in child_articles:
-        exclude_pks.append(article.pk)
-
-    related_articles = ArticlePage.objects.filter(
-        related_sections__section__slug=main_language_page.slug)
-
-    for article in related_articles:
-        exclude_pks.append(article.pk)
+    exclude_pks += ArticlePage.objects.filter(
+        related_sections__section__slug=main_language_page.slug
+    ).values_list('pk', flat=True)
 
     tags = section.get_main_language_page().specific.section_tags.filter(
             tag__isnull=False).values('tag__pk')
