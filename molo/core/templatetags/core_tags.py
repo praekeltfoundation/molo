@@ -79,13 +79,11 @@ def load_sections(context):
 
 @register.simple_tag(takes_context=True)
 def get_translation(context, page):
-    locale_code = context.get('locale_code')
     try:
-        translation = page.translated_pages.get(language__locale=locale_code)
+        return page.translated_pages.get(
+            language__locale=context.get('locale_code'))
     except:
         return page
-
-    return translation
 
 
 @register.simple_tag(takes_context=True)
@@ -165,19 +163,19 @@ def hero_article(context):
 
 @register.inclusion_tag('core/tags/bannerpages.html', takes_context=True)
 def bannerpages(context, position=-1):
+    pages = []
     request = context['request']
     locale = context.get('locale_code')
 
     if request.site:
         pages = request.site.root_page.specific.bannerpages().exact_type(
             BannerPage)
-    else:
-        pages = []
+
     if position >= 0:
         banners = get_pages(context, pages, locale)
         if position > (len(banners) - 1):
             return None
-        banners = get_pages(context, pages, locale)
+
         if banners and len(banners) > position:
             return {
                 'bannerpages': [banners[position]],
@@ -203,27 +201,26 @@ def bannerpages(context, position=-1):
 
 @register.inclusion_tag('core/tags/footerpage.html', takes_context=True)
 def footer_page(context):
+    pages = []
     request = context['request']
     locale = context.get('locale_code')
 
     if request.site:
         pages = request.site.root_page.specific.footers()
-    else:
-        pages = []
 
     return {
-        'footers': get_pages(context, pages, locale),
-        'request': context['request'],
+        'request': request,
         'locale_code': locale,
+        'footers': get_pages(context, pages, locale),
     }
 
 
 @register.inclusion_tag('core/tags/breadcrumbs.html', takes_context=True)
 def breadcrumbs(context):
+    translated_ancestors = []
     self = context.get('self')
     locale_code = context.get('locale_code')
-    ancestors = []
-    translated_ancestors = []
+
     if self is not None and not self.depth <= 2:
         ancestors = Page.objects.live().ancestor_of(
             self, inclusive=True).filter(depth__gt=3)
@@ -253,17 +250,12 @@ def render_translations(context, page):
 
     translated = []
     for code, title in languages:
-        if page.specific.translated_pages.filter(
-                language__locale=code).exists():
-            translated.append({
-                'locale': {'title': title, 'code': code},
-                'translated':
-                    page.specific.translated_pages.filter(
-                        language__locale=code).first()})
-        else:
-            translated.append({
-                'locale': {'title': title, 'code': code},
-                'translated': []})
+        translated.append({
+            'locale': {'title': title, 'code': code},
+            'translated':
+                page.specific.translated_pages.filter(
+                    language__locale=code).first() or []})
+
     return {
         'translations': translated,
         'page': page
@@ -288,8 +280,8 @@ def load_descendant_articles_for_section(
     qs = ArticlePage.objects.descendant_of(page).filter(
         language__is_main_language=True)
 
-    article_ordering = settings \
-        and settings.article_ordering_within_section
+    article_ordering = getattr(
+        settings, 'article_ordering_within_section', None)
 
     if article_ordering:
         order_by = ArticleOrderingChoices.\
@@ -300,18 +292,17 @@ def load_descendant_articles_for_section(
 
         # if the sort order is equal to CMS_DEFAULT_SORTING
         #  do not order QS, CMS handles it
-        if article_ordering and settings.article_ordering_within_section\
-                != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+        if article_ordering != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
             qs = qs.order_by(order_by)
 
-    if featured_in_homepage is not None:
+    if featured_in_homepage:
         qs = qs.filter(featured_in_homepage=featured_in_homepage)\
             .order_by('-featured_in_homepage_start_date')
 
-    if featured_in_latest is not None:
+    if featured_in_latest:
         qs = qs.filter(featured_in_latest=featured_in_latest)
 
-    if featured_in_section is not None:
+    if featured_in_section:
         qs = qs.filter(featured_in_section=featured_in_section)\
             .order_by('-featured_in_section_start_date')
 
@@ -339,7 +330,8 @@ def load_child_articles_for_section(
 
     # TODO: Consider caching the pks of these articles using a timestamp on
     # section as the key so tha twe don't always do these joins
-    article_ordering = settings and settings.article_ordering_within_section
+    article_ordering = getattr(
+        settings, 'article_ordering_within_section', None)
     order_by = ArticleOrderingChoices.\
         get(settings.article_ordering_within_section).name.lower() \
         if article_ordering else '-first_published_at'
@@ -353,8 +345,7 @@ def load_child_articles_for_section(
 
     # if the sort order is equal to CMS_DEFAULT_SORTING
     #  do not order QS, CMS handles it
-    if getattr(settings, 'article_ordering_within_section')\
-            != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+    if article_ordering != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
         child_articles = child_articles.order_by(order_by)
 
     if featured_in_section is not None:
@@ -391,8 +382,7 @@ def load_child_articles_for_section(
 def get_articles_for_tags_with_translations(
         request, tag, exclude_list, locale, context, exclude_pks):
 
-    pks = [article_tag.page.pk for article_tag in
-           ArticlePageTags.objects.filter(tag=tag)]
+    pks = ArticlePageTags.objects.filter(tag=tag).values('page__pk')
     pages = get_pages(
         context, ArticlePage.objects.descendant_of(
             request.site.root_page).filter(pk__in=pks), locale)
@@ -406,8 +396,8 @@ def get_articles_for_tag(context, tag):
     locale = context.get('locale_code')
     if tag:
         main_tag = tag.specific.get_main_language_page()
-        pks = [article_tag.page.pk for article_tag in
-               ArticlePageTags.objects.filter(tag=main_tag)]
+        pks = ArticlePageTags.objects.filter(
+            tag=main_tag).values('page__pk')
         return get_pages(
             context, ArticlePage.objects.descendant_of(
                 request.site.root_page).filter(
@@ -426,7 +416,7 @@ def get_next_tag(context, tag):
         language__is_main_language=True).live()
     if qs.exists():
         tags = list(qs)
-        if not (len(tags) == tags.index(current_tag) + 1):
+        if not len(tags) == tags.index(current_tag) + 1:
             next_tag = tags[tags.index(current_tag) + 1]
         else:
             next_tag = tags[0]
@@ -450,34 +440,35 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
     main_language_page = section.get_main_language_page()
     child_articles = ArticlePage.objects.descendant_of(
         main_language_page).filter(language__is_main_language=True)
+
     for article in child_articles:
         exclude_pks.append(article.pk)
+
     related_articles = ArticlePage.objects.filter(
         related_sections__section__slug=main_language_page.slug)
+
     for article in related_articles:
         exclude_pks.append(article.pk)
 
-    tags = [
-        section_tag.tag.pk for section_tag in
-        section.get_main_language_page().specific.section_tags.all()
-        if section_tag.tag]
+    tags = section.get_main_language_page().specific.section_tags.filter(
+            tag__isnull=False).values('tag__pk')
+
     if tags and request.site:
         qs = Tag.objects.descendant_of(
             request.site.root_page).live().filter(pk__in=tags)
+
         for tag in qs:
             tag_articles = get_articles_for_tags_with_translations(
                 request, tag, exclude_pks, locale, context,
                 exclude_pks)
+
             if len(tag_articles) > tag_article_count:
                 tag_articles = tag_articles[:tag_article_count]
+
             exclude_pks += [p.pk for p in tag_articles]
             tags = get_pages(context, qs.filter(pk=tag.pk), locale)
             if tags:
-                tags_list.append((
-                    tags[0],
-                    tag_articles))
-    else:
-        return []
+                tags_list.append((tags[0], tag_articles))
 
     return tags_list
 
@@ -563,9 +554,8 @@ def get_tag_articles(
         tag_for_locale = get_pages(context, tag_qs.filter(pk=tag.pk), locale)
 
         if tag_for_locale:
-            tags_list.append((tag_for_locale[0], tag_articles))
-        else:
-            tags_list.append((tag, tag_articles))
+            tags_list.append(
+                (tag_for_locale[0] if tag_for_locale else tag, tag_articles))
 
     # Latest Articles
     pages = get_pages(
@@ -585,48 +575,45 @@ def get_tag_articles(
 @register.simple_tag(takes_context=True)
 @prometheus_query_count
 def load_tags_for_article(context, article):
-    if not article.specific.__class__ == ArticlePage:
-        return None
+    if article.specific.__class__ == ArticlePage:
+        locale = context.get('locale_code')
+        request = context['request']
 
-    locale = context.get('locale_code')
-    request = context['request']
+        latest_revision_date = article.latest_revision_created_at.isoformat() \
+            if article.latest_revision_created_at \
+            else article.created_at.isoformat()
 
-    latest_revision_date = article.latest_revision_created_at.isoformat() \
-        if article.latest_revision_created_at \
-        else article.created_at.isoformat()
+        cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
+            locale, request.site.pk, article.pk, latest_revision_date)
+        tags_pks = cache.get(cache_key)
 
-    cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
-        locale, request.site.pk, article.pk, latest_revision_date)
-    tags_pks = cache.get(cache_key)
+        if not tags_pks:
+            tags = article.specific.get_main_language_page().nav_tags.filter(
+                tag__isnull=False).values('tag__pk')
 
-    if not tags_pks:
-        tags = [
-            article_tag.tag.pk for article_tag in
-            article.specific.get_main_language_page().nav_tags.all()
-            if article_tag.tag]
-        if tags and request.site:
-            qs = Tag.objects.descendant_of(
-                request.site.root_page).live().filter(pk__in=tags)
-            tags_pks = qs.values_list("pk", flat=True)
-            cache.set(cache_key, tags_pks, 300)
-        else:
-            return []
+            if tags and request.site:
+                tags_pks = Tag.objects.descendant_of(
+                    request.site.root_page).live().filter(
+                    pk__in=tags).values_list("pk", flat=True)
+                cache.set(cache_key, tags_pks, 300)
+            else:
+                tags_pks = []
 
-    qs = Tag.objects.descendant_of(
-        request.site.root_page).live().filter(pk__in=tags_pks)
-    return get_pages(context, qs, locale)
+        qs = Tag.objects.descendant_of(
+            request.site.root_page).live().filter(pk__in=tags_pks)
+        return get_pages(context, qs, locale)
+    return None
 
 
 @register.simple_tag(takes_context=True)
 @prometheus_query_count
 def load_choices_for_reaction_question(context, question):
-    locale = context.get('locale_code')
     if question:
         question = question.specific.get_main_language_page().specific
-    if question and question.get_children():
-        choices = ReactionQuestionChoice.objects.child_of(
-            question).filter(language__is_main_language=True)
-        return get_pages(context, choices, locale)
+        if question.get_children():
+            choices = ReactionQuestionChoice.objects.child_of(
+                question).filter(language__is_main_language=True)
+            return get_pages(context, choices, context.get('locale_code'))
     return []
 
 
@@ -641,51 +628,55 @@ def load_reaction_choice_submission_count(choice, article, question):
 @register.simple_tag(takes_context=True)
 @prometheus_query_count
 def load_user_can_vote_on_reaction_question(context, question, article_pk):
-    request = context['request']
     if question:
         question = question.specific.get_main_language_page()
         article = ArticlePage.objects.get(pk=article_pk)
+
         if hasattr(article, 'get_main_language_page'):
             article = article.get_main_language_page()
+
         return not question.has_user_submitted_reaction_response(
-            request, question.pk, article.pk)
+            context['request'], question.pk, article.pk)
 
 
 @register.simple_tag(takes_context=True)
 @prometheus_query_count
 def load_user_choice_reaction_question(context, question, article, choice):
-    request = context['request']
-    if question and request.user.is_authenticated:
+    if question and context['request'].user.is_authenticated:
         question = question.specific.get_main_language_page()
         article = ArticlePage.objects.get(pk=article)
+
         if hasattr(article, 'get_main_language_page'):
             article = article.get_main_language_page()
+
         return ReactionQuestionResponse.objects.filter(
             article=article, choice=choice,
-            question=question, user=request.user).exists()
+            question=question, user=context['request'].user
+        ).exists()
 
 
 @register.simple_tag(takes_context=True)
 @prometheus_query_count
 def load_reaction_question(context, article):
-    locale = context.get('locale_code')
-    request = context['request']
     question = None
+
     if article:
         article_question = article.get_main_language_page() \
             .reaction_questions.all().first()
         if hasattr(article_question, 'reaction_question'):
             question = article_question.reaction_question
 
-        if question and request.site:
+        if question and context['request'].site:
             qs = ReactionQuestion.objects.descendant_of(
-                request.site.root_page).live().filter(
+                context['request'].site.root_page).live().filter(
                     pk=question.pk, language__is_main_language=True)
         else:
             return []
-        translated_question = get_pages(context, qs, locale)
+
+        translated_question = get_pages(
+            context, qs, context.get('locale_code'))
         if translated_question:
-            return get_pages(context, qs, locale)[0]
+            return get_pages(context, qs, context.get('locale_code'))[0]
         return question
 
 
@@ -756,9 +747,8 @@ def handle_markdown(value):
 )
 @prometheus_query_count
 def social_media_footer(context, page=None):
-    request = context['request']
     locale = context.get('locale_code')
-    social_media = SiteSettings.for_site(request.site).\
+    social_media = SiteSettings.for_site(context['request'].site).\
         social_media_links_on_footer_page
 
     data = {
@@ -776,44 +766,30 @@ def social_media_footer(context, page=None):
 )
 @prometheus_query_count
 def social_media_article(context, page=None):
-    request = context['request']
     locale = context.get('locale_code')
-    site_settings = SiteSettings.for_site(request.site)
+    site_settings = SiteSettings.for_site(context['request'].site)
+    viber = False
+    twitter = False
+    facebook = False
+    whatsapp = False
+    telegram = False
 
-    if site_settings.facebook_sharing:
+    if site_settings:
         facebook = site_settings.facebook_image
-    else:
-        facebook = False
-
-    if site_settings.twitter_sharing:
         twitter = site_settings.twitter_image
-    else:
-        twitter = False
-
-    if site_settings.whatsapp_sharing:
         whatsapp = site_settings.whatsapp_image
-    else:
-        whatsapp = False
-
-    if site_settings.viber_sharing:
         viber = site_settings.viber_image
-    else:
-        viber = False
-
-    if site_settings.telegram_sharing:
         telegram = site_settings.telegram_image
-    else:
-        telegram = False
 
     data = {
-        'facebook': facebook,
-        'twitter': twitter,
-        'whatsapp': whatsapp,
-        'viber': viber,
-        'telegram': telegram,
-        'request': context['request'],
-        'locale_code': locale,
         'page': page,
+        'viber': viber,
+        'twitter': twitter,
+        'facebook': facebook,
+        'whatsapp': whatsapp,
+        'telegram': telegram,
+        'locale_code': locale,
+        'request': context['request'],
     }
     return data
 
@@ -824,9 +800,11 @@ def get_next_article(context, article):
     locale_code = context.get('locale_code')
     section = article.get_parent_section()
     articles = load_child_articles_for_section(context, section, count=None)
-    if len(articles) > 1:
+    article_len = len(articles)
+
+    if article_len > 1:
         try:
-            if len(articles) > articles.index(article) + 1:
+            if article_len > articles.index(article) + 1:
                 next_article = articles[articles.index(article) + 1]
             else:
                 next_article = articles[0]
@@ -848,27 +826,26 @@ def get_next_article(context, article):
 @register.simple_tag(takes_context=True)
 @prometheus_query_count
 def get_recommended_articles(context, article):
+    results = []
     locale_code = context.get('locale_code')
 
-    if article.recommended_articles.all():
-        recommended_articles = article.recommended_articles.all()
+    if article.recommended_articles.exists():
+        queryset = article.recommended_articles.all()\
+            .values_list('recommended_article', flat=True)
     else:
-        a = article.get_main_language_page()
-        recommended_articles = a.specific.recommended_articles.all()
-    # http://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order/37648265#37648265 # noqa
-    # the following allows us to order the results of the querystring
-    recommended_articles_queryset = recommended_articles.values_list(
-        'recommended_article', flat=True)
+        queryset = article.get_main_language_page().specific.\
+            recommended_articles.all()\
+            .values_list('recommended_article', flat=True)
 
-    if not recommended_articles_queryset:
-        return []
-    preserved = Case(
-        *[When(pk=pk, then=pos) for pos, pk in enumerate(
-                recommended_articles_queryset)])
-    articles = ArticlePage.objects.filter(
-                  pk__in=recommended_articles_queryset).order_by(preserved)
+    if queryset:
+        preserved = Case(*[
+            When(pk=pk, then=pos) for pos, pk in enumerate(queryset)
+        ])
+        articles = ArticlePage.objects\
+            .filter(pk__in=queryset).order_by(preserved)
 
-    return get_pages(context, articles, locale_code)
+        results = get_pages(context, articles, locale_code)
+    return results
 
 
 @register.simple_tag(takes_context=True)
