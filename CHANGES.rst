@@ -1,13 +1,9 @@
 CHANGES
 =======
 
-10.0.0
+8.12.6
 ~~~~~~
-- Support Django 2.2.5+ support
-
-9.0.1
-~~~~~
-- Remove wagtail forms from molo core
+- Performance updates
 
 8.12.5
 ~~~~~~
