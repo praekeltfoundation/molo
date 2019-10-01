@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+9.0.2
+~~~~~
+- Performance updates
+
 9.0.1
 ~~~~
 - Remove wagtail forms from molo core
