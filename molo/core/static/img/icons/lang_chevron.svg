@@ -1,0 +1,8 @@
+<svg width="11" height="7" viewBox="0 0 11 7" xmlns="http://www.w3.org/2000/svg">
+    <title>
+        Group 2
+    </title>
+    <g stroke="#FFF" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="square">
+        <path d="M1.5 1.5l4 4M5.5 5.5l4-4"/>
+    </g>
+</svg>

@@ -27,8 +27,8 @@ var gulp              =   require('gulp'),
          prd: 'molo/core/static/css/prd',
          dev: 'molo/core/static/css/dev'
     },
-    iconsPath = 'molo/core/static/images',
-    iconsDest = 'molo/core/static/images/generated-icons';
+    iconsPath = 'molo/core/static/img',
+    iconsDest = 'molo/core/static/img/generated-icons';
 
 function styles(env) {
   var s = gulp.src(sassPaths);
