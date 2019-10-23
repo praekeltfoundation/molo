@@ -13,6 +13,10 @@ CHANGES
 ~~~~
 - Remove wagtail forms from molo core
 
+8.12.6
+~~~~~~
+- Performance updates
+
 8.12.4
 ~~~~~~
 - Update the robots.txt file
