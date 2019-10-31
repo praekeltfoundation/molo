@@ -9,7 +9,7 @@ CHANGES
 ~~~~~~
 - Support Django 2.2.5+ support
 
-9.0.3
+9.0.4
 ~~~~~
 - Performance updates
 
