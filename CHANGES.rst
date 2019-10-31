@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+9.0.5
+~~~~~
+- Allow index pages to be shown without language
+
 9.0.4
 ~~~~~
 - Performance updates
