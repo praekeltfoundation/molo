@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-9.0.6
+9.0.7
 ~~~~~
 - Allow index pages to be shown without language
 
