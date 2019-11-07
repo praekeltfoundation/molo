@@ -1,34 +1,34 @@
 'use strict';
 
 var gulp              =   require('gulp'),
-    glob              =   require('glob'),
-    sass              =   require('gulp-sass'),
-    sassLint          =   require('gulp-sass-lint'),
-    sassGlob          =   require('gulp-sass-glob'),
-    cleanCSSMinify    =   require('gulp-clean-css'),
-    autoprefixer      =   require('gulp-autoprefixer'),
-    bless             =   require('gulp-bless'),
-    watch             =   require('gulp-watch'),
-    rename            =   require('gulp-rename'),
-    gzip              =   require('gulp-gzip'),
-    notify            =   require('gulp-notify'),
-    sourcemaps        =   require('gulp-sourcemaps'),
-    livereload        =   require('gulp-livereload'),
-    minify            =   require('gulp-minify'),
-    pixrem            =   require('gulp-pixrem'),
-    svgmin            =   require('gulp-svgmin'),
-    del               =   require('del'),
+  glob              =   require('glob'),
+  sass              =   require('gulp-sass'),
+  sassLint          =   require('gulp-sass-lint'),
+  sassGlob          =   require('gulp-sass-glob'),
+  cleanCSSMinify    =   require('gulp-clean-css'),
+  autoprefixer      =   require('gulp-autoprefixer'),
+  bless             =   require('gulp-bless'),
+  watch             =   require('gulp-watch'),
+  rename            =   require('gulp-rename'),
+  gzip              =   require('gulp-gzip'),
+  notify            =   require('gulp-notify'),
+  sourcemaps        =   require('gulp-sourcemaps'),
+  livereload        =   require('gulp-livereload'),
+  minify            =   require('gulp-minify'),
+  pixrem            =   require('gulp-pixrem'),
+  svgmin            =   require('gulp-svgmin'),
+  del               =   require('del'),
 
-    sassPaths = [
-        'molo/core/styles/sass/styles.s+(a|c)ss',
-        'molo/core/styles/mote.customize/mote.s+(a|c)ss'
-    ],
-    sassDest = {
-         prd: 'molo/core/static/css/prd',
-         dev: 'molo/core/static/css/dev'
-    },
-    iconsPath = 'molo/core/static/img',
-    iconsDest = 'molo/core/static/img/generated-icons';
+  sassPaths = [
+    'molo/core/styles/sass/styles.s+(a|c)ss',
+    'molo/core/styles/mote.customize/mote.s+(a|c)ss'
+  ],
+  sassDest = {
+     prd: 'molo/core/static/css/prd',
+     dev: 'molo/core/static/css/dev'
+  },
+  iconsPath = 'molo/core/static/img',
+  iconsDest = 'molo/core/static/img/generated-icons';
 
 function styles(env) {
   var s = gulp.src(sassPaths);
@@ -54,9 +54,10 @@ function styles(env) {
     s = s
     .pipe(sourcemaps.write('/maps'));
     return s
-    .pipe(gulp.dest(sassDest[env]))
-    .pipe(notify({ message: `Styles task complete: ${env}` }));
+    .pipe(notify({ message: `Styles task complete: ${env}` }))
+    .pipe(gulp.dest(sassDest[env]));
 }
+
 gulp.task('styles:prd', function() {
   return styles('prd');
 });
@@ -94,8 +95,7 @@ gulp.task('compress', function() {
 gulp.task('clean-generated-icons', function() {
   return del(iconsPath + '/svgs');
 });
-
-gulp.task('crush-svgs', ['clean-generated-icons'], function () {
+gulp.task('crush-svgs', gulp.series('clean-generated-icons', function() {
   return gulp.src(iconsPath + '/icons/*.svg')
   .pipe(svgmin({
     js2svg: {
@@ -103,11 +103,13 @@ gulp.task('crush-svgs', ['clean-generated-icons'], function () {
     }
   }))
   .pipe(gulp.dest(iconsPath + '/svgs'));
-});
+}));
+
 gulp.task('clean-icons', function() {
   return del(iconsDest);
 });
-gulp.task('icons', ['clean-icons', 'crush-svgs'], function(done) {
+
+gulp.task('icons', gulp.series('clean-icons', 'crush-svgs', function() {
   var icons = glob.sync(iconsPath + '/svgs/*.*'); //Get array of files from glob pattern
   var options = {
     enhanceSVG: true,
@@ -117,11 +119,34 @@ gulp.task('icons', ['clean-icons', 'crush-svgs'], function(done) {
       black: '#000000'
     }
   };
-});
-
-//Buggy
-// gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
-// gulp.task('default', ['styles', 'compress']);
+}));
 
 gulp.task('styles', gulp.series('styles:dev','styles:prd','stylesAdmin'));
 gulp.task('default', gulp.series('styles','compress'));
+
+//Buggy::
+// gulp.task('crush-svgs', ['clean-generated-icons'], function () {
+//   return gulp.src(iconsPath + '/icons/*.svg')
+//   .pipe(svgmin({
+//     js2svg: {
+//       pretty: true
+//     }
+//   }))
+//   .pipe(gulp.dest(iconsPath + '/svgs'));
+// });
+
+//
+// gulp.task('icons', ['clean-icons', 'crush-svgs'], function(done) {
+//   var icons = glob.sync(iconsPath + '/svgs/*.*'); //Get array of files from glob pattern
+//   var options = {
+//     enhanceSVG: true,
+//     dynamicColorOnly: true,
+//     colors: {
+//       white: '#ffffff',
+//       black: '#000000'
+//     }
+//   };
+// });
+
+// gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
+// gulp.task('default', ['styles', 'compress']);
