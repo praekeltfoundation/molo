@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+9.0.10
+~~~~~
+- Gulp version and template assets paths updates
+
 9.0.9
 ~~~~~
 - Exclude Index Pages from caching
