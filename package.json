@@ -5,7 +5,7 @@
   "main": "gulpfile.js",
   "dependencies": {
     "electron": "^1.7.12",
-    "marked": "0.3.9"
+    "marked": "0.3.18"
   },
   "devDependencies": {
     "del": "^3.0.0",
