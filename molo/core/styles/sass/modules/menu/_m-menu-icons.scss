@@ -17,25 +17,6 @@
     text-indent: -999em;
   }
 }
-
-#menu_icon, #menu > .menu-list__anchor {
-  @media screen and (min-width: 320px) {
-    background:  url('/static/images/icons/menu.svg') no-repeat 0 0 / auto 100%;
-  }
-}
-
-#search_icon, #search > .menu-list__anchor {
-  @media screen and (min-width: 320px) {
-    background:  url('/static/images/icons/search.svg') no-repeat 0 0 / auto 100%;
-  }
-}
-
-#profile_icon, #profile_register > .menu-list__anchor {
-  @media screen and (min-width: 320px) {
-    background:  url('/static/images/icons/user.svg') no-repeat 0 0 / auto 100%;
-  }
-}
-
 .menu-links {
   display: inline-block;
   float: right;

@@ -2,7 +2,7 @@
   "CarouselTeaserImage": {
       "modifiers": "",
       "img": {
-        "src": "/static/images/carousel.jpg",
+        "src": "/static/img/carousel.jpg",
         "alt": "Carousel Teaser Image"
       }
   }
