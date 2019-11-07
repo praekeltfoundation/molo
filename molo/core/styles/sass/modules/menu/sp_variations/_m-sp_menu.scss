@@ -27,19 +27,30 @@
     }
 }
 
-
 #profile {
+  float: left;
   .menu-list__anchor--section-nav {
-    background-image: url(/static/img/icons/avatar.svg), url(/static/img/icons/avatar@2x.png);
-    background-position: 10px 3px;
+    background-image: url(/static/img/icons/icons.svg), url(/static/img/icons/icons.png);
+    background-repeat: no-repeat;
+    background-position: -35px top;
+    background-size: 95px;
+    height: 35px;
+    width: auto;
   }
 }
 #search {
+  float: right;
   .menu-list__anchor--section-nav {
-    background-image: url(/static/img/icons/nav_search.svg), url(/static/img/icons/search-mint@2x.png);
-    background-position: 15px 3px;
+    //Mint search
+    background-image: url(/static/img/icons/icons.svg), url(/static/img/icons/icons.png);
+    background-position: -25px -72.9em;
+    background-size: 95px;
+    background-repeat: no-repeat;
+    height: 35px;
+    width: auto;
   }
 }
+
 #profile,
 #search {
   .menu-list__anchor--section-nav {

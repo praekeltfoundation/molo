@@ -2,7 +2,7 @@
   "Banner": {
       "modifiers": "",
       "img": {
-        "src": "/static/images/embed-image.png",
+        "src": "/static/img/mote/embed-image.png",
         "alt": "Banner"
       }
   }

@@ -13,7 +13,7 @@
           }
           &:after {
             content: "";
-            background: url('/static/images/icons/chevron-up.svg') no-repeat 0 0 / auto 100%;
+            background: url('/static/img/icons/chevron-up.svg') no-repeat 0 0 / auto 100%;
             height: 21px;
             width: 21px;
             position: absolute;
@@ -27,7 +27,7 @@
         &-text {
             &--backto-top-up_arrow {
               &:after {
-                content: url("/static/images/icons/up-arrow.svg");
+                content: url("/static/img/icons/up-arrow.svg");
                 right: 20%;
                 top: 30%;
                 position: absolute;
