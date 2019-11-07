@@ -81,9 +81,12 @@ def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(request.site).languages.filter(
         is_main_language=True).first()
     if pages and main_language and parent_page.depth > 2:
+
         if isinstance(pages, QuerySet):
             for page in pages:
-                if not page.specific:
+                if 'indexpage' in page.slug:
+                    continue
+                elif not page.specific:
                     pages = pages.exclude(pk=page.pk)
                 elif not page.specific.language:
                     pages = pages.exclude(pk=page.pk)

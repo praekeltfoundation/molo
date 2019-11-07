@@ -326,7 +326,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEqual(Page.objects.descendant_of(self.main).count(), 14)
+        self.assertEqual(Page.objects.descendant_of(self.main).count(), 13)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -339,7 +339,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'publish_copies': 'true'})
         self.assertEqual(response.status_code, 302)
         new_main = Page.objects.get(slug='new-main')
-        self.assertEqual(Page.objects.descendant_of(new_main).count(), 14)
+        self.assertEqual(Page.objects.descendant_of(new_main).count(), 13)
 
         self.assertEqual(len(mail.outbox), 1)
         [email] = mail.outbox
@@ -359,7 +359,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEqual(Page.objects.descendant_of(self.main).count(), 14)
+        self.assertEqual(Page.objects.descendant_of(self.main).count(), 13)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -375,7 +375,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_main_celery = Page.objects.get(slug='new-main-celery')
         # few pages created since we're not letting celery run
         self.assertEqual(
-            Page.objects.descendant_of(new_main_celery).count(), 7)
+            Page.objects.descendant_of(new_main_celery).count(), 6)
 
         # no email sent since copy is not complete
         self.assertEqual(len(mail.outbox), 0)

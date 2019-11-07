@@ -1,9 +1,25 @@
 CHANGES
 =======
 
-8.12.5
+9.0.7
+~~~~~
+- Allow index pages to be shown without language
+
+9.0.4
+~~~~~
+- Performance updates
+
+9.0.2
+~~~~~
+- Merge develop to develop-9.x
+
+9.0.1
+~~~~
+- Remove wagtail forms from molo core
+
+8.12.6
 ~~~~~~
-- Bug fixes: get_next_article, load_tags_for_article tags and form invalid key security question check
+- Performance updates
 
 8.12.4
 ~~~~~~
