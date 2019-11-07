@@ -123,30 +123,3 @@ gulp.task('icons', gulp.series('clean-icons', 'crush-svgs', function() {
 
 gulp.task('styles', gulp.series('styles:dev','styles:prd','stylesAdmin'));
 gulp.task('default', gulp.series('styles','compress'));
-
-//Buggy::
-// gulp.task('crush-svgs', ['clean-generated-icons'], function () {
-//   return gulp.src(iconsPath + '/icons/*.svg')
-//   .pipe(svgmin({
-//     js2svg: {
-//       pretty: true
-//     }
-//   }))
-//   .pipe(gulp.dest(iconsPath + '/svgs'));
-// });
-
-//
-// gulp.task('icons', ['clean-icons', 'crush-svgs'], function(done) {
-//   var icons = glob.sync(iconsPath + '/svgs/*.*'); //Get array of files from glob pattern
-//   var options = {
-//     enhanceSVG: true,
-//     dynamicColorOnly: true,
-//     colors: {
-//       white: '#ffffff',
-//       black: '#000000'
-//     }
-//   };
-// });
-
-// gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
-// gulp.task('default', ['styles', 'compress']);
