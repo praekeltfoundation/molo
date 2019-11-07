@@ -42,17 +42,17 @@ function styles(env) {
     .pipe(bless())
     .pipe(cleanCSSMinify())
     .pipe(autoprefixer({
-        browsers: [
-            'ie >= 8',
-            'android >= 2.3',
-            'iOS >= 6',
-            '> 0%'
-        ]
+      browsers: [
+        'ie >= 8',
+        'android >= 2.3',
+        'iOS >= 6',
+        '> 0%'
+      ]
     }))
     .pipe(pixrem());
     if (isDev)
     s = s
-      .pipe(sourcemaps.write('/maps'));
+    .pipe(sourcemaps.write('/maps'));
     return s
     .pipe(gulp.dest(sassDest[env]))
     .pipe(notify({ message: `Styles task complete: ${env}` }));
@@ -75,49 +75,53 @@ gulp.task('stylesAdmin', function() {
 });
 
 gulp.task('watch', function() {
-    livereload.listen();
-    gulp.watch(['molo/core/styles/**/*.scss'],['styles']);
+  livereload.listen();
+  gulp.watch(['molo/core/styles/**/*.scss'],['styles']);
 });
 
 // Minify JS
 gulp.task('compress', function() {
   gulp.src('molo/core/static/js/molo.js')
     .pipe(minify({
-        ext:{
-            min:'-min.js'
-        },
+      ext:{
+          min:'-min.js'
+      },
     }))
     .pipe(gulp.dest('molo/core/static/js/'))
 });
 
 //Icons
-
 gulp.task('clean-generated-icons', function() {
-    return del(iconsPath + '/svgs');
+  return del(iconsPath + '/svgs');
 });
+
 gulp.task('crush-svgs', ['clean-generated-icons'], function () {
-    return gulp.src(iconsPath + '/icons/*.svg')
-        .pipe(svgmin({
-          js2svg: {
-                pretty: true
-            }
-        }))
-        .pipe(gulp.dest(iconsPath + '/svgs'));
+  return gulp.src(iconsPath + '/icons/*.svg')
+  .pipe(svgmin({
+    js2svg: {
+      pretty: true
+    }
+  }))
+  .pipe(gulp.dest(iconsPath + '/svgs'));
 });
 gulp.task('clean-icons', function() {
-    return del(iconsDest);
+  return del(iconsDest);
 });
 gulp.task('icons', ['clean-icons', 'crush-svgs'], function(done) {
-    var icons = glob.sync(iconsPath + '/svgs/*.*'); //Get array of files from glob pattern
-    var options = {
-      enhanceSVG: true,
-      dynamicColorOnly: true,
-      colors: {
-        white: '#ffffff',
-        black: '#000000'
-      }
-    };
+  var icons = glob.sync(iconsPath + '/svgs/*.*'); //Get array of files from glob pattern
+  var options = {
+    enhanceSVG: true,
+    dynamicColorOnly: true,
+    colors: {
+      white: '#ffffff',
+      black: '#000000'
+    }
+  };
 });
 
-gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
-gulp.task('default', ['styles', 'compress']);
+//Buggy
+// gulp.task('styles', ['styles:dev', 'styles:prd','stylesAdmin']);
+// gulp.task('default', ['styles', 'compress']);
+
+gulp.task('styles', gulp.series('styles:dev','styles:prd','stylesAdmin'));
+gulp.task('default', gulp.series('styles','compress'));
