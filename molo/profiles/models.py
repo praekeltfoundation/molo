@@ -182,8 +182,18 @@ class UserProfilesSettings(BaseSetting):
         editable=True,
         verbose_name=_("Education Level Required"),
     )
+    require_login = models.BooleanField(
+        default=False,
+        verbose_name=_("Require login"),
+        help_text=_("Require login to access site content"),
+    )
 
     panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel('require_login'),
+            ],
+            heading="Require Login", ),
         MultiFieldPanel(
             [
                 FieldPanel('show_mobile_number_field'),

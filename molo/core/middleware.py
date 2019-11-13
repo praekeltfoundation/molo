@@ -1,26 +1,28 @@
 import uuid
-import django.utils.deprecation
-
 from bs4 import BeautifulSoup
 
+import django.utils.deprecation
 from django.conf import settings
 from django.http import HttpResponseForbidden
-from django_cas_ng.middleware import CASMiddleware
+from django.utils.translation import activate
+from django.contrib.messages import get_messages
 from django.views.defaults import permission_denied
 from django.contrib.auth.views import login, logout
 from django.core.urlresolvers import resolve, reverse
+from django.contrib.auth.views import redirect_to_login
 from django.shortcuts import redirect, render_to_response
-from django_cas_ng.views import login as cas_login, logout as cas_logout
-from django.utils.translation import activate
-from django.contrib.messages import get_messages
 from django.utils.translation import get_language_from_request
+
+from django_cas_ng.middleware import CASMiddleware
+from django_cas_ng.views import login as cas_login, logout as cas_logout
 
 from google_analytics.tasks import send_ga_tracking
 from google_analytics.utils import build_ga_params, set_cookie
 
-from wagtail.core.models import Site, Page
-from molo.core.models import SiteSettings
 from molo.core.models import Languages
+from molo.core.models import SiteSettings
+from wagtail.core.models import Site, Page
+from molo.profiles.models import UserProfilesSettings
 
 
 class MoloCASMiddleware(CASMiddleware):
@@ -199,3 +201,32 @@ class MaintenanceModeMiddleware(django.utils.deprecation.MiddlewareMixin):
                     'STATIC_URL': getattr(settings, 'STATIC_URL', 'dev'),
                 }
             )
+
+
+class LoginRequiredMiddleware(django.utils.deprecation.MiddlewareMixin):
+    def meets_requirements(self):
+        return True
+
+    def process_request(self, request):
+        if not request.user.is_authenticated \
+                and self.meets_requirements() \
+                and (
+                    'login' not in request.path and
+                    'auth' not in request.get_host() and
+                    'auth' not in request.path and
+                    'oidc' not in request.path and
+                    'logout' not in request.path and
+                    'profiles' not in request.path and
+                    'admin' not in request.path):
+            p_settings = UserProfilesSettings.for_site(request.site)
+
+            if not (p_settings.terms_and_conditions and
+                    p_settings.terms_and_conditions.slug in request.path)\
+                    and p_settings.require_login:
+                query_string = request.META['QUERY_STRING']
+                if query_string:
+                    next_value = request.path + '?%s' % query_string
+                else:
+                    next_value = request.path
+                return redirect_to_login(
+                    next=next_value, login_url=settings.LOGIN_URL)

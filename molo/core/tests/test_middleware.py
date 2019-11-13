@@ -3,17 +3,42 @@
 import responses
 from unittest.mock import patch
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import Client
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.core.urlresolvers import reverse
 
-from molo.core.middleware import MoloGoogleAnalyticsMiddleware
-from django.contrib.auth.models import User
-from molo.core.models import Main, Languages, SiteLanguageRelation
-from molo.core.tests.base import MoloTestCaseMixin
+from wagtail.core.models import Site
 from wagtail.search.backends import get_search_backend
+
+from molo.core.tests.base import MoloTestCaseMixin
+from molo.profiles.models import UserProfilesSettings
+from molo.core.middleware import MoloGoogleAnalyticsMiddleware
+from molo.core.models import Main, Languages, SiteLanguageRelation
+
+
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'molo.core.middleware.ForceDefaultLanguageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+
+    'molo.core.middleware.AdminLocaleMiddleware',
+    'molo.core.middleware.NoScriptGASessionMiddleware',
+
+    'molo.core.middleware.MoloGoogleAnalyticsMiddleware',
+    'molo.core.middleware.MultiSiteRedirectToHomepage',
+    'molo.core.middleware.LoginRequiredMiddleware',
+]
 
 
 class TestUtils(TestCase, MoloTestCaseMixin):
@@ -156,3 +181,29 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         self.assertTrue('custom_params' in mock_method._mock_call_args[1])
         self.assertTrue(mock_method._mock_call_args[1]['custom_params'],
                         custom_params)
+
+    @override_settings(MIDDLEWARE=MIDDLEWARE)
+    def test_login_required(self):
+        self.client.logout()
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+
+        self.client.force_login(self.user)
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+
+    @override_settings(MIDDLEWARE=MIDDLEWARE)
+    def test_login_required_true(self):
+        self.client.logout()
+
+        site = Site.objects.get(is_default_site=True)
+        profile_settings = UserProfilesSettings.for_site(site)
+        profile_settings.require_login = True
+        profile_settings.save()
+
+        res = self.client.get('/')
+        self.assertEqual(res.url, settings.LOGIN_URL + '?next=/')
+
+        self.client.force_login(self.user)
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
