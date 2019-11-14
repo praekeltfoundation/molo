@@ -5,7 +5,15 @@ CHANGES
 ~~~~~~
 - Support Django 2.2.5+ support
 
-9.0.3
+9.0.9
+~~~~~
+- Exclude Index Pages from caching
+
+9.0.8
+~~~~~
+- Allow index pages to be shown without language
+
+9.0.4
 ~~~~~
 - Performance updates
 
@@ -16,6 +24,10 @@ CHANGES
 9.0.1
 ~~~~~
 - Remove wagtail forms from molo core
+
+8.12.6
+~~~~~~
+- Performance updates
 
 8.12.4
 ~~~~~~
