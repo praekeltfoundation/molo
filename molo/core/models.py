@@ -1430,6 +1430,10 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             help_text=("Underneath the area for 'next articles' recommended "
                        "articles will appear, with the image + heading + "
                        "subheading")))
+    is_service_aggregator = (
+        models.BooleanField(
+            default=False, verbose_name='Service aggregator')
+    )
 
     api_fields = [
         "title", "live", "description", "image", "extra_style_hints",
@@ -1604,7 +1608,12 @@ SectionPage.settings_panels = [
             FieldPanel('enable_next_section'),
             FieldPanel('enable_recommended_section')
         ],
-        heading="Recommended Settings", )
+        heading="Recommended Settings", ),
+    MultiFieldPanel(
+        [
+            FieldPanel('is_service_aggregator'),
+        ],
+        heading="Service Aggregator", )
 ]
 
 
