@@ -49,16 +49,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='pagetranslation',
             name='page',
-            field=models.ForeignKey(related_name='translations', to='wagtailcore.Page'),
+            field=models.ForeignKey(related_name='translations', to='wagtailcore.Page', on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='languagerelation',
             name='language',
-            field=models.ForeignKey(related_name='+', to='core.SiteLanguage'),
+            field=models.ForeignKey(related_name='+', to='core.SiteLanguage', on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='languagerelation',
             name='page',
-            field=models.ForeignKey(related_name='languages', to='wagtailcore.Page'),
+            field=models.ForeignKey(related_name='languages', to='wagtailcore.Page', on_delete=models.SET_NULL),
         ),
     ]

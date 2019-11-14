@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from molo.core.middleware import MoloGoogleAnalyticsMiddleware
 from django.contrib.auth.models import User
@@ -72,7 +72,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         account = ''
         response = middleware.submit_tracking(account, request, response)
         self.assertTrue(mock_method.called_with(request.get_full_path()))
-        self.assertEquals(
+        self.assertEqual(
             mock_method._mock_call_args[1]['custom_params']['cd10'],
             self.english.locale)
 
@@ -101,7 +101,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         self.assertTrue(mock_method._mock_call_args[1]['custom_params'],
                         custom_params)
         # the language parameter is passed into the request
-        self.assertEquals(
+        self.assertEqual(
             mock_method._mock_call_args[1]['custom_params']['cd10'],
             custom_params['cd10'],
             self.english.locale)
@@ -125,7 +125,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         response = middleware.submit_tracking(account, request, response)
         self.assertTrue(mock_method.called_with(request.get_full_path()))
 
-        self.assertEquals(
+        self.assertEqual(
             mock_method._mock_call_args[1]['custom_params']['cd10'],
             self.french.locale)
 

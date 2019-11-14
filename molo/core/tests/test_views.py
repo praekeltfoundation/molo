@@ -8,7 +8,7 @@ from os import environ, makedirs, path
 from django.core import mail
 from django.conf import settings
 from django.utils import timezone
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.base import ContentFile
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase, override_settings, Client

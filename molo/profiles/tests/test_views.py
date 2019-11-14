@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 from django.utils import timezone
-from django.conf.urls import url, include
+from django.urls import re_path, include
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import QueryDict
 from django.test import TestCase, override_settings, Client
 
@@ -30,14 +30,13 @@ from wagtail.core import urls as wagtail_urls
 
 
 urlpatterns = [
-    url(r'^django-admin/', include(admin.site.urls)),
-    url(r'^admin/', include(wagtailadmin_urls)),
-    url(r'', include('molo.core.urls')),
-    url(r'^profiles/', include(
-        'molo.profiles.urls',
-        namespace='molo.profiles', app_name='molo.profiles')),
-    url('^', include('django.contrib.auth.urls')),
-    url(r'', include(wagtail_urls)),
+    re_path(r'^django-admin/', admin.site.urls),
+    re_path(r'^admin/', include(wagtailadmin_urls)),
+    re_path(r'', include('molo.core.urls')),
+    re_path(r'^profiles/', include((
+        'molo.profiles.urls', 'molo.profiles'), namespace='molo.profiles')),
+    re_path('^', include('django.contrib.auth.urls')),
+    re_path(r'', include(wagtail_urls)),
 ]
 
 DEFAULT_MIDDLEWARE = [

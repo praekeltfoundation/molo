@@ -4,7 +4,7 @@ import json
 
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 # from wagtail.images.tests.utils import get_test_image_file, Image
 

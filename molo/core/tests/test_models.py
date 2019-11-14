@@ -2,7 +2,7 @@
 import pytest
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -13,7 +13,7 @@ from molo.core.models import (
     ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
     BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
-    Timezone, Tag, ArticlePageTags, Site
+    Timezone, Tag, ArticlePageTags, Site, LanguageRelation
 )
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
@@ -30,22 +30,36 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
-        self.main = Main.objects.all().first()
         self.factory = RequestFactory()
+        self.main = Main.objects.all().first()
         self.language_setting = Languages.objects.create(
             site_id=self.main.get_site().pk)
+
         self.english = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting,
-            locale='en',
-            is_active=True)
-        # LanguageRelation.objects.create(
-        #     page=main, language=self.english)
+            locale='en', is_active=True)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.english)
+
         self.french = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting,
-            locale='fr',
-            is_active=True)
-        # LanguageRelation.objects.create(
-        #     page=self, language=self.french)
+            locale='fr', is_active=True)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.french)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.reaction_index, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.banner_index, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.tag_index, language=self.english)
 
         # Create an image for running tests on
         self.image = Image.objects.create(
@@ -71,6 +85,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
             language_setting=self.language_setting2,
             locale='es',
             is_active=True)
+
+        LanguageRelation.objects.create(
+            page=self.main2, language=self.english2)
+
+        LanguageRelation.objects.create(
+            page=self.main2, language=self.spanish)
 
         # Create an image for running tests on
         self.image = Image.objects.create(
@@ -98,6 +118,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             Languages.for_site(
                 self.main2.get_site()).languages.filter(locale='fr').exists())
         article = self.mk_articles(self.yourmind, 1)[0]
+
+        LanguageRelation.objects.create(
+            page=article, language=self.english2)
+
         self.mk_article_translation(article, self.french)
         article2 = article.copy(to=self.yourmind2)
         copy_translation_pages(article, article2)
@@ -107,7 +131,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(
-                    locale='fr').first().is_active)
+                locale='fr').first().is_active)
 
     def test_move_method_of_article_page_copies_over_languages(self):
         self.assertFalse(
@@ -122,41 +146,63 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(
-                    locale='fr').first().is_active)
+                locale='fr').first().is_active)
 
     def test_sections_method_of_main_gives_children_of_main_only(self):
         sections = self.main.sections()
         self.assertFalse(sections.child_of(self.main2).exists())
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_section_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=SectionIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
         self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_reaction_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=ReactionQuestionIndexPage.objects.child_of(
+                self.main2).first(),
+            language=self.spanish
+        )
         self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
         self.reaction_index.copy(to=self.main2)
         self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_tag_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=TagIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
         self.tag_index.copy(to=self.main2)
         self.assertEqual(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_footer_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=FooterIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
         self.assertEqual(
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_banner_index_wont_duplicate_index_pages(self):
+        LanguageRelation.objects.create(
+            page=BannerIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
         self.assertEqual(
             BannerIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
@@ -290,7 +336,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # check if the section doesn't have image it will return None
         en_section4 = self.mk_section(
             self.section_index,
-            title="New Section 4", slug="new-section-4",)
+            title="New Section 4", slug="new-section-4", )
         self.assertEqual(
             en_section4.get_effective_image(), '')
         fr_section4 = self.mk_section_translation(en_section4, self.french)
@@ -327,7 +373,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_number_of_child_sections(self):
         new_section = self.mk_section(self.section_index)
         self.mk_sections(new_section, count=12)
-        response = self.client.get('/')
+        self.client.get('/')
         response = self.client.get('/sections-main-1/test-section-0/')
         self.assertContains(response, 'Test Section 11')
 
@@ -444,7 +490,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         }
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
         post_data.update({
             'title': 'this is a test article2',
@@ -453,7 +499,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         })
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
 
         self.assertEqual(
@@ -498,7 +544,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         }
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
         post_data.update({
             'title': 'this is a test article2',
@@ -507,7 +553,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         })
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
 
         self.assertEqual(
@@ -554,7 +600,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertTrue(article2.nav_tags.get(), tag2)
 
     def test_social_media(self):
-
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
@@ -562,12 +607,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.mk_article(
             self.yourmind, title="New article",
             social_media_title='media title',
-            social_media_description='media description',)
+            social_media_description='media description', )
 
         self.mk_article(
             self.yourmind, title="New article2",
             social_media_title='media title',
-            social_media_image=self.image,)
+            social_media_image=self.image, )
 
         self.assertEqual(
             ArticlePage.objects.filter(
@@ -625,7 +670,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # create a new article and go to it's edit page
         new_section = self.mk_section(
             self.section_index, title="New Section", slug="new-section")
-        new_article = self.mk_article(new_section, title="New article",)
+        new_article = self.mk_article(new_section, title="New article", )
         response = self.client.get(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)))
         self.assertEqual(response.status_code, 200)
