@@ -1,9 +1,9 @@
 CHANGES
 =======
 
-10.0.0
+10.1.0
 ~~~~~~
-- Support Django 2.2.5+ support
+- Add Support for Django 2.2.5+
 
 9.0.9
 ~~~~~
