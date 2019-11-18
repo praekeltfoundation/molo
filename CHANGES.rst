@@ -1,8 +1,12 @@
 CHANGES
 =======
 
+10.1.0
+~~~~~~
+- Add Support for Django 2.2.5+
+
 9.0.10
-~~~~~
+~~~~~~
 - Gulp version and template assets paths updates
 
 9.0.9
@@ -22,7 +26,7 @@ CHANGES
 - Merge develop to develop-9.x
 
 9.0.1
-~~~~
+~~~~~
 - Remove wagtail forms from molo core
 
 8.12.6

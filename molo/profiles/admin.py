@@ -96,7 +96,8 @@ class ProfileUserAdmin(UserAdmin):
 
 # Below here is for Wagtail Admin
 class FrontendUsersDateRangeFilter(DateRangeFilter):
-    template = 'admin/frontend_users_date_range_filter.html'
+    # template = 'admin/frontend_users_date_range_filter.html'
+    pass
 
 
 class CustomUsersListFilter(admin.SimpleListFilter):

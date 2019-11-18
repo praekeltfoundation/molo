@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.test.client import Client
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from datetime import date
 from collections import OrderedDict
 from molo.core.tests.base import MoloTestCaseMixin

@@ -10,10 +10,10 @@ from molo.core.models import Languages, ArticlePage
 from molo.core.utils import create_new_article_relations
 from django.db.models.query import QuerySet
 
-from django.core import urlresolvers
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.utils.html import format_html
 
 from wagtail.core import hooks
@@ -129,7 +129,7 @@ def add_import_view():
 def register_api_menu_item():
     return MenuItem(
         _('API'),
-        urlresolvers.reverse('site-import'),
+        reverse('site-import'),
         classnames='icon icon-download',
     )
 
@@ -199,7 +199,7 @@ def show_explorer_only_to_users_have_access(request, menu_items):
 def page_listing_some_more_buttons(page, page_perms, is_parent=False):
     yield Button(
         _('Copy to All Countries'),
-        urlresolvers.reverse('copy-to-all-confirm', args=(page.id,)),
+        reverse('copy-to-all-confirm', args=(page.id,)),
         attrs={'copy_to_all_confirm': _("Copy page '{title}'").format(
             title=page.get_admin_display_title()
         )},

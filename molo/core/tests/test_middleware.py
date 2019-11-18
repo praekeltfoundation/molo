@@ -6,9 +6,9 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.urls import reverse
 
 from wagtail.core.models import Site
 from wagtail.search.backends import get_search_backend
@@ -97,7 +97,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         account = ''
         response = middleware.submit_tracking(account, request, response)
         self.assertTrue(mock_method.called_with(request.get_full_path()))
-        self.assertEquals(
+        self.assertEqual(
             mock_method._mock_call_args[1]['custom_params']['cd10'],
             self.english.locale)
 
@@ -126,7 +126,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         self.assertTrue(mock_method._mock_call_args[1]['custom_params'],
                         custom_params)
         # the language parameter is passed into the request
-        self.assertEquals(
+        self.assertEqual(
             mock_method._mock_call_args[1]['custom_params']['cd10'],
             custom_params['cd10'],
             self.english.locale)
@@ -150,7 +150,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         response = middleware.submit_tracking(account, request, response)
         self.assertTrue(mock_method.called_with(request.get_full_path()))
 
-        self.assertEquals(
+        self.assertEqual(
             mock_method._mock_call_args[1]['custom_params']['cd10'],
             self.french.locale)
 

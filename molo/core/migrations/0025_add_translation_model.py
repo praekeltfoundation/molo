@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('page', modelcluster.fields.ParentalKey(related_name='translations', to='wagtailcore.Page')),
-                ('translated_page', models.ForeignKey(related_name='+', to='wagtailcore.Page')),
+                ('translated_page', models.ForeignKey(related_name='+', to='wagtailcore.Page', on_delete=models.SET_NULL)),
             ],
         ),
     ]

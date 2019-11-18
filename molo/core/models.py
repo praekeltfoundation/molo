@@ -65,6 +65,10 @@ class ReadOnlyPanel(EditHandler):
         self.heading = pretty_name(self.attr) if heading is None else heading
         self.classname = classname
         self.help_text = help_text
+        self.form = None
+        self.model = None
+        self.request = None
+        self.instance = None
 
     def render(self):
         value = getattr(self.instance, self.attr)
@@ -470,7 +474,8 @@ class ImageInfo(models.Model):
         'wagtailimages.Image',
         null=True,
         blank=True,
-        related_name='image_info'
+        related_name='image_info',
+        on_delete=models.CASCADE
     )
 
     def save(self, *args, **kwargs):
@@ -649,14 +654,27 @@ class CommentedPageMixin(object):
 
 
 class PageTranslation(models.Model):
-    page = models.ForeignKey('wagtailcore.Page', related_name='translations')
+    page = models.ForeignKey(
+        'wagtailcore.Page',
+        related_name='translations',
+        on_delete=models.CASCADE
+    )
     translated_page = models.OneToOneField(
-        'wagtailcore.Page', related_name='source_page')
+        'wagtailcore.Page',
+        related_name='source_page',
+        on_delete=models.CASCADE
+    )
 
 
 class LanguageRelation(models.Model):
-    page = models.ForeignKey('wagtailcore.Page', related_name='languages')
-    language = models.ForeignKey('core.SiteLanguage', related_name='+')
+    page = models.ForeignKey(
+        'wagtailcore.Page',
+        related_name='languages', on_delete=models.CASCADE
+    )
+    language = models.ForeignKey(
+        'core.SiteLanguage',
+        related_name='+', on_delete=models.CASCADE
+    )
 
 
 def get_translation_for(pages, locale, site, is_live=True):
@@ -956,11 +974,16 @@ ReactionQuestionChoice.content_panels = [
 
 
 class ReactionQuestionResponse(models.Model):
-    user = models.ForeignKey('auth.User', blank=True, null=True)
-    article = models.ForeignKey('core.ArticlePage')
+    user = models.ForeignKey(
+        'auth.User', blank=True, null=True, on_delete=models.CASCADE
+    )
+    article = models.ForeignKey(
+        'core.ArticlePage', on_delete=models.CASCADE)
     choice = models.ForeignKey(
-        'core.ReactionQuestionChoice', blank=True, null=True)
-    question = models.ForeignKey('core.ReactionQuestion')
+        'core.ReactionQuestionChoice',
+        blank=True, null=True, on_delete=models.SET_NULL)
+    question = models.ForeignKey(
+        'core.ReactionQuestion', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def set_response_as_submitted_for_session(self, request, article):
