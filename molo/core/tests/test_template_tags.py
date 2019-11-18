@@ -367,7 +367,8 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your body')
 
         service = self.mk_section(
-            self.section_index, title='Service dir', is_service_aggregator=True)
+            self.section_index,
+            title='Service dir', is_service_aggregator=True)
 
         self.assertTrue(service not in load_sections(context))
         self.assertTrue(service in load_sections(
