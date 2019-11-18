@@ -1577,7 +1577,8 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
                 self.content_rotation_end_date,
             ]):
                 raise ValidationError(
-                    'Content rotation can not enabled when Service aggregator is selected'
+                    'Content rotation can not enabled when '
+                    'Service aggregator is selected'
                 )
         return super().clean()
 
