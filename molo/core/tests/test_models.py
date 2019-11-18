@@ -394,6 +394,22 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(
             new_section1.get_parent_section('en'), new_section)
 
+    def test_article_service_aggregator(self):
+        new_section = self.mk_section(
+            self.section_index, title="New Section", slug="new-section",
+            is_service_aggregator=True)
+
+        with self.assertRaises(ValidationError):
+            self.mk_article(
+                new_section, title="New Section 1", slug="new-section-1",
+                featured_in_latest=True)
+
+    def test_section_service_aggregator(self):
+        with self.assertRaises(ValidationError):
+            self.mk_section(
+                self.section_index, title="New Section", slug="new-section",
+                is_service_aggregator=True, monday_rotation=True)
+
     def test_commenting_closed_settings_fallbacks(self):
         new_section = self.mk_section(
             self.section_index, title="New Section", slug="new-section")

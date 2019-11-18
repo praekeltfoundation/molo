@@ -168,7 +168,8 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                         ).descendant_of(index).order_by('?').exact_type(
                             ArticlePage).first()
                         # set random article to feature in latest
-                        if random_article:
+                        if random_article and not random_article.get_parent(
+                        ).specific.is_service_aggregator:
                             random_article.featured_in_latest_start_date = \
                                 timezone.now()
                             random_article.save_revision().publish()
@@ -190,7 +191,9 @@ def rotate_featured_in_homepage(main_lang, day, main):
                 article.featured_in_homepage_end_date = None
                 article.save_revision().publish()
 
-    for section in SectionPage.objects.descendant_of(main):
+    sections = SectionPage.objects.descendant_of(
+        main).filter(is_service_aggregator=False)
+    for section in sections:
         days = get_days_section(section)
         # checks if current date is within the rotation date range
         if section.content_rotation_start_date and \
