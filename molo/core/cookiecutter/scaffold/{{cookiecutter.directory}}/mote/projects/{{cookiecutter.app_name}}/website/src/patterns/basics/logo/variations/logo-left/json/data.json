@@ -2,7 +2,7 @@
     "Logo": {
         "modifiers": "left",
         "img": {
-          "src": "/static/img/logo.png",
+          "src": "/static/images/logo.png",
           "alt": "Logo"
         }
     }

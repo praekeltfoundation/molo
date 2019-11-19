@@ -26,24 +26,13 @@
           &-icon {
             display: block;
             @media screen and (min-width: 320px) {
-              background-color: transparent;
-              background-image: url(/static/img/icons/icons.svg), url(/static/img/icons/icons.png);
-              background-repeat:  no-repeat;
-              background-position: 100% 0;
-              background-size: auto 98%;
-              right: 3%; //Check which media-query style does this belong
+              background:  url('/static/images/icons/search.svg') no-repeat 0 0 / auto 100%;
             }
           }
           &-icon-bg {
             border-radius: 0;
             @media screen and (min-width: 320px) {
-              background-color: #000;
-              background-image: url(/static/img/icons/icons.svg), url(/static/img/icons/icons.png);
-              background-repeat:  no-repeat;
-              background-position: 12px 10px;
-              background-size: auto 60%;
-              right: 10%;
-              top: 10px;
+              background:  #000 url('/static/images/icons/search_white.svg') no-repeat 12px 10px / auto 60%;
               right: 10%;
               top: 10px;
               height: 39px;

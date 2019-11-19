@@ -17,21 +17,13 @@
     list-style-type: none;
   }
   &__icon {
-    margin-top: -35px;
-    background-image: url("/static/img/icons/header-icons.svg"),
-      linear-gradient(transparent, transparent);
-    background-repeat: no-repeat;
-    background-position: center -18.5em;
-    background-size: 265px;
+    background: url('/static/img/icons/tag-cloud-love-hands.svg') no-repeat 0 0/contain;
     padding: 2px 5px;
     height: 88px;
     width: 100px;
     position: absolute;
     left: 50%;
-    margin-left: -55px;
-    text-align: center;
-    display: block;
-    z-index: 999;
+    margin-left: -50px;
   }
   &__heading {
     @include underline(zig-zag, 10px);

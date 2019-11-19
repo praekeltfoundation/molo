@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>icons/up</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M12,24 C18.627417,24 24,18.627417 24,12 C24,5.372583 18.627417,0 12,0 C5.372583,0 0,6.872583 0,13.5 C0,20.127417 5.372583,24 12,24 Z" id="path-1"></path>
+    </defs>
+    <g id="Basics" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="basics/icons" transform="translate(-534.000000, -519.000000)">
+            <g id="icon" transform="translate(479.000000, 487.000000)">
+                <g id="icons/select" transform="translate(55.000000, 32.000000)">
+                    <g>
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        <path stroke="#7300FF" stroke-width="2" d="M12,23 C5.54158342,23 1,19.242684 1,13.5 C1,7.10655525 6.20732388,1 12,1 C18.0751322,1 23,5.92486775 23,12 C23,18.0751322 18.0751322,23 12,23 Z"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -2,7 +2,7 @@
   "BaseTeaserThumbnail": {
       "modifiers": "base",
       "img": {
-        "src": "/static/img/teaser-thumbnail.jpg",
+        "src": "/static/images/teaser-thumbnail.jpg",
         "alt": "Base Teaser Thumbnail"
       }
   }

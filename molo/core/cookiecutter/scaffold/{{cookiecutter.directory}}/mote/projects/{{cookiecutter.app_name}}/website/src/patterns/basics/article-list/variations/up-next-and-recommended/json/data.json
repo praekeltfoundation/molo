@@ -4,7 +4,7 @@
       "modifiers": "brown",
       "hero": {
         "image": {
-          "src":"/static/img/thumbnail.png",
+          "src":"/static/images/thumbnail.png",
           "alt":"Article Image"
         },
         "title":"But there is no way to limit",
@@ -12,7 +12,7 @@
       },
       "list_hero": {
           "image": {
-            "src":"/static/img/thumbnail.png",
+            "src":"/static/images/thumbnail.png",
             "alt":"Article Image"
           },
           "title":"Title case ideally less than 120 characters",
@@ -21,7 +21,7 @@
       "list_subHero": [
         {
           "image": {
-            "src":"/static/img/thumbnail.png",
+            "src":"/static/images/thumbnail.png",
             "alt":"Article Image"
           },
           "title":"But there is no way to limit",
@@ -29,7 +29,7 @@
         },
         {
           "image": {
-            "src":"/static/img/thumbnail.png",
+            "src":"/static/images/thumbnail.png",
             "alt":"Article Image"
           },
           "title":"Another example of the an article title",
@@ -39,7 +39,7 @@
       "list": [
         {
           "image": {
-            "src":"/static/img/thumbnail.png",
+            "src":"/static/images/thumbnail.png",
             "alt":"Article Image"
           },
           "title":"But there is no way to limit",
@@ -47,7 +47,7 @@
         },
         {
           "image": {
-            "src":"/static/img/thumbnail.png",
+            "src":"/static/images/thumbnail.png",
             "alt":"Article Image"
           },
           "title":"Another example of the an article title",
@@ -55,7 +55,7 @@
         },
         {
           "image": {
-            "src":"/static/img/thumbnail.png",
+            "src":"/static/images/thumbnail.png",
             "alt":"Article Image"
           },
           "title":"But there is no way to limit",
@@ -63,7 +63,7 @@
         },
         {
           "image": {
-            "src":"/static/img/thumbnail.png",
+            "src":"/static/images/thumbnail.png",
             "alt":"Article Image"
           },
           "title":"Another example of the an article title",
