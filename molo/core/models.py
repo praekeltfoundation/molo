@@ -1841,8 +1841,9 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         return self.tags.names()
 
     def clean(self):
-        parent = self.get_parent().specific
-        if parent and parent.is_service_aggregator:
+        parent = getattr(self.get_parent(), 'specific', None)
+        should_validate = parent and isinstance(parent, SectionPage)
+        if should_validate and parent.is_service_aggregator:
             if any([
                 self.featured_in_latest,
                 self.featured_in_latest_start_date,
