@@ -7,9 +7,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profiles', '0006_merge_20191113_1025'),
-    ]
+    dependencies = []
 
     operations = [
         migrations.AddField(

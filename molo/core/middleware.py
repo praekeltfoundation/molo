@@ -4,8 +4,6 @@ from bs4 import BeautifulSoup
 import django.utils.deprecation
 from django.conf import settings
 from django.http import HttpResponseForbidden
-from django.utils.translation import activate
-from django.contrib.messages import get_messages
 from django.views.defaults import permission_denied
 
 from django.contrib.auth.views import LoginView, LogoutView, redirect_to_login
