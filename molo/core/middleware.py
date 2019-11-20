@@ -216,6 +216,8 @@ class LoginRequiredMiddleware(django.utils.deprecation.MiddlewareMixin):
         if not request.user.is_authenticated \
                 and self.meets_requirements() \
                 and (
+                    'sitemap.xml' not in request.path and
+                    'robots.txt' not in request.path and
                     'login' not in request.path and
                     'auth' not in request.get_host() and
                     'auth' not in request.path and
