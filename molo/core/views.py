@@ -31,7 +31,6 @@ from django.contrib.sitemaps import views as sitemap_views
 from wagtail.search.models import Query
 from wagtail.core.models import Page, UserPagePermissionsProxy
 
-from wagtail.contrib.sitemaps.views import prepare_sitemaps
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
