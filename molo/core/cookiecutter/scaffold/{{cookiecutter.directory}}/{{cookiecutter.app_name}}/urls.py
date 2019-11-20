@@ -40,7 +40,7 @@ urlpatterns += [
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^robots\.txt$', TemplateView.as_view(
         template_name='robots.txt', content_type='text/plain')),
-    url(r'^sitemap\.xml$', wagtail_views.sitemap),
+    url(r'^sitemap\.xml$', core_views.sitemap),
 
 {% for app_name, regex in cookiecutter.include %}
     url(r'{{regex}}',
