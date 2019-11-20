@@ -112,6 +112,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
 
+    def test_sitemap(self):
+        response = self.client.get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+
     def test_superuser_can_log_in_to_any_site(self):
         response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 200)
