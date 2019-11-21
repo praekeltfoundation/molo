@@ -75,7 +75,7 @@ def rotate_content(day=None):
 @task(ignore_result=True)
 def publish_scheduled_pages():
     management.call_command(
-        'publish_scheduled_pages', verbosity=0, interactive=False)
+        'publish_scheduled_pages', verbosity=0)
 
 
 @task(ignore_result=True)
@@ -83,7 +83,7 @@ def clearsessions():
     # Expired sessions will only be cleared roughly once an hour - randomly
     if random.randint(0, 59) == 0:
         management.call_command(
-            'clearsessions', verbosity=0, interactive=False)
+            'clearsessions', verbosity=0)
 
 
 @task(ignore_result=True)
