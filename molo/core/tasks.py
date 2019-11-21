@@ -58,17 +58,18 @@ def rotate_content(day=None):
 
     for main in Main.objects.all():
         site = main.sites_rooted_here.all().first()
-        main_lang = Languages.for_site(site).languages.filter(
-            is_main_language=True).first()
-        index = SectionIndexPage.objects.live().child_of(main).first()
-        site_settings = SiteSettings.for_site(site)
-        if day is None:
-            day = timezone.now().weekday()
+        if site:
+            main_lang = Languages.for_site(site).languages.filter(
+                is_main_language=True).first()
+            index = SectionIndexPage.objects.live().child_of(main).first()
+            site_settings = SiteSettings.for_site(site)
+            if day is None:
+                day = timezone.now().weekday()
 
-        # calls the two rotate methods with the necessary params
-        if main and index:
-            rotate_latest(main_lang, index, main, site_settings, day)
-            rotate_featured_in_homepage(main_lang, day, main)
+            # calls the two rotate methods with the necessary params
+            if main and index:
+                rotate_latest(main_lang, index, main, site_settings, day)
+                rotate_featured_in_homepage(main_lang, day, main)
 
 
 @task(ignore_result=True)
@@ -168,7 +169,8 @@ def rotate_latest(main_lang, index, main, site_settings, day):
                         ).descendant_of(index).order_by('?').exact_type(
                             ArticlePage).first()
                         # set random article to feature in latest
-                        if random_article:
+                        if random_article and not random_article.get_parent(
+                        ).specific.is_service_aggregator:
                             random_article.featured_in_latest_start_date = \
                                 timezone.now()
                             random_article.save_revision().publish()
@@ -190,7 +192,9 @@ def rotate_featured_in_homepage(main_lang, day, main):
                 article.featured_in_homepage_end_date = None
                 article.save_revision().publish()
 
-    for section in SectionPage.objects.descendant_of(main):
+    sections = SectionPage.objects.descendant_of(
+        main).filter(is_service_aggregator=False)
+    for section in sections:
         days = get_days_section(section)
         # checks if current date is within the rotation date range
         if section.content_rotation_start_date and \

@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from wagtail.admin.edit_handlers import EditHandler
@@ -692,44 +692,45 @@ def get_translation_for(pages, locale, site, is_live=True):
 
     translated_pages = []
     for page in pages:
-        cache_key = page.specific.get_translation_for_cache_key(
-            locale, site, is_live)
-        trans_pk = cache.get(cache_key)
+        if 'indexpage' not in page.slug:
+            cache_key = page.specific.get_translation_for_cache_key(
+                locale, site, is_live)
+            trans_pk = cache.get(cache_key)
 
-    # TODO: consider pickling page object. Be careful about page size in
-    # memory
-        if trans_pk:
-            translated_pages.append(Page.objects.get(pk=trans_pk).specific)
-            continue
-        main_language_page = page.specific.get_main_language_page()
-        if language.is_main_language and not page == main_language_page:
-            cache.set(cache_key, main_language_page.pk, None)
-            translated_pages.append(main_language_page)
-            continue
+        # TODO: consider pickling page object. Be careful about page size in
+        # memory
+            if trans_pk:
+                translated_pages.append(Page.objects.get(pk=trans_pk).specific)
+                continue
+            main_language_page = page.specific.get_main_language_page()
+            if language.is_main_language and not page == main_language_page:
+                cache.set(cache_key, main_language_page.pk, None)
+                translated_pages.append(main_language_page)
+                continue
 
-        # Filter the translation pages for this page by the given language
-        try:
-            translation = page.specific.translated_pages.get(
-                language=language)
-            if is_live is not None:
-                if not translation.live:
-                    translation = None
-            if translation:
-                translated = translation.specific
-                cache.set(cache_key, translated.pk, None)
-                translated_pages.append(translated)
-            else:
-                if not show_only_translated_pages:
-                    if is_live is not None and not page.live:
-                        continue
-                    translated_pages.append(page)
-        except ObjectDoesNotExist:
-            if not show_only_translated_pages:
+            # Filter the translation pages for this page by the given language
+            try:
+                translation = page.specific.translated_pages.get(
+                    language=language)
                 if is_live is not None:
-                    if not page.live:
-                        continue
-                translated_pages.append(page)
-            continue
+                    if not translation.live:
+                        translation = None
+                if translation:
+                    translated = translation.specific
+                    cache.set(cache_key, translated.pk, None)
+                    translated_pages.append(translated)
+                else:
+                    if not show_only_translated_pages:
+                        if is_live is not None and not page.live:
+                            continue
+                        translated_pages.append(page)
+            except ObjectDoesNotExist:
+                if not show_only_translated_pages:
+                    if is_live is not None:
+                        if not page.live:
+                            continue
+                    translated_pages.append(page)
+                continue
 
     return translated_pages
 
@@ -1429,6 +1430,10 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             help_text=("Underneath the area for 'next articles' recommended "
                        "articles will appear, with the image + heading + "
                        "subheading")))
+    is_service_aggregator = (
+        models.BooleanField(
+            default=False, verbose_name='Service aggregator')
+    )
 
     api_fields = [
         "title", "live", "description", "image", "extra_style_hints",
@@ -1557,6 +1562,26 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         context['p'] = p
         return context
 
+    def clean(self):
+        # check content rotation settings
+        if self.is_service_aggregator:
+            if any([
+                self.monday_rotation,
+                self.tuesday_rotation,
+                self.wednesday_rotation,
+                self.thursday_rotation,
+                self.friday_rotation,
+                self.saturday_rotation,
+                self.sunday_rotation,
+                self.content_rotation_start_date,
+                self.content_rotation_end_date,
+            ]):
+                raise ValidationError(
+                    'Content rotation can not enabled when '
+                    'Service aggregator is selected'
+                )
+        return super().clean()
+
     class Meta:
         verbose_name = _('Section')
 
@@ -1603,7 +1628,12 @@ SectionPage.settings_panels = [
             FieldPanel('enable_next_section'),
             FieldPanel('enable_recommended_section')
         ],
-        heading="Recommended Settings", )
+        heading="Recommended Settings", ),
+    MultiFieldPanel(
+        [
+            FieldPanel('is_service_aggregator'),
+        ],
+        heading="Service Aggregator", )
 ]
 
 
@@ -1809,6 +1839,25 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
 
     def tags_list(self):
         return self.tags.names()
+
+    def clean(self):
+        parent = getattr(self.get_parent(), 'specific', None)
+        should_validate = parent and isinstance(parent, SectionPage)
+        if should_validate and parent.is_service_aggregator:
+            if any([
+                self.featured_in_latest,
+                self.featured_in_latest_start_date,
+                self.featured_in_latest_end_date,
+                self.featured_in_section_start_date,
+                self.featured_in_section_end_date,
+                self.featured_in_homepage_start_date,
+                self.featured_in_homepage_end_date,
+            ]):
+                raise ValidationError(
+                    'Content rotation can not enabled when Service aggregator '
+                    'is selected on {} section'.format(parent)
+                )
+        return super().clean()
 
     class Meta:
         verbose_name = _('Article')

@@ -1,15 +1,26 @@
 CHANGES
 =======
 
-10.0.1
+10.1.1
 ~~~~~~
-- Performance updates
+- Fix Content rotation's site_id bug
+- Add Sitemap view to address issue in wagtails sitemap view
+- Add Section's is_service_aggregator attr
+- Add service_aggregator kwarg to get_sections template tag
 
-10.0.0
+10.1.0
 ~~~~~~
-- Support Django 2.2.5+ support
+- Add Support for Django 2.2.5+
 
-9.0.3
+9.0.9
+~~~~~
+- Exclude Index Pages from caching
+
+9.0.8
+~~~~~
+- Allow index pages to be shown without language
+
+9.0.4
 ~~~~~
 - Performance updates
 
@@ -600,7 +611,6 @@ CHANGES
 5.21.3
 ~~~~~~
 - Admin View FED updates
->>>>>>> 782c0cdd55db211b8dc80e3538ebeeb44cabb705
 
 5.21.2
 ~~~~~~
