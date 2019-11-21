@@ -58,17 +58,18 @@ def rotate_content(day=None):
 
     for main in Main.objects.all():
         site = main.sites_rooted_here.all().first()
-        main_lang = Languages.for_site(site).languages.filter(
-            is_main_language=True).first()
-        index = SectionIndexPage.objects.live().child_of(main).first()
-        site_settings = SiteSettings.for_site(site)
-        if day is None:
-            day = timezone.now().weekday()
+        if site:
+            main_lang = Languages.for_site(site).languages.filter(
+                is_main_language=True).first()
+            index = SectionIndexPage.objects.live().child_of(main).first()
+            site_settings = SiteSettings.for_site(site)
+            if day is None:
+                day = timezone.now().weekday()
 
-        # calls the two rotate methods with the necessary params
-        if main and index:
-            rotate_latest(main_lang, index, main, site_settings, day)
-            rotate_featured_in_homepage(main_lang, day, main)
+            # calls the two rotate methods with the necessary params
+            if main and index:
+                rotate_latest(main_lang, index, main, site_settings, day)
+                rotate_featured_in_homepage(main_lang, day, main)
 
 
 @task(ignore_result=True)
