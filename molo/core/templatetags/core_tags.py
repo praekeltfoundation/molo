@@ -67,11 +67,12 @@ def load_tags(context):
 
 
 @register.simple_tag(takes_context=True)
-def load_sections(context):
+def load_sections(context, service_aggregator=False):
     request = context['request']
     locale = context.get('locale_code')
     if request.site:
-        qs = request.site.root_page.specific.sections()
+        qs = request.site.root_page.specific.sections().filter(
+            is_service_aggregator=service_aggregator)
     else:
         return []
     return get_pages(context, qs, locale)

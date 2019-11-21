@@ -13,7 +13,7 @@ from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
     hero_article, render_translations, load_descendant_articles_for_section,
     load_child_articles_for_section, load_reaction_choice_submission_count,
-    load_user_choice_reaction_question, get_tag_articles
+    load_user_choice_reaction_question, get_tag_articles, load_sections
 )
 
 
@@ -357,3 +357,23 @@ class TestModels(TestCase, MoloTestCaseMixin):
         for i in tag_articles:
             self.assertNotIn(i, articles['sections'])
             self.assertNotIn(i, articles['latest_articles'])
+
+    def test_load_sections(self):
+        request = self.factory.get('/')
+        request.site = self.site
+        context = {'locale_code': 'en', 'request': request}
+
+        your_body = self.mk_section(
+            self.section_index, title='Your body')
+
+        service = self.mk_section(
+            self.section_index,
+            title='Service dir', is_service_aggregator=True)
+
+        self.assertTrue(service not in load_sections(context))
+        self.assertTrue(service in load_sections(
+            context, service_aggregator=True))
+
+        self.assertTrue(your_body in load_sections(context))
+        self.assertTrue(your_body not in load_sections(
+            context, service_aggregator=True))
