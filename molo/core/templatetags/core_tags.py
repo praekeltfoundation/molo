@@ -447,8 +447,12 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
         related_sections__section__slug=main_language_page.slug
     ).values_list('pk', flat=True)
 
-    tags = section.get_main_language_page().specific.section_tags.filter(
-            tag__isnull=False).values('tag__pk')
+    if getattr(request, 'is_preview', False):
+        tags = [tag.pk for tag in section.get_main_language_page()
+                .specific.section_tags.filter(tag__isnull=False)]
+    else:
+        tags = section.get_main_language_page().specific.section_tags\
+            .filter(tag__isnull=False).values('tag__pk')
 
     if tags and request.site:
         qs = Tag.objects.descendant_of(
