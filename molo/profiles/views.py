@@ -49,7 +49,7 @@ class RegistrationView(FormView):
         user.profile.save()
 
         for index, question in enumerate(self.questions):
-            answer = form.cleaned_data["question_%s" % index]
+            answer = form.cleaned_data.get("question_%s" % index)
             if answer:
                 SecurityAnswer.objects.create(
                     user=user.profile,
