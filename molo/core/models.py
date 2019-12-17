@@ -737,9 +737,10 @@ def get_translation_for(pages, locale, site, is_live=True):
 
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
-        return "get_translation_for_{}_{}_{}_{}_{}".format(
-            self.pk, locale, site.pk, is_live,
-            self.latest_revision_created_at.isoformat())
+        if self.latest_revision_created_at:
+            return "get_translation_for_{}_{}_{}_{}_{}".format(
+                self.pk, locale, site.pk, is_live,
+                self.latest_revision_created_at.isoformat())
 
     def get_main_language_page(self):
         try:
