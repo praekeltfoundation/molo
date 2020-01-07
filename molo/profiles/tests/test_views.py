@@ -1882,6 +1882,9 @@ class ResetPasswordViewTest(TestCase, MoloTestCaseMixin):
             user=self.user.profile, question=self.question, answer="20"
         )
 
+    def test_none_type_security_answer(self):
+        self.assertFalse(self.a1.check_answer(None))
+
     def proceed_to_reset_password_page(self):
         expected_token = default_token_generator.make_token(self.user)
         expected_query_params = QueryDict(mutable=True)

@@ -1,6 +1,19 @@
 CHANGES
 =======
 
+10.1.3
+~~~~~~
+- Bug fixes
+- Update core tags and accommodate fake querysets for page previews
+- Handle key errors on registration view's form_valid method
+- Update get_translation_for_cache_key
+- Update security answer's check
+
+
+10.1.2
+~~~~~~
+- Remove interactive argument from call_command function
+
 10.1.1
 ~~~~~~
 - Fix Content rotation's site_id bug

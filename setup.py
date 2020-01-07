@@ -35,7 +35,7 @@ install_requires = [
     'redis',
     'requests',
     'setuptools>=18.5',
-    'six>=1.9',
+    'six>=1.12.0',
     'ujson==1.35',
     'unicodecsv==0.14.1',
     'unicore.content',
