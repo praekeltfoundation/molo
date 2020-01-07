@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+10.1.2
+~~~~~~
+- Remove interactive argument from call_command function
+
 10.1.1
 ~~~~~~
 - Fix Content rotation's site_id bug
