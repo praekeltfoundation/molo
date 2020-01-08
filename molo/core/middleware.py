@@ -9,7 +9,7 @@ from django_cas_ng.middleware import CASMiddleware
 from django.views.defaults import permission_denied
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import resolve, reverse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django_cas_ng.views import LoginView as CasLogin,\
     LogoutView as CasLogout
 from django.utils.translation import activate
@@ -167,7 +167,8 @@ class MultiSiteRedirectToHomepage(django.utils.deprecation.MiddlewareMixin):
             current_site = Site.find_for_request(request)
             func, args, kwargs = resolve(request.path)
             if args:
-                p_site = Page.objects.get(pk=args[-1]).specific.get_site()
+                p_site = get_object_or_404(
+                    Page, pk=args[-1]).specific.get_site()
                 if p_site and not current_site == p_site:
                     return redirect('%s%s' % (p_site.root_url, request.path))
             if not Languages.for_site(request.site).languages.all().exists():
