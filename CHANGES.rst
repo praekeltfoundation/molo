@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+10.1.4
+~~~~~~
+- Gracefully handle Page 404's in Wagtail admin
+
 10.1.3
 ~~~~~~
 - Bug fixes
