@@ -1,7 +1,7 @@
 Installation
 ============
 
-Molo requires `Python`_ (version 2.6 or 2.7) to be installed. This installation method also requires `pip`_ as well as `virtualenv`_. All three of these must be installed before following the installation steps below.
+Molo requires `Python`_ (version >=3.5) to be installed. This installation method also requires `pip`_ as well as `virtualenv`_. All three of these must be installed before following the installation steps below.
 
 Installing Molo
 ---------------
