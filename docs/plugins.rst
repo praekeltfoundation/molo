@@ -39,7 +39,7 @@ The following plugins are available to extend the core features of Molo.
 molo.profiles
 ~~~~~~~~~~~~~
 
-``Github``: https://github.com/praekelt/molo.profiles
+``Github``: https://github.com/praekeltfoundation/molo.profiles
 
 Profiles provides user profiles which adds registration, login and user data functionality.
 
@@ -54,9 +54,9 @@ Main features:
 molo.commenting
 ~~~~~~~~~~~~~~~
 
-``Github``: https://github.com/praekelt/molo.commenting
+``Github``: https://github.com/praekeltfoundation/molo.commenting
 
-Commenting builds on the :ref:`molo.profiles <molo-profiles>` plugin. It allows users to comment on articles and these comments to be moderated.
+Commenting builds on the :ref: `molo.profiles <molo-profiles>` plugin. It allows users to comment on articles and these comments to be moderated.
 
 It is built using Django's `Comments Framework`_.
 
@@ -66,41 +66,23 @@ Main features:
     - Comment reporting by users to allow for community moderation
     - ``COMMENTS_FLAG_THRESHHOLD`` allows for comments to be automatically removed if they have been reported by multiple users
 
-molo.surveys
+molo.forms
 ~~~~~~~~~~~~
 
-``Github``: https://github.com/praekelt/molo.surveys/
+``Github``: https://github.com/praekeltfoundation/molo.forms/
 
-Surveys allows for user feedback on content.
+Forms allows for user feedback on content.
+YourWords (User generated content) allows users to submit content that can be converted into an article by an admin.
+A poll is a short set of questions (or typically only one question) with predetermined answers that a user can choose from.
 
-Main Features:
+Main features:
     - Multiple Questions of various types
     - Multi-page surveys
     - Direct and Linked surveys
-
-molo.yourwords
-~~~~~~~~~~~~~~
-
-``Github``: https://github.com/praekelt/molo.yourwords
-
-YourWords (User generated content) allows users to submit content that can be converted into an article by an admin.
-
-Main features:
     - Setting up a Your Words competition
     - Downloading competition entries as a CSV
     - Ability to shortlist entries
     - Converting winning entries to Articles
-
-molo.polls
-~~~~~~~~~~
-
-
-``Github``: https://github.com/praekelt/molo.polls
-
-
-A poll is a short set of questions (or typically only one question) with predetermined answers that a user can choose from.
-
-Main features:
     - Creating and publishing a Question to the home page, section page and article page
     - Multiple Question types (Single choice, Multiple Choice, Free Text, Numeric)
     - Exporting polls results as a CSV (currently in dev)
@@ -111,7 +93,7 @@ molo.usermetadata
 ~~~~~~~~~~~~~~~~~
 
 
-``Github``: https://github.com/praekelt/molo.usermetadata
+``Github``: https://github.com/praekeltfoundation/molo.usermetadata
 
 
 User meta data allows one to create persona pages so that when a user visits a site for the first time,
