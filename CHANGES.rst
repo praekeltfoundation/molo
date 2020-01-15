@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+10.1.5
+~~~~~~
+- Documentation updates
+- Enable the API to filter article pages by live state
+
 10.1.4
 ~~~~~~
 - Gracefully handle Page 404's in Wagtail admin
