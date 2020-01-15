@@ -1,6 +1,239 @@
 CHANGES
 =======
-8.0.2
+
+10.1.5
+~~~~~~
+- Documentation updates
+- Enable the API to filter article pages by live state
+
+10.1.4
+~~~~~~
+- Gracefully handle Page 404's in Wagtail admin
+
+10.1.3
+~~~~~~
+- Bug fixes
+- Update core tags and accommodate fake querysets for page previews
+- Handle key errors on registration view's form_valid method
+- Update get_translation_for_cache_key
+- Update security answer's check
+
+
+10.1.2
+~~~~~~
+- Remove interactive argument from call_command function
+
+10.1.1
+~~~~~~
+- Fix Content rotation's site_id bug
+- Add Sitemap view to address issue in wagtails sitemap view
+- Add Section's is_service_aggregator attr
+- Add service_aggregator kwarg to get_sections template tag
+
+
+10.1.0
+~~~~~~
+- Add Support for Django 2.2.5+
+
+9.0.9
+~~~~~
+- Exclude Index Pages from caching
+
+9.0.8
+~~~~~
+- Allow index pages to be shown without language
+
+9.0.4
+~~~~~
+- Performance updates
+
+9.0.2
+~~~~~
+- Merge develop to develop-9.x
+
+9.0.1
+~~~~~
+- Remove wagtail forms from molo core
+
+8.12.6
+~~~~~~
+- Performance updates
+
+8.12.4
+~~~~~~
+- Update the robots.txt file
+
+8.12.3
+~~~~~~
+- Get Tag articles template tag bug fix
+
+8.12.2
+~~~~~~
+- Add the request language to the custom params in GA middleware
+
+8.12.1
+~~~~~~
+- Update setting locale view redirect incase of empty next param
+
+8.12
+~~~~
+- Adding a raw HTML field for the article body
+
+8.11.9
+~~~~~~
+- Adding __str__ method for the timezone model
+
+8.11.8
+~~~~~~
+- Fix the page serve to only redirect translated pages
+
+8.11.7
+~~~~~~
+- Update the robots.txt file to exclude index pages
+
+8.11.6
+~~~~~~
+- Optimisation for home page
+
+8.11.5
+~~~~~~
+- Upgrade Django Rest Framework due to security vulnerability
+
+8.11.4
+~~~~~~
+- Add the GSC siteSettings panel
+
+8.11.3
+~~~~~~
+- Add google search console verification and setting
+
+8.11.2
+~~~~~~
+- Add Page model exact_type, is_content_page helper methods
+
+8.11.1
+~~~~~~
+- Add get_top_level_parent Page model method
+
+8.11.0
+~~~~~~
+- Add check for Ajax submisson on Reaction Questions
+
+8.10.9
+~~~~~~
+- BugFix: get_paret_section and get_next_article tags + tests
+
+8.10.8
+~~~~~~
+- BugFix: Add .specific to Pages
+
+8.10.7
+~~~~~~
+- BugFix: add validation check for load_child_articles_for_section
+
+8.10.6
+~~~~~~
+- BugFix: get_parent_section
+
+8.10.5
+~~~~~~
+- Add custom_params for unauthenticated users in the GA params
+
+8.10.4
+~~~~~~
+- Add template tag for reaction question response couunt
+
+8.10.3
+~~~~~~
+- Add is_via_freebasics check to template tag for bannerpages
+
+8.10.2
+~~~~~~
+- Rename model fiel din migration for bannerpage (fixed clash)
+
+8.10.0
+~~~~~~
+- Add richtext streamfield to Article Body
+- Add freebasics check on BannerPage
+
+8.9.5
+~~~~~
+- Make get_parent_section language aware
+
+8.9.4
+~~~~~
+- Article ordering bug fix
+
+8.9.3
+~~~~~
+- Add custom Prometheus query count decorator
+
+8.9.1
+~~~~~
+- Refactor deprecating Django 2.0 code on molo.core and molo.profiles
+
+8.9.0
+~~~~~
+- Add get_site() to all index pages
+
+8.8.1
+~~~~~
+- BugFix: Adapted get_site() to check if site_name contains main (TEMPORARY FIX)
+
+8.7.0
+~~~~~
+- Remove overriden get_url_parts method for Page
+
+8.6.0
+~~~~~
+- Do not install: Broken
+
+8.5.2
+~~~~~
+- BugFix: get_translation_for now works for multi site one root page
+
+8.5.1
+~~~~~
+- Add feature_in_seftion filter to load_child_pages
+
+8.5.0
+~~~~~
+- Add email to contact form
+
+8.4.0
+~~~~~
+- Name change from topic_of_the_day to hero_article (you will need to do the same in your project code)
+- Template tag added for getting sibling sections
+
+8.3.3
+~~~~~
+- Add viber content panels
+
+8.3.2
+~~~~~
+- Add viber sharing
+
+8.3.1
+~~~~~
+- Add new social media article sharing options to template tag
+
+8.3.0
+~~~~~
+- Add new social media article sharing options
+
+8.2.0
+~~~~~
+- Add forms
+
+8.1.0
+~~~~~
+- Add media to article for hero on homepage
+
+8.0.4
+~~~~~
+- Fix molo wagtail_hooks to work with querysets
+
+8.0.3
 ~~~~~
 - Upgrade to Wagtail 2.2
 
@@ -24,7 +257,7 @@ CHANGES
 
 7.1.0
 ~~~~~
-- Added prometheus metrics. Changes required to project see link 
+- Added prometheus metrics. Changes required to project see link
   https://github.com/korfuri/django-prometheus/blob/master/django_prometheus/db/common.py
 
 7.0.9
@@ -397,7 +630,6 @@ CHANGES
 5.21.3
 ~~~~~~
 - Admin View FED updates
->>>>>>> 782c0cdd55db211b8dc80e3538ebeeb44cabb705
 
 5.21.2
 ~~~~~~

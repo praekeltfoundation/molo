@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from wagtail.admin.edit_handlers import EditHandler
@@ -55,6 +55,7 @@ from molo.core.utils import (
 )
 
 from django.db.models.signals import pre_delete
+from django_enumfield import enum
 
 
 class ReadOnlyPanel(EditHandler):
@@ -64,6 +65,10 @@ class ReadOnlyPanel(EditHandler):
         self.heading = pretty_name(self.attr) if heading is None else heading
         self.classname = classname
         self.help_text = help_text
+        self.form = None
+        self.model = None
+        self.request = None
+        self.instance = None
 
     def render(self):
         value = getattr(self.instance, self.attr)
@@ -95,8 +100,25 @@ class ReadOnlyPanel(EditHandler):
             self.heading, _(':'), self.render())
 
 
+class ArticleOrderingChoices(enum.Enum):
+    CMS_DEFAULT_SORTING = 1
+    FIRST_PUBLISHED_AT = 2
+    FIRST_PUBLISHED_AT_DESC = 3
+    PK = 4
+    PK_DESC = 5
+
+    labels = {
+        CMS_DEFAULT_SORTING: 'CMS Default Sorting',
+        FIRST_PUBLISHED_AT: 'First Published At',
+        FIRST_PUBLISHED_AT_DESC: 'First Published At Desc',
+        PK: 'Primary Key',
+        PK_DESC: 'Primary Key Desc',
+    }
+
+
 @register_setting
 class SiteSettings(BaseSetting):
+
     logo = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -121,6 +143,14 @@ class SiteSettings(BaseSetting):
         help_text=_(
             "Global GA Tag Manager tracking code (e.g GTM-XXX) to be used"
             " to view analytics on more than one site globally")
+    )
+    google_search_console = models.CharField(
+        verbose_name=_('Google Search Console'),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The Google Search Console verification code")
     )
 
     fb_analytics_app_id = models.CharField(
@@ -201,6 +231,36 @@ class SiteSettings(BaseSetting):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    whatsapp_sharing = models.BooleanField(
+        default=False, verbose_name='Whatsapp',
+        help_text='Enable this field to allow for sharing to Whatsapp.')
+    whatsapp_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    viber_sharing = models.BooleanField(
+        default=False, verbose_name='Viber',
+        help_text='Enable this field to allow for sharing to Viber.')
+    viber_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    telegram_sharing = models.BooleanField(
+        default=False, verbose_name='Telegram',
+        help_text='Enable this field to allow for sharing to Telegram.')
+    telegram_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     enable_clickable_tags = models.BooleanField(
         default=False, verbose_name='Display tags on Front-end')
     enable_tag_navigation = models.BooleanField(
@@ -249,6 +309,11 @@ class SiteSettings(BaseSetting):
         blank=True,
     )
 
+    article_ordering_within_section = enum.EnumField(
+        ArticleOrderingChoices, null=True, blank=True, default=None,
+        help_text="Ordering of articles within a section"
+    )
+
     panels = [
         ImageChooserPanel('logo'),
         MultiFieldPanel(
@@ -276,6 +341,12 @@ class SiteSettings(BaseSetting):
                 FieldPanel('global_ga_tracking_code'),
             ],
             heading="GA Tracking Code Settings",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('google_search_console'),
+            ],
+            heading="Google Search Console Verification Code",
         ),
         MultiFieldPanel(
             [
@@ -308,6 +379,12 @@ class SiteSettings(BaseSetting):
                 ImageChooserPanel('facebook_image'),
                 FieldPanel('twitter_sharing'),
                 ImageChooserPanel('twitter_image'),
+                FieldPanel('whatsapp_sharing'),
+                ImageChooserPanel('whatsapp_image'),
+                FieldPanel('viber_sharing'),
+                ImageChooserPanel('viber_image'),
+                FieldPanel('telegram_sharing'),
+                ImageChooserPanel('telegram_image'),
             ],
             heading="Social Media Article Sharing Buttons",
         ),
@@ -329,6 +406,12 @@ class SiteSettings(BaseSetting):
                 FieldPanel('enable_multi_category_service_directory_search'),
             ],
             heading="Service Directory API Settings"
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('article_ordering_within_section'),
+            ],
+            heading="Article Ordering"
         )
     ]
 
@@ -342,6 +425,9 @@ class Timezone(models.Model):
     def __unicode__(self):
         return self.title
 
+    def __str__(self):
+        return self.title
+
 
 @register_setting
 class CmsSettings(BaseSetting):
@@ -352,7 +438,7 @@ class CmsSettings(BaseSetting):
     '''
 
     timezone = models.ForeignKey(
-        'core.Timezone',
+        Timezone,
         null=True,
         on_delete=models.PROTECT,
     )
@@ -388,7 +474,8 @@ class ImageInfo(models.Model):
         'wagtailimages.Image',
         null=True,
         blank=True,
-        related_name='image_info'
+        related_name='image_info',
+        on_delete=models.CASCADE
     )
 
     def save(self, *args, **kwargs):
@@ -567,20 +654,33 @@ class CommentedPageMixin(object):
 
 
 class PageTranslation(models.Model):
-    page = models.ForeignKey('wagtailcore.Page', related_name='translations')
+    page = models.ForeignKey(
+        'wagtailcore.Page',
+        related_name='translations',
+        on_delete=models.CASCADE
+    )
     translated_page = models.OneToOneField(
-        'wagtailcore.Page', related_name='source_page')
+        'wagtailcore.Page',
+        related_name='source_page',
+        on_delete=models.CASCADE
+    )
 
 
 class LanguageRelation(models.Model):
-    page = models.ForeignKey('wagtailcore.Page', related_name='languages')
-    language = models.ForeignKey('core.SiteLanguage', related_name='+')
+    page = models.ForeignKey(
+        'wagtailcore.Page',
+        related_name='languages', on_delete=models.CASCADE
+    )
+    language = models.ForeignKey(
+        'core.SiteLanguage',
+        related_name='+', on_delete=models.CASCADE
+    )
 
 
 def get_translation_for(pages, locale, site, is_live=True):
     show_only_translated_pages = SiteSettings.for_site(
         site).show_only_translated_pages
-    language_setting = Languages.for_site(site)
+    language_setting = Languages.for_site(site.root_page.specific.get_site())
     language = language_setting.languages.filter(
         locale=locale).first()
 
@@ -592,52 +692,55 @@ def get_translation_for(pages, locale, site, is_live=True):
 
     translated_pages = []
     for page in pages:
-        cache_key = page.specific.get_translation_for_cache_key(
-            locale, site, is_live)
-        trans_pk = cache.get(cache_key)
+        if 'indexpage' not in page.slug:
+            cache_key = page.specific.get_translation_for_cache_key(
+                locale, site, is_live)
+            trans_pk = cache.get(cache_key)
 
-    # TODO: consider pickling page object. Be careful about page size in
-    # memory
-        if trans_pk:
-            translated_pages.append(Page.objects.get(pk=trans_pk).specific)
-            continue
-        main_language_page = page.specific.get_main_language_page()
-        if language.is_main_language and not page == main_language_page:
-            cache.set(cache_key, main_language_page.pk, None)
-            translated_pages.append(main_language_page)
-            continue
+        # TODO: consider pickling page object. Be careful about page size in
+        # memory
+            if trans_pk:
+                translated_pages.append(Page.objects.get(pk=trans_pk).specific)
+                continue
+            main_language_page = page.specific.get_main_language_page()
+            if language.is_main_language and not page == main_language_page:
+                cache.set(cache_key, main_language_page.pk, None)
+                translated_pages.append(main_language_page)
+                continue
 
-        # Filter the translation pages for this page by the given language
-        try:
-            translation = page.specific.translated_pages.get(
-                language=language)
-            if is_live is not None:
-                if not translation.live:
-                    translation = None
-            if translation:
-                translated = translation.specific
-                cache.set(cache_key, translated.pk, None)
-                translated_pages.append(translated)
-            else:
-                if not show_only_translated_pages:
-                    if is_live is not None and not page.live:
-                        continue
-                    translated_pages.append(page)
-        except ObjectDoesNotExist:
-            if not show_only_translated_pages:
+            # Filter the translation pages for this page by the given language
+            try:
+                translation = page.specific.translated_pages.get(
+                    language=language)
                 if is_live is not None:
-                    if not page.live:
-                        continue
-                translated_pages.append(page)
-            continue
+                    if not translation.live:
+                        translation = None
+                if translation:
+                    translated = translation.specific
+                    cache.set(cache_key, translated.pk, None)
+                    translated_pages.append(translated)
+                else:
+                    if not show_only_translated_pages:
+                        if is_live is not None and not page.live:
+                            continue
+                        translated_pages.append(page)
+            except ObjectDoesNotExist:
+                if not show_only_translated_pages:
+                    if is_live is not None:
+                        if not page.live:
+                            continue
+                    translated_pages.append(page)
+                continue
+
     return translated_pages
 
 
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
-        return "get_translation_for_{}_{}_{}_{}_{}".format(
-            self.pk, locale, site.pk, is_live,
-            self.latest_revision_created_at.isoformat())
+        if self.latest_revision_created_at:
+            return "get_translation_for_{}_{}_{}_{}_{}".format(
+                self.pk, locale, site.pk, is_live,
+                self.latest_revision_created_at.isoformat())
 
     def get_main_language_page(self):
         try:
@@ -647,9 +750,13 @@ class TranslatablePageMixinNotRoutable(object):
             return self.specific
 
     def get_site(self):
-        # TODO: this will need to change for one content repo work
-        return self.get_ancestors().filter(
-            depth=2).first().sites_rooted_here.all().first() or None
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
     def save(self, *args, **kwargs):
         response = super(
@@ -692,7 +799,7 @@ class TranslatablePageMixinNotRoutable(object):
 
     def copy(self, *args, **kwargs):
         current_site = self.get_site()
-        destination_site = kwargs['to'].get_site()
+        destination_site = kwargs['to'].specific.get_site()
         if current_site is not destination_site:
             new_lang = self.copy_language(current_site, destination_site)
             page_copy = super(TranslatablePageMixinNotRoutable, self).copy(
@@ -740,16 +847,15 @@ class TranslatablePageMixinNotRoutable(object):
             if request.GET.urlencode():
                 return redirect("{}?{}".format(translation.url,
                                                request.GET.urlencode()))
-            else:
+            elif translation.live:
                 return redirect(translation.url)
-
         return super(TranslatablePageMixinNotRoutable, self).serve(
             request, *args, **kwargs)
 
 
 def clear_translation_cache(sender, instance, **kwargs):
     if isinstance(instance, TranslatablePageMixin):
-        site = instance.get_site()
+        site = instance.specific.get_site()
         for lang in Languages.for_site(site).languages.all():
             cache.delete(instance.get_translation_for_cache_key(
                 lang.locale, site, True))
@@ -777,10 +883,19 @@ class TagIndexPage(MoloPage, PreventDeleteMixin):
     subpage_types = ['Tag']
 
     def copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
+        site = kwargs['to'].specific.get_site()
         main = site.root_page
         TagIndexPage.objects.child_of(main).delete()
         super(TagIndexPage, self).copy(*args, **kwargs)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
 
 class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
@@ -788,10 +903,19 @@ class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
     subpage_types = ['ReactionQuestion']
 
     def copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
+        site = kwargs['to'].specific.get_site()
         main = site.root_page
         ReactionQuestionIndexPage.objects.child_of(main).delete()
         super(ReactionQuestionIndexPage, self).copy(*args, **kwargs)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
 
 class ReactionQuestion(TranslatablePageMixin, MoloPage):
@@ -851,11 +975,16 @@ ReactionQuestionChoice.content_panels = [
 
 
 class ReactionQuestionResponse(models.Model):
-    user = models.ForeignKey('auth.User', blank=True, null=True)
-    article = models.ForeignKey('core.ArticlePage')
+    user = models.ForeignKey(
+        'auth.User', blank=True, null=True, on_delete=models.CASCADE
+    )
+    article = models.ForeignKey(
+        'core.ArticlePage', on_delete=models.CASCADE)
     choice = models.ForeignKey(
-        'core.ReactionQuestionChoice', blank=True, null=True)
-    question = models.ForeignKey('core.ReactionQuestion')
+        'core.ReactionQuestionChoice',
+        blank=True, null=True, on_delete=models.SET_NULL)
+    question = models.ForeignKey(
+        'core.ReactionQuestion', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def set_response_as_submitted_for_session(self, request, article):
@@ -914,10 +1043,19 @@ class BannerIndexPage(MoloPage, PreventDeleteMixin, ImportableMixin):
     subpage_types = ['BannerPage']
 
     def copy(self, *args, **kwargs):
-        site = kwargs['to'].get_site()
+        site = kwargs['to'].specific.get_site()
         main = site.root_page
         BannerIndexPage.objects.child_of(main).delete()
         super(BannerIndexPage, self).copy(*args, **kwargs)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
 
 class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
@@ -950,6 +1088,7 @@ class BannerPage(ImportableMixin, TranslatablePageMixin, MoloPage):
                                      help_text='External link which a banner'
                                      ' will link to. '
                                      'eg https://www.google.co.za/')
+    hide_banner_on_freebasics = models.BooleanField(default=False)
     api_fields = [
         "title", "subtitle", "banner", "banner_link_page", "external_link"]
 
@@ -967,7 +1106,8 @@ BannerPage.content_panels = [
     FieldPanel('subtitle'),
     ImageChooserPanel('banner'),
     PageChooserPanel('banner_link_page'),
-    FieldPanel('external_link')
+    FieldPanel('external_link'),
+    FieldPanel('hide_banner_on_freebasics')
 ]
 
 # Signal for allowing plugins to create indexes
@@ -991,14 +1131,14 @@ class Main(CommentedPageMixin, MoloPage):
         return ArticlePage.objects.descendant_of(self).filter(
             featured_in_latest=True,
             language__is_main_language=True).exclude(
-                feature_as_topic_of_the_day=True,
+                feature_as_hero_article=True,
                 demote_date__gt=django_timezone.now()).order_by(
                     '-featured_in_latest_start_date',
                     '-promote_date', '-latest_revision_created_at').specific()
 
-    def topic_of_the_day(self):
+    def hero_article(self):
         return ArticlePage.objects.descendant_of(self).filter(
-            feature_as_topic_of_the_day=True,
+            feature_as_hero_article=True,
             language__is_main_language=True,
             promote_date__lte=django_timezone.now(),
             demote_date__gte=django_timezone.now()).order_by(
@@ -1007,6 +1147,13 @@ class Main(CommentedPageMixin, MoloPage):
     def footers(self):
         return FooterPage.objects.descendant_of(self).filter(
             language__is_main_language=True).specific()
+
+    def get_site(self):
+        try:
+            return self.sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.sites_rooted_here.all().first() or None
 
     def save(self, *args, **kwargs):
         super(Main, self).save(*args, **kwargs)
@@ -1157,6 +1304,15 @@ class SectionIndexPage(CommentedPageMixin, MoloPage, PreventDeleteMixin):
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
+
     def celery_copy(self, *args, **kwargs):
         SectionIndexPage.objects.child_of(kwargs['to']).delete()
         return super(SectionIndexPage, self).copy(*args, **kwargs)
@@ -1275,6 +1431,10 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             help_text=("Underneath the area for 'next articles' recommended "
                        "articles will appear, with the image + heading + "
                        "subheading")))
+    is_service_aggregator = (
+        models.BooleanField(
+            default=False, verbose_name='Service aggregator')
+    )
 
     api_fields = [
         "title", "live", "description", "image", "extra_style_hints",
@@ -1305,9 +1465,22 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             language__is_main_language=True)
 
     def get_site(self):
-        main = self.get_ancestors().filter(
-            depth=2).first()
-        return main.sites_rooted_here.all().first()
+        # We needed a way to find out which site is the default site
+        # when two sites are pointing to one url. Instead of adding
+        # a new model that inherits from wagtail Site model and add
+        # a field for this, we decided to do a check against the
+        # site name for the word main. This way we just need to
+        # add the word main in the site name definition. Since
+        # developers are the only ones touching the sites, and the
+        # fact that we did not want to add more custom models, we
+        # chose this route
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
     def get_effective_extra_style_hints(self):
         cache_key = "effective_extra_style_hints_{}_{}".format(
@@ -1359,8 +1532,18 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             page = self.get_main_language_page()
             return page.specific.get_effective_image()
 
-    def get_parent_section(self):
-        return SectionPage.objects.all().ancestor_of(self).last()
+    def get_parent_section(self, locale=None):
+        page = SectionPage.objects.parent_of(self).last()
+        if page:
+            if locale and page.language.locale == locale:
+                return page
+            elif locale:
+                return page.translated_pages.filter(
+                    language__locale=locale).first()
+            if page.language.locale == self.language.locale:
+                return page
+            return page.translated_pages.filter(
+                language__locale=self.language.locale).first()
 
     def featured_in_homepage_articles(self):
         main_language_page = self.get_main_language_page()
@@ -1379,6 +1562,26 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
 
         context['p'] = p
         return context
+
+    def clean(self):
+        # check content rotation settings
+        if self.is_service_aggregator:
+            if any([
+                self.monday_rotation,
+                self.tuesday_rotation,
+                self.wednesday_rotation,
+                self.thursday_rotation,
+                self.friday_rotation,
+                self.saturday_rotation,
+                self.sunday_rotation,
+                self.content_rotation_start_date,
+                self.content_rotation_end_date,
+            ]):
+                raise ValidationError(
+                    'Content rotation can not enabled when '
+                    'Service aggregator is selected'
+                )
+        return super().clean()
 
     class Meta:
         verbose_name = _('Section')
@@ -1426,7 +1629,12 @@ SectionPage.settings_panels = [
             FieldPanel('enable_next_section'),
             FieldPanel('enable_recommended_section')
         ],
-        heading="Recommended Settings", )
+        heading="Recommended Settings", ),
+    MultiFieldPanel(
+        [
+            FieldPanel('is_service_aggregator'),
+        ],
+        heading="Service Aggregator", )
 ]
 
 
@@ -1471,6 +1679,12 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     featured_in_homepage_start_date = models.DateTimeField(
         null=True, blank=True)
     featured_in_homepage_end_date = models.DateTimeField(null=True, blank=True)
+    homepage_media = StreamField([
+        ('media', MoloMediaBlock(icon='media'),)
+    ], null=True, blank=True,
+       help_text='If media is added here, it will override the article'
+                 ' image as the hero')
+    is_media_page = models.BooleanField(default=False)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1497,7 +1711,9 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         ('list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('numbered_list', blocks.ListBlock(blocks.CharBlock(label="Item"))),
         ('page', blocks.PageChooserBlock()),
-        ('media', MoloMediaBlock(icon='media'),)
+        ('media', MoloMediaBlock(icon='media'),),
+        ('richtext', blocks.RichTextBlock()),
+        ('html', blocks.RawHTMLBlock())
     ], null=True, blank=True)
 
     tags = ClusterTaggableManager(through=ArticlePageTag, blank=True)
@@ -1525,9 +1741,9 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     commenting_open_time = models.DateTimeField(null=True, blank=True)
     commenting_close_time = models.DateTimeField(null=True, blank=True)
 
-    feature_as_topic_of_the_day = models.BooleanField(
+    feature_as_hero_article = models.BooleanField(
         default=False,
-        help_text=_('Article to be featured as the Topic of the Day'))
+        help_text=_('Article to be featured as the Hero Article'))
     promote_date = models.DateTimeField(blank=True, null=True)
     demote_date = models.DateTimeField(blank=True, null=True)
 
@@ -1545,8 +1761,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         FieldPanel('featured_in_homepage_end_date'),
     ]
 
-    topic_of_the_day_panels = [
-        FieldPanel('feature_as_topic_of_the_day'),
+    hero_article_panels = [
+        FieldPanel('feature_as_hero_article'),
         FieldPanel('promote_date'),
         FieldPanel('demote_date'),
     ]
@@ -1578,8 +1794,13 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def get_absolute_url(self):  # pragma: no cover
         return self.url
 
-    def get_parent_section(self):
-        return self.get_parent().specific
+    def get_parent_section(self, locale=None):
+        parent = self.get_parent().specific
+        if parent:
+            if locale and parent.language.locale != locale:
+                return parent.translated_pages.filter(
+                    language__locale=locale).first()
+            return self.get_parent().specific
 
     def allow_commenting(self):
         commenting_settings = self.get_effective_commenting_settings()
@@ -1604,8 +1825,8 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
             return False
         return True
 
-    def is_current_topic_of_the_day(self):
-        if self.feature_as_topic_of_the_day:
+    def is_current_hero_article(self):
+        if self.feature_as_hero_article:
             now = django_timezone.now()
             return self.promote_date <= now <= self.demote_date
         return False
@@ -1620,6 +1841,25 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def tags_list(self):
         return self.tags.names()
 
+    def clean(self):
+        parent = getattr(self.get_parent(), 'specific', None)
+        should_validate = parent and isinstance(parent, SectionPage)
+        if should_validate and parent.is_service_aggregator:
+            if any([
+                self.featured_in_latest,
+                self.featured_in_latest_start_date,
+                self.featured_in_latest_end_date,
+                self.featured_in_section_start_date,
+                self.featured_in_section_end_date,
+                self.featured_in_homepage_start_date,
+                self.featured_in_homepage_end_date,
+            ]):
+                raise ValidationError(
+                    'Content rotation can not enabled when Service aggregator '
+                    'is selected on {} section'.format(parent)
+                )
+        return super().clean()
+
     class Meta:
         verbose_name = _('Article')
         ordering = ('-latest_revision_created_at',)
@@ -1632,13 +1872,13 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         "featured_in_latest_end_date", "featured_in_section",
         "featured_in_section_start_date", "featured_in_section_end_date",
         "featured_in_homepage", "featured_in_homepage_start_date",
-        "featured_in_homepage_end_date", "feature_as_topic_of_the_day",
+        "featured_in_homepage_end_date", "feature_as_hero_article",
         "promote_date", "demote_date", "metadata_tags",
         "latest_revision_created_at", "image",
         "social_media_image", "social_media_description",
         "social_media_title", "reaction_questions",
         "nav_tags", "recommended_articles", "related_sections",
-        "go_live_at", "expire_at", "expired"
+        "go_live_at", "expire_at", "expired", "live"
     ]
 
     @classmethod
@@ -1650,6 +1890,12 @@ ArticlePage.content_panels = [
     FieldPanel('title', classname='full title'),
     FieldPanel('subtitle'),
     ImageChooserPanel('image'),
+    MultiFieldPanel(
+        [
+            StreamFieldPanel('homepage_media'),
+            FieldPanel('is_media_page'),
+        ], heading='Homepage Media Options'
+    ),
     StreamFieldPanel('body'),
     FieldPanel('tags'),
     MultiFieldPanel(
@@ -1679,7 +1925,7 @@ ArticlePage.promote_panels = [
         ArticlePage.featured_section_promote_panels, "Featuring in Section"),
     MultiFieldPanel(
         ArticlePage.featured_homepage_promote_panels, "Featuring in Homepage"),
-    MultiFieldPanel(ArticlePage.topic_of_the_day_panels, "Topic of the Day"),
+    MultiFieldPanel(ArticlePage.hero_article_panels, "Hero Article"),
     MultiFieldPanel(ArticlePage.metedata_promote_panels, "Metadata"),
     MultiFieldPanel(
         Page.promote_panels,
@@ -1815,6 +2061,15 @@ class FooterIndexPage(MoloPage, PreventDeleteMixin):
         main = site.root_page
         FooterIndexPage.objects.child_of(main).delete()
         super(FooterIndexPage, self).copy(*args, **kwargs)
+
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
 
 
 class FooterPage(ArticlePage):

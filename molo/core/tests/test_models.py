@@ -1,13 +1,11 @@
 # coding=utf-8
 import pytest
-import datetime as dt
-from datetime import datetime, timedelta
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
-
 from django.core.exceptions import ValidationError
+from django.contrib.contenttypes.models import ContentType
 
 from mock import patch
 
@@ -15,7 +13,7 @@ from molo.core.models import (
     ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
     BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
-    Timezone, Tag, ArticlePageTags
+    Timezone, Tag, ArticlePageTags, Site, LanguageRelation
 )
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
@@ -32,22 +30,36 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
-        self.main = Main.objects.all().first()
         self.factory = RequestFactory()
+        self.main = Main.objects.all().first()
         self.language_setting = Languages.objects.create(
             site_id=self.main.get_site().pk)
+
         self.english = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting,
-            locale='en',
-            is_active=True)
-        # LanguageRelation.objects.create(
-        #     page=main, language=self.english)
+            locale='en', is_active=True)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.english)
+
         self.french = SiteLanguageRelation.objects.create(
             language_setting=self.language_setting,
-            locale='fr',
-            is_active=True)
-        # LanguageRelation.objects.create(
-        #     page=self, language=self.french)
+            locale='fr', is_active=True)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.french)
+
+        LanguageRelation.objects.create(
+            page=self.main, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.reaction_index, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.banner_index, language=self.english)
+
+        LanguageRelation.objects.create(
+            page=self.tag_index, language=self.english)
 
         # Create an image for running tests on
         self.image = Image.objects.create(
@@ -74,6 +86,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
             locale='es',
             is_active=True)
 
+        LanguageRelation.objects.create(
+            page=self.main2, language=self.english2)
+
+        LanguageRelation.objects.create(
+            page=self.main2, language=self.spanish)
+
         # Create an image for running tests on
         self.image = Image.objects.create(
             title="Test image",
@@ -89,11 +107,21 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.yourmind_sub2 = self.mk_section(
             self.yourmind2, title='Your mind subsection')
 
+    def test_multisite_one_root_page(self):
+        second_site = Site.objects.create(
+            hostname='kaios.mr.com', port=80, root_page=self.main,
+            is_default_site=False, site_name='kaios main')
+        self.assertEqual(self.main.get_site().pk, second_site.pk)
+
     def test_copy_method_of_article_page_copies_over_languages(self):
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(locale='fr').exists())
         article = self.mk_articles(self.yourmind, 1)[0]
+
+        LanguageRelation.objects.create(
+            page=article, language=self.english2)
+
         self.mk_article_translation(article, self.french)
         article2 = article.copy(to=self.yourmind2)
         copy_translation_pages(article, article2)
@@ -103,7 +131,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(
-                    locale='fr').first().is_active)
+                locale='fr').first().is_active)
 
     def test_move_method_of_article_page_copies_over_languages(self):
         self.assertFalse(
@@ -118,45 +146,67 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(
             Languages.for_site(
                 self.main2.get_site()).languages.filter(
-                    locale='fr').first().is_active)
+                locale='fr').first().is_active)
 
     def test_sections_method_of_main_gives_children_of_main_only(self):
         sections = self.main.sections()
         self.assertFalse(sections.child_of(self.main2).exists())
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_section_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        LanguageRelation.objects.create(
+            page=SectionIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
+        self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_reaction_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        LanguageRelation.objects.create(
+            page=ReactionQuestionIndexPage.objects.child_of(
+                self.main2).first(),
+            language=self.spanish
+        )
+        self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
         self.reaction_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_tag_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        LanguageRelation.objects.create(
+            page=TagIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
+        self.assertEqual(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
         self.tag_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             TagIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_footer_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        LanguageRelation.objects.create(
+            page=FooterIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
+        self.assertEqual(
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             FooterIndexPage.objects.child_of(self.main2).count(), 1)
 
+    @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_banner_index_wont_duplicate_index_pages(self):
-        self.assertEquals(
+        LanguageRelation.objects.create(
+            page=BannerIndexPage.objects.child_of(self.main2).first(),
+            language=self.spanish)
+        self.assertEqual(
             BannerIndexPage.objects.child_of(self.main2).count(), 1)
         self.section_index.copy(to=self.main2)
-        self.assertEquals(
+        self.assertEqual(
             BannerIndexPage.objects.child_of(self.main2).count(), 1)
 
     def test_main_returns_bannerpages(self):
@@ -168,23 +218,85 @@ class TestModels(TestCase, MoloTestCaseMixin):
         banner.save_revision().publish()
         self.assertEqual(self.main.bannerpages().count(), 2)
 
+    def test_get_parent_section_for_article(self):
+        article = self.mk_article(self.yourmind_sub)
+        parent = article.get_parent_section()
+        self.assertEqual(parent.pk, self.yourmind_sub.pk)
+
+    def test_get_parent_section_for_section(self):
+        parent = self.yourmind_sub.get_parent_section()
+        self.assertEqual(parent.pk, self.yourmind.pk)
+
+    def test_get_top_level_parent(self):
+        title = 'title'
+        main_content_type, created = ContentType.objects.get_or_create(
+            model='main', app_label='core')
+        main = Main.objects.create(
+            title=title, slug=title, content_type=main_content_type,
+            path='00010011', depth=2, numchild=0, url_path='/home/',
+        )
+        SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='en', is_active=True)
+
+        french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(main.get_site()),
+            locale='fr', is_active=True)
+
+        en_section = self.mk_section(
+            main, title="New Section", slug="new-section")
+        en_section2 = self.mk_section(
+            en_section, title="New Section 2", slug="new-section-2")
+        en_section3 = self.mk_section(
+            en_section2, title="New Section 3", slug="new-section-3")
+        en_section4 = self.mk_section(
+            en_section3, title="New Section 4", slug="new-section-4")
+
+        self.mk_section_translation(en_section, french)
+        self.mk_section_translation(en_section2, french)
+        fr_section3 = self.mk_section_translation(en_section3, french)
+        fr_section4 = self.mk_section_translation(en_section4, french)
+
+        parent = fr_section3.get_top_level_parent(locale='en')
+        self.assertEqual(parent.pk, en_section.pk)
+        self.assertEqual(fr_section3.depth, 5)
+        self.assertEqual(parent.depth, 3)
+
+        parent = fr_section4.get_top_level_parent(locale='en')
+        self.assertEqual(parent.pk, en_section.pk)
+        self.assertEqual(fr_section4.depth, 6)
+        self.assertEqual(parent.depth, 3)
+
+        parent = fr_section4.get_top_level_parent(locale='en', depth=4)
+        self.assertEqual(parent.pk, en_section2.pk)
+        self.assertEqual(fr_section4.depth, 6)
+        self.assertEqual(parent.depth, 4)
+
+        parent = fr_section4.get_top_level_parent(locale='en', depth=2)
+        self.assertEqual(parent.pk, main.pk)
+        self.assertEqual(parent.depth, 2)
+
+        parent = fr_section4.get_top_level_parent(locale='en', depth=-1)
+        self.assertEqual(parent, None)
+
     def test_article_order(self):
-        now = datetime.now()
+        now = timezone.now()
         article1 = self.mk_article(
             self.yourmind_sub, first_published_at=now)
 
         self.mk_article(
-            self.yourmind_sub, first_published_at=now + timedelta(hours=1))
+            self.yourmind_sub,
+            first_published_at=now + timezone.timedelta(hours=1))
 
         # most recent first
-        self.assertEquals(
+        self.assertEqual(
             self.yourmind_sub.articles()[0].title, article1.title)
 
         # swap published date
-        article1.first_published_at = now + timedelta(hours=4)
+        article1.first_published_at = now + timezone.timedelta(hours=4)
         article1.save_revision().publish()
 
-        self.assertEquals(
+        self.assertEqual(
             self.yourmind_sub.articles()[0].title, article1.title)
 
     def test_get_effective_image_for_sections(self):
@@ -192,43 +304,43 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index,
             title="New Section", slug="new-section",
             image=self.image)
-        self.assertEquals(
+        self.assertEqual(
             en_section.get_effective_image(), self.image)
 
         # image not set to use inherited value
         en_section2 = self.mk_section(
             en_section, title="New Section 2", slug="new-section-2")
-        self.assertEquals(
+        self.assertEqual(
             en_section2.get_effective_image(), en_section.image)
 
         # image not set to use inherited value
         en_section3 = self.mk_section(
             en_section2, title="New Section 3", slug="new-section-3")
-        self.assertEquals(
+        self.assertEqual(
             en_section3.get_effective_image(), en_section.image)
 
         # set the image
         en_section3.image = self.image2
-        self.assertEquals(
+        self.assertEqual(
             en_section3.get_effective_image(), self.image2)
         # if translated section doesn't have
         # an image it will inherited from the parent
         fr_section3 = self.mk_section_translation(en_section3, self.french)
-        self.assertEquals(
+        self.assertEqual(
             fr_section3.get_effective_image(), en_section3.image)
 
         fr_section2 = self.mk_section_translation(en_section2, self.french)
-        self.assertEquals(
+        self.assertEqual(
             fr_section2.get_effective_image(), en_section.image)
 
         # check if the section doesn't have image it will return None
         en_section4 = self.mk_section(
             self.section_index,
-            title="New Section 4", slug="new-section-4",)
-        self.assertEquals(
+            title="New Section 4", slug="new-section-4", )
+        self.assertEqual(
             en_section4.get_effective_image(), '')
         fr_section4 = self.mk_section_translation(en_section4, self.french)
-        self.assertEquals(
+        self.assertEqual(
             fr_section4.get_effective_image(), '')
 
     def test_get_effective_image_for_articles(self):
@@ -238,30 +350,30 @@ class TestModels(TestCase, MoloTestCaseMixin):
         en_article1, en_article2 = self.mk_articles(section, 2)
         fr_article1 = self.mk_article_translation(en_article1, self.french)
 
-        self.assertEquals(
+        self.assertEqual(
             en_article1.get_effective_image(), '')
-        self.assertEquals(
+        self.assertEqual(
             fr_article1.get_effective_image(), '')
 
         en_article1.image = self.image
         en_article1.save()
-        self.assertEquals(
+        self.assertEqual(
             en_article1.get_effective_image(), self.image)
 
         # if image not set it should inherite from the main language article
-        self.assertEquals(
+        self.assertEqual(
             fr_article1.get_effective_image(), en_article1.image)
 
         # if the translated article has an image it should return its image
         fr_article1.image = self.image2
         fr_article1.save()
-        self.assertEquals(
+        self.assertEqual(
             fr_article1.get_effective_image(), self.image2)
 
     def test_number_of_child_sections(self):
         new_section = self.mk_section(self.section_index)
         self.mk_sections(new_section, count=12)
-        response = self.client.get('/')
+        self.client.get('/')
         response = self.client.get('/sections-main-1/test-section-0/')
         self.assertContains(response, 'Test Section 11')
 
@@ -272,15 +384,31 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request.site = self.site
         articles = load_child_articles_for_section(
             {'request': request, 'locale_code': 'en'}, new_section, count=None)
-        self.assertEquals(len(articles), 12)
+        self.assertEqual(len(articles), 12)
 
     def test_parent_section(self):
         new_section = self.mk_section(
             self.section_index, title="New Section", slug="new-section")
         new_section1 = self.mk_section(
             new_section, title="New Section 1", slug="new-section-1")
-        self.assertEquals(
-            new_section1.get_parent_section(), new_section)
+        self.assertEqual(
+            new_section1.get_parent_section('en'), new_section)
+
+    def test_article_service_aggregator(self):
+        new_section = self.mk_section(
+            self.section_index, title="New Section", slug="new-section",
+            is_service_aggregator=True)
+
+        with self.assertRaises(ValidationError):
+            self.mk_article(
+                new_section, title="New Section 1", slug="new-section-1",
+                featured_in_latest=True)
+
+    def test_section_service_aggregator(self):
+        with self.assertRaises(ValidationError):
+            self.mk_section(
+                self.section_index, title="New Section", slug="new-section",
+                is_service_aggregator=True, monday_rotation=True)
 
     def test_commenting_closed_settings_fallbacks(self):
         new_section = self.mk_section(
@@ -290,20 +418,20 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.section_index.commenting_state = constants.COMMENTING_CLOSED
         self.section_index.save()
         comment_settings = new_article.get_effective_commenting_settings()
-        self.assertEquals(comment_settings['state'],
-                          constants.COMMENTING_CLOSED)
+        self.assertEqual(
+            comment_settings['state'], constants.COMMENTING_CLOSED)
         # test overriding settings in section
         new_section.commenting_state = constants.COMMENTING_CLOSED
         new_section.save()
         comment_settings = new_article.get_effective_commenting_settings()
-        self.assertEquals(comment_settings['state'],
-                          constants.COMMENTING_CLOSED)
+        self.assertEqual(
+            comment_settings['state'], constants.COMMENTING_CLOSED)
         # test overriding settings in article
         new_article.commenting_state = constants.COMMENTING_DISABLED
         new_article.save_revision().publish()
         comment_settings = new_article.get_effective_commenting_settings()
-        self.assertEquals(comment_settings['state'],
-                          constants.COMMENTING_DISABLED)
+        self.assertEqual(
+            comment_settings['state'], constants.COMMENTING_DISABLED)
 
     def test_commenting_allowed(self):
         new_section = self.mk_section(
@@ -311,7 +439,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         new_article = self.mk_article(
             new_section, title="New article",
             commenting_state=constants.COMMENTING_OPEN)
-        now = datetime.now()
+        now = timezone.now()
         # with commenting open
         self.assertTrue(new_article.allow_commenting())
         # with commenting disabled and no reopen_time given
@@ -319,20 +447,16 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(new_article.allow_commenting())
         # with commenting closed but past reopen time
         new_article.commenting_state = constants.COMMENTING_CLOSED
-        new_article.commenting_open_time = timezone.make_aware(
-            now - dt.timedelta(1))
+        new_article.commenting_open_time = now - timezone.timedelta(days=1)
         self.assertTrue(new_article.allow_commenting())
         # with commenting timestamped and within specified time
         new_article.commenting_state = constants.COMMENTING_TIMESTAMPED
-        new_article.commenting_open_time = timezone.make_aware(
-            now - dt.timedelta(1))
-        new_article.commenting_close_time = timezone.make_aware(
-            now + dt.timedelta(1))
+        new_article.commenting_open_time = now - timezone.timedelta(days=1)
+        new_article.commenting_close_time = now + timezone.timedelta(days=1)
         self.assertTrue(new_article.allow_commenting())
         # with commenting closed and not yet reopen_time
         new_article.commenting_state = constants.COMMENTING_CLOSED
-        new_article.commenting_open_time = timezone.make_aware(
-            now + dt.timedelta(1))
+        new_article.commenting_open_time = now + timezone.timedelta(days=1)
         self.assertFalse(new_article.allow_commenting())
 
     def test_commenting_enabled(self):
@@ -377,11 +501,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'body-0-order': 1,
             'body-0-type': 'paragraph',
             'tags': 'love, war',
-            'action-publish': 'Publish'
+            'action-publish': 'Publish',
+            'homepage_media-count': 0
         }
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
         post_data.update({
             'title': 'this is a test article2',
@@ -390,14 +515,14 @@ class TestModels(TestCase, MoloTestCaseMixin):
         })
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
 
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(tags__name='war').count(), 2)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(tags__name='love').count(), 1)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(tags__name='peace').count(), 1)
 
     def test_meta_data_tags(self):
@@ -430,11 +555,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'body-0-order': 1,
             'body-0-type': 'paragraph',
             'metadata_tags': 'love, happiness',
-            'action-publish': 'Publish'
+            'action-publish': 'Publish',
+            'homepage_media-count': 0
         }
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
         post_data.update({
             'title': 'this is a test article2',
@@ -443,16 +569,16 @@ class TestModels(TestCase, MoloTestCaseMixin):
         })
         self.client.post(
             reverse('wagtailadmin_pages:add',
-                    args=('core', 'articlepage', self.yourmind.id, )),
+                    args=('core', 'articlepage', self.yourmind.id,)),
             post_data)
 
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 metadata_tags__name='happiness').count(), 2)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 metadata_tags__name='love').count(), 1)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 metadata_tags__name='peace').count(), 1)
 
@@ -490,7 +616,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertTrue(article2.nav_tags.get(), tag2)
 
     def test_social_media(self):
-
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
@@ -498,25 +623,25 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.mk_article(
             self.yourmind, title="New article",
             social_media_title='media title',
-            social_media_description='media description',)
+            social_media_description='media description', )
 
         self.mk_article(
             self.yourmind, title="New article2",
             social_media_title='media title',
-            social_media_image=self.image,)
+            social_media_image=self.image, )
 
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 social_media_title='media title').count(), 2)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 social_media_description='media description').count(), 1)
-        self.assertEquals(
+        self.assertEqual(
             ArticlePage.objects.filter(
                 social_media_image=self.image).count(), 1)
 
         response = self.client.get('/sections-main-1/your-mind/new-article/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'content="media title"')
 
     def test_site_languages(self):
@@ -548,12 +673,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request.site = self.site
         qs = get_translation({
             'locale_code': 'fr', 'request': request}, section)
-        self.assertEquals(translated_section.id, qs.id)
+        self.assertEqual(translated_section.id, qs.id)
         qs = get_translation({
             'locale_code': 'fr', 'request': request}, section2)
-        self.assertEquals(section2.id, qs.id)
+        self.assertEqual(section2.id, qs.id)
 
-    def test_topic_of_the_day(self):
+    def test_hero_article(self):
         User.objects.create_superuser(
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
@@ -561,15 +686,15 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # create a new article and go to it's edit page
         new_section = self.mk_section(
             self.section_index, title="New Section", slug="new-section")
-        new_article = self.mk_article(new_section, title="New article",)
+        new_article = self.mk_article(new_section, title="New article", )
         response = self.client.get(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)))
         self.assertEqual(response.status_code, 200)
 
-        # Marking article as Topic of the day with no promote date
+        # Marking article as Hero Article with no promote date
         # or demote date raises error
         post_data = {
-            "feature_as_topic_of_the_day": True,
+            "feature_as_hero_article": True,
             'title': 'this is a test article',
             'slug': 'this-is-a-test-article',
             'recommended_articles-INITIAL_FORMS': 0,
@@ -595,6 +720,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'body-0-type': 'paragraph',
             'metadata_tags': 'love, happiness',
             'action-publish': 'Publish',
+            'homepage_media-count': 0
         }
         self.client.post(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
@@ -603,12 +729,12 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertRaisesMessage(
             ValidationError,
             "Please specify the date and time that you would like this "
-            "article to appear as the Topic of the Day."
+            "article to appear as the Hero Article."
         )
 
         # Raises error if promote_date is in the past
         post_data.update({
-            "promote_date": timezone.now() + timedelta(days=-1),
+            "promote_date": timezone.now() + timezone.timedelta(days=-1),
         })
         self.client.post(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
@@ -623,7 +749,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # promote date
         post_data.update({
             "promote_date": timezone.now(),
-            "demote_date": timezone.now() + timedelta(days=-1)
+            "demote_date": timezone.now() + timezone.timedelta(days=-1)
         })
         self.client.post(
             reverse('wagtailadmin_pages:edit', args=(new_article.id,)),
@@ -661,37 +787,41 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertFalse(article.featured_in_homepage)
         self.assertFalse(article.featured_in_section)
 
-    def test_is_topic_of_the_day(self):
-        promote_date = timezone.now() + timedelta(days=-1)
-        demote_date = timezone.now() + timedelta(days=1)
+    def test_is_hero_article(self):
+        promote_date = timezone.now() + timezone.timedelta(days=-1)
+        demote_date = timezone.now() + timezone.timedelta(days=1)
         article_1 = ArticlePage(
             title="New article",
-            feature_as_topic_of_the_day=True,
+            feature_as_hero_article=True,
             promote_date=promote_date,
             demote_date=demote_date
         )
         self.yourmind.add_child(instance=article_1)
-        self.assertTrue(article_1.is_current_topic_of_the_day())
+        self.assertTrue(article_1.is_current_hero_article())
 
-        promote_date = timezone.now() + timedelta(days=2)
-        demote_date = timezone.now() + timedelta(days=4)
+        promote_date = timezone.now() + timezone.timedelta(days=2)
+        demote_date = timezone.now() + timezone.timedelta(days=4)
         article_2 = ArticlePage(
             title="New article",
             promote_date=promote_date,
             demote_date=demote_date
         )
         self.yourmind.add_child(instance=article_2)
-        self.assertFalse(article_2.is_current_topic_of_the_day())
+        self.assertFalse(article_2.is_current_hero_article())
 
-    # exclude future-scheduled topic of the day articles from the
+    def test_molo_page_helper_method_is_content_page(self):
+        self.assertTrue(self.yourmind.is_content_page("Your mind"))
+        self.assertFalse(self.yourmind.is_content_page("Not Your mind"))
+
+    # exclude future-scheduled Hero Article articles from the
     # latest articles queryset.
     # Create two articles, one with present promote date and one
     # with future promote date. Verify that the article with a
     # future promote date does not appear in latest articles
     # queryset.
-    def test_future_topic_of_the_day_not_in_latest(self):
-        promote_date = timezone.now() + timedelta(days=2)
-        demote_date = timezone.now() + timedelta(days=4)
+    def test_future_hero_article_not_in_latest(self):
+        promote_date = timezone.now() + timezone.timedelta(days=2)
+        demote_date = timezone.now() + timezone.timedelta(days=4)
         future_article = ArticlePage(
             title="Future article",
             promote_date=promote_date,
@@ -699,15 +829,15 @@ class TestModels(TestCase, MoloTestCaseMixin):
             depth="1",
             path="0003",
             featured_in_latest=True,
-            feature_as_topic_of_the_day=True
+            feature_as_hero_article=True
         )
         self.yourmind.add_child(instance=future_article)
         future_article.save()
         main = Main.objects.all().first()
         self.assertQuerysetEqual(main.latest_articles(), [])
 
-        promote_date = timezone.now() + timedelta(days=-2)
-        demote_date = timezone.now() + timedelta(days=-1)
+        promote_date = timezone.now() + timezone.timedelta(days=-2)
+        demote_date = timezone.now() + timezone.timedelta(days=-1)
         present_article = ArticlePage(
             title="Present article",
             promote_date=promote_date,
@@ -715,7 +845,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             depth="1",
             path="0004",
             featured_in_latest_start_date=promote_date,
-            feature_as_topic_of_the_day=True
+            feature_as_hero_article=True
         )
         self.yourmind.add_child(instance=present_article)
         present_article.save()

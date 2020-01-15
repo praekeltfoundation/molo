@@ -128,6 +128,17 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Test page 0')
         self.assertContains(response, 'Test page 1')
 
+    def test_404_on_object_does_not_exist(self):
+        response = self.client.get(
+            '/admin/pages/{}/edit/'.format(self.yourmind.pk)
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            '/admin/pages/1234567/edit/'
+        )
+        self.assertEqual(response.status_code, 404)
+
 
 class TestAdminPermission(TestCase, MoloTestCaseMixin):
 
@@ -170,7 +181,7 @@ class TestAdminPermission(TestCase, MoloTestCaseMixin):
         self.client.login(username='super', password='password')
 
         response = self.client.get('/admin/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'reactionquestion')
 
     def test_user_has_perm_can_see_reaction_question_modeladmin(self):
@@ -181,7 +192,7 @@ class TestAdminPermission(TestCase, MoloTestCaseMixin):
         self.assertTrue(user.has_perm('wagtailadmin.access_admin'))
         self.assertFalse(user.has_perm('core.can_view_response'))
         response = self.client.get('/admin/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'reactionquestion')
 
         # User shoud see the reaction question model admin
@@ -190,5 +201,5 @@ class TestAdminPermission(TestCase, MoloTestCaseMixin):
         self.assertTrue(user.has_perm('wagtailadmin.access_admin'))
         self.assertTrue(user.has_perm('core.can_view_response'))
         response = self.client.get('/admin/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'reactionquestion')

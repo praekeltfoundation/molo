@@ -22,23 +22,23 @@ class ArticlePageForm(WagtailAdminPageForm):
     def clean(self):
         cleaned_data = super(ArticlePageForm, self).clean()
 
-        topic_of_the_day = cleaned_data.get("feature_as_topic_of_the_day")
+        hero_article = cleaned_data.get("feature_as_hero_article")
         promote_date = cleaned_data.get("promote_date")
         demote_date = cleaned_data.get("demote_date")
 
-        if topic_of_the_day:
+        if hero_article:
             if not promote_date:
                 self.add_error(
                     "promote_date",
                     "Please specify the date and time that you would like "
-                    "this article to appear as the Topic of the Day."
+                    "this article to appear as the Hero Article."
                 )
 
             if not demote_date:
                 self.add_error(
                     "demote_date",
                     "Please specify the date and time that you would like "
-                    "this article to be demoted as the Topic of the Day."
+                    "this article to be demoted as the Hero Article."
                 )
 
             if promote_date and demote_date:

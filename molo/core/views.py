@@ -2,13 +2,14 @@ from os import environ, path, walk
 import pkg_resources
 import requests
 import zipfile
+from io import BytesIO
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import (
     JsonResponse,
     HttpResponse,
@@ -21,12 +22,17 @@ from django.utils.translation import (
     LANGUAGE_SESSION_KEY,
     get_language_from_request
 )
-from django.utils.translation import ugettext as _
+from django.views.generic import ListView
 from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
-from io import BytesIO
-from wagtail.core.models import Page, UserPagePermissionsProxy
+from django.utils.translation import ugettext as _
+from django.contrib.sitemaps import views as sitemap_views
+
 from wagtail.search.models import Query
+from wagtail.core.models import Page, UserPagePermissionsProxy
+
+from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
+
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     ArticlePage, Languages, SiteSettings, Tag,
@@ -38,7 +44,6 @@ from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
 from molo.core.forms import MediaForm, ReactionQuestionChoiceForm
 from molo.core.tasks import copy_to_all_task
-from django.views.generic import ListView
 
 from el_pagination.decorators import page_template
 
@@ -101,7 +106,8 @@ def search(request, results_per_page=10, load_more=False):
 
 def locale_set(request, locale):
     request.session[LANGUAGE_SESSION_KEY] = locale
-    return redirect(request.GET.get('next', '/'))
+    # the next var if empty a blank is passed instead of / hence the below
+    return redirect(request.GET.get('next', '/') or '/')
 
 
 def health(request):
@@ -267,14 +273,22 @@ class ReactionQuestionChoiceView(FormView):
                 created.save()
                 created.set_response_as_submitted_for_session(
                     self.request, article)
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 created.user = self.request.user
                 created.save()
 
         else:
-            messages.error(
-                self.request,
-                "You have already given feedback on this article.")
+            if 'ajax' in self.request.POST and \
+                    self.request.POST['ajax'] == 'True':
+                response = ReactionQuestionResponse.objects.filter(
+                    article=article.pk, question=question_id,
+                    user=self.request.user).last()
+                response.choice = choice
+                response.save()
+            else:
+                messages.error(
+                    self.request,
+                    "You have already given feedback on this article.")
         return super(ReactionQuestionChoiceView, self).form_valid(
             form, *args, **kwargs)
 
@@ -513,3 +527,27 @@ def publish(request, page_id):
         'next': next_url,
         'not_live_descendant_count': page.get_descendants().not_live().count()
     })
+
+
+class MoloSitemap(Sitemap):
+    def _urls(self, page, protocol, domain):
+        urls = []
+        last_mods = set()
+
+        for item in self.paginator.page(page).object_list:
+
+            url_info_items = item.get_sitemap_urls()
+
+            for url_info in url_info_items:
+                urls.append(url_info)
+                last_mods.add(url_info.get('lastmod'))
+
+        # last_mods might be empty if the whole site is private
+        if last_mods and None not in last_mods:
+            self.latest_lastmod = max(last_mods)
+        return urls
+
+
+def sitemap(request, **kwargs):
+    sitemaps = {'wagtail': MoloSitemap(request)}
+    return sitemap_views.sitemap(request, sitemaps, **kwargs)

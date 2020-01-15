@@ -1,5 +1,22 @@
-Sitemap: {{request.get_host}}/sitemap.xml
+Sitemap: http://{{request.get_host}}/sitemap.xml
 User-agent: *
 Disallow: /admin/
 Disallow: /django-admin/
 Disallow: /health/
+Disallow: /search/
+Disallow: /security-questions/
+Disallow: /poll/*/*/
+Disallow: /surveys/*/*/
+Allow: /surveys/*/success/
+Disallow: /surveys/$
+Disallow: /sections/$
+Disallow: /banners/$
+Disallow: /polls/$
+
+Disallow: /reaction-questions/$
+Disallow: /forms/$
+Disallow: /tags/$
+Disallow: /footer/$
+Disallow: /footer-pages/$
+Disallow: /yourwords/$
+Disallow: /Your-words-competitions/$

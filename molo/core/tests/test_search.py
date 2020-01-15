@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.client import Client
 
 from wagtail.search.backends import get_search_backend
@@ -62,7 +62,7 @@ class TestSearch(TestCase, MoloTestCaseMixin):
         })
         results = response.context['results']
         for article in results:
-            self.assertNotEquals(article.title, 'Test Footer')
+            self.assertNotEqual(article.title, 'Test Footer')
 
     def test_search(self):
         self.backend = get_search_backend('default')

@@ -1,9 +1,10 @@
 import pytest
 
-from datetime import datetime
-
-from django.core.urlresolvers import reverse
+from django.utils import timezone
+from django.urls import reverse
 from django.test import TestCase
+from django.shortcuts import get_object_or_404
+from django.db.models.query import QuerySet
 
 from wagtail.core.models import Site
 
@@ -11,6 +12,8 @@ from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import SectionPage, SiteSettings, \
     ArticlePage, Main, SiteLanguageRelation, Languages, ArticlePageTags
 from molo.core.tasks import promote_articles
+from molo.core.wagtail_hooks import show_main_language_only
+from wagtail.core.models import Page
 
 
 @pytest.mark.django_db
@@ -72,6 +75,49 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response,
                                'French translation of English section')
 
+    def test_that_only_main_language_pages_returns_list(self):
+        self.client.post(reverse(
+            'add_translation', args=[self.english_section.id, 'fr']))
+        request = self.client.get(
+            "http://main-1.localhost:8000/admin/pages/"
+            + str(self.english_section.id) + "/")
+        request.site = self.site
+        parent_page = get_object_or_404(Page, id=self.section_index.id)
+        pages = list(parent_page.get_children().prefetch_related(
+            'content_type', 'sites_rooted_here'))
+        pages = show_main_language_only(
+            parent_page,
+            pages,
+            request,
+        )
+        # checks that only the english section is listed
+        # and not the french section
+        assert isinstance(pages, list)
+        assert len(pages) == 1
+        self.assertEqual(pages[0].title, 'English section')
+
+    def test_that_only_main_language_pages_returns_queryset(self):
+        self.client.post(reverse(
+            'add_translation', args=[self.english_section.id, 'fr']))
+        request = self.client.get(
+            "http://main-1.localhost:8000/admin/pages/"
+            + str(self.english_section.id) + "/")
+        request.site = self.site
+        parent_page = get_object_or_404(Page, id=self.section_index.id)
+        pages = parent_page.get_children().prefetch_related(
+            'content_type', 'sites_rooted_here')
+        pages = show_main_language_only(
+            parent_page,
+            pages,
+            request,
+        )
+        # check a queryset is returned
+        # checks that only the english section is in the queryset
+        # and not the french section
+        assert isinstance(pages, QuerySet)
+        assert len(pages) == 1
+        self.assertEqual(pages[0].title, 'English section')
+
     def test_page_doesnt_have_translation_action_button_links_to_addview(self):
         response = self.client.get(reverse(
             'wagtailadmin_explore', args=[self.section_index.id]))
@@ -84,7 +130,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
             'add_translation', args=[self.english_section.id, 'fr']))
         page = SectionPage.objects.get(
             title='French translation of English section')
-        self.assertEquals(str(page.language.locale), 'fr')
+        self.assertEqual(str(page.language.locale), 'fr')
 
     def test_draft_translations_have_additional_css_clsss(self):
         self.client.post(reverse(
@@ -193,18 +239,18 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         tag.save_revision().publish()
         articles = self.mk_articles(
             parent=self.english_section,
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now(), count=30)
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now(), count=30)
         for article in articles:
             ArticlePageTags.objects.create(page=article, tag=tag)
 
         promote_articles()
 
         response = self.client.get('/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response = self.client.get('/locale/fr/')
         response = self.client.get('/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_that_only_translated_sections_show_with_tag_navigation(self):
         site_settings = SiteSettings.for_site(self.main.get_site())
@@ -219,7 +265,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         article1 = self.mk_article(
             self.english_section,
             title='English article1 in English Section',
-            featured_in_homepage_start_date=datetime.now(),
+            featured_in_homepage_start_date=timezone.now(),
             featured_in_homepage=True)
         self.mk_article_translation(
             article1, self.french, title=article1.title + ' in french',)
@@ -253,16 +299,16 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         article1 = self.mk_article(
             eng_section2,
             title='English article1 in section 2',
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now())
         self.mk_article_translation(
             article1, self.french, title=article1.title + ' in french',)
 
         article2 = self.mk_article(
             self.english_section,
             title='English article2 in section 1',
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now())
         self.mk_article_translation(
             article2, self.french, title=article2.title + ' in french',)
         promote_articles()
@@ -292,7 +338,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         en_page = self.mk_article(self.english_section,
                                   title='English article1',
-                                  featured_in_latest_start_date=datetime.now())
+                                  featured_in_latest_start_date=timezone.now())
         promote_articles()
         en_page = ArticlePage.objects.get(title=en_page.title)
         self.mk_article_translation(
@@ -300,7 +346,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         self.mk_article(self.english_section,
                         title='English article2',
-                        featured_in_latest_start_date=datetime.now())
+                        featured_in_latest_start_date=timezone.now())
         promote_articles()
 
         # tests that in english section users will only see the articles
@@ -397,16 +443,16 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         article1 = self.mk_article(
             self.english_section,
             title='English article1',
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now())
         self.mk_article_translation(
             article1, self.french, title=article1.title + ' in french',)
 
         article2 = self.mk_article(
             self.english_section,
             title='English article2',
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now())
 
         # tests that users will see the main language article for
         # pages that haven't been translated
@@ -458,14 +504,14 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         self.mk_article(
             eng_section2,
             title='English article1 in section 2',
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now())
 
         en_page = self.mk_article(
             self.english_section,
             title='English article1',
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now())
         promote_articles()
         self.mk_article_translation(
             en_page, self.french, title=en_page.title + ' in french',)
@@ -473,7 +519,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         en_page2 = self.mk_article(
             self.english_section,
             title='English article2',
-            featured_in_latest_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now())
         promote_articles()
         en_page2 = ArticlePage.objects.get(title=en_page2.title)
         self.mk_article_translation(
@@ -588,8 +634,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         en_page = self.mk_article(
             en_section2,
             title='English article1',
-            featured_in_latest_start_date=datetime.now(),
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now(),
+            featured_in_homepage_start_date=timezone.now())
         promote_articles()
         en_page = ArticlePage.objects.get(pk=en_page.pk)
         self.mk_article_translation(

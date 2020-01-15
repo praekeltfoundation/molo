@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
 from django.http.request import QueryDict
 from django.http.response import HttpResponseForbidden
@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from molo.core.templatetags.core_tags import get_pages
 from molo.profiles import forms
@@ -48,7 +49,7 @@ class RegistrationView(FormView):
         user.profile.save()
 
         for index, question in enumerate(self.questions):
-            answer = form.cleaned_data["question_%s" % index]
+            answer = form.cleaned_data.get("question_%s" % index)
             if answer:
                 SecurityAnswer.objects.create(
                     user=user.profile,
@@ -74,7 +75,7 @@ class RegistrationView(FormView):
         return kwargs
 
 
-class RegistrationDone(FormView):
+class RegistrationDone(LoginRequiredMixin, FormView):
     form_class = forms.DoneForm
     template_name = 'profiles/done.html'
 
@@ -119,7 +120,7 @@ def logout_page(request):
     return HttpResponseRedirect(request.GET.get('next', '/'))
 
 
-class MyProfileView(TemplateView):
+class MyProfileView(LoginRequiredMixin, TemplateView):
     """
     Enables viewing of the user's profile in the HTML site, by the profile
     owner.
@@ -132,7 +133,7 @@ class MyProfileView(TemplateView):
         return context
 
 
-class MyProfileEdit(UpdateView):
+class MyProfileEdit(LoginRequiredMixin, UpdateView):
     """
     Enables editing of the user's profile in the HTML site
     """
@@ -162,7 +163,7 @@ class MyProfileEdit(UpdateView):
         return kwargs
 
 
-class ProfilePasswordChangeView(FormView):
+class ProfilePasswordChangeView(LoginRequiredMixin, FormView):
     form_class = forms.ProfilePasswordChangeForm
     template_name = 'profiles/change_password.html'
 
@@ -228,7 +229,7 @@ class ForgotPasswordView(FormView):
         # check security question answers
         answer_checks = []
         for i in range(profile_settings.num_security_questions):
-            user_answer = form.cleaned_data["question_%s" % (i,)]
+            user_answer = form.cleaned_data.get("question_%s" % (i,))
             try:
                 saved_answer = user.profile.securityanswer_set.get(
                     user=user.profile,

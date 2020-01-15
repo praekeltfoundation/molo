@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
-from os import environ, makedirs, path
 import re
 import json
 import pytest
 import responses
+from os import environ, makedirs, path
 
-from datetime import timedelta, datetime
-
-from django.conf import settings
-from django.contrib.auth.models import User, Group, Permission
-from django.contrib.contenttypes.models import ContentType
 from django.core import mail
-from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse
-from django.test import TestCase, override_settings, Client
+from django.conf import settings
 from django.utils import timezone
+from django.urls import reverse
+from django.core.files.base import ContentFile
+from django.contrib.contenttypes.models import ContentType
+from django.test import TestCase, override_settings, Client
+from django.contrib.auth.models import User, Group, Permission
 
 from io import BytesIO
 
@@ -34,7 +32,7 @@ from molo.core.wagtail_hooks import copy_translation_pages
 from mock import patch, Mock
 from shutil import rmtree
 from six import b
-from six.moves.urllib.parse import quote, parse_qs
+from six.moves.urllib.parse import parse_qs
 from bs4 import BeautifulSoup
 
 from wagtail.core.models import Site, Page
@@ -114,25 +112,17 @@ class TestPages(TestCase, MoloTestCaseMixin):
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
 
+    def test_sitemap(self):
+        response = self.client.get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+
     def test_superuser_can_log_in_to_any_site(self):
         response = self.client.get('/admin/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         client = Client(HTTP_HOST=self.main2.get_site().hostname)
         client.login(username='testuser', password='password')
         response = client.get('/admin/')
-        self.assertEquals(response.status_code, 200)
-
-    def test_site_redirect_if_no_languages(self):
-        self.mk_main2(title='main3', slug='main3', path='4099')
-        main3_pk = Page.objects.get(title='main3').pk
-        main3 = Main.objects.all().last()
-        client = Client(HTTP_HOST=main3.get_site().hostname)
-        client.login(user=self.superuser)
-        response = client.get('/admin/pages/%s/' % main3_pk)
-        admin_url = '/admin/pages/%s/' % main3_pk
-        self.assertEqual(
-            response['Location'],
-            '/admin/login/?next=' + quote(admin_url, safe=''))
+        self.assertEqual(response.status_code, 200)
 
     @override_settings(MAINTENANCE_MODE=True)
     def test_maintenance_mode(self):
@@ -164,7 +154,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_copy_langauges_for_translatable_pages_only(self):
         response = copy_translation_pages(
             self.section_index, self.section_index2)
-        self.assertEquals(response, 'Not translatable page')
+        self.assertEqual(response, 'Not translatable page')
 
     def test_able_to_copy_main(self):
         # testing that copying a main page does not give an error
@@ -196,9 +186,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'new_parent_page': self.root.id,
                 'copy_subpages': 'true',
                 'publish_copies': 'true'})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         main3 = Main.objects.get(slug='blank')
-        self.assertEquals(
+        self.assertEqual(
             main3.get_children().count(), self.main.get_children().count())
 
         self.assertEqual(len(mail.outbox), 1)
@@ -253,8 +243,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'new_parent_page': self.banner_index2.pk,
                 'copy_subpages': 'true',
                 'publish_copies': 'true'})
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
             BannerPage.objects.descendant_of(self.main2).get(
                 slug='blank').banner_link_page, None)
 
@@ -287,10 +277,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'new_parent_page': self.banner_index2.pk,
                 'copy_subpages': 'true',
                 'publish_copies': 'true'})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         article2 = ArticlePage.objects.descendant_of(
             self.main2).get(slug=article.slug)
-        self.assertEquals(
+        self.assertEqual(
             BannerPage.objects.descendant_of(self.main2).get(
                 slug='blank').banner_link_page.pk, article2.pk)
 
@@ -319,11 +309,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 self.main2.get_site()).languages.filter(
                     locale='fr').first().is_active)
         new_section = Page.objects.get(slug='blank').specific
-        self.assertEquals(new_section.get_site(), self.main2.get_site())
-        self.assertEquals(
+        self.assertEqual(new_section.get_site(), self.main2.get_site())
+        self.assertEqual(
             new_section.get_children().count(),
             self.yourmind.get_children().count())
-        self.assertEquals(
+        self.assertEqual(
             new_section.translated_pages.all().count(),
             self.yourmind.translated_pages.all().count())
 
@@ -340,7 +330,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEquals(Page.objects.descendant_of(self.main).count(), 13)
+        self.assertEqual(Page.objects.descendant_of(self.main).count(), 13)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -351,9 +341,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'new_parent_page': self.root.id,
                 'copy_subpages': 'true',
                 'publish_copies': 'true'})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         new_main = Page.objects.get(slug='new-main')
-        self.assertEquals(Page.objects.descendant_of(new_main).count(), 13)
+        self.assertEqual(Page.objects.descendant_of(new_main).count(), 13)
 
         self.assertEqual(len(mail.outbox), 1)
         [email] = mail.outbox
@@ -373,7 +363,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEquals(Page.objects.descendant_of(self.main).count(), 13)
+        self.assertEqual(Page.objects.descendant_of(self.main).count(), 13)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -384,11 +374,11 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'new_parent_page': self.root.id,
                 'copy_subpages': 'true',
                 'publish_copies': 'true'})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
         new_main_celery = Page.objects.get(slug='new-main-celery')
         # few pages created since we're not letting celery run
-        self.assertEquals(
+        self.assertEqual(
             Page.objects.descendant_of(new_main_celery).count(), 6)
 
         # no email sent since copy is not complete
@@ -398,13 +388,13 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_articles(self.yourmind_sub, count=10)
 
         response = self.client.get('/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(
             response,
             '<a href="/"  class="breadcrumbs-list-with-bg__anchor">Home</a>')
 
         response = self.client.get('/sections-main-1/your-mind/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
             '<span class="breadcrumbs-list-with-bg__anchor is-active">'
@@ -412,7 +402,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/your-mind/your-mind-subsection/test-page-1/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
             '<span class="breadcrumbs-list-with-bg__anchor is-active">'
@@ -459,7 +449,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_section_listing(self):
         self.mk_articles(
             self.yourmind_sub, count=10,
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_homepage_start_date=timezone.now())
         promote_articles()
         self.yourmind.extra_style_hints = '-yellow'
         self.yourmind.save_revision().publish()
@@ -518,14 +508,14 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
             self.yourmind_sub, count=10,
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_homepage_start_date=timezone.now())
         promote_articles()
         self.yourmind.extra_style_hints = '-yellow'
         self.yourmind.save_revision().publish()
 
         self.mk_articles(
             self.yourmind_sub2, count=10,
-            featured_in_homepage_start_date=datetime.now())
+            featured_in_homepage_start_date=timezone.now())
         promote_articles()
 
         self.yourmind2.extra_style_hints = '-purple'
@@ -552,7 +542,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.yourmind.save_revision().publish()
         article = self.mk_article(
             self.yourmind, title='article', slug='article')
-        article.featured_in_homepage_start_date = datetime.now()
+        article.featured_in_homepage_start_date = timezone.now()
         article.save()
         promote_articles()
 
@@ -597,7 +587,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         en_page = self.mk_article(self.yourmind)
         article = self.mk_article(
             self.yourmind, title='article', slug='article')
-        article.featured_in_homepage_start_date = datetime.now()
+        article.featured_in_homepage_start_date = timezone.now()
         article.save()
         promote_articles()
 
@@ -654,7 +644,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         en_page = self.mk_article(self.yourmind)
         article = self.mk_article(
             self.yourmind, title='article', slug='article')
-        article.featured_in_homepage_start_date = datetime.now()
+        article.featured_in_homepage_start_date = timezone.now()
         article.save()
         promote_articles()
 
@@ -706,7 +696,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_latest_listing(self):
         en_latest = self.mk_articles(
             self.yourmind_sub, count=10,
-            featured_in_latest_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now())
         for p in en_latest:
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french')
@@ -731,7 +721,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_latest(self):
         en_latest = self.mk_articles(
             self.yourmind_sub, count=4,
-            featured_in_latest_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now())
         for p in en_latest:
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french')
@@ -742,12 +732,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
             self.mk_article_translation(
                 p, self.french, title=p.title + ' in french')
 
-        self.assertEquals(self.main.latest_articles().count(), 4)
+        self.assertEqual(self.main.latest_articles().count(), 4)
 
     def test_latest_listing_in_french(self):
         en_latest = self.mk_articles(
             self.yourmind_sub, count=10,
-            featured_in_latest_start_date=datetime.now())
+            featured_in_latest_start_date=timezone.now())
 
         for p in en_latest:
             self.mk_article_translation(
@@ -864,7 +854,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_featured_homepage_listing(self):
         self.mk_article(
-            self.yourmind_sub, featured_in_homepage_start_date=datetime.now())
+            self.yourmind_sub, featured_in_homepage_start_date=timezone.now())
         promote_articles()
         response = self.client.get('/')
         self.assertContains(
@@ -875,31 +865,31 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_featured_homepage_listing_draft_articles(self):
         article = self.mk_article(
-            self.yourmind_sub, featured_in_homepage_start_date=datetime.now())
+            self.yourmind_sub, featured_in_homepage_start_date=timezone.now())
         article2 = self.mk_article(
-            self.yourmind_sub, featured_in_homepage_start_date=datetime.now())
+            self.yourmind_sub, featured_in_homepage_start_date=timezone.now())
         promote_articles()
         article2.unpublish()
-        self.assertEquals(ArticlePage.objects.live().count(), 1)
+        self.assertEqual(ArticlePage.objects.live().count(), 1)
         featured_in_homepage_articles = load_descendant_articles_for_section(
             {}, self.yourmind_sub, featured_in_homepage=True)
-        self.assertEquals(featured_in_homepage_articles.count(), 1)
-        self.assertEquals(
+        self.assertEqual(featured_in_homepage_articles.count(), 1)
+        self.assertEqual(
             featured_in_homepage_articles.first().title, article.title)
 
-    def test_featured_topic_of_the_day(self):
-        promote_date = timezone.now() + timedelta(days=-1)
-        demote_date = timezone.now() + timedelta(days=1)
+    def test_featured_hero_article(self):
+        promote_date = timezone.now() + timezone.timedelta(days=-1)
+        demote_date = timezone.now() + timezone.timedelta(days=1)
         self.mk_article(
             self.yourmind_sub,
-            feature_as_topic_of_the_day=True,
+            feature_as_hero_article=True,
             promote_date=promote_date,
             demote_date=demote_date
         )
         response = self.client.get('/')
         self.assertContains(
             response,
-            'Topic of the Day')
+            'Hero Article')
 
     def test_social_media_footer(self):
         default_site = Site.objects.get(is_default_site=True)
@@ -957,7 +947,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_featured_homepage_listing_in_french(self):
         en_page = self.mk_article(
-            self.yourmind_sub, featured_in_homepage_start_date=datetime.now())
+            self.yourmind_sub, featured_in_homepage_start_date=timezone.now())
         fr_page = self.mk_article_translation(
             en_page, self.french,
             title=en_page.title + ' in french',
@@ -1040,18 +1030,18 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEqual(response.status_code, 302)
 
         page_en = ArticlePage.objects.get(pk=en_page.pk)
-        self.assertEquals(page_en.get_parent().specific, self.yourmind_sub)
+        self.assertEqual(page_en.get_parent().specific, self.yourmind_sub)
 
         page_fr = ArticlePage.objects.get(pk=fr_page.pk)
-        self.assertEquals(page_fr.get_parent().specific, self.yourmind)
+        self.assertEqual(page_fr.get_parent().specific, self.yourmind)
 
     def test_health(self):
         environ['MARATHON_APP_ID'] = 'marathon-app-id'
         environ['MARATHON_APP_VERSION'] = 'marathon-app-version'
         response = self.client.get('/health/')
-        self.assertEquals(
+        self.assertEqual(
             response.status_code, 200)
-        self.assertEquals(
+        self.assertEqual(
             json.loads(response.content), {
                 'id': 'marathon-app-id',
                 'version': 'marathon-app-version',
@@ -1059,7 +1049,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_django_admin_loads(self):
         response = self.client.get(reverse('admin:index'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_translation_redirects(self):
         en_page = self.mk_article(self.yourmind, featured_in_homepage=True)
@@ -1069,10 +1059,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             subtitle=en_page.subtitle + ' in french')
 
         response = self.client.get('/sections-main-1/your-mind/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/locale/fr/')
 
@@ -1106,11 +1096,26 @@ class TestPages(TestCase, MoloTestCaseMixin):
         # unpublished translation will not result in a redirect
         self.yourmind_fr.unpublish()
         response = self.client.get('/sections-main-1/your-mind/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         fr_page.unpublish()
         response = self.client.get('/sections-main-1/your-mind/test-page-0/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+
+    def test_translation_drafted_page__translations_no_redirects(self):
+        """
+        When the non-main language's version of the page is in draft mode
+        The link to that page should redirect to the main langauge's version
+        of the page not the in draft version
+        """
+        response = self.client.get('/locale/fr/')
+        self.yourmind_fr.unpublish()
+        response = self.client.get('/sections-main-1/your-mind-in-french/')
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get('/sections-main-1/your-mind')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.url,
+                         '/sections-main-1/' + self.yourmind.slug + '/')
 
     def test_subsection_is_translated(self):
         en_page = self.mk_article(self.yourmind_sub)
@@ -1175,7 +1180,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.client.get('/')
 
         # session key should be the same after subsequent requests
-        self.assertEquals(
+        self.assertEqual(
             self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'],
             current_session_key)
 
@@ -1275,6 +1280,20 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertTrue('MOLO_GA_SESSION_FOR_NOSCRIPT' in self.client.session)
         self.assertContains(
             response, self.client.session['MOLO_GA_SESSION_FOR_NOSCRIPT'])
+
+    def test_google_search_console_setting(self):
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        response = self.client.get('/')
+        self.assertNotContains(response, 'google-site-verification')
+
+        setting.google_search_console = 'GTM-2345678'
+        setting.save()
+
+        response = self.client.get('/')
+        self.assertContains(response, 'google-site-verification')
+        self.assertContains(response, 'GTM-2345678')
 
     def test_admin_doesnt_translate_when_frontend_locale_changed(self):
         self.client.get('/locale/af/')
@@ -1612,16 +1631,16 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
     def test_article_recommended_section_enabled_disabled(self):
 
         self.assertTrue(
-            self.article_a.get_parent_section()
+            self.article_a.get_parent_section('en')
             .enable_recommended_section)
 
-        self.assertEquals(
+        self.assertEqual(
             self.article_b,
             self.article_a.recommended_articles.first()
             .recommended_article.specific)
 
         response = self.client.get('/sections-main-1/section-a/article-a/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Recommended')
         self.assertContains(response, self.article_b.title)
 
@@ -1637,7 +1656,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.article_b.title + ' in french')
         self.assertContains(response, self.article_c.title + ' in french')
 
@@ -1649,7 +1668,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.article_b.title)
         self.assertContains(response, self.article_c.title + ' in french')
 
@@ -1666,7 +1685,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.article_b.title)
         self.assertNotContains(response, self.article_b.title + 'in french')
         self.assertContains(response, self.article_c.title + ' in french')
@@ -1681,7 +1700,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.article_b.title + ' in french')
         self.assertContains(response, self.article_c_fr.title)
 
@@ -1697,7 +1716,7 @@ class TestArticlePageRecommendedSections(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.article_b.title + ' in french')
         self.assertContains(response, self.article_d.title + ' in french')
         self.assertContains(response, self.article_c_fr.title)
@@ -1745,20 +1764,20 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def test_next_article_main_language(self):
         # assumes articles loop
         self.assertTrue(
-            self.article_b.get_parent_section().enable_next_section)
+            self.article_b.get_parent_section('en').enable_next_section)
 
         response = self.client.get('/sections-main-1/section-a/article-c/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
         self.assertContains(response, self.article_b.title)
 
         response = self.client.get('/sections-main-1/section-a/article-b/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
         self.assertContains(response, self.article_a.title)
 
         response = self.client.get('/sections-main-1/section-a/article-a/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
         self.assertContains(response, self.article_c.title)
 
@@ -1766,7 +1785,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.section_a.save()
 
         response = self.client.get('/sections-main-1/section-a/article-c/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Next up in ' + self.section_a.title)
         self.assertNotContains(response, self.article_b.title)
 
@@ -1776,22 +1795,22 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/section-a/article-c-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.article_b.title + ' in french')
 
         response = self.client.get(
             '/sections-main-1/section-a/article-b-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.article_a.title + ' in french')
 
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.article_c.title + ' in french')
 
     def test_next_article_show_untranslated_pages(self):
         response = self.client.get('/sections-main-1/section-a/article-c/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
         self.assertContains(response, self.article_b.title)
         ArticlePage.objects.get(
@@ -1804,7 +1823,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/section-a/article-c-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Article B')
 
     def test_next_article_show_only_translated_pages(self):
@@ -1814,7 +1833,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         setting.save()
 
         response = self.client.get('/sections-main-1/section-a/article-c/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
         self.assertContains(response, self.article_b.title)
 
@@ -1825,7 +1844,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/sections-main-1/section-a/article-c-in-french/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.article_a.title + ' in french')
 
     def test_next_article_with_related_section(self):
@@ -1841,7 +1860,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.article_2.save_revision().publish()
 
         response = self.client.get('/sections-main-1/section-b/article-2/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.article_1.title)
         self.assertContains(response, 'Next up in ' + self.section_b.title)
 
@@ -1852,7 +1871,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.article_1.save_revision().publish()
 
         response = self.client.get('/sections-main-1/section-b/article-1/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Next up in')
 
     def test_next_article_not_displayd_single_article_only_translated(self):
@@ -1867,7 +1886,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         self.article_1.save_revision().publish()
 
         response = self.client.get('/sections-main-1/section-b/article-1/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Next up in')
 
 
@@ -1890,7 +1909,7 @@ class TestDjangoAdmin(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(reverse('admin:index'))
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
             '<a href="/django-admin/upload_media/">Upload Media</a>'
@@ -1924,7 +1943,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         main_page = Main.objects.first()
         response = self.client.get('/admin/pages/{0}/'
                                    .format(str(main_page.pk)))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         soup = BeautifulSoup(response.content, 'html.parser')
         # Get all the rows in the body of the table
@@ -1944,7 +1963,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
                        'title="Delete this page" class="u-link '
                        'is-live ">Delete</a>'.format(str(main_page.pk)))
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, delete_link, html=True)
 
     def test_delete_button_removed_in_edit_menu(self):
@@ -1956,7 +1975,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
                          'class="shortcut">Delete</a></li>'
                          .format(str(main_page.pk)))
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, delete_button, html=True)
 
     def test_delete_button_not_removed_in_edit_menu_for_sections(self):
@@ -1968,7 +1987,7 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
                          'class="shortcut">Delete</a></li>'
                          .format(str(section_page.pk)))
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, delete_button, html=True)
 
 
@@ -2014,7 +2033,7 @@ class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
 
     def can_see_pages_menu(self, client):
         response = client.get('/admin/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertTrue(soup.find('a', string='Pages'))
 
@@ -2036,7 +2055,7 @@ class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/admin/')
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertFalse(soup.find('a', string='Explorer'))
 

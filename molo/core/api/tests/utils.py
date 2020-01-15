@@ -68,7 +68,7 @@ def mocked_requests_get(url, *args, **kwargs):
                 "featured_in_section_start_date," \
                 "featured_in_section_end_date" \
                 ",featured_in_homepage,featured_in_homepage_start_date" \
-                ",featured_in_homepage_end_date,feature_as_topic_of_the_day" \
+                ",featured_in_homepage_end_date,feature_as_hero_article" \
                 ",promote_date,demote_date,metadata_tags," \
                 "latest_revision_created_at," \
                 "image,social_media_image,social_media_description," \

@@ -1,24 +1,41 @@
+from treebeard.mp_tree import get_result_class
+
 from wagtail.core.models import Page
-from wagtail.core.utils import WAGTAIL_APPEND_SLASH
-from django.urls import reverse
 
 
 class MoloPage(Page):
     class Meta:
         proxy = True
 
-    def get_url_parts(self, request=None):
-        for (site_id, root_path, root_url) in self._get_site_root_paths(
-                request):
-            if hasattr(request, 'site') and site_id != request.site.pk:
-                continue
-            if self.url_path.startswith(root_path):
-                page_path = reverse('wagtail_serve', args=(
-                    self.url_path[len(root_path):],))
+    def exact_type(self):
+        return self.__class__.__name__
 
-                # Remove the trailing slash from the URL reverse generates if
-                # WAGTAIL_APPEND_SLASH is False and we're not trying to serve
-                # the root path
-                if not WAGTAIL_APPEND_SLASH and page_path != '/':
-                    page_path = page_path.rstrip('/')
-                return (site_id, root_url, page_path)
+    def is_content_page(self, page):
+        if self.title.lower() == page.lower():
+            return True
+        else:
+            if hasattr(self.specific, 'translated_pages'):
+                for translation in self.specific.translated_pages.all():
+                    if translation.title.lower() == page.lower():
+                        return True
+        return False
+
+    def get_top_level_parent(self, locale=None, depth=3):
+        # exclude main has no attribute 'language'
+        if depth < 1:
+            return
+
+        parentpath = self._get_basepath(self.path, depth)
+        self._cached_parent_obj = get_result_class(self.__class__)\
+            .objects.get(path=parentpath)
+
+        parent = self._cached_parent_obj.specific \
+            if hasattr(self._cached_parent_obj, 'specific')\
+            else self._cached_parent_obj.specific
+
+        if parent and hasattr(parent, 'language'):
+            if locale and parent.language.locale != locale:
+                return parent.translated_pages.filter(
+                    language__locale=locale, depth=depth
+                ).first().specific
+        return parent

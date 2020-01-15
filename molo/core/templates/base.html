@@ -27,6 +27,9 @@
     <meta property="og:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
     <meta property="og:image:url" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% if settings.core.SiteSettings.google_search_console %}
+    <meta name="google-site-verification" content="{{settings.core.SiteSettings.google_search_console}}" />
+    {% endif %}
     {% compress css %}
       <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/{{ ENV }}/styles.css">
     {% endcompress %}

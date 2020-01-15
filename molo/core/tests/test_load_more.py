@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 
 from django.test import TestCase
 
@@ -71,7 +71,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
     def test_home_more(self):
         articles = self.mk_articles(parent=self.yourmind, count=30)
         for article in articles[:12]:
-            article.featured_in_latest_start_date = datetime.now()
+            article.featured_in_latest_start_date = timezone.now()
             article.save()
         promote_articles()
         articles = ArticlePage.objects.all()
@@ -90,7 +90,7 @@ class TestTags(MoloTestCaseMixin, TestCase):
     def test_home_index(self):
         articles = self.mk_articles(parent=self.yourmind, count=30)
         for article in articles[:12]:
-            article.featured_in_latest_start_date = datetime.now()
+            article.featured_in_latest_start_date = timezone.now()
             article.save()
         promote_articles()
         articles = ArticlePage.objects.all()

@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.test.client import Client
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from datetime import date
 from collections import OrderedDict
 from molo.core.tests.base import MoloTestCaseMixin
@@ -120,11 +120,11 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         ]
         self.assertTrue(isinstance(response, HttpResponse))
         self.assertContains(response, "\r\n".join(expected_csv))
-        self.assertEquals(
+        self.assertEqual(
             response['Content-Type'],
             'text/csv',
         )
-        self.assertEquals(
+        self.assertEqual(
             response['Content-Disposition'],
             'attachment;filename=export.csv',
         )
@@ -207,7 +207,7 @@ class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
         profile.save()
         response = self.client.post('/admin/auth/user/')
 
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
 
 class TestAdminUserView(TestCase, MoloTestCaseMixin):
@@ -337,7 +337,7 @@ class ImportExportTestCase(TestCase, MoloTestCaseMixin):
 
         # it should return a tuple of the question title and answer hash
         expected_result = [(self.question.title, self.a1.answer)]
-        self.assertEquals(result, expected_result)
+        self.assertEqual(result, expected_result)
 
     def test_importing_does_not_override_existing_data(self):
         user = User.objects.create_user(
@@ -347,7 +347,7 @@ class ImportExportTestCase(TestCase, MoloTestCaseMixin):
         user.profile.migrated_username = 'newuser'
         user.profile.site = self.site2
         user.profile.save()
-        self.assertEquals(User.objects.count(), 2)
+        self.assertEqual(User.objects.count(), 2)
         data = OrderedDict(
             [('security_question_answers',
               []),
@@ -368,12 +368,12 @@ class ImportExportTestCase(TestCase, MoloTestCaseMixin):
         )
         resource = MultiSiteUserResource()
         result = resource.import_row(row=data, instance_loader=None)
-        self.assertEquals(result.IMPORT_TYPE_SKIP, u'skip')
-        self.assertEquals(User.objects.count(), 2)
+        self.assertEqual(result.IMPORT_TYPE_SKIP, u'skip')
+        self.assertEqual(User.objects.count(), 2)
 
     def test_import_creates_security_questions_and_creates_answers(self):
-        self.assertEquals(SecurityQuestion.objects.count(), 0)
-        self.assertEquals(SecurityAnswer.objects.count(), 0)
+        self.assertEqual(SecurityQuestion.objects.count(), 0)
+        self.assertEqual(SecurityAnswer.objects.count(), 0)
         resource = MultiSiteUserResource()
         hash_1 = ('pbkdf2_sha256$24000$WwoRrb5eO3SG$fghoNMPmIGhakF/L'
                   '3uulZ37Ly9LNvR0UpFuhvjf7zQM=')
@@ -408,8 +408,8 @@ class ImportExportTestCase(TestCase, MoloTestCaseMixin):
         )
 
         resource.import_obj(obj=User(), data=data, dry_run=True)
-        self.assertEquals(SecurityQuestion.objects.count(), 3)
-        self.assertEquals(SecurityAnswer.objects.count(), 3)
+        self.assertEqual(SecurityQuestion.objects.count(), 3)
+        self.assertEqual(SecurityAnswer.objects.count(), 3)
         questions = SecurityQuestion.objects.all()
         for question in questions:
             self.assertTrue(SecurityAnswer.objects.filter(

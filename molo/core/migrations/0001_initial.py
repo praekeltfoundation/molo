@@ -14,7 +14,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HomePage',
             fields=[
-                ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
+                ('page_ptr', models.OneToOneField(
+                    parent_link=True, auto_created=True, primary_key=True,
+                    serialize=False, to='wagtailcore.Page', on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,

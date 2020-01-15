@@ -6,7 +6,7 @@ from django.conf import settings
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import Main, Languages, SiteLanguageRelation
 from molo.profiles.task import send_export_email
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class ModelsTestCase(TestCase, MoloTestCaseMixin):
@@ -57,10 +57,10 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_send_export_email(self):
         send_export_email('examplemail@test.com', {'profile__site': self.site})
         message = list(mail.outbox)[0]
-        self.assertEquals(message.to, ['examplemail@test.com'])
-        self.assertEquals(
+        self.assertEqual(message.to, ['examplemail@test.com'])
+        self.assertEqual(
             message.subject, 'Molo export: ' + settings.SITE_NAME)
-        self.assertEquals(
+        self.assertEqual(
             message.attachments[0],
             ('Molo_export_testapp.csv',
              'username,alias,first_name,last_name,date_of_birth,email,mobile_n'
@@ -78,7 +78,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         send_export_email(
             'examplemail@test.com', {'profile__site': self.site2})
         message = list(mail.outbox)[1]
-        self.assertEquals(
+        self.assertEqual(
             message.attachments[0],
             ('Molo_export_testapp.csv',
              'username,alias,first_name,last_name,date_of_birth,email,mobile_n'

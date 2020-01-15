@@ -1,12 +1,12 @@
 from daterange_filter.filter import DateRangeFilter
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from wagtail.contrib.modeladmin.options import (
-    ModelAdmin as WagtailModelAdmin,
+    ModelAdmin as WagtailModelAdmin, modeladmin_register
 )
 from wagtail.contrib.modeladmin.options import ModelAdminGroup
 
@@ -17,7 +17,8 @@ from molo.core.models import (
 
 
 class DateFilter(DateRangeFilter):
-    template = 'admin/date_range_filter.html'
+    # template = 'admin/date_range_filter.html'
+    pass
 
 
 class ReactionQuestionAdmin(admin.ModelAdmin):
@@ -42,6 +43,11 @@ class ReactionQuestionResponseAdmin(admin.ModelAdmin):
     readonly_fields = ['question', 'choice']
 
 
+class SectionPageAdmin(WagtailModelAdmin):
+    model = SectionPage
+
+
+modeladmin_register(SectionPageAdmin)
 admin.site.register(ReactionQuestion, ReactionQuestionAdmin)
 admin.site.register(ReactionQuestionResponse, ReactionQuestionResponseAdmin)
 

@@ -2,7 +2,7 @@
 import pytest
 import datetime
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase, override_settings
 
 from molo.core.tests.base import MoloTestCaseMixin
@@ -119,7 +119,7 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
         self.client.post(reverse('copy-to-all', args=(article.id,)))
 
         # assert that only exists once in site 2 and not in site 3
-        self.assertEquals(ArticlePage.objects.descendant_of(
+        self.assertEqual(ArticlePage.objects.descendant_of(
             self.main2).filter(slug=article.slug).count(), 1)
         self.assertFalse(ArticlePage.objects.descendant_of(
             self.main3).filter(slug=article.slug).exists())
@@ -152,7 +152,7 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
     def test_copy_to_all_scheduled_page(self):
         self.user = self.login()
 
-        date = datetime.datetime(2019, 3, 10, 17, 0, tzinfo=UTC)
+        date = datetime.datetime(3099, 3, 10, 17, 0, tzinfo=UTC)
         article = ArticlePage(
             title='article 1', slug='article1', go_live_at=date, live=False)
         self.yourmind.add_child(instance=article)
@@ -165,9 +165,9 @@ class TestCopyBulkAction(TestCase, MoloTestCaseMixin):
         ArticlePageTags.objects.create(page=article, tag=tag)
         article.refresh_from_db()
 
-        self.assertEquals(article.status_string, 'scheduled')
+        self.assertEqual(article.status_string, 'scheduled')
 
         self.client.post(reverse('copy-to-all', args=(article.id,)))
         new_article = ArticlePage.objects.descendant_of(
             self.main2).get(slug=article.slug)
-        self.assertEquals(new_article.status_string, 'scheduled')
+        self.assertEqual(new_article.status_string, 'scheduled')

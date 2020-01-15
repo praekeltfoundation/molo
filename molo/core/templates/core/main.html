@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags core_tags static media_tags  el_pagination_tags %}
+{% load wagtailcore_tags core_tags static media_tags el_pagination_tags %}
 
 {% block content %}
     {% bannerpages %}
     {% if not settings.core.SiteSettings.enable_tag_navigation %}
-      {% topic_of_the_day %}
+      {% hero_article %}
       {% latest_listing_homepage num_count=6 %}
       {% section_listing_homepage %}
       {% media_listing_homepage %}
@@ -13,7 +13,6 @@
       {% include 'core/tags/latest_listing_homepage.html' with articles=tag_nav_data.latest_articles %}
       {% include "patterns/components/article-tags/sp_variations/tag_articles_block.html" with tag=tag_nav_data.tags_list.0.0 tag_articles=tag_nav_data.tags_list.0.1 %}
       {% include 'core/tags/nav_tag_section_listing_homepage.html' with section=tag_nav_data.sections.0.0 featured_articles=tag_nav_data.sections.0.1 %}
-
       <ul id="articles-more"></ul>
       {% tag_menu_homepage %}
     {% endif %}
