@@ -265,7 +265,8 @@ class LanguageEndpointTestCase(APIMoloTestCase):
 class ArticleSearchEndpointTestCase(APIMoloTestCase):
     def test_filtering_for_only_articles(self):
         # Add a second article
-        article2 = self.mk_article(self.english_section, title='Second test page')
+        article2 = self.mk_article(self.english_section,
+                                   title='Second test page')
 
         # Call the endpoint
         response = self.client.get('/api/v2/pages/?type=core.ArticlePage')
@@ -281,14 +282,15 @@ class ArticleSearchEndpointTestCase(APIMoloTestCase):
 
     def test_filtering_on_live_articles(self):
         # Set existing article to not live
-        self.article.live=False
+        self.article.live = False
         self.article.save()
 
         # Add a second, live article
         self.mk_article(self.english_section, title='Second test page')
 
         # Call the endpoint, filtering for live articles
-        response = self.client.get('/api/v2/pages/?type=core.ArticlePage&live=true')
+        response = self.client.get(
+                '/api/v2/pages/?type=core.ArticlePage&live=true')
         self.assertEqual(response.status_code, 200)
 
         # Check only the live article is present
@@ -298,7 +300,7 @@ class ArticleSearchEndpointTestCase(APIMoloTestCase):
 
     def test_searching_on_live_articles(self):
         # Set content for existing article
-        self.article.body="This article is about earning love."
+        self.article.body = "This article is about earning love."
         self.article.save()
 
         # Add a second article with content
@@ -306,7 +308,8 @@ class ArticleSearchEndpointTestCase(APIMoloTestCase):
                         body='This article is about earning money.')
 
         # Call the endpoint with a search term
-        response = self.client.get('/api/v2/pages/?type=core.ArticlePage&search=earning+money')
+        response = self.client.get(
+                '/api/v2/pages/?type=core.ArticlePage&search=earning+money')
         self.assertEqual(response.status_code, 200)
 
         # Check only the relevant article is present
