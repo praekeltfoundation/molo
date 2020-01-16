@@ -589,8 +589,14 @@ def load_tags_for_article(context, article):
         tags_pks = cache.get(cache_key)
 
         if not tags_pks:
-            tags = article.specific.get_main_language_page().nav_tags.filter(
-                tag__isnull=False).values('tag__pk')
+            if getattr(request, 'is_preview', False):
+                tags = [
+                    tag.pk for tag in article.specific.
+                    get_main_language_page().nav_tags.
+                    filter(tag__isnull=False).values('tag__pk')]
+            else:
+                tags = article.specific.get_main_language_page().nav_tags.filter(
+                    tag__isnull=False).values('tag__pk')
 
             if tags and request.site:
                 tags_pks = Tag.objects.descendant_of(
