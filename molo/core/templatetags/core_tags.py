@@ -595,8 +595,8 @@ def load_tags_for_article(context, article):
                     get_main_language_page().nav_tags.
                     filter(tag__isnull=False).values('tag__pk')]
             else:
-                tags = article.specific.get_main_language_page().nav_tags.filter(
-                    tag__isnull=False).values('tag__pk')
+                tags = article.specific.get_main_language_page()\
+                    .nav_tags.filter(tag__isnull=False).values('tag__pk')
 
             if tags and request.site:
                 tags_pks = Tag.objects.descendant_of(
