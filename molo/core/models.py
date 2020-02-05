@@ -1878,7 +1878,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         "social_media_image", "social_media_description",
         "social_media_title", "reaction_questions",
         "nav_tags", "recommended_articles", "related_sections",
-        "go_live_at", "expire_at", "expired"
+        "go_live_at", "expire_at", "expired", "live"
     ]
 
     @classmethod

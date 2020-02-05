@@ -1144,7 +1144,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_versions_comparison(self):
         response = self.client.get(reverse('versions'))
         self.assertContains(response, 'Molo')
-        self.assertContains(response, 'Profiles')
+        self.assertContains(response, 'Forms')
+        self.assertContains(response, 'Commenting')
+        self.assertContains(response, 'Service Directory')
 
         with patch('pkg_resources.get_distribution', return_value=Mock(
                 version='2.5.0')):
@@ -1157,12 +1159,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 responses.add(
                     responses.GET, (
                         'https://pypi.python.org/pypi/%s/json' % plugin[0]),
-                    body=json.dumps({'info': {'version': '9.0.0'}}),
+                    body=json.dumps({'info': {'version': '10.1.4'}}),
                     content_type="application/json",
                     status=200)
 
             response = self.client.get(reverse('versions'))
-            self.assertContains(response, '9.0.0')
+            self.assertContains(response, '10.1.4')
             self.assertContains(response, 'Compare')
             self.assertContains(response, 'Not installed')
         get_pypi_version()

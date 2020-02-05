@@ -30,7 +30,7 @@ class APIMoloTestCase(MoloTestCaseMixin, TestCase):
             is_active=True)
         self.english_section = self.mk_section(
             self.section_index, title='English section')
-        self.mk_article(self.english_section)
+        self.article = self.mk_article(self.english_section)
 
         User.objects.create_superuser(
             username="admin", email="admin@admin.com", password="admin"
@@ -260,3 +260,59 @@ class LanguageEndpointTestCase(APIMoloTestCase):
         self.assertEqual(obj['locale'], 'fr')
         self.assertEqual(obj['is_main_language'], False)
         self.assertEqual(obj['is_active'], True)
+
+
+class ArticleSearchEndpointTestCase(APIMoloTestCase):
+    def test_filtering_for_only_articles(self):
+        # Add a second article
+        article2 = self.mk_article(self.english_section,
+                                   title='Second test page')
+
+        # Call the endpoint
+        response = self.client.get('/api/v2/pages/?type=core.ArticlePage')
+        self.assertEqual(response.status_code, 200)
+
+        # Check both articles are present
+        obj = json.loads(response.content)
+        self.assertEqual(obj['meta']['total_count'], 2)
+        self.assertEqual(obj['items'][0]['title'], 'Test page 0')
+        self.assertEqual(obj['items'][0]['id'], self.article.pk)
+        self.assertEqual(obj['items'][1]['title'], 'Second test page')
+        self.assertEqual(obj['items'][1]['id'], article2.pk)
+
+    def test_filtering_on_live_articles(self):
+        # Set existing article to not live
+        self.article.live = False
+        self.article.save()
+
+        # Add a second, live article
+        self.mk_article(self.english_section, title='Second test page')
+
+        # Call the endpoint, filtering for live articles
+        response = self.client.get(
+                '/api/v2/pages/?type=core.ArticlePage&live=true')
+        self.assertEqual(response.status_code, 200)
+
+        # Check only the live article is present
+        obj = json.loads(response.content)
+        self.assertEqual(obj['meta']['total_count'], 1)
+        self.assertEqual(obj['items'][0]['title'], 'Second test page')
+
+    def test_searching_on_live_articles(self):
+        # Set content for existing article
+        self.article.body = "This article is about earning love."
+        self.article.save()
+
+        # Add a second article with content
+        self.mk_article(self.english_section, title='Second test page',
+                        body='This article is about earning money.')
+
+        # Call the endpoint with a search term
+        response = self.client.get(
+                '/api/v2/pages/?type=core.ArticlePage&search=earning+money')
+        self.assertEqual(response.status_code, 200)
+
+        # Check only the relevant article is present
+        obj = json.loads(response.content)
+        self.assertEqual(obj['meta']['total_count'], 1)
+        self.assertEqual(obj['items'][0]['title'], 'Second test page')
