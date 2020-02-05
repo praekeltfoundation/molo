@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+10.1.6
+~~~~~~
+- Fix MoloPage language attribute bug for index pages
+
 10.1.5
 ~~~~~~
 - Documentation updates
