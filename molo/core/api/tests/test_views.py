@@ -14,6 +14,7 @@ from molo.core.models import (
     Main,
     Languages,
     SiteLanguageRelation,
+    ArticlePageTags,
     # ArticlePage,
 )
 
@@ -262,7 +263,7 @@ class LanguageEndpointTestCase(APIMoloTestCase):
         self.assertEqual(obj['is_active'], True)
 
 
-class ArticleSearchEndpointTestCase(APIMoloTestCase):
+class PagesEndpointTestCase(APIMoloTestCase):
     def test_filtering_for_only_articles(self):
         # Add a second article
         article2 = self.mk_article(self.english_section,
@@ -316,3 +317,21 @@ class ArticleSearchEndpointTestCase(APIMoloTestCase):
         obj = json.loads(response.content)
         self.assertEqual(obj['meta']['total_count'], 1)
         self.assertEqual(obj['items'][0]['title'], 'Second test page')
+
+    def test_filtering_by_article_nav_tags(self):
+        tag = self.mk_tag(self.tag_index)
+        ArticlePageTags.objects.create(page=self.article, tag=tag)
+
+        # Add a second, untagged article
+        self.mk_article(self.english_section, title='Second test page')
+
+        # Call the endpoint, filtering by the nav_tag
+        url = '/api/v2/pages/?type=core.ArticlePage&nav_tags__tag={}'\
+                .format(tag.pk)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Check only the tagged article is present
+        obj = json.loads(response.content)
+        self.assertEqual(obj['meta']['total_count'], 1)
+        self.assertEqual(obj['items'][0]['title'], 'Test page 0')
