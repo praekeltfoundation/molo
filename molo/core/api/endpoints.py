@@ -73,8 +73,16 @@ class MoloPagesEndpoint(PagesAPIEndpoint):
 
         # Enable filtering by navigation tags
         if model == ArticlePage and 'nav_tags__tag' in request.GET:
-            queryset = queryset.filter(
-                nav_tags__tag=request.GET['nav_tags__tag'])
+            try:
+                queryset = queryset.filter(
+                    nav_tags__tag=request.GET['nav_tags__tag'])
+            except ValueError as e:
+                raise BadRequestError(
+                    "field filter error. '%s' is not a valid value "
+                    "for nav_tags__tag (%s)" % (
+                        request.GET['nav_tags__tag'],
+                        str(e)
+                    ))
 
         return queryset
 

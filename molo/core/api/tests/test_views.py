@@ -335,3 +335,22 @@ class PagesEndpointTestCase(APIMoloTestCase):
         obj = json.loads(response.content)
         self.assertEqual(obj['meta']['total_count'], 1)
         self.assertEqual(obj['items'][0]['title'], 'Test page 0')
+
+    def test_invalid_type_for_nav_tag_returns_error(self):
+        tag = self.mk_tag(self.tag_index)
+        ArticlePageTags.objects.create(page=self.article, tag=tag)
+
+        # Add a second, untagged article
+        self.mk_article(self.english_section, title='Second test page')
+
+        # Call the endpoint, filtering by the nav_tag
+        url = '/api/v2/pages/?type=core.ArticlePage&nav_tags__tag=b'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 400)
+
+        # Check only the tagged article is present
+        obj = json.loads(response.content)
+        self.assertEqual(
+            obj['message'],
+            "field filter error. 'b' is not a valid value for nav_tags__tag"
+            " (invalid literal for int() with base 10: 'b')")
