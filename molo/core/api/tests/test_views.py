@@ -327,7 +327,7 @@ class PagesEndpointTestCase(APIMoloTestCase):
 
         # Call the endpoint, filtering by the nav_tag
         url = '/api/v2/pages/?type=core.ArticlePage&nav_tags__tag={}'\
-                .format(tag.pk)
+            .format(tag.pk)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
