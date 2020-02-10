@@ -27,6 +27,7 @@ Contents
    template-tags
    template-patterns
    testing
+   api
    plugins
    release-notes
 

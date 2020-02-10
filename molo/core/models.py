@@ -1012,7 +1012,7 @@ class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
 
     api_fields = [
         "id", "title", "feature_in_homepage", "go_live_at",
-        "expire_at", "expired"
+        "expire_at", "expired", "live"
     ]
 
 

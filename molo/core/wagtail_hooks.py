@@ -84,7 +84,8 @@ def show_main_language_only(parent_page, pages, request):
 
         if isinstance(pages, QuerySet):
             for page in pages:
-                if 'indexpage' in page.slug:
+                has_lang = hasattr(page.specific, 'language')
+                if 'indexpage' in page.slug or not has_lang:
                     continue
                 elif not page.specific:
                     pages = pages.exclude(pk=page.pk)

@@ -1,5 +1,12 @@
 CHANGES
 =======
+10.1.7
+~~~~~~
+- Enable the content API to filter articles by nav_tags
+
+10.1.6
+~~~~~~
+- Fix MoloPage language attribute bug for index pages
 
 10.1.5
 ~~~~~~
