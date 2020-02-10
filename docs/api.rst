@@ -11,7 +11,7 @@ plugin can be found on `GitHub <https://github.com/praekeltfoundation/molo.forms
 Articles
 --------
 
-A custom serializer is used to ensure that draft pages will also be
+A custom endpoint is used to ensure that draft pages will also be
 returned (this is required for the content import API).
 
 Pages endpoints
@@ -31,6 +31,9 @@ Custom fields::
 
 ``core.ArticlePage``
 ********************
+A special case is added to the ``MoloPageEndpoint``: If filtering with
+``?type=core.ArticlePage`` then the pages can also be filtered by the ``tag`` attribute
+of the ``nav_tags`` field using ``nav_tags__tag=<tag_id>``
 Custom fields::
 
     title, subtitle, body, tags, commenting_state, commenting_open_time,
