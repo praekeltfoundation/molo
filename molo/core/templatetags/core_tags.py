@@ -593,7 +593,8 @@ def load_tags_for_article(context, article):
                 tags = [
                     tag.pk for tag in article.specific.
                     get_main_language_page().nav_tags.
-                    filter(tag__isnull=False).values('tag__pk')]
+                    filter(tag__isnull=False)
+                ]
             else:
                 tags = article.specific.get_main_language_page()\
                     .nav_tags.filter(tag__isnull=False).values('tag__pk')
