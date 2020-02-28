@@ -452,7 +452,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
                 .specific.section_tags.filter(tag__isnull=False)]
     else:
         tags = section.get_main_language_page().specific.section_tags\
-            .filter(tag__isnull=False).values('tag__pk')
+            .filter(tag__isnull=False).values_list('tag__pk', flat=True)
 
     if tags and request.site:
         qs = Tag.objects.descendant_of(
@@ -593,10 +593,12 @@ def load_tags_for_article(context, article):
                 tags = [
                     tag.pk for tag in article.specific.
                     get_main_language_page().nav_tags.
-                    filter(tag__isnull=False).values('tag__pk')]
+                    filter(tag__isnull=False)
+                ]
             else:
                 tags = article.specific.get_main_language_page()\
-                    .nav_tags.filter(tag__isnull=False).values('tag__pk')
+                    .nav_tags.filter(tag__isnull=False)\
+                    .values_list('tag__pk', flat=True)
 
             if tags and request.site:
                 tags_pks = Tag.objects.descendant_of(
