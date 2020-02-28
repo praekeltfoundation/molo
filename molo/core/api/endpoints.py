@@ -8,7 +8,7 @@ from wagtail.images.api.v2.endpoints import BaseAPIEndpoint
 
 from molo.core.models import (
     SiteLanguage,
-    Languages,
+    Languages, ArticlePage,
 )
 from molo.core.api.filters import MainLanguageFilter
 from molo.core.api.serializers import (
@@ -41,7 +41,7 @@ class MoloPagesEndpoint(PagesAPIEndpoint):
     ]
 
     known_query_parameters = PagesAPIEndpoint.known_query_parameters.union([
-        'is_main_language'
+        'is_main_language', 'nav_tags__tag'
     ])
     extra_api_fields = ['url', 'live']
 
@@ -70,6 +70,19 @@ class MoloPagesEndpoint(PagesAPIEndpoint):
         # Filter by site
         queryset = queryset.descendant_of(
             request.site.root_page, inclusive=True)
+
+        # Enable filtering by navigation tags
+        if model == ArticlePage and 'nav_tags__tag' in request.GET:
+            try:
+                queryset = queryset.filter(
+                    nav_tags__tag=request.GET['nav_tags__tag'])
+            except ValueError as e:
+                raise BadRequestError(
+                    "field filter error. '%s' is not a valid value "
+                    "for nav_tags__tag (%s)" % (
+                        request.GET['nav_tags__tag'],
+                        str(e)
+                    ))
 
         return queryset
 
