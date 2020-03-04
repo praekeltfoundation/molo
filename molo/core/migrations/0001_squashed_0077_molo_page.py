@@ -383,14 +383,17 @@ def create_tag_index(apps, schema_editor):
 
 # molo.core.migrations.0060_reaction_questions_index_page
 def create_reaction_question_index(apps, schema_editor):
-    from molo.core.models import ReactionQuestionIndexPage, Main
-    main = Main.objects.all().first()
+    try:
+        from molo.core.models import ReactionQuestionIndexPage, Main
+        main = Main.objects.all().first()
 
-    if main:
-        reaction_question_index = ReactionQuestionIndexPage(
-            title='Reaction Questions', slug='reaction-questions')
-        main.add_child(instance=reaction_question_index)
-        reaction_question_index.save_revision().publish()
+        if main:
+            reaction_question_index = ReactionQuestionIndexPage(
+                title='Reaction Questions', slug='reaction-questions')
+            main.add_child(instance=reaction_question_index)
+            reaction_question_index.save_revision().publish()
+    except ImportError:
+        pass
 
 
 # molo.core.migrations.0068_media_migration

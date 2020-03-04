@@ -1,11 +1,11 @@
 from django.conf.urls import url
 
 from molo.core.admin import (
-    ReactionQuestionsModelAdmin, ReactionQuestionsSummaryModelAdmin,
+    # ReactionQuestionsModelAdmin, ReactionQuestionsSummaryModelAdmin,
     AdminViewGroup
 )
-from molo.core.admin_views import ReactionQuestionResultsAdminView, \
-    ReactionQuestionSummaryAdminView
+# from molo.core.admin_views import ReactionQuestionResultsAdminView, \
+#     ReactionQuestionSummaryAdminView
 from molo.core.models import Languages, ArticlePage
 from molo.core.utils import create_new_article_relations
 from django.db.models.query import QuerySet
@@ -21,7 +21,7 @@ from wagtail.admin.menu import MenuItem
 from wagtail.admin.site_summary import SummaryItem
 from wagtail.admin.widgets import Button
 from wagtail.contrib.modeladmin.options import (
-    modeladmin_register, ModelAdminGroup)
+    modeladmin_register)
 
 from molo.core.api import urls as molo_api_urls
 from molo.core import views
@@ -36,41 +36,6 @@ def urlconf_translations():
             views.add_translation,
             name='add_translation'),
     ]
-
-
-@hooks.register('register_admin_urls')
-def register_question_results_admin_view_url():
-    return [
-        url(r'reactionquestion/(?P<parent>\d+)/results/$',
-            ReactionQuestionResultsAdminView.as_view(),
-            name='reaction-question-results-admin'),
-    ]
-
-
-@hooks.register('register_admin_urls')
-def register_article_question_results_admin_view_url():
-    return [
-        url(r'reactionquestion/(?P<article>\d+)/results/summary/$',
-            ReactionQuestionSummaryAdminView.as_view(),
-            name='reaction-question-article-results-admin'),
-    ]
-
-
-class ReactionQuestionsGroup(ModelAdminGroup):
-    menu_label = 'ReactionQuestions'
-    menu_icon = 'folder-open-inverse'
-    menu_order = 500
-    items = (ReactionQuestionsSummaryModelAdmin, ReactionQuestionsModelAdmin)
-
-
-modeladmin_register(ReactionQuestionsGroup)
-
-
-@hooks.register('construct_main_menu')
-def show_reactionquestions_response_for_users_have_access(request, menu_items):
-    if not request.user.has_perm('core.can_view_response'):
-        menu_items[:] = [
-            item for item in menu_items if item.name != 'reactionquestions']
 
 
 modeladmin_register(AdminViewGroup)

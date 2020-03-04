@@ -1,10 +1,9 @@
+from itertools import chain
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
-from wagtail.admin.edit_handlers import EditHandler
 
-from itertools import chain
 
 from django.utils import timezone as django_timezone
 from django.conf import settings
@@ -15,12 +14,15 @@ from django.shortcuts import redirect
 from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
+from django.db.models.signals import pre_delete
 
+from django_enumfield import enum
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
-from modelcluster.tags import ClusterTaggableManager
 from modelcluster.models import ClusterableModel
+from modelcluster.tags import ClusterTaggableManager
 
+from wagtail.admin.edit_handlers import EditHandler
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.core.models import Page, Orderable, Site
 from wagtail.core.fields import StreamField
@@ -53,9 +55,6 @@ from molo.core.utils import (
     add_stream_fields,
     get_image_hash
 )
-
-from django.db.models.signals import pre_delete
-from django_enumfield import enum
 
 
 class ReadOnlyPanel(EditHandler):
@@ -559,7 +558,6 @@ class ImportableMixin(object):
             record_relation_functions = [
                 record_keeper.record_nav_tags,
                 record_keeper.record_recommended_articles,
-                record_keeper.record_reaction_questions,
                 record_keeper.record_related_sections,
                 record_keeper.record_section_tags,
                 record_keeper.record_banner_page_link,
@@ -898,107 +896,6 @@ class TagIndexPage(MoloPage, PreventDeleteMixin):
                 depth=2).first().sites_rooted_here.all().first() or None
 
 
-class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
-    parent_page_types = []
-    subpage_types = ['ReactionQuestion']
-
-    def copy(self, *args, **kwargs):
-        site = kwargs['to'].specific.get_site()
-        main = site.root_page
-        ReactionQuestionIndexPage.objects.child_of(main).delete()
-        super(ReactionQuestionIndexPage, self).copy(*args, **kwargs)
-
-    def get_site(self):
-        try:
-            return self.get_ancestors().filter(
-                depth=2).first().sites_rooted_here.get(
-                    site_name__icontains='main')
-        except Exception:
-            return self.get_ancestors().filter(
-                depth=2).first().sites_rooted_here.all().first() or None
-
-
-class ReactionQuestion(TranslatablePageMixin, MoloPage):
-    parent_page_types = ['core.ReactionQuestionIndexPage']
-    subpage_types = ['ReactionQuestionChoice']
-    language = models.ForeignKey('core.SiteLanguage',
-                                 blank=True,
-                                 null=True,
-                                 on_delete=models.SET_NULL,
-                                 )
-    translated_pages = models.ManyToManyField("self", blank=True)
-
-    def has_user_submitted_reaction_response(
-            self, request, reaction_id, article_id):
-        if 'reaction_response_submissions' not in request.session:
-            request.session['reaction_response_submissions'] = []
-        if article_id in request.session['reaction_response_submissions']:
-            return True
-        return False
-
-
-class ReactionQuestionChoice(TranslatablePageMixinNotRoutable,
-                             PageEffectiveImageMixin, MoloPage):
-    parent_page_types = ['core.ReactionQuestion']
-    subpage_types = []
-    language = models.ForeignKey('core.SiteLanguage',
-                                 blank=True,
-                                 null=True,
-                                 on_delete=models.SET_NULL,
-                                 )
-    translated_pages = models.ManyToManyField("self", blank=True)
-
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    success_message = models.CharField(blank=True, null=True, max_length=1000)
-    success_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-
-ReactionQuestionChoice.content_panels = [
-    FieldPanel('title', classname='full title'),
-    ImageChooserPanel('image'),
-    FieldPanel('success_message', classname='full title'),
-    ImageChooserPanel('success_image'),
-]
-
-
-class ReactionQuestionResponse(models.Model):
-    user = models.ForeignKey(
-        'auth.User', blank=True, null=True, on_delete=models.CASCADE
-    )
-    article = models.ForeignKey(
-        'core.ArticlePage', on_delete=models.CASCADE)
-    choice = models.ForeignKey(
-        'core.ReactionQuestionChoice',
-        blank=True, null=True, on_delete=models.SET_NULL)
-    question = models.ForeignKey(
-        'core.ReactionQuestion', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def set_response_as_submitted_for_session(self, request, article):
-        if 'reaction_response_submissions' not in request.session:
-            request.session['reaction_response_submissions'] = []
-        request.session['reaction_response_submissions'].append(article.id)
-        request.session.modified = True
-
-    class Meta:
-        permissions = (
-            ("can_view_response", "Can view Response"),
-        )
-
-
 class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
@@ -1178,11 +1075,11 @@ class Main(CommentedPageMixin, MoloPage):
                     generate_slug(self.title), )))
             self.add_child(instance=tag_index)
             tag_index.save_revision().publish()
-            reaction_question_index = ReactionQuestionIndexPage(
-                title='Reaction Questions', slug=('reaction-questions-%s' % (
-                    generate_slug(self.title), )))
-            self.add_child(instance=reaction_question_index)
-            reaction_question_index.save_revision().publish()
+            # reaction_question_index = ReactionQuestionIndexPage(
+            #     title='Reaction Questions', slug=('reaction-questions-%s' % (
+            #         generate_slug(self.title), )))
+            # self.add_child(instance=reaction_question_index)
+            # reaction_question_index.save_revision().publish()
             index_pages_after_copy.send(sender=self.__class__, instance=self)
 
 
@@ -1876,7 +1773,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         "promote_date", "demote_date", "metadata_tags",
         "latest_revision_created_at", "image",
         "social_media_image", "social_media_description",
-        "social_media_title", "reaction_questions",
+        "social_media_title",
         "nav_tags", "recommended_articles", "related_sections",
         "go_live_at", "expire_at", "expired", "live"
     ]
@@ -1913,7 +1810,6 @@ ArticlePage.content_panels = [
         ],
         heading="Social Media", ),
     InlinePanel('nav_tags', label="Tags for Navigation"),
-    InlinePanel('reaction_questions', label="Reaction Questions"),
     InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
@@ -2008,20 +1904,6 @@ class ArticlePageTags(Orderable):
             return
         else:
             super(ArticlePageTags, self).save(*args, **kwargs)
-
-
-class ArticlePageReactionQuestions(Orderable):
-    page = ParentalKey(ArticlePage, related_name='reaction_questions')
-    reaction_question = models.ForeignKey(
-        'wagtailcore.Page',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text=_('Reaction Questions')
-    )
-    panels = [PageChooserPanel('reaction_question', 'core.ReactionQuestion')]
-    api_fields = ['reaction_question']
 
 
 class ArticlePageRecommendedSections(Orderable):
