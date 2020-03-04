@@ -11,10 +11,8 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse
 from django.http import (
-    JsonResponse,
-    HttpResponse,
-    HttpResponseNotAllowed,
-    Http404,
+    JsonResponse, HttpResponse,
+    HttpResponseNotAllowed, Http404,
 )
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.http import is_safe_url
@@ -23,8 +21,6 @@ from django.utils.translation import (
     get_language_from_request
 )
 from django.views.generic import ListView
-from django.views.generic.edit import FormView
-from django.views.generic.base import TemplateView
 from django.utils.translation import ugettext as _
 from django.contrib.sitemaps import views as sitemap_views
 
@@ -37,7 +33,6 @@ from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     ArticlePage, Languages, SiteSettings, Tag,
     ArticlePageTags, SectionPage,
-    # ReactionQuestionChoice, ReactionQuestionResponse, ReactionQuestion,
     TranslatablePageMixinNotRoutable)
 
 from molo.core.templatetags.core_tags import get_pages

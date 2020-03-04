@@ -33,7 +33,8 @@ class ArticlePageForm(WagtailAdminPageForm):
                 if promote_date < timezone.now():
                     self.add_error(
                         "promote_date", _(
-                            "Please select the present date, or a future date.")
+                            "Please select the present date, or a future date."
+                        )
                     )
 
                 if demote_date < timezone.now() or demote_date < promote_date:
