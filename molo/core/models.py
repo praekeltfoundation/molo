@@ -1054,32 +1054,35 @@ class Main(CommentedPageMixin, MoloPage):
 
     def save(self, *args, **kwargs):
         super(Main, self).save(*args, **kwargs)
-        if not self.get_descendants().exists():
+        descendants = self.get_descendants().values_list('slug', flat=True)
+        slug = generate_slug(self.title)
+        if 'banners-%s' % slug not in descendants:
             banner_index = BannerIndexPage(
                 title='Banners', slug=('banners-%s' % (
-                    generate_slug(self.title), )))
+                    slug, )))
             self.add_child(instance=banner_index)
             banner_index.save_revision().publish()
+
+        if 'sections-%s' % slug not in descendants:
             section_index = SectionIndexPage(
                 title='Sections', slug=('sections-%s' % (
-                    generate_slug(self.title), )))
+                    slug, )))
             self.add_child(instance=section_index)
             section_index.save_revision().publish()
+
+        if 'footers-%s' % slug not in descendants:
             footer_index = FooterIndexPage(
                 title='Footers', slug=('footers-%s' % (
-                    generate_slug(self.title), )))
+                    slug, )))
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
+
+        if 'footers-%s' % slug not in descendants:
             tag_index = TagIndexPage(
                 title='Tags', slug=('tags-%s' % (
-                    generate_slug(self.title), )))
+                    slug, )))
             self.add_child(instance=tag_index)
             tag_index.save_revision().publish()
-            # reaction_question_index = ReactionQuestionIndexPage(
-            #     title='Reaction Questions', slug=('reaction-questions-%s' % (
-            #         generate_slug(self.title), )))
-            # self.add_child(instance=reaction_question_index)
-            # reaction_question_index.save_revision().publish()
             index_pages_after_copy.send(sender=self.__class__, instance=self)
 
 
