@@ -558,6 +558,7 @@ class ImportableMixin(object):
             record_relation_functions = [
                 record_keeper.record_nav_tags,
                 record_keeper.record_recommended_articles,
+                record_keeper.record_reaction_questions,
                 record_keeper.record_related_sections,
                 record_keeper.record_section_tags,
                 record_keeper.record_banner_page_link,

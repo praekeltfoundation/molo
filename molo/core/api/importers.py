@@ -264,6 +264,7 @@ class RecordKeeper(object):
             "related_sections": {},
             "nav_tags": {},
             "section_tags": {},
+            "reaction_questions": {},
         }
 
         # maps local page to foreign id
@@ -367,6 +368,11 @@ class RecordKeeper(object):
         self.record_foreign_relations(
             "nav_tags", "tag",
             "nav_tags", nested_fields, page_id, logger=logger)
+
+    def record_reaction_questions(self, nested_fields, page_id, logger=None):
+        self.record_foreign_relations(
+            "reaction_questions", "reaction_question",
+            "reaction_questions", nested_fields, page_id, logger=logger)
 
     def record_banner_page_link(self, nested_fields, page_id, logger=None):
         field = "banner_link_page"
