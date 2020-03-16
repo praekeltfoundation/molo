@@ -1057,6 +1057,7 @@ class Main(CommentedPageMixin, MoloPage):
         super(Main, self).save(*args, **kwargs)
         descendants = self.get_descendants().values_list('slug', flat=True)
         slug = generate_slug(self.title)
+
         if 'banners-%s' % slug not in descendants:
             banner_index = BannerIndexPage(
                 title='Banners', slug=('banners-%s' % (
@@ -1078,7 +1079,7 @@ class Main(CommentedPageMixin, MoloPage):
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
 
-        if 'footers-%s' % slug not in descendants:
+        if 'tags-%s' % slug not in descendants:
             tag_index = TagIndexPage(
                 title='Tags', slug=('tags-%s' % (
                     slug, )))
