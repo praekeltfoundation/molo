@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.2.0
+~~~~~~
+- Deprecate reaction questions
+
 10.1.8
 ~~~~~~
 - Update core tags(load_tags_for_article) and accommodate fake query sets for page previews

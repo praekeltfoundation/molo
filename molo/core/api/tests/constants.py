@@ -480,36 +480,6 @@ ARTICLE_PAGE_RESPONSE = {
         },
         "title": "Mountain"
     },
-    "reaction_questions": [
-        {
-            "id": 1,
-            "meta": {
-                "type": "core.ArticlePageReactionQuestions"
-            },
-            "reaction_question": {
-                "id": 37,
-                "meta": {
-                    "type": "core.ReactionQuestion",
-                    "detail_url": "http://localhost:8000/api/v2/pages/37/"
-                },
-                "title": "How does this make you feel?"
-            }
-        },
-        {
-            "id": 2,
-            "meta": {
-                "type": "core.ArticlePageReactionQuestions"
-            },
-            "reaction_question": {
-                "id": 38,
-                "meta": {
-                    "type": "core.ReactionQuestion",
-                    "detail_url": "http://localhost:8000/api/v2/pages/38/"
-                },
-                "title": "What colour was the dog?"
-            }
-        }
-    ],
     "nav_tags": [
         {
             "id": 1,
@@ -644,7 +614,6 @@ ARTICLE_PAGE_RESPONSE_STREAM_FIELDS = {
     "metadata_tags": [],
     "latest_revision_created_at": "2017-08-23T08:57:13.824364Z",
     "image": None,
-    "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": []
 }
@@ -968,7 +937,6 @@ ARTICLE_PAGE_RESPONSE_MAIN_LANG = {
     "metadata_tags": [],
     "latest_revision_created_at": "2017-07-10T08:52:14.326306Z",
     "image": None,
-    "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": []
 }
@@ -1033,7 +1001,6 @@ ARTICLE_PAGE_RESPONSE_FRENCH = {
     "metadata_tags": [],
     "latest_revision_created_at": "2017-07-10T08:52:14.326306Z",
     "image": None,
-    "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": []
 }
@@ -1395,7 +1362,6 @@ ARTICLE_RESPONSE_1 = {
     "metadata_tags": [],
     "latest_revision_created_at": "2017-08-04T10:07:58.605558Z",
     "image": None,
-    "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": []
 }
@@ -1456,7 +1422,6 @@ ARTICLE_RESPONSE_1_TRANSLATION = {
     "metadata_tags": [],
     "latest_revision_created_at": "2017-08-04T10:08:14.425964Z",
     "image": None,
-    "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": []
 }
@@ -1512,7 +1477,6 @@ ARTICLE_RESPONSE_2 = {
     "metadata_tags": [],
     "latest_revision_created_at": "2017-08-04T10:08:08.854104Z",
     "image": None,
-    "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": []
 }
@@ -1672,7 +1636,6 @@ NESTED_ARTICLE_RESPONSE = {
     "metadata_tags": [],
     "latest_revision_created_at": "2017-08-04T10:09:01.158928Z",
     "image": None,
-    "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": []
 }
@@ -1760,7 +1723,6 @@ ARTICLE_WITH_ONLY_IMAGE_RESPONSE = {
         },
         "title": "and it's more than just attraction."
     },
-    "reaction_questions": [],
     "nav_tags": [],
     "recommended_articles": [],
     "go_live_at": None,
