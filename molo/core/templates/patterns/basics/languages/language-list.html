@@ -13,7 +13,7 @@
     <ul class="language-list language-list--standard-{{alignment}}">
       {% for language in languages %}
       <li class="language-list__item language-list__item--standard">
-        <a href="{% url 'locale_set' language.locale %}?next={{request.path}}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="language-list__anchor language-list__anchor--standard-{{alignment}}{% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">
+        <a href="{% url 'locale_set' language.locale %}?next={{request.path}}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="language-list__anchor language-list__anchor--standard-{{alignment}}{% if request.LANGUAGE_CODE == language.locale %} is-active {% endif %}">
           {{language.locale|language_name_local}}
         </a>
       </li>
