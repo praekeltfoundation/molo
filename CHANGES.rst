@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.2.10
+~~~~~~
+- Add migrations to remove deprecated reaction question models
+
 10.2.0
 ~~~~~~
 - Deprecate reaction questions
