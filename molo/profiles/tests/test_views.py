@@ -107,6 +107,13 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         response = self.client.get(reverse('molo.profiles:user_register'))
         self.assertTrue(isinstance(response.context['form'], RegistrationForm))
 
+    def test_password_auto_complete(self):
+        response = self.client.get(reverse('molo.profiles:user_register'))
+        self.assertContains(response, 'autocomplete="off"')
+
+        response = self.client.get(reverse('molo.profiles:auth_login'))
+        self.assertContains(response, 'autocomplete="off"')
+
     def test_register_view_invalid_form(self):
         # NOTE: empty form submission
         response = self.client.post(reverse('molo.profiles:user_register'), {
