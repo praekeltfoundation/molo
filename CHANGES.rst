@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.2.2
+~~~~~~~
+- Disable password auto complete in Login and registration forms
+
 10.2.1
 ~~~~~~~
 - Add migrations to remove deprecated reaction question models
