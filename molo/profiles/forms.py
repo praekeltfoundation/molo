@@ -488,6 +488,7 @@ class ProfilePasswordChangeForm(forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4, min_length=4,
@@ -502,6 +503,7 @@ class ProfilePasswordChangeForm(forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4,
@@ -585,6 +587,7 @@ class ResetPasswordForm(forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4,
@@ -602,6 +605,7 @@ class ResetPasswordForm(forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4,
