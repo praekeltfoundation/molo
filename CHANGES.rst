@@ -1,12 +1,20 @@
 CHANGES
 =======
-10.2.10
-~~~~~~
+10.2.2
+~~~~~~~
+- Disable password auto complete in Login and registration forms
+
+10.2.1
+~~~~~~~
 - Add migrations to remove deprecated reaction question models
 
 10.2.0
 ~~~~~~
 - Deprecate reaction questions
+
+10.1.9
+~~~~~~
+- Use request Language_code in templates
 
 10.1.8
 ~~~~~~
