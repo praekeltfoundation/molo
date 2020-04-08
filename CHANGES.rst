@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.2.3
+~~~~~~~
+- Update molo.profiles "export User" admin to include multi site admin in admin list filter
+
 10.2.2
 ~~~~~~~
 - Disable password auto complete in Login and registration forms
