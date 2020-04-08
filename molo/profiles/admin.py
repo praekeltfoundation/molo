@@ -136,7 +136,10 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
     search_fields = ('username', 'profile__uuid',)
 
     def get_queryset(self, request):
-        return User.objects.filter(profile__site=request.site)
+        return User.objects.filter(
+            Q(profile__site=request.site) |
+            Q(profile__admin_sites__pk__in=[request.site.pk])
+        )
 
 
 class UserProfileModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
