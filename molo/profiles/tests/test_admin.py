@@ -203,6 +203,20 @@ class TestFrontendUsersAdminView(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, user3.username)
         self.assertContains(response, self.superuser.email)
 
+        user4 = User.objects.create_user(
+            username='testingstaff4', is_superuser=True)
+        user4.profile.site = None
+        user4.profile.save()
+
+        response = self.client.get(
+            '/admin/auth/user/?usertype=superuser'
+        )
+        self.assertNotContains(response, user1.username)
+        self.assertNotContains(response, user2.username)
+        self.assertNotContains(response, user3.username)
+        self.assertContains(response, user4.email)
+        self.assertContains(response, self.superuser.email)
+
     def test_gender_shown_on_admin(self):
         self.user.profile.gender = 'female'
         self.user.profile.save()
