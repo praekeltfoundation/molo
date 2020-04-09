@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.2.4
+~~~~~~~
+- Update molo.profiles "export User" add filter for superusers
+
 10.2.3
 ~~~~~~~
 - Update molo.profiles "export User" admin to include multi site admin in admin list filter

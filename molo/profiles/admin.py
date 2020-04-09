@@ -117,6 +117,9 @@ class CustomUsersListFilter(admin.SimpleListFilter):
         if self.value() == 'admin':
             return queryset.exclude(is_staff=False, groups__isnull=True)
 
+        if self.value() == 'superuser':
+            return queryset.filter(is_superuser=True)
+
 
 class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
     model = User
@@ -137,6 +140,7 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
 
     def get_queryset(self, request):
         return User.objects.filter(
+            Q(is_superuser=True) |
             Q(profile__site=request.site) |
             Q(profile__admin_sites__pk__in=[request.site.pk])
         )
