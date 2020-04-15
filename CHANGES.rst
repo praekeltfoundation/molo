@@ -1,5 +1,10 @@
 CHANGES
 =======
+10.2.5
+~~~~~~~
+- remove password field in the "export user" admin
+- Sqlite migration fix
+
 10.2.4
 ~~~~~~~
 - Update molo.profiles "export User" add filter for superusers
