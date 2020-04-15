@@ -138,6 +138,8 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
 
     search_fields = ('username', 'profile__uuid',)
 
+    form_fields_exclude = ('password',)
+
     def get_queryset(self, request):
         return User.objects.filter(
             Q(is_superuser=True) |
