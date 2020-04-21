@@ -6,11 +6,12 @@ from django.contrib.contenttypes.models import ContentType
 
 from wagtail.core.models import Page, Collection
 
-from molo.core.models import (
-    Main, SectionPage, ArticlePage, PageTranslation,
-    SectionIndexPage, FooterIndexPage,
-    BannerIndexPage, TagIndexPage, Tag,
-    BannerPage)
+from molo.core.models import (Main, SectionPage, ArticlePage, PageTranslation,
+                              SectionIndexPage, FooterIndexPage,
+                              BannerIndexPage, TagIndexPage, Tag,
+                              ReactionQuestionIndexPage,
+                              ArticlePageReactionQuestions, ReactionQuestion,
+                              ReactionQuestionChoice, BannerPage)
 from molo.core.utils import generate_slug
 
 
@@ -62,6 +63,9 @@ class MoloTestCaseMixin(object):
         self.section_index = SectionIndexPage.objects.child_of(
             self.main).first()
 
+        self.reaction_index = ReactionQuestionIndexPage.objects.child_of(
+            self.main).first()
+
         self.footer_index = FooterIndexPage.objects.child_of(self.main).first()
 
         self.banner_index = BannerIndexPage.objects.child_of(self.main).first()
@@ -99,6 +103,9 @@ class MoloTestCaseMixin(object):
 
         # Create index pages
         self.section_index2 = SectionIndexPage.objects.child_of(
+            self.main2).first()
+
+        self.reaction_index2 = ReactionQuestionIndexPage.objects.child_of(
             self.main2).first()
 
         self.footer_index2 = FooterIndexPage.objects.child_of(
@@ -142,6 +149,9 @@ class MoloTestCaseMixin(object):
 
         # Create index pages
         self.section_index3 = SectionIndexPage.objects.child_of(
+            self.main3).first()
+
+        self.reaction_index3 = ReactionQuestionIndexPage.objects.child_of(
             self.main3).first()
 
         self.footer_index3 = FooterIndexPage.objects.child_of(
@@ -196,6 +206,32 @@ class MoloTestCaseMixin(object):
             tag.save_revision().publish()
             tags.append(tag)
         return tags
+
+    def mk_reaction_question(self, parent, article, **kwargs):
+        data = {}
+        data.update({
+            'title': 'Test Question',
+        })
+        data.update(kwargs)
+        data.update({
+            'slug': generate_slug(data['title'])
+        })
+        question = ReactionQuestion(**data)
+        parent.add_child(instance=question)
+        question.save_revision().publish()
+        choice1 = ReactionQuestionChoice(
+            title='yes', success_message='well done')
+        question.add_child(instance=choice1)
+        choice1.save_revision().publish()
+        choice2 = ReactionQuestionChoice(title='maybe')
+        question.add_child(instance=choice2)
+        choice2.save_revision().publish()
+        choice3 = ReactionQuestionChoice(title='no')
+        question.add_child(instance=choice3)
+        choice3.save_revision().publish()
+        ArticlePageReactionQuestions.objects.create(
+            reaction_question=question, page=article)
+        return question
 
     def mk_sections(self, parent, count=2, **kwargs):
         sections = []
@@ -293,4 +329,9 @@ class MoloTestCaseMixin(object):
 
     def mk_tag_translation(self, source, language, **kwargs):
         instance = self.mk_tag(source.get_parent(), **kwargs)
+        return self.mk_translation(source, language, instance)
+
+    def mk_reaction_translation(self, source, article, language, **kwargs):
+        instance = self.mk_reaction_question(
+            source.get_parent(), article, **kwargs)
         return self.mk_translation(source, language, instance)

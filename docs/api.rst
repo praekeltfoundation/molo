@@ -44,7 +44,7 @@ Custom fields::
     featured_in_homepage, featured_in_homepage_start_date,
     featured_in_homepage_end_date, feature_as_hero_article, promote_date,
     demote_date, metadata_tags, latest_revision_created_at, image, social_media_image,
-    social_media_description, social_media_title, nav_tags,
+    social_media_description, social_media_title, reaction_questions, nav_tags,
     recommended_articles, related_sections, go_live_at, expire_at, expired, live
 
 ``core.SectionPage``
@@ -200,6 +200,7 @@ Detail endpoint:
             },
             "title": "21_girlpack_friendship_feature_BeTheBestToYourBestie.jpg"
         },
+        "reaction_questions": [],
         "nav_tags": [
             {
                 "id": 276,
