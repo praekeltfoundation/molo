@@ -1,18 +1,19 @@
 # coding=utf-8
 import pytest
 from mock import patch
+from django.contrib.auth.models import User
 from django.utils import timezone
 from django.test import TestCase, RequestFactory
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags,
-    SiteSettings, ArticleOrderingChoices,
-)
+    SiteSettings, ArticleOrderingChoices, ReactionQuestionChoice,
+    ReactionQuestion, ReactionQuestionResponse, ReactionQuestionIndexPage)
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
     get_parent, bannerpages, load_tags_for_article, get_recommended_articles,
     hero_article, render_translations, load_descendant_articles_for_section,
-    load_child_articles_for_section,
-    get_tag_articles, load_sections
+    load_child_articles_for_section, load_reaction_choice_submission_count,
+    load_user_choice_reaction_question, get_tag_articles, load_sections
 )
 
 
@@ -43,6 +44,55 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.factory = RequestFactory()
         self.request = self.factory.get('/')
         self.request.site = self.site
+
+    def test_load_user_choice_reaction_question(self):
+        article = self.mk_articles(self.yourmind, 1)[0]
+        question = ReactionQuestion(title='q1')
+        ReactionQuestionIndexPage.objects.last().add_child(instance=question)
+        question.save_revision().publish()
+        choice = ReactionQuestionChoice(title='yes')
+        question.add_child(instance=choice)
+        choice.save_revision().publish()
+        choice2 = ReactionQuestionChoice(title='no')
+        question.add_child(instance=choice2)
+        choice2.save_revision().publish()
+        user = User.objects.create_superuser(
+            username='testuser', password='password', email='test@email.com')
+        ReactionQuestionResponse.objects.create(
+            choice=choice, article=article, question=question,
+            user=user)
+        request = self.factory.get('/')
+        request.user = user
+        self.assertTrue(load_user_choice_reaction_question(
+            {'request': request},
+            question=question,
+            choice=choice,
+            article=article))
+        self.assertFalse(load_user_choice_reaction_question(
+            {'request': request},
+            question=question,
+            choice=choice2,
+            article=article))
+
+    def test_reaction_question_submission_count(self):
+        article = self.mk_articles(self.yourmind, 1)[0]
+        question = ReactionQuestion(title='q1')
+        ReactionQuestionIndexPage.objects.last().add_child(instance=question)
+        question.save_revision().publish()
+        choice = ReactionQuestionChoice(title='yes')
+        question.add_child(instance=choice)
+        choice.save_revision().publish()
+        choice2 = ReactionQuestionChoice(title='no')
+        question.add_child(instance=choice2)
+        choice2.save_revision().publish()
+        ReactionQuestionResponse.objects.create(
+            choice=choice, article=article, question=question)
+        count = load_reaction_choice_submission_count(
+            choice=choice, article=article, question=question)
+        self.assertEqual(count, 1)
+        count = load_reaction_choice_submission_count(
+            choice=choice2, article=article, question=question)
+        self.assertEqual(count, 0)
 
     def test_render_translations(self):
         # this should return an empty dictionary for non main lang pages
