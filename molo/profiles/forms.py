@@ -25,6 +25,11 @@ REGEX_EMAIL = settings.REGEX_EMAIL if hasattr(settings, 'REGEX_PHONE') else \
 
 
 class MoloAuthenticationForm(AuthenticationForm):
+    password = forms.CharField(
+        label=_("Password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'off'}),
+    )
 
     def clean(self):
         username = self.cleaned_data.get('username')
@@ -141,6 +146,7 @@ class RegistrationForm(DateOfBirthValidationMixin, forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4,
@@ -482,6 +488,7 @@ class ProfilePasswordChangeForm(forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4, min_length=4,
@@ -496,6 +503,7 @@ class ProfilePasswordChangeForm(forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4,
@@ -579,6 +587,7 @@ class ResetPasswordForm(forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4,
@@ -596,6 +605,7 @@ class ResetPasswordForm(forms.Form):
                 required=True,
                 render_value=False,
                 type='password',
+                autocomplete='off'
             )
         ),
         max_length=4,

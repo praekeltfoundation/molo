@@ -1,5 +1,62 @@
 CHANGES
 =======
+10.1.11
+~~~~~~~
+- Update MoloPage model override wagtails can_exist_under method in case of specific_class returning None
+
+10.1.10
+~~~~~~~
+- Update molo.profiles "export User" add filter for superusers
+
+- Update molo.profiles "export User" admin to include multi site admin in admin list filter
+
+- Disable password auto complete in Login and registration forms
+
+10.1.9
+~~~~~~
+- Use request Language_code in templates
+
+10.1.8
+~~~~~~
+- Update core tags(load_tags_for_article) and accommodate fake query sets for page previews
+
+10.1.7
+~~~~~~
+- Enable the content API to filter articles by nav_tags
+
+10.1.6
+~~~~~~
+- Fix MoloPage language attribute bug for index pages
+
+10.1.5
+~~~~~~
+- Documentation updates
+- Enable the API to filter article pages by live state
+
+10.1.4
+~~~~~~
+- Gracefully handle Page 404's in Wagtail admin
+
+10.1.3
+~~~~~~
+- Bug fixes
+- Update core tags and accommodate fake querysets for page previews
+- Handle key errors on registration view's form_valid method
+- Update get_translation_for_cache_key
+- Update security answer's check
+
+
+10.1.2
+~~~~~~
+- Remove interactive argument from call_command function
+
+10.1.1
+~~~~~~
+- Fix Content rotation's site_id bug
+- Add Sitemap view to address issue in wagtails sitemap view
+- Add Section's is_service_aggregator attr
+- Add service_aggregator kwarg to get_sections template tag
+
 
 10.1.0
 ~~~~~~
@@ -600,7 +657,6 @@ CHANGES
 5.21.3
 ~~~~~~
 - Admin View FED updates
->>>>>>> 782c0cdd55db211b8dc80e3538ebeeb44cabb705
 
 5.21.2
 ~~~~~~

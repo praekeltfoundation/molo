@@ -48,10 +48,9 @@
         loadJS( "{% static 'js/main.js' %}" );
       }
 
-    {% get_current_language as LANGUAGE_CODE %}
     </script>
   </head>
-  <body class="{% block body_class %}{% endblock %}" {% if LANGUAGE_CODE|language_bidi == True %}dir="rtl"{% endif %}>
+  <body class="{% block body_class %}{% endblock %}" {% if request.LANGUAGE_CODE|language_bidi == True %}dir="rtl"{% endif %}>
     {% block google_analytics %}
       {% include "patterns/components/ga_tag_manager.html" %}
     {% endblock %}
