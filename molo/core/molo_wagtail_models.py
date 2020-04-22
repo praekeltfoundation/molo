@@ -42,12 +42,6 @@ class MoloPage(Page):
 
     @classmethod
     def can_exist_under(cls, parent):
-        """
-        Checks if this page type can exist as a subpage under a parent page
-        instance.
-
-        See also: :func:`Page.can_create_at` and :func:`Page.can_move_to`
-        """
-        if parent.specific_class:
-            return cls in parent.specific_class.allowed_subpage_models()
+        if getattr(parent, 'specific_class', None):
+            return super().can_exist_under(parent)
         return False
