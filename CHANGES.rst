@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.1.11
+~~~~~~~
+- Update MoloPage model override wagtails can_exist_under method in case of specific_class returning None
+
 10.1.10
 ~~~~~~~
 - Update molo.profiles "export User" add filter for superusers
