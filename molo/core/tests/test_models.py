@@ -19,6 +19,7 @@ from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
     get_translation)
+from molo.core.molo_wagtail_models import MoloPage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.tasks import promote_articles
 from molo.core.wagtail_hooks import copy_translation_pages
@@ -881,3 +882,9 @@ class TestCmsSettings(TestCase, MoloTestCaseMixin):
 
         for settings in CmsSettings.objects.all():
             self.assertEqual(settings.timezone, self.timezone)
+
+
+class MoloPageTestCase(TestCase):
+
+    def test_can_exist_under_method(self):
+        self.assertEqual(MoloPage.can_exist_under(None), False)
