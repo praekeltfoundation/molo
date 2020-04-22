@@ -39,3 +39,9 @@ class MoloPage(Page):
                     language__locale=locale, depth=depth
                 ).first().specific
         return parent
+
+    @classmethod
+    def can_exist_under(cls, parent):
+        if getattr(parent, 'specific_class', None):
+            return super().can_exist_under(parent)
+        return False
