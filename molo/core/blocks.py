@@ -24,7 +24,7 @@ class MarkDownBlock(blocks.TextBlock):
             ],
         )
         return mark_safe(md)
-    
+
     def clean(self, value):
         value = super().clean(value)
 
@@ -32,7 +32,8 @@ class MarkDownBlock(blocks.TextBlock):
         has_html = bool(BeautifulSoup(value, "html.parser").find())
         if has_html:
             raise ValidationError(
-                    _('Please use MarkDown for formatting text instead of HTML.')
+                    _('Please use MarkDown for formatting text instead of '
+                      'HTML.')
                 )
 
         return value
