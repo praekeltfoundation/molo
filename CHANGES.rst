@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.1.13
+~~~~~~~
+- Prevent HTML from being used in MarkDown blocks
+
 10.1.12
 ~~~~~~~
 - Update MoloPage model override wagtails can_exist_under method in case of specific_class returning None
