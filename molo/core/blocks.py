@@ -1,4 +1,7 @@
+from bs4 import BeautifulSoup
+from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 from markdown import markdown
 
 from wagtail.core import blocks
@@ -21,6 +24,19 @@ class MarkDownBlock(blocks.TextBlock):
             ],
         )
         return mark_safe(md)
+
+    def clean(self, value):
+        value = super().clean(value)
+
+        # Return an error message if there is html in the value
+        has_html = bool(BeautifulSoup(value, "html.parser").find())
+        if has_html:
+            raise ValidationError(
+                    _('Please use MarkDown for formatting text instead of '
+                      'HTML.')
+                )
+
+        return value
 
 
 class MultimediaBlock(AbstractMediaChooserBlock):

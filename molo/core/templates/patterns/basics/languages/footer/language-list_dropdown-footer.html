@@ -12,7 +12,7 @@
         <ul class="language-list language-list--dropdown language-list--dropdown-footer">
           {% for language in languages %}
             <li class="language-list__item language-list__item--dropdown language-list__item--dropdown-footer">
-              <a href="{% url 'locale_set' language.locale %}?next={{request.path}}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="language-list__anchor language-list__anchor--dropdown language-list__anchor--dropdown-footer {% if LANGUAGE_CODE == language.locale %} is-active {% endif %}">
+              <a href="{% url 'locale_set' language.locale %}?next={{request.path}}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="language-list__anchor language-list__anchor--dropdown language-list__anchor--dropdown-footer {% if request.LANGUAGE_CODE == language.locale %} is-active {% endif %}">
                 {{language.locale|language_name_local}}
               </a>
             </li>

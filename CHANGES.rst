@@ -1,5 +1,29 @@
 CHANGES
 =======
+10.1.13
+~~~~~~~
+- Prevent HTML from being used in MarkDown blocks
+
+10.1.12
+~~~~~~~
+- Update MoloPage model override wagtails can_exist_under method in case of specific_class returning None
+
+10.1.10
+~~~~~~~
+- Update molo.profiles "export User" add filter for superusers
+
+- Update molo.profiles "export User" admin to include multi site admin in admin list filter
+
+- Disable password auto complete in Login and registration forms
+
+10.1.9
+~~~~~~
+- Use request Language_code in templates
+
+10.1.8
+~~~~~~
+- Update core tags(load_tags_for_article) and accommodate fake query sets for page previews
+
 10.1.7
 ~~~~~~
 - Enable the content API to filter articles by nav_tags
