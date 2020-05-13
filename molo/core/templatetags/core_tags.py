@@ -7,9 +7,8 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.db.models import Case, When
 
-from prometheus_client import Summary
 
-from molo.core.decorators import prometheus_query_count
+from molo.core.decorators import prometheus_query_count, request_time
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage, ReactionQuestion,
@@ -19,10 +18,6 @@ from molo.core.models import (
 
 
 register = template.Library()
-
-
-REQUEST_TIME = Summary(
-        'request_processing_seconds', 'Time spent processing request')
 
 
 def get_language(site, locale):
@@ -476,7 +471,7 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
 
 @prometheus_query_count
 @register.simple_tag(takes_context=True)
-@REQUEST_TIME.time()
+@request_time.time()
 def get_tag_articles(
         context, section_count=1, tag_count=4, sec_articles_count=4,
         latest_article_count=3):

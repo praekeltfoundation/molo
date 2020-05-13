@@ -1,10 +1,16 @@
 from functools import wraps
-from django.db import connection
 from prometheus_client import Summary
 
+from django.db import connection
 
-DATABASE_QUERIES = Summary(
+
+database_queries = Summary(
    'database_queries', 'DB queries count'
+)
+
+request_time = Summary(
+    'request_processing_seconds',
+    'Time spent processing request'
 )
 
 
@@ -16,7 +22,7 @@ def prometheus_query_count(func):
         results = func(*args, **kwargs)
         count2 = len(connection.queries)
         count = count2 - count1
-        DATABASE_QUERIES.observe(count)
+        database_queries.observe(count)
         return results
 
     wrap.__doc__ = func.__doc__

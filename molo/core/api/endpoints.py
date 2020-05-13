@@ -6,6 +6,8 @@ from wagtail.api.v2.utils import BadRequestError
 from wagtail.images.api.v2.endpoints import ImagesAPIEndpoint
 from wagtail.images.api.v2.endpoints import BaseAPIEndpoint
 
+from molo.core.decorators import prometheus_query_count, request_time
+
 from molo.core.models import (
     SiteLanguage,
     Languages, ArticlePage,
@@ -45,46 +47,47 @@ class MoloPagesEndpoint(PagesAPIEndpoint):
     ])
     extra_api_fields = ['url', 'live']
 
+    @request_time.time()
+    @prometheus_query_count
     def get_queryset(self):
-        '''
+        """"
         This is overwritten in order to not exclude drafts
         and pages submitted for moderation
-        '''
+        """
         request = self.request
 
         # Allow pages to be filtered to a specific type
-        if 'type' not in request.GET:
-            model = Page
-        else:
+
+        model = request.GET.get('type', Page)
+
+        if model is not Page:
             model_name = request.GET['type']
             try:
                 model = resolve_model_string(model_name)
             except LookupError:
                 raise BadRequestError("type doesn't exist")
+
             if not issubclass(model, Page):
                 raise BadRequestError("type doesn't exist")
 
-        # This is the overwritten line
-        queryset = model.objects.public()  # exclude .live()
-
-        # Filter by site
-        queryset = queryset.descendant_of(
-            request.site.root_page, inclusive=True)
-
         # Enable filtering by navigation tags
-        if model == ArticlePage and 'nav_tags__tag' in request.GET:
+        tag = request.GET.get('nav_tags__tag')
+        if model == ArticlePage and tag:
             try:
-                queryset = queryset.filter(
-                    nav_tags__tag=request.GET['nav_tags__tag'])
+                # use view_restrictions__restriction_type=None
+                # instead of .public()
+                queryset = model.objects \
+                    .filter(nav_tags__tag=tag, view_restrictions__restriction_type=None)\
+                    .descendant_of(request.site.root_page, inclusive=True,)
+
             except ValueError as e:
                 raise BadRequestError(
                     "field filter error. '%s' is not a valid value "
-                    "for nav_tags__tag (%s)" % (
-                        request.GET['nav_tags__tag'],
-                        str(e)
-                    ))
+                    "for nav_tags__tag (%s)" % (tag, str(e)))
+            return queryset
 
-        return queryset
+        return model.objects.filter(view_restrictions__restriction_type=None)\
+            .descendant_of(request.site.root_page, inclusive=True)
 
 
 class LanguagesAPIEndpoint(BaseAPIEndpoint):
