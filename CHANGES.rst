@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.1.14
+~~~~~~~
+- Use a more lenient parser to catch HTML in MarkDown blocks
+
 10.1.13
 ~~~~~~~
 - Prevent HTML from being used in MarkDown blocks
