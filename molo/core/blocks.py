@@ -29,7 +29,7 @@ class MarkDownBlock(blocks.TextBlock):
         value = super().clean(value)
 
         # Return an error message if there is html in the value
-        has_html = bool(BeautifulSoup(value, "html.parser").find())
+        has_html = bool(BeautifulSoup(value, "lxml").find())
         if has_html:
             raise ValidationError(
                     _('Please use MarkDown for formatting text instead of '
