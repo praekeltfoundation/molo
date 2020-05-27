@@ -1,7 +1,7 @@
+import html2markdown
+import re
 from bs4 import BeautifulSoup
-from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
 from markdown import markdown
 
 from wagtail.core import blocks
@@ -25,18 +25,41 @@ class MarkDownBlock(blocks.TextBlock):
         )
         return mark_safe(md)
 
-    def clean(self, value):
-        value = super().clean(value)
+    def get_api_representation(self, value, context=None):
+        """
+        This identifies any content that contains html and converts it into
+        the quivalent markdown for sending via the API
+        """
+        # Remove an invalid html tag that is often present in the content
+        value = value.replace("</br>", "\n")
 
-        # Return an error message if there is html in the value
-        has_html = bool(BeautifulSoup(value, "lxml").find())
-        if has_html:
-            raise ValidationError(
-                    _('Please use MarkDown for formatting text instead of '
-                      'HTML.')
-                )
+        has_html = bool(BeautifulSoup(value, "html.parser").find())
+        if not has_html:
+            return self.get_prep_value(value)
 
-        return value
+        # Some content has markdown and html. We convert it to html first
+        # to remove duplicate formatting and then to markdown
+        html_value = markdown(
+            value,
+            extensions=[
+                'markdown.extensions.fenced_code',
+                'codehilite',
+            ],
+        )
+        # This replaces newlines inside paragraphs with a space
+        html_value = re.sub(r'\n(?!<p>)', ' ', html_value)
+
+        markdown_value = html2markdown.convert(html_value)
+
+        # Remove any duplicated markdown
+        markdown_value = markdown_value.replace("____", "__")
+        markdown_value = markdown_value.replace("****", "**")
+        # Remove underlines since there isn't a markdown equivalent
+        markdown_value = markdown_value.replace("<u>", "")
+        markdown_value = markdown_value.replace("</u>", "")
+        # Remove any escape characters placed in front of markdown
+        markdown_value = markdown_value.replace("\\", "")
+        return markdown_value
 
 
 class MultimediaBlock(AbstractMediaChooserBlock):
