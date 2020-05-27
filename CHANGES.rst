@@ -1,5 +1,10 @@
 CHANGES
 =======
+10.1.15
+~~~~~~~
+- Remove validation preventing HTML from being used in MarkDown blocks
+- Overwrite MarkDown block api representation to convert HTML to MarkDown
+
 10.1.14
 ~~~~~~~
 - Use a more lenient parser to catch HTML in MarkDown blocks
