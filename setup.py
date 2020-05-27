@@ -49,6 +49,7 @@ install_requires = [
     'django-prometheus',
     'prometheus_client',
     'django-enumfield==1.5',
+    'html2markdown',
 ]
 
 # we need to only install typing for python2
