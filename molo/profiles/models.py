@@ -389,7 +389,7 @@ class SecurityAnswer(models.Model):
             self.save(update_fields=["answer"])
 
         return hashers.check_password(
-            raw_answer.strip().lower(),
+            raw_answer.strip().lower() if raw_answer else None,
             self.answer,
             setter
         )

@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from wagtail.admin.edit_handlers import EditHandler
@@ -737,9 +737,10 @@ def get_translation_for(pages, locale, site, is_live=True):
 
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
-        return "get_translation_for_{}_{}_{}_{}_{}".format(
-            self.pk, locale, site.pk, is_live,
-            self.latest_revision_created_at.isoformat())
+        if self.latest_revision_created_at:
+            return "get_translation_for_{}_{}_{}_{}_{}".format(
+                self.pk, locale, site.pk, is_live,
+                self.latest_revision_created_at.isoformat())
 
     def get_main_language_page(self):
         try:
@@ -1011,7 +1012,7 @@ class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
 
     api_fields = [
         "id", "title", "feature_in_homepage", "go_live_at",
-        "expire_at", "expired"
+        "expire_at", "expired", "live"
     ]
 
 
@@ -1430,6 +1431,10 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             help_text=("Underneath the area for 'next articles' recommended "
                        "articles will appear, with the image + heading + "
                        "subheading")))
+    is_service_aggregator = (
+        models.BooleanField(
+            default=False, verbose_name='Service aggregator')
+    )
 
     api_fields = [
         "title", "live", "description", "image", "extra_style_hints",
@@ -1558,6 +1563,26 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         context['p'] = p
         return context
 
+    def clean(self):
+        # check content rotation settings
+        if self.is_service_aggregator:
+            if any([
+                self.monday_rotation,
+                self.tuesday_rotation,
+                self.wednesday_rotation,
+                self.thursday_rotation,
+                self.friday_rotation,
+                self.saturday_rotation,
+                self.sunday_rotation,
+                self.content_rotation_start_date,
+                self.content_rotation_end_date,
+            ]):
+                raise ValidationError(
+                    'Content rotation can not enabled when '
+                    'Service aggregator is selected'
+                )
+        return super().clean()
+
     class Meta:
         verbose_name = _('Section')
 
@@ -1604,7 +1629,12 @@ SectionPage.settings_panels = [
             FieldPanel('enable_next_section'),
             FieldPanel('enable_recommended_section')
         ],
-        heading="Recommended Settings", )
+        heading="Recommended Settings", ),
+    MultiFieldPanel(
+        [
+            FieldPanel('is_service_aggregator'),
+        ],
+        heading="Service Aggregator", )
 ]
 
 
@@ -1811,6 +1841,25 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def tags_list(self):
         return self.tags.names()
 
+    def clean(self):
+        parent = getattr(self.get_parent(), 'specific', None)
+        should_validate = parent and isinstance(parent, SectionPage)
+        if should_validate and parent.is_service_aggregator:
+            if any([
+                self.featured_in_latest,
+                self.featured_in_latest_start_date,
+                self.featured_in_latest_end_date,
+                self.featured_in_section_start_date,
+                self.featured_in_section_end_date,
+                self.featured_in_homepage_start_date,
+                self.featured_in_homepage_end_date,
+            ]):
+                raise ValidationError(
+                    'Content rotation can not enabled when Service aggregator '
+                    'is selected on {} section'.format(parent)
+                )
+        return super().clean()
+
     class Meta:
         verbose_name = _('Article')
         ordering = ('-latest_revision_created_at',)
@@ -1829,7 +1878,7 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         "social_media_image", "social_media_description",
         "social_media_title", "reaction_questions",
         "nav_tags", "recommended_articles", "related_sections",
-        "go_live_at", "expire_at", "expired"
+        "go_live_at", "expire_at", "expired", "live"
     ]
 
     @classmethod

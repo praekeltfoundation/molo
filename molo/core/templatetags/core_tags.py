@@ -67,11 +67,12 @@ def load_tags(context):
 
 
 @register.simple_tag(takes_context=True)
-def load_sections(context):
+def load_sections(context, service_aggregator=False):
     request = context['request']
     locale = context.get('locale_code')
     if request.site:
-        qs = request.site.root_page.specific.sections()
+        qs = request.site.root_page.specific.sections().filter(
+            is_service_aggregator=service_aggregator)
     else:
         return []
     return get_pages(context, qs, locale)
@@ -446,8 +447,12 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
         related_sections__section__slug=main_language_page.slug
     ).values_list('pk', flat=True)
 
-    tags = section.get_main_language_page().specific.section_tags.filter(
-            tag__isnull=False).values('tag__pk')
+    if getattr(request, 'is_preview', False):
+        tags = [tag.pk for tag in section.get_main_language_page()
+                .specific.section_tags.filter(tag__isnull=False)]
+    else:
+        tags = section.get_main_language_page().specific.section_tags\
+            .filter(tag__isnull=False).values_list('tag__pk', flat=True)
 
     if tags and request.site:
         qs = Tag.objects.descendant_of(
@@ -584,8 +589,16 @@ def load_tags_for_article(context, article):
         tags_pks = cache.get(cache_key)
 
         if not tags_pks:
-            tags = article.specific.get_main_language_page().nav_tags.filter(
-                tag__isnull=False).values('tag__pk')
+            if getattr(request, 'is_preview', False):
+                tags = [
+                    tag.pk for tag in article.specific.
+                    get_main_language_page().nav_tags.
+                    filter(tag__isnull=False)
+                ]
+            else:
+                tags = article.specific.get_main_language_page()\
+                    .nav_tags.filter(tag__isnull=False)\
+                    .values_list('tag__pk', flat=True)
 
             if tags and request.site:
                 tags_pks = Tag.objects.descendant_of(

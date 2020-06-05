@@ -128,6 +128,17 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Test page 0')
         self.assertContains(response, 'Test page 1')
 
+    def test_404_on_object_does_not_exist(self):
+        response = self.client.get(
+            '/admin/pages/{}/edit/'.format(self.yourmind.pk)
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            '/admin/pages/1234567/edit/'
+        )
+        self.assertEqual(response.status_code, 404)
+
 
 class TestAdminPermission(TestCase, MoloTestCaseMixin):
 

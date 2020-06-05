@@ -19,6 +19,7 @@ from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
     get_translation)
+from molo.core.molo_wagtail_models import MoloPage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.tasks import promote_articles
 from molo.core.wagtail_hooks import copy_translation_pages
@@ -393,6 +394,22 @@ class TestModels(TestCase, MoloTestCaseMixin):
             new_section, title="New Section 1", slug="new-section-1")
         self.assertEqual(
             new_section1.get_parent_section('en'), new_section)
+
+    def test_article_service_aggregator(self):
+        new_section = self.mk_section(
+            self.section_index, title="New Section", slug="new-section",
+            is_service_aggregator=True)
+
+        with self.assertRaises(ValidationError):
+            self.mk_article(
+                new_section, title="New Section 1", slug="new-section-1",
+                featured_in_latest=True)
+
+    def test_section_service_aggregator(self):
+        with self.assertRaises(ValidationError):
+            self.mk_section(
+                self.section_index, title="New Section", slug="new-section",
+                is_service_aggregator=True, monday_rotation=True)
 
     def test_commenting_closed_settings_fallbacks(self):
         new_section = self.mk_section(
@@ -865,3 +882,9 @@ class TestCmsSettings(TestCase, MoloTestCaseMixin):
 
         for settings in CmsSettings.objects.all():
             self.assertEqual(settings.timezone, self.timezone)
+
+
+class MoloPageTestCase(TestCase):
+
+    def test_can_exist_under_method(self):
+        self.assertEqual(MoloPage.can_exist_under(None), False)

@@ -107,6 +107,13 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         response = self.client.get(reverse('molo.profiles:user_register'))
         self.assertTrue(isinstance(response.context['form'], RegistrationForm))
 
+    def test_password_auto_complete(self):
+        response = self.client.get(reverse('molo.profiles:user_register'))
+        self.assertContains(response, 'autocomplete="off"')
+
+        response = self.client.get(reverse('molo.profiles:auth_login'))
+        self.assertContains(response, 'autocomplete="off"')
+
     def test_register_view_invalid_form(self):
         # NOTE: empty form submission
         response = self.client.post(reverse('molo.profiles:user_register'), {
@@ -1881,6 +1888,9 @@ class ResetPasswordViewTest(TestCase, MoloTestCaseMixin):
         self.a1 = SecurityAnswer.objects.create(
             user=self.user.profile, question=self.question, answer="20"
         )
+
+    def test_none_type_security_answer(self):
+        self.assertFalse(self.a1.check_answer(None))
 
     def proceed_to_reset_password_page(self):
         expected_token = default_token_generator.make_token(self.user)
