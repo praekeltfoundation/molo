@@ -45,7 +45,7 @@ install_requires = [
     'boto==2.49.0',
     'django-storages==1.7.1',
     'Unidecode==0.04.16',
-    'django-treebeard==4.2.0',
+    'django-treebeard~=4.2',
     'django-prometheus',
     'prometheus_client',
     'django-enumfield==1.5',
