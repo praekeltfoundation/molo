@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.1.17
+~~~~~~~
+- Relax dependency requirements for django-treebeard
+
 10.1.16
 ~~~~~~~
 - Update testapp setting causing CI server to fail
