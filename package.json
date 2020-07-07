@@ -4,7 +4,7 @@
   "description": "Molo Core",
   "main": "gulpfile.js",
   "dependencies": {
-    "electron": "^1.7.12",
+    "electron": "^7.2.4",
     "marked": "0.3.9"
   },
   "devDependencies": {
