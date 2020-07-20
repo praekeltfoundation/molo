@@ -53,7 +53,6 @@ def copy_translation_pages(page, new_page):
 
 def create_new_article_relations(original_page, copied_page):
     from molo.core.models import ArticlePage, Tag, ArticlePageTags, \
-        ArticlePageReactionQuestions, ReactionQuestion, \
         ArticlePageRecommendedSections, ArticlePageRelatedSections, \
         SectionPage, BannerPage
 
@@ -71,17 +70,6 @@ def create_new_article_relations(original_page, copied_page):
                             copied_page.get_site().root_page).filter(
                                 slug=relation.tag.slug).first()
                         relation.tag = new_tag
-                        relation.save()
-
-                # replace old reaction question with new reaction question
-                question_relations = \
-                    ArticlePageReactionQuestions.objects.filter(page=article)
-                for relation in question_relations:
-                    if relation.reaction_question:
-                        new_question = ReactionQuestion.objects.descendant_of(
-                            copied_page.get_site().root_page).filter(
-                                slug=relation.reaction_question.slug).first()
-                        relation.reaction_question = new_question
                         relation.save()
 
                 # replace old recommended articles with new articles

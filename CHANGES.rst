@@ -1,5 +1,30 @@
 CHANGES
 =======
+10.2.5
+~~~~~~~
+- remove password field in the "export user" admin
+- Sqlite migration fix
+
+10.2.4
+~~~~~~~
+- Update molo.profiles "export User" add filter for superusers
+
+10.2.3
+~~~~~~~
+- Update molo.profiles "export User" admin to include multi site admin in admin list filter
+
+10.2.2
+~~~~~~~
+- Disable password auto complete in Login and registration forms
+
+10.2.1
+~~~~~~~
+- Add migrations to remove deprecated reaction question models
+
+10.2.0
+~~~~~~
+- Deprecate reaction questions
+
 10.1.15
 ~~~~~~~
 - Remove validation preventing HTML from being used in MarkDown blocks
