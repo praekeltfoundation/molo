@@ -35,7 +35,7 @@ install_requires = [
     'redis',
     'requests',
     'setuptools>=18.5',
-    'six>=1.9',
+    'six>=1.12.0',
     'ujson==1.35',
     'unicodecsv==0.14.1',
     'unicore.content',
@@ -49,6 +49,7 @@ install_requires = [
     'django-prometheus',
     'prometheus_client',
     'django-enumfield==1.5',
+    'html2markdown',
 ]
 
 # we need to only install typing for python2
@@ -67,8 +68,8 @@ setup(name='molo.core',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: BSD License',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.5',
           'Topic :: Internet :: WWW/HTTP',
           'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
       ],

@@ -50,15 +50,6 @@ urlpatterns = [
         views.home_more,
         name='home_more'
     ),
-    url(r'^reaction/(?P<article_slug>[0-9A-Za-z_\-]+)/'
-        r'(?P<question_id>\d+)/vote/$',
-        views.ReactionQuestionChoiceView.as_view(),
-        name='reaction-vote'),
-    url(r'^reaction/(?P<article_slug>[0-9A-Za-z_\-]+)/'
-        r'(?P<question_id>\d+)/(?P<choice_slug>[0-9A-Za-z_\-]+)/feedback/$',
-        views.ReactionQuestionChoiceFeedbackView.as_view(),
-        name='reaction-feedback'),
-
     url(r'^api/', include(
         ('molo.core.api.urls', 'molo.api'), namespace='molo_api')),
 

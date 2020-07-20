@@ -1,10 +1,9 @@
+from itertools import chain
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
-from wagtail.admin.edit_handlers import EditHandler
 
-from itertools import chain
 
 from django.utils import timezone as django_timezone
 from django.conf import settings
@@ -15,12 +14,15 @@ from django.shortcuts import redirect
 from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
+from django.db.models.signals import pre_delete
 
+from django_enumfield import enum
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
-from modelcluster.tags import ClusterTaggableManager
 from modelcluster.models import ClusterableModel
+from modelcluster.tags import ClusterTaggableManager
 
+from wagtail.admin.edit_handlers import EditHandler
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.core.models import Page, Orderable, Site
 from wagtail.core.fields import StreamField
@@ -53,9 +55,6 @@ from molo.core.utils import (
     add_stream_fields,
     get_image_hash
 )
-
-from django.db.models.signals import pre_delete
-from django_enumfield import enum
 
 
 class ReadOnlyPanel(EditHandler):
@@ -737,9 +736,10 @@ def get_translation_for(pages, locale, site, is_live=True):
 
 class TranslatablePageMixinNotRoutable(object):
     def get_translation_for_cache_key(self, locale, site, is_live):
-        return "get_translation_for_{}_{}_{}_{}_{}".format(
-            self.pk, locale, site.pk, is_live,
-            self.latest_revision_created_at.isoformat())
+        if self.latest_revision_created_at:
+            return "get_translation_for_{}_{}_{}_{}_{}".format(
+                self.pk, locale, site.pk, is_live,
+                self.latest_revision_created_at.isoformat())
 
     def get_main_language_page(self):
         try:
@@ -897,107 +897,6 @@ class TagIndexPage(MoloPage, PreventDeleteMixin):
                 depth=2).first().sites_rooted_here.all().first() or None
 
 
-class ReactionQuestionIndexPage(MoloPage, PreventDeleteMixin):
-    parent_page_types = []
-    subpage_types = ['ReactionQuestion']
-
-    def copy(self, *args, **kwargs):
-        site = kwargs['to'].specific.get_site()
-        main = site.root_page
-        ReactionQuestionIndexPage.objects.child_of(main).delete()
-        super(ReactionQuestionIndexPage, self).copy(*args, **kwargs)
-
-    def get_site(self):
-        try:
-            return self.get_ancestors().filter(
-                depth=2).first().sites_rooted_here.get(
-                    site_name__icontains='main')
-        except Exception:
-            return self.get_ancestors().filter(
-                depth=2).first().sites_rooted_here.all().first() or None
-
-
-class ReactionQuestion(TranslatablePageMixin, MoloPage):
-    parent_page_types = ['core.ReactionQuestionIndexPage']
-    subpage_types = ['ReactionQuestionChoice']
-    language = models.ForeignKey('core.SiteLanguage',
-                                 blank=True,
-                                 null=True,
-                                 on_delete=models.SET_NULL,
-                                 )
-    translated_pages = models.ManyToManyField("self", blank=True)
-
-    def has_user_submitted_reaction_response(
-            self, request, reaction_id, article_id):
-        if 'reaction_response_submissions' not in request.session:
-            request.session['reaction_response_submissions'] = []
-        if article_id in request.session['reaction_response_submissions']:
-            return True
-        return False
-
-
-class ReactionQuestionChoice(TranslatablePageMixinNotRoutable,
-                             PageEffectiveImageMixin, MoloPage):
-    parent_page_types = ['core.ReactionQuestion']
-    subpage_types = []
-    language = models.ForeignKey('core.SiteLanguage',
-                                 blank=True,
-                                 null=True,
-                                 on_delete=models.SET_NULL,
-                                 )
-    translated_pages = models.ManyToManyField("self", blank=True)
-
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    success_message = models.CharField(blank=True, null=True, max_length=1000)
-    success_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-
-ReactionQuestionChoice.content_panels = [
-    FieldPanel('title', classname='full title'),
-    ImageChooserPanel('image'),
-    FieldPanel('success_message', classname='full title'),
-    ImageChooserPanel('success_image'),
-]
-
-
-class ReactionQuestionResponse(models.Model):
-    user = models.ForeignKey(
-        'auth.User', blank=True, null=True, on_delete=models.CASCADE
-    )
-    article = models.ForeignKey(
-        'core.ArticlePage', on_delete=models.CASCADE)
-    choice = models.ForeignKey(
-        'core.ReactionQuestionChoice',
-        blank=True, null=True, on_delete=models.SET_NULL)
-    question = models.ForeignKey(
-        'core.ReactionQuestion', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def set_response_as_submitted_for_session(self, request, article):
-        if 'reaction_response_submissions' not in request.session:
-            request.session['reaction_response_submissions'] = []
-        request.session['reaction_response_submissions'].append(article.id)
-        request.session.modified = True
-
-    class Meta:
-        permissions = (
-            ("can_view_response", "Can view Response"),
-        )
-
-
 class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
     parent_page_types = ['core.TagIndexPage']
     subpage_types = []
@@ -1011,7 +910,7 @@ class Tag(TranslatablePageMixin, MoloPage, ImportableMixin):
 
     api_fields = [
         "id", "title", "feature_in_homepage", "go_live_at",
-        "expire_at", "expired"
+        "expire_at", "expired", "live"
     ]
 
 
@@ -1156,32 +1055,36 @@ class Main(CommentedPageMixin, MoloPage):
 
     def save(self, *args, **kwargs):
         super(Main, self).save(*args, **kwargs)
-        if not self.get_descendants().exists():
+        descendants = self.get_descendants().values_list('slug', flat=True)
+        slug = generate_slug(self.title)
+
+        if 'banners-%s' % slug not in descendants:
             banner_index = BannerIndexPage(
                 title='Banners', slug=('banners-%s' % (
-                    generate_slug(self.title), )))
+                    slug, )))
             self.add_child(instance=banner_index)
             banner_index.save_revision().publish()
+
+        if 'sections-%s' % slug not in descendants:
             section_index = SectionIndexPage(
                 title='Sections', slug=('sections-%s' % (
-                    generate_slug(self.title), )))
+                    slug, )))
             self.add_child(instance=section_index)
             section_index.save_revision().publish()
+
+        if 'footers-%s' % slug not in descendants:
             footer_index = FooterIndexPage(
                 title='Footers', slug=('footers-%s' % (
-                    generate_slug(self.title), )))
+                    slug, )))
             self.add_child(instance=footer_index)
             footer_index.save_revision().publish()
+
+        if 'tags-%s' % slug not in descendants:
             tag_index = TagIndexPage(
                 title='Tags', slug=('tags-%s' % (
-                    generate_slug(self.title), )))
+                    slug, )))
             self.add_child(instance=tag_index)
             tag_index.save_revision().publish()
-            reaction_question_index = ReactionQuestionIndexPage(
-                title='Reaction Questions', slug=('reaction-questions-%s' % (
-                    generate_slug(self.title), )))
-            self.add_child(instance=reaction_question_index)
-            reaction_question_index.save_revision().publish()
             index_pages_after_copy.send(sender=self.__class__, instance=self)
 
 
@@ -1430,6 +1333,10 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
             help_text=("Underneath the area for 'next articles' recommended "
                        "articles will appear, with the image + heading + "
                        "subheading")))
+    is_service_aggregator = (
+        models.BooleanField(
+            default=False, verbose_name='Service aggregator')
+    )
 
     api_fields = [
         "title", "live", "description", "image", "extra_style_hints",
@@ -1558,6 +1465,26 @@ class SectionPage(ImportableMixin, CommentedPageMixin,
         context['p'] = p
         return context
 
+    def clean(self):
+        # check content rotation settings
+        if self.is_service_aggregator:
+            if any([
+                self.monday_rotation,
+                self.tuesday_rotation,
+                self.wednesday_rotation,
+                self.thursday_rotation,
+                self.friday_rotation,
+                self.saturday_rotation,
+                self.sunday_rotation,
+                self.content_rotation_start_date,
+                self.content_rotation_end_date,
+            ]):
+                raise ValidationError(
+                    'Content rotation can not enabled when '
+                    'Service aggregator is selected'
+                )
+        return super().clean()
+
     class Meta:
         verbose_name = _('Section')
 
@@ -1604,7 +1531,12 @@ SectionPage.settings_panels = [
             FieldPanel('enable_next_section'),
             FieldPanel('enable_recommended_section')
         ],
-        heading="Recommended Settings", )
+        heading="Recommended Settings", ),
+    MultiFieldPanel(
+        [
+            FieldPanel('is_service_aggregator'),
+        ],
+        heading="Service Aggregator", )
 ]
 
 
@@ -1811,6 +1743,25 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
     def tags_list(self):
         return self.tags.names()
 
+    def clean(self):
+        parent = getattr(self.get_parent(), 'specific', None)
+        should_validate = parent and isinstance(parent, SectionPage)
+        if should_validate and parent.is_service_aggregator:
+            if any([
+                self.featured_in_latest,
+                self.featured_in_latest_start_date,
+                self.featured_in_latest_end_date,
+                self.featured_in_section_start_date,
+                self.featured_in_section_end_date,
+                self.featured_in_homepage_start_date,
+                self.featured_in_homepage_end_date,
+            ]):
+                raise ValidationError(
+                    'Content rotation can not enabled when Service aggregator '
+                    'is selected on {} section'.format(parent)
+                )
+        return super().clean()
+
     class Meta:
         verbose_name = _('Article')
         ordering = ('-latest_revision_created_at',)
@@ -1827,9 +1778,9 @@ class ArticlePage(ImportableMixin, CommentedPageMixin,
         "promote_date", "demote_date", "metadata_tags",
         "latest_revision_created_at", "image",
         "social_media_image", "social_media_description",
-        "social_media_title", "reaction_questions",
+        "social_media_title",
         "nav_tags", "recommended_articles", "related_sections",
-        "go_live_at", "expire_at", "expired"
+        "go_live_at", "expire_at", "expired", "live"
     ]
 
     @classmethod
@@ -1864,7 +1815,6 @@ ArticlePage.content_panels = [
         ],
         heading="Social Media", ),
     InlinePanel('nav_tags', label="Tags for Navigation"),
-    InlinePanel('reaction_questions', label="Reaction Questions"),
     InlinePanel('recommended_articles', label="Recommended articles"),
     InlinePanel('related_sections', label="Related Sections"),
 ]
@@ -1959,20 +1909,6 @@ class ArticlePageTags(Orderable):
             return
         else:
             super(ArticlePageTags, self).save(*args, **kwargs)
-
-
-class ArticlePageReactionQuestions(Orderable):
-    page = ParentalKey(ArticlePage, related_name='reaction_questions')
-    reaction_question = models.ForeignKey(
-        'wagtailcore.Page',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text=_('Reaction Questions')
-    )
-    panels = [PageChooserPanel('reaction_question', 'core.ReactionQuestion')]
-    api_fields = ['reaction_question']
 
 
 class ArticlePageRecommendedSections(Orderable):

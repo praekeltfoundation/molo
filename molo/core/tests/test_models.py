@@ -12,13 +12,14 @@ from mock import patch
 from molo.core.models import (
     ArticlePage, CmsSettings, Main,
     SiteLanguageRelation, Languages, SectionIndexPage, FooterIndexPage,
-    BannerIndexPage, TagIndexPage, BannerPage, ReactionQuestionIndexPage,
+    BannerIndexPage, TagIndexPage, BannerPage,
     Timezone, Tag, ArticlePageTags, Site, LanguageRelation
 )
 from molo.core import constants
 from molo.core.templatetags.core_tags import (
     load_child_articles_for_section,
     get_translation)
+from molo.core.molo_wagtail_models import MoloPage
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.tasks import promote_articles
 from molo.core.wagtail_hooks import copy_translation_pages
@@ -51,9 +52,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
         LanguageRelation.objects.create(
             page=self.main, language=self.english)
-
-        LanguageRelation.objects.create(
-            page=self.reaction_index, language=self.english)
 
         LanguageRelation.objects.create(
             page=self.banner_index, language=self.english)
@@ -162,19 +160,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.section_index.copy(to=self.main2)
         self.assertEqual(
             SectionIndexPage.objects.child_of(self.main2).count(), 1)
-
-    @pytest.mark.django_db(transaction=True)
-    def test_copy_method_of_reaction_index_wont_duplicate_index_pages(self):
-        LanguageRelation.objects.create(
-            page=ReactionQuestionIndexPage.objects.child_of(
-                self.main2).first(),
-            language=self.spanish
-        )
-        self.assertEqual(
-            ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
-        self.reaction_index.copy(to=self.main2)
-        self.assertEqual(
-            ReactionQuestionIndexPage.objects.child_of(self.main2).count(), 1)
 
     @pytest.mark.django_db(transaction=True)
     def test_copy_method_of_tag_index_wont_duplicate_index_pages(self):
@@ -394,6 +379,22 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(
             new_section1.get_parent_section('en'), new_section)
 
+    def test_article_service_aggregator(self):
+        new_section = self.mk_section(
+            self.section_index, title="New Section", slug="new-section",
+            is_service_aggregator=True)
+
+        with self.assertRaises(ValidationError):
+            self.mk_article(
+                new_section, title="New Section 1", slug="new-section-1",
+                featured_in_latest=True)
+
+    def test_section_service_aggregator(self):
+        with self.assertRaises(ValidationError):
+            self.mk_section(
+                self.section_index, title="New Section", slug="new-section",
+                is_service_aggregator=True, monday_rotation=True)
+
     def test_commenting_closed_settings_fallbacks(self):
         new_section = self.mk_section(
             self.section_index, title="New Section", slug="new-section")
@@ -471,10 +472,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'nav_tags-MAX_NUM_FORMS': 1000,
             'nav_tags-MIN_NUM_FORMS': 0,
             'nav_tags-TOTAL_FORMS': 0,
-            'reaction_questions-INITIAL_FORMS': 0,
-            'reaction_questions-MAX_NUM_FORMS': 1000,
-            'reaciction_questions-MIN_NUM_FORMS': 0,
-            'reaction_questions-TOTAL_FORMS': 0,
             'related_sections-INITIAL_FORMS': 0,
             'related_sections-MAX_NUM_FORMS': 1000,
             'related_sections-MIN_NUM_FORMS': 0,
@@ -521,10 +518,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'recommended_articles-MAX_NUM_FORMS': 1000,
             'recommended_articles-MIN_NUM_FORMS': 0,
             'recommended_articles-TOTAL_FORMS': 0,
-            'reaction_questions-INITIAL_FORMS': 0,
-            'reaction_questions-MAX_NUM_FORMS': 1000,
-            'reaciction_questions-MIN_NUM_FORMS': 0,
-            'reaction_questions-TOTAL_FORMS': 0,
             'related_sections-INITIAL_FORMS': 0,
             'related_sections-MAX_NUM_FORMS': 1000,
             'related_sections-MIN_NUM_FORMS': 0,
@@ -685,10 +678,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'recommended_articles-MAX_NUM_FORMS': 1000,
             'recommended_articles-MIN_NUM_FORMS': 0,
             'recommended_articles-TOTAL_FORMS': 0,
-            'reaction_questions-INITIAL_FORMS': 0,
-            'reaction_questions-MAX_NUM_FORMS': 1000,
-            'reaciction_questions-MIN_NUM_FORMS': 0,
-            'reaction_questions-TOTAL_FORMS': 0,
             'nav_tags-INITIAL_FORMS': 0,
             'nav_tags-MAX_NUM_FORMS': 1000,
             'nav_tags-MIN_NUM_FORMS': 0,
@@ -865,3 +854,9 @@ class TestCmsSettings(TestCase, MoloTestCaseMixin):
 
         for settings in CmsSettings.objects.all():
             self.assertEqual(settings.timezone, self.timezone)
+
+
+class MoloPageTestCase(TestCase):
+
+    def test_can_exist_under_method(self):
+        self.assertEqual(MoloPage.can_exist_under(None), False)

@@ -1,11 +1,10 @@
 from django.test import TestCase
-from django.contrib.auth.models import User, Group, Permission
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 from wagtail.images.tests.utils import get_test_image_file, Image
 
 from molo.core.models import (
-    Main, SiteLanguageRelation, Languages,
-    ArticlePage, ReactionQuestionResponse)
+    Main, SiteLanguageRelation, Languages, ArticlePage,
+)
 from molo.core.tests.base import MoloTestCaseMixin
 
 
@@ -128,67 +127,13 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Test page 0')
         self.assertContains(response, 'Test page 1')
 
-
-class TestAdminPermission(TestCase, MoloTestCaseMixin):
-
-    def setUp(self):
-        self.mk_main()
-        self.language_setting = Languages.objects.create(
-            site_id=self.main.get_site().pk)
-        self.english = SiteLanguageRelation.objects.create(
-            language_setting=self.language_setting,
-            locale='en',
-            is_active=True)
-        # create content types
-        wagtailadmin_content_type, created = ContentType.objects.get_or_create(
-            app_label='wagtailadmin',
-            model='admin'
+    def test_404_on_object_does_not_exist(self):
+        response = self.client.get(
+            '/admin/pages/{}/edit/'.format(self.yourmind.pk)
         )
-        reaction_question_content_type = ContentType.objects.get_for_model(
-            ReactionQuestionResponse)
-        # Create Wagtail admin permission
-        access_admin, created = Permission.objects.get_or_create(
-            content_type=wagtailadmin_content_type,
-            codename='access_admin',
-            name='Can access Wagtail admin'
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            '/admin/pages/1234567/edit/'
         )
-        # Create reaction question view response
-        self.reaction_question = Permission.objects.get(
-            content_type=reaction_question_content_type,
-            codename='can_view_response')
-        # create a group
-        self.test_group, _ = Group.objects.get_or_create(name='Test group')
-        self.test_group.permissions.add(access_admin)
-        # create a user and add the user to the group
-        user = User.objects.create_user(
-            username='username', password='password', email='login@email.com')
-        user.groups.add(self.test_group)
-
-    def test_superuser_can_see_reaction_question_modeladmin(self):
-        User.objects.create_superuser(
-            username='super', password='password', email='login@email.com')
-        self.client.login(username='super', password='password')
-
-        response = self.client.get('/admin/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'reactionquestion')
-
-    def test_user_has_perm_can_see_reaction_question_modeladmin(self):
-        self.client.login(username='username', password='password')
-        user = User.objects.filter(username='username').first()
-
-        # User shoudn't see the reaction question model admin
-        self.assertTrue(user.has_perm('wagtailadmin.access_admin'))
-        self.assertFalse(user.has_perm('core.can_view_response'))
-        response = self.client.get('/admin/')
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, 'reactionquestion')
-
-        # User shoud see the reaction question model admin
-        self.test_group.permissions.add(self.reaction_question)
-        user = User.objects.filter(username='username').first()
-        self.assertTrue(user.has_perm('wagtailadmin.access_admin'))
-        self.assertTrue(user.has_perm('core.can_view_response'))
-        response = self.client.get('/admin/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'reactionquestion')
+        self.assertEqual(response.status_code, 404)

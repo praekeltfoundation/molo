@@ -112,15 +112,6 @@ class TestImportableMixin(MoloTestCaseMixin, TestCase):
 
         self.assertTrue(
             content["id"] in
-            record_keeper.foreign_to_many_foreign_map["reaction_questions"])
-        self.assertEqual(
-            (record_keeper.foreign_to_many_foreign_map["reaction_questions"]
-                [content["id"]]),
-            [content["reaction_questions"][0]["reaction_question"]["id"],
-             content["reaction_questions"][1]["reaction_question"]["id"]])
-
-        self.assertTrue(
-            content["id"] in
             record_keeper.foreign_to_many_foreign_map["related_sections"])
         self.assertEqual(
             (record_keeper.foreign_to_many_foreign_map["related_sections"]

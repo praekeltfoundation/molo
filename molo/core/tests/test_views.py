@@ -21,8 +21,8 @@ from molo.core.models import (
     FooterPage, SectionPage, SiteSettings, ArticlePage,
     ArticlePageRecommendedSections, ArticlePageRelatedSections, Main,
     BannerIndexPage, SectionIndexPage, FooterIndexPage, Languages,
-    SiteLanguageRelation, Tag, ArticlePageTags, ReactionQuestion,
-    ArticlePageReactionQuestions, BannerPage, MoloMedia)
+    SiteLanguageRelation, Tag, ArticlePageTags,
+    BannerPage, MoloMedia)
 from molo.core.known_plugins import known_plugins
 from molo.core.tasks import promote_articles
 from molo.core.templatetags.core_tags import \
@@ -112,6 +112,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             username='testuser', password='password', email='test@email.com')
         self.client.login(username='testuser', password='password')
 
+    def test_sitemap(self):
+        response = self.client.get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+
     def test_superuser_can_log_in_to_any_site(self):
         response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 200)
@@ -157,7 +161,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.user = self.login()
         article = self.mk_article(self.yourmind)
         article2 = self.mk_article(self.yourmind)
-        question = self.mk_reaction_question(self.reaction_index, article)
         tag = self.mk_tag(parent=self.tag_index)
         ArticlePageTags.objects.create(page=article, tag=tag)
         ArticlePageRecommendedSections.objects.create(
@@ -201,8 +204,6 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_article2 = ArticlePage.objects.descendant_of(main3).get(
             slug=article2.slug)
         new_tag = Tag.objects.descendant_of(main3).get(slug=tag.slug)
-        new_question = ReactionQuestion.objects.descendant_of(main3).get(
-            slug=question.slug)
         new_section = SectionPage.objects.descendant_of(main3).get(
             slug=self.yourmind.slug)
         new_banner = BannerPage.objects.descendant_of(main3).get(
@@ -213,8 +214,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.assertEqual(new_banner2.banner_link_page.pk, new_section.pk)
         self.assertEqual(ArticlePageTags.objects.get(
             page=new_article).tag.pk, new_tag.pk)
-        self.assertEqual(ArticlePageReactionQuestions.objects.get(
-            page=new_article).reaction_question.pk, new_question.pk)
+
         self.assertEqual(ArticlePageRelatedSections.objects.get(
             page=new_article).section.pk, new_section.pk)
         self.assertEqual(ArticlePageRecommendedSections.objects.get(
@@ -326,7 +326,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEqual(Page.objects.descendant_of(self.main).count(), 13)
+        self.assertEqual(Page.objects.descendant_of(self.main).count(), 12)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -339,7 +339,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 'publish_copies': 'true'})
         self.assertEqual(response.status_code, 302)
         new_main = Page.objects.get(slug='new-main')
-        self.assertEqual(Page.objects.descendant_of(new_main).count(), 13)
+        self.assertEqual(Page.objects.descendant_of(new_main).count(), 12)
 
         self.assertEqual(len(mail.outbox), 1)
         [email] = mail.outbox
@@ -359,7 +359,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         self.mk_section_translation(self.yourmind, self.french)
         self.user = self.login()
 
-        self.assertEqual(Page.objects.descendant_of(self.main).count(), 13)
+        self.assertEqual(Page.objects.descendant_of(self.main).count(), 12)
 
         response = self.client.post(reverse(
             'wagtailadmin_pages:copy',
@@ -375,7 +375,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
         new_main_celery = Page.objects.get(slug='new-main-celery')
         # few pages created since we're not letting celery run
         self.assertEqual(
-            Page.objects.descendant_of(new_main_celery).count(), 6)
+            Page.objects.descendant_of(new_main_celery).count(), 5)
 
         # no email sent since copy is not complete
         self.assertEqual(len(mail.outbox), 0)
@@ -1140,7 +1140,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
     def test_versions_comparison(self):
         response = self.client.get(reverse('versions'))
         self.assertContains(response, 'Molo')
-        self.assertContains(response, 'Profiles')
+        self.assertContains(response, 'Forms')
+        self.assertContains(response, 'Commenting')
+        self.assertContains(response, 'Service Directory')
 
         with patch('pkg_resources.get_distribution', return_value=Mock(
                 version='2.5.0')):
@@ -1153,12 +1155,12 @@ class TestPages(TestCase, MoloTestCaseMixin):
                 responses.add(
                     responses.GET, (
                         'https://pypi.python.org/pypi/%s/json' % plugin[0]),
-                    body=json.dumps({'info': {'version': '9.0.0'}}),
+                    body=json.dumps({'info': {'version': '10.1.4'}}),
                     content_type="application/json",
                     status=200)
 
             response = self.client.get(reverse('versions'))
-            self.assertContains(response, '9.0.0')
+            self.assertContains(response, '10.1.4')
             self.assertContains(response, 'Compare')
             self.assertContains(response, 'Not installed')
         get_pypi_version()

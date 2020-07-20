@@ -1,20 +1,20 @@
 from itertools import chain
 from markdown import markdown
 
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.cache import cache
 from django import template
-from django.utils.safestring import mark_safe
+from django.core.cache import cache
 from django.db.models import Case, When
+from django.utils.safestring import mark_safe
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from prometheus_client import Summary
 
 from molo.core.decorators import prometheus_query_count
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
-    ArticlePageTags, SectionIndexPage, ReactionQuestion,
-    ReactionQuestionChoice, BannerPage, get_translation_for,
-    ArticleOrderingChoices, ReactionQuestionResponse
+    ArticlePageTags, SectionIndexPage,
+    BannerPage, get_translation_for,
+    ArticleOrderingChoices,
 )
 
 
@@ -67,11 +67,12 @@ def load_tags(context):
 
 
 @register.simple_tag(takes_context=True)
-def load_sections(context):
+def load_sections(context, service_aggregator=False):
     request = context['request']
     locale = context.get('locale_code')
     if request.site:
-        qs = request.site.root_page.specific.sections()
+        qs = request.site.root_page.specific.sections().filter(
+            is_service_aggregator=service_aggregator)
     else:
         return []
     return get_pages(context, qs, locale)
@@ -446,8 +447,12 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
         related_sections__section__slug=main_language_page.slug
     ).values_list('pk', flat=True)
 
-    tags = section.get_main_language_page().specific.section_tags.filter(
-            tag__isnull=False).values('tag__pk')
+    if getattr(request, 'is_preview', False):
+        tags = [tag.pk for tag in section.get_main_language_page()
+                .specific.section_tags.filter(tag__isnull=False)]
+    else:
+        tags = section.get_main_language_page().specific.section_tags\
+            .filter(tag__isnull=False).values_list('tag__pk', flat=True)
 
     if tags and request.site:
         qs = Tag.objects.descendant_of(
@@ -584,8 +589,16 @@ def load_tags_for_article(context, article):
         tags_pks = cache.get(cache_key)
 
         if not tags_pks:
-            tags = article.specific.get_main_language_page().nav_tags.filter(
-                tag__isnull=False).values('tag__pk')
+            if getattr(request, 'is_preview', False):
+                tags = [
+                    tag.pk for tag in article.specific.
+                    get_main_language_page().nav_tags.
+                    filter(tag__isnull=False)
+                ]
+            else:
+                tags = article.specific.get_main_language_page()\
+                    .nav_tags.filter(tag__isnull=False)\
+                    .values_list('tag__pk', flat=True)
 
             if tags and request.site:
                 tags_pks = Tag.objects.descendant_of(
@@ -599,81 +612,6 @@ def load_tags_for_article(context, article):
             request.site.root_page).live().filter(pk__in=tags_pks)
         return get_pages(context, qs, locale)
     return None
-
-
-@prometheus_query_count
-@register.simple_tag(takes_context=True)
-def load_choices_for_reaction_question(context, question):
-    if question:
-        question = question.specific.get_main_language_page().specific
-        if question.get_children():
-            choices = ReactionQuestionChoice.objects.child_of(
-                question).filter(language__is_main_language=True)
-            return get_pages(context, choices, context.get('locale_code'))
-    return []
-
-
-@register.simple_tag()
-def load_reaction_choice_submission_count(choice, article, question):
-    if choice and article:
-        choice = choice.specific.get_main_language_page().specific
-        return ReactionQuestionResponse.objects.filter(
-            article=article, choice=choice, question=question).count()
-
-
-@prometheus_query_count
-@register.simple_tag(takes_context=True)
-def load_user_can_vote_on_reaction_question(context, question, article_pk):
-    if question:
-        question = question.specific.get_main_language_page()
-        article = ArticlePage.objects.get(pk=article_pk)
-
-        if hasattr(article, 'get_main_language_page'):
-            article = article.get_main_language_page()
-
-        return not question.has_user_submitted_reaction_response(
-            context['request'], question.pk, article.pk)
-
-
-@prometheus_query_count
-@register.simple_tag(takes_context=True)
-def load_user_choice_reaction_question(context, question, article, choice):
-    if question and context['request'].user.is_authenticated:
-        question = question.specific.get_main_language_page()
-        article = ArticlePage.objects.get(pk=article)
-
-        if hasattr(article, 'get_main_language_page'):
-            article = article.get_main_language_page()
-
-        return ReactionQuestionResponse.objects.filter(
-            article=article, choice=choice,
-            question=question, user=context['request'].user
-        ).exists()
-
-
-@prometheus_query_count
-@register.simple_tag(takes_context=True)
-def load_reaction_question(context, article):
-    question = None
-
-    if article:
-        article_question = article.get_main_language_page() \
-            .reaction_questions.all().first()
-        if hasattr(article_question, 'reaction_question'):
-            question = article_question.reaction_question
-
-        if question and context['request'].site:
-            qs = ReactionQuestion.objects.descendant_of(
-                context['request'].site.root_page).live().filter(
-                    pk=question.pk, language__is_main_language=True)
-        else:
-            return []
-
-        translated_question = get_pages(
-            context, qs, context.get('locale_code'))
-        if translated_question:
-            return get_pages(context, qs, context.get('locale_code'))[0]
-        return question
 
 
 @prometheus_query_count

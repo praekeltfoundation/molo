@@ -37,4 +37,4 @@ What is bundled with Molo?
 
 
 .. _`Wagtail CMS`: http://wagtail.io
-.. _`Molo Profiles`: https://github.com/praekelt/molo.profiles/tree/develop/molo/profiles
+.. _`Molo Profiles`: https://github.com/praekeltfoundation/molo.profiles/tree/develop/molo/profiles

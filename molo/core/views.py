@@ -2,6 +2,7 @@ from os import environ, path, walk
 import pkg_resources
 import requests
 import zipfile
+from io import BytesIO
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,10 +11,8 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse
 from django.http import (
-    JsonResponse,
-    HttpResponse,
-    HttpResponseNotAllowed,
-    Http404,
+    JsonResponse, HttpResponse,
+    HttpResponseNotAllowed, Http404,
 )
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.http import is_safe_url
@@ -21,24 +20,25 @@ from django.utils.translation import (
     LANGUAGE_SESSION_KEY,
     get_language_from_request
 )
+from django.views.generic import ListView
 from django.utils.translation import ugettext as _
-from django.views.generic.edit import FormView
-from django.views.generic.base import TemplateView
-from io import BytesIO
-from wagtail.core.models import Page, UserPagePermissionsProxy
+from django.contrib.sitemaps import views as sitemap_views
+
 from wagtail.search.models import Query
+from wagtail.core.models import Page, UserPagePermissionsProxy
+
+from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
+
 from molo.core.utils import generate_slug, get_locale_code, update_media_file
 from molo.core.models import (
     ArticlePage, Languages, SiteSettings, Tag,
-    ArticlePageTags, SectionPage, ReactionQuestionChoice,
-    ReactionQuestionResponse, ReactionQuestion,
+    ArticlePageTags, SectionPage,
     TranslatablePageMixinNotRoutable)
 
 from molo.core.templatetags.core_tags import get_pages
 from molo.core.known_plugins import known_plugins
-from molo.core.forms import MediaForm, ReactionQuestionChoiceForm
+from molo.core.forms import MediaForm
 from molo.core.tasks import copy_to_all_task
-from django.views.generic import ListView
 
 from el_pagination.decorators import page_template
 
@@ -191,101 +191,6 @@ def get_pypi_version(plugin_name):
         return content.get('info').get('version')
     except:
         return 'request failed'
-
-
-class ReactionQuestionChoiceFeedbackView(TemplateView):
-    template_name = 'patterns/basics/articles/reaction_question_feedback.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(ReactionQuestionChoiceFeedbackView,
-                        self).get_context_data(**kwargs)
-        locale = self.request.LANGUAGE_CODE
-        choice_slug = self.kwargs.get('choice_slug')
-        context['request'] = self.request
-        main_lang_choice = ReactionQuestionChoice.objects.descendant_of(
-            self.request.site.root_page).filter(
-            slug=choice_slug)
-        choice = get_pages(context, main_lang_choice, locale)
-        if choice:
-            choice = choice[0]
-        else:
-            choice = main_lang_choice
-        context.update({'choice': choice})
-        article_slug = self.kwargs.get('article_slug')
-        article = ArticlePage.objects.descendant_of(
-            self.request.site.root_page).filter(slug=article_slug).first()
-        context.update({'article': article})
-        return context
-
-
-class ReactionQuestionChoiceView(FormView):
-    form_class = ReactionQuestionChoiceForm
-    template_name = 'patterns/basics/articles/reaction_question.html'
-    success_url = '/'
-
-    def get_success_url(self, *args, **kwargs):
-        article_slug = self.kwargs.get('article_slug')
-        article = ArticlePage.objects.descendant_of(
-            self.request.site.root_page).filter(slug=article_slug).first()
-        if not article:
-            raise Http404
-        choice_id = self.get_context_data()['form'].data.get('choice')
-        choice = get_object_or_404(ReactionQuestionChoice, pk=choice_id)
-        question_id = self.kwargs.get('question_id')
-        return reverse('reaction-feedback', kwargs={
-            'question_id': question_id, 'article_slug': article.slug,
-            'choice_slug': choice.slug})
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(
-            ReactionQuestionChoiceView, self).get_context_data(*args, **kwargs)
-        question_id = self.kwargs.get('question_id')
-        question = get_object_or_404(ReactionQuestion, pk=question_id)
-        context.update({'question': question})
-        return context
-
-    def form_valid(self, form, *args, **kwargs):
-        question_id = self.kwargs.get('question_id')
-        question = get_object_or_404(ReactionQuestion, pk=question_id)
-        question = question.get_main_language_page().specific
-        choice_pk = form.cleaned_data['choice']
-        choice = get_object_or_404(ReactionQuestionChoice, pk=choice_pk)
-        article_slug = self.kwargs.get('article_slug')
-        # get main language article and store the vote there
-        article = ArticlePage.objects.descendant_of(
-            self.request.site.root_page).filter(slug=article_slug).first()
-        if hasattr(article, 'get_main_language_page'):
-            article = article.get_main_language_page()
-        if not article:
-            raise Http404
-        if not question.has_user_submitted_reaction_response(
-                self.request, question_id, article.pk):
-            created = ReactionQuestionResponse.objects.create(
-                question=question,
-                article=article)
-            if created:
-                created.choice = choice
-                created.save()
-                created.set_response_as_submitted_for_session(
-                    self.request, article)
-            if self.request.user.is_authenticated:
-                created.user = self.request.user
-                created.save()
-
-        else:
-            if 'ajax' in self.request.POST and \
-                    self.request.POST['ajax'] == 'True':
-                response = ReactionQuestionResponse.objects.filter(
-                    article=article.pk, question=question_id,
-                    user=self.request.user).last()
-                response.choice = choice
-                response.save()
-            else:
-                messages.error(
-                    self.request,
-                    "You have already given feedback on this article.")
-        return super(ReactionQuestionChoiceView, self).form_valid(
-            form, *args, **kwargs)
 
 
 class TagsListView(ListView):
@@ -522,3 +427,27 @@ def publish(request, page_id):
         'next': next_url,
         'not_live_descendant_count': page.get_descendants().not_live().count()
     })
+
+
+class MoloSitemap(Sitemap):
+    def _urls(self, page, protocol, domain):
+        urls = []
+        last_mods = set()
+
+        for item in self.paginator.page(page).object_list:
+
+            url_info_items = item.get_sitemap_urls()
+
+            for url_info in url_info_items:
+                urls.append(url_info)
+                last_mods.add(url_info.get('lastmod'))
+
+        # last_mods might be empty if the whole site is private
+        if last_mods and None not in last_mods:
+            self.latest_lastmod = max(last_mods)
+        return urls
+
+
+def sitemap(request, **kwargs):
+    sitemaps = {'wagtail': MoloSitemap(request)}
+    return sitemap_views.sitemap(request, sitemaps, **kwargs)
