@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.2.6
+~~~~~~
+- Add changes introduced in version 10.1.x
+
 10.2.5
 ~~~~~~~
 - remove password field in the "export user" admin
