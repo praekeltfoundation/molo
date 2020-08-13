@@ -2,10 +2,10 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from wagtail.images.tests.utils import get_test_image_file, Image
 
-from molo.core.models import (
-    Main, SiteLanguageRelation, Languages, ArticlePage,
-)
+from molo.core.utils import generate_slug
 from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.models import (
+    Main, SiteLanguageRelation, Languages, ArticlePage)
 
 
 class TestAdminView(TestCase, MoloTestCaseMixin):
@@ -137,3 +137,25 @@ class TestAdminView(TestCase, MoloTestCaseMixin):
             '/admin/pages/1234567/edit/'
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_article_preview(self):
+        title = 'Test page'
+        data = {
+            'title': title,
+            'slug': generate_slug(title),
+            'subtitle': 'Sample page description'
+        }
+        article = ArticlePage(**data)
+        self.yourmind.add_child(instance=article)
+        article.save_revision()
+
+        response = self.client.get(
+            '/admin/pages/{}/edit/preview/'.format(article.pk)
+        )
+        self.assertEqual(response.status_code, 200)
+
+        article.get_latest_revision().publish()
+        response = self.client.get(
+            '/admin/pages/{}/edit/preview/'.format(article.pk)
+        )
+        self.assertEqual(response.status_code, 200)
