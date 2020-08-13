@@ -1,8 +1,9 @@
 from itertools import chain
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
+from django.core.exceptions import \
+    ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 
 
 from django.utils import timezone as django_timezone
@@ -745,6 +746,9 @@ class TranslatablePageMixinNotRoutable(object):
         try:
             return self.translated_pages.get(
                 language__is_main_language=True).specific
+        except MultipleObjectsReturned:
+            return self.translated_pages.filter(
+                language__is_main_language=True).last().specific
         except ObjectDoesNotExist:
             return self.specific
 
