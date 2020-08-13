@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.2.7
+~~~~~~
+- Bug Fix: Handle multiple returned revisions when previewing drafts
+
 10.2.6
 ~~~~~~
 - Add changes introduced in version 10.1.x
