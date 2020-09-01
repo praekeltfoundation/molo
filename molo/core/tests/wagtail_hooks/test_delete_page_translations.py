@@ -27,7 +27,7 @@ class TestHookDeletePageTranslations(TestCase, MoloTestCaseMixin):
 
         self.login()
 
-        self.page_english = self.mk_article(self.main, title='En')
+        self.page_english = self.mk_article(self.section_index, title='En')
 
         self.page_xhosa = self.mk_article_translation(
             self.page_english, xhosa, title='Xh')
@@ -62,3 +62,19 @@ class TestHookDeletePageTranslations(TestCase, MoloTestCaseMixin):
         self.assertEqual(ArticlePage.objects.filter(title='Xh').count(), 1)
         self.assertEqual(ArticlePage.objects.get(
                 title='En').translated_pages.all().count(), 1)
+
+    def test_deletes_main_page_and_all_children(self):
+        response = self.client.post(
+            '/admin/pages/{0}/delete/'.format(self.main.id))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ArticlePage.objects.filter(title='En').count(), 0)
+        self.assertEqual(ArticlePage.objects.filter(title='Xh').count(), 0)
+        self.assertEqual(ArticlePage.objects.filter(title='Zu').count(), 0)
+
+    def test_deletes_index_page_and_all_children(self):
+        response = self.client.post(
+            '/admin/pages/{0}/delete/'.format(self.section_index.pk))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ArticlePage.objects.filter(title='En').count(), 0)
+        self.assertEqual(ArticlePage.objects.filter(title='Xh').count(), 0)
+        self.assertEqual(ArticlePage.objects.filter(title='Zu').count(), 0)
