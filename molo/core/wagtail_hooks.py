@@ -73,7 +73,10 @@ def copy_translation_pages_hook(request, page, new_page):
 
 @hooks.register('before_delete_page')
 def delete_page_translations(request, page):
-    if request.method == 'POST' and page.specific.language.is_main_language:
+    # If this is the main language page then we want to delete all translations
+    # but Main and Index pages don't have a language or translations
+    if request.method == 'POST' and hasattr(page.specific, 'language') and \
+            page.specific.language.is_main_language:
         for translation in page.specific.translated_pages.all():
             translation.delete()
 
