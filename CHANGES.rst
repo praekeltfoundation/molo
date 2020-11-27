@@ -1,5 +1,9 @@
 CHANGES
 =======
+10.2.9
+~~~~~~
+- Mote template fix: update invalid tag
+
 10.2.8
 ~~~~~~
 - Bug Fix: Don't try to delete translations for pages without a language attr
