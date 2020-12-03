@@ -107,14 +107,6 @@ class ArticleOrderingChoices(enum.Enum):
     PK = 4
     PK_DESC = 5
 
-    labels = {
-        CMS_DEFAULT_SORTING: 'CMS Default Sorting',
-        FIRST_PUBLISHED_AT: 'First Published At',
-        FIRST_PUBLISHED_AT_DESC: 'First Published At Desc',
-        PK: 'Primary Key',
-        PK_DESC: 'Primary Key Desc',
-    }
-
 
 @register_setting
 class SiteSettings(BaseSetting):
@@ -678,6 +670,9 @@ class LanguageRelation(models.Model):
 
 
 def get_translation_for(pages, locale, site, is_live=True):
+    import ipdb;ipdb.set_trace()
+    print(site)
+    print("************")
     show_only_translated_pages = SiteSettings.for_site(
         site).show_only_translated_pages
     language_setting = Languages.for_site(site.root_page.specific.get_site())
@@ -835,9 +830,13 @@ class TranslatablePageMixinNotRoutable(object):
         ]
 
     def serve(self, request, *args, **kwargs):
+        print(request.__dict__)
         locale_code = get_locale_code(get_language_from_request(request))
+        print(locale_code)
         parent = self.get_main_language_page()
-        main_lang = Languages.for_site(request.site).languages.filter(
+        site = Site.find_for_request(request)
+        print(site)
+        main_lang = Languages.for_site(site).languages.filter(
             is_main_language=True).first()
         if main_lang.locale == locale_code:
             translation = parent

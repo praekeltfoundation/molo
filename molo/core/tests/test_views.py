@@ -1789,7 +1789,8 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
     def test_next_article_not_main_language(self):
         # assumes articles loop
-        self.client.get('/locale/fr/')
+        response = self.client.get('/locale/fr/')
+        print(response["location"])
 
         response = self.client.get(
             '/sections-main-1/section-a/article-c-in-french/')

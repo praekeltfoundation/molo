@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from wagtail.core.models import Page, Collection
+from wagtail.core.models import Page, Collection, Locale
 
 from molo.core.models import (
     Main, SectionPage, ArticlePage, PageTranslation,
@@ -26,6 +26,9 @@ class MoloTestCaseMixin(object):
         return user
 
     def mk_root(self):
+        locale_english = Locale.objects.get_or_create(language_code='en')
+        locale_french, _ = Locale.objects.get_or_create(language_code='fr')
+        print(locale_french)
         page_content_type, created = ContentType.objects.get_or_create(
             model='page',
             app_label='wagtailcore'
@@ -38,6 +41,7 @@ class MoloTestCaseMixin(object):
             depth=1,
             numchild=1,
             url_path='/',
+            locale=locale_french
         )
 
     def mk_main(self, title='Main', slug='main'):

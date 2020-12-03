@@ -2,6 +2,7 @@
 {% load compress static core_tags i18n %}
 {% load google_analytics_tags %}
 {% get_settings %}
+{% wagtail_site as current_site %}
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -20,12 +21,12 @@
     <meta name="twitter:title" content="{% if self.social_media_title %}{{ self.social_media_title }}{% elif self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}"/>
     <meta name="twitter:description" content="{% if self.social_media_description %}{{ self.social_media_description }}{% else %}{{ self.subtitle }}{% endif %}"/>
     {% image self.social_media_image width-300 as tmp_photo %}
-    <meta name="twitter:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+    <meta name="twitter:image" content="{% if self.social_media_image %}{{current_site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
     <meta property="og:title" content="{% if self.social_media_title %}{{ self.social_media_title }}{% elif self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}" />
     <meta property="og:description" content="{% if self.social_media_description %}{{ self.social_media_description }}{% else %}{{ self.subtitle }}{% endif %}"/>
     {% image self.social_media_image width-300 as tmp_photo %}
-    <meta property="og:image" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
-    <meta property="og:image:url" content="{% if self.social_media_image %}{{request.site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+    <meta property="og:image" content="{% if self.social_media_image %}{{current_site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
+    <meta property="og:image:url" content="{% if self.social_media_image %}{{current_site.root_url}}{{ tmp_photo.url }}{% endif %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {% if settings.core.SiteSettings.google_search_console %}
     <meta name="google-site-verification" content="{{settings.core.SiteSettings.google_search_console}}" />

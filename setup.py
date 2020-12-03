@@ -13,19 +13,19 @@ def read(*parts):
 
 install_requires = [
     'babel',
-    'beautifulsoup4==4.6.0',
+    'beautifulsoup4<4.9,>=4.8',
     'cached-property',
     'celery<4.0',
     'cookiecutter==1.0.0',
     'dj-database-url',
-    'Django~=2.2.5',
+    'Django~=3.1.4',
     'django-cas-ng~=3.6.0',
     'django-el-pagination==3.1.0',
     'django-extensions>=1,<2',
     'django-google-analytics-app~=4.4.0',
     'django-libsass',
-    'django-mptt~=0.10.0',
-    'djangorestframework==3.10.3',
+    'django-mptt~=0.11.0',
+    'djangorestframework<4.0,>=3.11.1',
     'django-phonenumber-field==1.3.0',
     'django-import-export',
     'django-daterange-filter',
@@ -39,8 +39,8 @@ install_requires = [
     'ujson==1.35',
     'unicodecsv==0.14.1',
     'unicore.content',
-    'wagtail~=2.6.2',
-    'wagtailmedia~=0.3.1',
+    'wagtail~=2.11.2',
+    'wagtailmedia~=0.7.0',
     'ImageHash==3.4',
     'boto==2.49.0',
     'django-storages==1.7.1',
@@ -48,8 +48,9 @@ install_requires = [
     'django-treebeard==4.2.0',
     'django-prometheus',
     'prometheus_client',
-    'django-enumfield==1.5',
+    'django-enumfield==2.0.2',
     'html2markdown',
+    'django-utils-six'
 ]
 
 # we need to only install typing for python2

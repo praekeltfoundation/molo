@@ -144,7 +144,7 @@ class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
         if not (response.status_code == 200 or response.status_code == 302):
             return response
 
-        site_settings = SiteSettings.for_site(request.site)
+        site_settings = SiteSettings.for_site(Site.find_for_request(request))
         local_ga_account = site_settings.local_ga_tracking_code or \
             settings.GOOGLE_ANALYTICS.get('google_analytics_id')
 
@@ -171,8 +171,8 @@ class MultiSiteRedirectToHomepage(django.utils.deprecation.MiddlewareMixin):
                     Page, pk=args[-1]).specific.get_site()
                 if p_site and not current_site == p_site:
                     return redirect('%s%s' % (p_site.root_url, request.path))
-            if not Languages.for_site(request.site).languages.all().exists():
-                return redirect('%s/admin/' % request.site.root_url)
+            if not Languages.for_site(current_site).languages.all().exists():
+                return redirect('%s/admin/' % current_site.root_url)
 
 
 class MaintenanceModeMiddleware(django.utils.deprecation.MiddlewareMixin):

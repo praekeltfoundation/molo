@@ -1,4 +1,4 @@
-from daterange_filter.filter import DateRangeFilter
+# from daterange_filter.filter import DateRangeFilter
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.urls import reverse
@@ -9,15 +9,16 @@ from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin, modeladmin_register
 )
 from wagtail.contrib.modeladmin.options import ModelAdminGroup
+from wagtail.core.models import Site
 
 from molo.core.models import (
     ArticlePage, ArticlePageLanguageProxy, SectionPage
 )
 
 
-class DateFilter(DateRangeFilter):
-    # template = 'admin/date_range_filter.html'
-    pass
+# class DateFilter(DateRangeFilter):
+#     # template = 'admin/date_range_filter.html'
+#     pass
 
 
 class SectionPageAdmin(WagtailModelAdmin):
@@ -126,8 +127,8 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
     list_filter = [
         StatusCategoryListFilter,
         SectionListFilter,
-        ('first_published_at', DateFilter),
-        ('latest_revision_created_at', DateFilter),
+        # ('first_published_at', DateFilter),
+        # ('latest_revision_created_at', DateFilter),
         'featured_in_latest',
         'featured_in_homepage',
         'featured_in_section',
@@ -201,7 +202,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
-            request.site.root_page)
+            Site.find_for_request(request).root_page)
         return qs
 
 

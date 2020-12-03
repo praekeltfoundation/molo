@@ -1,8 +1,9 @@
 {% load wagtailcore_tags i18n %}
+{% wagtail_site as current_site %}
 <ul class="section-listing-standard-list section-listing-standard-list{{self.get_effective_extra_style_hints}}">
   <li class="section-listing-standard-list__item">
     <a href="/" class="section-listing-standard-list__link">{% trans "Home" %}</a>
-    <a href="{{request.site.root_page.url}}" class="section-listing-standard-list__link">{% trans "Home" %}</a>
+    <a href="{{current_site.root_page.url}}" class="section-listing-standard-list__link">{% trans "Home" %}</a>
   </li>
 
   {% if self.get_parent_section %}

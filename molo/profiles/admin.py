@@ -10,7 +10,7 @@ from django.utils.timezone import localtime
 from django.conf import settings
 from django.db.models import Q
 
-from daterange_filter.filter import DateRangeFilter
+# from daterange_filter.filter import DateRangeFilter
 from wagtail.contrib.modeladmin.options import ModelAdmin as WagtailModelAdmin
 from molo.profiles.admin_views import FrontendUsersAdminView
 from molo.profiles.models import (
@@ -95,9 +95,9 @@ class ProfileUserAdmin(UserAdmin):
 
 
 # Below here is for Wagtail Admin
-class FrontendUsersDateRangeFilter(DateRangeFilter):
-    # template = 'admin/frontend_users_date_range_filter.html'
-    pass
+# class FrontendUsersDateRangeFilter(DateRangeFilter):
+#     # template = 'admin/frontend_users_date_range_filter.html'
+#     pass
 
 
 class CustomUsersListFilter(admin.SimpleListFilter):
@@ -133,7 +133,8 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
                     '_gender', '_uuid')
 
     list_filter = (
-        ('date_joined', FrontendUsersDateRangeFilter), 'is_active',
+        # ('date_joined', FrontendUsersDateRangeFilter),
+        'is_active',
         CustomUsersListFilter)
 
     search_fields = ('username', 'profile__uuid',)
@@ -141,10 +142,11 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
     form_fields_exclude = ('password',)
 
     def get_queryset(self, request):
+        site = Site.find_for_request(request)
         return User.objects.filter(
             Q(is_superuser=True) |
-            Q(profile__site=request.site) |
-            Q(profile__admin_sites__pk__in=[request.site.pk])
+            Q(profile__site=site) |
+            Q(profile__admin_sites__pk__in=[site.pk])
         )
 
 

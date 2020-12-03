@@ -1,25 +1,32 @@
 from django.conf.urls import url
 
+from wagtail.api.v2.views import PagesAPIViewSet
 from wagtail.api.v2.router import WagtailAPIRouter
-from wagtail.documents.api.v2.endpoints import DocumentsAPIEndpoint
+from wagtail.images.api.v2.views import ImagesAPIViewSet
+from wagtail.documents.api.v2.views import DocumentsAPIViewSet
+# from wagtail.api.v2.router import WagtailAPIRouter
+# from wagtail.api.v2.endpoints import DocumentsAPIEndpoint
 
 from molo.core.api import admin_views
-from molo.core.api.endpoints import (
-    MoloImagesAPIEndpoint,
-    MoloPagesEndpoint,
-    LanguagesAPIEndpoint,
-)
+# from molo.core.api.endpoints import (
+#     MoloImagesAPIEndpoint,
+#     MoloPagesEndpoint,
+#     LanguagesAPIEndpoint,
+# )
 
 # Adding extended images endpoint to new router.
 # For consistency, the "pages" and "documents"
 # endpoints have also been added even though they were
 # not modified.
 api_router = WagtailAPIRouter("wagtailapi_v2")
-api_router.register_endpoint("images", MoloImagesAPIEndpoint)
-api_router.register_endpoint("pages", MoloPagesEndpoint)
-api_router.register_endpoint("documents", DocumentsAPIEndpoint)
-api_router.register_endpoint("languages", LanguagesAPIEndpoint)
+# api_router.register_endpoint("images", MoloImagesAPIEndpoint)
+# api_router.register_endpoint("pages", MoloPagesEndpoint)
+# api_router.register_endpoint('documents', DocumentsAPIViewSet)
+# api_router.register_endpoint("languages", LanguagesAPIEndpoint)
 
+api_router.register_endpoint('pages', PagesAPIViewSet)
+api_router.register_endpoint('images', ImagesAPIViewSet)
+api_router.register_endpoint('documents', DocumentsAPIViewSet)
 urlpatterns = [
     url(
         r"^import-site/$",

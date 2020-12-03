@@ -12,9 +12,10 @@ class MoloProfilesModelBackend(MoloModelBackend):
 
         if username is not None and request is not None:
             try:
+                site = Site.find_for_request(request)
                 user = UserModel.objects.get(
                     profile__migrated_username=username,
-                    profile__site=request.site)
+                    profile__site=site)
                 username = user.username
             except UserModel.DoesNotExist:
                 UserModel().set_password(password)

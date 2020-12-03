@@ -42,7 +42,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         # create a requset object
         self.factory = RequestFactory()
         self.request = self.factory.get('/')
-        self.request.site = self.site
 
     def test_render_translations(self):
         # this should return an empty dictionary for non main lang pages
@@ -63,7 +62,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(self.main.bannerpages().count(), 3)
 
         request = self.factory.get('/')
-        request.site = self.site
 
         self.assertEqual(len(bannerpages({
             'locale_code': 'en', 'request': request})['bannerpages']), 3)
@@ -81,7 +79,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(self.main.bannerpages().count(), 3)
 
         request = self.factory.get('/')
-        request.site = self.site
 
         self.assertEqual(len(bannerpages({
             'locale_code': 'en',
@@ -108,7 +105,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         self.assertEqual(self.main.bannerpages().count(), 3)
 
         request = self.factory.get('/')
-        request.site = self.site
 
         self.assertEqual(bannerpages({
             'locale_code': 'en',
@@ -116,7 +112,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_get_parent_template_tag(self):
         request = self.factory.get('/')
-        request.site = self.site
 
         article = self.mk_articles(self.yourmind, 1)[0]
         fr_article = self.mk_article_translation(article, self.french)
@@ -158,7 +153,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_load_tags_for_article(self):
         request = self.factory.get('/')
-        request.site = self.site
         article1 = self.mk_article(self.yourmind, title='article 1')
 
         tag = self.mk_tag(parent=self.tag_index)
@@ -179,7 +173,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_article_ordering_descendant_articles(self):
         today = timezone.now()
         request = self.factory.get('/')
-        request.site = self.site
         settings = SiteSettings.objects.create(
             site=self.site,
             article_ordering_within_section=ArticleOrderingChoices.PK
@@ -216,7 +209,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
     def test_article_ordering_child_articles(self):
         today = timezone.now()
         request = self.factory.get('/')
-        request.site = self.site
         settings = SiteSettings.objects.create(
             site=self.site,
             article_ordering_within_section=ArticleOrderingChoices.PK
@@ -249,7 +241,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_get_recommended_articles(self):
         request = self.factory.get('/')
-        request.site = self.site
         article1 = self.mk_article(self.yourmind, title='article 1')
 
         self.assertEqual(get_recommended_articles(
@@ -259,7 +250,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
     @patch('molo.core.templatetags.core_tags.get_pages')
     def test_hero_article_empty_queryset_if_no_site(self, get_pages_mock):
         request = self.factory.get('/')
-        request.site = None
         context = {'request': request, 'locale_code': 'en'}
         get_pages_mock.return_value = []
 
@@ -274,7 +264,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_get_tag_articles(self):
         request = self.factory.get('/')
-        request.site = self.site
         your_body = self.mk_section(
             self.section_index, title='Your body')
 
@@ -310,7 +299,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
 
     def test_load_sections(self):
         request = self.factory.get('/')
-        request.site = self.site
         context = {'locale_code': 'en', 'request': request}
 
         your_body = self.mk_section(
