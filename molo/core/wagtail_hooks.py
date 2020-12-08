@@ -104,7 +104,7 @@ class LanguageSummaryItem(SummaryItem):
 
     def get_context(self):
         languages = Languages.for_site(
-            Site.find_for_request(request)).languages.all()
+            Site.find_for_request(seldf.request)).languages.all()
         return {
             'summaries': [{
                 'language': l.get_locale_display(),
