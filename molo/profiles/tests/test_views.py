@@ -209,7 +209,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def test_login(self):
         response = self.client.get(reverse('molo.profiles:auth_login'))
-        self.assertContains(response, 'Forgotten your password')
+        self.assertContains(response, 'Forgotten your pin?')
 
     def test_warning_message_shown_in_wagtail_if_no_country_code(self):
         site = Site.objects.get(is_default_site=True)
@@ -757,9 +757,9 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
             'email': 'example@foo.com',
             'terms_and_conditions': True
         })
-
+        print(response.content)
         expected_validation_message = "Sorry, but that is an invalid " \
-                                      "username. Please don&#39;t use " \
+                                      "username. Please don&#x27;t use " \
                                       "your phone number or email address " \
                                       "in your username."
 
@@ -780,7 +780,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         })
 
         expected_validation_message = "Sorry, but that is an invalid" \
-                                      " username. Please don&#39;t use" \
+                                      " username. Please don&#x27;t use" \
                                       " your email address in your" \
                                       " username."
 

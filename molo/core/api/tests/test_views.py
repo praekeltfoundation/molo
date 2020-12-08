@@ -353,4 +353,4 @@ class PagesEndpointTestCase(APIMoloTestCase):
         self.assertEqual(
             obj['message'],
             "field filter error. 'b' is not a valid value for nav_tags__tag"
-            " (invalid literal for int() with base 10: 'b')")
+            " (Field 'id' expected a number but got 'b'.)")
