@@ -1,4 +1,5 @@
 import uuid
+import json
 import django.utils.deprecation
 
 from bs4 import BeautifulSoup

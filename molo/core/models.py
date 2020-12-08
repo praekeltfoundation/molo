@@ -769,7 +769,7 @@ class TranslatablePageMixinNotRoutable(object):
             self.save()
         return response
 
-    def move(self, target, pos=None):
+    def move(self, target, pos=None, user=None):
         super(TranslatablePageMixinNotRoutable, self).move(target, pos)
 
         if hasattr(self, 'translated_pages'):
