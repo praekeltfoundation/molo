@@ -1,0 +1,3 @@
+rapidpro-python==2.6.1
+NewlineJSON
+google-cloud-bigquery

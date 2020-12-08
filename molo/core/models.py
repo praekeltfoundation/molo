@@ -9,7 +9,7 @@ from django.core.exceptions import \
 from django.utils import timezone as django_timezone
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
 from django.db.models.signals import (pre_save, post_save)
@@ -827,12 +827,9 @@ class TranslatablePageMixinNotRoutable(object):
         ]
 
     def serve(self, request, *args, **kwargs):
-        print(request.__dict__)
         locale_code = get_locale_code(get_language_from_request(request))
-        print(locale_code)
         parent = self.get_main_language_page()
         site = Site.find_for_request(request)
-        print(site)
         main_lang = Languages.for_site(site).languages.filter(
             is_main_language=True).first()
         if main_lang.locale == locale_code:

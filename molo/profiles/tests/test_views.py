@@ -199,7 +199,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         })
         # assert that logging into a different site throws permission denied
         self.assertContains(
-            response, 'Your username and password do not match.')
+            response, 'Your username and pin do not match. Please try again.')
 
     def test_logout(self):
         response = self.client.get('%s?next=%s' % (
@@ -805,7 +805,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         self.assertContains(response, expected_validation_message)
 
     def test_phone_number_not_allowed_in_username(self):
-        site = Site.objects.get(is_default_site=True)
+        site = Site.objects.first()
         profile_settings = UserProfilesSettings.for_site(site)
 
         profile_settings.prevent_phone_number_in_username = True
@@ -817,9 +817,8 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
             'email': 'example@foo.com',
             'terms_and_conditions': True
         })
-
         expected_validation_message = "Sorry, but that is an invalid" \
-                                      " username. Please don&#39;t use" \
+                                      " username. Please don&#x27;t use" \
                                       " your phone number in your username."
 
         self.assertContains(response, expected_validation_message)

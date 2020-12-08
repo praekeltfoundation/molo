@@ -100,7 +100,6 @@ def search(request, results_per_page=10, load_more=False):
 
 
 def locale_set(request, locale):
-    request.session[LANGUAGE_SESSION_KEY] = locale
     # the next var if empty a blank is passed instead of / hence the below
     return redirect(request.GET.get('next', '/') or '/')
 
@@ -198,7 +197,7 @@ class TagsListView(ListView):
     template_name = "core/article_tags.html"
 
     def get_queryset(self, *args, **kwargs):
-        site = Site.find_for_request(request)
+        site = Site.find_for_request(self.request)
         site_settings = SiteSettings.for_site(site)
         main = site.root_page
         tag = self.kwargs["tag_name"]
@@ -227,7 +226,7 @@ class TagsListView(ListView):
         context = super(TagsListView, self).get_context_data(*args, **kwargs)
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
-            slug=tag).descendant_of(Site.find_for_request(request).root_page).first()})
+            slug=tag).descendant_of(Site.find_for_request(self.request).root_page).first()})
         return context
 
 

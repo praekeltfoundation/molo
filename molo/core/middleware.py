@@ -102,6 +102,16 @@ class NoScriptGASessionMiddleware(django.utils.deprecation.MiddlewareMixin):
                 'MOLO_GA_SESSION_FOR_NOSCRIPT'] = uuid.uuid4().hex
 
 
+class SetLangaugeCodeMiddleware(django.utils.deprecation.MiddlewareMixin):
+    """Sets the language code"""
+    def process_response(self, request, response):
+        if not 'locale' in request.path:
+            return response
+        locale_code = request.path.split("/")[2]
+        response.set_cookie('django_language', locale_code)
+        return response
+
+
 class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
     """Uses GA IDs stored in Wagtail to track pageviews using celery"""
     def submit_tracking(self, account, request, response, custom_params={}):

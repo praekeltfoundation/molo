@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from molo.core.backends import MoloModelBackend
 
+from wagtail.core.models import Site
+
 UserModel = get_user_model()
 
 

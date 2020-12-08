@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 from os.path import abspath, dirname, join
 from os import environ
 from django.conf import global_settings, locale
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 import dj_database_url
 import djcelery
 from celery.schedules import crontab
@@ -21,7 +21,7 @@ djcelery.setup_loader()
 # Absolute filesystem path to the Django project directory:
 PROJECT_ROOT = dirname(dirname(dirname(abspath(__file__))))
 
-
+WAGTAILADMIN_GLOBAL_PAGE_EDIT_LOCK = True
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -100,6 +100,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'molo.core.middleware.ForceDefaultLanguageMiddleware',
+    'molo.core.middleware.SetLangaugeCodeMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

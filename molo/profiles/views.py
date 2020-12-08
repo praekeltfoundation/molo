@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.http.request import QueryDict
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import render
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin

@@ -1,7 +1,7 @@
 from django.conf.urls import re_path
 
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.templatetags.static import static
 from django.utils.html import format_html
@@ -104,7 +104,7 @@ class LanguageSummaryItem(SummaryItem):
 
     def get_context(self):
         languages = Languages.for_site(
-            Site.find_for_request(seldf.request)).languages.all()
+            Site.find_for_request(self.request)).languages.all()
         return {
             'summaries': [{
                 'language': l.get_locale_display(),
