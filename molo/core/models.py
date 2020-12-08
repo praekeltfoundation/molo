@@ -670,9 +670,6 @@ class LanguageRelation(models.Model):
 
 
 def get_translation_for(pages, locale, site, is_live=True):
-    import ipdb;ipdb.set_trace()
-    print(site)
-    print("************")
     show_only_translated_pages = SiteSettings.for_site(
         site).show_only_translated_pages
     language_setting = Languages.for_site(site.root_page.specific.get_site())

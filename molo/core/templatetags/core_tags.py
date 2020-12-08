@@ -28,13 +28,12 @@ REQUEST_TIME = Summary(
 
 
 def get_language(site, locale):
-    print(site.pk)
     language_cache_key = 'get_pages_language_{}_{}'.format(site.pk, locale)
     language = cache.get(language_cache_key)
     if not language:
         language = Languages.for_site(site).languages.filter(
             locale=locale).first()
-        # cache.set(language_cache_key, language, None)
+        cache.set(language_cache_key, language, None)
     return language
 
 
@@ -46,24 +45,9 @@ def get_pages(context, queryset, locale):
 
     request = context['request']
     site = Site.find_for_request(request)
-    print("*********")
-    print("*********")
-    print("*********")
-    print("*********")
-    print("*********")
-    print("*********")
-    print(site)
-    print("*********")
-    print("*********")
-    print("*********")
-    print("*********")
-    print("*********")
-    print("*********")
     if not site:
-        print("Over here returning normal page")
         return list[queryset]
     language = get_language(site, locale)
-    print("language")
     if language and language.is_main_language:
         return list(queryset.live())
     pages = get_translation_for(queryset, locale, site)
@@ -752,7 +736,6 @@ def social_media_article(context, page=None):
 @prometheus_query_count
 @register.simple_tag(takes_context=True)
 def get_next_article(context, article):
-    import ipdb;ipdb.set_trace()
     locale_code = context.get('locale_code')
     section = article.get_parent_section()
     articles = load_child_articles_for_section(context, section, count=None)
