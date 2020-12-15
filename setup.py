@@ -33,7 +33,7 @@ install_requires = [
     'markdown>=3.0.1',
     'mote-praekelt~=0.1.6',
     'raven~=6.10.0',
-    'redis',
+    'redis==3.5.3',
     'requests',
     'setuptools>=18.5',
     'six>=1.12.0',
