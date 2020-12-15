@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_extensions',
     'django_prometheus',
+    'rangefilter',
 
     'taggit',
     'modelcluster',
