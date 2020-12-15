@@ -18,5 +18,10 @@ class Migration(migrations.Migration):
             model_name='bannerpage',
             name='hide_banner_on_freebasics',
             field=models.BooleanField(default=False),
-        )
+        ),
+        migrations.AlterField(
+            model_name='sitesettings',
+            name='article_ordering_within_section',
+            field=django_enumfield.db.fields.EnumField(blank=True, default=None, enum=molo.core.models.ArticleOrderingChoices, help_text='Ordering of articles within a section', null=True),
+        ),
     ]

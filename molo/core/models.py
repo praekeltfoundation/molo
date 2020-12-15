@@ -1,4 +1,6 @@
 from itertools import chain
+from django_enumfield import enum
+
 from django.core.cache import cache
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
@@ -99,7 +101,16 @@ class ReadOnlyPanel(EditHandler):
             self.heading, _(':'), self.render())
 
 
-class ArticleOrderingChoices(models.TextChoices):
+# TODO: REMOVE THIS MODEL WHEN MIGRATIONS SQUASHED
+class ArticleOrderingChoices(enum.Enum):
+    CMS_DEFAULT_SORTING = 1
+    FIRST_PUBLISHED_AT = 2
+    FIRST_PUBLISHED_AT_DESC = 3
+    PK = 4
+    PK_DESC = 5
+
+
+class ArticleOrderingChoices2(models.TextChoices):
     CMS_DEFAULT_SORTING = '1', _('CMS Default Sorting')
     FIRST_PUBLISHED_AT = '2', _('First Published At')
     FIRST_PUBLISHED_AT_DESC = '3', _('First Published At Desc')
@@ -301,7 +312,7 @@ class SiteSettings(BaseSetting):
     )
 
     article_ordering_within_section = models.TextField(
-        choices=ArticleOrderingChoices.choices, null=True, blank=True, default=None,
+        choices=ArticleOrderingChoices2.choices, null=True, blank=True, default=None,
         help_text="Ordering of articles within a section"
     )
 
