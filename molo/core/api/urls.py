@@ -1,6 +1,5 @@
 from django.conf.urls import re_path
 
-from wagtail.api.v2.views import PagesAPIViewSet
 from wagtail.api.v2.router import WagtailAPIRouter
 from wagtail.documents.api.v2.views import DocumentsAPIViewSet
 

@@ -1,1 +1,0 @@
-0 22,10 * * * cd /app && /usr/local/bin/python rapidpro_to_bigquery.py >> /var/log/cron.log 2>&1

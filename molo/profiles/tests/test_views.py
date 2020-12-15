@@ -757,7 +757,6 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
             'email': 'example@foo.com',
             'terms_and_conditions': True
         })
-        print(response.content)
         expected_validation_message = "Sorry, but that is an invalid " \
                                       "username. Please don&#x27;t use " \
                                       "your phone number or email address " \
