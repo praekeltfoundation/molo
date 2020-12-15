@@ -17,7 +17,6 @@ from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
 from django.db.models.signals import pre_delete
 
-from django_enumfield import enum
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
@@ -100,12 +99,12 @@ class ReadOnlyPanel(EditHandler):
             self.heading, _(':'), self.render())
 
 
-class ArticleOrderingChoices(enum.Enum):
-    CMS_DEFAULT_SORTING = 1
-    FIRST_PUBLISHED_AT = 2
-    FIRST_PUBLISHED_AT_DESC = 3
-    PK = 4
-    PK_DESC = 5
+class ArticleOrderingChoices(models.TextChoices):
+    CMS_DEFAULT_SORTING = '1', _('CMS Default Sorting')
+    FIRST_PUBLISHED_AT = '2', _('First Published At')
+    FIRST_PUBLISHED_AT_DESC = '3', _('First Published At Desc')
+    PK = '4', _('Primary Key')
+    PK_DESC = '5', _('Primary Key Desc')
 
 
 @register_setting
@@ -301,8 +300,8 @@ class SiteSettings(BaseSetting):
         blank=True,
     )
 
-    article_ordering_within_section = enum.EnumField(
-        ArticleOrderingChoices, null=True, blank=True, default=None,
+    article_ordering_within_section = models.TextField(
+        choices=ArticleOrderingChoices.choices, null=True, blank=True, default=None,
         help_text="Ordering of articles within a section"
     )
 
