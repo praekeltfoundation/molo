@@ -1197,7 +1197,7 @@ class SiteLanguage(models.Model):
 
 
 class SiteLanguageRelation(Orderable, SiteLanguage):
-    language_setting = ParentalKey(Languages, related_name='languages')
+    language_setting = ParentalKey('Languages', related_name='languages')
 
 
 class SectionIndexPage(CommentedPageMixin, MoloPage, PreventDeleteMixin):
