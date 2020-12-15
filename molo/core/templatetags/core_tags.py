@@ -33,7 +33,7 @@ def get_language(site, locale):
     if not language:
         language = Languages.for_site(site).languages.filter(
             locale=locale).first()
-        # cache.set(language_cache_key, language, None)
+        cache.set(language_cache_key, language, None)
     return language
 
 
