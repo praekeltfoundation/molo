@@ -14,7 +14,7 @@ from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage,
     BannerPage, get_translation_for,
-    ArticleOrderingChoices, SiteLanguage
+    ArticleOrderingChoices, SiteLanguageRelation
 )
 
 from wagtail.core.models import Site
@@ -33,9 +33,10 @@ def get_language(site, locale):
     if not language_pk:
         language = Languages.for_site(site).languages.filter(
             locale=locale).first()
-        cache.set(language_cache_key, language.pk, None, None)
+        if language:
+            cache.set(language_cache_key, language.pk, None, None)
     else:
-        language = SiteLanguage.objects.get(pk=language_pk)
+        language = SiteLanguageRelation.objects.get(pk=language_pk)
     return language
 
 
