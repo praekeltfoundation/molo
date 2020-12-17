@@ -2,6 +2,7 @@ import pytest
 
 from django.utils import timezone
 from django.urls import reverse
+from django.core.cache import cache
 from django.test import TestCase, RequestFactory
 from django.shortcuts import get_object_or_404
 from django.db.models.query import QuerySet
@@ -19,6 +20,7 @@ from wagtail.core.models import Page
 @pytest.mark.django_db
 class TestTranslations(TestCase, MoloTestCaseMixin):
     def setUp(self):
+        cache.clear()
         self.mk_main()
         self.factory = RequestFactory()
         main = Main.objects.all().first()

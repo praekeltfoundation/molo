@@ -3,6 +3,7 @@ from datetime import date
 from django.utils import timezone
 from django.urls import re_path, include
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.contrib.auth.tokens import default_token_generator
 
 from django.urls import reverse
@@ -66,6 +67,7 @@ DEFAULT_MIDDLEWARE = [
 class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        cache.clear()
         self.mk_main()
         self.client = Client()
         self.main = Main.objects.all().first()
@@ -199,7 +201,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         })
         # assert that logging into a different site throws permission denied
         self.assertContains(
-            response, 'Your username and pin do not match. Please try again.')
+            response, 'Your username and password do not match. Please try again.')
 
     def test_logout(self):
         response = self.client.get('%s?next=%s' % (
@@ -209,7 +211,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def test_login(self):
         response = self.client.get(reverse('molo.profiles:auth_login'))
-        self.assertContains(response, 'Forgotten your pin?')
+        self.assertContains(response, 'Forgotten your password?')
 
     def test_warning_message_shown_in_wagtail_if_no_country_code(self):
         site = Site.objects.get(is_default_site=True)
@@ -1901,7 +1903,7 @@ class ResetPasswordViewTest(TestCase, MoloTestCaseMixin):
 
         response = self.client.post(
             reverse("molo.profiles:forgot_password"), {
-                "username": "tester",
+                "username": self.user.username,
                 "question_0": "20",
             }
         )
