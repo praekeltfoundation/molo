@@ -88,27 +88,27 @@ class RegistrationDone(LoginRequiredMixin, FormView):
             site).activate_dob) and not (
             UserProfilesSettings.for_site(
                 site).capture_dob_on_reg):
-                profile.date_of_birth = form.cleaned_data["date_of_birth"]
+            profile.date_of_birth = form.cleaned_data["date_of_birth"]
         if (UserProfilesSettings.for_site(
             site).activate_display_name) and not (
             UserProfilesSettings.for_site(
                 site).capture_display_name_on_reg):
-                profile.alias = form.cleaned_data["alias"]
+            profile.alias = form.cleaned_data["alias"]
         if (UserProfilesSettings.for_site(
             site).activate_gender) and not (
             UserProfilesSettings.for_site(
                 site).capture_gender_on_reg):
-                profile.gender = form.cleaned_data["gender"]
+            profile.gender = form.cleaned_data["gender"]
         if (UserProfilesSettings.for_site(
             site).activate_location) and not (
             UserProfilesSettings.for_site(
                 site).capture_location_on_reg):
-                profile.location = form.cleaned_data["location"]
+            profile.location = form.cleaned_data["location"]
         if (UserProfilesSettings.for_site(
             site).activate_education_level) and not (
             UserProfilesSettings.for_site(
                 site).capture_education_level_on_reg):
-                profile.education_level = form.cleaned_data["education_level"]
+            profile.education_level = form.cleaned_data["education_level"]
         profile.save()
         return HttpResponseRedirect(form.cleaned_data.get('next', '/'))
 

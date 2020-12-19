@@ -312,7 +312,8 @@ class SiteSettings(BaseSetting):
     )
 
     article_ordering_within_section = models.TextField(
-        choices=ArticleOrderingChoices2.choices, null=True, blank=True, default=None,
+        choices=ArticleOrderingChoices2.choices,
+        null=True, blank=True, default=None,
         help_text="Ordering of articles within a section"
     )
 

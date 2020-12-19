@@ -24,7 +24,8 @@ class MoloModelBackend(ModelBackend):
                 if user.is_superuser:
                     UserProfile.objects.get(user=user)
                 else:
-                    UserProfile.objects.get(user=user, site=Site.find_for_request(request))
+                    UserProfile.objects.get(
+                        user=user, site=Site.find_for_request(request))
             except UserProfile.DoesNotExist:
                 raise PermissionDenied
             except UserModel.DoesNotExist:

@@ -1,5 +1,4 @@
 import uuid
-import json
 import django.utils.deprecation
 
 from bs4 import BeautifulSoup
@@ -106,7 +105,7 @@ class NoScriptGASessionMiddleware(django.utils.deprecation.MiddlewareMixin):
 class SetLangaugeCodeMiddleware(django.utils.deprecation.MiddlewareMixin):
     """Sets the language code"""
     def process_response(self, request, response):
-        if not 'locale' in request.path:
+        if 'locale' not in request.path:
             return response
         locale_code = request.path.split("/")[2]
         response.set_cookie('django_language', locale_code)

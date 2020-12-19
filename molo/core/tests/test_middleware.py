@@ -5,7 +5,6 @@ from unittest.mock import patch
 from django.conf import settings
 from django.test import TestCase, RequestFactory
 from django.test.client import Client
-from django.test.client import RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.urls import reverse
 
@@ -74,7 +73,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             'language': 'en',
             'COOKIE_USER_PERSISTENCE': 30,
             'COOKIE_NAME': 'name',
-            'COOKIE_PATH': '/',}
+            'COOKIE_PATH': '/'}
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         response = middleware.submit_tracking(account, request, response)
@@ -94,7 +93,6 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         response = self.client.get(reverse('search'), {
             'q': 'Test'
         })
-        headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
         request = self.factory.get('/')
         mock_method.return_value = {
             'utm_url': 'url',
@@ -102,7 +100,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             'language': 'en',
             'COOKIE_USER_PERSISTENCE': 30,
             'COOKIE_NAME': 'name',
-            'COOKIE_PATH': '/',}
+            'COOKIE_PATH': '/'}
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         middleware.submit_tracking(
@@ -137,7 +135,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             'language': 'fr',
             'COOKIE_USER_PERSISTENCE': 30,
             'COOKIE_NAME': 'name',
-            'COOKIE_PATH': '/',}
+            'COOKIE_PATH': '/'}
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         response = middleware.submit_tracking(account, request, response)
@@ -170,7 +168,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             'language': 'en',
             'COOKIE_USER_PERSISTENCE': 30,
             'COOKIE_NAME': 'name',
-            'COOKIE_PATH': '/',}
+            'COOKIE_PATH': '/'}
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         middleware.submit_tracking(

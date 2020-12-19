@@ -5,7 +5,8 @@ from wagtail.core.models import Site
 
 
 def locale(request):
-    locale_code = get_locale_code(get_language_from_request(request, check_path=True))
+    locale_code = get_locale_code(
+        get_language_from_request(request, check_path=True))
     site = Site.find_for_request(request)
     languages = Languages.for_site(site).languages.filter(
         is_active=True)

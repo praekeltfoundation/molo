@@ -2032,7 +2032,14 @@ class TestWagtailAdmin(TestCase, MoloTestCaseMixin):
     def can_see_pages_menu(self, client):
         response = client.get('/admin/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<li class="menu-item" data-explorer-menu-item>\n        <a href="/admin/pages/" data-explorer-start-page="1">\n          <svg class="icon icon-folder-open-inverse icon--menuitem" aria-hidden="true" focusable="false"><use href="#icon-folder-open-inverse"></use></svg>\n          Pages\n        </a>')
+        self.assertContains(
+            response,
+            '<li class="menu-item" data-explorer-menu-item>\n        '
+            '<a href="/admin/pages/" data-explorer-start-page="1">\n          '
+            '<svg class="icon icon-folder-open-inverse icon--menuitem" '
+            'aria-hidden="true" focusable="false"><use '
+            'href="#icon-folder-open-inverse"></use></svg>\n          '
+            'Pages\n        </a>')
 
     def test_superuser_pages_access(self):
         self.client.login(username='testuser', password='password')

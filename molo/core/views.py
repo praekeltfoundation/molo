@@ -16,10 +16,7 @@ from django.http import (
 )
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.http import is_safe_url
-from django.utils.translation import (
-    LANGUAGE_SESSION_KEY,
-    get_language_from_request
-)
+from django.utils.translation import get_language_from_request
 from django.views.generic import ListView
 from django.utils.translation import ugettext as _
 from django.contrib.sitemaps import views as sitemap_views
@@ -226,7 +223,8 @@ class TagsListView(ListView):
         context = super(TagsListView, self).get_context_data(*args, **kwargs)
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
-            slug=tag).descendant_of(Site.find_for_request(self.request).root_page).first()})
+            slug=tag).descendant_of(
+                Site.find_for_request(self.request).root_page).first()})
         return context
 
 
@@ -319,7 +317,7 @@ def tag_index(request, extra_context=None,
     if not tag_name:
         raise Http404
 
-    main = Site.find_for_request(self.request).root_page
+    main = Site.find_for_request(request).root_page
     tag = Tag.objects.filter(slug=tag_name).descendant_of(main)
 
     if tag.exists():

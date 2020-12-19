@@ -10,7 +10,7 @@ urlpatterns = [
     re_path(r'^logout/$', views.logout_page, name='auth_logout'),
     # If user is not login it will redirect to login page
     re_path(r'^login/$',
-        auth_views.LoginView.as_view(
+            auth_views.LoginView.as_view(
             authentication_form=MoloAuthenticationForm
         ),
         name='auth_login'),

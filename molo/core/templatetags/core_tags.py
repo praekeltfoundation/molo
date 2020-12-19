@@ -392,7 +392,8 @@ def get_articles_for_tags_with_translations(
     pks = ArticlePageTags.objects.filter(tag=tag).values('page__pk')
     pages = get_pages(
         context, ArticlePage.objects.descendant_of(
-            Site.find_for_request(request).root_page).filter(pk__in=pks), locale)
+            Site.find_for_request(
+                request).root_page).filter(pk__in=pks), locale)
     return [x for x in pages if x.pk not in exclude_pks]
 
 
@@ -419,8 +420,9 @@ def get_next_tag(context, tag):
     request = context['request']
     locale_code = context.get('locale_code')
     current_tag = tag.get_main_language_page()
-    qs = Tag.objects.descendant_of(Site.find_for_request(request).root_page).filter(
-        language__is_main_language=True).live()
+    qs = Tag.objects.descendant_of(
+        Site.find_for_request(request).root_page).filter(
+            language__is_main_language=True).live()
     if qs.exists():
         tags = list(qs)
         if not len(tags) == tags.index(current_tag) + 1:
@@ -462,7 +464,8 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
 
     if tags and Site.find_for_request(request):
         qs = Tag.objects.descendant_of(
-            Site.find_for_request(request).root_page).live().filter(pk__in=tags)
+            Site.find_for_request(
+                request).root_page).live().filter(pk__in=tags)
 
         for tag in qs:
             tag_articles = get_articles_for_tags_with_translations(
@@ -547,8 +550,9 @@ def get_tag_articles(
             sections_list.append((section, sec_translated_articles))
 
     # Featured Tag/s
-    tag_qs = Tag.objects.descendant_of(Site.find_for_request(request).root_page).filter(
-        feature_in_homepage=True).live()
+    tag_qs = Tag.objects.descendant_of(
+        Site.find_for_request(request).root_page).filter(
+            feature_in_homepage=True).live()
     if tag_qs:
         tag = tag_qs.first()
         tag_articles = get_articles_for_tags_with_translations(
@@ -591,7 +595,8 @@ def load_tags_for_article(context, article):
             else article.created_at.isoformat()
 
         cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
-            locale, Site.find_for_request(request).pk, article.pk, latest_revision_date)
+            locale, Site.find_for_request(request).pk,
+            article.pk, latest_revision_date)
         tags_pks = cache.get(cache_key)
 
         if not tags_pks:
@@ -615,7 +620,8 @@ def load_tags_for_article(context, article):
                 tags_pks = []
 
         qs = Tag.objects.descendant_of(
-            Site.find_for_request(request).root_page).live().filter(pk__in=tags_pks)
+            Site.find_for_request(
+                request).root_page).live().filter(pk__in=tags_pks)
         return get_pages(context, qs, locale)
     return None
 
