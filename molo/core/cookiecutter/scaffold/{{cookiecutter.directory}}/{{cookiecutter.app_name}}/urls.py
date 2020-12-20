@@ -19,20 +19,25 @@ admin.autodiscover()
 # implement CAS URLs in a production setting
 if settings.ENABLE_SSO:
     urlpatterns = [
-        re_path(r'^admin/login/',
+        re_path(
+            r'^admin/login/',
             cas_views.LoginView.as_view(), name='cas_ng_login'),
-        re_path(r'^admin/logout/',
+        re_path(
+            r'^admin/logout/',
             cas_views.LogoutView.as_view(), name='cas_ng_logout'),
-        re_path(r'^admin/callback/',
+        re_path(
+            r'^admin/callback/',
             cas_views.CallbackView.as_view(), name='cas_ng_callback'),
     ]
 else:
     urlpatterns = []
 
 urlpatterns += [
-    re_path(r'^django-admin/upload_media/', core_views.upload_file,
+    re_path(
+        r'^django-admin/upload_media/', core_views.upload_file,
         name='molo_upload_media'),
-    re_path(r'^django-admin/download_media/', core_views.download_file,
+    re_path(
+        r'^django-admin/download_media/', core_views.download_file,
         name='molo_download_media'),
     re_path(r'^django-admin/', admin.site.urls),
     re_path(r'^admin/', include(wagtailadmin_urls)),
