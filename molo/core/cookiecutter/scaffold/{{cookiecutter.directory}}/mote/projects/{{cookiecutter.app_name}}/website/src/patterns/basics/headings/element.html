@@ -1,5 +1,4 @@
 {% raw %}
-{% load mote_tags %}
 {% with element.json.data.HeadingTypes as "headings" %}
 {% for item in headings.heading_texts %}
   <div class="heading heading__{{item.modifiers}}">

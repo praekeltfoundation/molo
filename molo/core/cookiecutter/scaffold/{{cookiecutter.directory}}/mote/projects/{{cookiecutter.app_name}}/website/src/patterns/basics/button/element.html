@@ -1,5 +1,4 @@
 {% raw %}
-{% load mote_tags %}
 {% with element.json.data.Button as "button" %}
 {% if button.attr.tag == "a" %}
   <a class="call-to-action__item call-to-action__item--{{button.modifiers}}" data-direction="right" href="{{ button.attr.href}}">

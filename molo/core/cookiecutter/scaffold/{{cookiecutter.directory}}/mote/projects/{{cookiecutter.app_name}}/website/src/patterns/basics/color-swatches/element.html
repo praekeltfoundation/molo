@@ -1,5 +1,4 @@
 {% raw %}
-{% load mote_tags %}
 {% with element.json.data.ColorSwatches as "color" %}
   {% for color in color.colorScheme %}
     <div class="color-chip" style="border-color: #{{color.hex}};">
