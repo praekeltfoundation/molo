@@ -1,7 +1,7 @@
 {% raw %}
 {% extends "mote/element/index.html" %}
 {% load mote_tags %}
-{% mask element.json.data.Button as "button" %}
+{% with element.json.data.Button as "button" %}
 {% block codeblock %}
 <div class="sg-code-block">
     <h4 class="title">
@@ -21,4 +21,5 @@
     </div>
 </div>
 {% endblock %}
+{% endwith %}
 {% endraw %}

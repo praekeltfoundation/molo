@@ -1,6 +1,6 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.FormInputs as "inputfields" %}
+{% with element.json.data.FormInputs as "inputfields" %}
   {% for item in inputfields.radioButtons %}
   <fieldset class="choice choice-group">
       <div class="heading heading__subheading">
@@ -12,4 +12,5 @@
     {% endfor %}
   </fieldset>
   {% endfor %}
+{% endwith %}
 {% endraw %}

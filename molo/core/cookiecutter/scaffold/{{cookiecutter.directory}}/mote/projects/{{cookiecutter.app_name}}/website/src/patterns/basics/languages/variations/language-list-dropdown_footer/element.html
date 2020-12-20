@@ -1,6 +1,6 @@
 {% raw %}
 {% load mote_tags wagtailimages_tags static i18n %}
-{% mask element.json.data.Language_list_dropdown as "language_list_dropdown" %}
+{% with element.json.data.Language_list_dropdown as "language_list_dropdown" %}
 <div class="languages">
     <input id="language-select_footer" class="language-select__toggle-input" type="checkbox">
     <label class="language-select__change-label language-select__change-label-footer"  for="language-select_footer">
@@ -16,5 +16,5 @@
       </ul>
     </div>
    </div>
-</div>
+{% endwith %}
 {% endraw %}

@@ -1,6 +1,6 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.FormInputs as "inputfields" %}
+{% with element.json.data.FormInputs as "inputfields" %}
   {% for item in inputfields.defaultInputs %}
   <fieldset>
     <label>{{item.label}}</label>
@@ -14,4 +14,5 @@
     <textarea cols="{{item.cols}}"  rows="{{item.rows}}" maxlength="3000" name="{{item.name}}" placeholder="{{item.placeholder}}"></textarea>
   </fieldset>
   {% endfor %}
+{% endwith %}
 {% endraw %}

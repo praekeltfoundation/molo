@@ -1,8 +1,9 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.FormSearch as "inputfields" %}
+{% with element.json.data.FormSearch as "inputfields" %}
  <fieldset>
     <input placeholder="{{inputfields.placeholder}}" name="{{inputfields.name}}" type="{{inputfields.input}}" value="{{inputfields.name}}">
     <input type="{{inputfields.submitButton.input}}" value="{{inputfields.submitButton.value}}" class="{{inputfields.submitButton.classType}} {{inputfields.submitButton.classModifiers}}">
   </fieldset>
+{% endwith %}
 {% endraw %}

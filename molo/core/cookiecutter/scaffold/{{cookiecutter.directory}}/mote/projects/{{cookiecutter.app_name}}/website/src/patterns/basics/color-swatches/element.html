@@ -1,6 +1,6 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.ColorSwatches as "color" %}
+{% with element.json.data.ColorSwatches as "color" %}
   {% for color in color.colorScheme %}
     <div class="color-chip" style="border-color: #{{color.hex}};">
     	<div class="color-chip__name">{{color.name}}</div>
@@ -8,4 +8,5 @@
     	<div class="color-chip__color">{{color.hex}}</div>
     </div>
   {% endfor %}
+{% endwith %}
 {% endraw %}

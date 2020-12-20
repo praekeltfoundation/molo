@@ -1,6 +1,6 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.helperInputs as "inputfields" %}
+{% with element.json.data.helperInputs as "inputfields" %}
   <fieldset>
     <label>{{inputfields.textInput.label}}</label>
     <input type="{{inputfields.textInput.input}}" placeholder="{{inputfields.textInput.placeholder}}" name="{{inputfields.textInput.name}}" />
@@ -13,4 +13,5 @@
     <div class="error-message">{{inputfields.textarea.error}}</div>
     <p class="helptext">{{inputfields.textarea.hint}}</p>
   </fieldset>
+{% endwith %}
 {% endraw %}

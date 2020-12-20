@@ -1,6 +1,6 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.Navigation as "section_nav" %}
+{% with element.json.data.Navigation as "section_nav" %}
 <div class="section-nav">
   <ul class="section-nav-list section-nav-list-wrap">
   {% for item in section_nav.navMenu %}
@@ -10,4 +10,5 @@
   {% endfor %}
   </ul>
 </div>
+{% endwith %}
 {% endraw %}
