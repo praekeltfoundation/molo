@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.test.client import Client
+from django.core.cache import cache
 
 from wagtail.search.backends import get_search_backend
 
@@ -12,6 +13,7 @@ from molo.core.tests.base import MoloTestCaseMixin
 class TestSearch(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         # Creates Main language
         self.mk_main()

@@ -1,10 +1,10 @@
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Site
 from wagtail.core.utils import resolve_model_string
-from wagtail.api.v2.endpoints import PagesAPIEndpoint
+from wagtail.api.v2.views import PagesAPIViewSet
 from wagtail.api.v2.serializers import BaseSerializer
 from wagtail.api.v2.utils import BadRequestError
-from wagtail.images.api.v2.endpoints import ImagesAPIEndpoint
-from wagtail.images.api.v2.endpoints import BaseAPIEndpoint
+from wagtail.images.api.v2.views import ImagesAPIViewSet
+from wagtail.api.v2.views import BaseAPIViewSet
 
 from molo.core.models import (
     SiteLanguage,
@@ -17,9 +17,9 @@ from molo.core.api.serializers import (
 )
 
 
-class MoloImagesAPIEndpoint(ImagesAPIEndpoint):
+class MoloImagesAPIEndpoint(ImagesAPIViewSet):
     base_serializer_class = MoloImageSerializer
-    body_fields = ImagesAPIEndpoint.body_fields + [
+    body_fields = ImagesAPIViewSet.body_fields + [
         "filename",
         "file",
         "image_url",
@@ -27,20 +27,20 @@ class MoloImagesAPIEndpoint(ImagesAPIEndpoint):
     ]
 
 
-class MoloPagesEndpoint(PagesAPIEndpoint):
+class MoloPagesEndpoint(PagesAPIViewSet):
     base_serializer_class = MoloPageSerializer
 
-    meta_fields = PagesAPIEndpoint.meta_fields + [
+    meta_fields = PagesAPIViewSet.meta_fields + [
         "children",
         "translations",
         "main_language_children",
     ]
 
-    filter_backends = PagesAPIEndpoint.filter_backends + [
+    filter_backends = PagesAPIViewSet.filter_backends + [
         MainLanguageFilter,
     ]
 
-    known_query_parameters = PagesAPIEndpoint.known_query_parameters.union([
+    known_query_parameters = PagesAPIViewSet.known_query_parameters.union([
         'is_main_language', 'nav_tags__tag'
     ])
     extra_api_fields = ['url', 'live']
@@ -69,7 +69,7 @@ class MoloPagesEndpoint(PagesAPIEndpoint):
 
         # Filter by site
         queryset = queryset.descendant_of(
-            request.site.root_page, inclusive=True)
+            Site.find_for_request(request).root_page, inclusive=True)
 
         # Enable filtering by navigation tags
         if model == ArticlePage and 'nav_tags__tag' in request.GET:
@@ -87,7 +87,7 @@ class MoloPagesEndpoint(PagesAPIEndpoint):
         return queryset
 
 
-class LanguagesAPIEndpoint(BaseAPIEndpoint):
+class LanguagesAPIEndpoint(BaseAPIViewSet):
     base_serializer_class = BaseSerializer
     filter_backends = []
     extra_api_fields = []
@@ -99,5 +99,6 @@ class LanguagesAPIEndpoint(BaseAPIEndpoint):
         Only serve site-specific languages
         '''
         request = self.request
-        return (Languages.for_site(request.site)
+        site = Site.find_for_request(request)
+        return (Languages.for_site(site)
                          .languages.filter().order_by('pk'))

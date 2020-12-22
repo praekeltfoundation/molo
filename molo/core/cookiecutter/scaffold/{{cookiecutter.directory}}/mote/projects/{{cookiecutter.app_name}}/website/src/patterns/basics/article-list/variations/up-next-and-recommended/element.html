@@ -1,6 +1,6 @@
 {% raw %}
-{% load mote_tags i18n %}
-{% mask element.json.data.ArticleList as "article" %}
+{% load i18n %}
+{% with element.json.data.ArticleList as "article" %}
   <h4 class="heading related-articles__up-next">{% trans "Next up in [category]:" %}</h4>
   <div class="related-articles-up-next">
       <a href="#" class="article__anchor">
@@ -36,4 +36,5 @@
     {% endfor %}
     </ul>
   </div>
+{% endwith %}
 {% endraw %}

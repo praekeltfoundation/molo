@@ -2,7 +2,8 @@ import pytest
 
 from django.utils import timezone
 from django.urls import reverse
-from django.test import TestCase
+from django.core.cache import cache
+from django.test import TestCase, RequestFactory
 from django.shortcuts import get_object_or_404
 from django.db.models.query import QuerySet
 
@@ -19,7 +20,9 @@ from wagtail.core.models import Page
 @pytest.mark.django_db
 class TestTranslations(TestCase, MoloTestCaseMixin):
     def setUp(self):
+        cache.clear()
         self.mk_main()
+        self.factory = RequestFactory()
         main = Main.objects.all().first()
         self.english = SiteLanguageRelation.objects.create(
             language_setting=Languages.for_site(main.get_site()),
@@ -78,10 +81,9 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
     def test_that_only_main_language_pages_returns_list(self):
         self.client.post(reverse(
             'add_translation', args=[self.english_section.id, 'fr']))
-        request = self.client.get(
+        request = self.factory.get(
             "http://main-1.localhost:8000/admin/pages/"
             + str(self.english_section.id) + "/")
-        request.site = self.site
         parent_page = get_object_or_404(Page, id=self.section_index.id)
         pages = list(parent_page.get_children().prefetch_related(
             'content_type', 'sites_rooted_here'))
@@ -99,10 +101,9 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
     def test_that_only_main_language_pages_returns_queryset(self):
         self.client.post(reverse(
             'add_translation', args=[self.english_section.id, 'fr']))
-        request = self.client.get(
+        request = self.factory.get(
             "http://main-1.localhost:8000/admin/pages/"
             + str(self.english_section.id) + "/")
-        request.site = self.site
         parent_page = get_object_or_404(Page, id=self.section_index.id)
         pages = parent_page.get_children().prefetch_related(
             'content_type', 'sites_rooted_here')
@@ -257,6 +258,8 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         site_settings.enable_tag_navigation = True
         site_settings.show_only_translated_pages = True
         site_settings.save()
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
 
         self.mk_section_translation(
             self.english_section, self.french,

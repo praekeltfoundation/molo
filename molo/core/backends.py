@@ -6,6 +6,8 @@ from django.core.exceptions import PermissionDenied
 
 from molo.profiles.models import UserProfile
 
+from wagtail.core.models import Site
+
 UserModel = get_user_model()
 
 
@@ -22,7 +24,8 @@ class MoloModelBackend(ModelBackend):
                 if user.is_superuser:
                     UserProfile.objects.get(user=user)
                 else:
-                    UserProfile.objects.get(user=user, site=request.site)
+                    UserProfile.objects.get(
+                        user=user, site=Site.find_for_request(request))
             except UserProfile.DoesNotExist:
                 raise PermissionDenied
             except UserModel.DoesNotExist:
@@ -43,6 +46,7 @@ class MoloCASBackend(CASBackend):
         if 'attributes' in request.session \
             and 'has_perm' in request.session['attributes']\
                 and request.session['attributes']['has_perm'] == 'True':
+            site = Site.find_for_request(request)
             if request.session['attributes']['is_admin'] == 'True':
                 user.email = request.session['attributes']['email']
                 user.is_staff = True
@@ -55,7 +59,7 @@ class MoloCASBackend(CASBackend):
                     user.groups.add(wagtail_login_only_group)
 
                 elif not user.profile.admin_sites.filter(
-                        pk=request.site.pk).exists():
+                        pk=site.pk).exists():
                     return None
 
                 """

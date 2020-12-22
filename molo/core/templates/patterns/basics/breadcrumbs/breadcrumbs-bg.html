@@ -1,10 +1,11 @@
 {% load wagtailcore_tags i18n %}
 {% block breadcrumbs %}
 {% if ancestors %}
+{% wagtail_site as current_site %}
 <div class="breadcrumbs">
   <ul class="breadcrumbs-list breadcrumbs-list-with-bg">
     <li class="breadcrumbs-list__item breadcrumbs-list-with-bg__item">
-      <a href="{% pageurl request.site.root_page.specific as url%}"  class="breadcrumbs-list-with-bg__anchor">{% trans "Home" %}</a>
+      <a href="{% pageurl current_site.root_page.specific as url%}"  class="breadcrumbs-list-with-bg__anchor">{% trans "Home" %}</a>
     </li>
     {% for ancestor in ancestors %}
       <li class="breadcrumbs-list__item breadcrumbs-list-with-bg__item">

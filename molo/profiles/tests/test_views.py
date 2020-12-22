@@ -3,6 +3,7 @@ from datetime import date
 from django.utils import timezone
 from django.urls import re_path, include
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.contrib.auth.tokens import default_token_generator
 
 from django.urls import reverse
@@ -49,7 +50,6 @@ DEFAULT_MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 
     'molo.core.middleware.AdminLocaleMiddleware',
@@ -67,6 +67,7 @@ DEFAULT_MIDDLEWARE = [
 class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        cache.clear()
         self.mk_main()
         self.client = Client()
         self.main = Main.objects.all().first()
@@ -200,7 +201,8 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         })
         # assert that logging into a different site throws permission denied
         self.assertContains(
-            response, 'Your username and password do not match.')
+            response,
+            'Your username and password do not match. Please try again.')
 
     def test_logout(self):
         response = self.client.get('%s?next=%s' % (
@@ -210,7 +212,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
 
     def test_login(self):
         response = self.client.get(reverse('molo.profiles:auth_login'))
-        self.assertContains(response, 'Forgotten your password')
+        self.assertContains(response, 'Forgotten your password?')
 
     def test_warning_message_shown_in_wagtail_if_no_country_code(self):
         site = Site.objects.get(is_default_site=True)
@@ -758,9 +760,8 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
             'email': 'example@foo.com',
             'terms_and_conditions': True
         })
-
         expected_validation_message = "Sorry, but that is an invalid " \
-                                      "username. Please don&#39;t use " \
+                                      "username. Please don&#x27;t use " \
                                       "your phone number or email address " \
                                       "in your username."
 
@@ -781,7 +782,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         })
 
         expected_validation_message = "Sorry, but that is an invalid" \
-                                      " username. Please don&#39;t use" \
+                                      " username. Please don&#x27;t use" \
                                       " your email address in your" \
                                       " username."
 
@@ -806,7 +807,7 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
         self.assertContains(response, expected_validation_message)
 
     def test_phone_number_not_allowed_in_username(self):
-        site = Site.objects.get(is_default_site=True)
+        site = Site.objects.first()
         profile_settings = UserProfilesSettings.for_site(site)
 
         profile_settings.prevent_phone_number_in_username = True
@@ -818,9 +819,8 @@ class RegistrationViewTest(TestCase, MoloTestCaseMixin):
             'email': 'example@foo.com',
             'terms_and_conditions': True
         })
-
         expected_validation_message = "Sorry, but that is an invalid" \
-                                      " username. Please don&#39;t use" \
+                                      " username. Please don&#x27;t use" \
                                       " your phone number in your username."
 
         self.assertContains(response, expected_validation_message)
@@ -1904,7 +1904,7 @@ class ResetPasswordViewTest(TestCase, MoloTestCaseMixin):
 
         response = self.client.post(
             reverse("molo.profiles:forgot_password"), {
-                "username": "tester",
+                "username": self.user.username,
                 "question_0": "20",
             }
         )

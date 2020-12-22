@@ -1,7 +1,7 @@
 {% raw %}
 {% extends "mote/element/index.html" %}
 {% load mote_tags %}
-{% mask element.json.data.Button as "button" %}
+{% with element.json.data.Button as "button" %}
 {% block codeblock %}
 <div class="sg-code-block">
     <h4 class="title">
@@ -14,7 +14,7 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element %}
+                  {% render element %}
                 </xmp>
             </code>
         </pre>
@@ -31,7 +31,7 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element.aspect.basics.menu.menu-base %}
+                  {% render element.aspect.basics.menu.menu-base %}
                 </xmp>
             </code>
         </pre>
@@ -47,7 +47,7 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element.aspect.basics.menu.menu-icon %}
+                  {% render element.aspect.basics.menu.menu-icon %}
                 </xmp>
             </code>
         </pre>
@@ -63,7 +63,7 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element.aspect.basics.menu.menu-with_home-toggle %}
+                  {% render element.aspect.basics.menu.menu-with_home-toggle %}
                 </xmp>
             </code>
         </pre>
@@ -80,7 +80,7 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element.aspect.basics.menu.menu-with_profile-icon %}
+                  {% render element.aspect.basics.menu.menu-with_profile-icon %}
                 </xmp>
             </code>
         </pre>
@@ -97,11 +97,12 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element.aspect.basics.menu.menu-with_search-icon %}
+                  {% render element.aspect.basics.menu.menu-with_search-icon %}
                 </xmp>
             </code>
         </pre>
     </div>
 </div>
 {% endblock %}
+{% endwith %}
 {% endraw %}

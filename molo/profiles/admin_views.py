@@ -1,5 +1,6 @@
 from wagtail.contrib.modeladmin.views import IndexView
 from wagtail.admin import messages
+from wagtail.core.models import Site
 from django.utils.translation import ugettext as _
 from django.shortcuts import redirect
 from .task import send_export_email
@@ -28,7 +29,7 @@ class FrontendUsersAdminView(IndexView):
             'is_active': is_active_exact
         }
 
-        arguments = {'profile__site': request.site.pk}
+        arguments = {'profile__site': Site.find_for_request(request).pk}
 
         for key, value in filter_list.items():
             if value:

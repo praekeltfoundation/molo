@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-
+from django.core.cache import cache
 from molo.core.models import Main, SiteLanguageRelation, Languages
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.utils import generate_slug
@@ -10,6 +10,7 @@ from wagtail.core.models import Site
 class TestSites(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        cache.clear()
         self.mk_main()
         self.main = Main.objects.all().first()
         self.english = SiteLanguageRelation.objects.create(

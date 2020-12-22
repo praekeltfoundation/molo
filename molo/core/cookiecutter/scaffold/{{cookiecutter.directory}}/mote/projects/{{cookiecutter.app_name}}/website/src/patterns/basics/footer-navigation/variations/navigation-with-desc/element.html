@@ -1,8 +1,8 @@
 {% raw %}
 {% load mote_tags %}
-{% mask element.json.data.Navigation as "nav" %}
+{% with element.json.data.Navigation as "nav" %}
 <div class="navigation">
-  {% render_element element.aspect.basics.logo %}
+  {% render element.aspect.basics.logo %}
   <ul class="nav-list nav-list--vertical">
     <li class="nav-list__item nav-list__item--vertical">
       <a href="/" class="nav-list__anchor nav-list__anchor--vertical">Home</a>
@@ -17,4 +17,5 @@
       {% endfor %}
   </ul>
 </div>
+{% endwith %}
 {% endraw %}

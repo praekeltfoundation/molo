@@ -1,6 +1,5 @@
 {% raw %}
-{% load mote_tags %}
-{% mask element.json.data.SringsterButtons as "buttons" %}
+{% with element.json.data.SringsterButtons as "buttons" %}
 {% for item in buttons.buttonVariations %}
   <div class="call-to-action  call-to-action--{{item.modifiers}}">
     <a href="{{item.anchor.link}}" class="{{item.anchor.classType}} {{item.anchor.classModifiers}}">
@@ -14,4 +13,5 @@
     </a>
   </div>
 {% endfor %}
+{% endwith %}
 {% endraw %}
