@@ -10,7 +10,7 @@ from django.utils.timezone import localtime
 from django.conf import settings
 from django.db.models import Q
 
-# from daterange_filter.filter import DateRangeFilter
+from rangefilter.filter import DateRangeFilter
 from wagtail.contrib.modeladmin.options import ModelAdmin as WagtailModelAdmin
 from molo.profiles.admin_views import FrontendUsersAdminView
 from molo.profiles.models import (
@@ -94,12 +94,6 @@ class ProfileUserAdmin(UserAdmin):
         return ''
 
 
-# Below here is for Wagtail Admin
-# class FrontendUsersDateRangeFilter(DateRangeFilter):
-#     # template = 'admin/frontend_users_date_range_filter.html'
-#     pass
-
-
 class CustomUsersListFilter(admin.SimpleListFilter):
     title = _('Type')
     parameter_name = 'usertype'
@@ -133,7 +127,7 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
                     '_gender', '_uuid')
 
     list_filter = (
-        # ('date_joined', FrontendUsersDateRangeFilter),
+        ('date_joined', DateRangeFilter),
         'is_active',
         CustomUsersListFilter)
 
