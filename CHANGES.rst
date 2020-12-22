@@ -1,5 +1,10 @@
 CHANGES
 =======
+
+11.0.0
+~~~~~~
+- Add support for Django 3+
+
 10.2.9
 ~~~~~~
 - Mote template fix: update invalid tag
