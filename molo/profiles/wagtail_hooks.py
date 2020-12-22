@@ -5,6 +5,7 @@ from molo.profiles.models import (
 from wagtail.contrib.modeladmin.options import modeladmin_register
 from wagtail.admin.site_summary import SummaryItem
 from wagtail.core import hooks
+from wagtail.core.models import Site
 
 
 class ProfileWarningMessagee(SummaryItem):
@@ -14,7 +15,8 @@ class ProfileWarningMessagee(SummaryItem):
 
 @hooks.register('construct_homepage_panels')
 def profile_warning_message(request, panels):
-    profile_settings = UserProfilesSettings.for_site(request.site)
+    site = Site.find_for_request(request)
+    profile_settings = UserProfilesSettings.for_site(site)
     if not profile_settings.country_code and \
             profile_settings.show_mobile_number_field:
         panels[:] = [ProfileWarningMessagee(request)]
@@ -31,10 +33,11 @@ class AccessErrorMessage(SummaryItem):
 
 @hooks.register('construct_homepage_panels')
 def add_access_error_message_panel(request, panels):
+    site = Site.find_for_request(request)
     if UserProfile.objects.filter(user=request.user).exists() and \
             not request.user.is_superuser:
         if not request.user.profile.admin_sites.filter(
-                pk=request.site.pk).exists():
+                pk=site.pk).exists():
             panels[:] = [AccessErrorMessage(request)]
 
 

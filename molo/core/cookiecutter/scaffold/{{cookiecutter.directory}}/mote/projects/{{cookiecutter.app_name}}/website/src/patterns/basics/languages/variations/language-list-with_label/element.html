@@ -1,6 +1,5 @@
 {% raw %}
-{% load mote_tags %}
-{% mask element.json.data.Language_list_with_label as "language_label" %}
+{% with element.json.data.Language_list_with_label as "language_label" %}
 <div class="languages">
   <ul class="language-list language-list--with-label">
     <li class="language-list__item language-list__item--with-label">
@@ -11,4 +10,5 @@
     {% endfor %}
   </ul>
 </div>
+{% endwith %}
 {% endraw %}

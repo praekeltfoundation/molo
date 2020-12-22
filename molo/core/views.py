@@ -16,16 +16,13 @@ from django.http import (
 )
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.http import is_safe_url
-from django.utils.translation import (
-    LANGUAGE_SESSION_KEY,
-    get_language_from_request
-)
+from django.utils.translation import get_language_from_request
 from django.views.generic import ListView
 from django.utils.translation import ugettext as _
 from django.contrib.sitemaps import views as sitemap_views
 
 from wagtail.search.models import Query
-from wagtail.core.models import Page, UserPagePermissionsProxy
+from wagtail.core.models import Page, UserPagePermissionsProxy, Site
 
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 
@@ -55,7 +52,7 @@ def search(request, results_per_page=10, load_more=False):
     locale = get_locale_code(get_language_from_request(request))
 
     if search_query:
-        main = request.site.root_page
+        main = Site.find_for_request(request).root_page
 
         results = ArticlePage.objects.descendant_of(main).filter(
             language__locale=locale
@@ -100,7 +97,6 @@ def search(request, results_per_page=10, load_more=False):
 
 
 def locale_set(request, locale):
-    request.session[LANGUAGE_SESSION_KEY] = locale
     # the next var if empty a blank is passed instead of / hence the below
     return redirect(request.GET.get('next', '/') or '/')
 
@@ -126,8 +122,9 @@ def add_translation(request, page_id, locale):
                 translated_page.first().id]))
 
     # create translation and redirect to edit page
-    language = Languages.for_site(request.site).languages.filter(
-        locale=locale).first()
+    language = Languages.for_site(
+        Site.find_for_request(request)).languages.filter(
+            locale=locale).first()
     if not language:
         raise Http404
     new_title = str(language) + " translation of %s" % page.title
@@ -197,8 +194,9 @@ class TagsListView(ListView):
     template_name = "core/article_tags.html"
 
     def get_queryset(self, *args, **kwargs):
-        site_settings = SiteSettings.for_site(self.request.site)
-        main = self.request.site.root_page
+        site = Site.find_for_request(self.request)
+        site_settings = SiteSettings.for_site(site)
+        main = site.root_page
         tag = self.kwargs["tag_name"]
         if site_settings.enable_tag_navigation:
             count = self.request.GET.get("count")
@@ -225,7 +223,8 @@ class TagsListView(ListView):
         context = super(TagsListView, self).get_context_data(*args, **kwargs)
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
-            slug=tag).descendant_of(self.request.site.root_page).first()})
+            slug=tag).descendant_of(
+                Site.find_for_request(self.request).root_page).first()})
         return context
 
 
@@ -318,7 +317,7 @@ def tag_index(request, extra_context=None,
     if not tag_name:
         raise Http404
 
-    main = request.site.root_page
+    main = Site.find_for_request(request).root_page
     tag = Tag.objects.filter(slug=tag_name).descendant_of(main)
 
     if tag.exists():
@@ -389,8 +388,9 @@ def copy_to_all_confirm(request, page_id):
 
 
 def copy_to_all(request, page_id):
+    site = Site.find_for_request(request)
     page = get_object_or_404(Page, id=page_id).specific
-    copy_to_all_task.delay(page.pk, request.user.pk, request.site.pk)
+    copy_to_all_task.delay(page.pk, request.user.pk, site.pk)
     next_url = get_valid_next_url_from_request(request)
     if next_url:
         return redirect(next_url)

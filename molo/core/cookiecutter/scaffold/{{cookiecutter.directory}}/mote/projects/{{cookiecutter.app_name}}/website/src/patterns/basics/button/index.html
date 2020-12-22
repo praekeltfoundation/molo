@@ -1,7 +1,7 @@
 {% raw %}
 {% extends "mote/element/index.html" %}
 {% load mote_tags %}
-{% mask element.json.data.Button as "button" %}
+{% with element.json.data.Button as "button" %}
 {% block codeblock %}
 <div class="sg-code-block">
     <h4 class="title">
@@ -14,7 +14,7 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element %}
+                  {% render element %}
                 </xmp>
             </code>
         </pre>
@@ -31,7 +31,7 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element.aspect.basics.button.primary %}
+                  {% render element.aspect.basics.button.primary %}
                 </xmp>
             </code>
         </pre>
@@ -48,11 +48,12 @@
         <pre>
             <code class="language-markup">
                 <xmp>
-                  {% render_element element.aspect.basics.button.secondary %}
+                  {% render element.aspect.basics.button.secondary %}
                 </xmp>
             </code>
         </pre>
     </div>
 </div>
 {% endblock %}
+{% endwith %}
 {% endraw %}

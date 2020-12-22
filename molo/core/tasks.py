@@ -119,19 +119,19 @@ def promote_articles():
 
 
 def get_days_section(section=None):
-        return [
-            section.monday_rotation, section.tuesday_rotation,
-            section.wednesday_rotation, section.thursday_rotation,
-            section.friday_rotation, section.saturday_rotation,
-            section.sunday_rotation]
+    return [
+        section.monday_rotation, section.tuesday_rotation,
+        section.wednesday_rotation, section.thursday_rotation,
+        section.friday_rotation, section.saturday_rotation,
+        section.sunday_rotation]
 
 
 def get_days_site_settings(site_settings):
-        return [
-            site_settings.monday_rotation, site_settings.tuesday_rotation,
-            site_settings.wednesday_rotation, site_settings.thursday_rotation,
-            site_settings.friday_rotation, site_settings.saturday_rotation,
-            site_settings.sunday_rotation]
+    return [
+        site_settings.monday_rotation, site_settings.tuesday_rotation,
+        site_settings.wednesday_rotation, site_settings.thursday_rotation,
+        site_settings.friday_rotation, site_settings.saturday_rotation,
+        site_settings.sunday_rotation]
 
 
 def rotate_latest(main_lang, index, main, site_settings, day):
@@ -180,17 +180,17 @@ def rotate_latest(main_lang, index, main, site_settings, day):
 
 def rotate_featured_in_homepage(main_lang, day, main):
     def demote_last_featured_article_in_homepage(section):
-            articles = ArticlePage.objects.live().filter(
-                featured_in_homepage=True,
-                language__id=main_lang.id
-            ).descendant_of(section).order_by(
-                '-featured_in_homepage_start_date')
-            if articles.count() >= 2:
-                article = articles.last()
-                article.featured_in_homepage = False
-                article.featured_in_homepage_start_date = None
-                article.featured_in_homepage_end_date = None
-                article.save_revision().publish()
+        articles = ArticlePage.objects.live().filter(
+            featured_in_homepage=True,
+            language__id=main_lang.id
+        ).descendant_of(section).order_by(
+            '-featured_in_homepage_start_date')
+        if articles.count() >= 2:
+            article = articles.last()
+            article.featured_in_homepage = False
+            article.featured_in_homepage_start_date = None
+            article.featured_in_homepage_end_date = None
+            article.save_revision().publish()
 
     sections = SectionPage.objects.descendant_of(
         main).filter(is_service_aggregator=False)

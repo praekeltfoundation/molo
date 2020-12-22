@@ -1,4 +1,6 @@
 from itertools import chain
+from django_enumfield import enum
+
 from django.core.cache import cache
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
@@ -9,7 +11,7 @@ from django.core.exceptions import \
 from django.utils import timezone as django_timezone
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.translation import get_language_from_request
 from django.shortcuts import redirect
 from django.db.models.signals import (pre_save, post_save)
@@ -17,7 +19,6 @@ from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
 from django.db.models.signals import pre_delete
 
-from django_enumfield import enum
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
@@ -100,6 +101,7 @@ class ReadOnlyPanel(EditHandler):
             self.heading, _(':'), self.render())
 
 
+# TODO: REMOVE THIS MODEL WHEN MIGRATIONS SQUASHED
 class ArticleOrderingChoices(enum.Enum):
     CMS_DEFAULT_SORTING = 1
     FIRST_PUBLISHED_AT = 2
@@ -107,13 +109,13 @@ class ArticleOrderingChoices(enum.Enum):
     PK = 4
     PK_DESC = 5
 
-    labels = {
-        CMS_DEFAULT_SORTING: 'CMS Default Sorting',
-        FIRST_PUBLISHED_AT: 'First Published At',
-        FIRST_PUBLISHED_AT_DESC: 'First Published At Desc',
-        PK: 'Primary Key',
-        PK_DESC: 'Primary Key Desc',
-    }
+
+class ArticleOrderingChoices2(models.TextChoices):
+    CMS_DEFAULT_SORTING = '1', _('CMS Default Sorting')
+    FIRST_PUBLISHED_AT = '2', _('First Published At')
+    FIRST_PUBLISHED_AT_DESC = '3', _('First Published At Desc')
+    PK = '4', _('Primary Key')
+    PK_DESC = '5', _('Primary Key Desc')
 
 
 @register_setting
@@ -309,8 +311,9 @@ class SiteSettings(BaseSetting):
         blank=True,
     )
 
-    article_ordering_within_section = enum.EnumField(
-        ArticleOrderingChoices, null=True, blank=True, default=None,
+    article_ordering_within_section = models.TextField(
+        choices=ArticleOrderingChoices2.choices,
+        null=True, blank=True, default=None,
         help_text="Ordering of articles within a section"
     )
 
@@ -777,7 +780,7 @@ class TranslatablePageMixinNotRoutable(object):
             self.save()
         return response
 
-    def move(self, target, pos=None):
+    def move(self, target, pos=None, user=None):
         super(TranslatablePageMixinNotRoutable, self).move(target, pos)
 
         if hasattr(self, 'translated_pages'):
@@ -837,7 +840,8 @@ class TranslatablePageMixinNotRoutable(object):
     def serve(self, request, *args, **kwargs):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
-        main_lang = Languages.for_site(request.site).languages.filter(
+        site = Site.find_for_request(request)
+        main_lang = Languages.for_site(site).languages.filter(
             is_main_language=True).first()
         if main_lang.locale == locale_code:
             translation = parent
@@ -1194,7 +1198,7 @@ class SiteLanguage(models.Model):
 
 
 class SiteLanguageRelation(Orderable, SiteLanguage):
-    language_setting = ParentalKey(Languages, related_name='languages')
+    language_setting = ParentalKey('Languages', related_name='languages')
 
 
 class SectionIndexPage(CommentedPageMixin, MoloPage, PreventDeleteMixin):

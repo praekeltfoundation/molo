@@ -3,9 +3,8 @@
 import responses
 from unittest.mock import patch
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.test.client import Client
-from django.test.client import RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.urls import reverse
 
@@ -19,6 +18,7 @@ from wagtail.search.backends import get_search_backend
 class TestUtils(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        self.factory = RequestFactory()
         self.client = Client()
         # Creates Main language
         self.mk_main()
@@ -65,9 +65,15 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             'q': 'Test'
         })
         headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
-        request = self.make_fake_request(
-            '/search/?q=Test', headers)
-
+        request = self.factory.get('/search/?q=Test', headers)
+        mock_method.return_value = {
+            'utm_url': 'http://url',
+            'user_id': 75,
+            'user_agent': 'agent',
+            'language': 'en',
+            'COOKIE_USER_PERSISTENCE': 30,
+            'COOKIE_NAME': 'name',
+            'COOKIE_PATH': '/'}
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         response = middleware.submit_tracking(account, request, response)
@@ -87,10 +93,14 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         response = self.client.get(reverse('search'), {
             'q': 'Test'
         })
-        headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
-        request = self.make_fake_request(
-            '/search/?q=Test', headers)
-
+        request = self.factory.get('/')
+        mock_method.return_value = {
+            'utm_url': 'url',
+            'user_agent': 'agent',
+            'language': 'en',
+            'COOKIE_USER_PERSISTENCE': 30,
+            'COOKIE_NAME': 'name',
+            'COOKIE_PATH': '/'}
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         middleware.submit_tracking(
@@ -119,7 +129,13 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             '/locale/fr/',
             headers, self.user,
             locale=self.french.locale)
-
+        mock_method.return_value = {
+            'utm_url': 'url',
+            'user_agent': 'agent',
+            'language': 'fr',
+            'COOKIE_USER_PERSISTENCE': 30,
+            'COOKIE_NAME': 'name',
+            'COOKIE_PATH': '/'}
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         response = middleware.submit_tracking(account, request, response)
@@ -145,7 +161,14 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
         request = self.make_fake_request(
             '/search/?q=Test', headers, self.user)
-
+        mock_method.return_value = {
+            'utm_url': 'http://url',
+            'user_id': 75,
+            'user_agent': 'agent',
+            'language': 'en',
+            'COOKIE_USER_PERSISTENCE': 30,
+            'COOKIE_NAME': 'name',
+            'COOKIE_PATH': '/'}
         middleware = MoloGoogleAnalyticsMiddleware()
         account = ''
         middleware.submit_tracking(

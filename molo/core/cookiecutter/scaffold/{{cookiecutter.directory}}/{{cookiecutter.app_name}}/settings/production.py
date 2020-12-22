@@ -20,9 +20,7 @@ COMPRESS_OFFLINE = True
 # (requires the django-celery package):
 # http://celery.readthedocs.org/en/latest/configuration.html
 
-# import djcelery
 #
-# djcelery.setup_loader()
 #
 # CELERY_SEND_TASK_ERROR_EMAILS = True
 # BROKER_URL = 'redis://'

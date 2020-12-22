@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.http.request import QueryDict
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import render
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -17,6 +17,8 @@ from molo.core.templatetags.core_tags import get_pages
 from molo.profiles import forms
 from molo.profiles.models import SecurityAnswer, SecurityQuestion
 from molo.profiles.models import UserProfile, UserProfilesSettings
+
+from wagtail.core.models import Site
 
 
 class RegistrationView(FormView):
@@ -42,7 +44,7 @@ class RegistrationView(FormView):
         user.profile.gender = gender
         user.profile.location = location
         user.profile.education_level = education_level
-        user.profile.site = self.request.site
+        user.profile.site = Site.find_for_request(self.request)
         if form.cleaned_data["email"]:
             user.email = form.cleaned_data["email"]
             user.save()
@@ -64,7 +66,7 @@ class RegistrationView(FormView):
     def get_form_kwargs(self):
         kwargs = super(RegistrationView, self).get_form_kwargs()
         self.questions = SecurityQuestion.objects.descendant_of(
-            self.request.site.root_page).live().filter(
+            Site.find_for_request(self.request).root_page).live().filter(
             language__is_main_language=True)
 
         context = {"request": self.request}
@@ -81,31 +83,32 @@ class RegistrationDone(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         profile = self.request.user.profile
+        site = Site.find_for_request(self.request)
         if (UserProfilesSettings.for_site(
-            self.request.site).activate_dob) and not (
+            site).activate_dob) and not (
             UserProfilesSettings.for_site(
-                self.request.site).capture_dob_on_reg):
-                profile.date_of_birth = form.cleaned_data["date_of_birth"]
+                site).capture_dob_on_reg):
+            profile.date_of_birth = form.cleaned_data["date_of_birth"]
         if (UserProfilesSettings.for_site(
-            self.request.site).activate_display_name) and not (
+            site).activate_display_name) and not (
             UserProfilesSettings.for_site(
-                self.request.site).capture_display_name_on_reg):
-                profile.alias = form.cleaned_data["alias"]
+                site).capture_display_name_on_reg):
+            profile.alias = form.cleaned_data["alias"]
         if (UserProfilesSettings.for_site(
-            self.request.site).activate_gender) and not (
+            site).activate_gender) and not (
             UserProfilesSettings.for_site(
-                self.request.site).capture_gender_on_reg):
-                profile.gender = form.cleaned_data["gender"]
+                site).capture_gender_on_reg):
+            profile.gender = form.cleaned_data["gender"]
         if (UserProfilesSettings.for_site(
-            self.request.site).activate_location) and not (
+            site).activate_location) and not (
             UserProfilesSettings.for_site(
-                self.request.site).capture_location_on_reg):
-                profile.location = form.cleaned_data["location"]
+                site).capture_location_on_reg):
+            profile.location = form.cleaned_data["location"]
         if (UserProfilesSettings.for_site(
-            self.request.site).activate_education_level) and not (
+            site).activate_education_level) and not (
             UserProfilesSettings.for_site(
-                self.request.site).capture_education_level_on_reg):
-                profile.education_level = form.cleaned_data["education_level"]
+                site).capture_education_level_on_reg):
+            profile.education_level = form.cleaned_data["education_level"]
         profile.save()
         return HttpResponseRedirect(form.cleaned_data.get('next', '/'))
 
@@ -189,7 +192,8 @@ class ForgotPasswordView(FormView):
     def form_valid(self, form):
         error_message = "The username and security question(s) combination " \
                         + "do not match."
-        profile_settings = UserProfilesSettings.for_site(self.request.site)
+        profile_settings = UserProfilesSettings.for_site(
+            Site.find_for_request(self.request))
 
         if "forgot_password_attempts" not in self.request.session:
             self.request.session["forgot_password_attempts"] = \
@@ -202,17 +206,17 @@ class ForgotPasswordView(FormView):
                 _("Too many attempts. Please try again later.")
             )
             return self.render_to_response({'form': form})
-
+        site = Site.find_for_request(self.request)
         username = form.cleaned_data["username"]
         try:
             user = User.objects.get(
                 profile__migrated_username=username,
-                profile__site=self.request.site)
+                profile__site=site)
             username = user.username
         except User.DoesNotExist:
             try:
                 user = User.objects.get(
-                    username=username, profile__site=self.request.site)
+                    username=username, profile__site=site)
             except User.DoesNotExist:
                 self.request.session['forgot_password_attempts'] += 1
                 form.add_error('username',
@@ -263,10 +267,11 @@ class ForgotPasswordView(FormView):
         # add security questions for form field generation
         # the security questions should be a random subset of
         # all the questions the user has answered
+        site = Site.find_for_request(self.request)
         kwargs = super(ForgotPasswordView, self).get_form_kwargs()
-        profile_settings = UserProfilesSettings.for_site(self.request.site)
+        profile_settings = UserProfilesSettings.for_site(site)
         self.security_questions = SecurityQuestion.objects.descendant_of(
-            self.request.site.root_page).live().filter(
+            site.root_page).live().filter(
             language__is_main_language=True
         )
 

@@ -7,7 +7,7 @@ from django.forms.widgets import SelectDateWidget
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
 from wagtail.core.models import Site
@@ -191,7 +191,8 @@ class RegistrationForm(DateOfBirthValidationMixin, forms.Form):
             site = Site.objects.get(is_default_site=True)
             self.profile_settings = UserProfilesSettings.for_site(site)
         else:
-            self.profile_settings = UserProfilesSettings.for_site(request.site)
+            self.profile_settings = UserProfilesSettings.for_site(
+                Site.find_for_request(request))
 
         self.fields['mobile_number'].required = (
             self.profile_settings.mobile_number_required and
@@ -326,7 +327,8 @@ class DoneForm(forms.Form):
             site = Site.objects.get(is_default_site=True)
             profile_settings = UserProfilesSettings.for_site(site)
         else:
-            profile_settings = UserProfilesSettings.for_site(request.site)
+            profile_settings = UserProfilesSettings.for_site(
+                Site.find_for_request(request))
 
         if self.fields.get('mobile_number'):
             self.fields['mobile_number'].required = (
@@ -403,7 +405,8 @@ class EditProfileForm(DateOfBirthValidationMixin, forms.ModelForm):
             site = Site.objects.get(is_default_site=True)
             self.profile_settings = UserProfilesSettings.for_site(site)
         else:
-            self.profile_settings = UserProfilesSettings.for_site(request.site)
+            self.profile_settings = UserProfilesSettings.for_site(
+                Site.find_for_request(request))
 
         if self.fields.get('mobile_number'):
             self.fields['mobile_number'].required = (

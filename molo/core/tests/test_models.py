@@ -366,7 +366,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         new_section = self.mk_section(self.section_index)
         self.mk_articles(new_section, count=12)
         request = self.factory.get('/sections-main-1/test-section-0/')
-        request.site = self.site
         articles = load_child_articles_for_section(
             {'request': request, 'locale_code': 'en'}, new_section, count=None)
         self.assertEqual(len(articles), 12)
@@ -647,7 +646,6 @@ class TestModels(TestCase, MoloTestCaseMixin):
         section2 = self.mk_section(self.section_index)
         translated_section = self.mk_section_translation(section, self.french)
         request = self.factory.get('/')
-        request.site = self.site
         qs = get_translation({
             'locale_code': 'fr', 'request': request}, section)
         self.assertEqual(translated_section.id, qs.id)

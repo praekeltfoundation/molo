@@ -1,6 +1,5 @@
 {% raw %}
-{% load mote_tags %}
-{% mask element.json.data.GridBaseTeaser as "teaser" %}
+{% with element.json.data.GridBaseTeaser as "teaser" %}
 <h3 class="{{teaser.modifiers}}-teaser__title">
   <a href="#" class="{{teaser.modifiers}}-teaser__title-link">{{ teaser.title }}</a></h3>
 {% if teaser.subtitle %}
@@ -8,4 +7,5 @@
     {{ teaser.subtitle }}
   </p>
 {% endif %}
+{% endwith %}
 {% endraw %}
