@@ -181,7 +181,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///%s' % (join(PROJECT_ROOT, 'db.sqlite3')),
         engine='django_prometheus.db.backends.sqlite3')
- }
+}
 
 DATABASES['default']['TEST'] = {}
 DATABASES['default']['TEST']['NAME'] = join(PROJECT_ROOT, 'db.sqlite3')
