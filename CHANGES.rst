@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.0.2
+~~~~~~
+- flake8 on cookiecutter apps
+
 11.0.1
 ~~~~~~
 - Add support for Django 3+
