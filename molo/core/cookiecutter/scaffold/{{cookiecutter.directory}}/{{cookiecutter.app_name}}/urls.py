@@ -52,7 +52,8 @@ urlpatterns += [
         include((
             '{{app_name}}.urls',
             '{{app_name}}'),
-        namespace='{{app_name}}')),
+            namespace='{{app_name}}')
+        ),
 {% endfor %}
     re_path(r"^mote/", include("mote.urls", namespace="mote")),
     re_path(r'', include('molo.core.urls')),
