@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-11.0.2
+11.0.5
 ~~~~~~
 - flake8 on cookiecutter apps
 
