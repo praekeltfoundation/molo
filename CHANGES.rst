@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.0.6
+~~~~~~
+- update package.json dependencies
+
 11.0.5
 ~~~~~~
 - flake8 on cookiecutter apps
