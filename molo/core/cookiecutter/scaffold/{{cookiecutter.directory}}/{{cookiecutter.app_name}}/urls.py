@@ -27,8 +27,7 @@ if settings.ENABLE_SSO:
             cas_views.LogoutView.as_view(), name='cas_ng_logout'),
         re_path(
             r'^admin/callback/',
-            cas_views.CallbackView.as_view(), name='cas_ng_callback'),
-    ]
+            cas_views.CallbackView.as_view(), name='cas_ng_callback'), ]
 else:
     urlpatterns = []
 
@@ -53,7 +52,7 @@ urlpatterns += [
             '{{app_name}}.urls',
             '{{app_name}}'),
             namespace='{{app_name}}')
-        ),
+    ),
 {% endfor %}
     re_path(r"^mote/", include("mote.urls", namespace="mote")),
     re_path(r'', include('molo.core.urls')),
