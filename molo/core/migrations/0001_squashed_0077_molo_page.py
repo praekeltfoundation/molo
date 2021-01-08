@@ -593,6 +593,8 @@ class Migration(migrations.Migration):
         ('wagtailcore', '0024_alter_page_content_type_on_delete_behaviour'),
         ('wagtailadmin', '0001_create_admin_access_permissions'),
         ('wagtailimages', '0018_remove_rendition_filter'),
+        ('wagtailcore', '0043_lock_fields'),
+        ('wagtailcore', '0052_pagelogentry'),
     ]
 
     operations = [
