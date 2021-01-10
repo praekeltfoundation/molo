@@ -571,6 +571,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('wagtailcore', '0043_lock_fields'),
+        ('wagtailcore', '0052_pagelogentry'),
         ('wagtailcore', '0015_add_more_verbose_names'),
         ('wagtailmedia', '0003_copy_media_permissions_to_collections'),
         ('wagtailimages', '0005_make_filter_spec_unique'),
@@ -593,8 +595,6 @@ class Migration(migrations.Migration):
         ('wagtailcore', '0024_alter_page_content_type_on_delete_behaviour'),
         ('wagtailadmin', '0001_create_admin_access_permissions'),
         ('wagtailimages', '0018_remove_rendition_filter'),
-        ('wagtailcore', '0043_lock_fields'),
-        ('wagtailcore', '0052_pagelogentry'),
     ]
 
     operations = [
