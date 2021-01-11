@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.0.7
+~~~~~~
+- update migrations
+
 11.0.6
 ~~~~~~
 - update package.json dependencies
