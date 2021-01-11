@@ -571,6 +571,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('wagtailcore', '0043_lock_fields'),
+        ('wagtailcore', '0052_pagelogentry'),
         ('wagtailcore', '0015_add_more_verbose_names'),
         ('wagtailmedia', '0003_copy_media_permissions_to_collections'),
         ('wagtailimages', '0005_make_filter_spec_unique'),
