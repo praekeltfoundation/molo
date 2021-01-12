@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.core.management.sql import emit_pre_migrate_signal, emit_post_migrate_signal
+from django.db.migrations.recorder import MigrationRecorder
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
@@ -487,6 +488,22 @@ def unset_timezone(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+    def __init__(self, name, app_label):
+        self.name = name
+        self.app_label = app_label
+        # Copy dependencies & other attrs as we might mutate them at runtime
+        self.operations = list(self.__class__.operations)
+        self.replaces = list(self.__class__.replaces)
+        try:
+            migrations = MigrationRecorder.Migration.objects.filter(app='core').last()
+            if migrations:
+                self.run_before = list(self.__class__.run_before)
+                self.dependencies = list(self.__class__.dependencies)
+        except:
+            self.run_before = list(self.__class__.run_before)
+            self.dependencies = [
+                ('wagtailcore', '0052_pagelogentry'),
+            ] + list(self.__class__.dependencies)
 
     replaces = [
         ('core', '0001_initial'),
@@ -571,8 +588,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('wagtailcore', '0043_lock_fields'),
-        ('wagtailcore', '0052_pagelogentry'),
         ('wagtailcore', '0015_add_more_verbose_names'),
         ('wagtailmedia', '0003_copy_media_permissions_to_collections'),
         ('wagtailimages', '0005_make_filter_spec_unique'),
