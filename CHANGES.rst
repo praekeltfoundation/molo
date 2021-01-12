@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-11.0.7
+11.0.8
 ~~~~~~
 - update migrations
 
