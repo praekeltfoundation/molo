@@ -1801,12 +1801,12 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             '/sections-main-1/section-a/article-c-in-french/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.article_c.title + ' in french')
+        self.assertContains(response, self.article_b.title + ' in french')
 
         response = self.client.get(
             '/sections-main-1/section-a/article-b-in-french/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.article_b.title + ' in french')
+        self.assertContains(response, self.article_a.title + ' in french')
 
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
