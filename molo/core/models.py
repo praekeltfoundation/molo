@@ -414,7 +414,8 @@ class SiteSettings(BaseSetting):
         ),
         MultiFieldPanel(
             [
-                FieldPanel('article_ordering_within_section', widget=forms.Select),
+                FieldPanel(
+                    'article_ordering_within_section', widget=forms.Select),
             ],
             heading="Article Ordering"
         )

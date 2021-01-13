@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.test import TestCase, RequestFactory
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags,
-    SiteSettings, ArticleOrderingChoices2,
+    SiteSettings
 )
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
@@ -227,7 +227,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'en', 'request': request
         }, self.yourmind)[1], article2)
 
-        settings.article_ordering_within_section ='pk_desc'
+        settings.article_ordering_within_section = 'pk_desc'
         settings.save()
 
         self.assertEqual(load_child_articles_for_section({
