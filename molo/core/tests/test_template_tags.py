@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.test import TestCase, RequestFactory
 from molo.core.models import (
     Main, SiteLanguageRelation, Languages, BannerPage, ArticlePageTags,
-    SiteSettings, ArticleOrderingChoices,
+    SiteSettings, ArticleOrderingChoices2,
 )
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.templatetags.core_tags import (
@@ -175,7 +175,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         settings = SiteSettings.objects.create(
             site=self.site,
-            article_ordering_within_section=ArticleOrderingChoices.PK
+            article_ordering_within_section=ArticleOrderingChoices2.PK
         )
         article1 = self.mk_article(
             self.yourmind, title='article 1',
@@ -196,7 +196,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         }, self.yourmind)[1], article2)
 
         settings.article_ordering_within_section =\
-            ArticleOrderingChoices.PK_DESC
+            ArticleOrderingChoices2.PK_DESC
         settings.save()
 
         self.assertEqual(load_descendant_articles_for_section({
@@ -211,7 +211,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         settings = SiteSettings.objects.create(
             site=self.site,
-            article_ordering_within_section=ArticleOrderingChoices.PK
+            article_ordering_within_section=ArticleOrderingChoices2.PK
         )
         article1 = self.mk_article(self.yourmind, title='article 1')
         article1.first_published_at = today + timezone.timedelta(hours=1)
@@ -229,7 +229,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         }, self.yourmind)[1], article2)
 
         settings.article_ordering_within_section =\
-            ArticleOrderingChoices.PK_DESC
+            ArticleOrderingChoices2.PK_DESC
         settings.save()
 
         self.assertEqual(load_child_articles_for_section({

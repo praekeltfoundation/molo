@@ -14,7 +14,7 @@ from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage,
     BannerPage, get_translation_for,
-    ArticleOrderingChoices, SiteLanguageRelation
+    ArticleOrderingChoices2, SiteLanguageRelation
 )
 
 from wagtail.core.models import Site
@@ -291,7 +291,7 @@ def load_descendant_articles_for_section(
         settings, 'article_ordering_within_section', None)
 
     if article_ordering:
-        order_by = ArticleOrderingChoices.\
+        order_by = ArticleOrderingChoices2.\
             get(settings.article_ordering_within_section).name.lower()
 
         order_by = order_by if order_by.find('_desc') == -1 \
@@ -299,7 +299,7 @@ def load_descendant_articles_for_section(
 
         # if the sort order is equal to CMS_DEFAULT_SORTING
         #  do not order QS, CMS handles it
-        if article_ordering != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+        if article_ordering != ArticleOrderingChoices2.CMS_DEFAULT_SORTING:
             qs = qs.order_by(order_by)
 
     if featured_in_homepage:
@@ -339,7 +339,7 @@ def load_child_articles_for_section(
     # section as the key so tha twe don't always do these joins
     article_ordering = getattr(
         settings, 'article_ordering_within_section', None)
-    order_by = ArticleOrderingChoices.\
+    order_by = ArticleOrderingChoices2.\
         get(settings.article_ordering_within_section).name.lower() \
         if article_ordering else '-first_published_at'
 
@@ -352,7 +352,7 @@ def load_child_articles_for_section(
 
     # if the sort order is equal to CMS_DEFAULT_SORTING
     #  do not order QS, CMS handles it
-    if article_ordering != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+    if article_ordering != ArticleOrderingChoices2.CMS_DEFAULT_SORTING:
         child_articles = child_articles.order_by(order_by)
 
     if featured_in_section is not None:
