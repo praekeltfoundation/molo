@@ -2,6 +2,7 @@ from itertools import chain
 from django_enumfield import enum
 
 from django.core.cache import cache
+from django import forms
 from django.forms.utils import pretty_name
 from django.utils.html import format_html
 from django.core.exceptions import \
@@ -111,11 +112,12 @@ class ArticleOrderingChoices(enum.Enum):
 
 
 class ArticleOrderingChoices2(models.TextChoices):
-    CMS_DEFAULT_SORTING = '1', _('CMS Default Sorting')
-    FIRST_PUBLISHED_AT = '2', _('First Published At')
-    FIRST_PUBLISHED_AT_DESC = '3', _('First Published At Desc')
-    PK = '4', _('Primary Key')
-    PK_DESC = '5', _('Primary Key Desc')
+    CMS_DEFAULT_SORTING = 'cms_default_sorting', _('CMS Default Sorting')
+    FIRST_PUBLISHED_AT = 'first_published_at', _('First Published At')
+    FIRST_PUBLISHED_AT_DESC = 'first_published_at_desc', _(
+        'First Published At Desc')
+    PK = 'pk', _('Primary Key')
+    PK_DESC = 'pk_desc', _('Primary Key Desc')
 
 
 @register_setting
@@ -313,7 +315,7 @@ class SiteSettings(BaseSetting):
 
     article_ordering_within_section = models.TextField(
         choices=ArticleOrderingChoices2.choices,
-        null=True, blank=True, default=None,
+        null=True, blank=True, default='cms_default_sorting',
         help_text="Ordering of articles within a section"
     )
 
@@ -412,7 +414,8 @@ class SiteSettings(BaseSetting):
         ),
         MultiFieldPanel(
             [
-                FieldPanel('article_ordering_within_section'),
+                FieldPanel(
+                    'article_ordering_within_section', widget=forms.Select),
             ],
             heading="Article Ordering"
         )

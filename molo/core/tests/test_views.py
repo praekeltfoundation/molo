@@ -52,7 +52,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             language_setting=Languages.for_site(main.get_site()),
             locale='en',
             is_active=True)
-
+        SiteSettings.objects.create(
+            site=Site.objects.first(),
+            article_ordering_within_section='first_published_at_desc'
+        )
         self.french = SiteLanguageRelation.objects.create(
             language_setting=Languages.for_site(Site.objects.first()),
             locale='fr',
@@ -889,7 +892,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_social_media_footer(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
         setting.social_media_links_on_footer_page = json.dumps([
             {
                 'type': 'social_media_site',
@@ -913,7 +916,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_social_media_facebook_sharing(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
         setting.facebook_sharing = True
         setting.facebook_image = self.image
         setting.save()
@@ -928,7 +931,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_social_media_twitter_sharing(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
         setting.twitter_sharing = True
         setting.twitter_image = self.image
         setting.save()
@@ -1184,7 +1187,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_local_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
 
         response = self.client.get('/')
         self.assertNotContains(response, 'www.googletagmanager.com')
@@ -1203,7 +1206,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     @responses.activate
     def test_local_ga_tracking_code_setting(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
 
         responses.add(
             responses.GET, 'http://www.google-analytics.com/collect',
@@ -1224,7 +1227,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     @responses.activate
     def test_global_ga_tracking_code_setting(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
 
         self.client.get('/')
         self.assertEqual(len(responses.calls), 0)
@@ -1240,7 +1243,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
     @responses.activate
     def test_ga_title_is_filled_in_using_middleware(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
 
         self.client.get('/')
         self.assertEqual(len(responses.calls), 0)
@@ -1263,7 +1266,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_global_ga_tag_manager_setting(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
 
         response = self.client.get('/')
         self.assertNotContains(response, 'www.googletagmanager.com')
@@ -1281,7 +1284,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_google_search_console_setting(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
 
         response = self.client.get('/')
         self.assertNotContains(response, 'google-site-verification')
@@ -1725,6 +1728,10 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.mk_main()
         self.main = Main.objects.all().first()
+        SiteSettings.objects.create(
+            site=Site.objects.first(),
+            article_ordering_within_section='first_published_at_desc'
+        )
         self.language_setting = Languages.objects.create(
             site_id=self.main.get_site().pk)
         self.english = SiteLanguageRelation.objects.create(
@@ -1826,7 +1833,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
     def test_next_article_show_only_translated_pages(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
         setting.show_only_translated_pages = True
         setting.save()
 
@@ -1874,7 +1881,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
     def test_next_article_not_displayd_single_article_only_translated(self):
         default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.get(site=default_site)
         setting.show_only_translated_pages = True
         setting.save()
 

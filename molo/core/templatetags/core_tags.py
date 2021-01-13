@@ -13,8 +13,7 @@ from molo.core.decorators import prometheus_query_count
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage,
-    BannerPage, get_translation_for,
-    ArticleOrderingChoices, SiteLanguageRelation
+    BannerPage, get_translation_for, SiteLanguageRelation
 )
 
 from wagtail.core.models import Site
@@ -291,15 +290,14 @@ def load_descendant_articles_for_section(
         settings, 'article_ordering_within_section', None)
 
     if article_ordering:
-        order_by = ArticleOrderingChoices.\
-            get(settings.article_ordering_within_section).name.lower()
+        order_by = settings.article_ordering_within_section
 
         order_by = order_by if order_by.find('_desc') == -1 \
             else '-{}'.format(order_by.replace('_desc', ''))
 
         # if the sort order is equal to CMS_DEFAULT_SORTING
         #  do not order QS, CMS handles it
-        if article_ordering != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+        if article_ordering != 'cms_default_sorting':
             qs = qs.order_by(order_by)
 
     if featured_in_homepage:
@@ -339,8 +337,7 @@ def load_child_articles_for_section(
     # section as the key so tha twe don't always do these joins
     article_ordering = getattr(
         settings, 'article_ordering_within_section', None)
-    order_by = ArticleOrderingChoices.\
-        get(settings.article_ordering_within_section).name.lower() \
+    order_by = settings.article_ordering_within_section \
         if article_ordering else '-first_published_at'
 
     order_by = order_by if order_by.find('_desc') == -1 \
@@ -352,7 +349,7 @@ def load_child_articles_for_section(
 
     # if the sort order is equal to CMS_DEFAULT_SORTING
     #  do not order QS, CMS handles it
-    if article_ordering != ArticleOrderingChoices.CMS_DEFAULT_SORTING:
+    if article_ordering != 'cms_default_sorting':
         child_articles = child_articles.order_by(order_by)
 
     if featured_in_section is not None:
