@@ -291,8 +291,7 @@ def load_descendant_articles_for_section(
         settings, 'article_ordering_within_section', None)
 
     if article_ordering:
-        order_by = ArticleOrderingChoices2.\
-            get(settings.article_ordering_within_section).name.lower()
+        order_by = settings.article_ordering_within_section
 
         order_by = order_by if order_by.find('_desc') == -1 \
             else '-{}'.format(order_by.replace('_desc', ''))
@@ -339,8 +338,7 @@ def load_child_articles_for_section(
     # section as the key so tha twe don't always do these joins
     article_ordering = getattr(
         settings, 'article_ordering_within_section', None)
-    order_by = ArticleOrderingChoices2.\
-        get(settings.article_ordering_within_section).name.lower() \
+    order_by = settings.article_ordering_within_section \
         if article_ordering else '-first_published_at'
 
     order_by = order_by if order_by.find('_desc') == -1 \

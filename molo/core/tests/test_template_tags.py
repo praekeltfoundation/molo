@@ -175,7 +175,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         settings = SiteSettings.objects.create(
             site=self.site,
-            article_ordering_within_section=ArticleOrderingChoices2.PK
+            article_ordering_within_section='pk'
         )
         article1 = self.mk_article(
             self.yourmind, title='article 1',
@@ -195,8 +195,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'en', 'request': request
         }, self.yourmind)[1], article2)
 
-        settings.article_ordering_within_section =\
-            ArticleOrderingChoices2.PK_DESC
+        settings.article_ordering_within_section = 'pk_desc'
         settings.save()
 
         self.assertEqual(load_descendant_articles_for_section({
@@ -211,7 +210,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         request = self.factory.get('/')
         settings = SiteSettings.objects.create(
             site=self.site,
-            article_ordering_within_section=ArticleOrderingChoices2.PK
+            article_ordering_within_section='pk'
         )
         article1 = self.mk_article(self.yourmind, title='article 1')
         article1.first_published_at = today + timezone.timedelta(hours=1)
@@ -228,8 +227,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
             'locale_code': 'en', 'request': request
         }, self.yourmind)[1], article2)
 
-        settings.article_ordering_within_section =\
-            ArticleOrderingChoices2.PK_DESC
+        settings.article_ordering_within_section ='pk_desc'
         settings.save()
 
         self.assertEqual(load_child_articles_for_section({
