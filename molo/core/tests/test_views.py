@@ -485,7 +485,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_order_of_child_articles_in_section(self):
         '''
-        Sections should display articles by order most recently published
+        Sections should display articles by cms default order
         '''
         new_section = self.mk_section(self.section_index)
         articles = self.mk_articles(new_section, count=3)
@@ -497,9 +497,8 @@ class TestPages(TestCase, MoloTestCaseMixin):
         article1_location = response.content.decode().find(article1.title)
         article2_location = response.content.decode().find(article2.title)
         article3_location = response.content.decode().find(article3.title)
-
         self.assertTrue(
-            article3_location < article2_location < article1_location)
+            article1_location < article2_location < article3_location)
 
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
@@ -1766,18 +1765,19 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/sections-main-1/section-a/article-c/')
         self.assertEqual(response.status_code, 200)
+        print(response.content)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
-        self.assertContains(response, self.article_b.title)
+        self.assertContains(response, self.article_a.title)
 
         response = self.client.get('/sections-main-1/section-a/article-b/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
-        self.assertContains(response, self.article_a.title)
+        self.assertContains(response, self.article_c.title)
 
         response = self.client.get('/sections-main-1/section-a/article-a/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
-        self.assertContains(response, self.article_c.title)
+        self.assertContains(response, self.article_b.title)
 
         self.section_a.enable_next_section = False
         self.section_a.save()
