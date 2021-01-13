@@ -298,7 +298,7 @@ def load_descendant_articles_for_section(
 
         # if the sort order is equal to CMS_DEFAULT_SORTING
         #  do not order QS, CMS handles it
-        if article_ordering != ArticleOrderingChoices2.CMS_DEFAULT_SORTING:
+        if article_ordering != 'cms_default_sorting':
             qs = qs.order_by(order_by)
 
     if featured_in_homepage:
@@ -350,7 +350,7 @@ def load_child_articles_for_section(
 
     # if the sort order is equal to CMS_DEFAULT_SORTING
     #  do not order QS, CMS handles it
-    if article_ordering != ArticleOrderingChoices2.CMS_DEFAULT_SORTING:
+    if article_ordering != 'cms_default_sorting':
         child_articles = child_articles.order_by(order_by)
 
     if featured_in_section is not None:
