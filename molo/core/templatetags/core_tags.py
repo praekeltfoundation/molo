@@ -13,8 +13,7 @@ from molo.core.decorators import prometheus_query_count
 from molo.core.models import (
     Page, ArticlePage, SectionPage, SiteSettings, Languages, Tag,
     ArticlePageTags, SectionIndexPage,
-    BannerPage, get_translation_for,
-    ArticleOrderingChoices2, SiteLanguageRelation
+    BannerPage, get_translation_for, SiteLanguageRelation
 )
 
 from wagtail.core.models import Site
