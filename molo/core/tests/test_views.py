@@ -52,7 +52,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
             language_setting=Languages.for_site(main.get_site()),
             locale='en',
             is_active=True)
-        settings = SiteSettings.objects.create(
+        SiteSettings.objects.create(
             site=Site.objects.first(),
             article_ordering_within_section='first_published_at_desc'
         )
@@ -1728,7 +1728,7 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.mk_main()
         self.main = Main.objects.all().first()
-        settings = SiteSettings.objects.create(
+        SiteSettings.objects.create(
             site=Site.objects.first(),
             article_ordering_within_section='first_published_at_desc'
         )
