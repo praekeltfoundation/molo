@@ -52,7 +52,10 @@ class TestPages(TestCase, MoloTestCaseMixin):
             language_setting=Languages.for_site(main.get_site()),
             locale='en',
             is_active=True)
-
+        settings = SiteSettings.objects.create(
+            site=Site.objects.first()
+            article_ordering_within_section='first_published_at_desc'
+        )
         self.french = SiteLanguageRelation.objects.create(
             language_setting=Languages.for_site(Site.objects.first()),
             locale='fr',
@@ -485,7 +488,7 @@ class TestPages(TestCase, MoloTestCaseMixin):
 
     def test_order_of_child_articles_in_section(self):
         '''
-        Sections should display articles by cms default order
+        Sections should display articles by order most recently published
         '''
         new_section = self.mk_section(self.section_index)
         articles = self.mk_articles(new_section, count=3)
@@ -497,8 +500,9 @@ class TestPages(TestCase, MoloTestCaseMixin):
         article1_location = response.content.decode().find(article1.title)
         article2_location = response.content.decode().find(article2.title)
         article3_location = response.content.decode().find(article3.title)
+
         self.assertTrue(
-            article1_location < article2_location < article3_location)
+            article3_location < article2_location < article1_location)
 
     def test_section_listing_multiple_sites(self):
         self.mk_articles(
@@ -1724,6 +1728,10 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.mk_main()
         self.main = Main.objects.all().first()
+        settings = SiteSettings.objects.create(
+            site=Site.objects.first()
+            article_ordering_within_section='first_published_at_desc'
+        )
         self.language_setting = Languages.objects.create(
             site_id=self.main.get_site().pk)
         self.english = SiteLanguageRelation.objects.create(
@@ -1765,19 +1773,18 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
 
         response = self.client.get('/sections-main-1/section-a/article-c/')
         self.assertEqual(response.status_code, 200)
-        print(response.content)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
-        self.assertContains(response, self.article_a.title)
+        self.assertContains(response, self.article_b.title)
 
         response = self.client.get('/sections-main-1/section-a/article-b/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
-        self.assertContains(response, self.article_c.title)
+        self.assertContains(response, self.article_a.title)
 
         response = self.client.get('/sections-main-1/section-a/article-a/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Next up in ' + self.section_a.title)
-        self.assertContains(response, self.article_b.title)
+        self.assertContains(response, self.article_c.title)
 
         self.section_a.enable_next_section = False
         self.section_a.save()
@@ -1794,17 +1801,17 @@ class TestArticlePageNextArticle(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             '/sections-main-1/section-a/article-c-in-french/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.article_a.title + ' in french')
+        self.assertContains(response, self.article_c.title + ' in french')
 
         response = self.client.get(
             '/sections-main-1/section-a/article-b-in-french/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.article_c.title + ' in french')
+        self.assertContains(response, self.article_b.title + ' in french')
 
         response = self.client.get(
             '/sections-main-1/section-a/article-a-in-french/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.article_b.title + ' in french')
+        self.assertContains(response, self.article_c.title + ' in french')
 
     def test_next_article_show_untranslated_pages(self):
         response = self.client.get('/sections-main-1/section-a/article-c/')
