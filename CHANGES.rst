@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.0.9
+~~~~~~
+- update article ordering
+
 11.0.8
 ~~~~~~
 - update migrations
