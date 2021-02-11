@@ -1,4 +1,5 @@
-from wagtail.core.models import Page, Site
+from django.conf import settings
+from wagtail.core.models import Page
 from wagtail.core.utils import resolve_model_string
 from wagtail.api.v2.views import PagesAPIViewSet
 from wagtail.api.v2.serializers import BaseSerializer
@@ -69,7 +70,7 @@ class MoloPagesEndpoint(PagesAPIViewSet):
 
         # Filter by site
         queryset = queryset.descendant_of(
-            Site.find_for_request(request).root_page, inclusive=True)
+            settings.main, inclusive=True)
 
         # Enable filtering by navigation tags
         if model == ArticlePage and 'nav_tags__tag' in request.GET:
@@ -98,7 +99,6 @@ class LanguagesAPIEndpoint(BaseAPIViewSet):
         '''
         Only serve site-specific languages
         '''
-        request = self.request
-        site = Site.find_for_request(request)
+        site = settings.site
         return (Languages.for_site(site)
                          .languages.filter().order_by('pk'))

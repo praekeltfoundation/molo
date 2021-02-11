@@ -843,9 +843,8 @@ class TranslatablePageMixinNotRoutable(object):
     def serve(self, request, *args, **kwargs):
         locale_code = get_locale_code(get_language_from_request(request))
         parent = self.get_main_language_page()
-        site = Site.find_for_request(request)
-        main_lang = Languages.for_site(site).languages.filter(
-            is_main_language=True).first()
+
+        main_lang = settings.main_lang
         if main_lang.locale == locale_code:
             translation = parent
         else:

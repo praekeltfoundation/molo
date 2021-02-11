@@ -44,6 +44,7 @@ DEFAULT_MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'molo.core.middleware.ForceDefaultLanguageMiddleware',
+    'molo.core.middleware.SetSiteMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

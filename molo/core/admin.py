@@ -1,4 +1,5 @@
 from rangefilter.filter import DateRangeFilter
+from django.conf import settings
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.urls import reverse
@@ -9,7 +10,6 @@ from wagtail.contrib.modeladmin.options import (
     ModelAdmin as WagtailModelAdmin, modeladmin_register
 )
 from wagtail.contrib.modeladmin.options import ModelAdminGroup
-from wagtail.core.models import Site
 
 from molo.core.models import (
     ArticlePage, ArticlePageLanguageProxy, SectionPage
@@ -197,7 +197,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
-            Site.find_for_request(request).root_page)
+            settings.site.root_page)
         return qs
 
 

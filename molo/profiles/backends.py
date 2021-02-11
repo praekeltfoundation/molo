@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from molo.core.backends import MoloModelBackend
 
-from wagtail.core.models import Site
 
 UserModel = get_user_model()
 
@@ -14,7 +14,7 @@ class MoloProfilesModelBackend(MoloModelBackend):
 
         if username is not None and request is not None:
             try:
-                site = Site.find_for_request(request)
+                site = settings.site
                 user = UserModel.objects.get(
                     profile__migrated_username=username,
                     profile__site=site)

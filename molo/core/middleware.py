@@ -20,8 +20,7 @@ from google_analytics.tasks import send_ga_tracking
 from google_analytics.utils import build_ga_params, set_cookie
 
 from wagtail.core.models import Site, Page
-from molo.core.models import SiteSettings
-from molo.core.models import Languages
+from molo.core.models import SiteSettings, Languages
 
 
 class MoloCASMiddleware(CASMiddleware):
@@ -110,6 +109,17 @@ class SetLangaugeCodeMiddleware(django.utils.deprecation.MiddlewareMixin):
         locale_code = request.path.split("/")[2]
         response.set_cookie('django_language', locale_code)
         return response
+
+
+class SetSiteMiddleware(django.utils.deprecation.MiddlewareMixin):
+    """Sets the language code"""
+    def process_request(self, request):
+        site = Site.find_for_request(request)
+        main_lang = Languages.for_site(site).languages.filter(
+            is_main_language=True).first()
+        settings.site = site
+        settings.main = site.root_page
+        settings.main_lang = main_lang
 
 
 class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):
