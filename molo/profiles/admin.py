@@ -136,7 +136,7 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
     form_fields_exclude = ('password',)
 
     def get_queryset(self, request):
-        site = Site.find_for_request(request)
+        site = settings.site
         return User.objects.filter(
             Q(is_superuser=True) |
             Q(profile__site=site) |

@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.sitemaps import views as sitemap_views
 
 from wagtail.search.models import Query
-from wagtail.core.models import Page, UserPagePermissionsProxy, Site
+from wagtail.core.models import Page, UserPagePermissionsProxy
 
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 
@@ -52,7 +52,7 @@ def search(request, results_per_page=10, load_more=False):
     locale = get_locale_code(get_language_from_request(request))
 
     if search_query:
-        main = Site.find_for_request(request).root_page
+        main = settings.main
 
         results = ArticlePage.objects.descendant_of(main).filter(
             language__locale=locale
@@ -123,7 +123,7 @@ def add_translation(request, page_id, locale):
 
     # create translation and redirect to edit page
     language = Languages.for_site(
-        Site.find_for_request(request)).languages.filter(
+        settings.site).languages.filter(
             locale=locale).first()
     if not language:
         raise Http404
@@ -194,7 +194,7 @@ class TagsListView(ListView):
     template_name = "core/article_tags.html"
 
     def get_queryset(self, *args, **kwargs):
-        site = Site.find_for_request(self.request)
+        site = settings.site
         site_settings = SiteSettings.for_site(site)
         main = site.root_page
         tag = self.kwargs["tag_name"]
@@ -224,7 +224,7 @@ class TagsListView(ListView):
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
             slug=tag).descendant_of(
-                Site.find_for_request(self.request).root_page).first()})
+                settings.main).first()})
         return context
 
 
@@ -317,7 +317,7 @@ def tag_index(request, extra_context=None,
     if not tag_name:
         raise Http404
 
-    main = Site.find_for_request(request).root_page
+    main = settings.main
     tag = Tag.objects.filter(slug=tag_name).descendant_of(main)
 
     if tag.exists():
@@ -388,7 +388,7 @@ def copy_to_all_confirm(request, page_id):
 
 
 def copy_to_all(request, page_id):
-    site = Site.find_for_request(request)
+    site = settings.site
     page = get_object_or_404(Page, id=page_id).specific
     copy_to_all_task.delay(page.pk, request.user.pk, site.pk)
     next_url = get_valid_next_url_from_request(request)

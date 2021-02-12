@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django_cas_ng.backends import CASBackend
 from django.contrib.auth import get_user_model
@@ -5,8 +6,6 @@ from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import PermissionDenied
 
 from molo.profiles.models import UserProfile
-
-from wagtail.core.models import Site
 
 UserModel = get_user_model()
 
@@ -25,7 +24,7 @@ class MoloModelBackend(ModelBackend):
                     UserProfile.objects.get(user=user)
                 else:
                     UserProfile.objects.get(
-                        user=user, site=Site.find_for_request(request))
+                        user=user, site=settings.site)
             except UserProfile.DoesNotExist:
                 raise PermissionDenied
             except UserModel.DoesNotExist:
@@ -46,7 +45,7 @@ class MoloCASBackend(CASBackend):
         if 'attributes' in request.session \
             and 'has_perm' in request.session['attributes']\
                 and request.session['attributes']['has_perm'] == 'True':
-            site = Site.find_for_request(request)
+            site = settings.site
             if request.session['attributes']['is_admin'] == 'True':
                 user.email = request.session['attributes']['email']
                 user.is_staff = True

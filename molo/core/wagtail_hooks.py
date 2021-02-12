@@ -1,4 +1,5 @@
 from django.conf.urls import re_path
+from django.conf import settings
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -7,7 +8,6 @@ from django.templatetags.static import static
 from django.utils.html import format_html
 
 from wagtail.core import hooks
-from wagtail.core.models import Site
 from wagtail.admin.menu import MenuItem
 from wagtail.admin.site_summary import SummaryItem
 from wagtail.admin.widgets import Button
@@ -38,7 +38,7 @@ modeladmin_register(AdminViewGroup)
 @hooks.register('construct_explorer_page_queryset')
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(
-        Site.find_for_request(request)).languages.filter(
+        settings.site).languages.filter(
             is_main_language=True).first()
     if pages and main_language and parent_page.depth > 2:
 
@@ -104,7 +104,7 @@ class LanguageSummaryItem(SummaryItem):
 
     def get_context(self):
         languages = Languages.for_site(
-            Site.find_for_request(self.request)).languages.all()
+            settings.site).languages.all()
         return {
             'summaries': [{
                 'language': l.get_locale_display(),
@@ -127,14 +127,14 @@ class LanguageErrorMessage(SummaryItem):
 @hooks.register('construct_homepage_panels')
 def add_language_error_message_panel(request, panels):
     if not Languages.for_site(
-            Site.find_for_request(request)).languages.all().exists():
+            settings.site).languages.all().exists():
         panels[:] = [LanguageErrorMessage(request)]
 
 
 @hooks.register('construct_main_menu')
 def hide_menu_items_if_no_language(request, menu_items):
     if not Languages.for_site(
-            Site.find_for_request(request)).languages.all().exists():
+            settings.site).languages.all().exists():
         menu_items[:] = [
             item for item in menu_items if (
                 item.name == 'settings' or
