@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.1.0
+~~~~~~
+- Add site and main to settings
+
 11.0.9
 ~~~~~~
 - update article ordering
