@@ -253,7 +253,7 @@ def download_file(request):
     '''Create and download a zip file containing the media file.'''
     if request.method == "GET":
         if path.exists(settings.MEDIA_ROOT):
-            zipfile_name = 'media_%s.zip' % request._wagtail_site_NAME
+            zipfile_name = 'media_%s.zip' % settings.SITE_NAME
             in_memory_file = BytesIO()
 
             media_zipfile = zipfile.ZipFile(in_memory_file, 'w',
