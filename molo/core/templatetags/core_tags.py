@@ -2,7 +2,6 @@ from itertools import chain
 from markdown import markdown
 
 from django import template
-from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Case, When
 from django.utils.safestring import mark_safe
@@ -43,7 +42,7 @@ def get_pages(context, queryset, locale):
     if queryset.count() == 0:
         return []
 
-    site = request._wagtail_site
+    site = context['request']._wagtail_site
     if not site:
         return list[queryset]
     language = get_language(site, locale)
@@ -56,7 +55,7 @@ def get_pages(context, queryset, locale):
 @register.simple_tag(takes_context=True)
 def load_tags(context):
     locale = context.get('locale_code')
-    site = request._wagtail_site
+    site = context['request']._wagtail_site
     if site:
         qs = Tag.objects.descendant_of(site.root_page).filter(
             language__is_main_language=True).live()
@@ -69,7 +68,7 @@ def load_tags(context):
 @register.simple_tag(takes_context=True)
 def load_sections(context, service_aggregator=False):
     locale = context.get('locale_code')
-    site = request._wagtail_site
+    site = context['request']._wagtail_site
     if site:
         qs = site.root_page.specific.sections().filter(
             is_service_aggregator=service_aggregator)
@@ -128,7 +127,7 @@ def tag_menu_homepage(context):
 )
 def latest_listing_homepage(context, num_count=5):
     locale = context.get('locale_code')
-    site = request._wagtail_site
+    site = context['request']._wagtail_site
     if site:
         articles = site.root_page.specific.latest_articles()
     else:
@@ -240,7 +239,7 @@ def render_translations(context, page):
         return {}
     if not page.specific.language.is_main_language:
         return {}
-    site = request._wagtail_site
+    site = context['request']._wagtail_site
     languages = [
         (l.locale, str(l))
         for l in Languages.for_site(
@@ -396,7 +395,7 @@ def get_articles_for_tag(context, tag):
             tag=main_tag).values('page__pk')
         return get_pages(
             context, ArticlePage.objects.descendant_of(
-                request._wagtail_site.root_page).filter(
+                context['request']._wagtail_site.root_page).filter(
                 pk__in=pks).order_by(
                 '-first_published_at'), locale)
     return None
@@ -408,7 +407,7 @@ def get_next_tag(context, tag):
     locale_code = context.get('locale_code')
     current_tag = tag.get_main_language_page()
     qs = Tag.objects.descendant_of(
-        request._wagtail_site.root_page).filter(
+        context['request']._wagtail_site.root_page).filter(
             language__is_main_language=True).live()
     if qs.exists():
         tags = list(qs)
@@ -416,7 +415,7 @@ def get_next_tag(context, tag):
             next_tag = tags[tags.index(current_tag) + 1]
         else:
             next_tag = tags[0]
-        site = request._wagtail_site
+        site = context['request']._wagtail_site
         next_tag_translated = get_translation_for(
                 [next_tag], locale_code, site)
         if next_tag_translated:
@@ -679,7 +678,7 @@ def handle_markdown(value):
 )
 def social_media_footer(context, page=None):
     locale = context.get('locale_code')
-    site = request._wagtail_site
+    site = context['request']._wagtail_site
     social_media = SiteSettings.for_site(site).\
         social_media_links_on_footer_page
 
@@ -699,7 +698,7 @@ def social_media_footer(context, page=None):
 )
 def social_media_article(context, page=None):
     locale = context.get('locale_code')
-    site = request._wagtail_site
+    site = context['request']._wagtail_site
     site_settings = SiteSettings.for_site(site)
     viber = False
     twitter = False
@@ -746,7 +745,7 @@ def get_next_article(context, article):
                 return next_article.translated_pages.get(
                     language__locale=locale_code)
             except:
-                site = request._wagtail_site
+                site = context['request']._wagtail_site
                 if next_article.language.locale == locale_code or not \
                     SiteSettings.for_site(
                         site).show_only_translated_pages:

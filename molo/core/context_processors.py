@@ -1,7 +1,6 @@
 from django.utils.translation import get_language_from_request
 from molo.core.utils import get_locale_code
 from molo.core.models import Languages
-from django.conf import settings
 
 
 def locale(request):

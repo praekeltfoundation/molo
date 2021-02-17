@@ -1,4 +1,3 @@
-from django.conf import settings
 from wagtail.contrib.modeladmin.views import IndexView
 from wagtail.admin import messages
 from django.utils.translation import ugettext as _

@@ -194,7 +194,7 @@ class TagsListView(ListView):
     template_name = "core/article_tags.html"
 
     def get_queryset(self, *args, **kwargs):
-        site = request._wagtail_site
+        site = self.request._wagtail_site
         site_settings = SiteSettings.for_site(site)
         main = site.root_page
         tag = self.kwargs["tag_name"]
@@ -224,7 +224,7 @@ class TagsListView(ListView):
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
             slug=tag).descendant_of(
-                request._wagtail_site.root_page).first()})
+                context['request']._wagtail_site.root_page).first()})
         return context
 
 

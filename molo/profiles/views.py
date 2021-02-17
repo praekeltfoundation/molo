@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login, logout
@@ -52,7 +51,7 @@ class RegistrationView(FormView):
         user.profile.gender = gender
         user.profile.location = location
         user.profile.education_level = education_level
-        user.profile.site = request._wagtail_site
+        user.profile.site = self.request._wagtail_site
         if form.cleaned_data["email"]:
             user.email = form.cleaned_data["email"]
             user.save()
@@ -74,7 +73,7 @@ class RegistrationView(FormView):
     def get_form_kwargs(self):
         kwargs = super(RegistrationView, self).get_form_kwargs()
         self.questions = SecurityQuestion.objects.descendant_of(
-            request._wagtail_siteroot_page).live().filter(
+            self.request._wagtail_siteroot_page).live().filter(
             language__is_main_language=True)
 
         context = {"request": self.request}
@@ -91,7 +90,7 @@ class RegistrationDone(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         profile = self.request.user.profile
-        site = request._wagtail_site
+        site = self.request._wagtail_site
         if (UserProfilesSettings.for_site(
             site).activate_dob) and not (
             UserProfilesSettings.for_site(
@@ -201,7 +200,7 @@ class ForgotPasswordView(FormView):
         error_message = "The username and security question(s) combination " \
                         + "do not match."
         profile_settings = UserProfilesSettings.for_site(
-            request._wagtail_site)
+            self.request._wagtail_site)
 
         if "forgot_password_attempts" not in self.request.session:
             self.request.session["forgot_password_attempts"] = \
@@ -214,7 +213,7 @@ class ForgotPasswordView(FormView):
                 _("Too many attempts. Please try again later.")
             )
             return self.render_to_response({'form': form})
-        site = request._wagtail_site
+        site = self.request._wagtail_site
         username = form.cleaned_data["username"]
         try:
             user = User.objects.get(
@@ -275,7 +274,7 @@ class ForgotPasswordView(FormView):
         # add security questions for form field generation
         # the security questions should be a random subset of
         # all the questions the user has answered
-        site = request._wagtail_site
+        site = self.request._wagtail_site
         kwargs = super(ForgotPasswordView, self).get_form_kwargs()
         profile_settings = UserProfilesSettings.for_site(site)
         self.security_questions = SecurityQuestion.objects.descendant_of(

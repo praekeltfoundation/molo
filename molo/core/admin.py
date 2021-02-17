@@ -1,5 +1,4 @@
 from rangefilter.filter import DateRangeFilter
-from django.conf import settings
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.urls import reverse

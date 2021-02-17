@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django_cas_ng.backends import CASBackend
 from django.contrib.auth import get_user_model

@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.conf import settings
 from molo.profiles.admin import FrontendUsersModelAdmin, UserProfileModelAdmin
 from molo.profiles.models import (
     UserProfilesSettings, UserProfile, SecurityAnswer)

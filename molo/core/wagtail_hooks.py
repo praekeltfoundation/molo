@@ -1,5 +1,4 @@
 from django.conf.urls import re_path
-from django.conf import settings
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -104,7 +103,7 @@ class LanguageSummaryItem(SummaryItem):
 
     def get_context(self):
         languages = Languages.for_site(
-            request._wagtail_site).languages.all()
+            self.request._wagtail_site).languages.all()
         return {
             'summaries': [{
                 'language': l.get_locale_display(),

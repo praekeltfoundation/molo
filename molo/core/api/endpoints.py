@@ -1,4 +1,3 @@
-from django.conf import settings
 from wagtail.core.models import Page
 from wagtail.core.utils import resolve_model_string
 from wagtail.api.v2.views import PagesAPIViewSet
@@ -70,7 +69,7 @@ class MoloPagesEndpoint(PagesAPIViewSet):
 
         # Filter by site
         queryset = queryset.descendant_of(
-            request._wagtail_site.root_page, inclusive=True)
+            self.request._wagtail_site.root_page, inclusive=True)
 
         # Enable filtering by navigation tags
         if model == ArticlePage and 'nav_tags__tag' in request.GET:
