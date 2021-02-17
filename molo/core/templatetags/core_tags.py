@@ -43,7 +43,7 @@ def get_pages(context, queryset, locale):
     if queryset.count() == 0:
         return []
 
-    site = settings.site
+    site = request._wagtail_site
     if not site:
         return list[queryset]
     language = get_language(site, locale)
@@ -56,7 +56,7 @@ def get_pages(context, queryset, locale):
 @register.simple_tag(takes_context=True)
 def load_tags(context):
     locale = context.get('locale_code')
-    site = settings.site
+    site = request._wagtail_site
     if site:
         qs = Tag.objects.descendant_of(site.root_page).filter(
             language__is_main_language=True).live()
@@ -69,7 +69,7 @@ def load_tags(context):
 @register.simple_tag(takes_context=True)
 def load_sections(context, service_aggregator=False):
     locale = context.get('locale_code')
-    site = settings.site
+    site = request._wagtail_site
     if site:
         qs = site.root_page.specific.sections().filter(
             is_service_aggregator=service_aggregator)
@@ -128,7 +128,7 @@ def tag_menu_homepage(context):
 )
 def latest_listing_homepage(context, num_count=5):
     locale = context.get('locale_code')
-    site = settings.site
+    site = request._wagtail_site
     if site:
         articles = site.root_page.specific.latest_articles()
     else:
@@ -146,7 +146,7 @@ def latest_listing_homepage(context, num_count=5):
 )
 def hero_article(context):
     locale = context.get('locale_code')
-    site = settings.site
+    site = request._wagtail_site
     if site:
         articles = site.root_page.specific \
             .hero_article()
@@ -165,7 +165,7 @@ def bannerpages(context, position=-1):
     pages = []
     request = context['request']
     locale = context.get('locale_code')
-    site = settings.site
+    site = request._wagtail_site
     if site:
         pages = site.root_page.specific.bannerpages().exact_type(
             BannerPage)
@@ -203,7 +203,7 @@ def footer_page(context):
     pages = []
     request = context['request']
     locale = context.get('locale_code')
-    site = settings.site
+    site = request._wagtail_site
     if site:
         pages = site.root_page.specific.footers()
 
@@ -240,7 +240,7 @@ def render_translations(context, page):
         return {}
     if not page.specific.language.is_main_language:
         return {}
-    site = settings.site
+    site = request._wagtail_site
     languages = [
         (l.locale, str(l))
         for l in Languages.for_site(
@@ -273,7 +273,7 @@ def load_descendant_articles_for_section(
     request = context.get('request')
     locale = context.get('locale_code')
     page = section.get_main_language_page()
-    site_settings = SiteSettings.for_site(settings.site) \
+    site_settings = SiteSettings.for_site(request._wagtail_site) \
         if request else None
 
     qs = ArticlePage.objects.descendant_of(page).filter(
@@ -323,7 +323,7 @@ def load_child_articles_for_section(
     request = context.get('request')
     locale = context.get('locale_code')
     main_language_page = section.specific.get_main_language_page()
-    site_settings = SiteSettings.for_site(settings.site) \
+    site_settings = SiteSettings.for_site(request._wagtail_site) \
         if request else None
 
     # TODO: Consider caching the pks of these articles using a timestamp on
@@ -382,7 +382,7 @@ def get_articles_for_tags_with_translations(
     pks = ArticlePageTags.objects.filter(tag=tag).values('page__pk')
     pages = get_pages(
         context, ArticlePage.objects.descendant_of(
-            settings.main).filter(pk__in=pks), locale)
+            request._wagtail_site.root_page).filter(pk__in=pks), locale)
     return [x for x in pages if x.pk not in exclude_pks]
 
 
@@ -396,7 +396,7 @@ def get_articles_for_tag(context, tag):
             tag=main_tag).values('page__pk')
         return get_pages(
             context, ArticlePage.objects.descendant_of(
-                settings.main).filter(
+                request._wagtail_site.root_page).filter(
                 pk__in=pks).order_by(
                 '-first_published_at'), locale)
     return None
@@ -408,7 +408,7 @@ def get_next_tag(context, tag):
     locale_code = context.get('locale_code')
     current_tag = tag.get_main_language_page()
     qs = Tag.objects.descendant_of(
-        settings.site.root_page).filter(
+        request._wagtail_site.root_page).filter(
             language__is_main_language=True).live()
     if qs.exists():
         tags = list(qs)
@@ -416,7 +416,7 @@ def get_next_tag(context, tag):
             next_tag = tags[tags.index(current_tag) + 1]
         else:
             next_tag = tags[0]
-        site = settings.site
+        site = request._wagtail_site
         next_tag_translated = get_translation_for(
                 [next_tag], locale_code, site)
         if next_tag_translated:
@@ -449,9 +449,9 @@ def get_tags_for_section(context, section, tag_count=2, tag_article_count=4):
         tags = section.get_main_language_page().specific.section_tags\
             .filter(tag__isnull=False).values_list('tag__pk', flat=True)
 
-    if tags and settings.site:
+    if tags and request._wagtail_site:
         qs = Tag.objects.descendant_of(
-            settings.main).live().filter(pk__in=tags)
+            request._wagtail_site.root_page).live().filter(pk__in=tags)
 
         for tag in qs:
             tag_articles = get_articles_for_tags_with_translations(
@@ -487,7 +487,7 @@ def get_tag_articles(
     # get x amount of articles featured in latest
     # ordered by featured in latest promote date
     all_latest_articles = ArticlePage.objects.descendant_of(
-        settings.site.root_page).filter(
+        request._wagtail_site.root_page).filter(
         language__is_main_language=True,
         featured_in_latest=True).exact_type(ArticlePage).exclude(
             pk__in=exclude_pks).order_by('-featured_in_latest_start_date')
@@ -506,7 +506,7 @@ def get_tag_articles(
                 exclude_pks += [p.pk for p in latest_articles]
 
     # Featured Section/s
-    sections = settings.site.root_page.specific.sections()
+    sections = request._wagtail_site.root_page.specific.sections()
     for section in sections[:section_count]:
         article_pages = ArticlePage.objects.descendant_of(section).filter(
             language__is_main_language=True,
@@ -537,7 +537,7 @@ def get_tag_articles(
 
     # Featured Tag/s
     tag_qs = Tag.objects.descendant_of(
-        settings.site.root_page).filter(
+        request._wagtail_site.root_page).filter(
             feature_in_homepage=True).live()
     if tag_qs:
         tag = tag_qs.first()
@@ -557,7 +557,7 @@ def get_tag_articles(
     # Latest Articles
     pages = get_pages(
             context, ArticlePage.objects.descendant_of(
-                settings.site.root_page).filter(
+                request._wagtail_site.root_page).filter(
                 language__is_main_language=True).exact_type(
                     ArticlePage).order_by('-featured_in_latest'), locale)
     articles = [x for x in pages if x.pk not in exclude_pks]
@@ -581,7 +581,7 @@ def load_tags_for_article(context, article):
             else article.created_at.isoformat()
 
         cache_key = "load_tags_for_article_{}_{}_{}_{}".format(
-            locale, settings.site.pk,
+            locale, request._wagtail_site.pk,
             article.pk, latest_revision_date)
         tags_pks = cache.get(cache_key)
 
@@ -597,16 +597,16 @@ def load_tags_for_article(context, article):
                     .nav_tags.filter(tag__isnull=False)\
                     .values_list('tag__pk', flat=True)
 
-            if tags and settings.site:
+            if tags and request._wagtail_site:
                 tags_pks = Tag.objects.descendant_of(
-                    settings.site.root_page).live().filter(
+                    request._wagtail_site.root_page).live().filter(
                     pk__in=tags).values_list("pk", flat=True)
                 cache.set(cache_key, tags_pks, 300)
             else:
                 tags_pks = []
 
         qs = Tag.objects.descendant_of(
-            settings.main).live().filter(pk__in=tags_pks)
+            request._wagtail_site.root_page).live().filter(pk__in=tags_pks)
         return get_pages(context, qs, locale)
     return None
 
@@ -679,7 +679,7 @@ def handle_markdown(value):
 )
 def social_media_footer(context, page=None):
     locale = context.get('locale_code')
-    site = settings.site
+    site = request._wagtail_site
     social_media = SiteSettings.for_site(site).\
         social_media_links_on_footer_page
 
@@ -699,7 +699,7 @@ def social_media_footer(context, page=None):
 )
 def social_media_article(context, page=None):
     locale = context.get('locale_code')
-    site = settings.site
+    site = request._wagtail_site
     site_settings = SiteSettings.for_site(site)
     viber = False
     twitter = False
@@ -746,7 +746,7 @@ def get_next_article(context, article):
                 return next_article.translated_pages.get(
                     language__locale=locale_code)
             except:
-                site = settings.site
+                site = request._wagtail_site
                 if next_article.language.locale == locale_code or not \
                     SiteSettings.for_site(
                         site).show_only_translated_pages:

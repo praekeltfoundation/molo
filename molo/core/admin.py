@@ -197,7 +197,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
-            settings.site.root_page)
+            request._wagtail_site.root_page)
         return qs
 
 

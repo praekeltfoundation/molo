@@ -14,7 +14,7 @@ class MoloProfilesModelBackend(MoloModelBackend):
 
         if username is not None and request is not None:
             try:
-                site = settings.site
+                site = request._wagtail_site
                 user = UserModel.objects.get(
                     profile__migrated_username=username,
                     profile__site=site)

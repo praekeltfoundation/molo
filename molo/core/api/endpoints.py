@@ -70,7 +70,7 @@ class MoloPagesEndpoint(PagesAPIViewSet):
 
         # Filter by site
         queryset = queryset.descendant_of(
-            settings.main, inclusive=True)
+            request._wagtail_site.root_page, inclusive=True)
 
         # Enable filtering by navigation tags
         if model == ArticlePage and 'nav_tags__tag' in request.GET:
@@ -99,6 +99,6 @@ class LanguagesAPIEndpoint(BaseAPIViewSet):
         '''
         Only serve site-specific languages
         '''
-        site = settings.site
+        site = request._wagtail_site
         return (Languages.for_site(site)
                          .languages.filter().order_by('pk'))
