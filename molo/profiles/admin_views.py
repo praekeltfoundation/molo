@@ -29,7 +29,7 @@ class FrontendUsersAdminView(IndexView):
             'is_active': is_active_exact
         }
 
-        arguments = {'profile__site': request._wagtail_sitepk}
+        arguments = {'profile__site': request._wagtail_site.pk}
 
         for key, value in filter_list.items():
             if value:
