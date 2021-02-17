@@ -98,6 +98,6 @@ class LanguagesAPIEndpoint(BaseAPIViewSet):
         '''
         Only serve site-specific languages
         '''
-        site = request._wagtail_site
+        site = self.request._wagtail_site
         return (Languages.for_site(site)
                          .languages.filter().order_by('pk'))

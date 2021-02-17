@@ -145,7 +145,7 @@ def latest_listing_homepage(context, num_count=5):
 )
 def hero_article(context):
     locale = context.get('locale_code')
-    site = request._wagtail_site
+    site = context['request']._wagtail_site
     if site:
         articles = site.root_page.specific \
             .hero_article()
