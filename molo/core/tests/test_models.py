@@ -651,6 +651,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         section2 = self.mk_section(self.section_index)
         translated_section = self.mk_section_translation(section, self.french)
         request = self.factory.get('/')
+        request._wagtail_site = self.site
         qs = get_translation({
             'locale_code': 'fr', 'request': request}, section)
         self.assertEqual(translated_section.id, qs.id)

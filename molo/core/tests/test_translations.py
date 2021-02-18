@@ -46,6 +46,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
 
         # Login
         self.user = self.login()
+        self.site = main.get_site()
 
     def test_section_index_page(self):
         response = self.client.get(reverse(
@@ -84,6 +85,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         request = self.factory.get(
             "http://main-1.localhost:8000/admin/pages/"
             + str(self.english_section.id) + "/")
+        request._wagtail_site = self.site
         parent_page = get_object_or_404(Page, id=self.section_index.id)
         pages = list(parent_page.get_children().prefetch_related(
             'content_type', 'sites_rooted_here'))
@@ -104,6 +106,7 @@ class TestTranslations(TestCase, MoloTestCaseMixin):
         request = self.factory.get(
             "http://main-1.localhost:8000/admin/pages/"
             + str(self.english_section.id) + "/")
+        request._wagtail_site = self.site
         parent_page = get_object_or_404(Page, id=self.section_index.id)
         pages = parent_page.get_children().prefetch_related(
             'content_type', 'sites_rooted_here')
