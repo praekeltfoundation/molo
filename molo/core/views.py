@@ -224,7 +224,7 @@ class TagsListView(ListView):
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
             slug=tag).descendant_of(
-                context['request']._wagtail_site.root_page).first()})
+                self.request._wagtail_site.root_page).first()})
         return context
 
 
