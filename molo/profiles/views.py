@@ -73,7 +73,7 @@ class RegistrationView(FormView):
     def get_form_kwargs(self):
         kwargs = super(RegistrationView, self).get_form_kwargs()
         self.questions = SecurityQuestion.objects.descendant_of(
-            self.request._wagtail_siteroot_page).live().filter(
+            self.request._wagtail_site.root_page).live().filter(
             language__is_main_language=True)
 
         context = {"request": self.request}
