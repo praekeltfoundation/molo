@@ -112,7 +112,7 @@ class SetLangaugeCodeMiddleware(django.utils.deprecation.MiddlewareMixin):
 
 
 class SetSiteMiddleware(django.utils.deprecation.MiddlewareMixin):
-    """Sets the language code"""
+    """Sets the wagtail site"""
     def process_request(self, request):
         Site.find_for_request(request)
 
