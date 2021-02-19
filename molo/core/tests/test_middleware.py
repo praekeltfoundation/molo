@@ -23,6 +23,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         # Creates Main language
         self.mk_main()
         self.main = Main.objects.all().first()
+        self.site = self.main.get_site()
         self.english = SiteLanguageRelation.objects.create(
             language_setting=Languages.for_site(self.main.get_site()),
             locale='en',
@@ -45,6 +46,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         """
         rf = RequestFactory()
         request = rf.get(url, **headers)
+        request._wagtail_site = self.site
         if locale:
             request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = locale
         if user:
@@ -66,6 +68,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         })
         headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
         request = self.factory.get('/search/?q=Test', headers)
+        request._wagtail_site = self.site
         mock_method.return_value = {
             'utm_url': 'http://url',
             'user_id': 75,
@@ -94,6 +97,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             'q': 'Test'
         })
         request = self.factory.get('/')
+        request._wagtail_site = self.site
         mock_method.return_value = {
             'utm_url': 'url',
             'user_agent': 'agent',
@@ -129,6 +133,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
             '/locale/fr/',
             headers, self.user,
             locale=self.french.locale)
+        request._wagtail_site = self.site
         mock_method.return_value = {
             'utm_url': 'url',
             'user_agent': 'agent',
@@ -161,6 +166,7 @@ class TestUtils(TestCase, MoloTestCaseMixin):
         headers = {'HTTP_X_IORG_FBS_UIP': '100.100.200.10'}
         request = self.make_fake_request(
             '/search/?q=Test', headers, self.user)
+        request._wagtail_site = self.site
         mock_method.return_value = {
             'utm_url': 'http://url',
             'user_id': 75,

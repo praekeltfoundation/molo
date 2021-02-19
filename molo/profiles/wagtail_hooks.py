@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.conf import settings
 from molo.profiles.admin import FrontendUsersModelAdmin, UserProfileModelAdmin
 from molo.profiles.models import (
     UserProfilesSettings, UserProfile, SecurityAnswer)
@@ -15,7 +14,7 @@ class ProfileWarningMessagee(SummaryItem):
 
 @hooks.register('construct_homepage_panels')
 def profile_warning_message(request, panels):
-    site = settings.site
+    site = request._wagtail_site
     profile_settings = UserProfilesSettings.for_site(site)
     if not profile_settings.country_code and \
             profile_settings.show_mobile_number_field:
@@ -33,7 +32,7 @@ class AccessErrorMessage(SummaryItem):
 
 @hooks.register('construct_homepage_panels')
 def add_access_error_message_panel(request, panels):
-    site = settings.site
+    site = request._wagtail_site
     if UserProfile.objects.filter(user=request.user).exists() and \
             not request.user.is_superuser:
         if not request.user.profile.admin_sites.filter(

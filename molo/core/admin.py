@@ -1,5 +1,4 @@
 from rangefilter.filter import DateRangeFilter
-from django.conf import settings
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.urls import reverse
@@ -197,7 +196,7 @@ class ArticleModelAdmin(WagtailModelAdmin, ArticleAdmin):
 
     def get_queryset(self, request):
         qs = ArticlePageLanguageProxy.objects.descendant_of(
-            settings.site.root_page)
+            request._wagtail_site.root_page)
         return qs
 
 

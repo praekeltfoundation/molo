@@ -1,6 +1,6 @@
 # coding=utf-8
 import pytest
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, Client
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -104,6 +104,10 @@ class TestModels(TestCase, MoloTestCaseMixin):
             self.section_index2, title='Your mind')
         self.yourmind_sub2 = self.mk_section(
             self.yourmind2, title='Your mind subsection')
+
+        self.client = Client()
+        self.client.get("/")
+        self.site = self.main.get_site()
 
     def test_multisite_one_root_page(self):
         second_site = Site.objects.create(
@@ -366,6 +370,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         new_section = self.mk_section(self.section_index)
         self.mk_articles(new_section, count=12)
         request = self.factory.get('/sections-main-1/test-section-0/')
+        request._wagtail_site = self.site
         articles = load_child_articles_for_section(
             {'request': request, 'locale_code': 'en'}, new_section, count=None)
         self.assertEqual(len(articles), 12)
@@ -646,6 +651,7 @@ class TestModels(TestCase, MoloTestCaseMixin):
         section2 = self.mk_section(self.section_index)
         translated_section = self.mk_section_translation(section, self.french)
         request = self.factory.get('/')
+        request._wagtail_site = self.site
         qs = get_translation({
             'locale_code': 'fr', 'request': request}, section)
         self.assertEqual(translated_section.id, qs.id)

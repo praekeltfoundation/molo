@@ -112,14 +112,9 @@ class SetLangaugeCodeMiddleware(django.utils.deprecation.MiddlewareMixin):
 
 
 class SetSiteMiddleware(django.utils.deprecation.MiddlewareMixin):
-    """Sets the language code"""
+    """Sets the wagtail site"""
     def process_request(self, request):
-        site = Site.find_for_request(request)
-        main_lang = Languages.for_site(site).languages.filter(
-            is_main_language=True).first()
-        settings.site = site
-        settings.main = site.root_page
-        settings.main_lang = main_lang
+        Site.find_for_request(request)
 
 
 class MoloGoogleAnalyticsMiddleware(django.utils.deprecation.MiddlewareMixin):

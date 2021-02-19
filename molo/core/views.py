@@ -52,7 +52,7 @@ def search(request, results_per_page=10, load_more=False):
     locale = get_locale_code(get_language_from_request(request))
 
     if search_query:
-        main = settings.main
+        main = request._wagtail_site.root_page
 
         results = ArticlePage.objects.descendant_of(main).filter(
             language__locale=locale
@@ -123,7 +123,7 @@ def add_translation(request, page_id, locale):
 
     # create translation and redirect to edit page
     language = Languages.for_site(
-        settings.site).languages.filter(
+        request._wagtail_site).languages.filter(
             locale=locale).first()
     if not language:
         raise Http404
@@ -194,7 +194,7 @@ class TagsListView(ListView):
     template_name = "core/article_tags.html"
 
     def get_queryset(self, *args, **kwargs):
-        site = settings.site
+        site = self.request._wagtail_site
         site_settings = SiteSettings.for_site(site)
         main = site.root_page
         tag = self.kwargs["tag_name"]
@@ -224,7 +224,7 @@ class TagsListView(ListView):
         tag = self.kwargs['tag_name']
         context.update({'tag': Tag.objects.filter(
             slug=tag).descendant_of(
-                settings.main).first()})
+                self.request._wagtail_site.root_page).first()})
         return context
 
 
@@ -317,7 +317,7 @@ def tag_index(request, extra_context=None,
     if not tag_name:
         raise Http404
 
-    main = settings.main
+    main = request._wagtail_site.root_page
     tag = Tag.objects.filter(slug=tag_name).descendant_of(main)
 
     if tag.exists():
@@ -388,7 +388,7 @@ def copy_to_all_confirm(request, page_id):
 
 
 def copy_to_all(request, page_id):
-    site = settings.site
+    site = request._wagtail_site
     page = get_object_or_404(Page, id=page_id).specific
     copy_to_all_task.delay(page.pk, request.user.pk, site.pk)
     next_url = get_valid_next_url_from_request(request)

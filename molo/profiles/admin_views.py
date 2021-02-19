@@ -1,4 +1,3 @@
-from django.conf import settings
 from wagtail.contrib.modeladmin.views import IndexView
 from wagtail.admin import messages
 from django.utils.translation import ugettext as _
@@ -29,7 +28,7 @@ class FrontendUsersAdminView(IndexView):
             'is_active': is_active_exact
         }
 
-        arguments = {'profile__site': settings.site.pk}
+        arguments = {'profile__site': request._wagtail_site.pk}
 
         for key, value in filter_list.items():
             if value:

@@ -192,7 +192,7 @@ class RegistrationForm(DateOfBirthValidationMixin, forms.Form):
             self.profile_settings = UserProfilesSettings.for_site(site)
         else:
             self.profile_settings = UserProfilesSettings.for_site(
-                settings.site)
+                request._wagtail_site)
 
         self.fields['mobile_number'].required = (
             self.profile_settings.mobile_number_required and
@@ -328,7 +328,7 @@ class DoneForm(forms.Form):
             profile_settings = UserProfilesSettings.for_site(site)
         else:
             profile_settings = UserProfilesSettings.for_site(
-                settings.site)
+                request._wagtail_site)
 
         if self.fields.get('mobile_number'):
             self.fields['mobile_number'].required = (
@@ -406,7 +406,7 @@ class EditProfileForm(DateOfBirthValidationMixin, forms.ModelForm):
             self.profile_settings = UserProfilesSettings.for_site(site)
         else:
             self.profile_settings = UserProfilesSettings.for_site(
-                settings.site)
+                request._wagtail_site)
 
         if self.fields.get('mobile_number'):
             self.fields['mobile_number'].required = (

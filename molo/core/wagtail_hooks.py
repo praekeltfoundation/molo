@@ -1,5 +1,4 @@
 from django.conf.urls import re_path
-from django.conf import settings
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -38,7 +37,7 @@ modeladmin_register(AdminViewGroup)
 @hooks.register('construct_explorer_page_queryset')
 def show_main_language_only(parent_page, pages, request):
     main_language = Languages.for_site(
-        settings.site).languages.filter(
+        request._wagtail_site).languages.filter(
             is_main_language=True).first()
     if pages and main_language and parent_page.depth > 2:
 
@@ -104,7 +103,7 @@ class LanguageSummaryItem(SummaryItem):
 
     def get_context(self):
         languages = Languages.for_site(
-            settings.site).languages.all()
+            self.request._wagtail_site).languages.all()
         return {
             'summaries': [{
                 'language': l.get_locale_display(),
@@ -127,14 +126,14 @@ class LanguageErrorMessage(SummaryItem):
 @hooks.register('construct_homepage_panels')
 def add_language_error_message_panel(request, panels):
     if not Languages.for_site(
-            settings.site).languages.all().exists():
+            request._wagtail_site).languages.all().exists():
         panels[:] = [LanguageErrorMessage(request)]
 
 
 @hooks.register('construct_main_menu')
 def hide_menu_items_if_no_language(request, menu_items):
     if not Languages.for_site(
-            settings.site).languages.all().exists():
+            request._wagtail_site).languages.all().exists():
         menu_items[:] = [
             item for item in menu_items if (
                 item.name == 'settings' or
