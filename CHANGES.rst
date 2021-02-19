@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.2.0
+~~~~~~
+- Get site from wagtail cache
+
 11.1.0
 ~~~~~~
 - Add site and main to settings
