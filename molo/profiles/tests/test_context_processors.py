@@ -5,6 +5,7 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from molo.profiles.context_processors import get_profile_data
 from molo.core.tests.base import MoloTestCaseMixin
+from wagtail.core.models import Site
 
 
 class ContextProcessorsTest(TestCase, MoloTestCaseMixin):
@@ -16,7 +17,7 @@ class ContextProcessorsTest(TestCase, MoloTestCaseMixin):
             username='tester',
             email='tester@example.com',
             password='tester')
-        self.site = self.main.get_site()
+        self.site = Site.objects.first()
 
     def test_get_profile_data_authenticated_anonymous(self):
         request = self.factory.get('/')
