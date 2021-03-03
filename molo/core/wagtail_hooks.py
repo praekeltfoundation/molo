@@ -10,7 +10,6 @@ from wagtail.core import hooks
 from wagtail.admin.menu import MenuItem
 from wagtail.admin.site_summary import SummaryItem
 from wagtail.admin.widgets import Button
-from wagtail.contrib.modeladmin.options import modeladmin_register
 
 from molo.core import views
 from django.db.models.query import QuerySet
@@ -28,7 +27,6 @@ def urlconf_translations():
             views.add_translation,
             name='add_translation'),
     ]
-
 
 
 @hooks.register('construct_explorer_page_queryset')
