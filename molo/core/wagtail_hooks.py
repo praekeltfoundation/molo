@@ -10,10 +10,8 @@ from wagtail.core import hooks
 from wagtail.admin.menu import MenuItem
 from wagtail.admin.site_summary import SummaryItem
 from wagtail.admin.widgets import Button
-from wagtail.contrib.modeladmin.options import modeladmin_register
 
 from molo.core import views
-from molo.core.admin import AdminViewGroup
 from django.db.models.query import QuerySet
 from molo.core.api import urls as molo_api_urls
 from molo.core.utils import copy_translation_pages
@@ -29,9 +27,6 @@ def urlconf_translations():
             views.add_translation,
             name='add_translation'),
     ]
-
-
-modeladmin_register(AdminViewGroup)
 
 
 @hooks.register('construct_explorer_page_queryset')
