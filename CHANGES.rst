@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.2.1
+~~~~~~
+- Remove unused admin features
+
 11.2.0
 ~~~~~~
 - Get site from wagtail cache
