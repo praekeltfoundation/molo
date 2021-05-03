@@ -132,7 +132,7 @@ class FrontendUsersModelAdmin(WagtailModelAdmin, ProfileUserAdmin):
         CustomUsersListFilter)
 
     search_fields = ('username', 'profile__uuid',)
-
+    index_view_extra_css = ('css/modeladmin-index.css',)
     form_fields_exclude = ('password',)
 
     def get_queryset(self, request):
