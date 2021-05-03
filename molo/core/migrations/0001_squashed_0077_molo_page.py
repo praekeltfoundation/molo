@@ -427,7 +427,7 @@ def convert_media_to_molo_media(apps, schema_editor):
         media.save()
         for article in ArticlePage.objects.all():
             for block in article.body:
-                if block.block_type is 'media' and block.value is media.id:
+                if block.block_type == 'media' and block.value == media.id:
                     block.value = new_media.id
                     article.save()
 
@@ -499,7 +499,7 @@ class Migration(migrations.Migration):
             if migrations:
                 self.run_before = list(self.__class__.run_before)
                 self.dependencies = list(self.__class__.dependencies)
-        except:
+        except error as e:
             self.run_before = list(self.__class__.run_before)
             self.dependencies = [
                 ('wagtailcore', '0052_pagelogentry'),
