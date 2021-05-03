@@ -241,8 +241,8 @@ def render_translations(context, page):
         return {}
     site = context['request']._wagtail_site
     languages = [
-        (l.locale, str(l))
-        for l in Languages.for_site(
+        (lang.locale, str(lang))
+        for lang in Languages.for_site(
             site.root_page.get_site()).languages.filter(
                 is_main_language=False)]
 

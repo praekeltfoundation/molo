@@ -101,10 +101,10 @@ class LanguageSummaryItem(SummaryItem):
             self.request._wagtail_site).languages.all()
         return {
             'summaries': [{
-                'language': l.get_locale_display(),
+                'language': lang.get_locale_display(),
                 'total': ArticlePage.objects.all().filter(
-                    language=l).count()
-            }for l in languages],
+                    language=lang).count()
+            }for lang in languages],
         }
 
 
