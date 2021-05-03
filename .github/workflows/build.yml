@@ -26,8 +26,8 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 molo --count --select=E9,F63,F7,F82 --max-complexity=20 --max-line-length=90 --statistics
-        flake8 --config=molo/core/migrations/.flake8 molo/core/migrations/
-        flake8 --config=molo/profiles/migrations/.flake8 molo/profiles/migrations/
+        flake8 --config=molo/core/migrations/.flake8 molo/core/migrations/ --select=E9,F63,F7,F82
+        flake8 --config=molo/profiles/migrations/.flake8 molo/profiles/migrations/ --select=E9,F63,F7,F82
     - name: Test with pytest
       run: |
         molo scaffold testapp

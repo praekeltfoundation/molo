@@ -499,7 +499,7 @@ class Migration(migrations.Migration):
             if migrations:
                 self.run_before = list(self.__class__.run_before)
                 self.dependencies = list(self.__class__.dependencies)
-        except error as e:
+        except:
             self.run_before = list(self.__class__.run_before)
             self.dependencies = [
                 ('wagtailcore', '0052_pagelogentry'),
