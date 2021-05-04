@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.3.0
+~~~~~~
+- Add extra css for users model admin
+
 11.2.1
 ~~~~~~
 - Remove unused admin features
