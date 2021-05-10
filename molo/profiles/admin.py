@@ -10,7 +10,7 @@ from django.utils.timezone import localtime
 from django.conf import settings
 from django.db.models import Q
 
-from rangefilter.filter import DateRangeFilter
+from rangefilter.filters import DateRangeFilter
 from wagtail.contrib.modeladmin.options import ModelAdmin as WagtailModelAdmin
 from molo.profiles.admin_views import FrontendUsersAdminView
 from molo.profiles.models import (
