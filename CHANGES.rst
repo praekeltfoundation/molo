@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.3.2
+~~~~~~
+- update rangefilter template
+
 11.3.1
 ~~~~~~
 - update rangefilter
