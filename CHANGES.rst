@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+11.3.1
+~~~~~~
+- update rangefilter
+
 11.3.0
 ~~~~~~
 - Add extra css for users model admin
