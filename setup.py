@@ -15,7 +15,7 @@ install_requires = [
     'babel',
     'beautifulsoup4<4.9,>=4.8',
     'cached-property',
-    'celery==4.4.7',
+    'celery==5.2.2',
     'cookiecutter==1.0.0',
     'dj-database-url',
     'Django~=3.1.4',
