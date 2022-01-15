@@ -5,7 +5,7 @@
   "main": "gulpfile.js",
   "dependencies": {
     "electron": "^9.4.0",
-    "marked": "^0.7.0",
+    "marked": "^4.0.10",
     "axios": ">=0.21.1",
     "postcss": "^7.0.0"
   },
