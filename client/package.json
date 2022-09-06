@@ -63,7 +63,7 @@
     "react-height": "^2.0.4",
     "react-motion": "^0.4.2",
     "react-redux": "^4.4.0",
-    "react-search": "1.0.9",
+    "react-search": "1.0.10",
     "react-typeahead": "^1.1.6",
     "redux": "^3.3.1",
     "redux-thunk": "^2.0.1",
