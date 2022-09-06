@@ -51,7 +51,7 @@
     "webpack-stream": "^3.1.0"
   },
   "dependencies": {
-    "axios": "^0.9.1",
+    "axios": "^0.27.2",
     "classnames": "^2.2.3",
     "js-cookie": "^2.1.0",
     "lodash": "^4.6.1",
